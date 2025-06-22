@@ -2135,7 +2135,137 @@ poetry run mud socketserver
 3. Interact using commands like `look`, `say`, `get`, etc.
 4. Connect in another terminal and try again. Both sessions should share world state.
 
+## 🚀 STEP 16: Add WebSocket Adapter for Browser Play & Future Agents
+
+### 🎯 Goal:
+Add WebSocket support alongside the Telnet server so players (or bots) can connect via modern web clients. This allows you to later build an in-browser UI or connect autonomous agents over WebSockets.
+
 ---
+
+### ✅ Overview:
+
+- Create a lightweight WebSocket server using **FastAPI + `websockets`** or **`starlette.websockets`**
+- Accept browser connections
+- Reuse existing `PlayerSession` and game loop logic
+- Allow each WebSocket client to control a character
+- Structure I/O for easy parsing by future LLM-based clients
+
+---
+
+### 🔲 Task 1: Add WebSocket Server
+
+- [ ] File: `mud/network/websocket_server.py`
+- [ ] Use `FastAPI` or `Starlette` to expose `/ws`
+- [ ] Accept `websocket` connections and hold open
+- [ ] Upgrade the WebSocket into a `PlayerSession`
+
+Prompt:
+```
+Use FastAPI to open a /ws WebSocket route. On connection, wrap into a PlayerSession-like object with .send() and .recv().
+```
+
+Validation:
+- `websocat ws://localhost:8000/ws` opens connection.
+
+---
+
+### 🔲 Task 2: Create WebSocketPlayerSession
+
+- [ ] File: `mud/network/websocket_session.py`
+- [ ] Define a subclass of `PlayerSession` that wraps a `WebSocket` object
+- [ ] Implement `.send()` and `.recv()` using JSON messages
+- [ ] Add metadata: `session_type = "websocket"`
+
+Prompt:
+```
+Subclass PlayerSession using a WebSocket object. All messages should be JSON with fields: type, text, metadata.
+```
+
+---
+
+### 🔲 Task 3: Bind to Game Loop
+
+- [ ] In `websocket_server.py`, call `handle_session()` as in socket version
+- [ ] Allow one character per session
+- [ ] Handle disconnects gracefully
+
+Validation:
+- Web client logs in, issues `look`, receives output
+
+---
+
+### 🔲 Task 4: JSON I/O Format
+
+- [ ] Standardize message format:
+  ```json
+  {
+    "type": "output",
+    "text": "You are standing in a quiet room.",
+    "room": 3001,
+    "hp": 34
+  }
+  ```
+- [ ] Parse inputs as:
+  ```json
+  {
+    "type": "command",
+    "text": "say hello"
+  }
+  ```
+
+Prompt:
+```
+Wrap all messages in JSON for structured LLM parsing. Include type, content, and optional metadata.
+```
+
+---
+
+### 🔲 Task 5: Add CORS and Host Config
+
+- [ ] File: `mud/config.py`
+- [ ] Allow configurable CORS origins via `.env`
+- [ ] Add `--host 0.0.0.0 --port 8000` for Docker
+
+Validation:
+- Browser frontend can connect from a different origin
+- No CORS errors
+
+---
+
+### 🔲 Task 6: CLI Entrypoint
+
+- [ ] In `mud/__main__.py`, add command:
+  ```bash
+  poetry run mud websocketserver
+  ```
+- [ ] Serve on `localhost:8000` or `0.0.0.0:8000`
+
+Validation:
+- Multiple users connect via `/ws`
+- Each has independent session
+
+---
+
+### 🧪 Completion Criteria
+
+- [ ] `poetry run mud websocketserver` launches server
+- [ ] Browser or `websocat` clients can connect to `/ws`
+- [ ] Each session logs in, enters game loop, and runs commands
+- [ ] Messages are in structured JSON format
+- [ ] Works in Docker with port 8000 exposed
+
+---
+
+### 🔮 Optional Extensions
+
+- Add logging of all WebSocket events
+- Build a barebones browser UI in React or Svelte
+- Support LLM input via message type: `"agent_command"`
+- a sample frontend React client
+- automatic login via token auth
+- agent memory/state integration over `/ws`
+
+
 
 ### 🧠 future enhancements
 
