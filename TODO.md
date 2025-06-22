@@ -1231,3 +1231,919 @@ def create_test_account():
 ### 🛠️ Next Step
 
 - Step 10 will support inventory persistence and loadable equipment, followed by automated account creation or authentication.
+
+## 🎒 Step 10: Add Inventory and Equipment Persistence
+
+**Objective**: Enable characters to carry and equip objects that persist in the database. Inventory and equipment should be loaded at login and saved at logout.
+
+---
+
+### 🧠 Codex Must Know:
+
+- Items are currently represented as `ObjPrototype` (for prototypes) and `Object` (for instances).
+- Characters have:
+  - `inventory: List[Object]`
+  - `equipment: Dict[str, Object]`  (e.g., `{"head": <helmet>, "feet": <boots>}`)
+- SQLAlchemy is being used with `SessionLocal()`.
+- Items may need an `id` separate from their prototype `vnum`.
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Add `ObjectInstance` ORM Table
+
+**1.1 In `mud/db/models.py`:**
+
+```python
+class ObjectInstance(Base):
+    __tablename__ = "object_instances"
+    id = Column(Integer, primary_key=True)
+    prototype_vnum = Column(Integer, ForeignKey("obj_prototypes.vnum"))
+    location = Column(String)  # 'inventory', 'equipment:head', etc.
+    character_id = Column(Integer, ForeignKey("characters.id"))
+
+    prototype = relationship("ObjPrototype")
+    character = relationship("Character", back_populates="objects")
+```
+
+**1.2 Extend `Character` model:**
+
+```python
+objects = relationship("ObjectInstance", back_populates="character")
+```
+
+---
+
+#### 2. Update Runtime Models (if needed)
+
+**2.1 In `mud/models/object.py`:**
+
+```python
+@dataclass
+class Object:
+    instance_id: Optional[int]
+    prototype: ObjPrototype
+```
+
+**2.2 Character:**
+
+```python
+inventory: List[Object]
+equipment: Dict[str, Object]
+```
+
+---
+
+#### 3. Add Load/Save Functions
+
+**3.1 In `mud/models/conversion.py`:**
+
+```python
+def load_objects_for_character(db_char: DBCharacter) -> Tuple[List[Object], Dict[str, Object]]:
+    inventory = []
+    equipment = {}
+
+    for inst in db_char.objects:
+        proto = obj_registry.get(inst.prototype_vnum)
+        obj = Object(instance_id=inst.id, prototype=proto)
+        if inst.location.startswith("equipment:"):
+            slot = inst.location.split(":")[1]
+            equipment[slot] = obj
+        else:
+            inventory.append(obj)
+
+    return inventory, equipment
+
+def save_objects_for_character(session, char: Character, db_char: DBCharacter):
+    # Delete old instances
+    session.query(DBObjectInstance).filter_by(character_id=db_char.id).delete()
+
+    for obj in char.inventory:
+        inst = DBObjectInstance(
+            prototype_vnum=obj.prototype.vnum,
+            location="inventory",
+            character_id=db_char.id
+        )
+        session.add(inst)
+
+    for slot, obj in char.equipment.items():
+        inst = DBObjectInstance(
+            prototype_vnum=obj.prototype.vnum,
+            location=f"equipment:{slot}",
+            character_id=db_char.id
+        )
+        session.add(inst)
+```
+
+---
+
+#### 4. Integrate with Character Load/Save
+
+**4.1 In `load_character()`:**
+
+```python
+char = from_orm(db_char)
+char.inventory, char.equipment = load_objects_for_character(db_char)
+```
+
+**4.2 In `save_character()`:**
+
+```python
+save_objects_for_character(session, char, db_char)
+session.commit()
+```
+
+---
+
+### ✅ Completion Criteria
+
+- Characters log in with correct items in `inventory` and `equipment`.
+- Item instances are tied to the character, not just vnum.
+- Picking up and equipping items updates the database at logout.
+- Items are not duplicated or orphaned in the DB.
+
+---
+
+### 🧪 Tests and Validation
+
+- Equip items in-game, logout, restart, and log back in. Validate state.
+- Use `psql` or SQLite browser to inspect `object_instances` table.
+- Add `pytest` test to:
+  - Create a character.
+  - Give them a sword and helmet.
+  - Save + reload.
+  - Assert restored objects match.
+
+---
+
+### 🔄 Optional Enhancements
+
+- Add `ObjectInstance.extra_flags` for durability, charges, enchantments.
+- Allow containers to hold other objects (parent-child relation).
+- Add soft-delete (`is_deleted`) for item recovery/testing.
+
+---
+
+### 🛠️ Next Step
+
+- Step 11 will implement **account creation, character selection**, and password authentication to allow proper user onboarding.
+
+## 🔐 Step 11: Account Creation and Authentication
+
+**Objective**: Allow users to create accounts with secure passwords, authenticate at login, and manage multiple characters under one account. This replaces manual test-account creation and enables real-world usage.
+
+---
+
+### 🧠 Codex Must Know:
+
+- `PlayerAccount` model already exists with fields:
+  - `username: str`
+  - `password_hash: str`
+  - `characters: List[Character]`
+- Passwords must be securely hashed with a salt (e.g., `bcrypt` or `pbkdf2_sha256`).
+- Authentication happens **before** a player enters the game world.
+- Character creation is a separate flow, gated by an existing account.
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Add Utility Functions for Hashing and Checking Passwords
+
+**1.1 In `mud/security/hash_utils.py`:**
+
+```python
+import hashlib
+import os
+
+def hash_password(password: str) -> str:
+    salt = os.urandom(16)
+    hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+    return salt.hex() + ":" + hash.hex()
+
+def verify_password(password: str, stored_hash: str) -> bool:
+    salt_hex, hash_hex = stored_hash.split(":")
+    salt = bytes.fromhex(salt_hex)
+    new_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+    return new_hash.hex() == hash_hex
+```
+
+---
+
+#### 2. Add Account Creation Flow
+
+**2.1 In `mud/account/account_service.py`:**
+
+```python
+from mud.db.session import SessionLocal
+from mud.db.models import PlayerAccount
+from mud.security.hash_utils import hash_password, verify_password
+
+def create_account(username: str, raw_password: str) -> bool:
+    session = SessionLocal()
+    if session.query(PlayerAccount).filter_by(username=username).first():
+        return False  # Already exists
+    account = PlayerAccount(
+        username=username,
+        password_hash=hash_password(raw_password)
+    )
+    session.add(account)
+    session.commit()
+    return True
+```
+
+---
+
+#### 3. Add Login Flow
+
+```python
+def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
+    session = SessionLocal()
+    account = session.query(PlayerAccount).filter_by(username=username).first()
+    if account and verify_password(raw_password, account.password_hash):
+        return account
+    return None
+```
+
+---
+
+#### 4. Character Selection and Creation
+
+```python
+def list_characters(account: PlayerAccount) -> List[str]:
+    return [char.name for char in account.characters]
+
+def create_character(account: PlayerAccount, name: str, starting_room_vnum: int = 3001) -> bool:
+    session = SessionLocal()
+    if session.query(Character).filter_by(name=name).first():
+        return False  # Name taken
+    new_char = Character(name=name, level=1, hp=100, room_vnum=starting_room_vnum, player_id=account.id)
+    session.add(new_char)
+    session.commit()
+    return True
+```
+
+---
+
+#### 5. Add a Temporary CLI Login Menu (for testing)
+
+**5.1 In `mud/entrypoint.py` or similar:**
+
+```python
+def prompt_login():
+    print("Welcome to the Realm.")
+    username = input("Username: ")
+    password = input("Password: ")
+
+    account = login(username, password)
+    if not account:
+        print("❌ Invalid login.")
+        return None
+
+    print(f"✅ Logged in as {username}")
+    return account
+
+def prompt_account_creation():
+    print("Create your account:")
+    username = input("Username: ")
+    password = input("Password: ")
+    confirm = input("Confirm Password: ")
+    if password != confirm:
+        print("❌ Passwords do not match.")
+        return None
+
+    success = create_account(username, password)
+    if success:
+        print("✅ Account created.")
+    else:
+        print("❌ Username already taken.")
+```
+
+---
+
+### ✅ Completion Criteria
+
+- Players can create an account and log in securely.
+- Passwords are never stored in plaintext.
+- A user can own multiple characters.
+- Character creation is restricted to logged-in users.
+
+---
+
+### 🧪 Testing & Verification
+
+- Create two accounts with different passwords.
+- Try logging in with wrong password → get failure.
+- Create a character, logout, login → see it in selection list.
+- Confirm password hash in DB looks like: `salt:hash`.
+
+---
+
+### 🛠️ Next Step
+
+- Step 12 will introduce **admin tools**, debugging commands (`@who`, `@teleport`, `@spawn`), and in-game state inspection for live world testing.
+
+## 🛠️ Step 12: Admin Tools and Debug Commands
+
+**Objective**: Add a set of privileged commands for admins to inspect world state, test gameplay, and moderate the game live. These commands are not player-accessible and should respect access levels or account flags.
+
+---
+
+### 🧠 Codex Must Know:
+
+- The command system should already support per-user execution contexts.
+- Admins should be able to:
+  - See who's online.
+  - Teleport to rooms.
+  - Spawn NPCs or objects.
+  - Save state manually.
+- Admin status may be:
+  - Hardcoded (`if account.username == "admin"`).
+  - Or tracked via a new `is_admin` column in the DB.
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Add Admin Flag to Account (optional but better)
+
+**1.1 In `mud/db/models.py`:**
+
+```python
+is_admin = Column(Boolean, default=False)
+```
+
+Set manually for now via DB or `seed.py`.
+
+---
+
+#### 2. Define Admin-Only Command Decorator
+
+**2.1 In `mud/commands/decorators.py`:**
+
+```python
+def admin_only(func):
+    def wrapper(context, *args, **kwargs):
+        if not context.account or not context.account.is_admin:
+            context.send("You do not have permission to use this command.")
+            return
+        return func(context, *args, **kwargs)
+    return wrapper
+```
+
+---
+
+#### 3. Add Admin Commands
+
+**3.1 In `mud/commands/admin_commands.py`:**
+
+```python
+@admin_only
+def cmd_who(context, *args):
+    context.send("Online Players:")
+    for player in get_online_players():
+        context.send(f" - {player.name} in room {player.room.vnum}")
+
+@admin_only
+def cmd_teleport(context, room_vnum):
+    if int(room_vnum) in room_registry:
+        context.character.move_to(room_registry[int(room_vnum)])
+        context.send(f"Teleported to room {room_vnum}")
+    else:
+        context.send("Invalid room.")
+
+@admin_only
+def cmd_spawn(context, npc_vnum):
+    proto = npc_registry.get(int(npc_vnum))
+    if not proto:
+        context.send("NPC not found.")
+        return
+    mob = create_mob_from_proto(proto)
+    context.character.room.add_npc(mob)
+    context.send(f"Spawned {mob.name}.")
+```
+
+---
+
+#### 4. Hook into Command Dispatcher
+
+**4.1 In `mud/commands/dispatcher.py`:**
+
+Add mappings like:
+
+```python
+commands = {
+    "@who": cmd_who,
+    "@teleport": cmd_teleport,
+    "@spawn": cmd_spawn,
+}
+```
+
+---
+
+#### 5. Create Debug Save/Load Shortcut (Optional)
+
+```python
+@admin_only
+def cmd_save(context):
+    save_character(context.character)
+    context.send("✅ Character saved.")
+```
+
+---
+
+### ✅ Completion Criteria
+
+- Admins can execute debug commands in real time.
+- Players cannot access these without being flagged.
+- Errors are handled gracefully with friendly feedback.
+- World state changes (teleport, spawn) are live and visible.
+
+---
+
+### 🧪 Tests and Verification
+
+- Flag a test account as `is_admin = True` in the DB.
+- Log in and:
+  - Run `@who` → see current players.
+  - `@teleport 3001` → verify room change.
+  - `@spawn 9001` → check for spawned mob.
+- Try these commands on a non-admin account — verify rejection.
+
+---
+
+### 🛠️ Next Step
+
+- Step 13 will add **Agent Integration & World Interface**, so autonomous agents (AI NPCs, world editors) can interface cleanly with the Python runtime.
+
+## 🤖 Step 13: Agent Integration & World Interface
+
+**Objective**: Build an abstract interface layer that exposes structured world state and actions. This will let agents observe the game world, plan actions, and issue valid commands — enabling AI-controlled NPCs, automated testing, or LLM-driven world builders.
+
+---
+
+### 🧠 Codex Must Know:
+
+- An “agent” is any external system that needs to read world state and issue actions.
+- The MUD runtime should expose:
+  - Structured state (room, inventory, surroundings).
+  - Valid actions (movement, speech, combat, equip, drop).
+  - Feedback (what happened as a result).
+- This step **does not require ML or OpenAI API usage** — just a clean abstraction.
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Define Agent Interface Protocol
+
+**1.1 In `mud/agent/agent_protocol.py`:**
+
+```python
+from abc import ABC, abstractmethod
+from typing import Dict, List
+
+class AgentInterface(ABC):
+    @abstractmethod
+    def get_observation(self) -> Dict:
+        """Return structured game state view."""
+        pass
+
+    @abstractmethod
+    def get_available_actions(self) -> List[str]:
+        """Return a list of valid actions the agent can choose from."""
+        pass
+
+    @abstractmethod
+    def perform_action(self, action: str, args: List[str]) -> str:
+        """Execute an action in-game. Returns textual feedback."""
+        pass
+```
+
+---
+
+#### 2. Create an Adapter for Characters
+
+**2.1 In `mud/agent/character_agent.py`:**
+
+```python
+class CharacterAgentAdapter(AgentInterface):
+    def __init__(self, character):
+        self.character = character
+
+    def get_observation(self):
+        return {
+            "name": self.character.name,
+            "room": {
+                "vnum": self.character.room.vnum,
+                "name": self.character.room.name,
+                "description": self.character.room.description,
+                "npcs": [npc.name for npc in self.character.room.npcs],
+                "players": [p.name for p in self.character.room.players if p != self.character],
+                "exits": list(self.character.room.exits.keys()),
+            },
+            "inventory": [obj.prototype.name for obj in self.character.inventory],
+            "equipment": {slot: obj.prototype.name for slot, obj in self.character.equipment.items()},
+            "hp": self.character.hp,
+            "level": self.character.level
+        }
+
+    def get_available_actions(self):
+        return ["move", "say", "pickup", "drop", "equip", "attack"]
+
+    def perform_action(self, action, args):
+        try:
+            if action == "move":
+                direction = args[0]
+                return self.character.move(direction)
+            elif action == "say":
+                return self.character.say(" ".join(args))
+            elif action == "pickup":
+                return self.character.pickup(args[0])
+            elif action == "drop":
+                return self.character.drop(args[0])
+            elif action == "equip":
+                return self.character.equip(args[0])
+            elif action == "attack":
+                return self.character.attack(args[0])
+            else:
+                return f"Unknown action: {action}"
+        except Exception as e:
+            return f"⚠️ Error: {str(e)}"
+```
+
+---
+
+#### 3. Register an Agent-Controlled NPC
+
+**3.1 Example usage in `mud/devtools/agent_demo.py`:**
+
+```python
+def run_agent_demo():
+    room = room_registry[3001]
+    mob = create_mob_from_proto(npc_registry[9001])
+    adapter = CharacterAgentAdapter(mob)
+    room.add_npc(mob)
+
+    print(adapter.get_observation())
+    print(adapter.perform_action("say", ["I", "am", "alive!"]))
+```
+
+---
+
+#### 4. Add Logging (for LLM agent reflection)
+
+**4.1 In `mud/logging/agent_trace.py`:**
+
+```python
+def log_agent_action(agent_id, observation, action, result):
+    with open(f"logs/agent_{agent_id}.log", "a") as f:
+        f.write(f"\nOBS: {observation}\nACT: {action}\nRES: {result}\n{'='*40}\n")
+```
+
+Call this after every `perform_action()` in agent loop.
+
+---
+
+### ✅ Completion Criteria
+
+- Any in-game character (or NPC) can be wrapped with an `AgentInterface`.
+- The interface returns structured game state as JSON-like dicts.
+- Actions can be simulated or executed programmatically.
+- Logs show behavior over time for testing or LLM loop tuning.
+
+---
+
+### 🧪 Tests and Validation
+
+- Wrap a live character with `CharacterAgentAdapter`.
+- Print their `get_observation()` state.
+- Try a `perform_action("say", ["hi there"])` call.
+- Wrap a dummy mob and simulate movement across rooms using `perform_action("move", ["north"])`.
+
+---
+
+### 🛠️ Next Step
+
+- Step 14 will address **Deployment, CLI Wrappers, and Dockerization**, to prepare the project for production and developer onboarding.
+
+## 🚀 Step 14: Deployment, CLI Tools, and Dockerization
+
+**Objective**: Finalize the project for real-world use by wrapping it with CLI tools, `.env`-based config, and Docker support. This enables easy server bootstrapping, environment separation, and deployment consistency.
+
+---
+
+### 🧠 Codex Must Know:
+
+- The project is now a modern Python backend with:
+  - `SQLAlchemy` for DB.
+  - CLI entrypoints.
+  - In-memory game state.
+- Needs:
+  - `mud.py runserver`
+  - `mud.py migrate`
+  - Docker support.
+  - `.env`-based configuration for secrets, ports, DB URL, etc.
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Add `.env` Support for Config
+
+**1.1 In `mud/config.py`:**
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///mud.db")
+PORT = int(os.getenv("PORT", 5000))
+```
+
+**1.2 Create `.env` in project root:**
+
+```env
+DATABASE_URL=sqlite:///mud.db
+PORT=5000
+```
+
+---
+
+#### 2. Create Unified CLI Entrypoint
+
+**2.1 In `mud/__main__.py`:**
+
+```python
+import typer
+from mud.server import run_game_loop
+from mud.db.migrations import run_migrations
+
+cli = typer.Typer()
+
+@cli.command()
+def runserver():
+    run_game_loop()
+
+@cli.command()
+def migrate():
+    run_migrations()
+
+if __name__ == "__main__":
+    cli()
+```
+
+**2.2 Add `__main__.py` to `pyproject.toml`:**
+
+```toml
+[tool.poetry.scripts]
+mud = "mud.__main__:cli"
+```
+
+Now you can run:
+
+```bash
+poetry run mud runserver
+poetry run mud migrate
+```
+
+---
+
+#### 3. Write Migration Script
+
+**3.1 In `mud/db/migrations.py`:**
+
+```python
+from mud.db.session import Base, engine
+
+def run_migrations():
+    Base.metadata.create_all(bind=engine)
+    print("✅ Migrations complete.")
+```
+
+---
+
+#### 4. Add Docker Support
+
+**4.1 In `Dockerfile`:**
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install
+
+COPY . .
+
+CMD ["mud", "runserver"]
+```
+
+**4.2 In `docker-compose.yml`:**
+
+```yaml
+version: "3.8"
+services:
+  mud:
+    build: .
+    ports:
+      - "${PORT:-5000}:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+```
+
+**4.3 Build & Run:**
+
+```bash
+docker-compose build
+docker-compose up
+```
+
+---
+
+#### 5. Optional: Add Health Check or Logs Viewer
+
+**5.1 In `mud/server.py`:**
+
+```python
+def run_game_loop():
+    print("🌍 Starting MUD server...")
+    # game tick, event loop, etc.
+```
+
+**5.2 Logs saved under `/logs` from earlier steps.**
+
+---
+
+### ✅ Completion Criteria
+
+- Project starts with `mud runserver` or `docker-compose up`.
+- Migrations run cleanly via `mud migrate`.
+- Environment config is isolated via `.env`.
+- Dockerized build works on any machine.
+
+---
+
+### 🧪 Tests and Verification
+
+- Clone repo fresh on another machine or Docker container.
+- Run `mud migrate` → tables created.
+- Run `mud runserver` → server boots.
+- Run `docker-compose up` → server available on `localhost:5000`.
+- Validate `.env` overrides (e.g. try different `PORT`).
+
+---
+
+### 🧭 Project Status: ✅ Core Migration Complete
+
+You have now fully migrated a C-based MUD engine with text and `.h`-based data into:
+
+- 🐍 A modern, modular **Python backend**
+- 🗃️ Powered by SQLAlchemy and SQLite/PostgreSQL
+- 🧱 Room/NPC/Object parsing via `.are` or DB
+- 🧠 Agent-compatible AI layer with structured I/O
+- 🚀 Deployable via Docker and CLI tools
+
+---
+
+### 🛠️ Optional Future Enhancements
+
+- 🌐 Web-based Admin UI (Flask + HTMX or FastAPI + React)
+- 📡 Multiplayer socket server (e.g., websockets or Telnet adapter)
+- 🧑‍💻 Builder tools via text or prompt interface
+- 🪄 AI quest/NPC generator via GPT agentic planner
+- 📖 Export world state to visual graph (e.g., Graphviz)
+
+---
+
+## 🌐 Step 15 Addendum: Telnet Access via Docker + Test Character Loader
+
+---
+
+### ✅ Part 1: Expose Telnet Port in Docker
+
+Your multiplayer MUD runs on TCP port `5000`. We need to make sure this is accessible when running via Docker.
+
+#### 1.1 Update `.env` (if not already)
+
+```env
+PORT=5000
+```
+
+#### 1.2 Update `docker-compose.yml`
+
+```yaml
+version: "3.8"
+services:
+  mud:
+    build: .
+    ports:
+      - "${PORT:-5000}:5000"  # expose 5000 for Telnet
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: poetry run mud socketserver
+```
+
+#### 1.3 Test It
+
+```bash
+docker-compose up
+```
+
+Then in a new terminal:
+
+```bash
+telnet localhost 5000
+```
+
+You should see:
+
+```
+Welcome to the MUD!
+Login:
+```
+
+---
+
+### ✅ Part 2: Add a Dev Command to Load Test Accounts
+
+We want an easy way to insert test data: account + character.
+
+#### 2.1 In `mud/scripts/load_test_data.py`:
+
+```python
+from mud.db.session import Session
+from mud.models import PlayerAccount, Character
+from mud.world.rooms import load_rooms  # or similar if rooms are preloaded
+
+def load_test_user():
+    db = Session()
+
+    # Create test account
+    account = PlayerAccount(username="test", email="test@example.com")
+    account.set_password("test123")
+    db.add(account)
+    db.flush()
+
+    # Create character
+    char = Character(name="Tester", hp=100, room_vnum=3001, account_id=account.id)
+    db.add(char)
+    db.commit()
+    print("✅ Test user created: login=test / pw=test123")
+```
+
+#### 2.2 Register with CLI
+
+In `mud/__main__.py`:
+
+```python
+@cli.command()
+def loadtestuser():
+    from mud.scripts.load_test_data import load_test_user
+    load_test_user()
+```
+
+Now run:
+
+```bash
+poetry run mud migrate
+poetry run mud loadtestuser
+poetry run mud socketserver
+```
+
+---
+
+### 🧪 Confirm Working Setup
+
+1. Connect via:
+   ```bash
+   telnet localhost 5000
+   ```
+2. Login:
+   ```
+   Login: test
+   Password: test123
+   ```
+3. Interact using commands like `look`, `say`, `get`, etc.
+4. Connect in another terminal and try again. Both sessions should share world state.
+
+---
+
+### 🧠 future enhancements
+
+Would you like:
+
+- ANSI color output for telnet?
+- Scripting interface for programmable NPCs?
+- WebSocket adapter for browser-based play?
+- Session timeouts & player reconnection support?
+
+Let me know and we’ll queue it up.
