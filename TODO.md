@@ -779,3 +779,455 @@ mud/
 
 - Step 7 (Validation) will run scripted sessions through this server.
 - Step 8 (Persistence) may attach DB-backed player login.
+
+## ✅ Step 7: Validate and Refine – Iterative Testing & AI Collaboration
+
+**Objective**: Implement an automated test suite and human-AI workflows to validate correctness of the Python MUD’s logic, ensure parity with the original C version, and improve reliability via continuous testing, snapshot comparisons, and scripted test sessions.
+
+---
+
+### 🧠 Codex Must Know:
+
+- Commands are handled by `process_command(char, input_str)`.
+- Game state is managed by Python objects: `Character`, `Room`, `MobInstance`, etc.
+- The server can be run in a headless mode for offline tests.
+- Step 2-6 outputs are deterministic and snapshot-friendly.
+- Original behavior of the C MUD can be emulated for test assertions.
+
+---
+
+### 📁 Target File Structure:
+
+```
+mud/
+├── tests/
+│   ├── __init__.py
+│   ├── test_commands.py
+│   ├── test_world_load.py
+│   ├── test_resets.py
+│   ├── test_snapshot.py
+│   └── scripts/
+│       └── scripted_session.py
+```
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Unit Tests for Core Systems
+
+**1.1 `test_world_load.py`:**
+- Load all areas from `area.lst`.
+- Assert correct count of rooms, mobs, objs.
+- Assert specific known room vnum exists (e.g. 3001).
+- Assert that exits are linked (e.g. `room.exits["north"] is Room`).
+
+**1.2 `test_resets.py`:**
+- Apply resets for a sample area.
+- Verify mobs/objects appear in correct rooms.
+- Assert inventory relationships (e.g. mob has item).
+
+**1.3 `test_commands.py`:**
+- Create a dummy `Character` in a test room.
+- Call `process_command(char, "look")` and assert output contains room name.
+- Call movement commands and verify room transitions.
+- Test `say`, `get`, `drop`, `inventory`.
+
+---
+
+#### 2. Snapshot Testing
+
+**2.1 Implement `to_snapshot(obj)` in `test_snapshot.py`:**
+- Serialize room state, inventory, and visible characters to dict/JSON.
+- Write expected snapshot outputs to file: `snapshots/room_3001.json`.
+- Compare actual to expected: diff on field-level.
+
+**2.2 Add utility to `pytest` to auto-generate snapshots on first run.**
+
+---
+
+#### 3. Scripted Session Simulation
+
+**3.1 In `scripted_session.py`:**
+- Define a scripted sequence:
+```python
+script = [
+  "look",
+  "get sword",
+  "north",
+  "look",
+  "say hello",
+  "inventory"
+]
+```
+- Feed each command to `process_command()` and capture results.
+- Assert expected output for each step.
+
+**3.2 Optional: Run this script through telnet client via subprocess (integration test).**
+
+---
+
+#### 4. Human-AI Assisted Test Expansion
+
+**4.1 Prompt AI to identify edge cases for commands:**
+- e.g., invalid direction, trying to pick up nonexistent item, talking in empty room.
+- Use results to generate more test cases.
+
+**4.2 Use AI to verify functional parity:**
+- Input: Original C server output logs.
+- AI compares Python outputs to legacy logs and highlights mismatches.
+
+---
+
+#### 5. CI & Regression Strategy
+
+**5.1 Add `pytest` test suite runner.**
+- Configure for GitHub Actions or CLI use.
+
+**5.2 Ensure tests fail on any regressions or diff mismatches.**
+
+**5.3 Document how to run:**
+```bash
+pytest mud/tests/
+```
+
+---
+
+### 🧪 Final Output for Step 7:
+
+- All core systems have unit tests with assertions.
+- Snapshot tests catch structural changes in room/mob state.
+- Scripted session simulates player interaction for regression testing.
+- AI-assisted edge cases increase test coverage.
+- All tests pass with clean CI output.
+
+---
+
+### ✅ Completion Criteria:
+
+- `pytest` returns 100% pass.
+- Known C behaviors are matched (e.g., correct room names, movement, object interactions).
+- Snapshots exist for at least 3 representative rooms with mobs/objects.
+- Scripted session outputs match expected game responses.
+- New features or changes must not break existing tests.
+
+---
+
+### 🛠️ Follow-up Dependency:
+
+- Step 8 (DB migration) should not break any snapshot or behavior tests.
+
+## 🗃️ Step 8: Migrate Persistent Data to a Structured Database
+
+**Objective**: Replace file-based world loading with a structured SQLAlchemy-backed database. Migrate `.are` file data into tables and create a runtime loader (`load_world_from_db()`) that populates all in-game registries using ORM queries.
+
+---
+
+### 🧠 Codex Must Know:
+
+- World state is currently populated from `.are` flat files into `room_registry`, `mob_registry`, `obj_registry`.
+- SQLAlchemy models exist in `mud.db.models`.
+- The goal is to make the database the canonical source of truth and eliminate flat file reliance.
+
+---
+
+### 📁 Target File Structure:
+
+```
+mud/
+├── db/
+│   ├── models.py         # ORM declarations
+│   ├── session.py        # SQLAlchemy engine/session setup
+│   ├── migrate_from_files.py  # One-time migration script
+│
+├── world/
+│   └── world_state.py    # Runtime game state loader
+```
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Setup SQLAlchemy Infrastructure
+
+- Already completed in `session.py` using `SessionLocal()` and `DATABASE_URL`.
+
+---
+
+#### 2. Define ORM Models (`models.py`)
+
+- `Area`, `Room`, `Exit`, `MobPrototype`, `ObjPrototype`
+- All use `declarative_base()` with relationships for area/room linkage.
+
+---
+
+#### 3. One-Time Migration from Files
+
+- Already implemented in `migrate_from_files.py`:
+  - Loads `.are` files with `load_all_areas()`
+  - Converts each entry to ORM instance and persists to DB
+  - Uses session management with `SessionLocal()`
+  - Prints confirmation when done
+
+---
+
+#### 4. Implement `load_world_from_db()`
+
+**Location**: `mud/world/world_state.py`
+
+```python
+from mud.db.session import SessionLocal
+from mud.db.models import Room as DBRoom, Exit as DBExit, MobPrototype as DBMob, ObjPrototype as DBObj
+from mud.registry import room_registry, mob_registry, obj_registry
+from mud.models import Room, MobPrototype, ObjPrototype  # dataclass equivalents
+
+def load_world_from_db():
+    session = SessionLocal()
+
+    # 1. Load rooms and build initial registry
+    db_rooms = session.query(DBRoom).all()
+    for db_room in db_rooms:
+        room = Room(
+            vnum=db_room.vnum,
+            name=db_room.name,
+            description=db_room.description,
+            sector_type=db_room.sector_type,
+            flags=db_room.room_flags,
+            exits={}  # will populate in next pass
+        )
+        room_registry[room.vnum] = room
+
+    # 2. Link exits using to_room_vnum
+    db_exits = session.query(DBExit).all()
+    for db_exit in db_exits:
+        origin_room = session.query(DBRoom).get(db_exit.room_id)
+        if origin_room is None:
+            continue
+
+        source = room_registry.get(origin_room.vnum)
+        target = room_registry.get(db_exit.to_room_vnum)
+        if source and target:
+            source.exits[db_exit.direction] = target
+
+    # 3. Load mobs
+    db_mobs = session.query(DBMob).all()
+    for db_mob in db_mobs:
+        mob = MobPrototype(
+            vnum=db_mob.vnum,
+            name=db_mob.name,
+            short_description=db_mob.short_desc,
+            long_description=db_mob.long_desc,
+            level=db_mob.level,
+            alignment=db_mob.alignment
+        )
+        mob_registry[mob.vnum] = mob
+
+    # 4. Load objects
+    db_objs = session.query(DBObj).all()
+    for db_obj in db_objs:
+        obj = ObjPrototype(
+            vnum=db_obj.vnum,
+            name=db_obj.name,
+            short_description=db_obj.short_desc,
+            long_description=db_obj.long_desc,
+            item_type=db_obj.item_type,
+            flags=db_obj.flags,
+            values=[db_obj.value0, db_obj.value1, db_obj.value2, db_obj.value3]
+        )
+        obj_registry[obj.vnum] = obj
+
+    print(f"✅ Loaded {len(room_registry)} rooms, {len(mob_registry)} mobs, {len(obj_registry)} objects.")
+    return True
+```
+
+---
+
+#### 5. Modify Game Runtime Loader
+
+- In the game entrypoint, replace:
+```python
+load_from_files("area.lst")
+```
+- With:
+```python
+load_world_from_db()
+```
+
+---
+
+### ✅ Completion Criteria
+
+- `room_registry`, `mob_registry`, and `obj_registry` are fully populated from database records.
+- `room.exits["north"]` is a `Room`, not a vnum.
+- All file-based parsing is removed or disabled.
+- Server can start cleanly with no `.are` files present.
+- Loading time is under 2 seconds for standard MUD datasets.
+
+---
+
+### 🧪 Validation Plan
+
+- Run `pytest tests/` (from Step 7) and confirm no regressions.
+- Verify output:
+  ```
+  ✅ Loaded 370 rooms, 58 mobs, 112 objects.
+  ```
+- Place a character in room 3001 and run `look()` to ensure data is linked.
+- Try walking between rooms using movement commands to validate exits.
+
+---
+
+### 🛠️ Next Step
+
+- ✅ Step 9 will handle saving player state, logout persistence, and eventually an admin panel or DB visualizer.
+
+## 👤 Step 9: Add Character Saving and Persistence
+
+**Objective**: Create persistent storage for players' character state using SQLAlchemy. Characters should be saved to the database on logout and reloaded on login, enabling continuity across sessions and restarts.
+
+---
+
+### 🧠 Codex Must Know:
+
+- Characters are currently in-memory and lost between sessions.
+- There is a distinction between:
+  - `PlayerAccount`: represents the login credentials or identity.
+  - `Character`: represents the avatar in-game (position, HP, inventory, etc).
+- SQLAlchemy is used with a `SessionLocal` pattern.
+- Dataclasses already exist for runtime character representations (`Character` or `PlayerCharacter`).
+
+---
+
+### ✅ Tasks and Subtasks
+
+#### 1. Extend the ORM: Add Player and Character Tables
+
+**1.1 In `mud/db/models.py` add:**
+
+```python
+class PlayerAccount(Base):
+    __tablename__ = "player_accounts"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
+    password_hash = Column(String)
+
+    characters = relationship("Character", back_populates="player")
+
+class Character(Base):
+    __tablename__ = "characters"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    level = Column(Integer)
+    hp = Column(Integer)
+    room_vnum = Column(Integer)
+
+    player_id = Column(Integer, ForeignKey("player_accounts.id"))
+    player = relationship("PlayerAccount", back_populates="characters")
+```
+
+> Optional: Add inventory and equipment as JSON or related tables.
+
+---
+
+#### 2. Add Conversion Functions
+
+**2.1 In `mud/models/character.py`:**
+
+```python
+def from_orm(db_char: DBCharacter) -> Character:
+    return Character(
+        name=db_char.name,
+        level=db_char.level,
+        hp=db_char.hp,
+        room=room_registry.get(db_char.room_vnum, default_starting_room)
+    )
+
+def to_orm(character: Character, player_id: int) -> DBCharacter:
+    return DBCharacter(
+        name=character.name,
+        level=character.level,
+        hp=character.hp,
+        room_vnum=character.room.vnum,
+        player_id=player_id
+    )
+```
+
+---
+
+#### 3. Implement Character Load/Save Methods
+
+**3.1 In `mud/account/account_manager.py` or equivalent:**
+
+```python
+def load_character(username: str, char_name: str) -> Character:
+    session = SessionLocal()
+    db_char = session.query(DBCharacter).filter_by(name=char_name).first()
+    return from_orm(db_char)
+
+def save_character(character: Character):
+    session = SessionLocal()
+    db_char = session.query(DBCharacter).filter_by(name=character.name).first()
+    if db_char:
+        db_char.level = character.level
+        db_char.hp = character.hp
+        db_char.room_vnum = character.room.vnum
+        session.commit()
+```
+
+---
+
+#### 4. Hook Into Game Loop
+
+**4.1 On Player Login:**
+
+- After login or `connect`, call `load_character()` using username and desired name.
+- Spawn character into the correct room:
+```python
+char = load_character(username, char_name)
+room = room_registry[char.room.vnum]
+room.add_char(char)
+```
+
+**4.2 On Logout/Disconnect:**
+
+- Call `save_character(char)` before deleting the session.
+
+---
+
+#### 5. Add Dev Utilities for Testing
+
+**5.1 In `mud/db/seed.py`:**
+
+```python
+def create_test_account():
+    session = SessionLocal()
+    account = PlayerAccount(username="admin", password_hash=hashlib.sha256(b"admin").hexdigest())
+    char = Character(name="Testman", level=1, hp=100, room_vnum=3001, player=account)
+    session.add(account)
+    session.add(char)
+    session.commit()
+```
+
+---
+
+### ✅ Completion Criteria
+
+- Players' characters persist after logout and server restart.
+- Login restores characters to the correct room and state.
+- Character cannot be duplicated or overwritten accidentally.
+- `Character` table in DB reflects runtime changes (level, room, HP).
+
+---
+
+### 🧪 Tests and Verification
+
+- Manually create an account with `create_test_account()`.
+- Login as `Testman`, walk into another room, logout.
+- Restart server, log back in — confirm state is restored.
+- Add pytest: assert saved and reloaded state matches.
+
+---
+
+### 🛠️ Next Step
+
+- Step 10 will support inventory persistence and loadable equipment, followed by automated account creation or authentication.
