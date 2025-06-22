@@ -69,3 +69,11 @@ This is the 2.1 production release of Merc.
 -----
 
 See other READMEs in the repo for full info and licenses.
+
+## Python Data Models
+
+The `mud/models` package provides dataclasses mirroring common structures from
+`merc.h` for experimentation with Python-based tooling. They also include enum
+definitions for many constants and simple registries for loading game data.
+These classes are not used by the C game engine but allow external scripts to
+manipulate area, room, object and character data in a pythonic way.
