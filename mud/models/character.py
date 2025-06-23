@@ -70,5 +70,4 @@ class Character:
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
 
-
 character_registry: list[Character] = []
