@@ -58,3 +58,53 @@ class WearLocation(IntEnum):
     WIELD = 16
     HOLD = 17
     FLOAT = 18
+
+class Sex(IntEnum):
+    """Biological sex of a character"""
+    NONE = 0
+    MALE = 1
+    FEMALE = 2
+    EITHER = 3
+
+
+class Size(IntEnum):
+    """Character sizes"""
+    TINY = 0
+    SMALL = 1
+    MEDIUM = 2
+    LARGE = 3
+    HUGE = 4
+    GIANT = 5
+
+
+class ItemType(IntEnum):
+    """Common object types"""
+    LIGHT = 1
+    SCROLL = 2
+    WAND = 3
+    STAFF = 4
+    WEAPON = 5
+    TREASURE = 8
+    ARMOR = 9
+    POTION = 10
+    CLOTHING = 11
+    FURNITURE = 12
+    TRASH = 13
+    CONTAINER = 15
+    DRINK_CON = 17
+    KEY = 18
+    FOOD = 19
+    MONEY = 20
+    BOAT = 22
+    CORPSE_NPC = 23
+    CORPSE_PC = 24
+    FOUNTAIN = 25
+    PILL = 26
+    PROTECT = 27
+    MAP = 28
+    PORTAL = 29
+    WARP_STONE = 30
+    ROOM_KEY = 31
+    GEM = 32
+    JEWELRY = 33
+    JUKEBOX = 34

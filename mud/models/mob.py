@@ -50,3 +50,10 @@ class MobIndex:
     size: int = 0
     material: Optional[str] = None
     mprog_flags: int = 0
+
+    def __repr__(self) -> str:
+        return f"<MobIndex vnum={self.vnum} name={self.short_descr!r}>"
+
+
+mob_registry: dict[int, MobIndex] = {}
+

@@ -51,3 +51,9 @@ class Room:
     people: List['Character'] = field(default_factory=list)
     contents: List['ObjectData'] = field(default_factory=list)
     next: Optional['Room'] = None
+
+    def __repr__(self) -> str:
+        return f"<Room vnum={self.vnum} name={self.name!r}>"
+
+
+room_registry: dict[int, Room] = {}

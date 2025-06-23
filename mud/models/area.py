@@ -21,3 +21,9 @@ class Area:
     security: int = 0
     helps: List[object] = field(default_factory=list)
     next: Optional['Area'] = None
+
+    def __repr__(self) -> str:
+        return f"<Area vnum={self.vnum} name={self.name!r}>"
+
+
+area_registry: dict[int, Area] = {}

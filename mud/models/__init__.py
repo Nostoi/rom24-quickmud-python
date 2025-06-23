@@ -5,7 +5,15 @@ from .room import Room, ExtraDescr, Exit, Reset
 from .mob import MobIndex, MobProgram
 from .obj import ObjIndex, ObjectData, Affect
 from .character import Character, PCData
-from .constants import Direction, Sector, Position, WearLocation
+from .constants import (
+    Direction,
+    Sector,
+    Position,
+    WearLocation,
+    Sex,
+    Size,
+    ItemType,
+)
 
 __all__ = [
     "Area",
@@ -24,4 +32,7 @@ __all__ = [
     "Sector",
     "Position",
     "WearLocation",
+    "Sex",
+    "Size",
+    "ItemType",
 ]

@@ -39,6 +39,11 @@ class ObjIndex:
     reset_num: int = 0
     next: Optional['ObjIndex'] = None
 
+    def __repr__(self) -> str:
+        return f"<ObjIndex vnum={self.vnum} name={self.short_descr!r}>"
+
+obj_index_registry: dict[int, ObjIndex] = {}
+
 @dataclass
 class ObjectData:
     """Python representation of OBJ_DATA"""
@@ -67,3 +72,9 @@ class ObjectData:
     enchanted: bool = False
     next_content: Optional['ObjectData'] = None
     next: Optional['ObjectData'] = None
+
+    def __repr__(self) -> str:
+        return f"<ObjectData type={self.item_type} name={self.short_descr!r}>"
+
+
+object_registry: list[ObjectData] = []

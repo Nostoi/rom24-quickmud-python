@@ -66,3 +66,9 @@ class Character:
     default_pos: int = 0
     mprog_delay: int = 0
     pcdata: Optional[PCData] = None
+
+    def __repr__(self) -> str:
+        return f"<Character name={self.name!r} level={self.level}>"
+
+
+character_registry: list[Character] = []
