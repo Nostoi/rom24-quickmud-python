@@ -59,7 +59,6 @@ class WearLocation(IntEnum):
     HOLD = 17
     FLOAT = 18
 
-
 class Sex(IntEnum):
     """Biological sex of a character"""
     NONE = 0

@@ -42,7 +42,6 @@ class ObjIndex:
     def __repr__(self) -> str:
         return f"<ObjIndex vnum={self.vnum} name={self.short_descr!r}>"
 
-
 obj_index_registry: dict[int, ObjIndex] = {}
 
 @dataclass
