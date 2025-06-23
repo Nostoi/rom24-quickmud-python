@@ -56,4 +56,3 @@ class MobIndex:
 
 
 mob_registry: dict[int, MobIndex] = {}
-
