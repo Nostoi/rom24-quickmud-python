@@ -6,6 +6,7 @@
 - [x] Step 4: Migrate NPC and Object Management (Prototypes to Instances)
 - [x] Step 5: Implement the Command Interpreter and Game Logic
 
+
 ## 🧱 Step 1: Define Python Data Models (Autonomous Codex Execution)
 
 **Objective**: Create Python data classes that accurately represent the core structs in the C codebase `rom24-quickmud` (QuickMUD). This lays the foundation for the rest of the system by modeling Rooms, Areas, Mobs, Objects, and related constants.

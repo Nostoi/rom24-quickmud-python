@@ -41,4 +41,5 @@ def load_area_file(filepath: str) -> Area:
             break
     key = area.file_name or filepath
     area_registry[key] = area
+
     return area
