@@ -1,6 +1,7 @@
 # TODO
 
 - [x] Step 1: Define Python Data Models (Autonomous Codex Execution)
+- [x] Step 2: Build Parsers to Load Game Data from Text Files
 
 ## 🧱 Step 1: Define Python Data Models (Autonomous Codex Execution)
 
@@ -149,7 +150,7 @@ mud/
 
 #### 1. Base Loader Utilities
 
-**1.1 Implement a BaseTokenizer:**
+**1.1 Implement a BaseTokenizer:** ✅
 - Output: `BaseTokenizer` class in `base_loader.py`
 - Behavior:
   - `.next_line()` → return next line from file (skipping comments).
@@ -158,7 +159,7 @@ mud/
   - `.read_number()` → parse next token as int.
   - Optional `.read_flags()` → parse int and map to enums later.
 
-**1.2 Write Utility Parsers:**
+**1.2 Write Utility Parsers:** ✅ (minimal for exits handled in loaders)
 - `parse_exits(tokenizer: BaseTokenizer)` → returns exit dict for a room.
 - `parse_affects()`, `parse_stats()`, etc., as needed.
 - Reuse logic across mobs, rooms, objects.
@@ -167,12 +168,12 @@ mud/
 
 #### 2. Top-Level Area Loader
 
-**2.1 Implement `load_area_file(filepath: str)` in `area_loader.py`:**
+**2.1 Implement `load_area_file(filepath: str)` in `area_loader.py`:** ✅
 - Reads full `.are` file and dispatches section parsers based on headers:
   - `#AREA`, `#MOBILES`, `#OBJECTS`, `#ROOMS`, `#RESETS`, etc.
 - Returns: `Area` instance with lists of contained rooms/mobs/objs/etc.
 
-**2.2 Add section dispatch mapping:**
+**2.2 Add section dispatch mapping:** ✅
 ```python
 SECTION_HANDLERS = {
   "#MOBILES": load_mobiles,
@@ -186,19 +187,19 @@ SECTION_HANDLERS = {
 
 #### 3. Section-Specific Parsers
 
-**3.1 `load_rooms(tokenizer) → List[Room]` in `room_loader.py`**
+**3.1 `load_rooms(tokenizer) → List[Room]` in `room_loader.py`** ✅
 - Parse vnum, name, description, flags, sector type.
 - Detect and parse `D0`–`D5` exits (multiple per room).
 - Stop on line with `S`.
 
-**3.2 `load_mobiles(tokenizer) → List[MobPrototype]` in `mob_loader.py`**
+**3.2 `load_mobiles(tokenizer) → List[MobPrototype]` in `mob_loader.py`** ✅
 - Parse vnum, keywords, short/long desc, act flags, alignment, stats.
 - Track all vnums in a registry: `mob_registry[vnum] = instance`
 
-**3.3 `load_objects(tokenizer) → List[ObjPrototype]` in `obj_loader.py`**
+**3.3 `load_objects(tokenizer) → List[ObjPrototype]` in `obj_loader.py`** ✅
 - Parse vnum, name/short desc, type/flags/values, affects.
 
-**3.4 `load_resets(tokenizer) → List[Reset]` in `reset_loader.py`**
+**3.4 `load_resets(tokenizer) → List[Reset]` in `reset_loader.py`** ✅ (simplified)
 - Parse one-line resets starting with `M`, `O`, `P`, etc.
 - Store them in area or room for later population.
 
@@ -206,7 +207,7 @@ SECTION_HANDLERS = {
 
 #### 4. Global Registries for VNUM Lookup
 
-**4.1 Create central registry file `mud/registry.py`:**
+**4.1 Create central registry file `mud/registry.py`:** ✅
 ```python
 room_registry = {}
 mob_registry = {}
@@ -220,7 +221,7 @@ area_registry = {}
 
 #### 5. Load All Areas from Master File
 
-**5.1 Implement `load_all_areas(list_path="area.lst")`:**
+**5.1 Implement `load_all_areas(list_path="area.lst")`:** ✅
 - Read each `.are` path from master list file (like `area.lst` in root dir).
 - For each file, call `load_area_file()`, store results.
 - At end: all registries are filled, world is loaded in memory.
@@ -234,6 +235,7 @@ area_registry = {}
 - Resets and exits are captured for future processing.
 - No exceptions raised on valid area files.
 - `test_load_midgaard.py` verifies room 3001 is correct (sample test).
+✔ `test_load_midgaard.py` verifies room 3001 is correct (sample test).
 
 ---
 
