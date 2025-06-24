@@ -1,6 +1,10 @@
 # TODO
 
 - [x] Step 1: Define Python Data Models (Autonomous Codex Execution)
+- [x] Step 2: Build Parsers to Load Game Data from Text Files
+- [x] Step 3: Replace the Rooms and Areas Subsystem (Environment Management)
+- [x] Step 4: Migrate NPC and Object Management (Prototypes to Instances)
+- [x] Step 5: Implement the Command Interpreter and Game Logic
 
 ## 🧱 Step 1: Define Python Data Models (Autonomous Codex Execution)
 
@@ -149,7 +153,7 @@ mud/
 
 #### 1. Base Loader Utilities
 
-**1.1 Implement a BaseTokenizer:**
+**1.1 Implement a BaseTokenizer:** ✅
 - Output: `BaseTokenizer` class in `base_loader.py`
 - Behavior:
   - `.next_line()` → return next line from file (skipping comments).
@@ -158,7 +162,7 @@ mud/
   - `.read_number()` → parse next token as int.
   - Optional `.read_flags()` → parse int and map to enums later.
 
-**1.2 Write Utility Parsers:**
+**1.2 Write Utility Parsers:** ✅ (minimal for exits handled in loaders)
 - `parse_exits(tokenizer: BaseTokenizer)` → returns exit dict for a room.
 - `parse_affects()`, `parse_stats()`, etc., as needed.
 - Reuse logic across mobs, rooms, objects.
@@ -167,12 +171,12 @@ mud/
 
 #### 2. Top-Level Area Loader
 
-**2.1 Implement `load_area_file(filepath: str)` in `area_loader.py`:**
+**2.1 Implement `load_area_file(filepath: str)` in `area_loader.py`:** ✅
 - Reads full `.are` file and dispatches section parsers based on headers:
   - `#AREA`, `#MOBILES`, `#OBJECTS`, `#ROOMS`, `#RESETS`, etc.
 - Returns: `Area` instance with lists of contained rooms/mobs/objs/etc.
 
-**2.2 Add section dispatch mapping:**
+**2.2 Add section dispatch mapping:** ✅
 ```python
 SECTION_HANDLERS = {
   "#MOBILES": load_mobiles,
@@ -186,19 +190,19 @@ SECTION_HANDLERS = {
 
 #### 3. Section-Specific Parsers
 
-**3.1 `load_rooms(tokenizer) → List[Room]` in `room_loader.py`**
+**3.1 `load_rooms(tokenizer) → List[Room]` in `room_loader.py`** ✅
 - Parse vnum, name, description, flags, sector type.
 - Detect and parse `D0`–`D5` exits (multiple per room).
 - Stop on line with `S`.
 
-**3.2 `load_mobiles(tokenizer) → List[MobPrototype]` in `mob_loader.py`**
+**3.2 `load_mobiles(tokenizer) → List[MobPrototype]` in `mob_loader.py`** ✅
 - Parse vnum, keywords, short/long desc, act flags, alignment, stats.
 - Track all vnums in a registry: `mob_registry[vnum] = instance`
 
-**3.3 `load_objects(tokenizer) → List[ObjPrototype]` in `obj_loader.py`**
+**3.3 `load_objects(tokenizer) → List[ObjPrototype]` in `obj_loader.py`** ✅
 - Parse vnum, name/short desc, type/flags/values, affects.
 
-**3.4 `load_resets(tokenizer) → List[Reset]` in `reset_loader.py`**
+**3.4 `load_resets(tokenizer) → List[Reset]` in `reset_loader.py`** ✅ (simplified)
 - Parse one-line resets starting with `M`, `O`, `P`, etc.
 - Store them in area or room for later population.
 
@@ -206,7 +210,7 @@ SECTION_HANDLERS = {
 
 #### 4. Global Registries for VNUM Lookup
 
-**4.1 Create central registry file `mud/registry.py`:**
+**4.1 Create central registry file `mud/registry.py`:** ✅
 ```python
 room_registry = {}
 mob_registry = {}
@@ -220,7 +224,7 @@ area_registry = {}
 
 #### 5. Load All Areas from Master File
 
-**5.1 Implement `load_all_areas(list_path="area.lst")`:**
+**5.1 Implement `load_all_areas(list_path="area.lst")`:** ✅
 - Read each `.are` path from master list file (like `area.lst` in root dir).
 - For each file, call `load_area_file()`, store results.
 - At end: all registries are filled, world is loaded in memory.
@@ -234,6 +238,7 @@ area_registry = {}
 - Resets and exits are captured for future processing.
 - No exceptions raised on valid area files.
 - `test_load_midgaard.py` verifies room 3001 is correct (sample test).
+✔ `test_load_midgaard.py` verifies room 3001 is correct (sample test).
 
 ---
 
@@ -286,7 +291,7 @@ mud/
 
 #### 1. Exit Linking and Validation
 
-**1.1 Implement `link_exits()` in `linking.py`:**
+**1.1 Implement `link_exits()` in `linking.py`:** ✅
 - Input: `room_registry` populated from Step 2.
 - For each room:
   - Iterate its `exits` dictionary (e.g. `{"north": 3010}`).
@@ -294,7 +299,7 @@ mud/
   - If missing, log a warning: `Unlinked exit in room 3001 -> north (target 9999 not found)`.
 - Add optional `room.unlinked_exits` set for diagnostics.
 
-**1.2 Add a one-time exit fix routine:**
+**1.2 Add a one-time exit fix routine:** ✅
 - Ensure this is called after loading areas and before gameplay starts.
 - `fix_all_exits()` could live in `world_state.py`.
 
@@ -302,7 +307,7 @@ mud/
 
 #### 2. Movement Logic
 
-**2.1 Implement `move_character(char: Character, direction: str) -> str` in `movement.py`:**
+**2.1 Implement `move_character(char: Character, direction: str) -> str` in `movement.py`:** ✅
 - Check if `direction` exists in `char.room.exits`.
 - If not: return `"You cannot go that way."`
 - Else:
@@ -311,7 +316,7 @@ mud/
   - Update `char.room = target_room`.
   - Return movement message: `"You walk north to <room name>."`
 
-**2.2 Optional: Room-level utility methods**
+**2.2 Optional: Room-level utility methods** ✅
 - `Room.add_character(char: Character)`
 - `Room.remove_character(char: Character)`
 - These manage bidirectional state updates.
@@ -320,7 +325,7 @@ mud/
 
 #### 3. Room Inspection (`look` Command)
 
-**3.1 Implement `look(char: Character) -> str` in `look.py`:**
+**3.1 Implement `look(char: Character) -> str` in `look.py`:** ✅
 - Output includes:
   - Room name (`room.name`)
   - Description (`room.description`)
@@ -328,23 +333,23 @@ mud/
   - Objects: list all in room
   - Characters: list other characters in room (not self)
 
-**3.2 Format exit display nicely:**
+**3.2 Format exit display nicely:** ✅
 - Match expected ROM output: `[Exits: north south]` or custom styles.
 
-**3.3 Test with a simulated character in room 3001:**
+**3.3 Test with a simulated character in room 3001:** ✅
 - Should output all fields cleanly.
 
 ---
 
 #### 4. World State Utility
 
-**4.1 Add `initialize_world()` in `world_state.py`:**
+**4.1 Add `initialize_world()` in `world_state.py`:** ✅
 - Calls:
   - `load_all_areas()` (Step 2)
   - `fix_all_exits()`
 - Returns: populated world state with registries and linked rooms.
 
-**4.2 Add `create_test_character(name, room_vnum)` function:**
+**4.2 Add `create_test_character(name, room_vnum)` function:** ✅
 - Spawns a new `Character` and places it in the correct Room.
 - Useful for test harnesses and dummy input simulation.
 
@@ -408,13 +413,13 @@ mud/
 
 #### 1. Define Spawnable Templates
 
-**1.1 Create `MobInstance` and `ObjectInstance` dataclasses in `templates.py`:**
+**1.1 Create `MobInstance` and `ObjectInstance` dataclasses in `templates.py`:** ✅
 - Fields:
   - `MobInstance`: name, level, current_hp, prototype_ref, inventory, location
   - `ObjectInstance`: name, type, prototype_ref, location, contained_items
 - Provide `from_prototype(proto: MobPrototype) -> MobInstance` constructors.
 
-**1.2 Attach utility methods:**
+**1.2 Attach utility methods:** ✅
 - `.move_to_room(room: Room)`
 - `.add_to_inventory(obj: ObjectInstance)`
 - `.equip(obj, slot)` (stub if needed)
@@ -423,7 +428,7 @@ mud/
 
 #### 2. Implement Spawner Functions
 
-**2.1 In `mob_spawner.py`:**
+**2.1 In `mob_spawner.py`:** ✅
 ```python
 def spawn_mob(vnum: int) -> MobInstance:
     proto = mob_registry[vnum]
@@ -431,7 +436,7 @@ def spawn_mob(vnum: int) -> MobInstance:
     return mob
 ```
 
-**2.2 In `obj_spawner.py`:**
+**2.2 In `obj_spawner.py`:** ✅
 ```python
 def spawn_object(vnum: int) -> ObjectInstance:
     proto = obj_registry[vnum]
@@ -446,7 +451,7 @@ def spawn_object(vnum: int) -> ObjectInstance:
 
 #### 3. Handle Resets for Initial World Population
 
-**3.1 In `reset_handler.py`, define `apply_resets(area: Area)`:**
+**3.1 In `reset_handler.py`, define `apply_resets(area: Area)`:** ✅
 - Iterate over `area.resets`.
 - For each reset:
   - `M <mob_vnum> <room_vnum>` → spawn mob and place in room.
@@ -455,19 +460,19 @@ def spawn_object(vnum: int) -> ObjectInstance:
   - `P <obj_vnum> <container_vnum>` → put in container.
 - Maintain context (e.g., last mob spawned) to apply nested resets.
 
-**3.2 Implement logging for invalid vnums or targets.**
+**3.2 Implement logging for invalid vnums or targets.** ✅
 
 ---
 
 #### 4. Integrate with Room and Character State
 
-**4.1 Add methods:**
+**4.1 Add methods:** ✅
 - `Room.add_object(obj)`
 - `Room.add_mob(mob)`
 - `Character.add_object(obj)`
 - `Character.equip_object(obj, slot)` (stub if not implemented)
 
-**4.2 Update `initialize_world()` to apply resets after linking exits.**
+**4.2 Update `initialize_world()` to apply resets after linking exits.** ✅
 
 ---
 
@@ -533,7 +538,7 @@ mud/
 
 #### 1. Command Dispatch System
 
-**1.1 Implement command registry in `dispatcher.py`:**
+**1.1 Implement command registry in `dispatcher.py`:** ✅
 ```python
 COMMANDS = {
   "look": do_look,
@@ -549,7 +554,7 @@ COMMANDS = {
 }
 ```
 
-**1.2 Add `process_command(char, input_str) -> str`:**
+**1.2 Add `process_command(char, input_str) -> str`:** ✅
 - Tokenize `input_str` into `command` and `argument`.
 - Lookup `COMMANDS[command]`.
 - Call corresponding function with `(char, argument)`.
@@ -559,7 +564,7 @@ COMMANDS = {
 
 #### 2. Movement Commands (in `movement.py`)
 
-**2.1 Define `do_north`, `do_south`, etc.:**
+**2.1 Define `do_north`, `do_south`, etc.:** ✅
 - Call `move_character(char, "north")` from Step 3.
 - Return movement message or error string.
 
@@ -567,7 +572,7 @@ COMMANDS = {
 
 #### 3. Inspection Commands (in `inspection.py`)
 
-**3.1 Implement `do_look(char, args)`:**
+**3.1 Implement `do_look(char, args)`:** ✅
 - Call `look(char)` from Step 3.
 - Return full description of room, exits, contents, and other characters.
 
@@ -575,27 +580,27 @@ COMMANDS = {
 
 #### 4. Inventory Commands (in `inventory.py`)
 
-**4.1 Implement `do_get(char, args)`:**
+**4.1 Implement `do_get(char, args)`:** ✅
 - Parse target object name from args.
 - Check if object exists in current room.
 - Move to char’s inventory.
 - Return message like `"You pick up a sword."`.
 
-**4.2 Implement `do_drop(char, args)`:**
+**4.2 Implement `do_drop(char, args)`:** ✅
 - Remove object from inventory, place in room.
 - Return confirmation.
 
-**4.3 Optional: Add `do_inventory` to list carried items.**
+**4.3 Optional: Add `do_inventory` to list carried items.** ✅
 
 ---
 
 #### 5. Communication Commands (in `communication.py`)
 
-**5.1 Implement `do_say(char, args)`:**
+**5.1 Implement `do_say(char, args)`:** ✅
 - Return message `"You say, 'X'"` to speaker.
 - Broadcast message to other characters in room: `"<Name> says, 'X'"`.
 
-**5.2 Add room broadcast utility in `Room`:**
+**5.2 Add room broadcast utility in `Room`:** ✅
 ```python
 def broadcast(self, message: str, exclude=None)
 ```
@@ -604,12 +609,12 @@ def broadcast(self, message: str, exclude=None)
 
 #### 6. Error Handling and Fallbacks
 
-**6.1 In `process_command()`, handle:**
+**6.1 In `process_command()`, handle:** ✅
 - Unknown commands: `"Huh?"`
 - Empty input: ignore or return `"What?"`
 - Missing arguments: `"Get what?"`
 
-**6.2 Normalize input:**
+**6.2 Normalize input:** ✅
 - Lowercase command.
 - Trim whitespace.
 
@@ -617,7 +622,7 @@ def broadcast(self, message: str, exclude=None)
 
 #### 7. Simulated Driver for Testing
 
-**7.1 Add `run_test_session()` function:**
+**7.1 Add `run_test_session()` function:** ✅
 - Create test character in room.
 - Feed a list of commands:
   - `["look", "get sword", "north", "say hello"]`
