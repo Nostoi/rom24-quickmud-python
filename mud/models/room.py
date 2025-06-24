@@ -1,6 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mud.spawning.templates import ObjectInstance, MobInstance
 
 from .constants import Direction
 
@@ -55,5 +58,32 @@ class Room:
     def __repr__(self) -> str:
         return f"<Room vnum={self.vnum} name={self.name!r}>"
 
+    def add_character(self, char: 'Character') -> None:
+        if char not in self.people:
+            self.people.append(char)
+        char.room = self
+
+    def remove_character(self, char: 'Character') -> None:
+        if char in self.people:
+            self.people.remove(char)
+
+    def add_object(self, obj: 'ObjectInstance') -> None:
+        if obj not in self.contents:
+            self.contents.append(obj)
+        obj.location = self
+
+    def add_mob(self, mob: 'MobInstance') -> None:
+        if mob not in self.people:
+            self.people.append(mob)
+        mob.room = self
+
+    def broadcast(self, message: str, exclude: Optional['Character'] = None) -> None:
+        for char in self.people:
+            if char is exclude:
+                continue
+            if hasattr(char, 'messages'):
+                char.messages.append(message)
+
 
 room_registry: dict[int, Room] = {}
+

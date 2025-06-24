@@ -1,6 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mud.spawning.templates import ObjectInstance
 
 @dataclass
 class PCData:
@@ -66,9 +69,19 @@ class Character:
     default_pos: int = 0
     mprog_delay: int = 0
     pcdata: Optional[PCData] = None
+    inventory: List['ObjectInstance'] = field(default_factory=list)
+    messages: List[str] = field(default_factory=list)
+    connection: Optional[object] = None
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
+
+    def add_object(self, obj: 'ObjectInstance') -> None:
+        self.inventory.append(obj)
+        obj.location = None
+
+    def equip_object(self, obj: 'ObjectInstance', slot: int) -> None:
+        self.add_object(obj)
 
 
 character_registry: list[Character] = []

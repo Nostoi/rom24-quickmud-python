@@ -39,5 +39,7 @@ def load_area_file(filepath: str) -> Area:
             handler(tokenizer, area)
         elif line.startswith('#$') or line == '$':
             break
-    area_registry[area.vnum] = area
+    key = area.file_name or filepath
+    area_registry[key] = area
+
     return area

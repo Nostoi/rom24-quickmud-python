@@ -20,6 +20,7 @@ class Area:
     area_flags: int = 0
     security: int = 0
     helps: List[object] = field(default_factory=list)
+    resets: List['Reset'] = field(default_factory=list)
     next: Optional['Area'] = None
 
     def __repr__(self) -> str:
