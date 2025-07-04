@@ -2,6 +2,7 @@ from __future__ import annotations
 import asyncio
 
 from mud.world.world_state import create_test_character
+from mud.account import load_character, save_character
 from mud.commands import process_command
 from mud.net.session import Session, SESSIONS
 from mud.net.protocol import send_to_char
@@ -20,7 +21,11 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         return
     name = name_data.decode().strip() or "guest"
 
-    char = create_test_character(name, 3001)
+    char = load_character(name, name)
+    if not char:
+        char = create_test_character(name, 3001)
+    elif char.room:
+        char.room.add_character(char)
     char.connection = writer
 
     session = Session(name=name, character=char, reader=reader, writer=writer)
@@ -44,6 +49,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 msg = char.messages.pop(0)
                 await send_to_char(char, msg)
     finally:
+        save_character(char)
         if char.room:
             char.room.remove_character(char)
         SESSIONS.pop(name, None)

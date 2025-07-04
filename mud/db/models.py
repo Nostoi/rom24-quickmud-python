@@ -55,3 +55,25 @@ class ObjPrototype(Base):
     value1 = Column(Integer)
     value2 = Column(Integer)
     value3 = Column(Integer)
+
+
+class PlayerAccount(Base):
+    __tablename__ = "player_accounts"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
+    password_hash = Column(String)
+
+    characters = relationship("Character", back_populates="player")
+
+
+class Character(Base):
+    __tablename__ = "characters"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    level = Column(Integer)
+    hp = Column(Integer)
+    room_vnum = Column(Integer)
+
+    player_id = Column(Integer, ForeignKey("player_accounts.id"))
+    player = relationship("PlayerAccount", back_populates="characters")
+
