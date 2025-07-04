@@ -923,7 +923,7 @@ pytest mud/tests/
 
 - Step 8 (DB migration) should not break any snapshot or behavior tests.
 
-## 🗃️ Step 8: Migrate Persistent Data to a Structured Database
+## ✅ Step 8: Migrate Persistent Data to a Structured Database
 
 **Objective**: Replace file-based world loading with a structured SQLAlchemy-backed database. Migrate `.are` file data into tables and create a runtime loader (`load_world_from_db()`) that populates all in-game registries using ORM queries.
 
