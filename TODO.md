@@ -655,7 +655,7 @@ def broadcast(self, message: str, exclude=None)
 - Step 6 (Networking) uses `process_command()` to respond to telnet clients.
 - Step 7 (Testing and validation) will snapshot outputs for regression safety.
 
-## 🌐 Step 6: Introduce Networking (Asynchronous Server)
+## ✅ Step 6: Introduce Networking (Asynchronous Server)
 
 **Objective**: Create an asynchronous Telnet-compatible server using Python’s `asyncio` that accepts multiple concurrent connections, manages client input/output, and interfaces with the command interpreter from Step 5.
 
