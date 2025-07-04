@@ -1087,7 +1087,7 @@ load_world_from_db()
 
 - ✅ Step 9 will handle saving player state, logout persistence, and eventually an admin panel or DB visualizer.
 
-## 👤 Step 9: Add Character Saving and Persistence
+## ✅ Step 9: Add Character Saving and Persistence
 
 **Objective**: Create persistent storage for players' character state using SQLAlchemy. Characters should be saved to the database on logout and reloaded on login, enabling continuity across sessions and restarts.
 
@@ -1106,7 +1106,7 @@ load_world_from_db()
 
 ### ✅ Tasks and Subtasks
 
-#### 1. Extend the ORM: Add Player and Character Tables
+#### 1. Extend the ORM: Add Player and Character Tables ✅
 
 **1.1 In `mud/db/models.py` add:**
 
@@ -1135,7 +1135,7 @@ class Character(Base):
 
 ---
 
-#### 2. Add Conversion Functions
+#### 2. Add Conversion Functions ✅
 
 **2.1 In `mud/models/character.py`:**
 
@@ -1160,7 +1160,7 @@ def to_orm(character: Character, player_id: int) -> DBCharacter:
 
 ---
 
-#### 3. Implement Character Load/Save Methods
+#### 3. Implement Character Load/Save Methods ✅
 
 **3.1 In `mud/account/account_manager.py` or equivalent:**
 
@@ -1182,7 +1182,7 @@ def save_character(character: Character):
 
 ---
 
-#### 4. Hook Into Game Loop
+#### 4. Hook Into Game Loop ✅
 
 **4.1 On Player Login:**
 
@@ -1200,7 +1200,7 @@ room.add_char(char)
 
 ---
 
-#### 5. Add Dev Utilities for Testing
+#### 5. Add Dev Utilities for Testing ✅
 
 **5.1 In `mud/db/seed.py`:**
 

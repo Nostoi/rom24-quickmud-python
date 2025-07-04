@@ -4,6 +4,7 @@ from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mud.spawning.templates import ObjectInstance
+    from mud.db.models import Character as DBCharacter
 
 @dataclass
 class PCData:
@@ -85,3 +86,28 @@ class Character:
 
 
 character_registry: list[Character] = []
+
+
+def from_orm(db_char: 'DBCharacter') -> Character:
+    from mud.registry import room_registry
+
+    room = room_registry.get(db_char.room_vnum)
+    char = Character(
+        name=db_char.name,
+        level=db_char.level or 0,
+        hit=db_char.hp or 0,
+    )
+    char.room = room
+    return char
+
+
+def to_orm(character: Character, player_id: int) -> 'DBCharacter':
+    from mud.db.models import Character as DBCharacter
+
+    return DBCharacter(
+        name=character.name,
+        level=character.level,
+        hp=character.hit,
+        room_vnum=character.room.vnum if getattr(character, "room", None) else None,
+        player_id=player_id,
+    )
