@@ -14,6 +14,7 @@ def create_test_account():
     account = PlayerAccount(
         username="admin",
         password_hash=hashlib.sha256(b"admin").hexdigest(),
+        is_admin=True,
     )
     char = Character(name="Testman", level=1, hp=100, room_vnum=3001, player=account)
     session.add(account)

@@ -6,6 +6,7 @@ from .movement import do_north, do_south, do_east, do_west, do_up, do_down
 from .inspection import do_look
 from .inventory import do_get, do_drop, do_inventory
 from .communication import do_say
+from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -21,6 +22,9 @@ COMMANDS: Dict[str, CommandFunc] = {
     "drop": do_drop,
     "inventory": do_inventory,
     "say": do_say,
+    "@who": cmd_who,
+    "@teleport": cmd_teleport,
+    "@spawn": cmd_spawn,
 }
 
 

@@ -15,3 +15,7 @@ class Session:
 
 
 SESSIONS: Dict[str, Session] = {}
+
+
+def get_online_players() -> list[Character]:
+    return [sess.character for sess in SESSIONS.values()]
