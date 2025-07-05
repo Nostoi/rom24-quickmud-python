@@ -1681,9 +1681,9 @@ def cmd_save(context):
 
 ### 🛠️ Next Step
 
-- Step 13 will add **Agent Integration & World Interface**, so autonomous agents (AI NPCs, world editors) can interface cleanly with the Python runtime.
+- ✅ Step 13 added **Agent Integration & World Interface**, so autonomous agents (AI NPCs, world editors) can interface cleanly with the Python runtime.
 
-## 🤖 Step 13: Agent Integration & World Interface
+## ✅ Step 13: Agent Integration & World Interface
 
 **Objective**: Build an abstract interface layer that exposes structured world state and actions. This will let agents observe the game world, plan actions, and issue valid commands — enabling AI-controlled NPCs, automated testing, or LLM-driven world builders.
 
