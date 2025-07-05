@@ -1236,9 +1236,9 @@ def create_test_account():
 
 ### 🛠️ Next Step
 
-- Step 10 will support inventory persistence and loadable equipment, followed by automated account creation or authentication.
+- [x] Step 10: Add Inventory and Equipment Persistence
 
-## 🎒 Step 10: Add Inventory and Equipment Persistence
+## ✅ Step 10: Add Inventory and Equipment Persistence
 
 **Objective**: Enable characters to carry and equip objects that persist in the database. Inventory and equipment should be loaded at login and saved at logout.
 

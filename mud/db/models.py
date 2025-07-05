@@ -57,6 +57,17 @@ class ObjPrototype(Base):
     value3 = Column(Integer)
 
 
+class ObjectInstance(Base):
+    __tablename__ = "object_instances"
+    id = Column(Integer, primary_key=True)
+    prototype_vnum = Column(Integer, ForeignKey("obj_prototypes.vnum"))
+    location = Column(String)
+    character_id = Column(Integer, ForeignKey("characters.id"))
+
+    prototype = relationship("ObjPrototype")
+    character = relationship("Character", back_populates="objects")
+
+
 class PlayerAccount(Base):
     __tablename__ = "player_accounts"
     id = Column(Integer, primary_key=True)
@@ -76,4 +87,5 @@ class Character(Base):
 
     player_id = Column(Integer, ForeignKey("player_accounts.id"))
     player = relationship("PlayerAccount", back_populates="characters")
+    objects = relationship("ObjectInstance", back_populates="character")
 

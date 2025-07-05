@@ -4,6 +4,7 @@ from .area import Area
 from .room import Room, ExtraDescr, Exit, Reset
 from .mob import MobIndex, MobProgram
 from .obj import ObjIndex, ObjectData, Affect
+from .object import Object
 from .character import Character, PCData
 from .constants import (
     Direction,
@@ -25,6 +26,7 @@ __all__ = [
     "MobProgram",
     "ObjIndex",
     "ObjectData",
+    "Object",
     "Affect",
     "Character",
     "PCData",

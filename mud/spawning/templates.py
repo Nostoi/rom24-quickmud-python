@@ -2,11 +2,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from mud.models.object import Object
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mud.models.mob import MobIndex
     from mud.models.obj import ObjIndex
+    from mud.models.object import Object
 
 
 @dataclass
@@ -34,7 +37,7 @@ class MobInstance:
     level: int
     current_hp: int
     prototype: MobIndex
-    inventory: List[ObjectInstance] = field(default_factory=list)
+    inventory: List[Object] = field(default_factory=list)
     room: Optional['Room'] = None
 
     @classmethod
@@ -50,9 +53,8 @@ class MobInstance:
         room.people.append(self)
         self.room = room
 
-    def add_to_inventory(self, obj: ObjectInstance) -> None:
+    def add_to_inventory(self, obj: Object) -> None:
         self.inventory.append(obj)
-        obj.location = None
 
-    def equip(self, obj: ObjectInstance, slot: int) -> None:  # stub
+    def equip(self, obj: Object, slot: int) -> None:  # stub
         self.add_to_inventory(obj)
