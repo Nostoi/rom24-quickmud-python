@@ -1,16 +1,10 @@
-FROM ubuntu:14.04
+FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y build-essential csh && apt-get clean
+WORKDIR /app
 
-ADD . /opt/rom
+COPY pyproject.toml ./
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-RUN cd /opt/rom/src && make -k
-RUN mkdir -p /opt/rom/log
-RUN mkdir -p /opt/rom/player
+COPY . .
 
-WORKDIR /opt/rom/area
-
-VOLUME [ "/opt/rom" ]
-EXPOSE 4000
-
-ENTRYPOINT [ "./startup" ]
+CMD ["mud", "runserver"]

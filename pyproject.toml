@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pythonmud"
+version = "0.1.0"
+description = "Python MUD"
+authors = ["Unknown <>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "*"
+uvicorn = "*"
+SQLAlchemy = "*"
+typer = "*"
+python-dotenv = "*"
+
+[tool.poetry.scripts]
+mud = "mud.__main__:cli"

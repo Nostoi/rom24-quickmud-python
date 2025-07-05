@@ -1834,7 +1834,7 @@ Call this after every `perform_action()` in agent loop.
 
 - Step 14 will address **Deployment, CLI Wrappers, and Dockerization**, to prepare the project for production and developer onboarding.
 
-## 🚀 Step 14: Deployment, CLI Tools, and Dockerization
+## ✅ Step 14: Deployment, CLI Tools, and Dockerization
 
 **Objective**: Finalize the project for real-world use by wrapping it with CLI tools, `.env`-based config, and Docker support. This enables easy server bootstrapping, environment separation, and deployment consistency.
 
@@ -2028,7 +2028,7 @@ You have now fully migrated a C-based MUD engine with text and `.h`-based data i
 
 ---
 
-## 🌐 Step 15 Addendum: Telnet Access via Docker + Test Character Loader
+## ✅ Step 15 Addendum: Telnet Access via Docker + Test Character Loader
 
 ---
 
