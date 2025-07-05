@@ -1395,7 +1395,7 @@ session.commit()
 
 - Step 11 will implement **account creation, character selection**, and password authentication to allow proper user onboarding.
 
-## 🔐 Step 11: Account Creation and Authentication
+## ✅ Step 11: Account Creation and Authentication
 
 **Objective**: Allow users to create accounts with secure passwords, authenticate at login, and manage multiple characters under one account. This replaces manual test-account creation and enables real-world usage.
 
@@ -1415,7 +1415,7 @@ session.commit()
 
 ### ✅ Tasks and Subtasks
 
-#### 1. Add Utility Functions for Hashing and Checking Passwords
+#### 1. Add Utility Functions for Hashing and Checking Passwords ✅
 
 **1.1 In `mud/security/hash_utils.py`:**
 
@@ -1437,7 +1437,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
 
 ---
 
-#### 2. Add Account Creation Flow
+#### 2. Add Account Creation Flow ✅
 
 **2.1 In `mud/account/account_service.py`:**
 
@@ -1461,7 +1461,7 @@ def create_account(username: str, raw_password: str) -> bool:
 
 ---
 
-#### 3. Add Login Flow
+#### 3. Add Login Flow ✅
 
 ```python
 def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
@@ -1474,7 +1474,7 @@ def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
 
 ---
 
-#### 4. Character Selection and Creation
+#### 4. Character Selection and Creation ✅
 
 ```python
 def list_characters(account: PlayerAccount) -> List[str]:
@@ -1492,7 +1492,7 @@ def create_character(account: PlayerAccount, name: str, starting_room_vnum: int 
 
 ---
 
-#### 5. Add a Temporary CLI Login Menu (for testing)
+#### 5. Add a Temporary CLI Login Menu (for testing) ✅
 
 **5.1 In `mud/entrypoint.py` or similar:**
 
