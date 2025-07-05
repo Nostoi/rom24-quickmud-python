@@ -2160,10 +2160,10 @@ Add WebSocket support alongside the Telnet server so players (or bots) can conne
 
 ### 🔲 Task 1: Add WebSocket Server
 
-- [ ] File: `mud/network/websocket_server.py`
-- [ ] Use `FastAPI` or `Starlette` to expose `/ws`
-- [ ] Accept `websocket` connections and hold open
-- [ ] Upgrade the WebSocket into a `PlayerSession`
+- [x] File: `mud/network/websocket_server.py`
+- [x] Use `FastAPI` or `Starlette` to expose `/ws`
+- [x] Accept `websocket` connections and hold open
+- [x] Upgrade the WebSocket into a `PlayerSession`
 
 Prompt:
 ```
@@ -2177,10 +2177,10 @@ Validation:
 
 ### 🔲 Task 2: Create WebSocketPlayerSession
 
-- [ ] File: `mud/network/websocket_session.py`
-- [ ] Define a subclass of `PlayerSession` that wraps a `WebSocket` object
-- [ ] Implement `.send()` and `.recv()` using JSON messages
-- [ ] Add metadata: `session_type = "websocket"`
+- [x] File: `mud/network/websocket_session.py`
+- [x] Define a subclass of `PlayerSession` that wraps a `WebSocket` object
+- [x] Implement `.send()` and `.recv()` using JSON messages
+- [x] Add metadata: `session_type = "websocket"`
 
 Prompt:
 ```
@@ -2191,9 +2191,9 @@ Subclass PlayerSession using a WebSocket object. All messages should be JSON wit
 
 ### 🔲 Task 3: Bind to Game Loop
 
-- [ ] In `websocket_server.py`, call `handle_session()` as in socket version
-- [ ] Allow one character per session
-- [ ] Handle disconnects gracefully
+- [x] In `websocket_server.py`, call `handle_session()` as in socket version
+- [x] Allow one character per session
+- [x] Handle disconnects gracefully
 
 Validation:
 - Web client logs in, issues `look`, receives output
@@ -2202,7 +2202,7 @@ Validation:
 
 ### 🔲 Task 4: JSON I/O Format
 
-- [ ] Standardize message format:
+- [x] Standardize message format:
   ```json
   {
     "type": "output",
@@ -2211,7 +2211,7 @@ Validation:
     "hp": 34
   }
   ```
-- [ ] Parse inputs as:
+- [x] Parse inputs as:
   ```json
   {
     "type": "command",
@@ -2228,9 +2228,9 @@ Wrap all messages in JSON for structured LLM parsing. Include type, content, and
 
 ### 🔲 Task 5: Add CORS and Host Config
 
-- [ ] File: `mud/config.py`
-- [ ] Allow configurable CORS origins via `.env`
-- [ ] Add `--host 0.0.0.0 --port 8000` for Docker
+- [x] File: `mud/config.py`
+- [x] Allow configurable CORS origins via `.env`
+- [x] Add `--host 0.0.0.0 --port 8000` for Docker
 
 Validation:
 - Browser frontend can connect from a different origin
@@ -2240,11 +2240,11 @@ Validation:
 
 ### 🔲 Task 6: CLI Entrypoint
 
-- [ ] In `mud/__main__.py`, add command:
+- [x] In `mud/__main__.py`, add command:
   ```bash
   poetry run mud websocketserver
   ```
-- [ ] Serve on `localhost:8000` or `0.0.0.0:8000`
+- [x] Serve on `localhost:8000` or `0.0.0.0:8000`
 
 Validation:
 - Multiple users connect via `/ws`
@@ -2254,11 +2254,11 @@ Validation:
 
 ### 🧪 Completion Criteria
 
-- [ ] `poetry run mud websocketserver` launches server
-- [ ] Browser or `websocat` clients can connect to `/ws`
-- [ ] Each session logs in, enters game loop, and runs commands
-- [ ] Messages are in structured JSON format
-- [ ] Works in Docker with port 8000 exposed
+- [x] `poetry run mud websocketserver` launches server
+- [x] Browser or `websocat` clients can connect to `/ws`
+- [x] Each session logs in, enters game loop, and runs commands
+- [x] Messages are in structured JSON format
+- [x] Works in Docker with port 8000 exposed
 
 ---
 
