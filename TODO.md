@@ -1548,9 +1548,9 @@ def prompt_account_creation():
 
 ### 🛠️ Next Step
 
-- Step 12 will introduce **admin tools**, debugging commands (`@who`, `@teleport`, `@spawn`), and in-game state inspection for live world testing.
+- ✔ Step 12 will introduce **admin tools**, debugging commands (`@who`, `@teleport`, `@spawn`), and in-game state inspection for live world testing.
 
-## 🛠️ Step 12: Admin Tools and Debug Commands
+## ✅ Step 12: Admin Tools and Debug Commands
 
 **Objective**: Add a set of privileged commands for admins to inspect world state, test gameplay, and moderate the game live. These commands are not player-accessible and should respect access levels or account flags.
 

@@ -74,6 +74,7 @@ class Character:
     equipment: Dict[str, 'Object'] = field(default_factory=dict)
     messages: List[str] = field(default_factory=list)
     connection: Optional[object] = None
+    is_admin: bool = False
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -100,6 +101,8 @@ def from_orm(db_char: 'DBCharacter') -> Character:
         hit=db_char.hp or 0,
     )
     char.room = room
+    if db_char.player is not None:
+        char.is_admin = bool(getattr(db_char.player, "is_admin", False))
     return char
 
 
