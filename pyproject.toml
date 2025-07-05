@@ -2,7 +2,10 @@
 name = "pythonmud"
 version = "0.1.0"
 description = "Python MUD"
-authors = ["Unknown <>"]
+authors = ["Mark Jedrzejczyk <mark.jedrzejczyk@gmail.com>"]
+packages = [
+    { include = "mud" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -14,3 +17,6 @@ python-dotenv = "*"
 
 [tool.poetry.scripts]
 mud = "mud.__main__:cli"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
