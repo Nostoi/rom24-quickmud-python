@@ -3,7 +3,8 @@ from dataclasses import dataclass, field
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from mud.spawning.templates import ObjectInstance, MobInstance
+    from mud.models.object import Object
+    from mud.spawning.templates import MobInstance
 
 from .constants import Direction
 
@@ -52,7 +53,7 @@ class Room:
     extra_descr: List[ExtraDescr] = field(default_factory=list)
     resets: List[Reset] = field(default_factory=list)
     people: List['Character'] = field(default_factory=list)
-    contents: List['ObjectData'] = field(default_factory=list)
+    contents: List['Object'] = field(default_factory=list)
     next: Optional['Room'] = None
 
     def __repr__(self) -> str:
@@ -67,10 +68,11 @@ class Room:
         if char in self.people:
             self.people.remove(char)
 
-    def add_object(self, obj: 'ObjectInstance') -> None:
+    def add_object(self, obj: 'Object') -> None:
         if obj not in self.contents:
             self.contents.append(obj)
-        obj.location = self
+        if hasattr(obj, "location"):
+            obj.location = self
 
     def add_mob(self, mob: 'MobInstance') -> None:
         if mob not in self.people:

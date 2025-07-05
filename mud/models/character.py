@@ -1,9 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from mud.spawning.templates import ObjectInstance
+    from mud.models.object import Object
     from mud.db.models import Character as DBCharacter
 
 @dataclass
@@ -70,19 +70,21 @@ class Character:
     default_pos: int = 0
     mprog_delay: int = 0
     pcdata: Optional[PCData] = None
-    inventory: List['ObjectInstance'] = field(default_factory=list)
+    inventory: List['Object'] = field(default_factory=list)
+    equipment: Dict[str, 'Object'] = field(default_factory=dict)
     messages: List[str] = field(default_factory=list)
     connection: Optional[object] = None
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
 
-    def add_object(self, obj: 'ObjectInstance') -> None:
+    def add_object(self, obj: 'Object') -> None:
         self.inventory.append(obj)
-        obj.location = None
 
-    def equip_object(self, obj: 'ObjectInstance', slot: int) -> None:
-        self.add_object(obj)
+    def equip_object(self, obj: 'Object', slot: str) -> None:
+        if obj in self.inventory:
+            self.inventory.remove(obj)
+        self.equipment[slot] = obj
 
 
 character_registry: list[Character] = []
