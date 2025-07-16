@@ -1,16 +1,15 @@
-FROM ubuntu:14.04
+FROM python:3.10
 
-RUN apt-get update && apt-get install -y build-essential csh && apt-get clean
+# Set the working directory inside the container
+WORKDIR /app/mud
 
-ADD . /opt/rom
+# Copy only the project files
+COPY mud/pyproject.toml ./
+COPY mud ./
 
-RUN cd /opt/rom/src && make -k
-RUN mkdir -p /opt/rom/log
-RUN mkdir -p /opt/rom/player
+# Install dependencies with Poetry
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi
 
-WORKDIR /opt/rom/area
-
-VOLUME [ "/opt/rom" ]
-EXPOSE 4000
-
-ENTRYPOINT [ "./startup" ]
+CMD ["python", "mud.py"]

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "quickmud"
+version = "0.1.0"
+description = "QuickMUD Python tools"
+authors = ["QuickMUD Team <example@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+sqlalchemy = "^1.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
