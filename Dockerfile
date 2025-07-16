@@ -1,15 +1,10 @@
-FROM python:3.10
+FROM python:3.11-slim
 
-# Set the working directory inside the container
-WORKDIR /app/mud
+WORKDIR /app
 
-# Copy only the project files
-COPY mud/pyproject.toml ./
-COPY mud ./
+COPY mud/pyproject.toml ./pyproject.toml
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-# Install dependencies with Poetry
-RUN pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi
+COPY . .
 
-CMD ["python", "mud.py"]
+CMD ["mud", "runserver"]

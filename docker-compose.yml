@@ -1,9 +1,11 @@
-version: "3"
+version: "3.8"
 services:
-  app:
-    image: avinson/rom
-    volumes:
-      - ./log:/opt/rom/log:rw
-      - ./player:/opt/rom/player:rw
+  mud:
+    build: .
     ports:
-      - 4000:4000
+      - "${PORT:-5000}:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: poetry run mud socketserver
