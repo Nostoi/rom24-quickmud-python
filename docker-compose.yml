@@ -8,4 +8,4 @@ services:
       - .env
     volumes:
       - .:/app
-      - ./mud/pyproject.toml:/app/mud/pyproject.toml
+      # Mount source code for live reload during development

@@ -3,7 +3,7 @@ name = "quickmud"
 version = "0.1.0"
 description = "QuickMUD Python tools"
 authors = ["QuickMUD Team <example@example.com>"]
-package-mode = false
+packages = [{ include = "mud" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
