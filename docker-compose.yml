@@ -8,4 +8,4 @@ services:
       - .env
     volumes:
       - .:/app
-    working_dir: /app/mud
+    working_dir: /app
