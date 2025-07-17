@@ -8,4 +8,4 @@ services:
       - .env
     volumes:
       - .:/app
-    command: poetry run mud socketserver
+      - ./mud/pyproject.toml:/app/mud/pyproject.toml

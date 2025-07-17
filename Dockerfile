@@ -1,10 +1,11 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /app/mud
 
 COPY mud/pyproject.toml ./pyproject.toml
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
+RUN pip install poetry && poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
-COPY . .
+COPY . /app
 
-CMD ["mud", "runserver"]
+CMD ["poetry", "run", "mud", "socketserver"]
