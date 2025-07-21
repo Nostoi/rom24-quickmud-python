@@ -11,13 +11,13 @@ RUN pip install --no-cache-dir poetry
 COPY mud/pyproject.toml mud/pyproject.toml
 RUN poetry -C mud install --no-interaction --no-ansi --no-root
 
-# Copy the rest of the repository
-COPY . .
-
-# Install the quickmud package itself so the "mud" entry point is available.
-# Poetry cannot discover the package because the project name differs from the
-# package directory, so we provide our own setup.py.
+# Copy only the source and setup script first so the package installs
+# correctly even when the build context is not the repository root.
 COPY setup.py ./
-RUN pip install -e .
+COPY mud/ mud/
+RUN pip install .
+
+# Copy the rest of the repository (areas, docs, etc.).
+COPY . .
 
 CMD ["mud", "socketserver"]
