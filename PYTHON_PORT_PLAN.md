@@ -28,8 +28,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Added `mud/scripts/convert_are_to_json.py` to transform `.are` files into schema-compliant JSON.
 3.2 ✅ Store converted JSON in a new `data/areas/` directory, mirroring the hierarchy by area name.
     - Updated converter to default to `data/areas` and committed a sample `limbo.json`.
+3.3 ✅ Create tests that load sample areas (e.g., Midgaard) from JSON and assert that room/mob/object counts match the original `.are` files.
+    - Added a Midgaard test comparing room, mob, and object counts between `.are` and converted JSON.
 
-3.3 Create tests that load sample areas (e.g., Midgaard) from JSON and assert that room/mob/object counts match the original `.are` files.
 
 ## 4. Implement Python data models
 4.1 Create `dataclasses` in `mud/models/` mirroring the JSON schemas.

@@ -11,3 +11,5 @@ def test_convert_area_creates_valid_json():
         schema = json.load(f)
     jsonschema.validate(data, schema)
     assert data["rooms"], "converted area should include rooms"
+    assert data["mobiles"], "converted area should include mobiles"
+    assert data["objects"], "converted area should include objects"

@@ -59,17 +59,34 @@ def room_to_dict(room) -> dict:
     }
 
 
+def mob_to_dict(mob) -> dict:
+    return {
+        "id": mob.vnum,
+        "name": mob.short_descr or "",
+        "description": mob.long_descr or "",
+    }
+
+def object_to_dict(obj) -> dict:
+    return {
+        "id": obj.vnum,
+        "name": obj.short_descr or "",
+        "description": obj.description or "",
+    }
+
 def convert_area(path: str) -> dict:
     clear_registries()
     area = load_area_file(path)
     rooms = [room_to_dict(r) for r in room_registry.values() if r.area is area]
+    mobiles = [mob_to_dict(m) for m in mob_registry.values() if m.area is area]
+    objects = [object_to_dict(o) for o in obj_registry.values() if o.area is area]
+
     data = {
         "name": area.name or "",
         "vnum_range": {"min": area.min_vnum, "max": area.max_vnum},
         "builders": [b.strip() for b in (area.builders or "").split(",") if b.strip()],
         "rooms": rooms,
-        "mobiles": [],
-        "objects": [],
+        "mobiles": mobiles,
+        "objects": objects,
     }
     return data
 

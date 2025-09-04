@@ -28,3 +28,6 @@
 | `test_inventory_persistence.py` | Saving/loading inventories |
 | `test_agent_interface.py` | AI agent command interface |
 | `test_model_instantiation.py` | Dataclass construction |
+| `test_are_conversion.py` | `.are` to JSON conversion produces valid schema |
+| `test_schema_validation.py` | JSON schemas remain valid |
+| `test_area_counts.py` | Area JSON preserves room/mob/object counts |
