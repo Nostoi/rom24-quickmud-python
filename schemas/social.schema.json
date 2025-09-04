@@ -1,0 +1,18 @@
+{
+  "$id": "social.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Social",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": {"type": "string"},
+    "char_no_arg": {"type": "string", "default": ""},
+    "others_no_arg": {"type": "string", "default": ""},
+    "char_found": {"type": "string", "default": ""},
+    "others_found": {"type": "string", "default": ""},
+    "vict_found": {"type": "string", "default": ""},
+    "char_auto": {"type": "string", "default": ""},
+    "others_auto": {"type": "string", "default": ""}
+  },
+  "additionalProperties": false
+}

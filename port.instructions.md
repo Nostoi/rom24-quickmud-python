@@ -15,4 +15,7 @@
 - Verify converted area JSON preserves room, mob, and object counts; tests must compare against source `.are` files.
 - Mirror each JSON schema with a `*_json.py` dataclass; update `mud/models/__init__.py` and `mud/models/README.md` when adding one.
 - Enumerate C subsystems in `PYTHON_PORT_PLAN.md`; never begin porting a module without a corresponding plan entry.
+- Mirror every new JSON schema with a `*_json.py` dataclass and export it via `mud/models/__init__.py`; update `mud/models/README.md` and tests immediately.
+- Run mypy with `--follow-imports=skip` on targeted modules to avoid unrelated type errors.
+- Ensure schema defaults mirror dataclass defaults; test instantiation to catch mismatches.
 

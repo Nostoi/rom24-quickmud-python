@@ -1,13 +1,21 @@
 {
+  "$id": "skill.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Skill",
   "type": "object",
   "required": ["name", "type", "function"],
   "properties": {
     "name": {"type": "string"},
-    "type": {"type": "string", "enum": ["skill", "spell"]},
+    "type": {"type": "string"},
     "function": {"type": "string"},
     "target": {"type": "string", "default": "victim"},
-    "lag": {"type": "integer", "default": 0}
-  }
+    "mana_cost": {"type": "integer", "minimum": 0, "default": 0},
+    "lag": {"type": "integer", "minimum": 0, "default": 0},
+    "messages": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "default": {}
+    }
+  },
+  "additionalProperties": false
 }

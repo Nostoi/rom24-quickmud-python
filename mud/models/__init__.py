@@ -31,6 +31,9 @@ from .object_json import (
 from .character_json import CharacterJson, StatsJson, ResourceJson
 from .player_json import PlayerJson
 from .skill_json import SkillJson
+from .shop_json import ShopJson
+from .help_json import HelpJson
+from .social_json import SocialJson
 from .json_io import (
     dataclass_from_dict,
     dataclass_to_dict,
@@ -67,6 +70,9 @@ __all__ = [
     "ResourceJson",
     "PlayerJson",
     "SkillJson",
+    "ShopJson",
+    "HelpJson",
+    "SocialJson",
     "dataclass_from_dict",
     "dataclass_to_dict",
     "load_dataclass",

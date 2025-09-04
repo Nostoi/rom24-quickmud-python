@@ -1,5 +1,3 @@
-import pytest
-
 from mud.models import (
     AreaJson,
     VnumRangeJson,
@@ -8,12 +6,22 @@ from mud.models import (
     CharacterJson,
     StatsJson,
     ResourceJson,
+    ShopJson,
+    SkillJson,
+    HelpJson,
+    SocialJson,
 )
 
 
 def test_area_room_instantiation():
     area = AreaJson(name="Test Area", vnum_range=VnumRangeJson(min=1, max=100))
-    room = RoomJson(id=100, name="Test Room", description="", sector_type="inside", area=1)
+    room = RoomJson(
+        id=100,
+        name="Test Room",
+        description="",
+        sector_type="inside",
+        area=1,
+    )
     area.rooms.append(room)
     assert area.name == "Test Area"
     assert area.rooms[0].name == "Test Room"
@@ -54,3 +62,33 @@ def test_character_instantiation():
     )
     assert char.level == 10
     assert char.stats.hitpoints.max == 100
+
+
+def test_shop_instantiation():
+    shop = ShopJson(keeper=1234)
+    assert shop.keeper == 1234
+    assert shop.profit_buy == 100
+
+
+def test_skill_instantiation():
+    skill = SkillJson(
+        name="fireball",
+        type="spell",
+        function="spell_fireball",
+        mana_cost=50,
+    )
+    assert skill.name == "fireball"
+    assert skill.mana_cost == 50
+    assert skill.messages == {}
+
+
+def test_help_instantiation():
+    entry = HelpJson(keywords=["look"], text="Look around.")
+    assert entry.keywords == ["look"]
+    assert entry.level == 0
+
+
+def test_social_instantiation():
+    social = SocialJson(name="smile", char_no_arg="You smile.")
+    assert social.name == "smile"
+    assert social.char_no_arg == "You smile."
