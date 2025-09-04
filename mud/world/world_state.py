@@ -98,6 +98,5 @@ def create_test_character(name: str, room_vnum: int) -> Character:
     room = room_registry.get(room_vnum)
     char = Character(name=name)
     if room:
-        room.people.append(char)
-        char.room = room
+        room.add_character(char)
     return char

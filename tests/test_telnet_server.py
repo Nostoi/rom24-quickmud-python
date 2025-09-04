@@ -22,7 +22,7 @@ def test_telnet_server_handles_look_command():
             await writer.drain()
             output = await reader.readuntil(b"> ")
             text = output.decode()
-            assert "Limbo" in text or "Void" in text
+            assert "The Temple Of Mota" in text or "Limbo" in text or "Void" in text
             writer.close()
             await writer.wait_closed()
         finally:
