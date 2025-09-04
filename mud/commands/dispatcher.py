@@ -8,6 +8,7 @@ from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say
 from .combat import do_kill
 from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
+from .shop import do_list, do_buy
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -26,6 +27,8 @@ COMMANDS: Dict[str, CommandFunc] = {
     "say": do_say,
     "kill": do_kill,
     "attack": do_kill,
+    "list": do_list,
+    "buy": do_buy,
     "@who": cmd_who,
     "@teleport": cmd_teleport,
     "@spawn": cmd_spawn,
