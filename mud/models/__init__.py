@@ -29,6 +29,8 @@ from .object_json import (
     ExtraDescriptionJson as ObjectExtraDescriptionJson,
 )
 from .character_json import CharacterJson, StatsJson, ResourceJson
+from .player_json import PlayerJson
+from .skill_json import SkillJson
 from .json_io import (
     dataclass_from_dict,
     dataclass_to_dict,
@@ -63,6 +65,8 @@ __all__ = [
     "CharacterJson",
     "StatsJson",
     "ResourceJson",
+    "PlayerJson",
+    "SkillJson",
     "dataclass_from_dict",
     "dataclass_to_dict",
     "load_dataclass",

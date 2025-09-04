@@ -13,4 +13,6 @@
 - Clear registries before conversions to avoid leaking data between areas.
 - Store converted area JSON under `data/areas/`; name files after the source `.are`.
 - Verify converted area JSON preserves room, mob, and object counts; tests must compare against source `.are` files.
+- Mirror each JSON schema with a `*_json.py` dataclass; update `mud/models/__init__.py` and `mud/models/README.md` when adding one.
+- Enumerate C subsystems in `PYTHON_PORT_PLAN.md`; never begin porting a module without a corresponding plan entry.
 
