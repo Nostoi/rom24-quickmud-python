@@ -1,0 +1,642 @@
+[
+  {
+    "keeper": 604,
+    "buy_types": [
+      "weapon",
+      "armor",
+      "container"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 80,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 605,
+    "buy_types": [
+      "armor"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 80,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 606,
+    "buy_types": [
+      "treasure",
+      "furniture",
+      "trash"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 80,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 607,
+    "buy_types": [
+      "food"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 10,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 608,
+    "buy_types": [
+      "drink_con",
+      "food"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 10,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 622,
+    "buy_types": [
+      "drink_con"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 10,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1113,
+    "buy_types": [
+      "drink_con"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1118,
+    "buy_types": [
+      "trash",
+      "weapon",
+      "container",
+      "light",
+      "drink_con"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1119,
+    "buy_types": [
+      "trash",
+      "weapon",
+      "container",
+      "light",
+      "drink_con"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1120,
+    "buy_types": [
+      "armor",
+      "weapon"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1130,
+    "buy_types": [
+      "drink_con"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3000,
+    "buy_types": [
+      "scroll",
+      "wand",
+      "staff",
+      "potion"
+    ],
+    "profit_buy": 105,
+    "profit_sell": 15,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3001,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3002,
+    "buy_types": [
+      "light",
+      "treasure",
+      "trash",
+      "container",
+      "food"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 40,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3003,
+    "buy_types": [
+      "weapon",
+      "6",
+      "7"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 40,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3004,
+    "buy_types": [
+      "armor"
+    ],
+    "profit_buy": 100,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3006,
+    "buy_types": [
+      "boat"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 90,
+    "open_hour": 6,
+    "close_hour": 22
+  },
+  {
+    "keeper": 3008,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3009,
+    "buy_types": [
+      "treasure",
+      "warp_stone",
+      "gem",
+      "jewelry"
+    ],
+    "profit_buy": 110,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3010,
+    "buy_types": [
+      "armor"
+    ],
+    "profit_buy": 110,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3040,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3042,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3043,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3044,
+    "buy_types": [],
+    "profit_buy": 170,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3045,
+    "buy_types": [],
+    "profit_buy": 150,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3046,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 90,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3070,
+    "buy_types": [
+      "potion"
+    ],
+    "profit_buy": 1000,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3100,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 6,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3150,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3160,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 306,
+    "buy_types": [
+      "light",
+      "potion",
+      "clothing",
+      "food"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 60,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 308,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9238,
+    "buy_types": [],
+    "profit_buy": 105,
+    "profit_sell": 15,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 6503,
+    "buy_types": [],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 6504,
+    "buy_types": [],
+    "profit_buy": 150,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1305,
+    "buy_types": [
+      "drink_con",
+      "food"
+    ],
+    "profit_buy": 210,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 1306,
+    "buy_types": [
+      "scroll",
+      "wand",
+      "staff",
+      "potion",
+      "21"
+    ],
+    "profit_buy": 250,
+    "profit_sell": 30,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 5310,
+    "buy_types": [],
+    "profit_buy": 120,
+    "profit_sell": 90,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 5311,
+    "buy_types": [
+      "weapon",
+      "drink_con",
+      "food"
+    ],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 6,
+    "close_hour": 20
+  },
+  {
+    "keeper": 5312,
+    "buy_types": [
+      "food"
+    ],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 7,
+    "close_hour": 19
+  },
+  {
+    "keeper": 5313,
+    "buy_types": [
+      "weapon",
+      "armor"
+    ],
+    "profit_buy": 130,
+    "profit_sell": 70,
+    "open_hour": 5,
+    "close_hour": 21
+  },
+  {
+    "keeper": 5314,
+    "buy_types": [
+      "light",
+      "treasure",
+      "furniture",
+      "trash",
+      "boat"
+    ],
+    "profit_buy": 135,
+    "profit_sell": 65,
+    "open_hour": 8,
+    "close_hour": 18
+  },
+  {
+    "keeper": 5317,
+    "buy_types": [
+      "scroll",
+      "wand",
+      "staff",
+      "potion"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 50,
+    "open_hour": 9,
+    "close_hour": 17
+  },
+  {
+    "keeper": 9505,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9510,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9511,
+    "buy_types": [
+      "light",
+      "treasure",
+      "furniture",
+      "trash",
+      "container"
+    ],
+    "profit_buy": 200,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9513,
+    "buy_types": [
+      "treasure",
+      "clothing",
+      "armor",
+      "16",
+      "21"
+    ],
+    "profit_buy": 200,
+    "profit_sell": 40,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9514,
+    "buy_types": [],
+    "profit_buy": 150,
+    "profit_sell": 40,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9515,
+    "buy_types": [],
+    "profit_buy": 100,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9516,
+    "buy_types": [
+      "armor",
+      "clothing"
+    ],
+    "profit_buy": 150,
+    "profit_sell": 10,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9517,
+    "buy_types": [
+      "weapon",
+      "6",
+      "7"
+    ],
+    "profit_buy": 130,
+    "profit_sell": 10,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9518,
+    "buy_types": [],
+    "profit_buy": 150,
+    "profit_sell": 40,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9565,
+    "buy_types": [
+      "boat"
+    ],
+    "profit_buy": 131,
+    "profit_sell": 86,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9566,
+    "buy_types": [],
+    "profit_buy": 250,
+    "profit_sell": 50,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9579,
+    "buy_types": [
+      "potion"
+    ],
+    "profit_buy": 187,
+    "profit_sell": 25,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9580,
+    "buy_types": [
+      "scroll",
+      "wand",
+      "staff"
+    ],
+    "profit_buy": 170,
+    "profit_sell": 30,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9583,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 90,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 9584,
+    "buy_types": [
+      "armor",
+      "clothing"
+    ],
+    "profit_buy": 105,
+    "profit_sell": 15,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 915,
+    "buy_types": [
+      "light",
+      "treasure",
+      "trash",
+      "container",
+      "food"
+    ],
+    "profit_buy": 120,
+    "profit_sell": 80,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 3717,
+    "buy_types": [
+      "light",
+      "container",
+      "drink_con",
+      "food"
+    ],
+    "profit_buy": 100,
+    "profit_sell": 100,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 10451,
+    "buy_types": [],
+    "profit_buy": 110,
+    "profit_sell": 75,
+    "open_hour": 0,
+    "close_hour": 23
+  },
+  {
+    "keeper": 10454,
+    "buy_types": [
+      "scroll",
+      "wand",
+      "staff",
+      "potion"
+    ],
+    "profit_buy": 225,
+    "profit_sell": 15,
+    "open_hour": 0,
+    "close_hour": 23
+  }
+]
