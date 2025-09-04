@@ -13,3 +13,4 @@
 - Clear registries before conversions to avoid leaking data between areas.
 - Store converted area JSON under `data/areas/`; name files after the source `.are`.
 - Verify converted area JSON preserves room, mob, and object counts; tests must compare against source `.are` files.
+

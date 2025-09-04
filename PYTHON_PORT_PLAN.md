@@ -31,6 +31,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 3.3 ✅ Create tests that load sample areas (e.g., Midgaard) from JSON and assert that room/mob/object counts match the original `.are` files.
     - Added a Midgaard test comparing room, mob, and object counts between `.are` and converted JSON.
 
+
 ## 4. Implement Python data models
 4.1 Create `dataclasses` in `mud/models/` mirroring the JSON schemas.
 4.2 Add serialization/deserialization helpers to read/write JSON and handle default values.
