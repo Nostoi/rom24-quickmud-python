@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shop",
+  "type": "object",
+  "required": [
+    "keeper",
+    "buy_types",
+    "profit_buy",
+    "profit_sell",
+    "open_hour",
+    "close_hour"
+  ],
+  "properties": {
+    "keeper": {"type": "integer"},
+    "buy_types": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 5,
+      "default": []
+    },
+    "profit_buy": {"type": "integer", "default": 100},
+    "profit_sell": {"type": "integer", "default": 100},
+    "open_hour": {"type": "integer", "default": 0},
+    "close_hour": {"type": "integer", "default": 23}
+  }
+}

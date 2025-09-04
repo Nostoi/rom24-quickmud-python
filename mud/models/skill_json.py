@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -9,4 +11,6 @@ class SkillJson:
     type: str
     function: str
     target: str = "victim"
+    mana_cost: int = 0
     lag: int = 0
+    messages: dict[str, str] = field(default_factory=dict)

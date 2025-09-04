@@ -1,0 +1,17 @@
+{
+  "$id": "help.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HelpEntry",
+  "type": "object",
+  "required": ["keywords", "text"],
+  "properties": {
+    "keywords": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "text": {"type": "string"},
+    "level": {"type": "integer", "minimum": 0, "default": 0}
+  },
+  "additionalProperties": false
+}

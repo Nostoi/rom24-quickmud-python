@@ -9,11 +9,15 @@
 | `world/` | World state management, movement helpers, look | `act_move.c`, `act_info.c` |
 | `loaders/` | Parse legacy area files into Python objects | `db.c`, `db2.c` |
 | `spawning/` | Reset handling and spawning of mobs/objects | `update.c` resets |
-| `models/` | Dataclasses mirroring MUD structures (rooms, mobs, objects, characters) | `merc.h` structs |
+| `models/` | Dataclasses mirroring MUD structures (rooms, mobs, objects, characters, skills, shops) | `merc.h` structs |
 | `registry.py` | Global registries for rooms, mobs, objects, areas | `db.c` tables |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
 | `account/` & `security/` | Account management and password hashing | `nanny.c`, `sha256.c` |
 | `network/` | Websocket server (new functionality) | – |
+
+- `schemas/skill.schema.json` formalizes skill and spell metadata for use with `SkillJson`.
+- `schemas/help.schema.json` captures help entry text and levels for `HelpJson`.
+- `schemas/social.schema.json` defines social command messages for `SocialJson`.
 
 ## Tests in `tests/`
 

@@ -8,9 +8,9 @@ initial porting experiments.
 
 - `constants.py` defines enums for directions, sector types, character positions,
   wear locations and object item types.
-- `room_json.py`, `object_json.py`, `character_json.py`, `area_json.py`,
-  `player_json.py`, and `skill_json.py` contain the schema dataclasses used for
-  serialized game data.
+ - `room_json.py`, `object_json.py`, `character_json.py`, `area_json.py`,
+   `player_json.py`, `skill_json.py`, `shop_json.py`, `help_json.py`, and
+   `social_json.py` contain the schema dataclasses used for serialized game data.
 - `json_io.py` offers generic helpers for loading and dumping these dataclasses to and from JSON.
 
 Legacy `area.py`, `room.py`, `mob.py`, and `obj.py` structures have been superseded and should not

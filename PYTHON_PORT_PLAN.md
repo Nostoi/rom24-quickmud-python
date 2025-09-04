@@ -22,9 +22,12 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Documented area JSON schema in `schemas/area.schema.json` covering metadata and embedded room/mob/object lists.
 2.5 ✅ Validate schemas with JSON Schema files so game data can be linted automatically.
     - Added tests using `jsonschema` to ensure each schema file is itself valid.
-2.6 Define JSON schema for **shops** including keeper vnums, trade types, profit margins, and open/close hours.
-2.7 Define JSON schema for **skills & spells** detailing names, mana costs, target types, lag, and messages.
-2.8 Define JSON schema for **help entries and socials** so player-facing text and emotes can be managed in JSON.
+2.6 ✅ Define JSON schema for **shops** including keeper vnums, trade types, profit margins, and open/close hours.
+    - Added `schemas/shop.schema.json` and matching `ShopJson` dataclass with tests validating the schema.
+2.7 ✅ Define JSON schema for **skills & spells** detailing names, mana costs, target types, lag, and messages.
+    - Added `schemas/skill.schema.json` and expanded `SkillJson` dataclass with tests validating defaults.
+2.8 ✅ Define JSON schema for **help entries and socials** so player-facing text and emotes can be managed in JSON.
+    - Added `schemas/help.schema.json` and `schemas/social.schema.json` with matching `HelpJson` and `SocialJson` dataclasses and tests.
 
 ## 3. Convert legacy data files to JSON
 3.1 ✅ Write conversion scripts in Python that parse existing `.are` files and output JSON using the schemas above.
