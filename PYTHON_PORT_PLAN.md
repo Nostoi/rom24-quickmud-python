@@ -108,3 +108,16 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 9.2 Define completion criteria for each milestone to ensure the port remains on schedule.
 
 This plan should be followed iteratively: pick a subsystem, define JSON, port logic to Python, write tests, and remove the old C code once feature parity is reached.
+
+## 10. Database integration roadmap
+As a future enhancement, migrate from JSON files to a database for scalability and richer persistence.
+
+10.1 **Assess existing schema** – review current SQLAlchemy models in `mud/db/models.py` and ensure tables cover areas, rooms, exits, mobiles, objects, accounts, and characters.
+10.2 **Select database backend** – default to SQLite for development and support PostgreSQL or another production-grade RDBMS via `DATABASE_URL` in `mud/db/session.py`.
+10.3 **Establish migrations** – adopt a migration tool (e.g., Alembic) or expand `mud/db/migrations.py` to handle schema evolution.
+10.4 **Import existing data** – create scripts to load JSON data (`data/areas/*.json`, `data/shops.json`, `data/skills.json`) into the database, preserving vnum and identifier relationships.
+10.5 **Replace file loaders** – update loaders and registries to read from the database using ORM queries, with caching layers for frequently accessed records.
+10.6 **Persist game state** – store player saves, world resets, and dynamic objects in the database with transactional safety.
+10.7 **Testing and CI** – run tests against an in-memory SQLite database and provide fixtures for database setup/teardown in the test suite.
+10.8 **Configuration and deployment** – add configuration options for database URLs, connection pooling, and credentials; update Docker and deployment scripts to initialize the database.
+10.9 **Performance and indexing** – profile query patterns, add indexes, and monitor growth to ensure the database scales with player activity.
