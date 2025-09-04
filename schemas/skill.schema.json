@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill",
+  "type": "object",
+  "required": ["name", "type", "function"],
+  "properties": {
+    "name": {"type": "string"},
+    "type": {"type": "string", "enum": ["skill", "spell"]},
+    "function": {"type": "string"},
+    "target": {"type": "string", "default": "victim"},
+    "lag": {"type": "integer", "default": 0}
+  }
+}
