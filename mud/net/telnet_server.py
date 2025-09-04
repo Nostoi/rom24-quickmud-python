@@ -5,9 +5,18 @@ from mud.world.world_state import initialize_world
 from .connection import handle_connection
 
 
-async def start_server(host: str = "0.0.0.0", port: int = 4000) -> None:
-    initialize_world(None)
-    server = await asyncio.start_server(handle_connection, host, port)
+async def create_server(
+    host: str = "0.0.0.0", port: int = 4000, area_list: str = "area/area.lst"
+) -> asyncio.AbstractServer:
+    """Return a started telnet server without blocking the loop."""
+    initialize_world(area_list)
+    return await asyncio.start_server(handle_connection, host, port)
+
+
+async def start_server(
+    host: str = "0.0.0.0", port: int = 4000, area_list: str = "area/area.lst"
+) -> None:
+    server = await create_server(host, port, area_list)
     addr = server.sockets[0].getsockname()
     print(f"Serving on {addr}")
     async with server:

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Player",
+  "type": "object",
+  "required": [
+    "name",
+    "level",
+    "hit",
+    "max_hit",
+    "mana",
+    "max_mana",
+    "move",
+    "max_move",
+    "gold",
+    "silver",
+    "exp",
+    "position",
+    "room_vnum",
+    "inventory",
+    "equipment"
+  ],
+  "properties": {
+    "name": {"type": "string"},
+    "level": {"type": "integer"},
+    "hit": {"type": "integer"},
+    "max_hit": {"type": "integer"},
+    "mana": {"type": "integer"},
+    "max_mana": {"type": "integer"},
+    "move": {"type": "integer"},
+    "max_move": {"type": "integer"},
+    "gold": {"type": "integer"},
+    "silver": {"type": "integer"},
+    "exp": {"type": "integer"},
+    "position": {"type": "integer"},
+    "room_vnum": {"type": ["integer", "null"]},
+    "inventory": {
+      "type": "array",
+      "items": {"type": "integer"},
+      "default": []
+    },
+    "equipment": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"},
+      "default": {}
+    }
+  }
+}
