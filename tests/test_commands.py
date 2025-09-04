@@ -28,3 +28,15 @@ def test_process_command_sequence():
     out4 = process_command(char, 'say hello')
     assert out4 == "You say, 'hello'"
     assert f"{char.name} says, 'hello'" in other.messages
+
+
+def test_equipment_command():
+    initialize_world('area/area.lst')
+    char = create_test_character('Tester', 3001)
+    sword = spawn_object(3022)
+    assert sword is not None
+    char.add_object(sword)
+    char.equip_object(sword, 'wield')
+    out = process_command(char, 'equipment')
+    assert 'You are using' in out
+    assert 'wield' in out

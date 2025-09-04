@@ -32,3 +32,12 @@ def do_inventory(char: Character, args: str = "") -> str:
     if not char.inventory:
         return "You are carrying nothing."
     return "You are carrying: " + ", ".join(obj.short_descr or obj.name or "object" for obj in char.inventory)
+
+
+def do_equipment(char: Character, args: str = "") -> str:
+    if not char.equipment:
+        return "You are wearing nothing."
+    parts = []
+    for slot, obj in char.equipment.items():
+        parts.append(f"{slot}: {obj.short_descr or obj.name or 'object'}")
+    return "You are using: " + ", ".join(parts)

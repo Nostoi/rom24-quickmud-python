@@ -4,8 +4,9 @@ from typing import Callable, Dict
 from mud.models.character import Character
 from .movement import do_north, do_south, do_east, do_west, do_up, do_down
 from .inspection import do_look
-from .inventory import do_get, do_drop, do_inventory
+from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say
+from .combat import do_kill
 from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
 
 CommandFunc = Callable[[Character, str], str]
@@ -21,7 +22,10 @@ COMMANDS: Dict[str, CommandFunc] = {
     "get": do_get,
     "drop": do_drop,
     "inventory": do_inventory,
+    "equipment": do_equipment,
     "say": do_say,
+    "kill": do_kill,
+    "attack": do_kill,
     "@who": cmd_who,
     "@teleport": cmd_teleport,
     "@spawn": cmd_spawn,
