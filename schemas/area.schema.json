@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Area",
+  "type": "object",
+  "required": ["name", "vnum_range", "builders", "rooms", "mobiles", "objects"],
+  "properties": {
+    "name": {"type": "string"},
+    "vnum_range": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {"type": "integer"},
+        "max": {"type": "integer"}
+      }
+    },
+    "builders": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "rooms": {
+      "type": "array",
+      "items": {"type": "object"},
+      "default": []
+    },
+    "mobiles": {
+      "type": "array",
+      "items": {"type": "object"},
+      "default": []
+    },
+    "objects": {
+      "type": "array",
+      "items": {"type": "object"},
+      "default": []
+    }
+  }
+}

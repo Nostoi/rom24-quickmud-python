@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Character",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "level",
+    "stats",
+    "skills",
+    "inventory",
+    "flags",
+    "position"
+  ],
+  "properties": {
+    "id": {"type": "integer"},
+    "name": {"type": "string"},
+    "short_description": {"type": "string"},
+    "long_description": {"type": "string"},
+    "description": {"type": "string"},
+    "level": {"type": "integer"},
+    "alignment": {"type": "integer", "default": 0},
+    "gold": {"type": "integer", "default": 0},
+    "silver": {"type": "integer", "default": 0},
+    "stats": {
+      "type": "object",
+      "required": ["str", "int", "wis", "dex", "con", "hitpoints", "mana", "move"],
+      "properties": {
+        "str": {"type": "integer"},
+        "int": {"type": "integer"},
+        "wis": {"type": "integer"},
+        "dex": {"type": "integer"},
+        "con": {"type": "integer"},
+        "hitpoints": {
+          "type": "object",
+          "required": ["current", "max"],
+          "properties": {
+            "current": {"type": "integer"},
+            "max": {"type": "integer"}
+          }
+        },
+        "mana": {
+          "type": "object",
+          "required": ["current", "max"],
+          "properties": {
+            "current": {"type": "integer"},
+            "max": {"type": "integer"}
+          }
+        },
+        "move": {
+          "type": "object",
+          "required": ["current", "max"],
+          "properties": {
+            "current": {"type": "integer"},
+            "max": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"},
+      "default": {}
+    },
+    "inventory": {
+      "type": "array",
+      "items": {"type": "integer"},
+      "default": []
+    },
+    "flags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "position": {"type": "string"}
+  }
+}
