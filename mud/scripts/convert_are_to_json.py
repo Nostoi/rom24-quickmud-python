@@ -90,6 +90,5 @@ def main():
     out_file = out_dir / f"{Path(args.input).stem}.json"
     out_file.write_text(json.dumps(data, indent=2) + "\n")
 
-
 if __name__ == "__main__":
     main()

@@ -12,3 +12,4 @@
 - Always convert `.are` files using `mud/scripts/convert_are_to_json.py`; never handcraft JSON.
 - Clear registries before conversions to avoid leaking data between areas.
 - Store converted area JSON under `data/areas/`; name files after the source `.are`.
+
