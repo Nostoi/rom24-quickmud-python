@@ -36,8 +36,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Updated converter to default to `data/areas` and committed a sample `limbo.json`.
 3.3 ✅ Create tests that load sample areas (e.g., Midgaard) from JSON and assert that room/mob/object counts match the original `.are` files.
     - Added a Midgaard test comparing room, mob, and object counts between `.are` and converted JSON.
-3.4 Convert `shops.dat`, `skills.dat`, and other auxiliary tables into their JSON counterparts under `data/`.
-3.5 Add tests ensuring converted shop, skill, help, and social data match legacy counts and key fields.
+3.4 ✅ Convert `shops.dat`, `skills.dat`, and other auxiliary tables into their JSON counterparts under `data/`.
+    - Added `mud/scripts/convert_shops_to_json.py` to extract `#SHOPS` data from area files and write `data/shops.json`.
+3.5 ✅ Add tests ensuring converted shop, skill, help, and social data match legacy counts and key fields.
+    - Added tests confirming `data/shops.json` keeper counts align with area files and verifying `skills.json` contains the expected `fireball` entry.
 
 
 ## 4. Implement Python data models

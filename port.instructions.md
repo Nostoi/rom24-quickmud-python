@@ -19,3 +19,5 @@
 - Run mypy with `--follow-imports=skip` on targeted modules to avoid unrelated type errors.
 - Ensure schema defaults mirror dataclass defaults; test instantiation to catch mismatches.
 
+- Convert `#SHOPS` sections with `convert_shops_to_json.py`; map item type numbers to `ItemType` names and skip zeros.
+- Cross-check converted table counts with source files; fail tests on mismatches.
