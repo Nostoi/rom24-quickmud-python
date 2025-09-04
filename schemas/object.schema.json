@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Object",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "item_type",
+    "flags",
+    "values",
+    "weight",
+    "cost"
+  ],
+  "properties": {
+    "id": {"type": "integer"},
+    "name": {"type": "string"},
+    "short_description": {"type": "string"},
+    "description": {"type": "string"},
+    "item_type": {"type": "string"},
+    "flags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "wear_flags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "level": {"type": "integer", "default": 0},
+    "weight": {"type": "integer"},
+    "cost": {"type": "integer"},
+    "condition": {"type": "integer", "default": 0},
+    "material": {"type": "string", "default": ""},
+    "values": {
+      "type": "array",
+      "items": {"type": "integer"},
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "affects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["location", "modifier"],
+        "properties": {
+          "location": {"type": "string"},
+          "modifier": {"type": "integer"}
+        }
+      },
+      "default": []
+    },
+    "extra_descriptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["keyword", "description"],
+        "properties": {
+          "keyword": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      },
+      "default": []
+    }
+  }
+}

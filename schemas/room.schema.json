@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Room",
+  "type": "object",
+  "required": ["id", "name", "description", "sector_type", "flags", "exits", "area"],
+  "properties": {
+    "id": {"type": "integer"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "sector_type": {"type": "string"},
+    "flags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "exits": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["to_room"],
+        "properties": {
+          "to_room": {"type": "integer"},
+          "description": {"type": "string"},
+          "keyword": {"type": "string"},
+          "flags": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "extra_descriptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["keyword", "description"],
+        "properties": {
+          "keyword": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      },
+      "default": []
+    },
+    "resets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command"],
+        "properties": {
+          "command": {"type": "string"},
+          "arg1": {"type": "integer"},
+          "arg2": {"type": "integer"},
+          "arg3": {"type": "integer"},
+          "arg4": {"type": "integer"}
+        }
+      },
+      "default": []
+    },
+    "area": {"type": "integer"}
+  }
+}

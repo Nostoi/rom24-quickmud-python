@@ -1,0 +1,14 @@
+- Use `rg` for code searches; never run `grep -R`.
+- Quote paths with spaces (e.g., `src/'QuickMUD Fixes'`).
+- Update `doc/c_module_inventory.md` whenever C modules are added or removed.
+- Always run `pytest` before committing.
+- Maintain `doc/python_module_inventory.md` when Python modules change; keep C feature mapping current.
+- Keep `doc/c_python_cross_reference.md` updated when subsystems move from C to Python.
+- Maintain JSON schemas under `schemas/`; revise them whenever data formats change.
+- Keep `schemas/character.schema.json` aligned with `char_data` structure; include new stats or flags immediately.
+- Keep `schemas/object.schema.json` aligned with `OBJ_DATA`; update wear flags and value slots when they change.
+- Keep `schemas/area.schema.json` aligned with `AREA_DATA`; capture vnum ranges and builder lists precisely.
+- Validate every JSON schema with `jsonschema` tests; update tests when schemas change.
+- Always convert `.are` files using `mud/scripts/convert_are_to_json.py`; never handcraft JSON.
+- Clear registries before conversions to avoid leaking data between areas.
+- Store converted area JSON under `data/areas/`; name files after the source `.are`.
