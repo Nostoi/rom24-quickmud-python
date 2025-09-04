@@ -11,6 +11,8 @@ def load_resets(tokenizer: BaseTokenizer, area):
         if line == 'S':
             continue
         if line == '$' or line.startswith('#'):
+            # allow outer loader to handle following sections
+            tokenizer.index -= 1
             break
         parts = line.split()
         if not parts:

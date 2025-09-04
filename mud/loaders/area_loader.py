@@ -4,6 +4,7 @@ from .room_loader import load_rooms
 from .mob_loader import load_mobiles
 from .obj_loader import load_objects
 from .reset_loader import load_resets
+from .shop_loader import load_shops
 from mud.models.area import Area
 from mud.registry import area_registry
 
@@ -12,6 +13,7 @@ SECTION_HANDLERS = {
     "#MOBILES": load_mobiles,
     "#OBJECTS": load_objects,
     "#RESETS": load_resets,
+    "#SHOPS": load_shops,
 }
 
 
