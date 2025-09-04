@@ -1,0 +1,56 @@
+import pytest
+
+from mud.models import (
+    AreaJson,
+    VnumRangeJson,
+    RoomJson,
+    ObjectJson,
+    CharacterJson,
+    StatsJson,
+    ResourceJson,
+)
+
+
+def test_area_room_instantiation():
+    area = AreaJson(name="Test Area", vnum_range=VnumRangeJson(min=1, max=100))
+    room = RoomJson(id=100, name="Test Room", description="", sector_type="inside", area=1)
+    area.rooms.append(room)
+    assert area.name == "Test Area"
+    assert area.rooms[0].name == "Test Room"
+
+
+def test_object_instantiation():
+    obj = ObjectJson(
+        id=200,
+        name="Stick",
+        description="",
+        item_type="misc",
+        values=[0, 0, 0, 0, 0],
+        weight=0,
+        cost=0,
+    )
+    assert obj.item_type == "misc"
+    assert obj.values == [0, 0, 0, 0, 0]
+
+
+def test_character_instantiation():
+    stats = StatsJson(
+        str=10,
+        int=10,
+        wis=10,
+        dex=10,
+        con=10,
+        hitpoints=ResourceJson(100, 100),
+        mana=ResourceJson(50, 50),
+        move=ResourceJson(30, 30),
+    )
+    char = CharacterJson(
+        id=1,
+        name="Hero",
+        description="",
+        level=10,
+        stats=stats,
+        position="standing",
+    )
+    assert char.level == 10
+    assert char.stats.hitpoints.max == 100
