@@ -1,0 +1,39 @@
+{
+  "name": "Limbo",
+  "vnum_range": {
+    "min": 0,
+    "max": 99
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 1,
+      "name": "The Void",
+      "description": "You are floating in nothing.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    },
+    {
+      "id": 2,
+      "name": "Limbo",
+      "description": "You are floating in a formless void, detached from all sensation of physical\nmatter, surrounded by swirling glowing light, which fades into the relative\ndarkness around you without any trace of edges or shadow.\nThere is a \"No Tipping\" notice pinned to the darkness.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 3001,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    }
+  ],
+  "mobiles": [],
+  "objects": []
+}

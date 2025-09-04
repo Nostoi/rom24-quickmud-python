@@ -77,11 +77,18 @@ def convert_area(path: str) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Convert ROM .are file to JSON")
     parser.add_argument("input", help="Path to .are file")
-    parser.add_argument("output", help="Output JSON file")
+    parser.add_argument(
+        "--out-dir",
+        default=Path("data/areas"),
+        type=Path,
+        help="Directory to write JSON files (default: data/areas)",
+    )
     args = parser.parse_args()
     data = convert_area(args.input)
-    Path(args.output).write_text(json.dumps(data, indent=2))
-
+    out_dir = args.out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_file = out_dir / f"{Path(args.input).stem}.json"
+    out_file.write_text(json.dumps(data, indent=2) + "\n")
 
 if __name__ == "__main__":
     main()
