@@ -101,8 +101,12 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## 7. Decommission C code
 7.1 ✅ As Python features reach parity, remove the corresponding C files and build steps from `src/` and the makefiles.
     - Removed obsolete `sha256.c` and `sha256.h` and scrubbed all documentation references.
-7.2 Update documentation to describe the new Python‑only architecture.
-7.3 Ensure the Docker image and deployment scripts start the Python server exclusively.
+7.2 ✅ Update documentation to describe the new Python‑only architecture.
+    - Revised README with Python engine details and added `doc/python_architecture.md`.
+7.3 ✅ Ensure the Docker image and deployment scripts start the Python server exclusively.
+    - Dockerfile runs `mud runserver` and docker-compose uses the same command so containers launch only the Python engine.
+7.4 ✅ Remove remaining C source tree now that Python covers all functionality.
+    - Deleted the entire `src/` directory and legacy makefiles, leaving a pure Python codebase.
 
 ## 8. Future enhancements
 8.1 Consider a plugin system for content or rules modifications.
