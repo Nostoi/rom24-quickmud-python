@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest>=8.0
+mypy
+ruff
+flake8
+jsonschema

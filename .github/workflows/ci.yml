@@ -7,14 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
+          check-latest: true
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
           pip install -e .
-          pip install pytest mypy ruff flake8 jsonschema
       - name: Lint
         run: |
           ruff check mud/net tests/test_telnet_server.py tests/test_ansi.py
@@ -22,4 +23,4 @@ jobs:
       - name: Type check
         run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py --follow-imports=skip
       - name: Test
-        run: pytest
+        run: pytest -q
