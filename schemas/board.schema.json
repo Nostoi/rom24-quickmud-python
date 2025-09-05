@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Board",
+  "type": "object",
+  "required": ["name", "description", "notes"],
+  "properties": {
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "notes": {
+      "type": "array",
+      "items": {"$ref": "./note.schema.json"}
+    }
+  },
+  "additionalProperties": false
+}

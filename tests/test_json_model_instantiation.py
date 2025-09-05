@@ -10,6 +10,8 @@ from mud.models import (
     SkillJson,
     HelpJson,
     SocialJson,
+    BoardJson,
+    NoteJson,
 )
 
 
@@ -92,3 +94,21 @@ def test_social_instantiation():
     social = SocialJson(name="smile", char_no_arg="You smile.")
     assert social.name == "smile"
     assert social.char_no_arg == "You smile."
+
+
+def test_note_instantiation():
+    note = NoteJson(
+        sender="Alice",
+        to="All",
+        subject="Hi",
+        text="Hello",
+        timestamp=1.0,
+    )
+    assert note.sender == "Alice"
+    assert note.subject == "Hi"
+
+
+def test_board_instantiation():
+    board = BoardJson(name="general", description="General board")
+    assert board.name == "general"
+    assert board.notes == []

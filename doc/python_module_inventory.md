@@ -15,6 +15,8 @@
 | `models/` | Dataclasses mirroring MUD structures (rooms, mobs, objects, characters, skills, shops) | `merc.h` structs |
 | `registry.py` | Global registries for rooms, mobs, objects, areas | `db.c` tables |
 | `persistence.py` | JSON save/load for characters and world | `save.c` |
+| `notes.py` | Message boards and note handling with JSON persistence | `board.c` |
+| `mobprog.py` | Mob program triggers and interpreter | `mob_prog.c` |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
 | `account/` & `security/` | Account management, login flow, password hashing | `sha256.c` |
 | `network/` | Websocket server (new functionality) | – |
@@ -22,6 +24,8 @@
 - `schemas/skill.schema.json` formalizes skill and spell metadata for use with `SkillJson`.
 - `schemas/help.schema.json` captures help entry text and levels for `HelpJson`.
 - `schemas/social.schema.json` defines social command messages for `SocialJson`.
+- `schemas/board.schema.json` and `schemas/note.schema.json` describe persistent
+  message boards and their notes.
 
 ## Tests in `tests/`
 
@@ -45,3 +49,4 @@
 | `test_shops.py` | Shop listing and transactions |
 | `test_telnet_server.py` | Telnet look command and multi-connection chat |
 | `test_ansi.py` | ROM color tokens translate to ANSI |
+| `test_mobprog.py` | Mob program trigger handling |
