@@ -13,7 +13,8 @@
 | Skills & spells | `skills.c`, `magic.c`, `magic2.c` | `mud/skills/` | JSON-driven registry dispatches skill handlers |
 | Character advancement | `update.c`, `act_info.c` | `mud/advancement.py`, `mud/commands/advancement.py` | Python handles experience, leveling, practice, and training |
 | Shops & economy | `healer.c`, shop logic in other files | `mud/commands/shop.py`, `mud/loaders/shop_loader.py` | Python lists, buys, and sells items using profit margins |
+| Message boards & notes | `board.c` | `mud/notes.py`, `mud/commands/notes.py` | Notes persisted to JSON and accessed via Python commands |
 | OLC / Builders | `olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c` | – | Not yet ported |
-| Mob programs | `mob_prog.c`, `mob_cmds.c` | – | Not yet ported |
+| Mob programs | `mob_prog.c`, `mob_cmds.c` | `mud/mobprog.py` | Basic trigger handling and interpreter |
 | InterMUD | `imc.c` | – | Not yet ported |
 

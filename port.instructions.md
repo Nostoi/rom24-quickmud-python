@@ -41,3 +41,9 @@
 - In telnet tests with multiple clients, wait for prompts to flush broadcast messages.
 - Route global channel messages through `broadcast_global`; respect `muted_channels` and block senders with `banned_channels`.
 - Clear `character_registry` in tests that inspect channel broadcasts to avoid cross-test contamination.
+- Persist boards to `data/boards` using atomic writes and `os.replace`; never write directly to the final JSON file.
+- Override `notes.BOARDS_DIR` in tests to isolate board data and reload `board_registry` between cases.
+- Register new commands like `note` and `board` in the dispatcher; keep the command table authoritative.
+- Represent mobprog triggers with `IntFlag` in `mobprog.py`; match trigger bits with `MobProgram.trig_type`.
+- `run_prog` must filter by trigger and phrase and return executed actions for tests.
+- Interpreter supports only `say` and `emote`; ignore other commands for now.

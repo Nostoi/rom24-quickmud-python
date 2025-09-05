@@ -75,8 +75,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Removed `comm.c`, `nanny.c`, and `telnet.h`; telnet server now translates ROM color codes, handles prompts and login flow, and passes multi‑client tests with CI linting.
 5.9 ✅ **Player communication & channels** – port say/tell/shout and global channel handling with mute/ban support.
     - Added tell and shout commands with global broadcast respecting per-player mutes and bans, covered by communication tests.
-5.10 **Message boards & notes** – migrate board system to Python with persistent storage.
-5.11 **Mob programs & scripting** – implement mobprog triggers and interpreter in Python.
+5.10 ✅ **Message boards & notes** – migrate board system to Python with persistent storage.
+    - Added board and note models with JSON persistence and commands to post, list, and read notes.
+5.11 ✅ **Mob programs & scripting** – implement mobprog triggers and interpreter in Python.
+    - Added `mud/mobprog.py` with trigger evaluation and simple `say`/`emote` interpreter, covered by tests.
 5.12 **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
 5.13 **Game update loop** – implement periodic tick handler for regen, weather, and timed events.
 5.14 **Account system & login flow** – port character creation (`nanny`) and account management.

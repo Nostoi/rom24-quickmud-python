@@ -11,6 +11,8 @@ from .shop import Shop
 from .skill import Skill
 from .help import HelpEntry
 from .social import Social
+from .board import Board
+from .note import Note
 from .constants import (
     Direction,
     Sector,
@@ -39,6 +41,8 @@ from .skill_json import SkillJson
 from .shop_json import ShopJson
 from .help_json import HelpJson
 from .social_json import SocialJson
+from .board_json import BoardJson
+from .note_json import NoteJson
 from .json_io import (
     JsonDataclass,
     dataclass_from_dict,
@@ -65,6 +69,8 @@ __all__ = [
     "Skill",
     "HelpEntry",
     "Social",
+    "Board",
+    "Note",
     # JSON schema-aligned dataclasses
     "AreaJson",
     "VnumRangeJson",
@@ -83,6 +89,8 @@ __all__ = [
     "ShopJson",
     "HelpJson",
     "SocialJson",
+    "BoardJson",
+    "NoteJson",
     "JsonDataclass",
     "dataclass_from_dict",
     "dataclass_to_dict",
