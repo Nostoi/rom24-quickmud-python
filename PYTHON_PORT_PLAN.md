@@ -79,10 +79,14 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Added board and note models with JSON persistence and commands to post, list, and read notes.
 5.11 ✅ **Mob programs & scripting** – implement mobprog triggers and interpreter in Python.
     - Added `mud/mobprog.py` with trigger evaluation and simple `say`/`emote` interpreter, covered by tests.
-5.12 **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
-5.13 **Game update loop** – implement periodic tick handler for regen, weather, and timed events.
-5.14 **Account system & login flow** – port character creation (`nanny`) and account management.
-5.15 **Security** – replace SHA256 password utilities and audit authentication paths.
+5.12 ✅ **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
+    - Added admin-only `@redit` command for live room name and description editing with unit tests.
+5.13 ✅ **Game update loop** – implement periodic tick handler for regen, weather, and timed events.
+    - Added Python tick handler that regenerates characters, cycles weather, runs scheduled callbacks, and invokes area resets.
+5.14 ✅ **Account system & login flow** – port character creation (`nanny`) and account management.
+    - Implemented password-protected account login with automatic creation and character selection in the telnet server.
+5.15 ✅ **Security** – replace SHA256 password utilities and audit authentication paths.
+    - Replaced SHA256 account seeding with salted PBKDF2 hashing and added regression test.
 
 ## 6. Testing and validation
 6.1 Expand `pytest` suite to cover each subsystem as it is ported.

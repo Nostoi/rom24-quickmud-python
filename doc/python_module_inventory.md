@@ -4,11 +4,12 @@
 
 | Module | Purpose | C Feature Equivalent |
 | --- | --- | --- |
-| `net/` & `server.py` | Async telnet server, ANSI color translation, connection handling | replaces `comm.c` and `nanny.c` |
-| `commands/` | Command dispatcher and basic commands (movement, inventory, communication with channels, admin, shops) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c`, shop code |
+| `net/` & `server.py` | Async telnet server, ANSI color translation, account login & character selection | replaces `comm.c` and `nanny.c` |
+| `commands/` | Command dispatcher and basic commands (movement, inventory, communication with channels, admin, shops, building) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c`, shop code |
 | `world/` | World state management, movement helpers, look | `act_move.c`, `act_info.c` |
 | `loaders/` | Parse legacy area files into Python objects | `db.c`, `db2.c` |
 | `spawning/` | Reset handling and spawning of mobs/objects | `update.c` resets |
+| `game_loop.py` | Tick handler for regen, weather, and timed events | `update.c` main loop |
 | `combat/` | Basic melee resolution and combat helpers | `fight.c` |
 | `skills/` | Skill registry and spell handlers | `skills.c`, `magic.c` |
 | `advancement.py` | Experience gain, leveling, practice/train | `update.c`, `act_info.c` |

@@ -2,6 +2,13 @@ import asyncio
 from contextlib import suppress
 
 from mud.net.telnet_server import create_server
+from mud.db.models import Base
+from mud.db.session import engine
+
+
+def setup_module(module):
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
 
 
 def test_telnet_server_handles_look_command():
@@ -11,9 +18,14 @@ def test_telnet_server_handles_look_command():
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
-            # greeting
             assert b"Welcome" in await reader.readline()
-            await reader.readline()  # name prompt
+            await reader.readuntil(b"Account: ")
+            writer.write(b"Tester\n")
+            await writer.drain()
+            await reader.readuntil(b"Password: ")
+            writer.write(b"pass\n")
+            await writer.drain()
+            await reader.readuntil(b"Character: ")
             writer.write(b"Tester\n")
             await writer.drain()
             await reader.readuntil(b"> ")
@@ -48,13 +60,25 @@ def test_telnet_server_handles_multiple_connections():
             r1, w1 = await asyncio.open_connection(host, port)
             r2, w2 = await asyncio.open_connection(host, port)
 
-            # greetings and name prompts
             await r1.readline()
-            await r1.readline()
+            await r1.readuntil(b"Account: ")
             w1.write(b"Alice\n")
             await w1.drain()
+            await r1.readuntil(b"Password: ")
+            w1.write(b"pw\n")
+            await w1.drain()
+            await r1.readuntil(b"Character: ")
+            w1.write(b"Alice\n")
+            await w1.drain()
+
             await r2.readline()
-            await r2.readline()
+            await r2.readuntil(b"Account: ")
+            w2.write(b"Bob\n")
+            await w2.drain()
+            await r2.readuntil(b"Password: ")
+            w2.write(b"pw\n")
+            await w2.drain()
+            await r2.readuntil(b"Character: ")
             w2.write(b"Bob\n")
             await w2.drain()
 

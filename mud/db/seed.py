@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import hashlib
-
 from mud.db.session import SessionLocal
 from mud.db.models import PlayerAccount, Character
+from mud.security.hash_utils import hash_password
 
 
 def create_test_account():
@@ -13,10 +12,16 @@ def create_test_account():
         return
     account = PlayerAccount(
         username="admin",
-        password_hash=hashlib.sha256(b"admin").hexdigest(),
+        password_hash=hash_password("admin"),
         is_admin=True,
     )
-    char = Character(name="Testman", level=1, hp=100, room_vnum=3001, player=account)
+    char = Character(
+        name="Testman",
+        level=1,
+        hp=100,
+        room_vnum=3001,
+        player=account,
+    )
     session.add(account)
     session.add(char)
     session.commit()
