@@ -8,6 +8,35 @@ The legacy C engine has been fully replaced by a pure Python 3 codebase.
 All game logic now lives in the `mud/` package and game data is loaded
 from JSON files under `data/`.
 
+## Installation
+
+### Users
+
+```bash
+pip install quickmud
+```
+
+Run the server with:
+
+```bash
+mud runserver
+```
+
+### Developers
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -e .[dev]
+```
+
+Run tests with:
+
+```bash
+pytest
+```
+
+
 ## Python Architecture
 
 Game systems are implemented in Python modules:
