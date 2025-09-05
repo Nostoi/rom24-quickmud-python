@@ -1,0 +1,70 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Callable, List
+
+from mud.models.character import Character, character_registry
+from mud.skills.registry import skill_registry
+from mud.spawning.reset_handler import reset_tick
+
+
+@dataclass
+class WeatherState:
+    """Very small placeholder for global weather."""
+    sky: str = "sunny"
+
+
+weather = WeatherState()
+
+
+@dataclass
+class TimedEvent:
+    ticks: int
+    callback: Callable[[], None]
+
+
+events: List[TimedEvent] = []
+
+
+def schedule_event(ticks: int, callback: Callable[[], None]) -> None:
+    """Schedule a callback to run after a number of ticks."""
+    events.append(TimedEvent(ticks, callback))
+
+
+def event_tick() -> None:
+    """Advance timers and fire ready callbacks."""
+    for ev in events[:]:
+        ev.ticks -= 1
+        if ev.ticks <= 0:
+            ev.callback()
+            events.remove(ev)
+
+
+def regen_character(ch: Character) -> None:
+    """Apply a single tick of regeneration to a character."""
+    ch.hit = min(ch.max_hit, ch.hit + 1)
+    ch.mana = min(ch.max_mana, ch.mana + 1)
+    ch.move = min(ch.max_move, ch.move + 1)
+    skill_registry.tick(ch)
+
+
+def regen_tick() -> None:
+    for ch in list(character_registry):
+        regen_character(ch)
+
+
+_WEATHER_STATES = ["sunny", "cloudy", "rainy"]
+
+
+def weather_tick() -> None:
+    """Cycle through simple weather states."""
+    index = _WEATHER_STATES.index(weather.sky)
+    weather.sky = _WEATHER_STATES[(index + 1) % len(_WEATHER_STATES)]
+
+
+def game_tick() -> None:
+    """Run a full game tick: regen, weather, timed events, and resets."""
+    regen_tick()
+    weather_tick()
+    event_tick()
+    reset_tick()

@@ -29,7 +29,7 @@ def test_inventory_and_equipment_persistence(tmp_path):
 
     save_character(char)
 
-    loaded = load_character(char.name, char.name)
+    loaded = load_character('tester', char.name)
     assert loaded is not None
     assert any(obj.prototype.vnum == 3022 for obj in loaded.inventory)
     assert loaded.equipment['head'].prototype.vnum == 3356

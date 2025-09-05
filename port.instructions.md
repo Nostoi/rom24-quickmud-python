@@ -47,3 +47,11 @@
 - Represent mobprog triggers with `IntFlag` in `mobprog.py`; match trigger bits with `MobProgram.trig_type`.
 - `run_prog` must filter by trigger and phrase and return executed actions for tests.
 - Interpreter supports only `say` and `emote`; ignore other commands for now.
+- Put OLC commands in `commands/build.py`; guard them as admin-only and return usage on bad args.
+- Verify `@redit` updates `Room` fields in-place via dispatcher-driven tests.
+- Record new modules in `doc/python_module_inventory.md` and update cross-reference docs.
+- Game tick must regen characters, cycle weather, fire timers, then run resets.
+ - Filter character loads by account username; never allow cross-account character access.
+- Prompt for account then password; auto-create missing accounts with supplied password in tests.
+- Reset DB tables before telnet login tests to isolate accounts.
+- Seed accounts must hash passwords with `hash_password`; never use `hashlib` directly.
