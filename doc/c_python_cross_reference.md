@@ -9,7 +9,7 @@
 | Game update loop | `update.c` (regen, weather, timers) | `mud/game_loop.py` | Regen, simple weather cycling, and timed events handled in Python |
 | Data models | `merc.h` structs | `mud/models/` | Reset logic now uses schema dataclasses instead of `merc.h` structs; runtime dataclasses added for shops, skills, helps, socials |
 | Persistence | `save.c` | `mud/persistence.py`, `mud/db/` | Characters saved to JSON with atomic file replacement |
-| Accounts & security | `sha256.c` | `mud/account/`, `mud/security/`, `mud/net/connection.py` | Python handles account creation, hashing, login flow, and character selection |
+| Accounts & security | (former `sha256.c`, now removed) | `mud/account/`, `mud/security/`, `mud/net/connection.py` | Python handles account creation, hashing, login flow, and character selection |
 | Combat engine | `fight.c` | `mud/combat/` | Python engine resolves hit/miss rolls and death cleanup |
 | Skills & spells | `skills.c`, `magic.c`, `magic2.c` | `mud/skills/` | JSON-driven registry dispatches skill handlers |
 | Character advancement | `update.c`, `act_info.c` | `mud/advancement.py`, `mud/commands/advancement.py` | Python handles experience, leveling, practice, and training |
