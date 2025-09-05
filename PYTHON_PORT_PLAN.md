@@ -79,19 +79,29 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Added board and note models with JSON persistence and commands to post, list, and read notes.
 5.11 ✅ **Mob programs & scripting** – implement mobprog triggers and interpreter in Python.
     - Added `mud/mobprog.py` with trigger evaluation and simple `say`/`emote` interpreter, covered by tests.
-5.12 **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
-5.13 **Game update loop** – implement periodic tick handler for regen, weather, and timed events.
-5.14 **Account system & login flow** – port character creation (`nanny`) and account management.
-5.15 **Security** – replace SHA256 password utilities and audit authentication paths.
+5.12 ✅ **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
+    - Added admin-only `@setroom`, `@setobj`, and `@setmob` commands to modify room data and mob/object prototypes with tests validating edits.
+5.13 ✅ **Game update loop** – implement periodic tick handler for regen, weather, and timed events.
+    - Added `update_tick` for regeneration, weather cycling, timed events, and area resets with tests.
+5.14 ✅ **Account system & login flow** – port character creation (`nanny`) and account management.
+    - Telnet connection now prompts for username/password and creates/selects characters.
+    - Added tests exercising account creation and login flow.
+5.15 ✅ **Security** – replace SHA256 password utilities and audit authentication paths.
+    - Replaced custom PBKDF2 code with bcrypt hashing, updated seed data and tests, and verified login uses secure checks.
 
 ## 6. Testing and validation
-6.1 Expand `pytest` suite to cover each subsystem as it is ported.
-6.2 Add integration tests that run a small world, execute a scripted player session, and verify outputs.
-6.3 Use CI to run tests and static analysis (ruff/flake8, mypy) on every commit.
-6.4 Measure code coverage and enforce minimum thresholds in CI.
+6.1 ✅ Expand `pytest` suite to cover each subsystem as it is ported.
+    - Tests now exercise world loading, command dispatch, combat, skills, advancement, shops, persistence, networking, communication, boards, mob programs, online creation, update loop, login flow, and security.
+6.2 ✅ Add integration tests that run a small world, execute a scripted player session, and verify outputs.
+    - Added scripted telnet session test covering login, movement, and chat.
+6.3 ✅ Use CI to run tests and static analysis (ruff/flake8, mypy) on every commit.
+    - GitHub workflow lints, type-checks, and tests core modules and their suites on each push or PR.
+6.4 ✅ Measure code coverage and enforce minimum thresholds in CI.
+    - CI runs pytest with coverage and fails if overall coverage drops below 80%.
 
 ## 7. Decommission C code
-7.1 As Python features reach parity, remove the corresponding C files and build steps from `src/` and the makefiles.
+7.1 ✅ As Python features reach parity, remove the corresponding C files and build steps from `src/` and the makefiles.
+    - Deleted the entire legacy `src/` directory and its makefiles, leaving Python as the sole codebase.
 7.2 Update documentation to describe the new Python‑only architecture.
 7.3 Ensure the Docker image and deployment scripts start the Python server exclusively.
 

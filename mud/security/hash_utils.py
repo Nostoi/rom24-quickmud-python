@@ -1,20 +1,15 @@
-import hashlib
-import os
+import bcrypt  # type: ignore[import-not-found]
 
 
 def hash_password(password: str) -> str:
-    """Return a salted hash for the given password."""
-    salt = os.urandom(16)
-    hashed = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
-    return salt.hex() + ":" + hashed.hex()
+    """Return a bcrypt hash for the given password."""
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt).decode()
 
 
 def verify_password(password: str, stored_hash: str) -> bool:
-    """Check password against the stored ``salt:hash`` string."""
+    """Validate ``password`` against ``stored_hash``."""
     try:
-        salt_hex, hash_hex = stored_hash.split(":")
+        return bcrypt.checkpw(password.encode(), stored_hash.encode())
     except ValueError:
         return False
-    salt = bytes.fromhex(salt_hex)
-    new_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
-    return new_hash.hex() == hash_hex

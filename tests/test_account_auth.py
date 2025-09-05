@@ -1,4 +1,4 @@
-from mud.db.models import Base, PlayerAccount, Character
+from mud.db.models import Base, PlayerAccount
 from mud.db.session import engine, SessionLocal
 from mud.account.account_service import (
     create_account,
@@ -25,7 +25,7 @@ def test_account_create_and_login():
     # check hash format
     session = SessionLocal()
     db_acc = session.query(PlayerAccount).filter_by(username="alice").first()
-    assert db_acc and ":" in db_acc.password_hash
+    assert db_acc and db_acc.password_hash.startswith("$2")
     assert verify_password("secret", db_acc.password_hash)
     session.close()
 

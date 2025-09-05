@@ -14,12 +14,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install pytest mypy ruff flake8 jsonschema
+          pip install pytest pytest-cov mypy ruff flake8 jsonschema bcrypt
       - name: Lint
         run: |
-          ruff check mud/net tests/test_telnet_server.py tests/test_ansi.py
-          flake8 mud/net/ansi.py mud/net/protocol.py tests/test_telnet_server.py tests/test_ansi.py
+          ruff check mud/net mud/commands/dispatcher.py mud/commands/olc.py mud/update.py mud/security/hash_utils.py mud/account/account_service.py tests/test_telnet_server.py tests/test_ansi.py tests/test_login_flow.py tests/test_update_loop.py tests/test_olc.py tests/test_scripted_session.py tests/test_hash_utils.py tests/test_account_auth.py
+          flake8 mud/net mud/commands/dispatcher.py mud/commands/olc.py mud/update.py mud/security/hash_utils.py mud/account/account_service.py tests/test_telnet_server.py tests/test_ansi.py tests/test_login_flow.py tests/test_update_loop.py tests/test_olc.py tests/test_scripted_session.py tests/test_hash_utils.py tests/test_account_auth.py
       - name: Type check
-        run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py --follow-imports=skip
-      - name: Test
-        run: pytest
+        run: |
+          mypy --follow-imports=skip mud/net/connection.py mud/commands/dispatcher.py mud/commands/olc.py mud/update.py mud/security/hash_utils.py mud/account/account_service.py tests/test_telnet_server.py tests/test_ansi.py tests/test_login_flow.py tests/test_update_loop.py tests/test_olc.py tests/test_scripted_session.py tests/test_hash_utils.py tests/test_account_auth.py
+      - name: Test with coverage
+        run: |
+          pytest --cov=mud --cov-report=term --cov-fail-under=80 -k "not scripted_session"
+          pytest tests/test_scripted_session.py

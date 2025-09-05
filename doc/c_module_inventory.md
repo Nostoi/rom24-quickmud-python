@@ -1,5 +1,8 @@
 # C Module Inventory
 
+The legacy `src/` tree has been removed. The table below is retained solely for
+historical reference.
+
 | Module | Responsibility |
 | --- | --- |
 | act_enter.c | Enter and exit actions, gate commands |

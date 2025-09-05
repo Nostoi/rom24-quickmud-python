@@ -47,3 +47,11 @@
 - Represent mobprog triggers with `IntFlag` in `mobprog.py`; match trigger bits with `MobProgram.trig_type`.
 - `run_prog` must filter by trigger and phrase and return executed actions for tests.
 - Interpreter supports only `say` and `emote`; ignore other commands for now.
+- Mark OLC commands admin_only and parse args with shlex.split to handle spaces.
+- Central update_tick must call regen_tick, weather_tick, event_tick, and reset_tick every loop.
+- Login handshake must ask for username, password, then char name; reject unknown chars.
+- Hash passwords with bcrypt; never store raw or SHA hashes.
+- Wait for '> ' prompt after each telnet command in scripted sessions; never read partial output.
+- CI must lint and type-check core modules with ruff, flake8, and mypy, and run pytest; install bcrypt and jsonschema in workflows.
+- Enforce at least 80% coverage in CI using `pytest --cov`; skip `test_scripted_session.py` during coverage and run it separately.
+- Purge the legacy `src/` tree and makefiles; never reintroduce C sources.

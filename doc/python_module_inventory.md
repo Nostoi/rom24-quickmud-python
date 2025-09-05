@@ -9,6 +9,7 @@
 | `world/` | World state management, movement helpers, look | `act_move.c`, `act_info.c` |
 | `loaders/` | Parse legacy area files into Python objects | `db.c`, `db2.c` |
 | `spawning/` | Reset handling and spawning of mobs/objects | `update.c` resets |
+| `update.py` | Periodic tick handler for regen, weather, events, and resets | `update.c` |
 | `combat/` | Basic melee resolution and combat helpers | `fight.c` |
 | `skills/` | Skill registry and spell handlers | `skills.c`, `magic.c` |
 | `advancement.py` | Experience gain, leveling, practice/train | `update.c`, `act_info.c` |
@@ -18,7 +19,7 @@
 | `notes.py` | Message boards and note handling with JSON persistence | `board.c` |
 | `mobprog.py` | Mob program triggers and interpreter | `mob_prog.c` |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
-| `account/` & `security/` | Account management, login flow, password hashing | `sha256.c` |
+| `account/` & `security/` | Account management, login flow, bcrypt password hashing | `sha256.c` |
 | `network/` | Websocket server (new functionality) | – |
 
 - `schemas/skill.schema.json` formalizes skill and spell metadata for use with `SkillJson`.
@@ -37,6 +38,7 @@
 | `test_spawning.py` | Reset spawning logic |
 | `test_load_midgaard.py` | Area file loading |
 | `test_account_auth.py` | Account creation and authentication |
+| `test_hash_utils.py` | bcrypt password hashing |
 | `test_inventory_persistence.py` | Saving/loading inventories |
 | `test_agent_interface.py` | AI agent command interface |
 | `test_model_instantiation.py` | Dataclass construction |
@@ -50,3 +52,5 @@
 | `test_telnet_server.py` | Telnet look command and multi-connection chat |
 | `test_ansi.py` | ROM color tokens translate to ANSI |
 | `test_mobprog.py` | Mob program trigger handling |
+| `test_update_loop.py` | Game tick regeneration, weather cycling, timed events, and resets |
+| `test_login_flow.py` | Account login and character creation via telnet |

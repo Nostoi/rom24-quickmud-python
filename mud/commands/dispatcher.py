@@ -13,6 +13,7 @@ from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
 from .shop import do_list, do_buy, do_sell
 from .advancement import do_practice, do_train
 from .notes import do_board, do_note
+from .olc import cmd_setroom, cmd_setobj, cmd_setmob
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -51,6 +52,9 @@ COMMANDS: List[Command] = [
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
+    Command("@setroom", cmd_setroom, admin_only=True),
+    Command("@setobj", cmd_setobj, admin_only=True),
+    Command("@setmob", cmd_setmob, admin_only=True),
 ]
 
 
