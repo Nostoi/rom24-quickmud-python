@@ -1,3 +1,6 @@
+NOTE: QuickMUD now runs entirely on Python. The details below describe the
+original Merc/ROM C source and are kept only for historical reference.
+
 Merc Release 2.1
 Sunday 01 August 1993
 

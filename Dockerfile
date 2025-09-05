@@ -19,5 +19,6 @@ COPY . .
 # package directory, so we provide our own setup.py.
 COPY setup.py ./
 RUN pip install -e .
+EXPOSE 5000
 
-CMD ["mud", "socketserver"]
+CMD ["mud", "runserver"]

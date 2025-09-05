@@ -60,3 +60,6 @@
 - Add new modules to CI lint, type, and test steps immediately; keep .github/workflows/ci.yml lists current.
 - Run pytest with coverage across the full suite; never exclude tests and enforce `--cov-fail-under=80` in CI.
 - Delete obsolete C modules as soon as Python replaces them; purge docs and build scripts.
+- Purge obsolete C documentation; mark historical files and highlight Python-only architecture in README.
+- Docker images must launch the Python server with `mud runserver`; never reference the old `avinson/rom` C binary.
+- Kill the entire src/ tree; never commit C code again.

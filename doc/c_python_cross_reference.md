@@ -1,11 +1,12 @@
 # C/Python Cross-Reference
+All listed C modules have been removed; the table remains for historical reference.
 
 | System | C Modules | Python Modules | Status |
 | --- | --- | --- | --- |
 | Networking loop | – | `mud/net/`, `mud/server.py` | C networking code removed; Python telnet server handles login, prompts, and ANSI |
 | Command interpreter & basic commands | `interp.c`, `act_move.c`, `act_obj.c`, `act_wiz.c` | `mud/commands/` | Python dispatcher covers movement, communication (say/tell/shout with channel mute/ban), inventory, admin; supports abbreviations & permission checks |
-| World loading | `db.c`, `db2.c` | `mud/loaders/`, `mud/registry.py` | Python loaders parse areas into world registry; C loader still serves legacy runtime |
-| Reset/spawning | `update.c` (resets) | `mud/spawning/` | Python scheduler clears and repopulates areas; C update loop unused in tests |
+| World loading | `db.c`, `db2.c` | `mud/loaders/`, `mud/registry.py` | Python loaders parse areas into the world registry; C loader removed |
+| Reset/spawning | `update.c` (resets) | `mud/spawning/` | Python scheduler clears and repopulates areas; C update loop removed |
 | Game update loop | `update.c` (regen, weather, timers) | `mud/game_loop.py` | Regen, simple weather cycling, and timed events handled in Python |
 | Data models | `merc.h` structs | `mud/models/` | Reset logic now uses schema dataclasses instead of `merc.h` structs; runtime dataclasses added for shops, skills, helps, socials |
 | Persistence | `save.c` | `mud/persistence.py`, `mud/db/` | Characters saved to JSON with atomic file replacement |
@@ -17,5 +18,4 @@
 | Message boards & notes | `board.c` | `mud/notes.py`, `mud/commands/notes.py` | Notes persisted to JSON and accessed via Python commands |
 | OLC / Builders | `olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c` | `mud/commands/build.py` | Basic `@redit` room editing available |
 | Mob programs | `mob_prog.c`, `mob_cmds.c` | `mud/mobprog.py` | Basic trigger handling and interpreter |
-| InterMUD | `imc.c` | – | Not yet ported |
-
+| InterMUD | `imc.c` | – | C subsystem removed; no Python implementation yet |
