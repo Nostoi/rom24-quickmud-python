@@ -36,3 +36,8 @@
 - Practice and train commands must consume sessions and validate targets.
 - Shop prices must use `shop.profit_buy`/`shop.profit_sell`; never charge raw object cost.
 - Write player saves atomically: dump to a temp file and `os.replace`.
+- Strip `comm.c`, `nanny.c`, and `telnet.h` once networking moves to Python; update inventories and cross-reference docs immediately.
+- Translate ROM color tokens with `translate_ansi` before sending to clients; never emit raw `{` codes.
+- In telnet tests with multiple clients, wait for prompts to flush broadcast messages.
+- Route global channel messages through `broadcast_global`; respect `muted_channels` and block senders with `banned_channels`.
+- Clear `character_registry` in tests that inspect channel broadcasts to avoid cross-test contamination.

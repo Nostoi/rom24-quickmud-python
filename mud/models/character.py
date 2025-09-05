@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from mud.models.room import Room
     from mud.db.models import Character as DBCharacter
 
+
 @dataclass
 class PCData:
     """Subset of PC_DATA from merc.h"""
@@ -22,6 +23,7 @@ class PCData:
     condition: List[int] = field(default_factory=lambda: [0] * 4)
     points: int = 0
     security: int = 0
+
 
 @dataclass
 class Character:
@@ -78,6 +80,8 @@ class Character:
     messages: List[str] = field(default_factory=list)
     connection: Optional[object] = None
     is_admin: bool = False
+    muted_channels: set[str] = field(default_factory=set)
+    banned_channels: set[str] = field(default_factory=set)
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"

@@ -2,7 +2,6 @@
 
 | Module | Responsibility |
 | --- | --- |
-| act_comm.c | Player communication commands (say, shout, channels) |
 | act_enter.c | Enter and exit actions, gate commands |
 | act_info.c | Information commands like look, score, help |
 | act_move.c | Movement commands (north, south, flee) |
@@ -12,7 +11,6 @@
 | ban.c | Site and player banning |
 | bit.c | Bit and flag manipulation helpers |
 | board.c | In-game message boards and notes |
-| comm.c | Network I/O and main game loop |
 | const.c | Global constant tables |
 | db.c | World database loading, area resets |
 | db2.c | Additional world loading helpers |
@@ -31,7 +29,6 @@
 | mob_cmds.c | Mob command interpreter |
 | mob_prog.c | Mobile program scripting engine |
 | music.c | Song and music support |
-| nanny.c | Connection and login state machine |
 | olc.c | On-line creation core |
 | olc_act.c | OLC action handlers |
 | olc_mpcode.c | OLC mob program code editor |

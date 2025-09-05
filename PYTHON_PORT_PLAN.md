@@ -71,10 +71,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Shop commands list, buy, and sell with profit margins and buy-type restrictions.
 5.7 ✅ **Persistence** – replace C save files with JSON; implement load/save for players and world state.
     - Characters saved atomically to JSON with inventories and equipment; world loader restores them into rooms.
-5.8 **Networking** – use existing async telnet server; gradually remove any remaining C networking code.
-    - Integrate login flow, prompt handling, and ANSI support.
-    - Add tests for multiple simultaneous connections.
-5.9 **Player communication & channels** – port say/tell/shout and global channel handling with mute/ban support.
+5.8 ✅ **Networking** – use existing async telnet server; gradually remove any remaining C networking code.
+    - Removed `comm.c`, `nanny.c`, and `telnet.h`; telnet server now translates ROM color codes, handles prompts and login flow, and passes multi‑client tests with CI linting.
+5.9 ✅ **Player communication & channels** – port say/tell/shout and global channel handling with mute/ban support.
+    - Added tell and shout commands with global broadcast respecting per-player mutes and bans, covered by communication tests.
 5.10 **Message boards & notes** – migrate board system to Python with persistent storage.
 5.11 **Mob programs & scripting** – implement mobprog triggers and interpreter in Python.
 5.12 **Online creation (OLC)** – port building commands to edit rooms, mobs, and objects in-game.
