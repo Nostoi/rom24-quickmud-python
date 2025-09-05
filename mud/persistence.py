@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
+import os
 
 from mud.models.character import Character, character_registry
 from mud.models.json_io import dump_dataclass, load_dataclass
@@ -54,8 +55,13 @@ def save_character(char: Character) -> None:
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
     )
-    with (PLAYERS_DIR / f"{char.name.lower()}.json").open("w") as f:
+    path = PLAYERS_DIR / f"{char.name.lower()}.json"
+    tmp_path = path.with_suffix(".tmp")
+    with tmp_path.open("w") as f:
         dump_dataclass(data, f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_path, path)
 
 
 def load_character(name: str) -> Optional[Character]:
@@ -80,7 +86,9 @@ def load_character(name: str) -> Optional[Character]:
         position=data.position,
     )
     if data.room_vnum is not None:
-        char.room = room_registry.get(data.room_vnum)
+        room = room_registry.get(data.room_vnum)
+        if room:
+            room.add_character(char)
     for vnum in data.inventory:
         obj = spawn_object(vnum)
         if obj:
@@ -89,6 +97,7 @@ def load_character(name: str) -> Optional[Character]:
         obj = spawn_object(vnum)
         if obj:
             char.equip_object(obj, slot)
+    character_registry.append(char)
     return char
 
 

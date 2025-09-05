@@ -1,5 +1,5 @@
-from mud.models.room import Reset
 from .base_loader import BaseTokenizer
+from mud.models.room_json import ResetJson
 
 
 def load_resets(tokenizer: BaseTokenizer, area):
@@ -25,5 +25,5 @@ def load_resets(tokenizer: BaseTokenizer, area):
         # pad to four integers
         while len(nums) < 4:
             nums.append(0)
-        reset = Reset(command=cmd, arg1=nums[0], arg2=nums[1], arg3=nums[2], arg4=nums[3])
+        reset = ResetJson(command=cmd, arg1=nums[0], arg2=nums[1], arg3=nums[2], arg4=nums[3])
         area.resets.append(reset)

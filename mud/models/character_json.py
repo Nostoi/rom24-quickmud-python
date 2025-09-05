@@ -2,30 +2,33 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
+import builtins
+
+from .json_io import JsonDataclass
 
 
 @dataclass
-class ResourceJson:
+class ResourceJson(JsonDataclass):
     """Track current and maximum resource values."""
     current: int
     max: int
 
 
 @dataclass
-class StatsJson:
+class StatsJson(JsonDataclass):
     """Primary stats and pooled resources."""
     str: int
     int: int
-    wis: int
-    dex: int
-    con: int
+    wis: builtins.int
+    dex: builtins.int
+    con: builtins.int
     hitpoints: ResourceJson
     mana: ResourceJson
     move: ResourceJson
 
 
 @dataclass
-class CharacterJson:
+class CharacterJson(JsonDataclass):
     """Character record matching ``schemas/character.schema.json``."""
     id: int
     name: str

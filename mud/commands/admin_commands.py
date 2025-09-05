@@ -2,10 +2,8 @@ from mud.models.character import Character
 from mud.registry import room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.net.session import SESSIONS
-from mud.commands.decorators import admin_only
 
 
-@admin_only
 def cmd_who(char: Character, args: str) -> str:
     lines = ["Online Players:"]
     for sess in SESSIONS.values():
@@ -15,7 +13,6 @@ def cmd_who(char: Character, args: str) -> str:
     return "\n".join(lines)
 
 
-@admin_only
 def cmd_teleport(char: Character, args: str) -> str:
     if not args.isdigit() or int(args) not in room_registry:
         return "Invalid room."
@@ -26,7 +23,6 @@ def cmd_teleport(char: Character, args: str) -> str:
     return f"Teleported to room {args}"
 
 
-@admin_only
 def cmd_spawn(char: Character, args: str) -> str:
     if not args.isdigit():
         return "Invalid vnum."

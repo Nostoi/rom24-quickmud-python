@@ -5,12 +5,16 @@
 | Module | Purpose | C Feature Equivalent |
 | --- | --- | --- |
 | `net/` & `server.py` | Async telnet server and connection handling | `comm.c` network loop |
-| `commands/` | Command dispatcher and basic commands (movement, inventory, communication, admin) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c` |
+| `commands/` | Command dispatcher and basic commands (movement, inventory, communication, admin, shops) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c`, shop code |
 | `world/` | World state management, movement helpers, look | `act_move.c`, `act_info.c` |
 | `loaders/` | Parse legacy area files into Python objects | `db.c`, `db2.c` |
 | `spawning/` | Reset handling and spawning of mobs/objects | `update.c` resets |
+| `combat/` | Basic melee resolution and combat helpers | `fight.c` |
+| `skills/` | Skill registry and spell handlers | `skills.c`, `magic.c` |
+| `advancement.py` | Experience gain, leveling, practice/train | `update.c`, `act_info.c` |
 | `models/` | Dataclasses mirroring MUD structures (rooms, mobs, objects, characters, skills, shops) | `merc.h` structs |
 | `registry.py` | Global registries for rooms, mobs, objects, areas | `db.c` tables |
+| `persistence.py` | JSON save/load for characters and world | `save.c` |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
 | `account/` & `security/` | Account management and password hashing | `nanny.c`, `sha256.c` |
 | `network/` | Websocket server (new functionality) | – |
@@ -35,3 +39,7 @@
 | `test_are_conversion.py` | `.are` to JSON conversion produces valid schema |
 | `test_schema_validation.py` | JSON schemas remain valid |
 | `test_area_counts.py` | Area JSON preserves room/mob/object counts |
+| `test_combat.py` | Basic melee hit/miss and death handling |
+| `test_skills.py` | Skill registry, mana costs, and failure rates |
+| `test_advancement.py` | Level gains, practice, and training |
+| `test_shops.py` | Shop listing and transactions |

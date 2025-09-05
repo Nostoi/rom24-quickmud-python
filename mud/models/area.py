@@ -2,9 +2,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from .room_json import ResetJson
+
+
 @dataclass
 class Area:
-    """Python representation of AREA_DATA from merc.h"""
+    """Runtime area container loaded from legacy files."""
     file_name: Optional[str] = None
     name: Optional[str] = None
     credits: Optional[str] = None
@@ -20,7 +23,7 @@ class Area:
     area_flags: int = 0
     security: int = 0
     helps: List[object] = field(default_factory=list)
-    resets: List['Reset'] = field(default_factory=list)
+    resets: List[ResetJson] = field(default_factory=list)
     next: Optional['Area'] = None
 
     def __repr__(self) -> str:

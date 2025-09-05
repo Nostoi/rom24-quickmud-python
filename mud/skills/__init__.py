@@ -1,3 +1,3 @@
-from .registry import load_skills, skill_registry
+from .registry import SkillRegistry, load_skills, skill_registry
 
-__all__ = ["load_skills", "skill_registry"]
+__all__ = ["SkillRegistry", "load_skills", "skill_registry"]

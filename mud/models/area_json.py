@@ -6,17 +6,18 @@ from typing import List
 from .room_json import RoomJson
 from .character_json import CharacterJson
 from .object_json import ObjectJson
+from .json_io import JsonDataclass
 
 
 @dataclass
-class VnumRangeJson:
+class VnumRangeJson(JsonDataclass):
     """Minimum and maximum vnums for an area."""
     min: int
     max: int
 
 
 @dataclass
-class AreaJson:
+class AreaJson(JsonDataclass):
     """Area record matching ``schemas/area.schema.json``."""
     name: str
     vnum_range: VnumRangeJson

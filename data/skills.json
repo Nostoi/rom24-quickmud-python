@@ -1,3 +1,12 @@
 [
-  {"name": "fireball", "type": "spell", "function": "fireball"}
+  {
+    "name": "fireball",
+    "type": "spell",
+    "function": "fireball",
+    "target": "victim",
+    "mana_cost": 10,
+    "lag": 12,
+    "cooldown": 2,
+    "failure_rate": 0.0
+  }
 ]

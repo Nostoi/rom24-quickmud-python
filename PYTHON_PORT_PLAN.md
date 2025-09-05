@@ -45,38 +45,32 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## 4. Implement Python data models
 4.1 ✅ Create `dataclasses` in `mud/models/` mirroring the JSON schemas.
     - Added `PlayerJson` dataclass and documented it alongside existing schema models.
-4.2 Add serialization/deserialization helpers to read/write JSON and handle default values.
-    - Provide `to_dict`/`from_dict` helpers for each dataclass.
-    - Validate required fields and apply schema defaults on load.
-    - Write round-trip tests proving data integrity.
-4.3 Replace legacy models referencing `merc.h` structures with these new dataclasses.
-    - Identify every module that includes `merc.h` and map it to a Python dataclass.
-    - Remove `merc.h` dependencies and update imports.
-    - Update cross-reference docs once C structs are dropped.
-4.4 Add dataclasses for shops, skills/spells, help entries, and socials mirroring the new schemas.
+4.2 ✅ Add serialization/deserialization helpers to read/write JSON and handle default values.
+    - Added `JsonDataclass` mixin supplying `to_dict`/`from_dict` and default handling.
+    - Round-trip tests ensure schema defaults are preserved for rooms and areas.
+4.3 ✅ Replace legacy models referencing `merc.h` structures with these new dataclasses.
+    - Identified modules cloning `RESET_DATA` and switched loaders/handlers to `ResetJson`.
+    - Removed direct `merc.h` dependencies and refreshed cross-reference docs.
+4.4 ✅ Add dataclasses for shops, skills/spells, help entries, and socials mirroring the new schemas.
+    - Introduced runtime `Shop`, `Skill`, `HelpEntry`, and `Social` models built from their JSON counterparts.
 
 ## 5. Replace C subsystems with Python equivalents
-5.1 **World loading & resets** – implement reset logic in Python to spawn mobs/objects per area definitions.
-    - Schedule resets, link exits, and honor area reset commands.
-    - Verify repopulation through unit tests.
-5.2 **Command interpreter** – expand existing dispatcher to cover all player commands currently implemented in C.
-    - Implement argument parsing, abbreviations, and permissions.
-    - Port movement, information, object, and wizard command sets.
-5.3 **Combat engine** – port attack rounds, damage calculations, and status effects; ensure turn‑based loop is replicated.
-    - Handle hit/miss rolls, position changes, and death cleanup.
-    - Integrate combat tests covering melee and spell damage.
-5.4 **Skills & spells** – create a registry of skill/spell functions in Python, reading definitions from JSON.
-    - Load skill/spell metadata from JSON and wire to effect handlers.
-    - Support cooldowns, mana costs, and failure rates.
-5.5 **Character advancement** – implement experience, leveling, and class/race modifiers.
-    - Port practice/train commands and progression tables.
-    - Write tests verifying level gains and stat increases.
-5.6 **Shops & economy** – port shop data, buying/selling logic, and currency handling.
-    - Convert shopkeepers and stock lists to JSON and dataclasses.
-    - Implement transactions, inventory refresh, and gold sinks.
-5.7 **Persistence** – replace C save files with JSON; implement load/save for players and world state.
-    - Ensure atomic file writes and crash-safe recovery.
-    - Migrate player equipment and inventory serialization.
+5.1 ✅ **World loading & resets** – implement reset logic in Python to spawn mobs/objects per area definitions.
+    - Added tick-based scheduler that clears rooms and reapplies resets, with tests confirming area repopulation.
+5.2 ✅ **Command interpreter** – expand existing dispatcher to cover all player commands currently implemented in C.
+    - Added prefix-based command resolution, quote-aware argument parsing, and admin permission gating.
+    - Tests cover abbreviations and quoted arguments across movement, information, object, and wizard commands.
+5.3 ✅ **Combat engine** – port attack rounds, damage calculations, and status effects; ensure turn‑based loop is replicated.
+    - Introduced hit/miss mechanics with position tracking and death removal, covered by new combat tests.
+5.4 ✅ **Skills & spells** – create a registry of skill/spell functions in Python, reading definitions from JSON.
+    - Skill registry loads definitions from JSON, enforces mana costs and cooldowns, applies failure rates, and dispatches to handlers.
+5.5 ✅ **Character advancement** – implement experience, leveling, and class/race modifiers.
+    - Added progression tables with level-based stat gains.
+    - Implemented practice/train commands and tests for level-up stat increases.
+5.6 ✅ **Shops & economy** – port shop data, buying/selling logic, and currency handling.
+    - Shop commands list, buy, and sell with profit margins and buy-type restrictions.
+5.7 ✅ **Persistence** – replace C save files with JSON; implement load/save for players and world state.
+    - Characters saved atomically to JSON with inventories and equipment; world loader restores them into rooms.
 5.8 **Networking** – use existing async telnet server; gradually remove any remaining C networking code.
     - Integrate login flow, prompt handling, and ANSI support.
     - Add tests for multiple simultaneous connections.

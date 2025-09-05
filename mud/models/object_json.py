@@ -3,23 +3,25 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from .json_io import JsonDataclass
+
 
 @dataclass
-class AffectJson:
+class AffectJson(JsonDataclass):
     """Per-object affect modifier."""
     location: str
     modifier: int
 
 
 @dataclass
-class ExtraDescriptionJson:
+class ExtraDescriptionJson(JsonDataclass):
     """Extra description block for objects."""
     keyword: str
     description: str
 
 
 @dataclass
-class ObjectJson:
+class ObjectJson(JsonDataclass):
     """Object record matching ``schemas/object.schema.json``."""
     id: int
     name: str

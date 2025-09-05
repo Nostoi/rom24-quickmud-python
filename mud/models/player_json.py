@@ -3,9 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
+from .json_io import JsonDataclass
+
 
 @dataclass
-class PlayerJson:
+class PlayerJson(JsonDataclass):
     """Player record matching ``schemas/player.schema.json``."""
 
     name: str
