@@ -9,6 +9,8 @@ setup(
         "SQLAlchemy>=2.0",
         "typer>=0.9",
         "python-dotenv>=1.0",
+        "fastapi",
+        "uvicorn",
     ],
     extras_require={
         "dev": [
