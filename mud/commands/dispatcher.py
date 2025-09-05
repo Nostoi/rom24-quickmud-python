@@ -7,7 +7,7 @@ from mud.models.character import Character
 from .movement import do_north, do_south, do_east, do_west, do_up, do_down
 from .inspection import do_look
 from .inventory import do_get, do_drop, do_inventory, do_equipment
-from .communication import do_say
+from .communication import do_say, do_tell, do_shout
 from .combat import do_kill
 from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
 from .shop import do_list, do_buy, do_sell
@@ -37,6 +37,8 @@ COMMANDS: List[Command] = [
     Command("inventory", do_inventory, aliases=("inv",)),
     Command("equipment", do_equipment, aliases=("eq",)),
     Command("say", do_say),
+    Command("tell", do_tell),
+    Command("shout", do_shout),
     Command("kill", do_kill, aliases=("attack",)),
     Command("list", do_list),
     Command("buy", do_buy),

@@ -4,8 +4,8 @@
 
 | Module | Purpose | C Feature Equivalent |
 | --- | --- | --- |
-| `net/` & `server.py` | Async telnet server and connection handling | `comm.c` network loop |
-| `commands/` | Command dispatcher and basic commands (movement, inventory, communication, admin, shops) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c`, shop code |
+| `net/` & `server.py` | Async telnet server, ANSI color translation, connection handling | replaces `comm.c` and `nanny.c` |
+| `commands/` | Command dispatcher and basic commands (movement, inventory, communication with channels, admin, shops) | `interp.c`, `act_move.c`, `act_obj.c`, `act_comm.c`, `act_wiz.c`, shop code |
 | `world/` | World state management, movement helpers, look | `act_move.c`, `act_info.c` |
 | `loaders/` | Parse legacy area files into Python objects | `db.c`, `db2.c` |
 | `spawning/` | Reset handling and spawning of mobs/objects | `update.c` resets |
@@ -16,7 +16,7 @@
 | `registry.py` | Global registries for rooms, mobs, objects, areas | `db.c` tables |
 | `persistence.py` | JSON save/load for characters and world | `save.c` |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
-| `account/` & `security/` | Account management and password hashing | `nanny.c`, `sha256.c` |
+| `account/` & `security/` | Account management, login flow, password hashing | `sha256.c` |
 | `network/` | Websocket server (new functionality) | – |
 
 - `schemas/skill.schema.json` formalizes skill and spell metadata for use with `SkillJson`.
@@ -43,3 +43,5 @@
 | `test_skills.py` | Skill registry, mana costs, and failure rates |
 | `test_advancement.py` | Level gains, practice, and training |
 | `test_shops.py` | Shop listing and transactions |
+| `test_telnet_server.py` | Telnet look command and multi-connection chat |
+| `test_ansi.py` | ROM color tokens translate to ANSI |
