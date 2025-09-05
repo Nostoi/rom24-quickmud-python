@@ -1,5 +1,5 @@
-SQLAlchemy>=2.0,<3
-Typer>=0.9
-python-dotenv>=1.0
-fastapi
-uvicorn
+SQLAlchemy==2.0.43
+Typer==0.17.4
+python-dotenv==1.1.1
+fastapi==0.116.1
+uvicorn==0.35.0
