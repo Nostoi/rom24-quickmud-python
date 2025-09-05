@@ -17,11 +17,13 @@ jobs:
         run: pip install -e .[dev] || pip install -e .
       - name: Lint
         run: |
-          ruff check mud/net tests/test_telnet_server.py tests/test_ansi.py
-          flake8 mud/net/ansi.py mud/net/protocol.py tests/test_telnet_server.py tests/test_ansi.py
+          ruff check mud/net mud/security \
+            tests/test_telnet_server.py tests/test_ansi.py \
+            tests/test_scripted_session.py tests/test_hash_utils.py
+          flake8 mud/net/ansi.py mud/net/protocol.py mud/security/hash_utils.py \
+            tests/test_telnet_server.py tests/test_ansi.py \
+            tests/test_scripted_session.py tests/test_hash_utils.py
       - name: Type check
-        run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py --follow-imports=skip
+        run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py mud/security/hash_utils.py --follow-imports=skip
       - name: Test
-        run: pytest --cov=mud --cov-report=term --cov-fail-under=80 -k "not scripted_session"
-      - name: Test scripted_session
-        run: pytest tests/test_scripted_session.py
+        run: pytest --cov=mud --cov-report=term --cov-fail-under=80

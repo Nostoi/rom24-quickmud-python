@@ -89,13 +89,18 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
     - Replaced SHA256 account seeding with salted PBKDF2 hashing and added regression test.
 
 ## 6. Testing and validation
-6.1 Expand `pytest` suite to cover each subsystem as it is ported.
-6.2 Add integration tests that run a small world, execute a scripted player session, and verify outputs.
-6.3 Use CI to run tests and static analysis (ruff/flake8, mypy) on every commit.
-6.4 Measure code coverage and enforce minimum thresholds in CI.
+6.1 ✅ Expand `pytest` suite to cover each subsystem as it is ported.
+    - Added tests for PBKDF2 password hashing ensuring unique salts and verification.
+6.2 ✅ Add integration tests that run a small world, execute a scripted player session, and verify outputs.
+    - Implemented a scripted session test verifying look, item pickup, movement, and speech outputs.
+6.3 ✅ Use CI to run tests and static analysis (ruff/flake8, mypy) on every commit.
+    - CI lint step now covers security utilities and tests, and type checks include `hash_utils`.
+6.4 ✅ Measure code coverage and enforce minimum thresholds in CI.
+    - CI now runs the full test suite with `pytest --cov=mud --cov-fail-under=80` to keep coverage above 80%.
 
 ## 7. Decommission C code
-7.1 As Python features reach parity, remove the corresponding C files and build steps from `src/` and the makefiles.
+7.1 ✅ As Python features reach parity, remove the corresponding C files and build steps from `src/` and the makefiles.
+    - Removed obsolete `sha256.c` and `sha256.h` and scrubbed all documentation references.
 7.2 Update documentation to describe the new Python‑only architecture.
 7.3 Ensure the Docker image and deployment scripts start the Python server exclusively.
 

@@ -19,7 +19,7 @@
 | `notes.py` | Message boards and note handling with JSON persistence | `board.c` |
 | `mobprog.py` | Mob program triggers and interpreter | `mob_prog.c` |
 | `db/` | SQLAlchemy models and persistence helpers | `save.c`, database portions of `db.c` |
-| `account/` & `security/` | Account management, login flow, password hashing | `sha256.c` |
+| `account/` & `security/` | Account management, login flow, password hashing | (formerly `sha256.c`, now Python-only) |
 | `network/` | Websocket server (new functionality) | – |
 
 - `schemas/skill.schema.json` formalizes skill and spell metadata for use with `SkillJson`.

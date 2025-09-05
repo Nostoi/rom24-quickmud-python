@@ -36,7 +36,6 @@
 | recycle.c | Object recycle/free lists |
 | save.c | Player and object persistence |
 | scan.c | Scan command implementation |
-| sha256.c | SHA-256 hashing implementation |
 | skills.c | Skill table and skill-specific code |
 | special.c | Special procedure handlers for mobiles/objects |
 | string.c | String utilities and buffer management |

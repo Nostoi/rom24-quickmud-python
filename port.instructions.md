@@ -55,3 +55,8 @@
 - Prompt for account then password; auto-create missing accounts with supplied password in tests.
 - Reset DB tables before telnet login tests to isolate accounts.
 - Seed accounts must hash passwords with `hash_password`; never use `hashlib` directly.
+- Hash passwords with `hash_password` to generate unique `salt:hash` tokens; tests must confirm uniqueness and reject malformed tokens.
+- Exercise the full command loop with `run_test_session`; assert each scripted line's output and never leave placeholder tests.
+- Add new modules to CI lint, type, and test steps immediately; keep .github/workflows/ci.yml lists current.
+- Run pytest with coverage across the full suite; never exclude tests and enforce `--cov-fail-under=80` in CI.
+- Delete obsolete C modules as soon as Python replaces them; purge docs and build scripts.
