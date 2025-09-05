@@ -3,20 +3,70 @@ from __future__ import annotations
 import json
 from importlib import import_module
 from pathlib import Path
-from typing import Callable, Dict
+from random import Random
+from typing import Callable, Dict, Optional
 
-from mud.models import SkillJson
+from mud.models import Skill, SkillJson
 from mud.models.json_io import dataclass_from_dict
 
-skill_registry: Dict[str, Callable] = {}
+
+class SkillRegistry:
+    """Load skill metadata from JSON and dispatch handlers."""
+
+    def __init__(self, rng: Optional[Random] = None) -> None:
+        self.skills: Dict[str, Skill] = {}
+        self.handlers: Dict[str, Callable] = {}
+        self.rng = rng or Random()
+
+    def load(self, path: Path) -> None:
+        """Load skill definitions from a JSON file."""
+        with path.open() as fp:
+            data = json.load(fp)
+        module = import_module("mud.skills.handlers")
+        for entry in data:
+            skill_json = dataclass_from_dict(SkillJson, entry)
+            skill = Skill.from_json(skill_json)
+            handler = getattr(module, skill.function)
+            self.skills[skill.name] = skill
+            self.handlers[skill.name] = handler
+
+    def get(self, name: str) -> Skill:
+        return self.skills[name]
+
+    def use(self, caster, name: str, target=None):
+        """Execute a skill and handle resource costs and failure."""
+        skill = self.get(name)
+        if caster.mana < skill.mana_cost:
+            raise ValueError("not enough mana")
+
+        cooldowns = getattr(caster, "cooldowns", {})
+        if cooldowns.get(name, 0) > 0:
+            raise ValueError("skill on cooldown")
+
+        caster.mana -= skill.mana_cost
+        if self.rng.random() < skill.failure_rate:
+            cooldowns[name] = skill.cooldown
+            caster.cooldowns = cooldowns
+            return False
+
+        result = self.handlers[name](caster, target)
+        cooldowns[name] = skill.cooldown
+        caster.cooldowns = cooldowns
+        return result
+
+    def tick(self, character) -> None:
+        """Reduce active cooldowns on a character by one tick."""
+        cooldowns = getattr(character, "cooldowns", {})
+        for key in list(cooldowns):
+            cooldowns[key] -= 1
+            if cooldowns[key] <= 0:
+                del cooldowns[key]
+        character.cooldowns = cooldowns
+
+
+skill_registry = SkillRegistry()
 
 
 def load_skills(path: Path) -> None:
-    """Load skill definitions from JSON and register their handlers."""
-    with path.open() as fp:
-        data = json.load(fp)
-    for entry in data:
-        skill = dataclass_from_dict(SkillJson, entry)
-        module = import_module("mud.skills.handlers")
-        func = getattr(module, skill.function)
-        skill_registry[skill.name] = func
+    skill_registry.load(path)
+

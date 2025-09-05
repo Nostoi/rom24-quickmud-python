@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mud.models.object import Object
+    from mud.models.room import Room
     from mud.db.models import Character as DBCharacter
 
 @dataclass
@@ -48,8 +49,10 @@ class Character:
     act: int = 0
     affected_by: int = 0
     position: int = 0
+    room: Optional['Room'] = None
     practice: int = 0
     train: int = 0
+    skills: Dict[str, int] = field(default_factory=dict)
     carry_weight: int = 0
     carry_number: int = 0
     saving_throw: int = 0
@@ -113,6 +116,6 @@ def to_orm(character: Character, player_id: int) -> 'DBCharacter':
         name=character.name,
         level=character.level,
         hp=character.hit,
-        room_vnum=character.room.vnum if getattr(character, "room", None) else None,
+        room_vnum=character.room.vnum if character.room else None,
         player_id=player_id,
     )

@@ -40,3 +40,17 @@ def test_equipment_command():
     out = process_command(char, 'equipment')
     assert 'You are using' in out
     assert 'wield' in out
+
+
+def test_abbreviations_and_quotes():
+    initialize_world('area/area.lst')
+    char = create_test_character('Tester', 3001)
+
+    out1 = process_command(char, 'l')
+    assert 'Temple' in out1
+
+    out2 = process_command(char, 'n')
+    assert 'You walk north' in out2
+
+    out3 = process_command(char, 'say "hello world"')
+    assert out3 == "You say, 'hello world'"

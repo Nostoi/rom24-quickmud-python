@@ -5,8 +5,11 @@ from typing import List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.spawning.templates import MobInstance
+    from mud.models.area import Area
+    from mud.models.character import Character
 
 from .constants import Direction
+from .room_json import ResetJson
 
 @dataclass
 class ExtraDescr:
@@ -27,17 +30,8 @@ class Exit:
     orig_door: int = 0
 
 @dataclass
-class Reset:
-    """Representation of RESET_DATA"""
-    command: str
-    arg1: int
-    arg2: int
-    arg3: int
-    arg4: int
-
-@dataclass
 class Room:
-    """Python representation of ROOM_INDEX_DATA"""
+    """Runtime room container built from area files."""
     vnum: int
     name: Optional[str] = None
     description: Optional[str] = None
@@ -51,7 +45,7 @@ class Room:
     clan: int = 0
     exits: List[Optional[Exit]] = field(default_factory=lambda: [None] * len(Direction))
     extra_descr: List[ExtraDescr] = field(default_factory=list)
-    resets: List[Reset] = field(default_factory=list)
+    resets: List[ResetJson] = field(default_factory=list)
     people: List['Character'] = field(default_factory=list)
     contents: List['Object'] = field(default_factory=list)
     next: Optional['Room'] = None

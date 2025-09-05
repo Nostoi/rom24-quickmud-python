@@ -1,11 +1,16 @@
 """Data models for QuickMUD translated from C structs."""
 
 from .area import Area
-from .room import Room, ExtraDescr, Exit, Reset
+from .room import Room, ExtraDescr, Exit
+from .room_json import ResetJson as Reset
 from .mob import MobIndex, MobProgram
 from .obj import ObjIndex, ObjectData, Affect
 from .object import Object
 from .character import Character, PCData
+from .shop import Shop
+from .skill import Skill
+from .help import HelpEntry
+from .social import Social
 from .constants import (
     Direction,
     Sector,
@@ -35,6 +40,7 @@ from .shop_json import ShopJson
 from .help_json import HelpJson
 from .social_json import SocialJson
 from .json_io import (
+    JsonDataclass,
     dataclass_from_dict,
     dataclass_to_dict,
     dump_dataclass,
@@ -55,6 +61,10 @@ __all__ = [
     "Affect",
     "Character",
     "PCData",
+    "Shop",
+    "Skill",
+    "HelpEntry",
+    "Social",
     # JSON schema-aligned dataclasses
     "AreaJson",
     "VnumRangeJson",
@@ -73,6 +83,7 @@ __all__ = [
     "ShopJson",
     "HelpJson",
     "SocialJson",
+    "JsonDataclass",
     "dataclass_from_dict",
     "dataclass_to_dict",
     "load_dataclass",

@@ -3,7 +3,7 @@ from mud.loaders import load_all_areas
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry
 from mud.db.session import SessionLocal
 from mud.db import models
-from mud.models.character import Character
+from mud.models.character import Character, character_registry
 from mud.spawning.reset_handler import apply_resets
 from .linking import link_exits
 
@@ -99,4 +99,5 @@ def create_test_character(name: str, room_vnum: int) -> Character:
     char = Character(name=name)
     if room:
         room.add_character(char)
+    character_registry.append(char)
     return char

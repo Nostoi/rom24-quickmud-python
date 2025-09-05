@@ -3,9 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
+from .json_io import JsonDataclass
+
 
 @dataclass
-class ExitJson:
+class ExitJson(JsonDataclass):
     """Exit specification for JSON rooms."""
     to_room: int
     description: Optional[str] = None
@@ -14,14 +16,14 @@ class ExitJson:
 
 
 @dataclass
-class ExtraDescriptionJson:
+class ExtraDescriptionJson(JsonDataclass):
     """Extra description block for JSON rooms."""
     keyword: str
     description: str
 
 
 @dataclass
-class ResetJson:
+class ResetJson(JsonDataclass):
     """Reset command affecting a room."""
     command: str
     arg1: Optional[int] = None
@@ -31,7 +33,7 @@ class ResetJson:
 
 
 @dataclass
-class RoomJson:
+class RoomJson(JsonDataclass):
     """Room record matching ``schemas/room.schema.json``."""
     id: int
     name: str

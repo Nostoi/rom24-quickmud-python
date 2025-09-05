@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .json_io import JsonDataclass
+from .social_json import SocialJson
 
 
 @dataclass
-class SocialJson(JsonDataclass):
-    """Social command messages matching ``schemas/social.schema.json``."""
+class Social:
+    """Runtime representation of a social command."""
 
     name: str
     char_no_arg: str = ""
@@ -17,3 +17,7 @@ class SocialJson(JsonDataclass):
     vict_found: str = ""
     char_auto: str = ""
     others_auto: str = ""
+
+    @classmethod
+    def from_json(cls, data: SocialJson) -> "Social":
+        return cls(**data.to_dict())

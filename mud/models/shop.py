@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .json_io import JsonDataclass
+from .shop_json import ShopJson
 
 
 @dataclass
-class ShopJson(JsonDataclass):
-    """Shop record matching ``schemas/shop.schema.json``."""
+class Shop:
+    """Runtime representation of a shop."""
 
     keeper: int
     buy_types: list[str] = field(default_factory=list)
@@ -15,3 +15,7 @@ class ShopJson(JsonDataclass):
     profit_sell: int = 100
     open_hour: int = 0
     close_hour: int = 23
+
+    @classmethod
+    def from_json(cls, data: ShopJson) -> "Shop":
+        return cls(**data.to_dict())

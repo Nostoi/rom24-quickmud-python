@@ -21,3 +21,18 @@
 
 - Convert `#SHOPS` sections with `convert_shops_to_json.py`; map item type numbers to `ItemType` names and skip zeros.
 - Cross-check converted table counts with source files; fail tests on mismatches.
+- Make every schema dataclass subclass `JsonDataclass`; never hand-roll JSON serialization.
+- Stop cloning `merc.h` structs; favor schema dataclasses like `ResetJson` in loaders and handlers.
+- Create runtime dataclasses mirroring each schema; never operate on JSON dataclasses inside the engine.
+- Reset ticks must clear mobs and objects before reapplying area resets.
+- Test reset scheduler with ticks to ensure repop occurs when areas empty.
+- Drive command dispatch through a Command dataclass; match unique prefixes and block admin-only commands in dispatcher.
+- Use shlex.split for argument parsing; reject ambiguous abbreviations as unknown commands.
+- Force hits or misses by cranking hitroll; don't seed global RNG in tests.
+- Flip positions: set both to FIGHTING on swing, set victim DEAD and attacker STANDING when killing.
+- Drive all skill usage through `skill_registry`; never hard-code spell lists.
+- Inject RNG into `SkillRegistry` for deterministic failure tests.
+- Level ups must call `advance_level`; never adjust `level` without stat gains.
+- Practice and train commands must consume sessions and validate targets.
+- Shop prices must use `shop.profit_buy`/`shop.profit_sell`; never charge raw object cost.
+- Write player saves atomically: dump to a temp file and `os.replace`.
