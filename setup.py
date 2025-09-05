@@ -6,7 +6,7 @@ setup(
     packages=['mud'] + [f'mud.{p}' for p in find_packages('mud')],
     package_dir={'mud': 'mud'},
     install_requires=[
-        "SQLAlchemy>=2.0",
+        "SQLAlchemy>=2.0,<3",
         "typer>=0.9",
         "python-dotenv>=1.0",
     ],
