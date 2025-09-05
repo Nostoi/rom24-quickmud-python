@@ -9,12 +9,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'  # Use 3.12 for dependency compatibility
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt -r requirements-dev.txt
-          pip install -e .
+          python-version: '3.13'
+          check-latest: true
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install project
+        run: pip install -e .[dev] || pip install -e .
       - name: Lint
         run: |
           ruff check mud/net tests/test_telnet_server.py tests/test_ansi.py
