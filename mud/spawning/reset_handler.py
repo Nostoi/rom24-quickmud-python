@@ -42,6 +42,8 @@ def apply_resets(area: Area) -> None:
             obj = spawn_object(obj_vnum)
             if obj and last_mob:
                 last_mob.add_to_inventory(obj)
+                # Track spawned objects so later P resets can reference them
+                spawned_objects[obj_vnum] = obj
             else:
                 logging.warning('Invalid G reset %s', obj_vnum)
         elif cmd == 'E':
@@ -50,15 +52,21 @@ def apply_resets(area: Area) -> None:
             obj = spawn_object(obj_vnum)
             if obj and last_mob:
                 last_mob.equip(obj, slot)
+                spawned_objects[obj_vnum] = obj
             else:
                 logging.warning('Invalid E reset %s', obj_vnum)
         elif cmd == 'P':
             obj_vnum = reset.arg2 or 0
             container_vnum = reset.arg4 or 0
+            if container_vnum <= 0:
+                # Negative or zero container vnums are invalid; skip quietly
+                logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
+                continue
             obj = spawn_object(obj_vnum)
             container = spawned_objects.get(container_vnum)
             if obj and isinstance(container, type(obj)):
                 container.contained_items.append(obj)
+                spawned_objects[obj_vnum] = obj
             else:
                 logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
 
