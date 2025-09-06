@@ -53,12 +53,18 @@ pytest
 
 ### Publishing
 
-Build and upload a wheel to PyPI when releasing:
+To release a new version to PyPI:
+
+1. Update the version in `pyproject.toml`.
+2. Commit and tag:
 
 ```bash
-python -m build
-twine upload dist/*
+git commit -am "release: v1.2.3"
+git tag v1.2.3
+git push origin main --tags
 ```
+
+The GitHub Actions workflow will build and publish the package when the tag is pushed.
 
 
 ## Python Architecture
