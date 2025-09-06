@@ -104,8 +104,6 @@ Connect via:
 telnet localhost 5000
 ```
 
-See other READMEs in the repo for full historical information and licenses.
-
 ## Data Models
 
 The `mud/models` package defines dataclasses used by the game engine.

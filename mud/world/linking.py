@@ -12,6 +12,10 @@ def link_exits() -> None:
                 continue
             if exit.to_room is not None:
                 continue
+            if exit.vnum <= 0:
+                # Negative or zero vnums denote an intentionally unset exit.
+                # These should be ignored rather than reported as errors.
+                continue
             target = room_registry.get(exit.vnum)
             if target:
                 exit.to_room = target
