@@ -21,3 +21,12 @@ class Social:
     @classmethod
     def from_json(cls, data: SocialJson) -> "Social":
         return cls(**data.to_dict())
+
+
+# placeholder registry to track loaded socials
+social_registry: dict[str, Social] = {}
+
+
+def register_social(social: Social) -> None:
+    """Register a social by its lowercase name."""
+    social_registry[social.name.lower()] = social

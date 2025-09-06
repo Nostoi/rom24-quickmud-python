@@ -43,6 +43,15 @@ def test_social_from_json():
     assert social.char_no_arg == "You smile."
 
 
+def test_register_social():
+    data = SocialJson(name="wave", char_no_arg="You wave.")
+    social = Social.from_json(data)
+    from mud.models.social import social_registry, register_social
+
+    register_social(social)
+    assert social_registry["wave"] is social
+
+
 def test_board_from_json():
     data = BoardJson(
         name="general",
