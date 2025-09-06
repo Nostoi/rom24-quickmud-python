@@ -1,3 +1,36 @@
+## Port Instructions (ROM 2.4 → Python) — Living Rules
+
+<!-- RULES-START -->
+- RULE: All combat randomness must use the ROM Mitchell–Moore `number_mm` family (`seed_mm`, `number_range`, `number_percent`, `dice`, `number_bits`); forbid `random.*` in combat paths.
+  RATIONALE: Preserves ROM hit/damage distributions and exact RNG sequence.
+  EXAMPLE: rng_mm.seed_mm(1234); rng_mm.number_percent()
+
+- RULE: Use C-semantics helpers `c_div` and `c_mod` in all combat math; forbid `//` and `%` in ported code.
+  RATIONALE: C truncates toward zero; Python floors; negatives diverge.
+  EXAMPLE: c_div(-3, 2) == -1  # matches C
+
+- RULE: Armor Class is better when more negative; map damage type → AC index exactly as in ROM.
+  RATIONALE: Prevents inverted hit curves and weapon-type bias.
+  EXAMPLE: dam_type "slash" → AC_SLASH; unarmed → AC_BASH
+
+- RULE: Preserve defense check order exactly (hit roll → shield block → parry → dodge), each early-outs on success.
+  RATIONALE: Reordering changes effective probabilities.
+  EXAMPLE: assert call_order == ["hit", "shield", "parry", "dodge"]
+
+- RULE: Dice are inclusive (1..size); apply modifiers after base dice, then apply RIV (IMMUNE=0, RESIST=½, VULN=×2 unless fork differs) before side-effects.
+  RATIONALE: Off-by-one and wrong ordering skew damage and status logic.
+  EXAMPLE: dmg = dice(n,s) + str_mod + damroll; dmg = apply_riv(dmg, dam_type)
+
+- RULE: Match tick cadence and WAIT/DAZE consumption to ROM’s `PULSE_VIOLENCE`; do not change update ordering.
+  RATIONALE: Attack frequency and regen timing must align to parity.
+  EXAMPLE: scheduler.every(PULSE_VIOLENCE)(violence_update)
+
+- RULE: File formats (areas/help/player saves) must parse/serialize byte-for-byte compatible fields and ordering.
+  RATIONALE: Tiny text/layout changes break content and saves.
+  EXAMPLE: save_player() writes fields in ROM order; golden read/write round-trip test passes
+<!-- RULES-END -->
+
+## Ops Playbook (human tips the bot won’t manage)
 - Use `rg` for code searches; never run `grep -R`.
 - Quote paths with spaces (e.g., `src/'QuickMUD Fixes'`).
 - Update `doc/c_module_inventory.md` whenever C modules are added or removed.
@@ -5,7 +38,7 @@
 - Maintain `doc/python_module_inventory.md` when Python modules change; keep C feature mapping current.
 - Keep `doc/c_python_cross_reference.md` updated when subsystems move from C to Python.
 - Maintain JSON schemas under `schemas/`; revise them whenever data formats change.
-- Keep `schemas/character.schema.json` aligned with `char_data` structure; include new stats or flags immediately.
+- Keep `schemas/character.schema.json` aligned with `char_data`; include new stats or flags immediately.
 - Keep `schemas/object.schema.json` aligned with `OBJ_DATA`; update wear flags and value slots when they change.
 - Keep `schemas/area.schema.json` aligned with `AREA_DATA`; capture vnum ranges and builder lists precisely.
 - Validate every JSON schema with `jsonschema` tests; update tests when schemas change.
@@ -13,53 +46,47 @@
 - Clear registries before conversions to avoid leaking data between areas.
 - Store converted area JSON under `data/areas/`; name files after the source `.are`.
 - Verify converted area JSON preserves room, mob, and object counts; tests must compare against source `.are` files.
-- Mirror each JSON schema with a `*_json.py` dataclass; update `mud/models/__init__.py` and `mud/models/README.md` when adding one.
+- Mirror each JSON schema with a `*_json.py` dataclass; update `mud/models/__init__.py` and `mud/models/README.md`.
 - Enumerate C subsystems in `PYTHON_PORT_PLAN.md`; never begin porting a module without a corresponding plan entry.
-- Mirror every new JSON schema with a `*_json.py` dataclass and export it via `mud/models/__init__.py`; update `mud/models/README.md` and tests immediately.
 - Run mypy with `--follow-imports=skip` on targeted modules to avoid unrelated type errors.
 - Ensure schema defaults mirror dataclass defaults; test instantiation to catch mismatches.
-
 - Convert `#SHOPS` sections with `convert_shops_to_json.py`; map item type numbers to `ItemType` names and skip zeros.
 - Cross-check converted table counts with source files; fail tests on mismatches.
 - Make every schema dataclass subclass `JsonDataclass`; never hand-roll JSON serialization.
-- Stop cloning `merc.h` structs; favor schema dataclasses like `ResetJson` in loaders and handlers.
+- Stop cloning `merc.h` structs; favor schema dataclasses like `ResetJson`.
 - Create runtime dataclasses mirroring each schema; never operate on JSON dataclasses inside the engine.
 - Reset ticks must clear mobs and objects before reapplying area resets.
 - Test reset scheduler with ticks to ensure repop occurs when areas empty.
 - Drive command dispatch through a Command dataclass; match unique prefixes and block admin-only commands in dispatcher.
-- Use shlex.split for argument parsing; reject ambiguous abbreviations as unknown commands.
-- Force hits or misses by cranking hitroll; don't seed global RNG in tests.
-- Flip positions: set both to FIGHTING on swing, set victim DEAD and attacker STANDING when killing.
+- Use `shlex.split` for argument parsing; reject ambiguous abbreviations as unknown commands.
+- Force hits or misses by cranking hitroll; don’t seed global RNG in tests.
+- Flip positions correctly on swing/kill; remove corpses and grant XP in ROM order.
 - Drive all skill usage through `skill_registry`; never hard-code spell lists.
 - Inject RNG into `SkillRegistry` for deterministic failure tests.
-- Level ups must call `advance_level`; never adjust `level` without stat gains.
-- Practice and train commands must consume sessions and validate targets.
-- Shop prices must use `shop.profit_buy`/`shop.profit_sell`; never charge raw object cost.
-- Write player saves atomically: dump to a temp file and `os.replace`.
-- Strip `comm.c`, `nanny.c`, and `telnet.h` once networking moves to Python; update inventories and cross-reference docs immediately.
-- Translate ROM color tokens with `translate_ansi` before sending to clients; never emit raw `{` codes.
-- In telnet tests with multiple clients, wait for prompts to flush broadcast messages.
-- Route global channel messages through `broadcast_global`; respect `muted_channels` and block senders with `banned_channels`.
-- Clear `character_registry` in tests that inspect channel broadcasts to avoid cross-test contamination.
-- Persist boards to `data/boards` using atomic writes and `os.replace`; never write directly to the final JSON file.
-- Override `notes.BOARDS_DIR` in tests to isolate board data and reload `board_registry` between cases.
-- Register new commands like `note` and `board` in the dispatcher; keep the command table authoritative.
-- Represent mobprog triggers with `IntFlag` in `mobprog.py`; match trigger bits with `MobProgram.trig_type`.
-- `run_prog` must filter by trigger and phrase and return executed actions for tests.
-- Interpreter supports only `say` and `emote`; ignore other commands for now.
-- Put OLC commands in `commands/build.py`; guard them as admin-only and return usage on bad args.
-- Verify `@redit` updates `Room` fields in-place via dispatcher-driven tests.
-- Record new modules in `doc/python_module_inventory.md` and update cross-reference docs.
-- Game tick must regen characters, cycle weather, fire timers, then run resets.
- - Filter character loads by account username; never allow cross-account character access.
-- Prompt for account then password; auto-create missing accounts with supplied password in tests.
-- Reset DB tables before telnet login tests to isolate accounts.
-- Seed accounts must hash passwords with `hash_password`; never use `hashlib` directly.
-- Hash passwords with `hash_password` to generate unique `salt:hash` tokens; tests must confirm uniqueness and reject malformed tokens.
-- Exercise the full command loop with `run_test_session`; assert each scripted line's output and never leave placeholder tests.
-- Add new modules to CI lint, type, and test steps immediately; keep .github/workflows/ci.yml lists current.
-- Run pytest with coverage across the full suite; never exclude tests and enforce `--cov-fail-under=80` in CI.
-- Delete obsolete C modules as soon as Python replaces them; purge docs and build scripts.
-- Purge obsolete C documentation; mark historical files and highlight Python-only architecture in README.
-- Docker images must launch the Python server with `mud runserver`; never reference the old `avinson/rom` C binary.
-- Kill the entire src/ tree; never commit C code again.
+- Level-ups must call `advance_level`; never set `level` directly.
+- Practice/train must consume sessions and validate targets.
+- Shop prices must use `shop.profit_buy/profit_sell`; never charge raw object cost.
+- Write player saves atomically (temp file + `os.replace`).
+- Strip `comm.c`, `nanny.c`, and `telnet.h` once networking is Python-only; update docs immediately.
+- Translate ROM color tokens with `translate_ansi` before sending to clients.
+- In telnet tests with multiple clients, wait for prompts to flush broadcasts.
+- Route global channels through `broadcast_global`; respect mutes/bans.
+- Clear `character_registry` in channel tests to avoid cross-test contamination.
+- Persist boards under `data/boards` with atomic writes; override paths in tests.
+- Register `note`/`board` commands in the dispatcher; keep the command table authoritative.
+- Represent mobprog triggers with `IntFlag`; match trigger bits precisely.
+- `run_prog` should return executed actions for tests; ignore unsupported commands.
+- Put OLC commands in `commands/build.py`; guard them as admin-only; return usage on bad args.
+- Verify `@redit` updates `Room` fields in-place via dispatcher tests.
+- Tick order: regen → weather → timers → resets (match ROM cadence).
+- Filter character loads by account username; never allow cross-account access.
+- Prompt account then password; auto-create missing accounts in tests only.
+- Reset DB tables before telnet login tests.
+- Hash passwords via `hash_password` (salted); never use `hashlib` directly.
+- Ensure password tokens are `salt:hash`; tests must verify uniqueness & reject malformed tokens.
+- Exercise the full command loop with `run_test_session`; remove placeholder tests.
+- Keep CI (ruff/mypy/pytest/coverage) current with new modules.
+- Enforce `--cov-fail-under=80` in CI.
+- Delete obsolete C modules and docs once replaced.
+- Docker must launch `mud runserver`; never reference the old C binary.
+- Remove the entire `src/` tree; do not commit C code again.
