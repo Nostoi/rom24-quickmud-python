@@ -40,6 +40,9 @@
 - RULE: Dispatch social commands via registry loaded from ROM `social.are`; forbid hard-coded emote strings.
   RATIONALE: Maintains ROM social messaging and target handling.
   EXAMPLE: social = social_registry["smile"]; social.execute(ch, victim)
+- RULE: Expand social messages with ROM placeholders (`$n`, `$N`, `$mself`) before dispatch.
+  RATIONALE: Ensures actor and target names/pronouns match ROM outputs.
+  EXAMPLE: expand_social("$n smiles at you.", ch, vict)
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")

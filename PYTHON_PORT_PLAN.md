@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: affects_saves -->
+<!-- LAST-PROCESSED: socials -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -62,7 +62,7 @@ NOTES:
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.55)
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.58)
 KEY RISKS: file_formats, side_effects
 TASKS:
 - [P0] Load socials into registry and dispatch via command table — acceptance: pytest validates `smile` output to actor and room
@@ -70,8 +70,10 @@ TASKS:
 - [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden file matches ROM layout
 - [P1] Achieve ≥80% test coverage for socials — acceptance: coverage report ≥80%
 NOTES:
-- `Social` dataclass defined without registry or dispatcher hook
+- `Social` dataclass lacked registry; added `social_registry` placeholder and register function
+- `rg` shows no dispatcher integration or placeholder logic
 - `social.are` exists but is never loaded
+- Applied tiny fix: added registry and unit test
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
