@@ -1,7 +1,24 @@
+<!-- LAST-PROCESSED: INIT -->
+<!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
+<!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
+world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
+help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
+security_auth_bans, logging_admin, olc_builders -->
 # Python Conversion Plan for QuickMUD
 
 ## Overview
 This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C codebase to Python. It also describes how to migrate existing game data (rooms, characters, items, etc.) into JSON so the Python engine can consume it directly.
+
+## System Inventory & Coverage Matrix
+<!-- COVERAGE-START -->
+| subsystem | status | evidence | tests |
+|---|---|---|---|
+<!-- COVERAGE-END -->
+
+## Parity Gaps & Corrections
+<!-- PARITY-GAPS-START -->
+<!-- AUDITED:  -->
+<!-- PARITY-GAPS-END -->
 
 ## 1. Inventory current system
 1.1 ✅ Audit C modules under `src/` to identify all functionality: combat, skills/spells, shops, resets, saving, networking, etc.
