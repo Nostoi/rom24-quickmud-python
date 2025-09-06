@@ -30,14 +30,20 @@ source venv/bin/activate
 pip install -e .[dev]
 ```
 
-For a fully reproducible environment, use the pinned requirements files:
+For a fully reproducible environment, use the pinned requirements files generated with [pip-tools](https://github.com/jazzband/pip-tools):
 
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-Tools like [Poetry](https://python-poetry.org/) or [pip-tools](https://github.com/jazzband/pip-tools) can also manage dependenci
-es and lock files if you prefer that workflow.
+To update the pinned dependencies:
+
+```bash
+pip-compile requirements.in
+pip-compile requirements-dev.in
+```
+
+Tools like [Poetry](https://python-poetry.org/) provide a similar workflow if you prefer that approach.
 
 Run tests with:
 
