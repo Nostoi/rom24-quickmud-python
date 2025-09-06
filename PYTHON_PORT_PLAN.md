@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: logging_admin -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -45,17 +45,19 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin -->
 
 <!-- SUBSYSTEM: affects_saves START -->
-### affects_saves — Parity Audit 2025-09-06
+### affects_saves — Parity Audit 2025-09-09
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
 KEY RISKS: flags, side_effects
 TASKS:
+- [P0] Define ROM affect flag constants via IntFlag — acceptance: enumeration matches merc.h bit values
 - [P0] Implement affect application/removal with bit flags — acceptance: unit test toggles AFF_BLIND on/off
 - [P0] Implement saving throw resolution using number_mm — acceptance: deterministic pass/fail test
 - [P1] Persist affects to character saves with correct bit widths — acceptance: save/load round trip preserves flags
 - [P1] Integrate affect timers into game update loop — acceptance: tick test expires affect after duration
 NOTES:
 - `Character` dataclass defines `affected_by` and `saving_throw` without mechanics
-- No tests cover affect or saving throw behavior
+- Added `AffectFlag` enum with `AFF_BLIND` bit and basic unit test
+- Applied tiny fix: added `AffectFlag.BLIND` and test
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->

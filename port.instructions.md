@@ -34,6 +34,9 @@
 - RULE: Track affects and saving throws with bitmask flags; avoid Python booleans.
   RATIONALE: ROM uses fixed-width bit flags; parity requires bitwise operations.
   EXAMPLE: ch.affected_by |= AFF_BLIND
+- RULE: Define affect flags via `IntFlag` with explicit bit values; forbid magic numbers.
+  RATIONALE: Ensures flag widths match ROM and improves readability.
+  EXAMPLE: class AffectFlag(IntFlag): BLIND = 0x00000001
 - RULE: Dispatch social commands via registry loaded from ROM `social.are`; forbid hard-coded emote strings.
   RATIONALE: Maintains ROM social messaging and target handling.
   EXAMPLE: social = social_registry["smile"]; social.execute(ch, victim)
