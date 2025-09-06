@@ -1,7 +1,10 @@
-from enum import IntEnum
+from enum import IntEnum, IntFlag  # START affects_saves
+# END affects_saves
+
 
 class Direction(IntEnum):
     """Mapping of direction constants from merc.h"""
+
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -9,8 +12,10 @@ class Direction(IntEnum):
     UP = 4
     DOWN = 5
 
+
 class Sector(IntEnum):
     """Sector types from merc.h"""
+
     INSIDE = 0
     CITY = 1
     FIELD = 2
@@ -24,8 +29,10 @@ class Sector(IntEnum):
     DESERT = 10
     MAX = 11
 
+
 class Position(IntEnum):
     """Character positions from merc.h"""
+
     DEAD = 0
     MORTAL = 1
     INCAP = 2
@@ -36,8 +43,10 @@ class Position(IntEnum):
     FIGHTING = 7
     STANDING = 8
 
+
 class WearLocation(IntEnum):
     """Equipment wear locations from merc.h"""
+
     NONE = -1
     LIGHT = 0
     FINGER_L = 1
@@ -59,8 +68,10 @@ class WearLocation(IntEnum):
     HOLD = 17
     FLOAT = 18
 
+
 class Sex(IntEnum):
     """Biological sex of a character"""
+
     NONE = 0
     MALE = 1
     FEMALE = 2
@@ -69,6 +80,7 @@ class Sex(IntEnum):
 
 class Size(IntEnum):
     """Character sizes"""
+
     TINY = 0
     SMALL = 1
     MEDIUM = 2
@@ -79,6 +91,7 @@ class Size(IntEnum):
 
 class ItemType(IntEnum):
     """Common object types"""
+
     LIGHT = 1
     SCROLL = 2
     WAND = 3
@@ -108,3 +121,11 @@ class ItemType(IntEnum):
     GEM = 32
     JEWELRY = 33
     JUKEBOX = 34
+
+
+# START affects_saves
+class AffectFlag(IntFlag):
+    BLIND = 0x00000001
+
+
+# END affects_saves
