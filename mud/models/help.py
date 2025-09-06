@@ -16,3 +16,13 @@ class HelpEntry:
     @classmethod
     def from_json(cls, data: HelpJson) -> "HelpEntry":
         return cls(**data.to_dict())
+
+
+# placeholder registry to track loaded help entries
+help_registry: dict[str, HelpEntry] = {}
+
+
+def register_help(entry: HelpEntry) -> None:
+    """Register a help entry under each keyword."""
+    for keyword in entry.keywords:
+        help_registry[keyword.lower()] = entry

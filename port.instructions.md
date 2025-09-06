@@ -28,6 +28,30 @@
 - RULE: File formats (areas/help/player saves) must parse/serialize byte-for-byte compatible fields and ordering.
   RATIONALE: Tiny text/layout changes break content and saves.
   EXAMPLE: save_player() writes fields in ROM order; golden read/write round-trip test passes
+- RULE: Wiznet channels must mirror ROM wiznet flag bits and levels; track immortal subscriptions.
+  RATIONALE: Ensures admin communications match ROM visibility.
+  EXAMPLE: wiznet("Imm info", WIZ_ON, ch)
+- RULE: Track affects and saving throws with bitmask flags; avoid Python booleans.
+  RATIONALE: ROM uses fixed-width bit flags; parity requires bitwise operations.
+  EXAMPLE: ch.affected_by |= AFF_BLIND
+- RULE: Dispatch social commands via registry loaded from ROM `social.are`; forbid hard-coded emote strings.
+  RATIONALE: Maintains ROM social messaging and target handling.
+  EXAMPLE: social = social_registry["smile"]; social.execute(ch, victim)
+- RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
+  RATIONALE: Day/night transitions affect light levels and time-based effects.
+  EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
+- RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
+  RATIONALE: ROM prevents over-encumbered characters from moving.
+  EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
+- RULE: Serve help topics via registry loaded from ROM help JSON; dispatch `help` command through keyword lookup.
+  RATIONALE: Preserves ROM help text layout and keyword search behavior.
+  EXAMPLE: text = help_registry["murder"].text
+- RULE: Invoke NPC special functions via registry each tick; avoid hard-coded checks.
+  RATIONALE: ROM uses spec_fun pointers for mob AI; registry preserves behaviors.
+  EXAMPLE: spec_fun = spec_fun_registry.get(ch.spec_fun); spec_fun(ch)
+- RULE: Log admin commands to `log/admin.log` and rotate daily.
+  RATIONALE: Ensures immortal actions are auditable like ROM's wiznet logs.
+  EXAMPLE: ban bob  # appends line to log/admin.log
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
