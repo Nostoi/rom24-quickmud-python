@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quickmud"
-version = "0.1.0"
+version = "0.1.1"
 description = "QuickMUD Python tools"
 authors = ["QuickMUD Team <example@example.com>"]
 package-mode = false

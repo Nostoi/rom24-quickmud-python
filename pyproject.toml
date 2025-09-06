@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quickmud"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python port of the ROM 2.4b6 MUD engine"
 readme = "README.md"
 requires-python = ">=3.10"
