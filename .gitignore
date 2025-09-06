@@ -5,3 +5,6 @@ pytest_cache/
 tests/__pycache__/
 game.db
 .history/
+dist/
+build/
+*.egg-info/

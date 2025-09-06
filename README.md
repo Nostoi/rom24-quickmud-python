@@ -30,10 +30,28 @@ source venv/bin/activate
 pip install -e .[dev]
 ```
 
+For a fully reproducible environment, use the pinned requirements files:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Tools like [Poetry](https://python-poetry.org/) or [pip-tools](https://github.com/jazzband/pip-tools) can also manage dependenci
+es and lock files if you prefer that workflow.
+
 Run tests with:
 
 ```bash
 pytest
+```
+
+### Publishing
+
+Build and upload a wheel to PyPI when releasing:
+
+```bash
+python -m build
+twine upload dist/*
 ```
 
 
