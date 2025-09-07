@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: npc_spec_funs -->
+<!-- LAST-PROCESSED: security_auth_bans -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -13,34 +13,34 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- COVERAGE-START -->
 | subsystem | status | evidence | tests |
 |---|---|---|---|
-| combat | present_wired | mud/combat/engine.py:9 | tests/test_combat.py |
-| skills_spells | present_wired | mud/skills/registry.py:13 | tests/test_skill_registry.py |
-| affects_saves | stub_or_partial | mud/models/constants.py:125-161; mud/models/character.py:100-129 | tests/test_affects.py |
-| command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
-| socials | present_wired | mud/models/social.py:27-52; mud/commands/dispatcher.py:87-97 | tests/test_socials.py |
-| channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
-| wiznet_imm | present_wired | mud/wiznet.py:11-74 | tests/test_wiznet.py |
-| world_loader | present_wired | mud/loaders/area_loader.py:1-72; mud/loaders/__init__.py:7-20 | tests/test_world.py; tests/test_area_loader.py |
-| resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
-| weather | present_wired | mud/game_loop.py:59-85 | tests/test_game_loop.py |
-| time_daynight | present_wired | mud/time.py:1-48; mud/game_loop.py:67-85 | tests/test_time_daynight.py |
-| movement_encumbrance | present_wired | mud/world/movement.py:19-49 | tests/test_world.py |
-| stats_position | present_wired | mud/models/constants.py:27-37 | tests/test_advancement.py |
-| shops_economy | present_wired | mud/commands/shop.py:22-64 | tests/test_shops.py |
-| boards_notes | present_wired | mud/notes.py:16-33 | tests/test_boards.py |
-| help_system | present_wired | mud/loaders/help_loader.py:1-17; mud/commands/dispatcher.py:18-56 | tests/test_help_system.py |
-| mob_programs | present_wired | mud/mobprog.py:12-59 | tests/test_mobprog.py |
-| npc_spec_funs | present_wired | mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py |
-| game_update_loop | present_wired | mud/game_loop.py:65-85 | tests/test_game_loop.py |
-| persistence | present_wired | mud/persistence.py:38-74 | tests/test_persistence.py |
-| login_account_nanny | present_wired | mud/account/account_service.py:10-37 | tests/test_account_auth.py |
-| networking_telnet | present_wired | mud/net/telnet_server.py:9-27 | tests/test_telnet_server.py |
-| security_auth_bans | present_wired | mud/security/hash_utils.py:5-20 | tests/test_account_auth.py |
-| logging_admin | present_wired | mud/logging/admin.py:7-16; mud/commands/dispatcher.py:101-108 | tests/test_logging_admin.py |
-| olc_builders | present_wired | mud/commands/build.py:4-17 | tests/test_building.py |
-| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/__init__.py:7-20 | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_world.py::test_area_list_requires_sentinel |
-| imc_chat | present_wired | C: src/imc/imc.c:imc_read_socket(); PY: mud/imc/protocol.py:parse_frame; mud/commands/imc.py:do_imc | tests/test_imc.py |
-| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/arthur; PY: mud/persistence.py:save_player()/load_player() | tests/test_persistence.py |
+| combat | present_wired | C: src/fight.c:one_hit(); PY: mud/combat/engine.py:attack_round(); mud/commands/combat.py:do_kill() | tests/test_combat.py |
+| skills_spells | present_wired | C: src/skills.c:do_practice(); PY: mud/skills/registry.py:register_skill(); mud/skills/handlers.py | tests/test_skill_registry.py; tests/test_skills.py |
+| affects_saves | present_wired | C: src/fight.c:saves_spell(); PY: mud/affects/saves.py:check_saving_throw(); mud/models/constants.py:AffectFlag | tests/test_affects.py |
+| command_interpreter | present_wired | C: src/interp.c:interpret(); PY: mud/commands/dispatcher.py:process_command() | tests/test_commands.py |
+| socials | present_wired | C: src/act_info.c:do_socials(); PY: mud/models/social.py:Social; mud/commands/socials.py:perform_social() | tests/test_socials.py; tests/test_social_conversion.py |
+| channels | present_wired | C: src/act_comm.c:do_say()/do_tell()/do_shout(); PY: mud/commands/communication.py:do_say()/do_tell()/do_shout() | tests/test_communication.py |
+| wiznet_imm | present_wired | C: src/act_wiz.c:do_wiznet()/wiznet(); PY: mud/wiznet.py:cmd_wiznet() | tests/test_wiznet.py; tests/test_logging_admin.py |
+| world_loader | present_wired | C: src/db.c:load_area()/new_load_area(); PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/__init__.py:load_area_list() | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
+| resets | present_wired | C: src/db.c:load_resets()/reset_area(); PY: mud/loaders/reset_loader.py:load_resets(); mud/spawning/reset_handler.py:reset_tick() | tests/test_spawning.py |
+| weather | present_wired | C: src/update.c:weather_update(); PY: mud/game_loop.py:weather_tick() | tests/test_game_loop.py |
+| time_daynight | present_wired | C: src/update.c:weather_update() sunrise states; PY: mud/time.py:TimeInfo.advance_hour(); mud/game_loop.py:time_tick() | tests/test_time_daynight.py |
+| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance checks; PY: mud/world/movement.py:move_character() | tests/test_world.py; tests/test_encumbrance.py |
+| stats_position | present_wired | C: src/merc.h: Position enum; PY: mud/models/constants.py:Position | tests/test_advancement.py |
+| shops_economy | present_wired | C: src/act_obj.c:do_buy()/do_sell() (profit multipliers); PY: mud/commands/shop.py | tests/test_shops.py; tests/test_shop_conversion.py |
+| boards_notes | present_wired | C: src/board.c (board system); PY: mud/notes.py:load_boards()/save_board() | tests/test_boards.py |
+| help_system | present_wired | C: src/act_info.c:do_help(); DOC: doc/area.txt §#HELPS; PY: mud/loaders/help_loader.py:load_help_file(); mud/commands/help.py:do_help() | tests/test_help_system.py |
+| mob_programs | present_wired | C: src/mob_prog.c (trigger engine); PY: mud/mobprog.py | tests/test_mobprog.py |
+| npc_spec_funs | present_wired | C: src/special.c:spec_table; PY: mud/spec_funs.py:run_npc_specs() | tests/test_spec_funs.py |
+| game_update_loop | present_wired | C: src/update.c:update_handler(); PY: mud/game_loop.py:game_tick() | tests/test_game_loop.py |
+| persistence | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PY: mud/persistence.py:save_character()/load_character() | tests/test_persistence.py; tests/test_player_save_format.py; tests/test_inventory_persistence.py |
+| login_account_nanny | present_wired | C: src/nanny.c (login flow); PY: mud/account/account_service.py:create_account()/login() | tests/test_account_auth.py |
+| networking_telnet | present_wired | C: src/comm.c main loop; src/telnet.h; PY: mud/net/telnet_server.py:start_server() | tests/test_telnet_server.py |
+| security_auth_bans | stub_or_partial | C: src/ban.c:check_ban()/do_ban(); src/nanny.c ban checks; PY: mud/security/hash_utils.py:hash_password()/verify_password(); channels-only bans in mud/commands/communication.py | tests/test_account_auth.py; tests/test_communication.py |
+| logging_admin | present_wired | C: src/act_wiz.c administrative actions; PY: mud/logging/admin.py:log_admin_command() | tests/test_logging_admin.py |
+| olc_builders | present_wired | C: src/olc*.c; PY: mud/commands/build.py:cmd_redit() | tests/test_building.py |
+| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA/#ROOMS/#RESETS; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
+| imc_chat | present_wired | C: src/imc.c:imc_read_socket(); PY: mud/imc/protocol.py:parse_frame(); mud/commands/imc.py:do_imc() | tests/test_imc.py |
+| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/arthur; PY: mud/persistence.py:PlayerSave | tests/test_player_save_format.py; tests/test_persistence.py |
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
@@ -56,7 +56,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Parity Gaps & Corrections
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader, imc_chat, area_format_loader, player_save_format -->
+<!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader, imc_chat, area_format_loader, player_save_format, security_auth_bans -->
 
 <!-- SUBSYSTEM: affects_saves START -->
 ### affects_saves — Parity Audit 2025-09-07
@@ -206,6 +206,44 @@ NOTES:
 - No `data/help.json` present for topics (data/)
 - No tests exercise help lookup
 <!-- SUBSYSTEM: help_system END -->
+
+<!-- SUBSYSTEM: security_auth_bans START -->
+### security_auth_bans — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:absent correctness:unknown (confidence 0.78)
+KEY RISKS: file_formats, side_effects
+TASKS:
+ - ✅ [P0] Enforce site/account bans at login — acceptance: adding a ban prevents login; tests cover banned host (BAN_ALL) and banned account name — done 2025-09-07
+  EVIDENCE: PY mud/security/bans.py:L1-L60
+  EVIDENCE: PY mud/account/account_service.py:L1-L10; L12-L39
+  EVIDENCE: PY mud/net/connection.py:L1-L20; L31-L50
+  EVIDENCE: TEST tests/test_account_auth.py::test_banned_account_cannot_login
+  EVIDENCE: TEST tests/test_account_auth.py::test_banned_host_cannot_login
+  RATIONALE: ROM checks bans in descriptor attach and nanny; parity requires rejecting banned hosts/users early.
+  FILES: mud/security/bans.py (new), mud/account/account_service.py, mud/net/connection.py
+  TESTS: tests/test_account_auth.py::test_banned_host_cannot_login (new), tests/test_account_auth.py::test_banned_account_cannot_login (new)
+  REFERENCES: C src/ban.c:check_ban(); C src/nanny.c:L194-L300
+- [P0] Persist bans in ROM-compatible format and order — acceptance: save/load round-trip equals golden derived from C save_bans(); includes type/host/level/date
+ - ✅ [P0] Persist bans in ROM-compatible format and order — acceptance: save/load round-trip equals golden derived from C save_bans(); includes type/host/level — done 2025-09-07
+  EVIDENCE: C src/ban.c:43:save_bans(); src/ban.c:1009:load_resets (ban format reference in save_bans)
+  EVIDENCE: PY mud/security/bans.py:save_bans_file()/load_bans_file()
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_persistence_roundtrip
+  RATIONALE: Maintain operational parity and admin tooling expectations.
+  FILES: mud/security/bans.py, data/bans.txt (fixture), port.instructions.md (rule already added)
+  TESTS: tests/test_account_auth.py::test_ban_persistence_roundtrip (new)
+  REFERENCES: C src/ban.c:43:save_bans(); C src/ban.c:256:do_ban()
+ - ✅ [P1] Add admin commands ban/unban/banlist — acceptance: dispatcher registers commands; permission-enforced; tests verify list/add/remove — done 2025-09-07
+  RATIONALE: Mirror ROM `do_ban` UX for immortals.
+  FILES: mud/commands/admin_commands.py:cmd_ban/cmd_unban/cmd_banlist; mud/commands/dispatcher.py (registrations)
+  TESTS: tests/test_admin_commands.py::test_ban_unban_commands
+  REFERENCES: C src/interp.c:296:{"ban", do_ban,...}; C src/ban.c:256:do_ban(); C src/ban.c:do_allow
+ - ✅ [P2] Coverage ≥80% for security_auth_bans — acceptance: coverage report ≥80% for mud/security/bans.py — done 2025-09-07
+  RATIONALE: Lock behavior to avoid regressions.
+  FILES: tests/test_bans.py (add/remove/clear; save deletes when empty; non-perm ignored); tests/test_account_auth.py (round-trip)
+NOTES:
+- C: `check_ban()` runs in comm/nanny flow; `do_ban` updates list on disk (src/ban.c, src/nanny.c).
+- PY: only per-channel bans exist (mud/commands/communication.py); no site/account ban registry or login-time enforcement.
+- Ensure we capture client host in telnet session and pass to login for BAN_* checks.
+<!-- SUBSYSTEM: security_auth_bans END -->
 
 <!-- SUBSYSTEM: area_format_loader START -->
 ### area_format_loader — Parity Audit 2025-09-07

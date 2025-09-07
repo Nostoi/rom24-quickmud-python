@@ -5,7 +5,7 @@ from mud.account import (
     load_character,
     save_character,
     create_account,
-    login,
+    login_with_host,
     list_characters,
     create_character,
 )
@@ -18,6 +18,9 @@ async def handle_connection(
     reader: asyncio.StreamReader, writer: asyncio.StreamWriter
 ) -> None:
     addr = writer.get_extra_info("peername")
+    host_for_ban = None
+    if isinstance(addr, tuple) and addr:
+        host_for_ban = addr[0]
     session = None
     char = None
     account = None
@@ -41,10 +44,11 @@ async def handle_connection(
             if not pwd_data:
                 return
             password = pwd_data.decode().strip()
-            account = login(username, password)
+            # Enforce site/account bans at login time
+            account = login_with_host(username, password, host_for_ban)
             if not account:
                 if create_account(username, password):
-                    account = login(username, password)
+                    account = login_with_host(username, password, host_for_ban)
                 else:
                     writer.write(b"Login failed.\r\n")
                     await writer.drain()
