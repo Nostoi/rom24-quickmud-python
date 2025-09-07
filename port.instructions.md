@@ -73,6 +73,9 @@
 - RULE: Register `wiznet` command in dispatcher; restrict usage to immortals and toggle flag bits via helper.
   RATIONALE: Keeps admin communications controlled and consistent with ROM wiznet flags.
   EXAMPLE: command_registry["wiznet"] = wiznet_cmd; wiznet_cmd(ch, "show")
+- RULE: Define wiznet flags via IntFlag with explicit bit values; forbid magic numbers.
+  RATIONALE: Ensures wiznet subscriptions use consistent bitmask widths.
+  EXAMPLE: class WiznetFlag(IntFlag): WIZ_ON = 0x00000001
 - RULE: Resolve saving throws with `rng_mm.number_percent` and `c_div`; forbid Python `%` or boolean short-circuit.
   RATIONALE: Preserves ROM probability and C arithmetic for saves.
   EXAMPLE: save = rng_mm.number_percent() < c_div(level * 3, 2)
