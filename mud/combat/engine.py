@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import random
-
 from mud.models.character import Character
 from mud.models.constants import Position
+from mud.utils import rng_mm
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -20,7 +19,8 @@ def attack_round(attacker: Character, victim: Character) -> str:
     victim.position = Position.FIGHTING
 
     to_hit = 50 + attacker.hitroll
-    if random.randint(1, 100) > to_hit:
+    # Use ROM-compatible RNG percent roll.
+    if rng_mm.number_percent() > to_hit:
         return f"You miss {victim.name}."
 
     damage = max(1, attacker.damroll)
