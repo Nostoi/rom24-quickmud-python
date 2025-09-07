@@ -3,7 +3,7 @@
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
 help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
-security_auth_bans, logging_admin, olc_builders -->
+security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 # Python Conversion Plan for QuickMUD
 
 ## Overview
@@ -38,6 +38,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | security_auth_bans | present_wired | mud/security/hash_utils.py:5-20 | tests/test_account_auth.py |
 | logging_admin | stub_or_partial | mud/logging/agent_trace.py:5-9 | — |
 | olc_builders | present_wired | mud/commands/build.py:4-17 | tests/test_building.py |
+| area_format_loader | C: db.c:load_area() | PY: mud/loaders/area_loader.py:load_area_json(); scripts/convert_are_to_json.py |
+| imc_chat | C: imc/imc.c:imc_read_socket() | PY: (absent) |
+| player_save_format | C: save.c:save_char_obj()/load_char_obj() | PY: mud/persistence.py:save_player()/load_player() |
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
