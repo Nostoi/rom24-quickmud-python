@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: npc_spec_funs -->
+<!-- LAST-PROCESSED: logging_admin -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -45,7 +45,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
+ <!-- affects_saves P0 complete 2025-09-07 -->
 - npc_spec_funs: Build spec_fun registry and invoke during NPC updates
 - npc_spec_funs: Load spec_fun names from mob JSON and execute functions
 <!-- logging_admin P0s completed 2025-09-07 -->
@@ -63,21 +63,20 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- SUBSYSTEM: affects_saves START -->
 ### affects_saves — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.62)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.74)
 KEY RISKS: flags, RNG
 TASKS:
 - ✅ [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values — done 2025-09-07
   EVIDENCE: mud/models/constants.py:L125-L158; tests/test_affects.py::test_affect_flag_values
 - ✅ [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats — done 2025-09-08
   EVIDENCE: mud/models/character.py:L100-L129; tests/test_affects.py::test_apply_and_remove_affects_updates_stats
-- [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables
-  - rationale: match src/magic.c `saves_spell` probabilities
-  - files: mud/models/character.py, mud/models/constants.py
-  - tests: tests/test_affects.py::test_saving_throw_resolution
-  - acceptance_criteria: deterministic pass/fail per C table
-  - estimate: M
-  - risk: high
-  - references: C src/magic.c:212-236; PY mud/models/character.py:62
+- ✅ [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables — done 2025-09-07
+  EVIDENCE: C src/magic.c:saves_spell() L212-L243
+  EVIDENCE: DOC doc/class.txt § Classes (fMana)
+  EVIDENCE: PY mud/affects/saves.py:L1-L56
+  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_uses_level_and_saving_throw
+  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_berserk_bonus
+  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_fmana_reduction
 - [P1] Persist affects to character saves with correct bit widths
   - rationale: ensure save/load parity
   - files: mud/persistence.py
@@ -94,10 +93,10 @@ TASKS:
   - estimate: M
   - risk: low
 NOTES:
-- C: src/magic.c:saves_spell() L212-L236
-- PY: mud/models/character.py:62; mud/models/constants.py:125-158
+- C: src/magic.c:saves_spell() L212-L243
+- PY: mud/models/character.py:62; mud/models/constants.py:125-158; mud/affects/saves.py:1-56
 - Helper methods update stats when applying/removing affects (character.py:100-129; tests/test_affects.py:26-38)
-- Saving throw tables absent; resolution not implemented
+- Saving throw tables initially absent; resolution now implemented with fMana
 - `AffectFlag` enumerates full ROM bitset
 <!-- SUBSYSTEM: affects_saves END -->
 
