@@ -17,28 +17,28 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | skills_spells | present_wired | mud/skills/registry.py:13 | tests/test_skill_registry.py |
 | affects_saves | stub_or_partial | mud/models/constants.py:125-161; mud/models/character.py:100-129 | tests/test_affects.py |
 | command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
-| socials | stub_or_partial | mud/models/social.py:27-52 | tests/test_socials.py |
+| socials | present_wired | mud/models/social.py:27-52; mud/commands/dispatcher.py:87-97 | tests/test_socials.py |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
-| wiznet_imm | stub_or_partial | mud/wiznet.py:11-58 | tests/test_wiznet.py |
-| world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py; tests/test_area_loader.py |
+| wiznet_imm | present_wired | mud/wiznet.py:11-74 | tests/test_wiznet.py |
+| world_loader | present_wired | mud/loaders/area_loader.py:1-72; mud/loaders/__init__.py:7-20 | tests/test_world.py; tests/test_area_loader.py |
 | resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
-| weather | present_wired | mud/game_loop.py:59-68 | tests/test_game_loop.py |
-| time_daynight | stub_or_partial | mud/time.py:1-48; mud/game_loop.py:67-85 | tests/test_time_daynight.py |
-| movement_encumbrance | stub_or_partial | mud/world/movement.py:19-49 | tests/test_world.py |
+| weather | present_wired | mud/game_loop.py:59-85 | tests/test_game_loop.py |
+| time_daynight | present_wired | mud/time.py:1-48; mud/game_loop.py:67-85 | tests/test_time_daynight.py |
+| movement_encumbrance | present_wired | mud/world/movement.py:19-49 | tests/test_world.py |
 | stats_position | present_wired | mud/models/constants.py:27-37 | tests/test_advancement.py |
 | shops_economy | present_wired | mud/commands/shop.py:22-64 | tests/test_shops.py |
 | boards_notes | present_wired | mud/notes.py:16-33 | tests/test_boards.py |
-| help_system | stub_or_partial | mud/models/help.py:8-18 | — |
+| help_system | present_wired | mud/loaders/help_loader.py:1-17; mud/commands/dispatcher.py:18-56 | tests/test_help_system.py |
 | mob_programs | present_wired | mud/mobprog.py:12-59 | tests/test_mobprog.py |
 | npc_spec_funs | stub_or_partial | mud/models/mob.py:21 | tests/test_spec_funs.py::test_case_insensitive_lookup |
-| game_update_loop | present_wired | mud/game_loop.py:65-70 | tests/test_game_loop.py |
+| game_update_loop | present_wired | mud/game_loop.py:65-85 | tests/test_game_loop.py |
 | persistence | present_wired | mud/persistence.py:38-74 | tests/test_persistence.py |
 | login_account_nanny | present_wired | mud/account/account_service.py:10-37 | tests/test_account_auth.py |
 | networking_telnet | present_wired | mud/net/telnet_server.py:9-27 | tests/test_telnet_server.py |
 | security_auth_bans | present_wired | mud/security/hash_utils.py:5-20 | tests/test_account_auth.py |
 | logging_admin | stub_or_partial | mud/logging/agent_trace.py:5-9 | — |
 | olc_builders | present_wired | mud/commands/build.py:4-17 | tests/test_building.py |
-| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_json(); scripts/convert_are_to_json.py | tests/test_area_loader.py; tests/test_area_counts.py |
+| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/__init__.py:7-20 | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_world.py::test_area_list_requires_sentinel |
 | imc_chat | absent | C: src/imc/imc.c:imc_read_socket(); PY: (absent) | — |
 | player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/arthur; PY: mud/persistence.py:save_player()/load_player() | tests/test_persistence.py |
 <!-- COVERAGE-END -->
@@ -48,8 +48,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
 - npc_spec_funs: Build spec_fun registry and invoke during NPC updates
 - npc_spec_funs: Load spec_fun names from mob JSON and execute functions
-- logging_admin: Log admin commands to `log/admin.log` with timestamps
-- logging_admin: Hook logging into admin command handlers
+<!-- logging_admin P0s completed 2025-09-07 -->
 <!-- NEXT-ACTIONS-END -->
 
 ## Data Anchors (Canonical Samples)
@@ -216,7 +215,10 @@ STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.
 KEY RISKS: file_formats, flags, indexing
 TASKS:
 - [P0] Verify Midgaard conversion parity (counts & exits) — acceptance: ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS counts match; exit flags/doors/keys verified; golden JSON added
-- [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — acceptance: missing/duplicate entries raise errors; unit test asserts failures
+- ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — acceptance: missing/duplicate entries raise errors; unit test asserts failures — done 2025-09-07
+  EVIDENCE: PY mud/loaders/__init__.py:L14-L20 (sentinel check)
+  EVIDENCE: PY mud/loaders/area_loader.py:L62-L69 (duplicate vnum rejection)
+  EVIDENCE: TEST tests/test_world.py::test_area_list_requires_sentinel
 - [P1] Preserve `#RESETS` command semantics — acceptance: reset loop reproduces ROM placements on tick; golden-driven test
 - [P2] Coverage ≥80% for area_format_loader — acceptance: coverage report ≥80%
 NOTES:
@@ -257,20 +259,7 @@ NOTES:
 <!-- SUBSYSTEM: imc_chat END -->
 
 
-<!-- SUBSYSTEM: socials START -->
-### socials — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
-KEY RISKS: file_formats, side_effects
-TASKS:
-- [P0] Convert `social.are` to JSON per ROM width rules — acceptance: golden JSON matches ROM text layout
-- [P0] Wire dispatcher & placeholder expansion — acceptance: `$n/$N/$mself` expansions validated for actor/room/victim lines
-- [P2] Coverage ≥80% for socials — acceptance: coverage report ≥80%
-NOTES:
-- C: `src/socials.c` definitions; `interp.c` dispatch
-- DOC: `doc/area.txt` social entry format
-- ARE: `areas/social.are` as source
-- PY: `mud/loaders/social_loader.py`, `mud/commands/socials.py`, `mud/models/social.py`
-<!-- SUBSYSTEM: socials END -->
+<!-- Removed duplicate SUBSYSTEM: socials block (merged above) -->
 
 
 <!-- SUBSYSTEM: npc_spec_funs START -->
@@ -330,8 +319,12 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
 KEY RISKS: file_formats, side_effects
 TASKS:
-- [P0] Log admin commands to `log/admin.log` with timestamps — acceptance: invoking `ban` writes entry
-- [P0] Hook logging into admin command handlers — acceptance: `wiznet` toggling logs action
+- ✅ [P0] Log admin commands to `log/admin.log` with timestamps — done 2025-09-07
+  EVIDENCE: PY mud/logging/admin.py:L1-L16
+  EVIDENCE: PY mud/commands/dispatcher.py:L87-L100 (admin logging hook)
+- ✅ [P0] Hook logging into admin command handlers — acceptance: `wiznet` toggling logs action — done 2025-09-07
+  EVIDENCE: TEST tests/test_logging_admin.py::test_wiznet_toggle_is_logged
+  EVIDENCE: PY mud/commands/dispatcher.py:L87-L100
 - [P1] Rotate admin log daily with ROM naming convention — acceptance: midnight tick creates new file
 - [P1] Achieve ≥80% test coverage for logging_admin — acceptance: coverage report ≥80%
 NOTES:

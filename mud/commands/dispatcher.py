@@ -17,6 +17,7 @@ from .build import cmd_redit
 from .socials import perform_social
 from .help import do_help
 from mud.wiznet import cmd_wiznet
+from mud.logging.admin import log_admin_command
 from mud.models.social import social_registry
 
 CommandFunc = Callable[[Character, str], str]
@@ -98,6 +99,13 @@ def process_command(char: Character, input_str: str) -> str:
     if command.admin_only and not getattr(char, "is_admin", False):
         return "You do not have permission to use this command."
     arg_str = " ".join(args)
+    # Log admin commands (accepted) to admin log for auditability.
+    if command.admin_only and getattr(char, "is_admin", False):
+        try:
+            log_admin_command(getattr(char, "name", "?"), command.name, arg_str)
+        except Exception:
+            # Logging must never break command execution.
+            pass
     return command.func(char, arg_str)
 
 
