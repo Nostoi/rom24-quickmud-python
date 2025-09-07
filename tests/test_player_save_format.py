@@ -61,3 +61,47 @@ def test_missing_header_footer_and_bad_hmv(tmp_path):
         assert False, 'expected ValueError for Act flags'
     except ValueError as e:
         assert 'Act flags' in str(e)
+
+
+def test_invalid_level_and_room(tmp_path):
+    bad = tmp_path / 'bad'
+    bad.write_text('#PLAYER\nName Bob~\nLevl X\nRoom 3001\nHMV 1 2 3 4 5 6\n#END\n', encoding='latin-1')
+    try:
+        convert_player(str(bad))
+        assert False
+    except ValueError as e:
+        assert 'invalid Levl' in str(e)
+
+    bad2 = tmp_path / 'bad2'
+    bad2.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom ROOM\nHMV 1 2 3 4 5 6\n#END\n', encoding='latin-1')
+    try:
+        convert_player(str(bad2))
+        assert False
+    except ValueError as e:
+        assert 'invalid Room' in str(e)
+
+
+def test_multi_letter_flags(tmp_path):
+    good = tmp_path / 'good'
+    good.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nAct ABC\nComm NOP\n#END\n', encoding='latin-1')
+    pj = convert_player(str(good))
+    def bit(ch):
+        return 1 << (ord(ch) - ord('A'))
+    assert pj.plr_flags == bit('A') | bit('B') | bit('C')
+    assert pj.comm_flags == bit('N') | bit('O') | bit('P')
+
+
+def test_player_json_field_order():
+    pj = PlayerJson(
+        name='X', level=1, hit=1, max_hit=1, mana=1, max_mana=1,
+        move=1, max_move=1, gold=0, silver=0, exp=0, position=0,
+        room_vnum=3001, inventory=[], equipment={}, plr_flags=0, comm_flags=0,
+    )
+    data = pj.to_dict()
+    keys = list(data.keys())
+    expected = [
+        'name','level','hit','max_hit','mana','max_mana','move','max_move',
+        'gold','silver','exp','position','room_vnum','inventory','equipment',
+        'plr_flags','comm_flags'
+    ]
+    assert keys == expected

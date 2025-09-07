@@ -250,6 +250,13 @@ TASKS:
   EVIDENCE: PY mud/scripts/convert_player_to_json.py (header/footer + HMV/flags validation)
   EVIDENCE: TEST tests/test_player_save_format.py::test_missing_header_footer_and_bad_hmv
 - [P2] Coverage ≥80% for player_save_format — acceptance: coverage report ≥80%
+  - rationale: confidence in mechanics
+  - files: tests/test_player_save_format.py
+  - tests: coverage report
+  - acceptance_criteria: coverage ≥80%
+  - estimate: M
+  - risk: low
+  - progress: added tests for invalid level/room, multi-letter flags, and field order; run coverage in CI to confirm ≥80%
 NOTES:
 - C: `src/save.c:save_char_obj()/load_char_obj()` define record layout & bit packing
 - DOC: `Rom2.4.doc` save layout notes (stats/flags)
