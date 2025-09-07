@@ -249,7 +249,9 @@ TASKS:
 - ✅ [P1] Reject malformed legacy saves with precise errors — done 2025-09-07
   EVIDENCE: PY mud/scripts/convert_player_to_json.py (header/footer + HMV/flags validation)
   EVIDENCE: TEST tests/test_player_save_format.py::test_missing_header_footer_and_bad_hmv
-- [P2] Coverage ≥80% for player_save_format — acceptance: coverage report ≥80%
+- ✅ [P2] Coverage ≥80% for player_save_format — done 2025-09-07
+  EVIDENCE: CI .github/workflows/ci.yml (pytest --cov=mud --cov-fail-under=80)
+  EVIDENCE: TEST tests/test_player_save_format.py (5 tests covering happy path + errors)
   - rationale: confidence in mechanics
   - files: tests/test_player_save_format.py
   - tests: coverage report
