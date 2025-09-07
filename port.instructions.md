@@ -37,6 +37,9 @@
 - RULE: Define affect flags via `IntFlag` with explicit bit values; forbid magic numbers.
   RATIONALE: Ensures flag widths match ROM and improves readability.
   EXAMPLE: class AffectFlag(IntFlag): BLIND = 0x00000001
+- RULE: Manipulate character affects via `add_affect`/`remove_affect`; forbid direct bit twiddling in game logic.
+  RATIONALE: Central helpers preserve future side effects and keep flag math consistent.
+  EXAMPLE: ch.add_affect(AffectFlag.BLIND)
 - RULE: Dispatch social commands via registry loaded from ROM `social.are`; forbid hard-coded emote strings.
   RATIONALE: Maintains ROM social messaging and target handling.
   EXAMPLE: social = social_registry["smile"]; social.execute(ch, victim)

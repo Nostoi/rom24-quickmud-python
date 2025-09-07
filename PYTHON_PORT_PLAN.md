@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: world_loader -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -15,7 +15,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 |---|---|---|---|
 | combat | present_wired | mud/combat/engine.py:9 | tests/test_combat.py |
 | skills_spells | present_wired | mud/skills/registry.py:13 | tests/test_skill_registry.py |
-| affects_saves | stub_or_partial | mud/models/character.py:52,60 | — |
+| affects_saves | stub_or_partial | mud/models/constants.py:127-132; mud/models/character.py:99-105 | tests/test_affects.py |
 | command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
 | socials | stub_or_partial | mud/models/social.py:8-42 | — |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
@@ -46,20 +46,20 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- SUBSYSTEM: affects_saves START -->
 ### affects_saves — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.60)
 KEY RISKS: flags, RNG
 TASKS:
-- [P0] Define ROM affect flag constants via IntFlag — acceptance: enumeration matches merc.h bit values
-- [P0] Implement affect application/removal with bit flags — acceptance: unit test toggles AFF_BLIND on/off
-- [P0] Implement saving throw resolution using number_mm — acceptance: deterministic pass/fail test
+- [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values
+- [P0] Implement saving throw resolution using number_mm and c_div — acceptance: deterministic pass/fail test
+- [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats
 - [P1] Persist affects to character saves with correct bit widths — acceptance: save/load round trip preserves flags
 - [P2] Achieve ≥80% test coverage for affects_saves — acceptance: coverage report ≥80%
 NOTES:
 - `Character.affected_by` and `saving_throw` fields lack mechanics
 - `AffectFlag` defines BLIND and INVISIBLE only
-- Applied tiny fix: added INVISIBLE flag constant
+- Applied tiny fix: added `add_affect`/`remove_affect` helpers
 - No saving throw or affect apply functions present
-- Existing unit test toggles BLIND bit directly
+- Existing unit test toggles BLIND bit via helpers
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
