@@ -3,7 +3,7 @@ from __future__ import annotations
 from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
 from mud.models.constants import AffectFlag
-from mud.utils.rng_mm import number_percent
+from mud.utils import rng_mm
 
 
 # Minimal fMana mapping from ROM const.c order: mage, cleric → True; thief, warrior → False
@@ -52,5 +52,4 @@ def saves_spell(level: int, victim: Character, dam_type: int) -> bool:
         save = c_div(9 * save, 10)
 
     save = urange(5, save, 95)
-    return number_percent() < save
-
+    return rng_mm.number_percent() < save

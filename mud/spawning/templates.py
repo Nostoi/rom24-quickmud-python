@@ -39,6 +39,9 @@ class MobInstance:
     prototype: MobIndex
     inventory: List[Object] = field(default_factory=list)
     room: Optional['Room'] = None
+    # Minimal encumbrance fields to interoperate with move_character
+    carry_weight: int = 0
+    carry_number: int = 0
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> 'MobInstance':

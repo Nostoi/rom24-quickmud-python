@@ -1,1 +1,1 @@
-scripts/agent_loop.sh: line 17: codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENT.md: command not found
+./scripts/agent_loop.sh: line 17: codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENTS.md: command not found

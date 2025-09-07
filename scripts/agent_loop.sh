@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # --- config knobs ---
-AUDITOR_CMD=${AUDITOR_CMD:-"codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENT.md"}
-EXECUTOR_CMD=${EXECUTOR_CMD:-"codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENT.EXECUTOR.md"}
+AUDITOR_CMD=${AUDITOR_CMD:-"codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENTS.md"}
+EXECUTOR_CMD=${EXECUTOR_CMD:-"codex exec --approval-mode auto-edit --quiet --json --prompt-file AGENTS.EXECUTOR.md"}
 MAX_ROUNDS=${MAX_ROUNDS:-20}
 LOG_DIR=${LOG_DIR:-.agent_logs}
 mkdir -p "$LOG_DIR"
