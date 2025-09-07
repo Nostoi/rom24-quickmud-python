@@ -40,6 +40,9 @@
 - RULE: Manipulate character affects via `add_affect`/`remove_affect`; forbid direct bit twiddling in game logic.
   RATIONALE: Central helpers preserve future side effects and keep flag math consistent.
   EXAMPLE: ch.add_affect(AffectFlag.BLIND)
+- RULE: Check character affects with `has_affect`; forbid inline bitmask tests.
+  RATIONALE: Central helper mirrors ROM macros and avoids scattered bit logic.
+  EXAMPLE: if ch.has_affect(AffectFlag.BLIND): ...
 - RULE: Dispatch social commands via registry loaded from ROM `social.are`; forbid hard-coded emote strings.
   RATIONALE: Maintains ROM social messaging and target handling.
   EXAMPLE: social = social_registry["smile"]; social.execute(ch, victim)
@@ -88,6 +91,9 @@
 - RULE: Require `$` sentinel at end of `area.lst`; raise `ValueError` if missing.
   RATIONALE: ROM uses `$` to terminate area lists; missing sentinel risks partial loads.
   EXAMPLE: load_all_areas("bad.lst")  # ValueError
+- RULE: Parse `#AREADATA` builders/security/flags into `Area`; forbid skipping this section.
+  RATIONALE: ROM stores builder permissions and security in `#AREADATA`; omitting them loses access control.
+  EXAMPLE: area = load_area_file('midgaard.are'); assert area.builders and area.security == 9
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)

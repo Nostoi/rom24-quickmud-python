@@ -100,6 +100,9 @@ class Character:
     def add_affect(self, flag: AffectFlag) -> None:
         self.affected_by |= flag
 
+    def has_affect(self, flag: AffectFlag) -> bool:
+        return bool(self.affected_by & flag)
+
     def remove_affect(self, flag: AffectFlag) -> None:
         self.affected_by &= ~flag
 # END affects_saves

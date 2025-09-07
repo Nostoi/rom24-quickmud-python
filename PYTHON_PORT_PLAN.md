@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: wiznet_imm -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -20,7 +20,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | socials | stub_or_partial | mud/models/social.py:8-42 | — |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
 | wiznet_imm | stub_or_partial | mud/wiznet.py:1-13 | — |
-| world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py |
+| world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py; tests/test_area_loader.py |
 | resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
 | weather | present_wired | mud/game_loop.py:59-68 | tests/test_game_loop.py |
 | time_daynight | absent | rg "day" (no matches) | — |
@@ -58,8 +58,8 @@ NOTES:
 - `Character.affected_by` and `saving_throw` fields lack mechanics
 - `AffectFlag` defines BLIND and INVISIBLE only
 - Applied tiny fix: added `add_affect`/`remove_affect` helpers
+- Applied tiny fix: added `has_affect` helper and test
 - No saving throw or affect apply functions present
-- Existing unit test toggles BLIND bit via helpers
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
@@ -97,7 +97,7 @@ NOTES:
 
 <!-- SUBSYSTEM: world_loader START -->
 ### world_loader — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.60)
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.65)
 KEY RISKS: file_formats, indexing
 TASKS:
 - [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test
@@ -106,23 +106,25 @@ NOTES:
 - `load_area_file` ignores `#AREADATA` fields
 - Tests only verify movement/lookup, not area metadata
 - Applied tiny fix: key `area_registry` by `min_vnum`
-- Applied tiny fix: reject duplicate area vnums in `area_registry`
-- Applied tiny fix: enforce `$` sentinel in `area.lst`
-- Added test ensuring missing sentinel raises `ValueError`
+- Applied tiny fix: reject duplicate area vnums in `area_registry`; added regression test
+- Applied tiny fix: enforce `$` sentinel in `area.lst`; test added
+- Applied tiny fix: reordered imports in `tests/test_area_loader.py`
 <!-- SUBSYSTEM: world_loader END -->
 
 <!-- SUBSYSTEM: time_daynight START -->
-### time_daynight — Parity Audit 2025-09-07
+### time_daynight — Parity Audit 2025-09-06
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.90)
 KEY RISKS: tick_cadence
 TASKS:
 - [P0] Implement ROM `time_info` with hour/day/month/year and sun state — acceptance: unit test advances hour and triggers sunrise
 - [P0] Broadcast sunrise/sunset messages to players — acceptance: pytest captures "The sun rises" on transition
+- [P0] Advance time at ROM tick cadence (4 pulses/hour) — acceptance: tick loop advances hour after 4 pulses
 - [P1] Persist `time_info` across reboot — acceptance: save/load retains current hour
 - [P2] Achieve ≥80% test coverage for time_daynight — acceptance: coverage report ≥80%
 NOTES:
 - `rg "day"` finds no time-of-day logic
 - `mud/game_loop.py` tracks weather but not sun state
+- No `TimeInfo` dataclass or sunrise messages exist
 <!-- SUBSYSTEM: time_daynight END -->
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
