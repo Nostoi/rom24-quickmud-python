@@ -2,6 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, TYPE_CHECKING
 
+from mud.models.constants import AffectFlag
+
 if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.models.room import Room
@@ -93,6 +95,14 @@ class Character:
         if obj in self.inventory:
             self.inventory.remove(obj)
         self.equipment[slot] = obj
+
+# START affects_saves
+    def add_affect(self, flag: AffectFlag) -> None:
+        self.affected_by |= flag
+
+    def remove_affect(self, flag: AffectFlag) -> None:
+        self.affected_by &= ~flag
+# END affects_saves
 
 
 character_registry: list[Character] = []
