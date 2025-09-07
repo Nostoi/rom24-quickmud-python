@@ -9,7 +9,14 @@ from .inspection import do_look
 from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say, do_tell, do_shout
 from .combat import do_kill
-from .admin_commands import cmd_who, cmd_teleport, cmd_spawn
+from .admin_commands import (
+    cmd_who,
+    cmd_teleport,
+    cmd_spawn,
+    cmd_ban,
+    cmd_unban,
+    cmd_banlist,
+)
 from .shop import do_list, do_buy, do_sell
 from .advancement import do_practice, do_train
 from .notes import do_board, do_note
@@ -60,6 +67,9 @@ COMMANDS: List[Command] = [
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
+    Command("ban", cmd_ban, admin_only=True),
+    Command("unban", cmd_unban, admin_only=True),
+    Command("banlist", cmd_banlist, admin_only=True),
     Command("@redit", cmd_redit, admin_only=True),
     Command("wiznet", cmd_wiznet, admin_only=True),
 ]

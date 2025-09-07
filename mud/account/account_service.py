@@ -5,6 +5,7 @@ from typing import Optional, List
 from mud.db.session import SessionLocal
 from mud.db.models import PlayerAccount, Character
 from mud.security.hash_utils import hash_password, verify_password
+from mud.security import bans
 
 
 def create_account(username: str, raw_password: str) -> bool:
@@ -25,6 +26,9 @@ def create_account(username: str, raw_password: str) -> bool:
 
 def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
     """Return PlayerAccount if credentials match."""
+    # Enforce account-name bans irrespective of host.
+    if bans.is_account_banned(username):
+        return None
     session = SessionLocal()
     account = session.query(PlayerAccount).filter_by(username=username).first()
     if account and verify_password(raw_password, account.password_hash):
@@ -35,6 +39,19 @@ def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
         return account
     session.close()
     return None
+
+
+def login_with_host(
+    username: str, raw_password: str, host: str | None
+) -> Optional[PlayerAccount]:
+    """Login that also enforces site bans.
+
+    This wrapper checks both account and host bans and only then delegates to
+    the standard login function.
+    """
+    if bans.is_host_banned(host):
+        return None
+    return login(username, raw_password)
 
 
 def list_characters(account: PlayerAccount) -> List[str]:

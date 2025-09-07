@@ -2,6 +2,7 @@
 
 from mud.registry import shop_registry
 from mud.models.character import Character
+from mud.math.c_compat import c_div
 
 
 def _find_shopkeeper(char: Character):
@@ -32,7 +33,7 @@ def do_list(char: Character, args: str = "") -> str:
     for obj in keeper.inventory:
         name = obj.short_descr or obj.name or "item"
         base_cost = getattr(obj.prototype, "cost", 0)
-        price = base_cost * shop.profit_buy // 100
+        price = c_div(base_cost * shop.profit_buy, 100)
         items.append(f"{name} {price} gold")
     return "Items for sale: " + ", ".join(items)
 
@@ -51,7 +52,7 @@ def do_buy(char: Character, args: str) -> str:
         obj_name = (obj.short_descr or obj.name or "").lower()
         if name in obj_name:
             base_cost = getattr(obj.prototype, "cost", 0)
-            price = base_cost * shop.profit_buy // 100
+            price = c_div(base_cost * shop.profit_buy, 100)
             if char.gold < price:
                 return "You can't afford that."
             char.gold -= price
@@ -78,10 +79,9 @@ def do_sell(char: Character, args: str) -> str:
             if shop.buy_types and item_type not in shop.buy_types:
                 return "The shopkeeper doesn't buy that."
             base_cost = getattr(obj.prototype, "cost", 0)
-            price = base_cost * shop.profit_sell // 100
+            price = c_div(base_cost * shop.profit_sell, 100)
             char.gold += price
             char.inventory.remove(obj)
             keeper.inventory.append(obj)
             return f"You sell {obj.short_descr or obj.name} for {price} gold."
     return "You don't have that."
-

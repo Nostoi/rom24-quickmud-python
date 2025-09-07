@@ -118,6 +118,9 @@
 - RULE: Register `spec_fun` names in lowercase for case-insensitive lookup.
   RATIONALE: ROM's `spec_lookup` compares names without regard to case.
   EXAMPLE: register_spec_fun("Spec_Cast_Adept", func)
+ - RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
+  RATIONALE: Security parity with ROM (`check_ban`/`do_ban`); prevents banned hosts/accounts from entering.
+  EXAMPLE: add_ban(host="bad.example", type="all"); assert login(host) == "BANNED"
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
