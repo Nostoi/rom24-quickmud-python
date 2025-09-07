@@ -27,7 +27,10 @@ class PlayerSave:
     silver: int
     exp: int
     position: int
-    room_vnum: Optional[int]
+    # ROM bitfields to preserve flags parity
+    affected_by: int = 0
+    wiznet: int = 0
+    room_vnum: Optional[int] = None
     inventory: List[int] = field(default_factory=list)
     equipment: Dict[str, int] = field(default_factory=dict)
 
@@ -51,6 +54,8 @@ def save_character(char: Character) -> None:
         silver=char.silver,
         exp=char.exp,
         position=char.position,
+        affected_by=getattr(char, "affected_by", 0),
+        wiznet=getattr(char, "wiznet", 0),
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
@@ -85,6 +90,9 @@ def load_character(name: str) -> Optional[Character]:
         exp=data.exp,
         position=data.position,
     )
+    # restore bitfields
+    char.affected_by = getattr(data, "affected_by", 0)
+    char.wiznet = getattr(data, "wiznet", 0)
     if data.room_vnum is not None:
         room = room_registry.get(data.room_vnum)
         if room:

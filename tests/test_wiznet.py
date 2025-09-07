@@ -1,6 +1,7 @@
 from mud.wiznet import WiznetFlag, wiznet
 from mud.models.character import Character, character_registry
 from mud.commands.dispatcher import process_command
+import mud.persistence as persistence
 
 
 def setup_function(_):
@@ -54,3 +55,20 @@ def test_wiznet_command_toggles_flag():
     result = process_command(imm, "wiznet")
     assert imm.wiznet & int(WiznetFlag.WIZ_ON)
     assert "wiznet is now on" in result.lower()
+
+
+def test_wiznet_persistence(tmp_path):
+    # Persist wiznet flags and ensure round-trip retains bitfield.
+    persistence.PLAYERS_DIR = tmp_path
+    from mud.world import initialize_world
+
+    initialize_world('area/area.lst')
+    imm = Character(name="Imm", is_admin=True)
+    # Set multiple flags
+    imm.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS | WiznetFlag.WIZ_DEBUG)
+    persistence.save_character(imm)
+    loaded = persistence.load_character('Imm')
+    assert loaded is not None
+    assert loaded.wiznet & int(WiznetFlag.WIZ_ON)
+    assert loaded.wiznet & int(WiznetFlag.WIZ_TICKS)
+    assert loaded.wiznet & int(WiznetFlag.WIZ_DEBUG)

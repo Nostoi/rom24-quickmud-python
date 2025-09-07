@@ -11,6 +11,7 @@
     "char_found": {"type": "string", "default": ""},
     "others_found": {"type": "string", "default": ""},
     "vict_found": {"type": "string", "default": ""},
+    "not_found": {"type": "string", "default": ""},
     "char_auto": {"type": "string", "default": ""},
     "others_auto": {"type": "string", "default": ""}
   },

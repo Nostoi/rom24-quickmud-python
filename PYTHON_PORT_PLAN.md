@@ -45,10 +45,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
- <!-- affects_saves P0 complete 2025-09-07 -->
-- npc_spec_funs: Build spec_fun registry and invoke during NPC updates
-- npc_spec_funs: Load spec_fun names from mob JSON and execute functions
-<!-- logging_admin P0s completed 2025-09-07 -->
+<!-- none: no open [P0] tasks at this time -->
 <!-- NEXT-ACTIONS-END -->
 
 ## Data Anchors (Canonical Samples)
@@ -77,14 +74,10 @@ TASKS:
   EVIDENCE: TEST tests/test_affects.py::test_saves_spell_uses_level_and_saving_throw
   EVIDENCE: TEST tests/test_affects.py::test_saves_spell_berserk_bonus
   EVIDENCE: TEST tests/test_affects.py::test_saves_spell_fmana_reduction
-- [P1] Persist affects to character saves with correct bit widths
-  - rationale: ensure save/load parity
-  - files: mud/persistence.py
-  - tests: tests/test_affects.py::test_affect_persistence
-  - acceptance_criteria: round-trip preserves affect flags
-  - estimate: S
-  - risk: medium
-  - references: C src/save.c:save_char_obj; PY mud/persistence.py:save_player
+- ✅ [P1] Persist affects to character saves with correct bit widths — done 2025-09-07
+  EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
+  EVIDENCE: TEST tests/test_affects.py::test_affect_persistence
+  EVIDENCE: C src/save.c:save_char_obj()
 - [P2] Achieve ≥80% test coverage for affects_saves
   - rationale: confidence in mechanics
   - files: tests/test_affects.py
@@ -102,12 +95,16 @@ NOTES:
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.60)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
 KEY RISKS: file_formats, side_effects
 TASKS:
 - ✅ [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages — done 2025-09-08
   EVIDENCE: mud/commands/dispatcher.py:L87-L97; tests/test_socials.py::test_smile_command_sends_messages
-- [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden JSON matches ROM text layout
+- ✅ [P1] Convert `social.are` to JSON with fixed field widths — done 2025-09-07
+  EVIDENCE: PY mud/scripts/convert_social_are_to_json.py
+  EVIDENCE: TEST tests/test_social_conversion.py::test_convert_social_are_to_json_matches_layout
+  EVIDENCE: DOC doc/command.txt § Social Commands
+  EVIDENCE: ARE area/social.are
 - [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80%
 NOTES:
 - `load_socials` reads JSON into registry (loaders/social_loader.py:1-16)
@@ -128,7 +125,9 @@ TASKS:
   EVIDENCE: mud/wiznet.py:L43-L58; tests/test_wiznet.py::test_wiznet_broadcast_filtering
 - ✅ [P0] Hook `wiznet` command into dispatcher — acceptance: pytest toggles WIZ_ON with `wiznet` command — done 2025-09-07
   EVIDENCE: mud/wiznet.py:L61-L74; tests/test_wiznet.py::test_wiznet_command_toggles_flag
-- [P1] Persist wiznet subscriptions to player saves with bit widths — acceptance: save/load round trip retains flags
+- ✅ [P1] Persist wiznet subscriptions to player saves with bit widths — done 2025-09-07
+  EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
+  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_persistence
 - [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%
 NOTES:
 - Added broadcast helper to filter subscribed immortals (wiznet.py:43-58)

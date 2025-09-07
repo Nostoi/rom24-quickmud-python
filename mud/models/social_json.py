@@ -15,5 +15,6 @@ class SocialJson(JsonDataclass):
     char_found: str = ""
     others_found: str = ""
     vict_found: str = ""
+    not_found: str = ""
     char_auto: str = ""
     others_auto: str = ""
