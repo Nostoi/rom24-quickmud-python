@@ -100,6 +100,21 @@
 - RULE: Map `$mself` pronouns by `Sex` (NONE→"itself", MALE→"himself", FEMALE→"herself", others→"themselves").
   RATIONALE: Reflexive pronouns depend on actor sex to match ROM socials.
   EXAMPLE: expand_placeholders("$n laughs at $mself.", ch)
+- RULE: Treat areas/*.are as canonical; conversions must preserve counts, ids, exits, flags, resets, specials.
+  RATIONALE: Prevent silent data loss during ROM→JSON migration.
+  EXAMPLE: pytest -q tests/test_area_counts.py::test_midgaard_counts
+- RULE: Validate conversion with goldens: for each .are, store a {area}.golden.json and assert stable round-trip.
+  RATIONALE: Detect accidental schema drift, field reordering, or flag width changes.
+  EXAMPLE: tests/data/midgaard.golden.json vs converter output.
+- RULE: Player saves must preserve bit widths and field order from /player/* semantics; never reorder JSON keys that map to packed flags.
+  RATIONALE: Prevent save/load parity bugs.
+  EXAMPLE: save_load_roundtrip("arthur"); assert flags == expected
+- RULE: Document-driven behavior takes precedence; when code and docs disagree, cite C+DOC evidence and lock tests to ROM semantics.
+  RATIONALE: Guard against “clean” Python refactors that drift from ROM.
+  EXAMPLE: test_thac0_table_matches_rom()
+- RULE: IMC code is feature-flagged; if disabled at runtime, keep loader and protocol parsers in place with no-op dispatch.
+  RATIONALE: Preserve wire compatibility without enabling cross-MUD chat.
+  EXAMPLE: IMC_ENABLED=False → sockets never opened; parsers tested.
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
