@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: affects_saves -->
+<!-- LAST-PROCESSED: socials -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -64,18 +64,18 @@ NOTES:
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.62)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
 KEY RISKS: file_formats, side_effects
 TASKS:
-- [P0] Load socials from JSON and dispatch via command table — acceptance: pytest verifies `smile` outputs actor/room messages
-- [P0] Implement ROM-style placeholder substitution (`$n/$N/$mself`) — acceptance: unit test expands placeholders for actor and victim
+- [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages
+- [P0] Expand placeholders including `$mself` and pronouns — acceptance: unit test covers `$n/$N/$mself`
 - [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden JSON matches ROM text layout
-- [P2] Achieve ≥80% test coverage for socials — acceptance: coverage report ≥80%
+- [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80%
 NOTES:
-- `mud/models/social.py` defines `Social` and registry without loader or dispatcher integration
-- `mud/commands/dispatcher.py` lacks social command entries
-- Social data JSON file missing
-- Applied tiny fix: added `$n/$N` placeholder expansion helper
+- `Social` model and registry exist but no loader or dispatcher integration
+- `expand_placeholders` handles `$n/$N` only; missing `$mself`
+- `rg social` in dispatcher shows no social command
+- No tests exercise social commands
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
