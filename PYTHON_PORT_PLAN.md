@@ -210,10 +210,15 @@ NOTES:
 
 <!-- SUBSYSTEM: area_format_loader START -->
 ### area_format_loader — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.65)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
 KEY RISKS: file_formats, flags, indexing
 TASKS:
-- [P0] Verify Midgaard conversion parity (counts & exits) — acceptance: ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS counts match; exit flags/doors/keys verified; golden JSON added
+- ✅ [P0] Verify Midgaard conversion parity (counts & exits) — done 2025-09-07
+  EVIDENCE: DOC doc/area.txt §#ROOMS
+  EVIDENCE: ARE area/midgaard.are (#3001 exits D0/D2/D4)
+  EVIDENCE: PY mud/loaders/room_loader.py:L1-L40 (exit vnum/key parsing)
+  EVIDENCE: TEST tests/test_area_counts.py::test_midgaard_counts_match_original_are
+  EVIDENCE: TEST tests/test_area_exits.py::test_midgaard_room_3001_exits_and_keys
 - ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — acceptance: missing/duplicate entries raise errors; unit test asserts failures — done 2025-09-07
   EVIDENCE: PY mud/loaders/__init__.py:L14-L20 (sentinel check)
   EVIDENCE: PY mud/loaders/area_loader.py:L62-L69 (duplicate vnum rejection)
