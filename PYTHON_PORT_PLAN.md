@@ -182,6 +182,83 @@ NOTES:
 - No tests exercise help lookup
 <!-- SUBSYSTEM: help_system END -->
 
+<!-- SUBSYSTEM: area_format_loader START -->
+### area_format_loader — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.65)
+KEY RISKS: file_formats, flags, indexing
+TASKS:
+- [P0] Verify Midgaard conversion parity (counts & exits) — acceptance: ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS counts match; exit flags/doors/keys verified; golden JSON added
+- [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — acceptance: missing/duplicate entries raise errors; unit test asserts failures
+- [P1] Preserve `#RESETS` command semantics — acceptance: reset loop reproduces ROM placements on tick; golden-driven test
+- [P2] Coverage ≥80% for area_format_loader — acceptance: coverage report ≥80%
+NOTES:
+- C: `src/db.c:load_area()` handles `#AREADATA`, `#ROOMS`, `#RESETS`, sentinel `$`
+- DOC: `doc/area.txt` sections for block layouts; `Rom2.4.doc` reset rules
+- ARE: `areas/midgaard.are` as canonical fixture
+- PY: `mud/scripts/convert_are_to_json.py`, `mud/loaders/area_loader.py` implement conversion/loading
+<!-- SUBSYSTEM: area_format_loader END -->
+
+<!-- SUBSYSTEM: player_save_format START -->
+### player_save_format — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.60)
+KEY RISKS: flags, file_formats, side_effects
+TASKS:
+- [P0] Map `/player/*` fields to JSON preserving bit widths & field order — acceptance: S/L/H bitmasks round-trip; golden fixture player passes
+- [P1] Reject malformed legacy saves with precise errors — acceptance: tests cover missing header/footer and bad widths
+- [P2] Coverage ≥80% for player_save_format — acceptance: coverage report ≥80%
+NOTES:
+- C: `src/save.c:save_char_obj()/load_char_obj()` define record layout & bit packing
+- DOC: `Rom2.4.doc` save layout notes (stats/flags)
+- PLAYER: `/player/*` legacy files (choose sample fixture)
+- PY: `mud/persistence.py` save/load; `mud/models/character_json.py` flag fields
+<!-- SUBSYSTEM: player_save_format END -->
+
+<!-- SUBSYSTEM: imc_chat START -->
+### imc_chat — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:absent correctness:unknown (confidence 0.55)
+KEY RISKS: file_formats, side_effects, networking
+TASKS:
+- [P0] Stub IMC protocol reader/writer behind feature flag — acceptance: sample IMC frames parse/serialize; sockets not opened when disabled
+- [P1] Wire no-op dispatcher integration (command visible, gated) — acceptance: help text present; command disabled unless `IMC_ENABLED=True`
+- [P2] Coverage ≥80% for imc_chat — acceptance: coverage report ≥80%
+NOTES:
+- C: `imc/imc.c` framing & message flow
+- DOC: any bundled IMC readme/spec in `/imc` (if present)
+- PY: (absent) — add `mud/imc/*` module; guard with `IMC_ENABLED`
+- Runtime: ensure zero side-effects when disabled
+<!-- SUBSYSTEM: imc_chat END -->
+
+<!-- SUBSYSTEM: help_system START -->
+### help_system — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.62)
+KEY RISKS: file_formats, indexing
+TASKS:
+- [P0] Convert `help.are` to JSON respecting width/ordering — acceptance: golden JSON matches ROM layout
+- [P0] Wire `help` command lookup & rendering — acceptance: `help murder` returns expected text; case/keyword matching per ROM
+- [P2] Coverage ≥80% for help_system — acceptance: coverage report ≥80%
+NOTES:
+- C: `src/help.c` (or `db.c` help loader) and `interp.c` command behavior
+- DOC: `doc/area.txt` help block format; `Rom2.4.doc` help conventions
+- ARE: `areas/help.are` (or equivalent) as source
+- PY: `mud/loaders/help_loader.py`, `mud/commands/help.py`, `data/help.json`
+<!-- SUBSYSTEM: help_system END -->
+
+<!-- SUBSYSTEM: socials START -->
+### socials — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
+KEY RISKS: file_formats, side_effects
+TASKS:
+- [P0] Convert `social.are` to JSON per ROM width rules — acceptance: golden JSON matches ROM text layout
+- [P0] Wire dispatcher & placeholder expansion — acceptance: `$n/$N/$mself` expansions validated for actor/room/victim lines
+- [P2] Coverage ≥80% for socials — acceptance: coverage report ≥80%
+NOTES:
+- C: `src/socials.c` definitions; `interp.c` dispatch
+- DOC: `doc/area.txt` social entry format
+- ARE: `areas/social.are` as source
+- PY: `mud/loaders/social_loader.py`, `mud/commands/socials.py`, `mud/models/social.py`
+<!-- SUBSYSTEM: socials END -->
+
+
 <!-- SUBSYSTEM: npc_spec_funs START -->
 ### npc_spec_funs — Parity Audit 2025-09-08
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
@@ -211,6 +288,8 @@ NOTES:
 - `log_agent_action` writes per-agent logs under `log/agent_{id}.log` (logging/agent_trace.py:5-8)
 - Dispatcher lacks admin logging hooks (commands/dispatcher.py:32-60)
 <!-- SUBSYSTEM: logging_admin END -->
+
+
 <!-- PARITY-GAPS-END -->
 
 ## 1. Inventory current system
