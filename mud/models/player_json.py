@@ -25,3 +25,5 @@ class PlayerJson(JsonDataclass):
     room_vnum: Optional[int]
     inventory: List[int] = field(default_factory=list)
     equipment: Dict[str, int] = field(default_factory=dict)
+    plr_flags: int = 0
+    comm_flags: int = 0

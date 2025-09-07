@@ -234,17 +234,24 @@ NOTES:
 
 <!-- SUBSYSTEM: player_save_format START -->
 ### player_save_format — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.60)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
 KEY RISKS: flags, file_formats, side_effects
 TASKS:
-- [P0] Map `/player/*` fields to JSON preserving bit widths & field order — acceptance: S/L/H bitmasks round-trip; golden fixture player passes
+- ✅ [P0] Map `/player/*` fields to JSON preserving bit widths & field order — done 2025-09-07
+  EVIDENCE: C src/merc.h:PLR_* and COMM_* bit defines (letters → bits)
+  EVIDENCE: DOC Rom2.4.doc (player file layout overview)
+  EVIDENCE: ARE/PLAYER player/Shemp (Act QT; Comm NOP)
+  EVIDENCE: PY schemas/player.schema.json (add plr_flags, comm_flags)
+  EVIDENCE: PY mud/models/player_json.py (fields plr_flags, comm_flags)
+  EVIDENCE: PY mud/scripts/convert_player_to_json.py (Act/Comm → bitmasks; HMV parsing)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip
 - [P1] Reject malformed legacy saves with precise errors — acceptance: tests cover missing header/footer and bad widths
 - [P2] Coverage ≥80% for player_save_format — acceptance: coverage report ≥80%
 NOTES:
 - C: `src/save.c:save_char_obj()/load_char_obj()` define record layout & bit packing
 - DOC: `Rom2.4.doc` save layout notes (stats/flags)
-- PLAYER: `/player/*` legacy files (choose sample fixture)
-- PY: `mud/persistence.py` save/load; `mud/models/character_json.py` flag fields
+- PLAYER: `/player/Shemp` used as golden fixture
+- PY: `mud/persistence.py` save/load; `mud/models/player_json.py` flag fields
 <!-- SUBSYSTEM: player_save_format END -->
 
 <!-- SUBSYSTEM: imc_chat START -->
