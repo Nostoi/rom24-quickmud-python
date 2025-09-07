@@ -43,6 +43,12 @@
 - RULE: Expand social messages with ROM placeholders (`$n`, `$N`, `$mself`) before dispatch.
   RATIONALE: Ensures actor and target names/pronouns match ROM outputs.
   EXAMPLE: expand_social("$n smiles at you.", ch, vict)
+- RULE: Lowercase social command names on registration to ensure case-insensitive lookup.
+  RATIONALE: ROM treats social commands without regard to case.
+  EXAMPLE: social_registry[social.name.lower()] = social
+- RULE: Convert `social.are` to JSON preserving field widths; verify with golden file tests.
+  RATIONALE: ROM social lines are fixed-width; reformatting alters parsing.
+  EXAMPLE: convert_social_are("data/social.are")
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
@@ -58,6 +64,21 @@
 - RULE: Log admin commands to `log/admin.log` and rotate daily.
   RATIONALE: Ensures immortal actions are auditable like ROM's wiznet logs.
   EXAMPLE: ban bob  # appends line to log/admin.log
+- RULE: Register `wiznet` command in dispatcher; restrict usage to immortals and toggle flag bits via helper.
+  RATIONALE: Keeps admin communications controlled and consistent with ROM wiznet flags.
+  EXAMPLE: command_registry["wiznet"] = wiznet_cmd; wiznet_cmd(ch, "show")
+- RULE: Resolve saving throws with `rng_mm.number_percent` and `c_div`; forbid Python `%` or boolean short-circuit.
+  RATIONALE: Preserves ROM probability and C arithmetic for saves.
+  EXAMPLE: save = rng_mm.number_percent() < c_div(level * 3, 2)
+- RULE: Index `area_registry` by area vnum; forbid filename keys.
+  RATIONALE: ROM looks up areas by vnum; string keys break reset lookup.
+  EXAMPLE: area_registry[area.min_vnum] = area
+- RULE: Reject duplicate area vnum ranges when loading; raise `ValueError` on conflict.
+  RATIONALE: Overlapping vnum ranges corrupt world lookups.
+  EXAMPLE: load_area_file("mid.are"); load_area_file("mid.are")  # ValueError
+- RULE: Require `$` sentinel at end of `area.lst`; raise `ValueError` if missing.
+  RATIONALE: ROM uses `$` to terminate area lists; missing sentinel risks partial loads.
+  EXAMPLE: load_all_areas("bad.lst")  # ValueError
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)

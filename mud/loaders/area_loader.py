@@ -41,7 +41,16 @@ def load_area_file(filepath: str) -> Area:
             handler(tokenizer, area)
         elif line.startswith('#$') or line == '$':
             break
-    key = area.file_name or filepath
+    key = area.min_vnum
+    area.vnum = area.min_vnum
+    # START enforce unique area vnum
+    if (
+        key != 0
+        and key in area_registry
+        and area_registry[key].file_name != area.file_name
+    ):
+        raise ValueError(f"duplicate area vnum {key}")
+    # END enforce unique area vnum
     area_registry[key] = area
 
     return area

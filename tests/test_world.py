@@ -1,5 +1,7 @@
+import pytest
 from mud.world import initialize_world, create_test_character, move_character, look
-from mud.registry import room_registry
+from mud.registry import room_registry, area_registry
+from mud.loaders import load_all_areas
 
 
 def test_movement_and_look():
@@ -13,3 +15,12 @@ def test_movement_and_look():
     assert char.room.vnum == room_registry[3054].vnum
     out2 = look(char)
     assert 'temple' in out2.lower() or 'altar' in out2.lower()
+
+
+def test_area_list_requires_sentinel(tmp_path):
+    area_registry.clear()
+    area_list = tmp_path / "area.lst"
+    area_list.write_text("midgaard.are\n", encoding="latin-1")
+    with pytest.raises(ValueError):
+        load_all_areas(str(area_list))
+    area_registry.clear()

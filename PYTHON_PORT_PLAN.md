@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: socials -->
+<!-- LAST-PROCESSED: world_loader -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -17,10 +17,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | skills_spells | present_wired | mud/skills/registry.py:13 | tests/test_skill_registry.py |
 | affects_saves | stub_or_partial | mud/models/character.py:52,60 | — |
 | command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
-| socials | stub_or_partial | mud/models/social.py:8-20 | — |
+| socials | stub_or_partial | mud/models/social.py:8-42 | — |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
 | wiznet_imm | absent | rg "wiznet" (no code) | — |
-| world_loader | present_wired | mud/world/world_state.py:1-20 | tests/test_world.py |
+| world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py |
 | resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
 | weather | present_wired | mud/game_loop.py:59-68 | tests/test_game_loop.py |
 | time_daynight | absent | rg "day" (no matches) | — |
@@ -42,43 +42,45 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Parity Gaps & Corrections
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin -->
+<!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader -->
 
 <!-- SUBSYSTEM: affects_saves START -->
-### affects_saves — Parity Audit 2025-09-09
+### affects_saves — Parity Audit 2025-09-06
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
-KEY RISKS: flags, side_effects
+KEY RISKS: flags, RNG
 TASKS:
 - [P0] Define ROM affect flag constants via IntFlag — acceptance: enumeration matches merc.h bit values
 - [P0] Implement affect application/removal with bit flags — acceptance: unit test toggles AFF_BLIND on/off
 - [P0] Implement saving throw resolution using number_mm — acceptance: deterministic pass/fail test
 - [P1] Persist affects to character saves with correct bit widths — acceptance: save/load round trip preserves flags
-- [P1] Integrate affect timers into game update loop — acceptance: tick test expires affect after duration
+- [P2] Achieve ≥80% test coverage for affects_saves — acceptance: coverage report ≥80%
 NOTES:
-- `Character` dataclass defines `affected_by` and `saving_throw` without mechanics
-- Added `AffectFlag` enum with `AFF_BLIND` bit and basic unit test
-- Applied tiny fix: added `AffectFlag.BLIND` and test
+- `Character.affected_by` and `saving_throw` fields lack mechanics
+- `AffectFlag` defines BLIND and INVISIBLE only
+- Applied tiny fix: added INVISIBLE flag constant
+- No saving throw or affect apply functions present
+- Existing unit test toggles BLIND bit directly
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.58)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.62)
 KEY RISKS: file_formats, side_effects
 TASKS:
-- [P0] Load socials into registry and dispatch via command table — acceptance: pytest validates `smile` output to actor and room
-- [P0] Implement ROM-style placeholder substitution for social messages — acceptance: test verifies `$n/$N/$mself` expansions
-- [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden file matches ROM layout
-- [P1] Achieve ≥80% test coverage for socials — acceptance: coverage report ≥80%
+- [P0] Load socials from JSON and dispatch via command table — acceptance: pytest verifies `smile` outputs actor/room messages
+- [P0] Implement ROM-style placeholder substitution (`$n/$N/$mself`) — acceptance: unit test expands placeholders for actor and victim
+- [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden JSON matches ROM text layout
+- [P2] Achieve ≥80% test coverage for socials — acceptance: coverage report ≥80%
 NOTES:
-- `Social` dataclass lacked registry; added `social_registry` placeholder and register function
-- `rg` shows no dispatcher integration or placeholder logic
-- `social.are` exists but is never loaded
-- Applied tiny fix: added registry and unit test
+- `mud/models/social.py` defines `Social` and registry without loader or dispatcher integration
+- `mud/commands/dispatcher.py` lacks social command entries
+- Social data JSON file missing
+- Applied tiny fix: added `$n/$N` placeholder expansion helper
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
-### wiznet_imm — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.65)
+### wiznet_imm — Parity Audit 2025-09-06
+STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.90)
 KEY RISKS: flags, side_effects
 TASKS:
 - [P0] Implement wiznet flag bits and broadcast function — acceptance: immortal with WIZ_ON receives message; mortal does not
@@ -87,8 +89,24 @@ TASKS:
 - [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%
 NOTES:
 - `rg wiznet` finds no implementation modules
-- Help files reference `wiznet` syntax but command is missing
+- Help files reference `wiznet` command but dispatcher lacks registration
 <!-- SUBSYSTEM: wiznet_imm END -->
+
+<!-- SUBSYSTEM: world_loader START -->
+### world_loader — Parity Audit 2025-09-06
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.60)
+KEY RISKS: file_formats, indexing
+TASKS:
+- [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test
+- [P2] Achieve ≥80% test coverage for world_loader — acceptance: coverage report ≥80%
+NOTES:
+- `load_area_file` ignores `#AREADATA` fields
+- Tests only verify movement/lookup, not area metadata
+- Applied tiny fix: key `area_registry` by `min_vnum`
+- Applied tiny fix: reject duplicate area vnums in `area_registry`
+- Applied tiny fix: enforce `$` sentinel in `area.lst`
+- Added test ensuring missing sentinel raises `ValueError`
+<!-- SUBSYSTEM: world_loader END -->
 
 <!-- SUBSYSTEM: time_daynight START -->
 ### time_daynight — Parity Audit 2025-09-07
