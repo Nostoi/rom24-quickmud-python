@@ -52,6 +52,12 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
 <!-- NEXT-ACTIONS-END -->
 
+## Data Anchors (Canonical Samples)
+- ARE: areas/midgaard.are  (primary fixture)
+- DOC: doc/area.txt §#ROOMS/#MOBILES/#OBJECTS/#RESETS
+- DOC: doc/Rom2.4.doc  (stats, AC/THAC0, saves)
+- C:  src/db.c:load_area(), src/save.c:load_char_obj(), src/socials.c
+
 ## Parity Gaps & Corrections
 <!-- PARITY-GAPS-START -->
 <!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader -->
