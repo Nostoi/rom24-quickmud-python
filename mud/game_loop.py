@@ -8,6 +8,7 @@ from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
 from mud.net.protocol import broadcast_global
+from mud.spec_funs import run_npc_specs
 
 
 @dataclass
@@ -83,3 +84,5 @@ def game_tick() -> None:
     weather_tick()
     event_tick()
     reset_tick()
+    # Invoke NPC special functions after resets to mirror ROM's update cadence
+    run_npc_specs()

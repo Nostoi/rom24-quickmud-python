@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: logging_admin -->
+<!-- LAST-PROCESSED: npc_spec_funs -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -263,25 +263,17 @@ NOTES:
 
 <!-- SUBSYSTEM: npc_spec_funs START -->
 ### npc_spec_funs — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
-KEY RISKS: flags, side_effects
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.78)
+KEY RISKS: side_effects
 TASKS:
-- [P0] Build spec_fun registry and invoke during NPC updates
-  - rationale: run special procedures each tick like ROM
-  - files: mud/spec_funs.py, mud/game_loop.py
-  - tests: tests/test_spec_funs.py::test_registry_executes_function
-  - acceptance_criteria: update loop calls registered dummy spec_fun
-  - estimate: M
-  - risk: medium
-  - references: C src/update.c:427-430; PY mud/spec_funs.py:1-8
-- [P0] Load spec_fun names from mob JSON and execute functions
-  - rationale: support `spec_fun` field in mob data
-  - files: mud/models/mob.py, mud/loaders/area_loader.py
-  - tests: tests/test_spec_funs.py::test_mob_spec_fun_invoked
-  - acceptance_criteria: loader attaches spec_fun and function runs
-  - estimate: M
-  - risk: high
-  - references: C src/db.c:1365-1366; PY mud/models/mob.py:21
+- ✅ [P0] Build spec_fun registry and invoke during NPC updates — done 2025-09-07
+  EVIDENCE: C src/update.c:L420-L460 (mobile_update invokes spec_fun)
+  EVIDENCE: PY mud/spec_funs.py:L1-L40 (registry + run_npc_specs)
+  EVIDENCE: PY mud/game_loop.py:L80-L86 (tick → run_npc_specs)
+  EVIDENCE: TEST tests/test_spec_funs.py::test_registry_executes_function
+- ✅ [P0] Load spec_fun names from mob JSON and execute functions — done 2025-09-07
+  EVIDENCE: PY mud/models/mob.py:L1-L40 (MobIndex.spec_fun)
+  EVIDENCE: TEST tests/test_spec_funs.py::test_mob_spec_fun_invoked
 - [P1] Port core ROM spec functions using number_mm RNG
   - rationale: mirror ROM behaviors
   - files: mud/spec_funs.py
@@ -306,11 +298,9 @@ TASKS:
   - estimate: M
   - risk: low
 NOTES:
-- C: src/update.c:427-430; src/special.c:80-115
-- PY: mud/spec_funs.py:1-8; mud/models/mob.py:21
-- Applied tiny fix: `register_spec_fun`/`get_spec_fun` normalize names to lowercase (spec_funs.py:6-12) and added case-insensitive lookup test with registry cleanup (tests/test_spec_funs.py:1-18)
-- Game loop lacks spec_fun hook (game_loop.py:73-79)
-- `spec_fun_registry` exists but never invoked
+- C: src/update.c: mobile update path and special procedure calls; src/special.c common specs
+- PY: spec_fun registry exists and is now invoked each tick; game loop calls run_npc_specs()
+- Applied tiny fix: spec runner now uses central mud.registry.room_registry to avoid duplicate registries
 <!-- SUBSYSTEM: npc_spec_funs END -->
 
 <!-- SUBSYSTEM: logging_admin START -->
