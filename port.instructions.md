@@ -115,6 +115,9 @@
 - RULE: IMC code is feature-flagged; if disabled at runtime, keep loader and protocol parsers in place with no-op dispatch.
   RATIONALE: Preserve wire compatibility without enabling cross-MUD chat.
   EXAMPLE: IMC_ENABLED=False → sockets never opened; parsers tested.
+- RULE: Register `spec_fun` names in lowercase for case-insensitive lookup.
+  RATIONALE: ROM's `spec_lookup` compares names without regard to case.
+  EXAMPLE: register_spec_fun("Spec_Cast_Adept", func)
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
