@@ -1,5 +1,4 @@
-from enum import IntEnum, IntFlag  # START affects_saves
-# END affects_saves
+from enum import IntEnum, IntFlag
 
 
 class Direction(IntEnum):
@@ -125,8 +124,38 @@ class ItemType(IntEnum):
 
 # START affects_saves
 class AffectFlag(IntFlag):
-    BLIND = 0x00000001
-    INVISIBLE = 0x00000002
+    BLIND = 1 << 0
+    INVISIBLE = 1 << 1
+    DETECT_EVIL = 1 << 2
+    DETECT_INVIS = 1 << 3
+    DETECT_MAGIC = 1 << 4
+    DETECT_HIDDEN = 1 << 5
+    SANCTUARY = 1 << 6
+    FAERIE_FIRE = 1 << 7
+    INFRARED = 1 << 8
+    CURSE = 1 << 9
+    UNUSED1 = 1 << 10
+    POISON = 1 << 11
+    PROTECT_EVIL = 1 << 12
+    PROTECT_GOOD = 1 << 13
+    SNEAK = 1 << 14
+    HIDE = 1 << 15
+    SLEEP = 1 << 16
+    CHARM = 1 << 17
+    FLYING = 1 << 18
+    PASS_DOOR = 1 << 19
+    UNUSED2 = 1 << 20
+    BERSERK = 1 << 21
+    CALM = 1 << 22
+    HASTE = 1 << 23
+    SLOW = 1 << 24
+    PLAGUE = 1 << 25
+    DARK_VISION = 1 << 26
+    UNUSED3 = 1 << 27
+    SWIM = 1 << 28
+    REGENERATION = 1 << 29
+    UNUSED4 = 1 << 30
+    UNUSED5 = 1 << 31
 
 
 # END affects_saves

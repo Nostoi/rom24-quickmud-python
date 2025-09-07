@@ -6,6 +6,8 @@ from typing import Callable, List
 from mud.models.character import Character, character_registry
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
+from mud.time import time_info
+from mud.net.protocol import broadcast_global
 
 
 @dataclass
@@ -62,8 +64,21 @@ def weather_tick() -> None:
     weather.sky = _WEATHER_STATES[(index + 1) % len(_WEATHER_STATES)]
 
 
+def time_tick() -> None:
+    """Advance world time and broadcast day/night transitions."""
+    for message in time_info.advance_hour():
+        broadcast_global(message, channel="info")
+
+
+_pulse_counter = 0
+
+
 def game_tick() -> None:
-    """Run a full game tick: regen, weather, timed events, and resets."""
+    """Run a full game tick: time, regen, weather, timed events, and resets."""
+    global _pulse_counter
+    _pulse_counter += 1
+    if _pulse_counter % 4 == 0:
+        time_tick()
     regen_tick()
     weather_tick()
     event_tick()

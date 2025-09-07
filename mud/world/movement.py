@@ -16,10 +16,21 @@ dir_map: Dict[str, Direction] = {
 }
 
 
+def can_carry_w(ch: Character) -> int:
+    return 100
+
+
+def can_carry_n(ch: Character) -> int:
+    return 30
+
+
 def move_character(char: Character, direction: str) -> str:
     dir_key = direction.lower()
     if dir_key not in dir_map:
         return "You cannot go that way."
+
+    if char.carry_weight > can_carry_w(char) or char.carry_number > can_carry_n(char):
+        return "You are too encumbered to move."
 
     idx = dir_map[dir_key]
     exit = char.room.exits[idx]

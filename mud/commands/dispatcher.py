@@ -14,6 +14,10 @@ from .shop import do_list, do_buy, do_sell
 from .advancement import do_practice, do_train
 from .notes import do_board, do_note
 from .build import cmd_redit
+from .socials import perform_social
+from .help import do_help
+from mud.wiznet import cmd_wiznet
+from mud.models.social import social_registry
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -49,10 +53,12 @@ COMMANDS: List[Command] = [
     Command("train", do_train),
     Command("board", do_board),
     Command("note", do_note),
+    Command("help", do_help),
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
     Command("@redit", cmd_redit, admin_only=True),
+    Command("wiznet", cmd_wiznet, admin_only=True),
 ]
 
 
@@ -85,6 +91,9 @@ def process_command(char: Character, input_str: str) -> str:
     cmd_name, *args = parts
     command = resolve_command(cmd_name)
     if not command:
+        social = social_registry.get(cmd_name.lower())
+        if social:
+            return perform_social(char, cmd_name, " ".join(args))
         return "Huh?"
     if command.admin_only and not getattr(char, "is_admin", False):
         return "You do not have permission to use this command."

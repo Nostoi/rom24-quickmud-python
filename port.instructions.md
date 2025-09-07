@@ -61,6 +61,9 @@
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
+- RULE: Advance time at four pulses per in-game hour.
+  RATIONALE: ROM updates the hour every four ticks; parity requires same cadence.
+  EXAMPLE: if pulse % 4 == 0: time_info.hour = (time_info.hour + 1) % 24
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
   RATIONALE: ROM prevents over-encumbered characters from moving.
   EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
@@ -94,6 +97,9 @@
 - RULE: Parse `#AREADATA` builders/security/flags into `Area`; forbid skipping this section.
   RATIONALE: ROM stores builder permissions and security in `#AREADATA`; omitting them loses access control.
   EXAMPLE: area = load_area_file('midgaard.are'); assert area.builders and area.security == 9
+- RULE: Map `$mself` pronouns by `Sex` (NONE→"itself", MALE→"himself", FEMALE→"herself", others→"themselves").
+  RATIONALE: Reflexive pronouns depend on actor sex to match ROM socials.
+  EXAMPLE: expand_placeholders("$n laughs at $mself.", ch)
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
