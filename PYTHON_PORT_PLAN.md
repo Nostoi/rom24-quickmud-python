@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: socials -->
+<!-- LAST-PROCESSED: wiznet_imm -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -19,7 +19,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
 | socials | stub_or_partial | mud/models/social.py:8-42 | — |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
-| wiznet_imm | absent | rg "wiznet" (no code) | — |
+| wiznet_imm | stub_or_partial | mud/wiznet.py:1-13 | — |
 | world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py |
 | resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
 | weather | present_wired | mud/game_loop.py:59-68 | tests/test_game_loop.py |
@@ -79,17 +79,20 @@ NOTES:
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
-### wiznet_imm — Parity Audit 2025-09-06
+### wiznet_imm — Parity Audit 2025-09-07
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.90)
 KEY RISKS: flags, side_effects
 TASKS:
-- [P0] Implement wiznet flag bits and broadcast function — acceptance: immortal with WIZ_ON receives message; mortal does not
-- [P0] Hook wiznet command into dispatcher registry — acceptance: pytest toggles WIZ_ON with `wiznet` command
+- [P0] Define wiznet flag bits via IntFlag — acceptance: enumeration matches ROM values
+- [P0] Implement wiznet broadcast filtering — acceptance: immortal with WIZ_ON receives message; mortal does not
+- [P0] Hook `wiznet` command into dispatcher — acceptance: pytest toggles WIZ_ON with `wiznet` command
 - [P1] Persist wiznet subscriptions to player saves with bit widths — acceptance: save/load round trip retains flags
 - [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%
 NOTES:
-- `rg wiznet` finds no implementation modules
-- Help files reference `wiznet` command but dispatcher lacks registration
+- `rg wiznet` finds only placeholder IntFlag; no broadcast function
+- Dispatcher lacks `wiznet` command
+- Help files reference `wiznet` command but no implementation
+- Applied tiny fix: added `WiznetFlag` IntFlag placeholder
 <!-- SUBSYSTEM: wiznet_imm END -->
 
 <!-- SUBSYSTEM: world_loader START -->
