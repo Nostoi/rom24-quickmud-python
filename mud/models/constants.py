@@ -126,6 +126,7 @@ class ItemType(IntEnum):
 # START affects_saves
 class AffectFlag(IntFlag):
     BLIND = 0x00000001
+    INVISIBLE = 0x00000002
 
 
 # END affects_saves

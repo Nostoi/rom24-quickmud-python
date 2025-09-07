@@ -30,3 +30,13 @@ social_registry: dict[str, Social] = {}
 def register_social(social: Social) -> None:
     """Register a social by its lowercase name."""
     social_registry[social.name.lower()] = social
+
+
+# START socials
+def expand_placeholders(message: str, actor: object, victim: object | None = None) -> str:
+    """Replace basic ROM placeholders in social messages."""
+    result = message.replace("$n", getattr(actor, "name", ""))
+    if victim is not None:
+        result = result.replace("$N", getattr(victim, "name", ""))
+    return result
+# END socials
