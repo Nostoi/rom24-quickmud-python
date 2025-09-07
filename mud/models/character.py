@@ -84,27 +84,66 @@ class Character:
     is_admin: bool = False
     muted_channels: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
+    wiznet: int = 0
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
 
     def add_object(self, obj: 'Object') -> None:
         self.inventory.append(obj)
+        self.carry_number += 1
+        self.carry_weight += getattr(obj.prototype, "weight", 0)
 
     def equip_object(self, obj: 'Object', slot: str) -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
+        else:
+            self.carry_number += 1
+            self.carry_weight += getattr(obj.prototype, "weight", 0)
         self.equipment[slot] = obj
 
+    def remove_object(self, obj: 'Object') -> None:
+        if obj in self.inventory:
+            self.inventory.remove(obj)
+        else:
+            for slot, eq in list(self.equipment.items()):
+                if eq is obj:
+                    del self.equipment[slot]
+                    break
+        self.carry_number -= 1
+        self.carry_weight -= getattr(obj.prototype, "weight", 0)
+
 # START affects_saves
-    def add_affect(self, flag: AffectFlag) -> None:
+    def add_affect(
+        self,
+        flag: AffectFlag,
+        *,
+        hitroll: int = 0,
+        damroll: int = 0,
+        saving_throw: int = 0,
+    ) -> None:
+        """Apply an affect flag and modify core stats."""
         self.affected_by |= flag
+        self.hitroll += hitroll
+        self.damroll += damroll
+        self.saving_throw += saving_throw
 
     def has_affect(self, flag: AffectFlag) -> bool:
         return bool(self.affected_by & flag)
 
-    def remove_affect(self, flag: AffectFlag) -> None:
+    def remove_affect(
+        self,
+        flag: AffectFlag,
+        *,
+        hitroll: int = 0,
+        damroll: int = 0,
+        saving_throw: int = 0,
+    ) -> None:
+        """Remove an affect flag and revert stat modifications."""
         self.affected_by &= ~flag
+        self.hitroll -= hitroll
+        self.damroll -= damroll
+        self.saving_throw -= saving_throw
 # END affects_saves
 
 

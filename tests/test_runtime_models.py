@@ -10,7 +10,9 @@ from mud.models import (
     BoardJson,
     Board,
     NoteJson,
+    Sex,
 )
+from mud.models.social import expand_placeholders
 
 
 def test_shop_from_json():
@@ -50,6 +52,30 @@ def test_register_social():
 
     register_social(social)
     assert social_registry["wave"] is social
+
+
+def test_expand_placeholders_mself_male():
+    actor = type("Dummy", (), {"name": "Bob", "sex": Sex.MALE})()
+    out = expand_placeholders("$n laughs at $mself.", actor)
+    assert out == "Bob laughs at himself."
+
+
+def test_expand_placeholders_mself_female():
+    actor = type("Dummy", (), {"name": "Alice", "sex": Sex.FEMALE})()
+    out = expand_placeholders("$n laughs at $mself.", actor)
+    assert out == "Alice laughs at herself."
+
+
+def test_expand_placeholders_mself_neutral():
+    actor = type("Dummy", (), {"name": "Blob", "sex": Sex.NONE})()
+    out = expand_placeholders("$n pokes $mself.", actor)
+    assert out == "Blob pokes itself."
+
+
+def test_expand_placeholders_mself_default():
+    actor = type("Dummy", (), {"name": "Sam"})()
+    out = expand_placeholders("$n thinks about $mself.", actor)
+    assert out == "Sam thinks about themselves."
 
 
 def test_board_from_json():

@@ -26,7 +26,7 @@ def load_area_file(filepath: str) -> Area:
         line = tokenizer.next_line()
         if line is None:
             break
-        if line.startswith('#AREA'):
+        if line == '#AREA':
             area.file_name = tokenizer.next_line().rstrip('~')
             area.name = tokenizer.next_line().rstrip('~')
             area.credits = tokenizer.next_line().rstrip('~')
@@ -39,6 +39,22 @@ def load_area_file(filepath: str) -> Area:
         elif line in SECTION_HANDLERS:
             handler = SECTION_HANDLERS[line]
             handler(tokenizer, area)
+        elif line == "#AREADATA":
+            while True:
+                peek = tokenizer.peek_line()
+                if peek is None or peek.startswith('#'):
+                    break
+                data_line = tokenizer.next_line()
+                if data_line.startswith('Builders'):
+                    area.builders = data_line.split(None, 1)[1].rstrip('~')
+                elif data_line.startswith('Security'):
+                    parts = data_line.split()
+                    if len(parts) > 1:
+                        area.security = int(parts[1])
+                elif data_line.startswith('Flags'):
+                    parts = data_line.split()
+                    if len(parts) > 1:
+                        area.area_flags = int(parts[1])
         elif line.startswith('#$') or line == '$':
             break
     key = area.min_vnum

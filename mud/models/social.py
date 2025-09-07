@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .social_json import SocialJson
+from mud.models.constants import Sex
 
 
 @dataclass
@@ -38,5 +39,15 @@ def expand_placeholders(message: str, actor: object, victim: object | None = Non
     result = message.replace("$n", getattr(actor, "name", ""))
     if victim is not None:
         result = result.replace("$N", getattr(victim, "name", ""))
+    sex_attr = getattr(actor, "sex", None)
+    if isinstance(sex_attr, Sex):
+        pronoun = {
+            Sex.MALE: "himself",
+            Sex.FEMALE: "herself",
+            Sex.NONE: "itself",
+        }.get(sex_attr, "themselves")
+    else:
+        pronoun = "themselves"
+    result = result.replace("$mself", pronoun)
     return result
 # END socials

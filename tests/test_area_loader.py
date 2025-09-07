@@ -16,3 +16,26 @@ def test_duplicate_area_vnum_raises_value_error(tmp_path):
     with pytest.raises(ValueError):
         load_area_file(str(dup))
     area_registry.clear()
+
+
+def test_areadata_parsing(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "test.are~\n"
+        "Test Area~\n"
+        "Credits~\n"
+        "0 0\n"
+        "#AREADATA\n"
+        "Builders Alice~\n"
+        "Security 9\n"
+        "Flags 3\n"
+        "#$\n"
+    )
+    path = tmp_path / "test.are"
+    path.write_text(content, encoding="latin-1")
+    area = load_area_file(str(path))
+    assert area.builders == "Alice"
+    assert area.security == 9
+    assert area.area_flags == 3
+    area_registry.clear()

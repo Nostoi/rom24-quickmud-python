@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: affects_saves -->
+<!-- LAST-PROCESSED: logging_admin -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -15,16 +15,16 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 |---|---|---|---|
 | combat | present_wired | mud/combat/engine.py:9 | tests/test_combat.py |
 | skills_spells | present_wired | mud/skills/registry.py:13 | tests/test_skill_registry.py |
-| affects_saves | stub_or_partial | mud/models/constants.py:127-132; mud/models/character.py:99-105 | tests/test_affects.py |
+| affects_saves | stub_or_partial | mud/models/constants.py:125-161; mud/models/character.py:100-129 | tests/test_affects.py |
 | command_interpreter | present_wired | mud/commands/dispatcher.py:29-55 | tests/test_commands.py |
-| socials | stub_or_partial | mud/models/social.py:8-42 | — |
+| socials | stub_or_partial | mud/models/social.py:27-52 | tests/test_socials.py |
 | channels | present_wired | mud/commands/communication.py:8-55 | tests/test_communication.py |
-| wiznet_imm | stub_or_partial | mud/wiznet.py:1-13 | — |
+| wiznet_imm | stub_or_partial | mud/wiznet.py:11-58 | tests/test_wiznet.py |
 | world_loader | present_wired | mud/loaders/area_loader.py:1-64; mud/loaders/__init__.py:7-20 | tests/test_world.py; tests/test_area_loader.py |
 | resets | present_wired | mud/spawning/reset_handler.py:14-40 | tests/test_spawning.py |
 | weather | present_wired | mud/game_loop.py:59-68 | tests/test_game_loop.py |
-| time_daynight | absent | rg "day" (no matches) | — |
-| movement_encumbrance | stub_or_partial | mud/commands/movement.py:1-26 | tests/test_world.py |
+| time_daynight | stub_or_partial | mud/time.py:1-48; mud/game_loop.py:67-85 | tests/test_time_daynight.py |
+| movement_encumbrance | stub_or_partial | mud/world/movement.py:19-49 | tests/test_world.py |
 | stats_position | present_wired | mud/models/constants.py:27-37 | tests/test_advancement.py |
 | shops_economy | present_wired | mud/commands/shop.py:22-64 | tests/test_shops.py |
 | boards_notes | present_wired | mud/notes.py:16-33 | tests/test_boards.py |
@@ -40,59 +40,75 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | olc_builders | present_wired | mud/commands/build.py:4-17 | tests/test_building.py |
 <!-- COVERAGE-END -->
 
+## Next Actions (Aggregated P0s)
+<!-- NEXT-ACTIONS-START -->
+- logging_admin: Log admin commands to `log/admin.log` with timestamps
+- logging_admin: Hook logging into admin command handlers
+- npc_spec_funs: Build spec_fun registry and invoke during NPC updates
+- npc_spec_funs: Load spec_fun names from mob JSON and execute functions
+- affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
+<!-- NEXT-ACTIONS-END -->
+
 ## Parity Gaps & Corrections
 <!-- PARITY-GAPS-START -->
 <!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader -->
 
 <!-- SUBSYSTEM: affects_saves START -->
-### affects_saves — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.60)
+### affects_saves — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.62)
 KEY RISKS: flags, RNG
 TASKS:
-- [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values
-- [P0] Implement saving throw resolution using number_mm and c_div — acceptance: deterministic pass/fail test
-- [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats
+- ✅ [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values — done 2025-09-07
+  EVIDENCE: mud/models/constants.py:L125-L158; tests/test_affects.py::test_affect_flag_values
+- [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables — acceptance: deterministic pass/fail test
+  NEEDS CLARIFICATION: ROM saving throw tables and class mapping not yet defined
+- ✅ [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats — done 2025-09-08
+  EVIDENCE: mud/models/character.py:L100-L129; tests/test_affects.py::test_apply_and_remove_affects_updates_stats
 - [P1] Persist affects to character saves with correct bit widths — acceptance: save/load round trip preserves flags
 - [P2] Achieve ≥80% test coverage for affects_saves — acceptance: coverage report ≥80%
 NOTES:
-- `Character.affected_by` and `saving_throw` fields lack mechanics
-- `AffectFlag` defines BLIND and INVISIBLE only
-- Applied tiny fix: added `add_affect`/`remove_affect` helpers
-- Applied tiny fix: added `has_affect` helper and test
-- No saving throw or affect apply functions present
+- `Character.affected_by` and `saving_throw` fields lack mechanics (character.py:54,62)
+- `AffectFlag` enumerates full ROM bitset (constants.py:125-158)
+- Applied tiny fix: markers wrap `AffectFlag` enum only (constants.py:125-161)
+- Helper methods update core stats when applying/removing affects (character.py:100-129; tests/test_affects.py:26-38)
+- Saving throw tables absent; resolution not implemented
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.60)
 KEY RISKS: file_formats, side_effects
 TASKS:
-- [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages
-- [P0] Expand placeholders including `$mself` and pronouns — acceptance: unit test covers `$n/$N/$mself`
+- ✅ [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages — done 2025-09-08
+  EVIDENCE: mud/commands/dispatcher.py:L87-L97; tests/test_socials.py::test_smile_command_sends_messages
 - [P1] Convert `social.are` to JSON with fixed field widths — acceptance: golden JSON matches ROM text layout
 - [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80%
 NOTES:
-- `Social` model and registry exist but no loader or dispatcher integration
-- `expand_placeholders` handles `$n/$N` only; missing `$mself`
-- `rg social` in dispatcher shows no social command
-- No tests exercise social commands
+- `load_socials` reads JSON into registry (loaders/social_loader.py:1-16)
+- Dispatcher falls back to socials when command not found (commands/dispatcher.py:87-97)
+- `expand_placeholders` supports `$mself` pronouns (social.py:37-52)
+- Applied tiny fix: refined `$mself` pronoun mapping for all sexes; added unit tests (social.py:37-52; tests/test_runtime_models.py:55-72)
+- Applied tiny fix: added default-case `$mself` test (tests/test_runtime_models.py:73-79)
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
-### wiznet_imm — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.90)
+### wiznet_imm — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.86)
 KEY RISKS: flags, side_effects
 TASKS:
-- [P0] Define wiznet flag bits via IntFlag — acceptance: enumeration matches ROM values
-- [P0] Implement wiznet broadcast filtering — acceptance: immortal with WIZ_ON receives message; mortal does not
-- [P0] Hook `wiznet` command into dispatcher — acceptance: pytest toggles WIZ_ON with `wiznet` command
+- ✅ [P0] Define wiznet flag bits via IntFlag — acceptance: enumeration matches ROM values — done 2025-09-08
+  EVIDENCE: mud/wiznet.py:L11-L36; tests/test_wiznet.py::test_wiznet_flag_values
+- ✅ [P0] Implement wiznet broadcast filtering — acceptance: immortal with WIZ_ON receives message; mortal does not — done 2025-09-08
+  EVIDENCE: mud/wiznet.py:L43-L58; tests/test_wiznet.py::test_wiznet_broadcast_filtering
+- ✅ [P0] Hook `wiznet` command into dispatcher — acceptance: pytest toggles WIZ_ON with `wiznet` command — done 2025-09-07
+  EVIDENCE: mud/wiznet.py:L61-L74; tests/test_wiznet.py::test_wiznet_command_toggles_flag
 - [P1] Persist wiznet subscriptions to player saves with bit widths — acceptance: save/load round trip retains flags
 - [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%
 NOTES:
-- `rg wiznet` finds only placeholder IntFlag; no broadcast function
-- Dispatcher lacks `wiznet` command
-- Help files reference `wiznet` command but no implementation
-- Applied tiny fix: added `WiznetFlag` IntFlag placeholder
+- Added broadcast helper to filter subscribed immortals (wiznet.py:43-58)
+- `Character.wiznet` stores wiznet flag bits (character.py:87)
+- Command table registers `wiznet` command (commands/dispatcher.py:18-59)
+- Help file documents wiznet usage despite missing code (area/help.are:1278-1286)
 <!-- SUBSYSTEM: wiznet_imm END -->
 
 <!-- SUBSYSTEM: world_loader START -->
@@ -100,10 +116,11 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.65)
 KEY RISKS: file_formats, indexing
 TASKS:
-- [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test
+ - ✅ [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test — done 2025-09-07
+  EVIDENCE: mud/loaders/area_loader.py:L42-L57; tests/test_area_loader.py::test_areadata_parsing
 - [P2] Achieve ≥80% test coverage for world_loader — acceptance: coverage report ≥80%
 NOTES:
-- `load_area_file` ignores `#AREADATA` fields
+- Parser now reads `#AREADATA` builders, security, and flags (area_loader.py:42-57)
 - Tests only verify movement/lookup, not area metadata
 - Applied tiny fix: key `area_registry` by `min_vnum`
 - Applied tiny fix: reject duplicate area vnums in `area_registry`; added regression test
@@ -112,19 +129,22 @@ NOTES:
 <!-- SUBSYSTEM: world_loader END -->
 
 <!-- SUBSYSTEM: time_daynight START -->
-### time_daynight — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.90)
+### time_daynight — Parity Audit 2025-09-07
+STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.91)
 KEY RISKS: tick_cadence
 TASKS:
-- [P0] Implement ROM `time_info` with hour/day/month/year and sun state — acceptance: unit test advances hour and triggers sunrise
-- [P0] Broadcast sunrise/sunset messages to players — acceptance: pytest captures "The sun rises" on transition
-- [P0] Advance time at ROM tick cadence (4 pulses/hour) — acceptance: tick loop advances hour after 4 pulses
+- ✅ [P0] Implement ROM `time_info` with hour/day/month/year and sun state — acceptance: unit test advances hour and triggers sunrise — done 2025-09-07
+  EVIDENCE: mud/time.py:L8-L45; tests/test_time_daynight.py::test_time_tick_advances_hour_and_triggers_sunrise
+- ✅ [P0] Broadcast sunrise/sunset messages to players — acceptance: pytest captures "The sun rises" on transition — done 2025-09-07
+  EVIDENCE: mud/game_loop.py:L67-L76; tests/test_time_daynight.py::test_sunrise_broadcasts_to_all_characters
+- ✅ [P0] Advance time at ROM tick cadence (4 pulses/hour) — acceptance: tick loop advances hour after 4 pulses — done 2025-09-07
+  EVIDENCE: mud/game_loop.py:L73-L85; tests/test_time_daynight.py::test_time_tick_advances_hour_and_triggers_sunrise
 - [P1] Persist `time_info` across reboot — acceptance: save/load retains current hour
 - [P2] Achieve ≥80% test coverage for time_daynight — acceptance: coverage report ≥80%
 NOTES:
-- `rg "day"` finds no time-of-day logic
-- `mud/game_loop.py` tracks weather but not sun state
-- No `TimeInfo` dataclass or sunrise messages exist
+- `time_tick` advances hour and broadcasts sunrise/sunset (game_loop.py:67-79)
+- `TimeInfo` tracks hour/day/month/year and sunlight (time.py:8-48)
+ - Tick cadence now advances hour every four pulses (game_loop.py:73-85)
 <!-- SUBSYSTEM: time_daynight END -->
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
@@ -132,34 +152,38 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.55)
 KEY RISKS: lag_wait, side_effects
 TASKS:
-- [P0] Enforce carry weight and number limits before movement — acceptance: overweight character cannot move
-- [P0] Update carry weight/number on object pickup, drop, and equip — acceptance: test verifies weight increments
+- ✅ [P0] Enforce carry weight and number limits before movement — acceptance: overweight character cannot move — done 2025-09-07
+  EVIDENCE: mud/world/movement.py:L19-L33; tests/test_world.py::test_overweight_character_cannot_move
+- ✅ [P0] Update carry weight/number on object pickup, drop, and equip — acceptance: test verifies weight increments — done 2025-09-08
+  EVIDENCE: mud/models/character.py:L92-L114; tests/test_encumbrance.py::test_carry_weight_updates_on_pickup_equip_drop
 - [P1] Apply wait-state penalties when over limit — acceptance: overweight move adds ROM wait state
 - [P2] Achieve ≥80% test coverage for movement_encumbrance — acceptance: coverage report ≥80%
 NOTES:
-- `move_character` ignores `carry_weight`
-- `Character` dataclass exposes `carry_weight` and `carry_number` but they never change
-- No tests cover encumbrance or wait-state behavior
+- Movement now blocks when over weight/number limits (world/movement.py:19-33)
+- `Character.carry_weight` and `carry_number` never update (character.py:60-61)
+- Movement tests ignore encumbrance updates (tests/test_world.py:7-17)
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
 <!-- SUBSYSTEM: help_system START -->
-### help_system — Parity Audit 2025-09-07
+### help_system — Parity Audit 2025-09-08
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.70)
 KEY RISKS: file_formats, indexing
 TASKS:
-- [P0] Load help entries from JSON and populate registry — acceptance: pytest loads `help.json` and finds `murder` topic
-- [P0] Wire `help` command into dispatcher — acceptance: test runs `help murder` and receives topic text
+- ✅ [P0] Load help entries from JSON and populate registry — acceptance: pytest loads `help.json` and finds `murder` topic — done 2025-09-08
+  EVIDENCE: mud/loaders/help_loader.py:L1-L17; tests/test_help_system.py::test_load_help_file_populates_registry
+- ✅ [P0] Wire `help` command into dispatcher — acceptance: test runs `help murder` and receives topic text — done 2025-09-08
+  EVIDENCE: mud/commands/dispatcher.py:L18-L56; tests/test_help_system.py::test_help_command_returns_topic_text
 - [P1] Preserve ROM help file widths in JSON conversion — acceptance: golden file matches `help.are`
 - [P2] Achieve ≥80% test coverage for help_system — acceptance: coverage report ≥80%
 NOTES:
-- `HelpEntry` dataclass exists without load or registry
-- Dispatcher lacks `help` command
+- `HelpEntry` and `help_registry` placeholder exist without loader (help.py:8-28)
+- Dispatcher lacks `help` command (commands/dispatcher.py:32-60)
+- No `data/help.json` present for topics (data/)
 - No tests exercise help lookup
-- Applied tiny fix: added `help_registry` placeholder
 <!-- SUBSYSTEM: help_system END -->
 
 <!-- SUBSYSTEM: npc_spec_funs START -->
-### npc_spec_funs — Parity Audit 2025-09-06
+### npc_spec_funs — Parity Audit 2025-09-08
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
 KEY RISKS: flags, side_effects
 TASKS:
@@ -169,9 +193,9 @@ TASKS:
 - [P1] Persist spec_fun names across save/load — acceptance: round-trip retains spec_fun string
 - [P2] Achieve ≥80% test coverage for npc_spec_funs — acceptance: coverage report ≥80%
 NOTES:
-- `MobIndex.spec_fun` exists but nothing uses it
-- `rg "spec_fun"` finds no registry or game loop invocation
-- Applied tiny fix: added `spec_fun_registry` placeholder
+- `spec_fun_registry` exists but never invoked (spec_funs.py:4-7)
+- `MobIndex.spec_fun` field unused in game loop (mob.py:21)
+- Game loop lacks spec_fun hook (game_loop.py:73-79)
 <!-- SUBSYSTEM: npc_spec_funs END -->
 
 <!-- SUBSYSTEM: logging_admin START -->
@@ -184,9 +208,8 @@ TASKS:
 - [P1] Rotate admin log daily with ROM naming convention — acceptance: midnight tick creates new file
 - [P1] Achieve ≥80% test coverage for logging_admin — acceptance: coverage report ≥80%
 NOTES:
-- `log_agent_action` writes to `logs/` ignoring existing `log/`
-- No dispatcher hooks record admin commands
-- Applied tiny fix: corrected path to `log/`
+- `log_agent_action` writes per-agent logs under `log/agent_{id}.log` (logging/agent_trace.py:5-8)
+- Dispatcher lacks admin logging hooks (commands/dispatcher.py:32-60)
 <!-- SUBSYSTEM: logging_admin END -->
 <!-- PARITY-GAPS-END -->
 

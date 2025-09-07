@@ -1,0 +1,12 @@
+[
+  {
+    "name": "smile",
+    "char_no_arg": "You smile.",
+    "others_no_arg": "$n smiles.",
+    "char_found": "You smile at $N.",
+    "others_found": "$n smiles at $N.",
+    "vict_found": "$n smiles at you.",
+    "char_auto": "You smile at yourself.",
+    "others_auto": "$n smiles at $mself."
+  }
+]

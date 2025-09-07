@@ -17,6 +17,15 @@ def test_movement_and_look():
     assert 'temple' in out2.lower() or 'altar' in out2.lower()
 
 
+def test_overweight_character_cannot_move():
+    initialize_world('area/area.lst')
+    char = create_test_character('Tester', 3001)
+    char.carry_weight = 200
+    msg = move_character(char, 'north')
+    assert msg == 'You are too encumbered to move.'
+    assert char.room.vnum == 3001
+
+
 def test_area_list_requires_sentinel(tmp_path):
     area_registry.clear()
     area_list = tmp_path / "area.lst"
