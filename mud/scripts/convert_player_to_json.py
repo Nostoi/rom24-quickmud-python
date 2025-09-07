@@ -36,23 +36,45 @@ def convert_player(path: str | Path) -> PlayerJson:
     plr_flags = 0
     comm_flags = 0
 
-    for raw in Path(path).read_text(encoding="latin-1").splitlines():
+    lines = Path(path).read_text(encoding="latin-1").splitlines()
+    # Validate header/footer sentinels
+    nonempty = [ln.strip() for ln in lines if ln.strip()]
+    if not nonempty or nonempty[0] != "#PLAYER":
+        raise ValueError("invalid player file: missing #PLAYER header")
+    if "#END" not in nonempty:
+        raise ValueError("invalid player file: missing #END footer")
+
+    for raw in lines:
         line = raw.strip()
         if not line:
             continue
         if line.startswith("Name "):
             name = line.split(" ", 1)[1].rstrip("~")
         elif line.startswith("Levl "):
-            level = int(line.split()[1])
+            try:
+                level = int(line.split()[1])
+            except Exception as e:
+                raise ValueError("invalid Levl field") from e
         elif line.startswith("Room "):
-            room_vnum = int(line.split()[1])
+            try:
+                room_vnum = int(line.split()[1])
+            except Exception as e:
+                raise ValueError("invalid Room field") from e
         elif line.startswith("HMV "):
             vals = line.split()[1:]
+            if len(vals) != 6:
+                raise ValueError("invalid HMV field: expected 6 integers")
             hit, max_hit, mana, max_mana, move, max_move = _parse_hmv(vals)
         elif line.startswith("Act "):
-            plr_flags = _letters_to_bits(line.split()[1])
+            spec = line.split()[1]
+            if not spec.isalpha() or not spec.isupper():
+                raise ValueError("invalid Act flags: expected A..Z letters")
+            plr_flags = _letters_to_bits(spec)
         elif line.startswith("Comm "):
-            comm_flags = _letters_to_bits(line.split()[1])
+            spec = line.split()[1]
+            if not spec.isalpha() or not spec.isupper():
+                raise ValueError("invalid Comm flags: expected A..Z letters")
+            comm_flags = _letters_to_bits(spec)
 
     return PlayerJson(
         name=name,
@@ -87,4 +109,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -246,6 +246,9 @@ TASKS:
   EVIDENCE: PY mud/scripts/convert_player_to_json.py (Act/Comm → bitmasks; HMV parsing)
   EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip
 - [P1] Reject malformed legacy saves with precise errors — acceptance: tests cover missing header/footer and bad widths
+- ✅ [P1] Reject malformed legacy saves with precise errors — done 2025-09-07
+  EVIDENCE: PY mud/scripts/convert_player_to_json.py (header/footer + HMV/flags validation)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_missing_header_footer_and_bad_hmv
 - [P2] Coverage ≥80% for player_save_format — acceptance: coverage report ≥80%
 NOTES:
 - C: `src/save.c:save_char_obj()/load_char_obj()` define record layout & bit packing
