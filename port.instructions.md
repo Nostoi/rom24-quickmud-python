@@ -52,6 +52,9 @@
 - RULE: Convert `social.are` to JSON preserving field widths; verify with golden file tests.
   RATIONALE: ROM social lines are fixed-width; reformatting alters parsing.
   EXAMPLE: convert_social_are("data/social.are")
+- RULE: Format social messages via `expand_placeholders`; forbid f-strings or `.format` for names.
+  RATIONALE: Preserves ROM placeholder semantics and pronoun expansion.
+  EXAMPLE: expand_placeholders("$n nods at $N.", ch, vict)
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
