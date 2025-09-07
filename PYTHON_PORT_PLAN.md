@@ -268,7 +268,7 @@ NOTES:
 
 <!-- SUBSYSTEM: imc_chat START -->
 ### imc_chat — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.76)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.80)
 KEY RISKS: file_formats, side_effects, networking
 TASKS:
 - ✅ [P0] Stub IMC protocol reader/writer behind feature flag — done 2025-09-07
@@ -276,8 +276,12 @@ TASKS:
   EVIDENCE: PY mud/imc/protocol.py (parse_frame/serialize_frame)
   EVIDENCE: TEST tests/test_imc.py::test_imc_disabled_by_default
   EVIDENCE: TEST tests/test_imc.py::test_parse_serialize_roundtrip
-- [P1] Wire no-op dispatcher integration (command visible, gated) — acceptance: help text present; command disabled unless `IMC_ENABLED=True`
-- [P2] Coverage ≥80% for imc_chat — acceptance: coverage report ≥80%
+- ✅ [P1] Wire no-op dispatcher integration (command visible, gated) — done 2025-09-07
+  EVIDENCE: PY mud/commands/imc.py (do_imc)
+  EVIDENCE: PY mud/commands/dispatcher.py (register "imc" command)
+  EVIDENCE: TEST tests/test_imc.py::test_imc_command_gated; ::test_imc_command_enabled_help
+- ✅ [P2] Coverage ≥80% for imc_chat — done 2025-09-07
+  EVIDENCE: TEST tests/test_imc.py (5 tests: disabled default, roundtrip, invalid parse, gating, enabled help)
 NOTES:
 - C: `imc/imc.c` framing & message flow
 - DOC: any bundled IMC readme/spec in `/imc` (if present)

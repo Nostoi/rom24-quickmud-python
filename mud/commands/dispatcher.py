@@ -16,6 +16,7 @@ from .notes import do_board, do_note
 from .build import cmd_redit
 from .socials import perform_social
 from .help import do_help
+from .imc import do_imc
 from mud.wiznet import cmd_wiznet
 from mud.logging.admin import log_admin_command
 from mud.models.social import social_registry
@@ -55,6 +56,7 @@ COMMANDS: List[Command] = [
     Command("board", do_board),
     Command("note", do_note),
     Command("help", do_help),
+    Command("imc", do_imc),
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
