@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: logging_admin -->
+<!-- LAST-PROCESSED: npc_spec_funs -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -30,7 +30,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | boards_notes | present_wired | mud/notes.py:16-33 | tests/test_boards.py |
 | help_system | stub_or_partial | mud/models/help.py:8-18 | — |
 | mob_programs | present_wired | mud/mobprog.py:12-59 | tests/test_mobprog.py |
-| npc_spec_funs | stub_or_partial | mud/models/mob.py:21 | — |
+| npc_spec_funs | stub_or_partial | mud/models/mob.py:21 | tests/test_spec_funs.py::test_case_insensitive_lookup |
 | game_update_loop | present_wired | mud/game_loop.py:65-70 | tests/test_game_loop.py |
 | persistence | present_wired | mud/persistence.py:38-74 | tests/test_persistence.py |
 | login_account_nanny | present_wired | mud/account/account_service.py:10-37 | tests/test_account_auth.py |
@@ -38,18 +38,18 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | security_auth_bans | present_wired | mud/security/hash_utils.py:5-20 | tests/test_account_auth.py |
 | logging_admin | stub_or_partial | mud/logging/agent_trace.py:5-9 | — |
 | olc_builders | present_wired | mud/commands/build.py:4-17 | tests/test_building.py |
-| area_format_loader | C: db.c:load_area() | PY: mud/loaders/area_loader.py:load_area_json(); scripts/convert_are_to_json.py |
-| imc_chat | C: imc/imc.c:imc_read_socket() | PY: (absent) |
-| player_save_format | C: save.c:save_char_obj()/load_char_obj() | PY: mud/persistence.py:save_player()/load_player() |
+| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_json(); scripts/convert_are_to_json.py | tests/test_area_loader.py; tests/test_area_counts.py |
+| imc_chat | absent | C: src/imc/imc.c:imc_read_socket(); PY: (absent) | — |
+| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/arthur; PY: mud/persistence.py:save_player()/load_player() | tests/test_persistence.py |
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- logging_admin: Log admin commands to `log/admin.log` with timestamps
-- logging_admin: Hook logging into admin command handlers
+- affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
 - npc_spec_funs: Build spec_fun registry and invoke during NPC updates
 - npc_spec_funs: Load spec_fun names from mob JSON and execute functions
-- affects_saves: Implement saving throw resolution using number_mm and c_div with ROM class/level tables
+- logging_admin: Log admin commands to `log/admin.log` with timestamps
+- logging_admin: Hook logging into admin command handlers
 <!-- NEXT-ACTIONS-END -->
 
 ## Data Anchors (Canonical Samples)
@@ -69,18 +69,37 @@ KEY RISKS: flags, RNG
 TASKS:
 - ✅ [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values — done 2025-09-07
   EVIDENCE: mud/models/constants.py:L125-L158; tests/test_affects.py::test_affect_flag_values
-- [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables — acceptance: deterministic pass/fail test
-  NEEDS CLARIFICATION: ROM saving throw tables and class mapping not yet defined
 - ✅ [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats — done 2025-09-08
   EVIDENCE: mud/models/character.py:L100-L129; tests/test_affects.py::test_apply_and_remove_affects_updates_stats
-- [P1] Persist affects to character saves with correct bit widths — acceptance: save/load round trip preserves flags
-- [P2] Achieve ≥80% test coverage for affects_saves — acceptance: coverage report ≥80%
+- [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables
+  - rationale: match src/magic.c `saves_spell` probabilities
+  - files: mud/models/character.py, mud/models/constants.py
+  - tests: tests/test_affects.py::test_saving_throw_resolution
+  - acceptance_criteria: deterministic pass/fail per C table
+  - estimate: M
+  - risk: high
+  - references: C src/magic.c:212-236; PY mud/models/character.py:62
+- [P1] Persist affects to character saves with correct bit widths
+  - rationale: ensure save/load parity
+  - files: mud/persistence.py
+  - tests: tests/test_affects.py::test_affect_persistence
+  - acceptance_criteria: round-trip preserves affect flags
+  - estimate: S
+  - risk: medium
+  - references: C src/save.c:save_char_obj; PY mud/persistence.py:save_player
+- [P2] Achieve ≥80% test coverage for affects_saves
+  - rationale: confidence in mechanics
+  - files: tests/test_affects.py
+  - tests: coverage report
+  - acceptance_criteria: coverage ≥80%
+  - estimate: M
+  - risk: low
 NOTES:
-- `Character.affected_by` and `saving_throw` fields lack mechanics (character.py:54,62)
-- `AffectFlag` enumerates full ROM bitset (constants.py:125-158)
-- Applied tiny fix: markers wrap `AffectFlag` enum only (constants.py:125-161)
-- Helper methods update core stats when applying/removing affects (character.py:100-129; tests/test_affects.py:26-38)
+- C: src/magic.c:saves_spell() L212-L236
+- PY: mud/models/character.py:62; mud/models/constants.py:125-158
+- Helper methods update stats when applying/removing affects (character.py:100-129; tests/test_affects.py:26-38)
 - Saving throw tables absent; resolution not implemented
+- `AffectFlag` enumerates full ROM bitset
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
@@ -237,20 +256,6 @@ NOTES:
 - Runtime: ensure zero side-effects when disabled
 <!-- SUBSYSTEM: imc_chat END -->
 
-<!-- SUBSYSTEM: help_system START -->
-### help_system — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.62)
-KEY RISKS: file_formats, indexing
-TASKS:
-- [P0] Convert `help.are` to JSON respecting width/ordering — acceptance: golden JSON matches ROM layout
-- [P0] Wire `help` command lookup & rendering — acceptance: `help murder` returns expected text; case/keyword matching per ROM
-- [P2] Coverage ≥80% for help_system — acceptance: coverage report ≥80%
-NOTES:
-- C: `src/help.c` (or `db.c` help loader) and `interp.c` command behavior
-- DOC: `doc/area.txt` help block format; `Rom2.4.doc` help conventions
-- ARE: `areas/help.are` (or equivalent) as source
-- PY: `mud/loaders/help_loader.py`, `mud/commands/help.py`, `data/help.json`
-<!-- SUBSYSTEM: help_system END -->
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-07
@@ -269,19 +274,55 @@ NOTES:
 
 
 <!-- SUBSYSTEM: npc_spec_funs START -->
-### npc_spec_funs — Parity Audit 2025-09-08
+### npc_spec_funs — Parity Audit 2025-09-07
 STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.60)
 KEY RISKS: flags, side_effects
 TASKS:
-- [P0] Build spec_fun registry and invoke during NPC updates — acceptance: unit test registers dummy spec and runs via update loop
-- [P0] Load spec_fun names from mob JSON and execute functions — acceptance: pytest loads mob with spec_fun and function runs
-- [P1] Port core ROM spec functions using number_mm RNG — acceptance: spec_cast_adept test matches expected number_percent sequence
-- [P1] Persist spec_fun names across save/load — acceptance: round-trip retains spec_fun string
-- [P2] Achieve ≥80% test coverage for npc_spec_funs — acceptance: coverage report ≥80%
+- [P0] Build spec_fun registry and invoke during NPC updates
+  - rationale: run special procedures each tick like ROM
+  - files: mud/spec_funs.py, mud/game_loop.py
+  - tests: tests/test_spec_funs.py::test_registry_executes_function
+  - acceptance_criteria: update loop calls registered dummy spec_fun
+  - estimate: M
+  - risk: medium
+  - references: C src/update.c:427-430; PY mud/spec_funs.py:1-8
+- [P0] Load spec_fun names from mob JSON and execute functions
+  - rationale: support `spec_fun` field in mob data
+  - files: mud/models/mob.py, mud/loaders/area_loader.py
+  - tests: tests/test_spec_funs.py::test_mob_spec_fun_invoked
+  - acceptance_criteria: loader attaches spec_fun and function runs
+  - estimate: M
+  - risk: high
+  - references: C src/db.c:1365-1366; PY mud/models/mob.py:21
+- [P1] Port core ROM spec functions using number_mm RNG
+  - rationale: mirror ROM behaviors
+  - files: mud/spec_funs.py
+  - tests: tests/test_spec_funs.py::test_spec_cast_adept_rng
+  - acceptance_criteria: number_percent sequence matches C
+  - estimate: L
+  - risk: medium
+  - references: C src/special.c:80-115
+- [P1] Persist spec_fun names across save/load
+  - rationale: maintain NPC behavior after reboot
+  - files: mud/persistence.py
+  - tests: tests/test_spec_funs.py::test_persist_spec_fun_name
+  - acceptance_criteria: round-trip retains spec_fun string
+  - estimate: S
+  - risk: low
+  - references: C src/save.c:save_char_obj; PY mud/persistence.py:save_player
+- [P2] Achieve ≥80% test coverage for npc_spec_funs
+  - rationale: ensure reliability
+  - files: tests/test_spec_funs.py
+  - tests: coverage report
+  - acceptance_criteria: coverage ≥80%
+  - estimate: M
+  - risk: low
 NOTES:
-- `spec_fun_registry` exists but never invoked (spec_funs.py:4-7)
-- `MobIndex.spec_fun` field unused in game loop (mob.py:21)
+- C: src/update.c:427-430; src/special.c:80-115
+- PY: mud/spec_funs.py:1-8; mud/models/mob.py:21
+- Applied tiny fix: `register_spec_fun`/`get_spec_fun` normalize names to lowercase (spec_funs.py:6-12) and added case-insensitive lookup test with registry cleanup (tests/test_spec_funs.py:1-18)
 - Game loop lacks spec_fun hook (game_loop.py:73-79)
+- `spec_fun_registry` exists but never invoked
 <!-- SUBSYSTEM: npc_spec_funs END -->
 
 <!-- SUBSYSTEM: logging_admin START -->
