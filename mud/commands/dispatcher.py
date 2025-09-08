@@ -18,6 +18,7 @@ from .admin_commands import (
     cmd_banlist,
 )
 from .shop import do_list, do_buy, do_sell
+from .alias_cmds import do_alias, do_unalias
 from .advancement import do_practice, do_train
 from .notes import do_board, do_note
 from .build import cmd_redit
@@ -64,6 +65,8 @@ COMMANDS: List[Command] = [
     Command("note", do_note),
     Command("help", do_help),
     Command("imc", do_imc),
+    Command("alias", do_alias),
+    Command("unalias", do_unalias),
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
@@ -92,11 +95,30 @@ def resolve_command(name: str) -> Optional[Command]:
     return None
 
 
+def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> str:
+    """Expand the first token using per-character aliases, up to max_depth."""
+    s = input_str
+    for _ in range(max_depth):
+        try:
+            parts = shlex.split(s)
+        except ValueError:
+            return s
+        if not parts:
+            return s
+        head, tail = parts[0], parts[1:]
+        expansion = char.aliases.get(head)
+        if not expansion:
+            return s
+        s = (expansion + (" " + " ".join(tail) if tail else "")).strip()
+    return s
+
+
 def process_command(char: Character, input_str: str) -> str:
     if not input_str.strip():
         return "What?"
+    expanded = _expand_aliases(char, input_str)
     try:
-        parts = shlex.split(input_str)
+        parts = shlex.split(expanded)
     except ValueError:
         return "Huh?"
     if not parts:

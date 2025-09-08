@@ -54,3 +54,40 @@ def test_abbreviations_and_quotes():
 
     out3 = process_command(char, 'say "hello world"')
     assert out3 == "You say, 'hello world'"
+
+
+def test_alias_create_expand_and_unalias():
+    initialize_world('area/area.lst')
+    char = create_test_character('AliasUser', 3001)
+
+    # Initially no aliases
+    out0 = process_command(char, 'alias')
+    assert 'No aliases' in out0
+
+    # Create alias and use it
+    set_out = process_command(char, 'alias lk look')
+    assert 'Alias set: lk -> look' in set_out
+    out1 = process_command(char, 'lk')
+    assert 'Temple' in out1  # expanded to look
+
+    # Remove alias
+    rm_out = process_command(char, 'unalias lk')
+    assert 'Removed alias' in rm_out
+    out2 = process_command(char, 'lk')
+    assert out2 == 'Huh?'
+
+
+def test_alias_persists_in_save_load(tmp_path, monkeypatch):
+    initialize_world('area/area.lst')
+    char = create_test_character('AliasPersist', 3001)
+    process_command(char, 'alias lk look')
+
+    # Redirect players dir to tmp
+    from mud import persistence as p
+    monkeypatch.setattr(p, 'PLAYERS_DIR', tmp_path)
+    p.save_character(char)
+
+    loaded = p.load_character('AliasPersist')
+    assert loaded is not None
+    out = process_command(loaded, 'lk')
+    assert 'Temple' in out

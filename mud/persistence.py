@@ -34,6 +34,7 @@ class PlayerSave:
     room_vnum: Optional[int] = None
     inventory: List[int] = field(default_factory=list)
     equipment: Dict[str, int] = field(default_factory=dict)
+    aliases: Dict[str, str] = field(default_factory=dict)
 
 
 PLAYERS_DIR = Path("data/players")
@@ -61,6 +62,7 @@ def save_character(char: Character) -> None:
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
+        aliases=dict(getattr(char, "aliases", {})),
     )
     path = PLAYERS_DIR / f"{char.name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -107,6 +109,11 @@ def load_character(name: str) -> Optional[Character]:
         obj = spawn_object(vnum)
         if obj:
             char.equip_object(obj, slot)
+    # restore aliases
+    try:
+        char.aliases.update(getattr(data, "aliases", {}) or {})
+    except Exception:
+        pass
     character_registry.append(char)
     return char
 
