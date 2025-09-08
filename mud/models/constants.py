@@ -219,3 +219,92 @@ class DefenseBit(IntFlag):
     IRON = 1 << 25  # Z
 
 # END damage_types_and_defense_bits
+
+# START imm_res_vuln_flags
+class ImmFlag(IntFlag):
+    """IMM_* flags mapped to ROM bit letters (A..Z).
+
+    Values mirror DefenseBit so code may interchangeably use either.
+    """
+
+    SUMMON = int(DefenseBit.SUMMON)
+    CHARM = int(DefenseBit.CHARM)
+    MAGIC = int(DefenseBit.MAGIC)
+    WEAPON = int(DefenseBit.WEAPON)
+    BASH = int(DefenseBit.BASH)
+    PIERCE = int(DefenseBit.PIERCE)
+    SLASH = int(DefenseBit.SLASH)
+    FIRE = int(DefenseBit.FIRE)
+    COLD = int(DefenseBit.COLD)
+    LIGHTNING = int(DefenseBit.LIGHTNING)
+    ACID = int(DefenseBit.ACID)
+    POISON = int(DefenseBit.POISON)
+    NEGATIVE = int(DefenseBit.NEGATIVE)
+    HOLY = int(DefenseBit.HOLY)
+    ENERGY = int(DefenseBit.ENERGY)
+    MENTAL = int(DefenseBit.MENTAL)
+    DISEASE = int(DefenseBit.DISEASE)
+    DROWNING = int(DefenseBit.DROWNING)
+    LIGHT = int(DefenseBit.LIGHT)
+    SOUND = int(DefenseBit.SOUND)
+    WOOD = int(DefenseBit.WOOD)
+    SILVER = int(DefenseBit.SILVER)
+    IRON = int(DefenseBit.IRON)
+
+
+class ResFlag(IntFlag):
+    """RES_* flags mapped to ROM bit letters (A..Z)."""
+
+    SUMMON = int(DefenseBit.SUMMON)
+    CHARM = int(DefenseBit.CHARM)
+    MAGIC = int(DefenseBit.MAGIC)
+    WEAPON = int(DefenseBit.WEAPON)
+    BASH = int(DefenseBit.BASH)
+    PIERCE = int(DefenseBit.PIERCE)
+    SLASH = int(DefenseBit.SLASH)
+    FIRE = int(DefenseBit.FIRE)
+    COLD = int(DefenseBit.COLD)
+    LIGHTNING = int(DefenseBit.LIGHTNING)
+    ACID = int(DefenseBit.ACID)
+    POISON = int(DefenseBit.POISON)
+    NEGATIVE = int(DefenseBit.NEGATIVE)
+    HOLY = int(DefenseBit.HOLY)
+    ENERGY = int(DefenseBit.ENERGY)
+    MENTAL = int(DefenseBit.MENTAL)
+    DISEASE = int(DefenseBit.DISEASE)
+    DROWNING = int(DefenseBit.DROWNING)
+    LIGHT = int(DefenseBit.LIGHT)
+    SOUND = int(DefenseBit.SOUND)
+    WOOD = int(DefenseBit.WOOD)
+    SILVER = int(DefenseBit.SILVER)
+    IRON = int(DefenseBit.IRON)
+
+
+class VulnFlag(IntFlag):
+    """VULN_* flags mapped to ROM bit letters (A..Z)."""
+
+    SUMMON = int(DefenseBit.SUMMON)
+    CHARM = int(DefenseBit.CHARM)
+    MAGIC = int(DefenseBit.MAGIC)
+    WEAPON = int(DefenseBit.WEAPON)
+    BASH = int(DefenseBit.BASH)
+    PIERCE = int(DefenseBit.PIERCE)
+    SLASH = int(DefenseBit.SLASH)
+    FIRE = int(DefenseBit.FIRE)
+    COLD = int(DefenseBit.COLD)
+    LIGHTNING = int(DefenseBit.LIGHTNING)
+    ACID = int(DefenseBit.ACID)
+    POISON = int(DefenseBit.POISON)
+    NEGATIVE = int(DefenseBit.NEGATIVE)
+    HOLY = int(DefenseBit.HOLY)
+    ENERGY = int(DefenseBit.ENERGY)
+    MENTAL = int(DefenseBit.MENTAL)
+    DISEASE = int(DefenseBit.DISEASE)
+    DROWNING = int(DefenseBit.DROWNING)
+    LIGHT = int(DefenseBit.LIGHT)
+    SOUND = int(DefenseBit.SOUND)
+    WOOD = int(DefenseBit.WOOD)
+    SILVER = int(DefenseBit.SILVER)
+    IRON = int(DefenseBit.IRON)
+
+# END imm_res_vuln_flags

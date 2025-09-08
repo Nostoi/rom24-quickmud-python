@@ -1,5 +1,4 @@
 from mud.models.character import Character
-from mud.spawning.obj_spawner import spawn_object
 
 
 def do_get(char: Character, args: str) -> str:
