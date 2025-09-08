@@ -182,7 +182,7 @@ NOTES:
 
 <!-- SUBSYSTEM: time_daynight START -->
 ### time_daynight — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.88)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.90)
 KEY RISKS: tick_cadence
 TASKS:
 - ✅ [P0] Align hour advancement to ROM PULSE_TICK — done 2025-09-08
@@ -193,8 +193,11 @@ TASKS:
   EVIDENCE: TEST tests/test_time_daynight.py::test_time_tick_advances_hour_and_triggers_sunrise
   RATIONALE: Match ROM cadence (hour changes on PULSE_TICK boundary); sunrise/sunset broadcast occurs at that moment.
   FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
-- [P1] Introduce configurable tick scaling for tests — acceptance: tests can set TIME_SCALE to accelerate PULSE_TICK without affecting production cadence.
+- ✅ [P1] Introduce configurable tick scaling for tests — done 2025-09-08
   EVIDENCE: C src/update.c comment notes randomization around PULSE_TICK; parity permits test-only scaling.
+  EVIDENCE: PY mud/config.py:get_pulse_tick() reads TIME_SCALE/env and clamps ≥1
+  EVIDENCE: PY mud/game_loop.py uses get_pulse_tick() each tick
+  EVIDENCE: TEST tests/test_time_daynight.py::test_time_scale_accelerates_tick
   FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
 - [P2] Persist `time_info` across reboot — acceptance: save/load retains current hour.
 NOTES:

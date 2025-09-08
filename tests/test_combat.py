@@ -50,10 +50,12 @@ def test_attack_kills_target():
     assert 'Victim is DEAD!!!' in attacker.messages
 
 
-def test_attack_misses_target():
+def test_attack_misses_target(monkeypatch):
     attacker, victim = setup_combat()
-    attacker.hitroll = -100  # guarantee miss
+    attacker.hitroll = -100  # extremely low hit chance
     victim.hit = 10
+    # Guarantee miss deterministically
+    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 100)
     out = process_command(attacker, 'kill victim')
     assert out == 'You miss Victim.'
     assert victim.hit == 10

@@ -1,6 +1,7 @@
 from mud.models.character import Character, character_registry
 from mud.time import time_info, Sunlight
 from mud import game_loop
+from mud import config as mud_config
 from mud.config import get_pulse_tick
 
 
@@ -54,3 +55,20 @@ def test_sunset_and_night_messages_and_wraparound():
     t = TimeInfo(hour=23, day=34, month=16, year=5)
     _ = t.advance_hour()
     assert t.hour == 0 and t.day == 0 and t.month == 0 and t.year == 6
+
+
+def test_time_scale_accelerates_tick(monkeypatch):
+    character_registry.clear()
+    time_info.hour = 4
+    game_loop._pulse_counter = 0
+    # Speed up tick so that a single pulse triggers an hour advance
+    monkeypatch.setattr('mud.config.TIME_SCALE', 60 * 4)
+    # Sanity: scaled tick should be 1
+    assert mud_config.get_pulse_tick() == 1
+
+    ch = Character(name="Scaler")
+    character_registry.append(ch)
+    game_loop.game_tick()  # one pulse with scaling
+    assert time_info.hour == 5
+    assert time_info.sunlight == Sunlight.LIGHT
+    assert "The sun rises in the east." in ch.messages
