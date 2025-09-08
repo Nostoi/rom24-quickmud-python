@@ -85,6 +85,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | area_format_loader | src/db.c:load_area/new_load_area | mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py |
 | imc_chat | imc/imc.c | mud/imc/__init__.py:imc_enabled; mud/commands/imc.py:do_imc |
 | player_save_format | src/save.c:save_char_obj | mud/persistence.py:PlayerSave |
+| skills_spells | src/tables.c:skill_table; src/flags.c | mud/models/constants.py; mud/models/skill.py |
+| security_auth_bans | src/sha256.c:sha256_crypt | mud/security/hash_utils.py:sha256_hex |
+| affects_saves | src/flags.c:IMM_*/RES_*/VULN_* | mud/models/constants.py:ImmFlag/ResFlag/VulnFlag |
 <!-- PARITY-MAP-END -->
 
 ## Data Anchors (Canonical Samples)
