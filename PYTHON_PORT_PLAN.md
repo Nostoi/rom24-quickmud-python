@@ -237,6 +237,12 @@ TASKS:
   EVIDENCE: TEST tests/test_combat.py::test_ac_influences_hit_chance
   RATIONALE: More negative AC must reduce hit chance; integrate AC index and sign.
   FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.py
+ - ✅ [P0] Add positional/visibility hit modifiers — done 2025-09-08
+  EVIDENCE: C src/fight.c:L480-L520 (victim_ac adjustments: <FIGHTING +4, <RESTING +6, !can_see -4)
+  EVIDENCE: PY mud/combat/engine.py:L26-L41 (invisible and position-based AC modifiers using pre-attack position)
+  EVIDENCE: TEST tests/test_combat.py::test_visibility_and_position_modifiers
+  RATIONALE: Sleeping targets are easier to hit; invisible targets harder.
+  FILES: mud/combat/engine.py, tests/test_combat.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py

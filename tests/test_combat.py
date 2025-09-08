@@ -12,6 +12,7 @@ from mud.models.constants import (
     VulnFlag,
 )
 from mud.combat import engine as combat_engine
+from mud.models.constants import AffectFlag
 
 
 def setup_combat():
@@ -127,6 +128,32 @@ def test_ac_influences_hit_chance(monkeypatch):
     # Positive AC raises to_hit: +20 → +(20//2)=+10 → 70 → hit
     victim.hit = 50
     victim.armor[AC_BASH] = 20
+    out = process_command(attacker, 'kill victim')
+    assert out.startswith('You hit')
+
+
+def test_visibility_and_position_modifiers(monkeypatch):
+    attacker, victim = setup_combat()
+    attacker.hitroll = 10
+    attacker.damroll = 3
+    attacker.dam_type = int(DamageType.BASH)
+    victim.armor = [0, 0, 0, 0]
+    victim.hit = 50
+
+    # At roll 60, baseline to_hit=60 → hit; invisible should make it miss
+    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 60)
+    out = process_command(attacker, 'kill victim')
+    assert out.startswith('You hit')
+    victim.hit = 50
+    victim.add_affect(AffectFlag.INVISIBLE)
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You miss Victim.'
+
+    # Positional: roll 62; sleeping target grants +10 effective AC mods (+4 +6)
+    victim.hit = 50
+    victim.remove_affect(AffectFlag.INVISIBLE)
+    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 62)
+    victim.position = Position.SLEEPING
     out = process_command(attacker, 'kill victim')
     assert out.startswith('You hit')
 

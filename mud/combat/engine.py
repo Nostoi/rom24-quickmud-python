@@ -13,6 +13,7 @@ from mud.utils import rng_mm
 from mud.math.c_compat import c_div
 from mud.affects.saves import _check_immune as _riv_check
 from mud.math.c_compat import urange
+from mud.models.constants import AffectFlag
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -26,6 +27,8 @@ def attack_round(attacker: Character, victim: Character) -> str:
     """
 
     attacker.position = Position.FIGHTING
+    # Capture victim's pre-attack position for ROM-like modifiers
+    _victim_pos_before = victim.position
     victim.position = Position.FIGHTING
 
     to_hit = 50 + attacker.hitroll
@@ -35,6 +38,17 @@ def attack_round(attacker: Character, victim: Character) -> str:
     victim_ac = 0
     if hasattr(victim, "armor") and 0 <= ac_idx < len(victim.armor):
         victim_ac = victim.armor[ac_idx]
+    # Visibility and position modifiers (ROM-inspired):
+    # - Invisible target: harder to hit (victim_ac - 4)
+    # - Target below fighting: easier (+4)
+    # - Target below resting: even easier (+6)
+    if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.INVISIBLE):
+        victim_ac -= 4
+    if _victim_pos_before < Position.FIGHTING:
+        victim_ac += 4
+    if _victim_pos_before < Position.RESTING:
+        victim_ac += 6
+
     to_hit += victim_ac // 2
     to_hit = urange(5, to_hit, 100)
     # Use ROM-style percent roll (1..100), hit when roll ≤ to_hit.
