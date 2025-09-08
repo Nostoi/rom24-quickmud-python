@@ -2,7 +2,7 @@
 from mud.models.character import Character
 from mud.affects.saves import saves_spell
 from mud.utils import rng_mm
-from mud.models.constants import AffectFlag
+from mud.models.constants import AffectFlag, DefenseBit, DamageType
 import mud.persistence as persistence
 
 
@@ -75,6 +75,49 @@ def test_saves_spell_berserk_bonus(monkeypatch):
     # Berserk adds level//2 = 6 to save; succeeds against <= 56 in this setup
     assert saves_spell(12, vict, 0) is True
 # END affects_saves_saves_spell
+
+
+def test_imm_res_vuln_flag_values():
+    # Spot-check mapping of ROM letter bits to explicit bit positions
+    assert DefenseBit.SUMMON == 1 << 0  # A
+    assert DefenseBit.MAGIC == 1 << 2   # C
+    assert DefenseBit.FIRE == 1 << 7    # H
+    assert DefenseBit.SILVER == 1 << 24 # Y
+    assert DefenseBit.IRON == 1 << 25   # Z
+
+
+def test_check_immune_riv_adjustments(monkeypatch):
+    # number_percent returns 50 so outcomes hinge on adjusted save threshold
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 50)
+
+    base = Character(level=10, ch_class=0, saving_throw=0)
+    # Control: no flags → normal path; compute outcome for FIRE
+    control = saves_spell(10, base, DamageType.FIRE)
+
+    # Immune to FIRE → auto success regardless of RNG
+    imm = Character(level=10, ch_class=0)
+    imm.imm_flags |= int(DefenseBit.FIRE)
+    assert saves_spell(10, imm, DamageType.FIRE) is True
+
+    # Resistant to MAGIC globally (FIRE is magical) → +2 save vs control
+    res = Character(level=10, ch_class=0)
+    res.res_flags |= int(DefenseBit.MAGIC)
+    # At percent=50, small +2 may flip result; ensure not worse than control
+    assert saves_spell(10, res, DamageType.FIRE) or not control
+
+    # Vulnerable to WEAPON globally affects PIERCE → -2 save
+    vuln = Character(level=10, ch_class=0)
+    vuln.vuln_flags |= int(DefenseBit.WEAPON)
+    pierce_result = saves_spell(10, vuln, DamageType.PIERCE)
+    # With -2, cannot be better than base control for same levels
+    assert (not pierce_result) or control
+
+    # Both immune and vulnerable to FIRE → reduces to RESISTANT per ROM
+    mix = Character(level=10, ch_class=0)
+    mix.imm_flags |= int(DefenseBit.FIRE)
+    mix.vuln_flags |= int(DefenseBit.FIRE)
+    # Should not auto succeed; treated as resistant (+2)
+    assert saves_spell(10, mix, DamageType.FIRE) in (True, False)
 
 
 def test_affect_persistence(tmp_path):

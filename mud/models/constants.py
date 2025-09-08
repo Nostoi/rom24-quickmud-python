@@ -159,3 +159,63 @@ class AffectFlag(IntFlag):
 
 
 # END affects_saves
+
+# START damage_types_and_defense_bits
+class DamageType(IntEnum):
+    """Damage types mirroring merc.h DAM_* values."""
+
+    NONE = 0
+    BASH = 1
+    PIERCE = 2
+    SLASH = 3
+    FIRE = 4
+    COLD = 5
+    LIGHTNING = 6
+    ACID = 7
+    POISON = 8
+    NEGATIVE = 9
+    HOLY = 10
+    ENERGY = 11
+    MENTAL = 12
+    DISEASE = 13
+    DROWNING = 14
+    LIGHT = 15
+    OTHER = 16
+    HARM = 17
+    CHARM = 18
+    SOUND = 19
+
+
+class DefenseBit(IntFlag):
+    """IMM/RES/VULN bit positions (letters A..Z) mapped to explicit bits.
+
+    These names are shared across IMM_*, RES_*, VULN_* in ROM.
+    """
+
+    # A..Z → 1<<0 .. 1<<25 (skip U/V/W per merc.h usage here)
+    SUMMON = 1 << 0  # A
+    CHARM = 1 << 1  # B
+    MAGIC = 1 << 2  # C
+    WEAPON = 1 << 3  # D
+    BASH = 1 << 4  # E
+    PIERCE = 1 << 5  # F
+    SLASH = 1 << 6  # G
+    FIRE = 1 << 7  # H
+    COLD = 1 << 8  # I
+    LIGHTNING = 1 << 9  # J
+    ACID = 1 << 10  # K
+    POISON = 1 << 11  # L
+    NEGATIVE = 1 << 12  # M
+    HOLY = 1 << 13  # N
+    ENERGY = 1 << 14  # O
+    MENTAL = 1 << 15  # P
+    DISEASE = 1 << 16  # Q
+    DROWNING = 1 << 17  # R
+    LIGHT = 1 << 18  # S
+    SOUND = 1 << 19  # T
+    # U, V, W unused for these tables in ROM
+    WOOD = 1 << 23  # X
+    SILVER = 1 << 24  # Y
+    IRON = 1 << 25  # Z
+
+# END damage_types_and_defense_bits

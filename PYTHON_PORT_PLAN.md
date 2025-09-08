@@ -92,6 +92,7 @@ NOTES:
 - C: src/magic.c:saves_spell() L212-L243; src/handler.c:213-320 check_immune sets default from WEAPON/MAGIC globals then dam_type-specific bits.
 - PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` is currently a stub returning normal.
 - Applied tiny fix: added `imm_flags`, `res_flags`, `vuln_flags` to Character (mud/models/character.py) to enable RIV checks.
+- Applied tiny fix: corrected RIV mapping in saves_spell to ROM values (IS_IMMUNE=1, IS_RESISTANT=2, IS_VULNERABLE=3).
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
