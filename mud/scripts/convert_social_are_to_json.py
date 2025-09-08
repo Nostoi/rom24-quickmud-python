@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Convert ROM social.are to JSON matching schemas/social.schema.json.
 
 Rules:
@@ -7,8 +9,6 @@ Rules:
 - A line consisting of a single "#" terminates the current social early;
   remaining fields default to empty strings.
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 import json
