@@ -204,7 +204,7 @@ NOTES:
 
 <!-- SUBSYSTEM: combat START -->
 ### combat — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.83)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.87)
 KEY RISKS: defense_order, AC mapping, RNG, RIV
 TASKS:
 - ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
@@ -221,6 +221,14 @@ TASKS:
   EVIDENCE: TEST tests/test_combat.py::test_ac_mapping_and_sign_semantics
   RATIONALE: Ensure unarmed defaults to BASH; EXOTIC for non-physical; negative AC is better.
   FILES: mud/models/constants.py, mud/combat/engine.py, tests/test_combat.py
+ - ✅ [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — done 2025-09-08
+  EVIDENCE: C src/fight.c:L806-L834 (switch on check_immune: immune=0, resist=dam-dam/3, vuln=dam+dam/2)
+  EVIDENCE: C src/handler.c:check_immune (dam_type → bit mapping; WEAPON/MAGIC defaults)
+  EVIDENCE: PY mud/combat/engine.py:L32-L55 (RIV scaling with c_div; on_hit_effects hook)
+  EVIDENCE: PY mud/affects/saves.py:_check_immune mapping → IMM/RES/VULN
+  EVIDENCE: TEST tests/test_combat.py::test_riv_scaling_applies_before_side_effects (captures scaled damage via on_hit_effects)
+  RATIONALE: Side-effects must see scaled damage; matches ROM ordering.
+  FILES: mud/combat/engine.py, mud/affects/saves.py, tests/test_combat.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py

@@ -1,6 +1,16 @@
 from mud.world import initialize_world, create_test_character
 from mud.commands import process_command
-from mud.models.constants import Position, DamageType, AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC
+from mud.models.constants import (
+    Position,
+    DamageType,
+    AC_PIERCE,
+    AC_BASH,
+    AC_SLASH,
+    AC_EXOTIC,
+    ResFlag,
+    ImmFlag,
+    VulnFlag,
+)
 from mud.combat import engine as combat_engine
 
 
@@ -91,3 +101,40 @@ def test_ac_mapping_and_sign_semantics():
     assert combat_engine.is_better_ac(-10, -5)
     assert combat_engine.is_better_ac(-1, 5)
     assert not combat_engine.is_better_ac(5, 0)
+
+
+def test_riv_scaling_applies_before_side_effects(monkeypatch):
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100
+    attacker.damroll = 9
+    attacker.dam_type = int(DamageType.BASH)
+    victim.hit = 50
+
+    captured: list[int] = []
+
+    def on_hit(a, v, d):
+        captured.append(d)
+
+    monkeypatch.setattr(combat_engine, "on_hit_effects", on_hit)
+
+    # Resistant: dam -= dam/3 → 9 - 3 = 6
+    victim.res_flags = int(ResFlag.BASH)
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You hit Victim for 6 damage.'
+    assert captured[-1] == 6
+
+    # Vulnerable: dam += dam/2 → 9 + 4 = 13
+    victim.hit = 50
+    victim.res_flags = 0
+    victim.vuln_flags = int(VulnFlag.BASH)
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You hit Victim for 13 damage.'
+    assert captured[-1] == 13
+
+    # Immune: dam = 0
+    victim.hit = 50
+    victim.vuln_flags = 0
+    victim.imm_flags = int(ImmFlag.BASH)
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You hit Victim for 0 damage.'
+    assert captured[-1] == 0

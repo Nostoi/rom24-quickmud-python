@@ -10,6 +10,8 @@ from mud.models.constants import (
     AC_EXOTIC,
 )
 from mud.utils import rng_mm
+from mud.math.c_compat import c_div
+from mud.affects.saves import _check_immune as _riv_check
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -39,6 +41,18 @@ def attack_round(attacker: Character, victim: Character) -> str:
         return f"{victim.name} dodges your attack."
 
     damage = max(1, attacker.damroll)
+    # Apply RIV (IMMUNE/RESIST/VULN) scaling before any side-effects.
+    dam_type = attacker.dam_type or int(DamageType.BASH)
+    riv = _riv_check(victim, dam_type)
+    if riv == 1:  # IS_IMMUNE
+        damage = 0
+    elif riv == 2:  # IS_RESISTANT: dam -= dam/3 (ROM)
+        damage = damage - c_div(damage, 3)
+    elif riv == 3:  # IS_VULNERABLE: dam += dam/2 (ROM)
+        damage = damage + c_div(damage, 2)
+
+    # Invoke any on-hit effects with scaled damage (can be monkeypatched in tests).
+    on_hit_effects(attacker, victim, damage)
     victim.hit -= damage
     if victim.hit <= 0:
         victim.hit = 0
@@ -49,6 +63,11 @@ def attack_round(attacker: Character, victim: Character) -> str:
             victim.room.remove_character(victim)
         return f"You kill {victim.name}."
     return f"You hit {victim.name} for {damage} damage."
+
+
+def on_hit_effects(attacker: Character, victim: Character, damage: int) -> None:  # pragma: no cover - default no-op
+    """Hook for on-hit side-effects; receives RIV-scaled damage."""
+    return None
 
 
 # --- Defense checks (override in tests as needed) ---
