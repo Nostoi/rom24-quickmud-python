@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- LAST-PROCESSED: combat -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -45,7 +45,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-No open P0 items. All P0 tasks completed as of 2025-09-08.
+- [P0][combat] Implement Mitchell–Moore RNG (`number_mm` family) with ROM bitmask gating; swap all callsites to rng_mm.
+- [P0][combat] Provide C-seeded golden tests for `number_percent/range/bits/dice` vs src/db.c algorithm.
+- [P0][combat] Enforce no `random.*` in combat paths; grep gate in CI.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -183,9 +185,7 @@ NOTES:
 - Help file documents wiznet usage despite missing code (area/help.are:1278-1286)
 <!-- SUBSYSTEM: wiznet_imm END -->
 
-## ✅ Completion Note (2025-09-08)
-All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- Removed prior completion note; RNG parity tasks remain open. -->
 
 <!-- SUBSYSTEM: world_loader START -->
 ### world_loader — Parity Audit 2025-09-06
@@ -236,7 +236,7 @@ NOTES:
 
 <!-- SUBSYSTEM: combat START -->
 ### combat — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.87)
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.83)
 KEY RISKS: defense_order, AC mapping, RNG, RIV
 TASKS:
 - ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
@@ -294,12 +294,29 @@ TASKS:
   EVIDENCE: TEST coverage run — mud/combat/engine.py 97% (3 missed) via `pytest -q --cov=mud.combat.engine --cov-report=term-missing`
   EVIDENCE: TEST tests/test_combat.py, tests/test_combat_thac0.py, tests/test_combat_thac0_engine.py
   FILES: tests/*
-- [P1] Implement Mitchell–Moore RNG (number_mm family) with sequence parity — acceptance: for a fixed seed, Python `rng_mm.number_mm/number_percent/number_range/number_bits` produce the same masked output sequence as a C harness compiled with `OLD_RAND`.
-  RATIONALE: ROM’s Mitchell–Moore RNG underpins combat odds; parity requires matching its bit-masked output sequence, not just distribution.
-  FILES: mud/utils/rng_mm.py (add stateful MM generator + seed/init), tests/test_rng_and_ccompat.py (new sequence test), tests/data/number_mm_seed42.txt (golden captured from C `OLD_RAND`).
-  TESTS: tests/test_rng_and_ccompat.py::test_number_mm_sequence_matches_c_golden; ::test_percent_and_range_wrap_use_mm
-  REFERENCES: C src/db.c:init_mm (OLD_RAND state) L3630-L3667; C src/db.c:number_mm L3669-L3692; C src/db.c:number_range L3504-L3522; C src/db.c:number_percent L3527-L3534; C src/db.c:number_bits L3550-L3554.
-  ESTIMATE: M; PRIORITY: P1; RISK: medium
+- [P0] Implement Mitchell–Moore RNG (number_mm) with ROM gating
+  - rationale: Combat odds depend on exact sequence; ROM gates with `while` loops and bitmasks
+  - files: mud/utils/rng_mm.py (stateful MM generator + seed/init; percent/range/bits/dice)
+  - tests: tests/test_rng_and_ccompat.py::test_number_mm_sequence_matches_c_golden; ::test_percent_range_bits_gating
+  - acceptance_criteria: with a fixed seed, number_mm/percent/range/bits/dice match C-derived goldens; loops gate outputs (no out-of-range values)
+  - references: C src/db.c:number_mm L3669-L3692; number_percent L3527-L3534; number_range L3504-L3522; number_bits L3550-L3554; dice L3716-L3739
+  - priority: P0; estimate: M; risk: medium
+
+- [P0] Enforce rng_mm usage; ban random.* in combat/affects
+  - rationale: Prevent regressions to Python RNG
+  - files: mud/combat/engine.py; mud/affects/saves.py; add CI grep in .github/workflows/ci.yml
+  - tests: CI check fails on `random.` occurrences under mud/combat/** and mud/affects/**
+  - acceptance_criteria: CI passes with zero matches; introduce failing example proves gate
+  - references: port.instructions.md rule on Mitchell–Moore RNG
+  - priority: P0; estimate: S; risk: low
+
+- [P1] Port dice(n,size) helper with ROM semantics
+  - rationale: Many combat effects roll dice; parity requires inclusive 1..size and sum of number_range
+  - files: mud/utils/rng_mm.py (add dice), callsites as needed
+  - tests: tests/test_rng_and_ccompat.py::test_dice_matches_rom
+  - acceptance_criteria: dice(2,6) boundaries and distribution align with C dice
+  - references: C src/db.c:dice L3716-L3739
+  - priority: P1; estimate: S; risk: low
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py

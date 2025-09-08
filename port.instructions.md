@@ -86,9 +86,13 @@
    RATIONALE: Save/load parity.
    EXAMPLE: `save_load_roundtrip("Shemp")`
 
- - RULE: IMC parsing behind feature flag; parsers validated with sample frames; no sockets when disabled.
-   RATIONALE: Wire compatibility without runtime coupling.
-   EXAMPLE: `IMC_ENABLED=False`
+- RULE: IMC parsing behind feature flag; parsers validated with sample frames; no sockets when disabled.
+  RATIONALE: Wire compatibility without runtime coupling.
+  EXAMPLE: `IMC_ENABLED=False`
+
+- RULE: Implement ROM gating loops for RNG: `number_percent`, `number_range`, and `number_bits` must derive from `number_mm` with bitmask + `while` gating exactly as in `src/db.c`; `dice(n,size)` sums `number_range(1,size)` n times.
+  RATIONALE: Bitmask gating avoids out‑of‑range values and matches ROM sequences; direct `getrandbits` or `randint` changes parity.
+  EXAMPLE: while ( (percent = number_mm() & 127) > 99 ) ; return 1 + percent
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
   RATIONALE: ROM prevents over-encumbered characters from moving.
   EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
