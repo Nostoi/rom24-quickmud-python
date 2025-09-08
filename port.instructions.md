@@ -61,6 +61,10 @@
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
+ 
+ - RULE: Over-encumbrance imposes a wait-state; overweight move attempts should increase `ch.wait` using ROM `WAIT_STATE` semantics.
+   RATIONALE: Movement penalties from weight are enforced via lag/wait in ROM.
+   EXAMPLE: if ch.carry_weight > can_carry_w(ch): WAIT_STATE(ch, PULSE_VIOLENCE/2)
 
 - RULE: Hour advances on ROM `PULSE_TICK` (60 × `PULSE_PER_SECOND`), not every 4 pulses; tests may scale ticks but engine cadence must match ROM.
   RATIONALE: `update_handler` increments time on `pulse_point == 0` (i.e., `PULSE_TICK`), which triggers `weather_update` and sunrise/sunset.
