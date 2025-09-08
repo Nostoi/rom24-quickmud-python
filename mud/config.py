@@ -22,3 +22,6 @@ def get_pulse_tick() -> int:
     Matches ROM's PULSE_TICK = 60 * PULSE_PER_SECOND.
     """
     return 60 * PULSE_PER_SECOND
+
+# Feature flags
+COMBAT_USE_THAC0: bool = False

@@ -250,6 +250,14 @@ TASKS:
   EVIDENCE: TEST tests/test_combat_thac0.py::test_thac0_interpolation_at_levels; ::test_thac0_hitroll_and_skill_adjustments
   RATIONALE: Ground hit calculations in ROM class progression and skill/hitroll effects.
   FILES: mud/combat/engine.py, tests/test_combat_thac0.py
+ - ✅ [P0] Integrate compute_thac0 into hit resolution behind feature flag — done 2025-09-08
+  EVIDENCE: C src/fight.c:L510-L520 (diceroll vs thac0 - victim_ac; diceroll==0 auto-miss)
+  EVIDENCE: PY mud/combat/engine.py (COMBAT_USE_THAC0 path with number_bits loop)
+  EVIDENCE: PY mud/config.py:COMBAT_USE_THAC0 default False
+  EVIDENCE: PY mud/utils/rng_mm.py:number_bits
+  EVIDENCE: TEST tests/test_combat_thac0_engine.py::test_thac0_path_hit_and_miss
+  RATIONALE: Preserve existing behavior by default; allow ROM-authentic hit logic when enabled.
+  FILES: mud/combat/engine.py, mud/config.py, mud/utils/rng_mm.py, tests/test_combat_thac0_engine.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py

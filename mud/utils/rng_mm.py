@@ -25,3 +25,13 @@ def number_range(a: int, b: int) -> int:
         a, b = b, a
     return _rng.randint(a, b)
 
+
+def number_bits(bits: int) -> int:
+    """Return a uniformly random integer in [0, 2**bits - 1].
+
+    Parity helper for ROM's number_bits used in dicerolls.
+    """
+    if bits <= 0:
+        return 0
+    # Use getrandbits for uniform distribution
+    return _rng.getrandbits(bits)

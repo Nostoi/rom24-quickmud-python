@@ -14,6 +14,7 @@ from mud.math.c_compat import c_div
 from mud.affects.saves import _check_immune as _riv_check
 from mud.math.c_compat import urange
 from mud.models.constants import AffectFlag
+from mud.config import COMBAT_USE_THAC0
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -31,17 +32,12 @@ def attack_round(attacker: Character, victim: Character) -> str:
     _victim_pos_before = victim.position
     victim.position = Position.FIGHTING
 
-    to_hit = 50 + attacker.hitroll
-    # Apply victim AC to hit chance (more negative AC lowers to_hit).
     dam_type = attacker.dam_type or int(DamageType.BASH)
     ac_idx = ac_index_for_dam_type(dam_type)
     victim_ac = 0
     if hasattr(victim, "armor") and 0 <= ac_idx < len(victim.armor):
         victim_ac = victim.armor[ac_idx]
-    # Visibility and position modifiers (ROM-inspired):
-    # - Invisible target: harder to hit (victim_ac - 4)
-    # - Target below fighting: easier (+4)
-    # - Target below resting: even easier (+6)
+    # Visibility and position modifiers (ROM-inspired)
     if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.INVISIBLE):
         victim_ac -= 4
     if _victim_pos_before < Position.FIGHTING:
@@ -49,11 +45,25 @@ def attack_round(attacker: Character, victim: Character) -> str:
     if _victim_pos_before < Position.RESTING:
         victim_ac += 6
 
-    to_hit += victim_ac // 2
-    to_hit = urange(5, to_hit, 100)
-    # Use ROM-style percent roll (1..100), hit when roll ≤ to_hit.
-    if rng_mm.number_percent() > to_hit:
-        return f"You miss {victim.name}."
+    if COMBAT_USE_THAC0:
+        # ROM diceroll using number_bits(5) until < 20
+        while True:
+            diceroll = rng_mm.number_bits(5)
+            if diceroll < 20:
+                break
+        # Compute class-based thac0 with hitroll/skill contributions
+        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=100)
+        vac = c_div(victim_ac, 10)
+        # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
+        if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
+            return f"You miss {victim.name}."
+    else:
+        # Percent model kept for parity stability outside feature flag
+        to_hit = 50 + attacker.hitroll
+        to_hit += victim_ac // 2
+        to_hit = urange(5, to_hit, 100)
+        if rng_mm.number_percent() > to_hit:
+            return f"You miss {victim.name}."
 
     # Defense checks in ROM order: shield block → parry → dodge.
     if check_shield_block(attacker, victim):
