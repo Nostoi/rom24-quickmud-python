@@ -42,6 +42,13 @@ class Position(IntEnum):
     FIGHTING = 7
     STANDING = 8
 
+# --- Armor Class indices (merc.h) ---
+# AC is better when more negative; indices map to damage types.
+AC_PIERCE = 0
+AC_BASH = 1
+AC_SLASH = 2
+AC_EXOTIC = 3
+
 
 class WearLocation(IntEnum):
     """Equipment wear locations from merc.h"""

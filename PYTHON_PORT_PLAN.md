@@ -207,14 +207,19 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.83)
 KEY RISKS: defense_order, AC mapping, RNG, RIV
 TASKS:
-- [P0] Implement defense check order (hit → shield block → parry → dodge) — acceptance: deterministic test asserts call order and early-out semantics.
-  EVIDENCE: C src/fight.c: local prototypes and usage of check_shield_block/check_parry/check_dodge around one_hit
-  EVIDENCE: C src/fight.c:L1-L200 (violence_update/multi_hit/one_hit flow) and later blocks where checks occur before damage application
-  EVIDENCE: PY mud/combat/engine.py:L1-L40 (no defense checks; simplistic to_hit/damage)
-  FILES: mud/combat/engine.py; tests/test_combat.py (extend)
-- [P0] Map dam_type → AC index and apply AC sign correctly — acceptance: table-driven test confirming AC_PIERCE/BASH/SLASH/EXOTIC mapping; negative AC is better.
-  EVIDENCE: C src/merc.h:L996-L999 (AC_PIERCE/BASH/SLASH/EXOTIC)
-  EVIDENCE: C src/const.c:L118-L156 (attack table → DAM_*)
+- ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
+  EVIDENCE: C src/fight.c: one_hit()/check_* ordering around damage application
+  EVIDENCE: C src/fight.c:L1900-L2100 (calls to check_shield_block/check_parry/check_dodge before damage)
+  EVIDENCE: PY mud/combat/engine.py:L23-L55 (defense order and messages); L58-L70 (check_* stubs)
+  EVIDENCE: TEST tests/test_combat.py::test_defense_order_and_early_out
+  RATIONALE: Preserve ROM probability ordering via early-outs.
+  FILES: mud/combat/engine.py; tests/test_combat.py
+- ✅ [P0] Map dam_type → AC index and apply AC sign correctly — done 2025-09-08
+  EVIDENCE: C src/merc.h: AC_PIERCE/AC_BASH/AC_SLASH/AC_EXOTIC defines
+  EVIDENCE: C src/const.c: attack table → DAM_* mappings
+  EVIDENCE: PY mud/models/constants.py (AC_* indices); mud/combat/engine.py:L73-L94 (ac_index_for_dam_type, is_better_ac)
+  EVIDENCE: TEST tests/test_combat.py::test_ac_mapping_and_sign_semantics
+  RATIONALE: Ensure unarmed defaults to BASH; EXOTIC for non-physical; negative AC is better.
   FILES: mud/models/constants.py, mud/combat/engine.py, tests/test_combat.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
