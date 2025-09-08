@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: combat -->
+<!-- LAST-PROCESSED: resets -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -48,6 +48,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - [P0][combat] Implement Mitchell–Moore RNG (`number_mm` family) with ROM bitmask gating; swap all callsites to rng_mm.
 - [P0][combat] Provide C-seeded golden tests for `number_percent/range/bits/dice` vs src/db.c algorithm.
 - [P0][combat] Enforce no `random.*` in combat paths; grep gate in CI.
+- [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -393,6 +394,38 @@ NOTES:
 - Loader populates registry from JSON; dispatcher wires `help` command.
 - Tests cover loading and command output; add P1/P2 tasks for format preservation and coverage.
 <!-- SUBSYSTEM: help_system END -->
+
+<!-- SUBSYSTEM: resets START -->
+### resets — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.66)
+KEY RISKS: file_formats, indexing, side_effects
+TASKS:
+- [P0] Implement 'P' reset semantics using LastObj + limits
+  - rationale: ROM nests objects inside the last created object, not by vnum; also enforces arg2 limits and fixes container lock state
+  - files: mud/spawning/reset_handler.py (apply_resets), tests/test_spawning.py
+  - tests: add cases from area/midgaard.are that place objects into containers via 'P'; assert correct counts and nesting
+  - acceptance_criteria: with midgaard.are, nested objects match C behavior; respects arg2>50⇒limit=6, arg2==-1⇒no limit; copies container value[1] from prototype after fills
+  - references: C src/db.c: reset_room() case 'P' L1897-L1953 (limit handling, LastObj, level, lock fix)
+
+- [P1] Implement 'G'/'E' reset limits and level logic
+  - rationale: ROM enforces per-index count limits and computes object levels for shopkeepers/equipment
+  - files: mud/spawning/reset_handler.py
+  - tests: extend tests/test_spawning.py to cover equip vs give with limits; object levels within bounds
+  - acceptance_criteria: limit respected; level computed like C (UMAX/UMIN/number_fuzzy/number_range paths)
+  - references: C src/db.c: reset_room() case 'G'/'E' L1955-L2057
+
+- [P1] Support 'R' resets to randomize exits
+  - rationale: ROM shuffles exits for certain rooms
+  - files: mud/spawning/reset_handler.py; mud/world/room.py (exit order utility)
+  - tests: new test asserting exit list permutation after reset on a room with R reset
+  - acceptance_criteria: after reset_tick, specified rooms have exits permuted; stable when no R reset
+  - references: C src/db.c: reset_room() case 'R' L2059-L2080
+
+NOTES:
+- C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.
+- C: 'P' applies container lock fix: `LastObj->value[1] = LastObj->pIndexData->value[1]` post-population.
+- PY: reset_tick ages/emptiness gating implemented; detailed per-reset semantics incomplete.
+<!-- SUBSYSTEM: resets END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->
 ### security_auth_bans — Parity Audit 2025-09-07
