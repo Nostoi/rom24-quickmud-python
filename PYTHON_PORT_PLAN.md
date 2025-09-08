@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: area_format_loader -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -45,9 +45,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- time_daynight: Align hour advancement to ROM PULSE_TICK; add test scale.
-- combat: Implement defense order (hit→shield→parry→dodge) and AC mapping.
-- skills_spells: Replace Random.random with rng_mm.number_percent in SkillRegistry.
+No open P0 items. All P0 tasks completed as of 2025-09-08.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map

@@ -98,7 +98,8 @@ def convert_player(path: str | Path) -> PlayerJson:
 
 
 def main() -> None:
-    import argparse, json
+    import argparse
+    import json
 
     parser = argparse.ArgumentParser(description="Convert ROM player file to JSON")
     parser.add_argument("input", help="Path to legacy player file")

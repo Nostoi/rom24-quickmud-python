@@ -60,7 +60,8 @@ def attack_round(attacker: Character, victim: Character) -> str:
     else:
         # Percent model kept for parity stability outside feature flag
         to_hit = 50 + attacker.hitroll
-        to_hit += victim_ac // 2
+        # Use C-style division for negative AC to match ROM semantics
+        to_hit += c_div(victim_ac, 2)
         to_hit = urange(5, to_hit, 100)
         if rng_mm.number_percent() > to_hit:
             return f"You miss {victim.name}."
