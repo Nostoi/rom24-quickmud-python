@@ -9,6 +9,7 @@ from mud.models.character import Character, character_registry
 from mud.models.json_io import dump_dataclass, load_dataclass
 from mud.spawning.obj_spawner import spawn_object
 from mud.registry import room_registry
+from mud.time import time_info, Sunlight
 
 
 @dataclass
@@ -36,6 +37,7 @@ class PlayerSave:
 
 
 PLAYERS_DIR = Path("data/players")
+TIME_FILE = Path("data/time.json")
 
 
 def save_character(char: Character) -> None:
@@ -111,6 +113,7 @@ def load_character(name: str) -> Optional[Character]:
 
 def save_world() -> None:
     """Write all registered characters to disk."""
+    save_time_info()
     for char in list(character_registry):
         if char.name:
             save_character(char)
@@ -119,6 +122,7 @@ def save_world() -> None:
 def load_world() -> List[Character]:
     """Load all character files from ``PLAYERS_DIR``."""
     chars: List[Character] = []
+    load_time_info()
     if not PLAYERS_DIR.exists():
         return chars
     for path in PLAYERS_DIR.glob("*.json"):
@@ -126,3 +130,49 @@ def load_world() -> List[Character]:
         if char:
             chars.append(char)
     return chars
+
+
+# --- Time persistence ---
+
+@dataclass
+class TimeSave:
+    hour: int
+    day: int
+    month: int
+    year: int
+    sunlight: int
+
+
+def save_time_info() -> None:
+    """Persist global time_info to TIME_FILE (atomic write)."""
+    TIME_FILE.parent.mkdir(parents=True, exist_ok=True)
+    data = TimeSave(
+        hour=time_info.hour,
+        day=time_info.day,
+        month=time_info.month,
+        year=time_info.year,
+        sunlight=int(time_info.sunlight),
+    )
+    tmp_path = TIME_FILE.with_suffix(".tmp")
+    with tmp_path.open("w") as f:
+        dump_dataclass(data, f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_path, TIME_FILE)
+
+
+def load_time_info() -> None:
+    """Load global time_info from TIME_FILE if present."""
+    if not TIME_FILE.exists():
+        return
+    with TIME_FILE.open() as f:
+        data = load_dataclass(TimeSave, f)
+    time_info.hour = data.hour
+    time_info.day = data.day
+    time_info.month = data.month
+    time_info.year = data.year
+    try:
+        time_info.sunlight = Sunlight(data.sunlight)
+    except Exception:
+        # Fallback if invalid value
+        time_info.sunlight = Sunlight.DARK

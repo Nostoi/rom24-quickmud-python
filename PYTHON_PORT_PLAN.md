@@ -182,7 +182,7 @@ NOTES:
 
 <!-- SUBSYSTEM: time_daynight START -->
 ### time_daynight — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.90)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.92)
 KEY RISKS: tick_cadence
 TASKS:
 - ✅ [P0] Align hour advancement to ROM PULSE_TICK — done 2025-09-08
@@ -199,7 +199,11 @@ TASKS:
   EVIDENCE: PY mud/game_loop.py uses get_pulse_tick() each tick
   EVIDENCE: TEST tests/test_time_daynight.py::test_time_scale_accelerates_tick
   FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
-- [P2] Persist `time_info` across reboot — acceptance: save/load retains current hour.
+- ✅ [P2] Persist `time_info` across reboot — done 2025-09-08
+  EVIDENCE: PY mud/persistence.py:TimeSave dataclass; save_time_info()/load_time_info(); integrated into save_world()/load_world()
+  EVIDENCE: TEST tests/test_time_persistence.py::test_time_info_persist_roundtrip
+  RATIONALE: Maintain world time across reboot consistent with ROM behavior.
+  FILES: mud/persistence.py, tests/test_time_persistence.py
 NOTES:
 - C shows hour-related updates occur at `pulse_point == 0` (PULSE_TICK) which triggers `weather_update` that manages sunrise/sunset state.
 - PY currently increments hour each 4 pulses; adjust to PULSE_TICK and add test scale to keep tests fast.
