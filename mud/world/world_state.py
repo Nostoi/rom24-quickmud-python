@@ -4,6 +4,7 @@ from mud.registry import room_registry, area_registry, mob_registry, obj_registr
 from mud.db.session import SessionLocal
 from mud.db import models
 from mud.models.character import Character, character_registry
+from mud.models.constants import Position
 from mud.spawning.reset_handler import apply_resets
 from .linking import link_exits
 from mud.security import bans
@@ -103,6 +104,8 @@ def fix_all_exits() -> None:
 def create_test_character(name: str, room_vnum: int) -> Character:
     room = room_registry.get(room_vnum)
     char = Character(name=name)
+    # ROM default: new players start standing.
+    char.position = int(Position.STANDING)
     if room:
         room.add_character(char)
     character_registry.append(char)

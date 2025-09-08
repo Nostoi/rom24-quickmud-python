@@ -28,6 +28,7 @@ from .imc import do_imc
 from mud.wiznet import cmd_wiznet
 from mud.logging.admin import log_admin_command
 from mud.models.social import social_registry
+from mud.models.constants import Position
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -38,36 +39,56 @@ class Command:
     func: CommandFunc
     aliases: tuple[str, ...] = ()
     admin_only: bool = False
+    min_position: Position = Position.DEAD
 
 
 COMMANDS: List[Command] = [
-    Command("look", do_look, aliases=("l",)),
-    Command("north", do_north, aliases=("n",)),
-    Command("south", do_south, aliases=("s",)),
-    Command("east", do_east, aliases=("e",)),
-    Command("west", do_west, aliases=("w",)),
-    Command("up", do_up, aliases=("u",)),
-    Command("down", do_down, aliases=("d",)),
-    Command("get", do_get, aliases=("g",)),
-    Command("drop", do_drop),
-    Command("inventory", do_inventory, aliases=("inv",)),
-    Command("equipment", do_equipment, aliases=("eq",)),
-    Command("say", do_say),
-    Command("tell", do_tell),
-    Command("shout", do_shout),
-    Command("kill", do_kill, aliases=("attack",)),
-    Command("scan", do_scan),
-    Command("list", do_list),
-    Command("buy", do_buy),
-    Command("sell", do_sell),
-    Command("practice", do_practice),
-    Command("train", do_train),
-    Command("board", do_board),
-    Command("note", do_note),
-    Command("help", do_help),
-    Command("imc", do_imc),
-    Command("alias", do_alias),
-    Command("unalias", do_unalias),
+    # Movement (require standing per ROM)
+    Command("north", do_north, aliases=("n",), min_position=Position.STANDING),
+    Command("east", do_east, aliases=("e",), min_position=Position.STANDING),
+    Command("south", do_south, aliases=("s",), min_position=Position.STANDING),
+    Command("west", do_west, aliases=("w",), min_position=Position.STANDING),
+    Command("up", do_up, aliases=("u",), min_position=Position.STANDING),
+    Command("down", do_down, aliases=("d",), min_position=Position.STANDING),
+
+    # Common actions
+    Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
+    Command("get", do_get, aliases=("g",), min_position=Position.RESTING),
+    Command("drop", do_drop, min_position=Position.RESTING),
+    Command("inventory", do_inventory, aliases=("inv",), min_position=Position.DEAD),
+    Command("equipment", do_equipment, aliases=("eq",), min_position=Position.DEAD),
+
+    # Communication
+    Command("say", do_say, min_position=Position.RESTING),
+    Command("tell", do_tell, min_position=Position.RESTING),
+    Command("shout", do_shout, min_position=Position.RESTING),
+
+    # Combat
+    Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
+
+    # Info
+    Command("scan", do_scan, min_position=Position.SLEEPING),
+
+    # Shops
+    Command("list", do_list, min_position=Position.RESTING),
+    Command("buy", do_buy, min_position=Position.RESTING),
+    Command("sell", do_sell, min_position=Position.RESTING),
+
+    # Advancement
+    Command("practice", do_practice, min_position=Position.SLEEPING),
+    Command("train", do_train, min_position=Position.RESTING),
+
+    # Boards/Notes/Help
+    Command("board", do_board, min_position=Position.SLEEPING),
+    Command("note", do_note, min_position=Position.DEAD),
+    Command("help", do_help, min_position=Position.DEAD),
+
+    # IMC and aliasing
+    Command("imc", do_imc, min_position=Position.DEAD),
+    Command("alias", do_alias, min_position=Position.DEAD),
+    Command("unalias", do_unalias, min_position=Position.DEAD),
+
+    # Admin (leave position as DEAD; admin-only gating applies separately)
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
@@ -133,6 +154,25 @@ def process_command(char: Character, input_str: str) -> str:
         return "Huh?"
     if command.admin_only and not getattr(char, "is_admin", False):
         return "You do not have permission to use this command."
+    # Position gating (ROM-compatible messages)
+    if char.position < command.min_position:
+        pos = char.position
+        if pos == Position.DEAD:
+            return "Lie still; you are DEAD."
+        if pos in (Position.MORTAL, Position.INCAP):
+            return "You are hurt far too bad for that."
+        if pos == Position.STUNNED:
+            return "You are too stunned to do that."
+        if pos == Position.SLEEPING:
+            return "In your dreams, or what?"
+        if pos == Position.RESTING:
+            return "Nah... You feel too relaxed..."
+        if pos == Position.SITTING:
+            return "Better stand up first."
+        if pos == Position.FIGHTING:
+            return "No way!  You are still fighting!"
+        # Fallback (should not happen)
+        return "You can't do that right now."
     arg_str = " ".join(args)
     # Log admin commands (accepted) to admin log for auditability.
     if command.admin_only and getattr(char, "is_admin", False):

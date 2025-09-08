@@ -2,6 +2,7 @@ from mud.world import initialize_world, create_test_character
 from mud.spawning.obj_spawner import spawn_object
 from mud.commands import process_command
 from mud.registry import room_registry
+from mud.models.constants import Position
 
 
 def test_process_command_sequence():
@@ -104,3 +105,29 @@ def test_alias_persists_in_save_load(tmp_path, monkeypatch):
     assert loaded is not None
     out = process_command(loaded, 'lk')
     assert 'Temple' in out
+
+
+def test_position_gating_sleeping_blocks_look_allows_scan():
+    initialize_world('area/area.lst')
+    char = create_test_character('Sleeper', 3001)
+    # Force sleeping state
+    char.position = Position.SLEEPING
+
+    out1 = process_command(char, 'look')
+    assert out1 == 'In your dreams, or what?'
+
+    out2 = process_command(char, 'scan')
+    assert 'You scan for life signs' in out2
+
+
+def test_position_gating_resting_blocks_movement():
+    initialize_world('area/area.lst')
+    char = create_test_character('Repose', 3001)
+    here = char.room
+    # Force resting state
+    char.position = Position.RESTING
+
+    out = process_command(char, 'north')
+    assert out == 'Nah... You feel too relaxed...'
+    # Ensure no movement occurred
+    assert char.room is here

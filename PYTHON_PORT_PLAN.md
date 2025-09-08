@@ -47,9 +47,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- NEXT-ACTIONS-START -->
 - [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
 - [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
-- [P0][command_interpreter] Enforce per-command required position gating and denial messages.
 - [P0][movement_encumbrance] Implement enter/portal/gate flows per act_enter.c and door/exit checks.
-- [P0][command_interpreter] Implement user-defined aliases (create/list/remove, expand, persist).
 - [P0][command_interpreter] Implement scan command semantics with range/visibility rules.
 - [P0][shops_economy] Port healer NPC shop logic (spell services and pricing).
 <!-- NEXT-ACTIONS-END -->
@@ -798,22 +796,20 @@ NOTES:
 <!-- SUBSYSTEM: shops_economy END -->
 <!-- SUBSYSTEM: command_interpreter START -->
 ### command_interpreter — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.68)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.78)
 KEY RISKS: position_gating, abbreviations
 TASKS:
-- [P0] Enforce per-command required position before execution
-  - rationale: ROM blocks commands when position < required; dispatcher must gate
-  - files: mud/commands/dispatcher.py (add position on Command and checks), mud/models/constants.py (Position mappings)
-  - tests: extend tests/test_commands.py to verify messages for POS_SLEEPING/RESTING/FIGHTING cases
-  - acceptance_criteria: for representative commands, Python returns ROM-like denial messages based on position
-  - references: C src/interp.c: position checks L530-L576 (switch on ch->position vs cmd_table[cmd].position)
+- ✅ [P0] Enforce per-command required position before execution — done 2025-09-08
+  EVIDENCE: C src/interp.c:L520-L560 (position denial messages); C src/interp.c:L24-L120, L180-L260 (cmd_table positions for movement/look/etc.)
+  EVIDENCE: PY mud/commands/dispatcher.py:L1-L40; L44-L95; L117-L158 (Command.min_position and gating)
+  EVIDENCE: TEST tests/test_commands.py::test_position_gating_sleeping_blocks_look_allows_scan
+  EVIDENCE: TEST tests/test_commands.py::test_position_gating_resting_blocks_movement
 
-- [P0] Implement user-defined aliases (alias.c)
-  - rationale: ROM supports per-character aliases expanded before dispatch; parity needs create/list/remove and persistence
-  - files: mud/commands/dispatcher.py (alias expansion), mud/commands/admin_commands.py (if admin alias mgmt), mud/persistence.py (persist per-player aliases)
-  - tests: tests/test_commands.py add create/list/remove and expansion tests; saved aliases reload on login
-  - acceptance_criteria: `alias k kill` creates alias; `k orc` dispatches to kill orc; removal and persistence verified
-  - references: C src/alias.c:do_alias/do_unalias L1-L220; C src/interp.c: preprocess alias before interpret
+- ✅ [P0] Implement user-defined aliases (alias.c) — done 2025-09-08
+  EVIDENCE: C src/alias.c:L1-L200 (substitute_alias/do_alias); C src/interp.c:L140-L178 (alias in cmd table)
+  EVIDENCE: PY mud/commands/alias_cmds.py:L1-L60; mud/commands/dispatcher.py:L96-L138 (_expand_aliases & registrations)
+  EVIDENCE: PY mud/persistence.py:L35-L38; L63-L66; L111-L115 (persist/restore aliases)
+  EVIDENCE: TEST tests/test_commands.py::test_alias_create_expand_and_unalias; tests/test_commands.py::test_alias_persists_in_save_load
 
 - [P0] Implement scan command semantics (scan.c)
   - rationale: `scan` shows nearby mobiles/exits; parity requires range-limited, sector-aware output
@@ -830,8 +826,8 @@ TASKS:
   - references: C src/interp.c: command table ordering and str_prefix usage L40-L130 and usage in check_social/interpret
 
 NOTES:
-- C: interpret() handles logging and position gating before dispatch; Python currently lacks required-position gating.
-- PY: dispatcher does unique match; add ROM-compatible position handling and clarify abbreviation tie-breaker.
+- C: interpret() gates by `ch->position` vs command `position`, returning specific strings; Python now mirrors this for representative commands.
+- PY: Added `Command.min_position` and denial messages identical to ROM; default character position set to STANDING for tests and parity.
 <!-- SUBSYSTEM: command_interpreter END -->
 <!-- SUBSYSTEM: game_update_loop START -->
 ### game_update_loop — Parity Audit 2025-09-08
