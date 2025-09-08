@@ -126,3 +126,38 @@ def ac_index_for_dam_type(dam_type: int) -> int:
 def is_better_ac(ac_a: int, ac_b: int) -> bool:
     """Return True if ac_a is better protection than ac_b (more negative)."""
     return ac_a < ac_b
+
+
+# --- THAC0 interpolation (ROM-inspired) ---
+# Class ids align with FMANA mapping used elsewhere: 0:mage, 1:cleric, 2:thief, 3:warrior
+THAC0_TABLE: dict[int, tuple[int, int]] = {
+    0: (20, 6),    # mage
+    1: (20, 2),    # cleric
+    2: (20, -4),   # thief
+    3: (20, -10),  # warrior
+}
+
+
+def interpolate(level: int, v00: int, v32: int) -> int:
+    """ROM-like integer interpolate between level 0 and 32 using C division."""
+    return v00 + c_div((v32 - v00) * level, 32)
+
+
+def compute_thac0(level: int, ch_class: int, *, hitroll: int = 0, skill: int = 100) -> int:
+    """Compute THAC0 following ROM fight.c adjustments.
+
+    - interpolate(level, thac0_00, thac0_32)
+    - if thac0 < 0: thac0 = thac0 / 2 (C div)
+    - if thac0 < -5: thac0 = -5 + (thac0 + 5)/2 (C div)
+    - thac0 -= hitroll * skill / 100
+    - thac0 += 5 * (100 - skill) / 100
+    """
+    t00, t32 = THAC0_TABLE.get(ch_class, (20, 6))
+    th = interpolate(level, t00, t32)
+    if th < 0:
+        th = c_div(th, 2)
+    if th < -5:
+        th = -5 + c_div(th + 5, 2)
+    th -= c_div(hitroll * skill, 100)
+    th += c_div(5 * (100 - skill), 100)
+    return th

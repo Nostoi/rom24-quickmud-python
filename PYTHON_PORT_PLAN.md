@@ -243,6 +243,13 @@ TASKS:
   EVIDENCE: TEST tests/test_combat.py::test_visibility_and_position_modifiers
   RATIONALE: Sleeping targets are easier to hit; invisible targets harder.
   FILES: mud/combat/engine.py, tests/test_combat.py
+ - ✅ [P0] Introduce THAC0 interpolation (class-based) and tests — done 2025-09-08
+  EVIDENCE: C src/const.c: class_table thac0_00/thac0_32 values (mage 20→6; cleric 20→2; thief 20→-4; warrior 20→-10)
+  EVIDENCE: C src/fight.c:L463-L472 (interpolate and negative adjustments)
+  EVIDENCE: PY mud/combat/engine.py:THAC0_TABLE, interpolate(), compute_thac0()
+  EVIDENCE: TEST tests/test_combat_thac0.py::test_thac0_interpolation_at_levels; ::test_thac0_hitroll_and_skill_adjustments
+  RATIONALE: Ground hit calculations in ROM class progression and skill/hitroll effects.
+  FILES: mud/combat/engine.py, tests/test_combat_thac0.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
