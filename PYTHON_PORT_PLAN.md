@@ -38,9 +38,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | security_auth_bans | present_wired | C: src/ban.c:check_ban()/do_ban(); src/nanny.c ban checks; PY: mud/security/bans.py:add_banned_host()/is_host_banned(); mud/account/account_service.py:login_with_ban_checks() | tests/test_account_auth.py; tests/test_bans.py |
 | logging_admin | present_wired | C: src/act_wiz.c administrative actions; PY: mud/logging/admin.py:log_admin_command() | tests/test_logging_admin.py |
 | olc_builders | present_wired | C: src/olc*.c; PY: mud/commands/build.py:cmd_redit() | tests/test_building.py |
-| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA/#ROOMS/#RESETS; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
+| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA/#ROOMS/#RESETS; ARE: area/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
 | imc_chat | present_wired | C: src/imc.c:imc_read_socket(); PY: mud/imc/protocol.py:parse_frame(); mud/commands/imc.py:do_imc() | tests/test_imc.py |
-| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/arthur; PY: mud/persistence.py:PlayerSave | tests/test_player_save_format.py; tests/test_persistence.py |
+| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/Shemp; PY: mud/persistence.py:PlayerSave | tests/test_player_save_format.py; tests/test_persistence.py |
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
@@ -58,7 +58,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- PARITY-MAP-END -->
 
 ## Data Anchors (Canonical Samples)
-- ARE: areas/midgaard.are  (primary fixture)
+- ARE: area/midgaard.are  (primary fixture)
 - DOC: doc/area.txt §#ROOMS/#MOBILES/#OBJECTS/#RESETS
 - DOC: doc/Rom2.4.doc  (stats, AC/THAC0, saves)
 - C:  src/db.c:load_area(), src/save.c:load_char_obj(), src/socials.c
@@ -231,7 +231,6 @@ TASKS:
   FILES: mud/security/bans.py (new), mud/account/account_service.py, mud/net/connection.py
   TESTS: tests/test_account_auth.py::test_banned_host_cannot_login (new), tests/test_account_auth.py::test_banned_account_cannot_login (new)
   REFERENCES: C src/ban.c:check_ban(); C src/nanny.c:L194-L300
-- [P0] Persist bans in ROM-compatible format and order — acceptance: save/load round-trip equals golden derived from C save_bans(); includes type/host/level/date
  - ✅ [P0] Persist bans in ROM-compatible format and order — acceptance: save/load round-trip equals golden derived from C save_bans(); includes type/host/level — done 2025-09-07
   EVIDENCE: C src/ban.c:43:save_bans(); src/ban.c:1009:load_resets (ban format reference in save_bans)
   EVIDENCE: PY mud/security/bans.py:save_bans_file()/load_bans_file()

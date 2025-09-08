@@ -64,6 +64,18 @@
 - RULE: Advance time at four pulses per in-game hour.
   RATIONALE: ROM updates the hour every four ticks; parity requires same cadence.
   EXAMPLE: if pulse % 4 == 0: time_info.hour = (time_info.hour + 1) % 24
+
+ - RULE: Conversions from `area/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
+   RATIONALE: Prevent silent data loss.
+   EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`
+
+ - RULE: Player save JSON must preserve ROM bit widths and field order; never reorder keys that map to packed flags.
+   RATIONALE: Save/load parity.
+   EXAMPLE: `save_load_roundtrip("Shemp")`
+
+ - RULE: IMC parsing behind feature flag; parsers validated with sample frames; no sockets when disabled.
+   RATIONALE: Wire compatibility without runtime coupling.
+   EXAMPLE: `IMC_ENABLED=False`
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
   RATIONALE: ROM prevents over-encumbered characters from moving.
   EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
