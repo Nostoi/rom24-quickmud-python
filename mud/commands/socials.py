@@ -24,6 +24,10 @@ def perform_social(char: Character, name: str, arg: str) -> str:
     elif arg and victim is char:
         char.messages.append(expand_placeholders(social.char_auto, char))
         char.room.broadcast(expand_placeholders(social.others_auto, char), exclude=char)
+    elif arg and not victim:
+        # ROM semantics: if an argument was provided but no victim is found,
+        # emit the "not found" message instead of the no-arg variant.
+        char.messages.append(expand_placeholders(social.not_found, char))
     else:
         char.messages.append(expand_placeholders(social.char_no_arg, char))
         char.room.broadcast(expand_placeholders(social.others_no_arg, char), exclude=char)

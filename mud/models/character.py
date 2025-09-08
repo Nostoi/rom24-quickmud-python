@@ -71,6 +71,10 @@ class Character:
     size: int = 0
     material: Optional[str] = None
     off_flags: int = 0
+    # ROM parity: immunity/resistance/vulnerability bitvectors (merc.h)
+    imm_flags: int = 0
+    res_flags: int = 0
+    vuln_flags: int = 0
     damage: List[int] = field(default_factory=lambda: [0, 0, 0])
     dam_type: int = 0
     start_pos: int = 0

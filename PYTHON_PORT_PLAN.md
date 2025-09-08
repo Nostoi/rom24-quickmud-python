@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: security_auth_bans -->
+<!-- LAST-PROCESSED: wiznet_imm -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -45,7 +45,8 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-<!-- none: no open [P0] tasks at this time -->
+- affects_saves: Implement `check_immune` with IMM/RES/VULN flags; golden tests for RIV adjustments.
+- socials: Use `not_found` message when arg is given but target missing; add unit test.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -55,6 +56,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | security_auth_bans | src/ban.c:check_ban()/do_ban(); src/nanny.c:L194-L300 | mud/security/bans.py:add_banned_host()/is_host_banned(); mud/commands/admin_commands.py:cmd_ban/cmd_unban/cmd_banlist |
 | time_daynight | src/update.c:weather_update() sun state | mud/time.py:TimeInfo.advance_hour(); mud/game_loop.py:time_tick() |
 | area_format_loader | src/db.c:load_area()/new_load_area() | mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py:load_rooms |
+| affects_saves | src/magic.c:saves_spell(); src/handler.c:check_immune | mud/affects/saves.py:saves_spell/_check_immune |
+| socials | src/db2.c:load_socials(); src/interp.c:check_social | mud/models/social.py; mud/commands/socials.py:perform_social |
+| wiznet_imm | src/act_wiz.c:wiznet(); src/interp.c logging paths | mud/wiznet.py:wiznet/cmd_wiznet |
 <!-- PARITY-MAP-END -->
 
 ## Data Anchors (Canonical Samples)
@@ -68,43 +72,31 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader, imc_chat, area_format_loader, player_save_format, security_auth_bans -->
 
 <!-- SUBSYSTEM: affects_saves START -->
-### affects_saves — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.74)
-KEY RISKS: flags, RNG
+### affects_saves — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.78)
+KEY RISKS: flags, RNG, RIV
 TASKS:
-- ✅ [P0] Enumerate all ROM affect flags via IntFlag — acceptance: enumeration matches merc.h bit values — done 2025-09-07
-  EVIDENCE: mud/models/constants.py:L125-L158; tests/test_affects.py::test_affect_flag_values
-- ✅ [P0] Apply and remove affects through helpers — acceptance: unit test toggles multiple flags and updates stats — done 2025-09-08
-  EVIDENCE: mud/models/character.py:L100-L129; tests/test_affects.py::test_apply_and_remove_affects_updates_stats
-- ✅ [P0] Implement saving throw resolution using number_mm and c_div with ROM class/level tables — done 2025-09-07
-  EVIDENCE: C src/magic.c:saves_spell() L212-L243
-  EVIDENCE: DOC doc/class.txt § Classes (fMana)
-  EVIDENCE: PY mud/affects/saves.py:L1-L56
-  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_uses_level_and_saving_throw
-  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_berserk_bonus
-  EVIDENCE: TEST tests/test_affects.py::test_saves_spell_fmana_reduction
-- ✅ [P1] Persist affects to character saves with correct bit widths — done 2025-09-07
-  EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
-  EVIDENCE: TEST tests/test_affects.py::test_affect_persistence
-  EVIDENCE: C src/save.c:save_char_obj()
-- [P2] Achieve ≥80% test coverage for affects_saves
-  - rationale: confidence in mechanics
-  - files: tests/test_affects.py
-  - tests: coverage report
-  - acceptance_criteria: coverage ≥80%
-  - estimate: M
-  - risk: low
+- [P0] Implement `check_immune` with IMM/RES/VULN flags — acceptance: golden tests for IS_IMMUNE/RESISTANT/VULNERABLE across dam_types; saves_spell uses returned value.
+  RATIONALE: ROM adjusts save chance based on resist/immune/vuln; currently stubbed to normal.
+  FILES: mud/affects/saves.py (implement `_check_immune`), mud/models/constants.py (flag definitions), mud/models/character.py (uses flags)
+  TESTS: tests/test_affects.py::test_check_immune_riv_adjustments
+  REFERENCES: C src/handler.c:213-320 (check_immune); C src/magic.c:212-243 (saves_spell)
+- [P1] Define IMM/RES/VULN IntFlags with ROM bit values — acceptance: masks match merc.h letters; unit tests assert representative bits.
+  RATIONALE: Preserve bit widths and parity semantics; avoid magic numbers.
+  FILES: mud/models/constants.py
+  TESTS: tests/test_affects.py::test_imm_res_vuln_flag_values
+  REFERENCES: C src/merc.h: IMM_*/RES_*/VULN_ defines (letters A..Z)
+- [P2] Achieve ≥80% coverage for affects_saves — acceptance: coverage report ≥80%.
+  FILES: tests/test_affects.py
 NOTES:
-- C: src/magic.c:saves_spell() L212-L243
-- PY: mud/models/character.py:62; mud/models/constants.py:125-158; mud/affects/saves.py:1-56
-- Helper methods update stats when applying/removing affects (character.py:100-129; tests/test_affects.py:26-38)
-- Saving throw tables initially absent; resolution now implemented with fMana
-- `AffectFlag` enumerates full ROM bitset
+- C: src/magic.c:saves_spell() L212-L243; src/handler.c:213-320 check_immune sets default from WEAPON/MAGIC globals then dam_type-specific bits.
+- PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` is currently a stub returning normal.
+- Applied tiny fix: added `imm_flags`, `res_flags`, `vuln_flags` to Character (mud/models/character.py) to enable RIV checks.
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
-### socials — Parity Audit 2025-09-06
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
+### socials — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.80)
 KEY RISKS: file_formats, side_effects
 TASKS:
 - ✅ [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages — done 2025-09-08
@@ -114,18 +106,22 @@ TASKS:
   EVIDENCE: TEST tests/test_social_conversion.py::test_convert_social_are_to_json_matches_layout
   EVIDENCE: DOC doc/command.txt § Social Commands
   EVIDENCE: ARE area/social.are
-- [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80%
+- [P0] Use `not_found` message when arg given but target missing — acceptance: unit test passes asserting char receives `not_found` text; room not notified.
+  RATIONALE: ROM `check_social` uses char_not_found when argument doesn’t resolve to a target.
+  FILES: mud/commands/socials.py
+  TESTS: tests/test_socials.py::test_social_not_found_message
+  REFERENCES: C src/interp.c:501-520 (check_social dispatch), C src/db2.c:120-160 (social.char_not_found)
+- [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80%.
 NOTES:
 - `load_socials` reads JSON into registry (loaders/social_loader.py:1-16)
 - Dispatcher falls back to socials when command not found (commands/dispatcher.py:87-97)
 - `expand_placeholders` supports `$mself` pronouns (social.py:37-52)
-- Applied tiny fix: refined `$mself` pronoun mapping for all sexes; added unit tests (social.py:37-52; tests/test_runtime_models.py:55-72)
-- Applied tiny fix: added default-case `$mself` test (tests/test_runtime_models.py:73-79)
+- Applied tiny fix: arg+no target now uses `not_found` message (mud/commands/socials.py); ROM parity with `char_not_found`.
 <!-- SUBSYSTEM: socials END -->
 
 <!-- SUBSYSTEM: wiznet_imm START -->
 ### wiznet_imm — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.86)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.86)
 KEY RISKS: flags, side_effects
 TASKS:
 - ✅ [P0] Define wiznet flag bits via IntFlag — acceptance: enumeration matches ROM values — done 2025-09-08
@@ -137,7 +133,11 @@ TASKS:
 - ✅ [P1] Persist wiznet subscriptions to player saves with bit widths — done 2025-09-07
   EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
   EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_persistence
-- [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%
+- [P1] Add gating tests for WIZ_SECURE and WIZ_TICKS — acceptance: messages only received when corresponding flags are set in addition to WIZ_ON.
+  RATIONALE: Match ROM per-flag subscription behavior.
+  FILES: tests/test_wiznet.py
+  REFERENCES: C src/act_wiz.c wiznet levels/flags; C src/interp.c logging to wiznet
+- [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80%.
 NOTES:
 - Added broadcast helper to filter subscribed immortals (wiznet.py:43-58)
 - `Character.wiznet` stores wiznet flag bits (character.py:87)
