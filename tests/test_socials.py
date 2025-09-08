@@ -29,3 +29,14 @@ def test_smile_command_sends_messages():
     process_command(actor, "smile")
     assert actor.messages[-1] == "You smile happily."
     assert onlooker.messages[-1] == "Alice smiles happily."
+
+
+def test_social_not_found_message_when_target_missing():
+    # Ensure ROM parity: with arg but no target, use the social's not_found text
+    load_socials("data/socials.json")
+    _, actor, _, _ = setup_room()
+    actor.messages.clear()
+    result = process_command(actor, "smile Mallory")
+    # Command returns empty string; message goes to actor only
+    assert result == ""
+    assert actor.messages[-1] == "There's no one by that name around."

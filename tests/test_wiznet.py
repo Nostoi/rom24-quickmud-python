@@ -72,3 +72,16 @@ def test_wiznet_persistence(tmp_path):
     assert loaded.wiznet & int(WiznetFlag.WIZ_ON)
     assert loaded.wiznet & int(WiznetFlag.WIZ_TICKS)
     assert loaded.wiznet & int(WiznetFlag.WIZ_DEBUG)
+
+
+def test_wiznet_requires_specific_flag():
+    # Immortal with WIZ_ON only should not receive WIZ_TICKS messages.
+    imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
+    character_registry.append(imm)
+    wiznet("tick", WiznetFlag.WIZ_TICKS)
+    assert "tick" not in imm.messages
+
+    # After subscribing to WIZ_TICKS, should receive.
+    imm.wiznet |= int(WiznetFlag.WIZ_TICKS)
+    wiznet("tick2", WiznetFlag.WIZ_TICKS)
+    assert "tick2" in imm.messages

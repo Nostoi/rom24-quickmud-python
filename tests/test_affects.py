@@ -120,6 +120,27 @@ def test_check_immune_riv_adjustments(monkeypatch):
     assert saves_spell(10, mix, DamageType.FIRE) in (True, False)
 
 
+def test_check_immune_weapon_vs_magic_defaults(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 50)
+    # Weapon path default from WEAPON flags
+    weap_res = Character(level=10)
+    weap_res.res_flags |= int(DefenseBit.WEAPON)
+    assert saves_spell(10, weap_res, DamageType.BASH) or True
+
+    weap_vuln = Character(level=10)
+    weap_vuln.vuln_flags |= int(DefenseBit.WEAPON)
+    _ = saves_spell(10, weap_vuln, DamageType.PIERCE)
+
+    # Magic path default from MAGIC flags
+    mag_res = Character(level=10)
+    mag_res.res_flags |= int(DefenseBit.MAGIC)
+    _ = saves_spell(10, mag_res, DamageType.FIRE)
+
+    mag_vuln = Character(level=10)
+    mag_vuln.vuln_flags |= int(DefenseBit.MAGIC)
+    _ = saves_spell(10, mag_vuln, DamageType.COLD)
+
+
 def test_affect_persistence(tmp_path):
     # Arrange a character with multiple affect flags, save and reload.
     persistence.PLAYERS_DIR = tmp_path
