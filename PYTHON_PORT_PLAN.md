@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: combat -->
+<!-- LAST-PROCESSED: area_format_loader -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -305,34 +305,49 @@ STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.
 KEY RISKS: RNG, side_effects
 TASKS:
 - ✅ [P0] Replace Random.random() with rng_mm.number_percent() in SkillRegistry — done 2025-09-08
-  EVIDENCE: PY mud/skills/registry.py:L1-L25; L38-L63 (rng_mm.number_percent; threshold ≤ percent)
-  EVIDENCE: TEST tests/test_skills.py::test_cast_fireball_failure
-  EVIDENCE: C src/skills.c (skill checks compare number_percent against thresholds)
-  FILES: mud/skills/registry.py; tests/test_skills.py; tests/test_skill_registry.py
-- [P1] Model failure chance via learned % where available — acceptance: skill with learned=75% succeeds on average with roll ≤75 via number_percent; add golden test.
-  EVIDENCE: C src/skills.c:do_practice and skill improvement paths tied to number_percent
-  FILES: mud/models/skill.py, mud/skills/registry.py, tests/test_skills.py
-- [P2] Coverage ≥80% for skills — acceptance: coverage report ≥80% for mud/skills/registry.py
+  - rationale: ROM evaluates against percent rolls; float RNG diverges
+  - files: mud/skills/registry.py; tests/test_skills.py; tests/test_skill_registry.py
+  - acceptance_criteria: failure triggers when number_percent() ≤ threshold; test asserts deterministic failure by forcing threshold=100
+  - references: C src/skills.c (do_practice, success/failure checks)
+- [P1] Use learned% for success when available; fallback to failure_rate until learned is wired
+  - rationale: ROM uses per-character learned percent (tables.c/skills.c)
+  - files: mud/models/skill.py (add learned on Skill or per-character learned map), mud/skills/registry.py (success gate), tests/test_skills.py
+  - tests: inject RNG to force boundary cases (1 and 100); success when roll ≤ learned
+  - acceptance_criteria: with learned=75, roll=75 succeeds; roll=76 fails
+  - estimate: M; risk: medium
+  - references: C src/skills.c:do_practice; src/magic.c:saves_spell (percent gating)
+- [P2] Coverage ≥80% for skills
+  - acceptance_criteria: coverage report ≥80% for mud/skills/registry.py and handlers
 NOTES:
-- Current float RNG breaks parity requirements and the existing RULE banning random.* in combat/skills.
-- Switching to rng_mm keeps semantics aligned with ROM and existing RNG tests.
+- C: success/failure checks compare percent rolls to thresholds derived from skill knowledge.
+- PY: SkillRegistry uses rng_mm now (good); learned% not yet modeled — add without breaking existing JSON by defaulting to failure_rate when learned absent.
 <!-- SUBSYSTEM: skills_spells END -->
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
-### movement_encumbrance — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.55)
+### movement_encumbrance — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.62)
 KEY RISKS: lag_wait, side_effects
 TASKS:
-- ✅ [P0] Enforce carry weight and number limits before movement — acceptance: overweight character cannot move — done 2025-09-07
-  EVIDENCE: mud/world/movement.py:L19-L33; tests/test_world.py::test_overweight_character_cannot_move
-- ✅ [P0] Update carry weight/number on object pickup, drop, and equip — acceptance: test verifies weight increments — done 2025-09-08
-  EVIDENCE: mud/models/character.py:L92-L114; tests/test_encumbrance.py::test_carry_weight_updates_on_pickup_equip_drop
-- [P1] Apply wait-state penalties when over limit — acceptance: overweight move adds ROM wait state
-- [P2] Achieve ≥80% test coverage for movement_encumbrance — acceptance: coverage report ≥80%
+- ✅ [P0] Enforce carry weight and number limits before movement — done 2025-09-07
+  - evidence: PY mud/world/movement.py:L19-L33; TEST tests/test_world.py::test_overweight_character_cannot_move
+- ✅ [P0] Update carry weight/number on pickup/drop/equip — done 2025-09-08
+  - evidence: PY mud/models/character.py:L92-L114; TEST tests/test_encumbrance.py::test_carry_weight_updates_on_pickup_equip_drop
+- [P1] Apply wait-state penalties on overweight move attempts
+  - rationale: ROM sets wait/daze via WAIT_STATE when actions are constrained
+  - files: mud/world/movement.py (return path to also increment char.wait), mud/models/character.py (ensure wait field), tests/test_world.py
+  - acceptance_criteria: after failed overweight move, char.wait increases by ≥1 pulse; subsequent move denied until wait decremented
+  - references: C src/merc.h: WAIT_STATE macro; C src/act_move.c movement checks
+  - estimate: S; risk: low
+- [P1] Replace fixed limits with STR-based carry caps (can_carry_w/n)
+  - rationale: ROM derives carry caps from character stats/tables
+  - files: mud/world/movement.py (can_carry_w/can_carry_n), mud/models/constants.py (strength table), tests/test_encumbrance.py
+  - acceptance_criteria: higher STR increases capacity; test asserts monotonic relation matching ROM doc table
+  - references: DOC Rom2.4.doc (carry caps); C src/handler.c:can_carry_w/can_carry_n
+- [P2] Coverage ≥80% for movement_encumbrance
+  - acceptance_criteria: coverage report ≥80% for mud/world/movement.py
 NOTES:
-- Movement now blocks when over weight/number limits (world/movement.py:19-33)
-- `Character.carry_weight` and `carry_number` never update (character.py:60-61)
-- Movement tests ignore encumbrance updates (tests/test_world.py:7-17)
+- Movement now blocks when over caps; add wait-state and stat-derived caps.
+- C: act_move.c and macros in merc.h govern movement and WAIT_STATE.
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
 <!-- SUBSYSTEM: help_system START -->
@@ -390,27 +405,34 @@ NOTES:
 <!-- SUBSYSTEM: security_auth_bans END -->
 
 <!-- SUBSYSTEM: area_format_loader START -->
-### area_format_loader — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
+### area_format_loader — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.74)
 KEY RISKS: file_formats, flags, indexing
 TASKS:
 - ✅ [P0] Verify Midgaard conversion parity (counts & exits) — done 2025-09-07
-  EVIDENCE: DOC doc/area.txt §#ROOMS
-  EVIDENCE: ARE area/midgaard.are (#3001 exits D0/D2/D4)
-  EVIDENCE: PY mud/loaders/room_loader.py:L1-L40 (exit vnum/key parsing)
-  EVIDENCE: TEST tests/test_area_counts.py::test_midgaard_counts_match_original_are
-  EVIDENCE: TEST tests/test_area_exits.py::test_midgaard_room_3001_exits_and_keys
-- ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — acceptance: missing/duplicate entries raise errors; unit test asserts failures — done 2025-09-07
-  EVIDENCE: PY mud/loaders/__init__.py:L14-L20 (sentinel check)
-  EVIDENCE: PY mud/loaders/area_loader.py:L62-L69 (duplicate vnum rejection)
-  EVIDENCE: TEST tests/test_world.py::test_area_list_requires_sentinel
-- [P1] Preserve `#RESETS` command semantics — acceptance: reset loop reproduces ROM placements on tick; golden-driven test
-- [P2] Coverage ≥80% for area_format_loader — acceptance: coverage report ≥80%
+  - evidence: DOC doc/area.txt §#ROOMS; ARE area/midgaard.are; PY mud/loaders/room_loader.py
+  - tests: tests/test_area_counts.py::test_midgaard_counts_match_original_are; tests/test_area_exits.py::test_midgaard_room_3001_exits_and_keys
+- ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — done 2025-09-07
+  - evidence: PY mud/loaders/__init__.py (sentinel); PY mud/loaders/area_loader.py (duplicate vnum)
+  - tests: tests/test_world.py::test_area_list_requires_sentinel
+- [P1] Preserve `#RESETS` semantics for nested `P` (put) into spawned containers
+  - rationale: ROM allows multiple identical vnums; loader must track specific instance linkage
+  - files: mud/spawning/reset_handler.py (use per-instance identifiers instead of vnum map), tests/test_spawning.py (golden for nested containers)
+  - acceptance_criteria: `P` reset places object inside the correct container instance when multiple exist; matches C behavior on midgaard.are sample
+  - references: C src/db.c:load_resets; DOC Rom2.4.doc reset rules; ARE area/midgaard.are §#RESETS
+  - estimate: M; risk: medium
+- [P1] Support `#SPECIALS` section to wire spec_funs from areas
+  - rationale: ROM areas bind `spec_fun` entries to mob/room prototypes
+  - files: mud/loaders/area_loader.py (add handler), mud/spec_funs.py (registration), tests/test_area_loader.py (specials parsing)
+  - acceptance_criteria: at least one known SPECIAL from a canonical area maps to a registered Python spec_fun; test asserts registration
+  - references: C src/db.c:new_load_area() (SPECIALS parsing); DOC doc/area.txt §#SPECIALS
+- [P2] Coverage ≥80% for area_format_loader
+  - acceptance_criteria: coverage report ≥80% across loader modules
 NOTES:
-- C: `src/db.c:load_area()` handles `#AREADATA`, `#ROOMS`, `#RESETS`, sentinel `$`
-- DOC: `doc/area.txt` sections for block layouts; `Rom2.4.doc` reset rules
-- ARE: `areas/midgaard.are` as canonical fixture
-- PY: `mud/scripts/convert_are_to_json.py`, `mud/loaders/area_loader.py` implement conversion/loading
+- C: src/db.c:load_area() handles `#AREADATA`, `#ROOMS`, `#RESETS`, `#SPECIALS`, sentinel `$`.
+- DOC: doc/area.txt sections for block layouts; Rom2.4.doc reset rules.
+- ARE: area/midgaard.are as canonical fixture.
+- PY: mud/scripts/convert_are_to_json.py, mud/loaders/area_loader.py, mud/spawning/reset_handler.py implement conversion/loading; refine `P` semantics.
 <!-- SUBSYSTEM: area_format_loader END -->
 
 <!-- SUBSYSTEM: player_save_format START -->
