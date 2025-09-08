@@ -12,6 +12,7 @@ from mud.models.constants import (
 from mud.utils import rng_mm
 from mud.math.c_compat import c_div
 from mud.affects.saves import _check_immune as _riv_check
+from mud.math.c_compat import urange
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -28,7 +29,15 @@ def attack_round(attacker: Character, victim: Character) -> str:
     victim.position = Position.FIGHTING
 
     to_hit = 50 + attacker.hitroll
-    # Use ROM-compatible RNG percent roll.
+    # Apply victim AC to hit chance (more negative AC lowers to_hit).
+    dam_type = attacker.dam_type or int(DamageType.BASH)
+    ac_idx = ac_index_for_dam_type(dam_type)
+    victim_ac = 0
+    if hasattr(victim, "armor") and 0 <= ac_idx < len(victim.armor):
+        victim_ac = victim.armor[ac_idx]
+    to_hit += victim_ac // 2
+    to_hit = urange(5, to_hit, 100)
+    # Use ROM-style percent roll (1..100), hit when roll ≤ to_hit.
     if rng_mm.number_percent() > to_hit:
         return f"You miss {victim.name}."
 

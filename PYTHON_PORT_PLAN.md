@@ -229,6 +229,14 @@ TASKS:
   EVIDENCE: TEST tests/test_combat.py::test_riv_scaling_applies_before_side_effects (captures scaled damage via on_hit_effects)
   RATIONALE: Side-effects must see scaled damage; matches ROM ordering.
   FILES: mud/combat/engine.py, mud/affects/saves.py, tests/test_combat.py
+ - ✅ [P0] Integrate AC into hit chance (GET_AC/THAC0 parity) — done 2025-09-08
+  EVIDENCE: C src/fight.c:L463-L520 (thac0 interpolation, GET_AC index/10, diceroll vs thac0-victim_ac)
+  EVIDENCE: C src/merc.h:2104 (GET_AC macro), AC indices
+  EVIDENCE: PY mud/combat/engine.py:L14-L24 (AC mapping), L20-L31 (AC-adjusted to_hit with clamp)
+  EVIDENCE: PY mud/models/character.py:L74-L76 (armor indices storage)
+  EVIDENCE: TEST tests/test_combat.py::test_ac_influences_hit_chance
+  RATIONALE: More negative AC must reduce hit chance; integrate AC index and sign.
+  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.py
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py

@@ -89,6 +89,8 @@ class Character:
     muted_channels: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
     wiznet: int = 0
+    # Armor class per index [AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC]
+    armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"

@@ -103,6 +103,34 @@ def test_ac_mapping_and_sign_semantics():
     assert not combat_engine.is_better_ac(5, 0)
 
 
+def test_ac_influences_hit_chance(monkeypatch):
+    attacker, victim = setup_combat()
+    attacker.hitroll = 10
+    attacker.damroll = 3
+    attacker.dam_type = int(DamageType.BASH)
+
+    # Fix roll to 60 for deterministic checks
+    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 60)
+
+    # No armor: base to_hit = 50 + 10 = 60 → hit on 60
+    victim.armor = [0, 0, 0, 0]
+    victim.hit = 10
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You hit Victim for 3 damage.'
+
+    # Strong negative AC on BASH index lowers to_hit: victim.armor[AC_BASH] = -22 → +(-22//2) = -11 → 49 → miss
+    victim.hit = 50
+    victim.armor[AC_BASH] = -22
+    out = process_command(attacker, 'kill victim')
+    assert out == 'You miss Victim.'
+
+    # Positive AC raises to_hit: +20 → +(20//2)=+10 → 70 → hit
+    victim.hit = 50
+    victim.armor[AC_BASH] = 20
+    out = process_command(attacker, 'kill victim')
+    assert out.startswith('You hit')
+
+
 def test_riv_scaling_applies_before_side_effects(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100
