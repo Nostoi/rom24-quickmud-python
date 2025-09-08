@@ -49,6 +49,8 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - [P0][combat] Provide C-seeded golden tests for `number_percent/range/bits/dice` vs src/db.c algorithm.
 - [P0][combat] Enforce no `random.*` in combat paths; grep gate in CI.
 - [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
+- [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
+- [P0][command_interpreter] Enforce per-command required position gating and denial messages.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -361,6 +363,12 @@ TASKS:
   - evidence: PY mud/world/movement.py:L19-L33; TEST tests/test_world.py::test_overweight_character_cannot_move
 - ✅ [P0] Update carry weight/number on pickup/drop/equip — done 2025-09-08
   - evidence: PY mud/models/character.py:L92-L114; TEST tests/test_encumbrance.py::test_carry_weight_updates_on_pickup_equip_drop
+- [P0] Apply sector-based movement costs and resource checks (boat/fly)
+  - rationale: ROM charges movement points by sector pair, requires boat for noswim and fly for air; also applies WAIT_STATE(1)
+  - files: mud/world/movement.py (movement_loss table, move cost, boat/fly checks, WAIT_STATE equivalent), mud/models/constants.py (Sector)
+  - tests: new tests for water/air movement gating; verify move points reduced and message parity
+  - acceptance_criteria: moving from CITY→FOREST reduces `move` by average sector cost; water-noswim requires boat unless flying; sets short wait
+  - references: C src/act_move.c:movement_loss table and checks L41-L118; do_move/move_char logic and WAIT_STATE(1) L95-L140, L191-L218
 - [P1] Apply wait-state penalties on overweight move attempts
   - rationale: ROM sets wait/daze via WAIT_STATE when actions are constrained
   - files: mud/world/movement.py (return path to also increment char.wait), mud/models/character.py (ensure wait field), tests/test_world.py
@@ -754,3 +762,78 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 10.7 **Testing and CI** – run tests against an in-memory SQLite database and provide fixtures for database setup/teardown in the test suite.
 10.8 **Configuration and deployment** – add configuration options for database URLs, connection pooling, and credentials; update Docker and deployment scripts to initialize the database.
 10.9 **Performance and indexing** – profile query patterns, add indexes, and monitor growth to ensure the database scales with player activity.
+<!-- SUBSYSTEM: shops_economy START -->
+### shops_economy — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.64)
+KEY RISKS: pricing_rules, file_formats
+TASKS:
+- [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount
+  - rationale: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters)
+  - files: mud/commands/shop.py (price computation), mud/models/shop.py (profits/types)
+  - tests: extend tests/test_shops.py with fixtures verifying buy/sell prices and inventory discount behavior
+  - acceptance_criteria: prices match C for given shop setup (types, profits, inventory)
+  - references: C src/act_obj.c:get_cost L2468-L2530
+
+- [P1] Adjust wand/staff prices by charges
+  - rationale: ROM scales price by remaining charges; zero-charge quarter price
+  - files: mud/commands/shop.py
+  - tests: add cases for staves/wands with different value[1]/value[2]
+  - acceptance_criteria: price = base * remaining/total; zero-charge → price/4
+  - references: C src/act_obj.c:get_cost L2516-L2528
+
+- [P2] Preserve #SHOPS data in conversion and loader
+  - rationale: Ensure shop entries (keeper/profit_buy/profit_sell/buy_type list) round-trip
+  - files: mud/scripts/convert_are_to_json.py; mud/loaders/area_loader.py
+  - tests: tests/test_shop_conversion.py asserts counts/fields
+  - references: C src/db.c:load_shops (around L1280-L1320); DOC doc/area.txt §#SHOPS
+
+NOTES:
+- C: get_cost handles inventory-based discounting and charge scaling; prices feed do_buy/do_sell flows.
+- PY: current implementation lacks charge/inventory adjustments — add parity helpers.
+<!-- SUBSYSTEM: shops_economy END -->
+<!-- SUBSYSTEM: command_interpreter START -->
+### command_interpreter — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.68)
+KEY RISKS: position_gating, abbreviations
+TASKS:
+- [P0] Enforce per-command required position before execution
+  - rationale: ROM blocks commands when position < required; dispatcher must gate
+  - files: mud/commands/dispatcher.py (add position on Command and checks), mud/models/constants.py (Position mappings)
+  - tests: extend tests/test_commands.py to verify messages for POS_SLEEPING/RESTING/FIGHTING cases
+  - acceptance_criteria: for representative commands, Python returns ROM-like denial messages based on position
+  - references: C src/interp.c: position checks L530-L576 (switch on ch->position vs cmd_table[cmd].position)
+
+- [P1] Align abbreviation semantics with ROM
+  - rationale: ROM allows 1–2 letter abbreviations based on command table order and str_prefix matching
+  - files: mud/commands/dispatcher.py (resolve_command); ensure unambiguous prefix selection mirrors ROM behavior
+  - tests: add cases where multiple commands share prefix; behavior matches ROM (first match)
+  - acceptance_criteria: specific abbreviation examples resolve as in C table (e.g., 'ex' → exits)
+  - references: C src/interp.c: command table ordering and str_prefix usage L40-L130 and usage in check_social/interpret
+
+NOTES:
+- C: interpret() handles logging and position gating before dispatch; Python currently lacks required-position gating.
+- PY: dispatcher does unique match; add ROM-compatible position handling and clarify abbreviation tie-breaker.
+<!-- SUBSYSTEM: command_interpreter END -->
+<!-- SUBSYSTEM: game_update_loop START -->
+### game_update_loop — Parity Audit 2025-09-08
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.70)
+KEY RISKS: tick_cadence, wait_daze_consumption
+TASKS:
+- [P1] Decrement wait/daze on PULSE_VIOLENCE cadence
+  - rationale: ROM reduces ch->wait and ch->daze by PULSE_VIOLENCE each violence pulse
+  - files: mud/game_loop.py (introduce violence pulse counter), mud/models/character.py (fields wait/daze), mud/config.py (PULSE_VIOLENCE)
+  - tests: tests/test_game_loop.py add case verifying wait/daze reduce on cadence
+  - acceptance_criteria: after N pulses, wait/daze hit zero matching UMAX(0, value - PULSE_VIOLENCE)
+  - references: C src/fight.c:L193-L196 (UMAX wait/daze decrement); C src/update.c:L1180-L1189 (pulse_violence/pulse_point scheduling)
+
+- [P1] Schedule weather/time/resets in ROM order with separate pulse counters
+  - rationale: ROM maintains independent pulse counters for violence and tick; align ordering
+  - files: mud/game_loop.py
+  - tests: extend tests/test_game_loop.py to assert relative order callbacks
+  - acceptance_criteria: violence updates occur 3× per second; tick hourly per PULSE_TICK; order consistent
+  - references: C src/update.c:L1161-L1189 (pulse initialization and update_handler)
+
+NOTES:
+- C: update_handler uses separate counters for pulse_violence and pulse_point; our loop has a single counter.
+- PY: add violence cadence and wait/daze handling; keep existing tests passing via configurable scaling.
+<!-- SUBSYSTEM: game_update_loop END -->

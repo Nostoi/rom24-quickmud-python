@@ -97,6 +97,14 @@
 - RULE: Apply ROM reset semantics for 'P' nesting and limits; track `LastObj`/`LastMob` during area resets and respect `arg2` limits and lock-state fix-ups.
   RATIONALE: Vnum-keyed placement loses instance order and breaks container contents; limit/lock semantics matter for canonical areas.
   EXAMPLE: after 'O' creates container C (LastObj=C), 'P' places items into C until `count_obj_list` reaches arg4; then `C->value[1] = C->pIndexData->value[1]`.
+
+- RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
+  RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
+  EXAMPLE: if ch.position < POS_RESTING: "Nah... You feel too relaxed..."
+
+- RULE: Charge movement points by sector and apply short wait on moves; require boat for noswim and fly for air.
+  RATIONALE: Movement economy and gating are core to ROM exploration pacing.
+  EXAMPLE: move_cost = (movement_loss[from] + movement_loss[to]) / 2; WAIT_STATE(ch,1)
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
   RATIONALE: ROM prevents over-encumbered characters from moving.
   EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
