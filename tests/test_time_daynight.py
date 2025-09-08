@@ -1,6 +1,7 @@
 from mud.models.character import Character, character_registry
 from mud.time import time_info, Sunlight
 from mud import game_loop
+from mud.config import get_pulse_tick
 
 
 def setup_function(func):
@@ -21,7 +22,8 @@ def test_time_tick_advances_hour_and_triggers_sunrise():
     ch = Character(name="Tester")
     character_registry.append(ch)
     time_info.hour = 4
-    for _ in range(4):
+    # Advance exactly one ROM hour (PULSE_TICK pulses)
+    for _ in range(get_pulse_tick()):
         game_loop.game_tick()
     assert time_info.hour == 5
     assert time_info.sunlight == Sunlight.LIGHT
@@ -33,7 +35,7 @@ def test_sunrise_broadcasts_to_all_characters():
     ch2 = Character(name="B")
     character_registry.extend([ch1, ch2])
     time_info.hour = 4
-    for _ in range(4):
+    for _ in range(get_pulse_tick()):
         game_loop.game_tick()
     assert "The sun rises in the east." in ch1.messages
     assert "The sun rises in the east." in ch2.messages

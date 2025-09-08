@@ -7,6 +7,7 @@ from mud.models.character import Character, character_registry
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
+from mud.config import get_pulse_tick
 from mud.net.protocol import broadcast_global
 from mud.spec_funs import run_npc_specs
 
@@ -78,7 +79,8 @@ def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
     global _pulse_counter
     _pulse_counter += 1
-    if _pulse_counter % 4 == 0:
+    # Advance the world hour only on ROM's PULSE_TICK boundary
+    if _pulse_counter % get_pulse_tick() == 0:
         time_tick()
     regen_tick()
     weather_tick()

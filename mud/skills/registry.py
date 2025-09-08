@@ -7,6 +7,7 @@ from random import Random
 from typing import Callable, Dict, Optional
 
 from mud.models import Skill, SkillJson
+from mud.utils import rng_mm
 from mud.models.json_io import dataclass_from_dict
 
 
@@ -44,7 +45,10 @@ class SkillRegistry:
             raise ValueError("skill on cooldown")
 
         caster.mana -= skill.mana_cost
-        if self.rng.random() < skill.failure_rate:
+        # Use ROM-style percent roll (1..100 inclusive) for failure checks
+        # Convert float failure_rate (0.0..1.0) to percentage threshold 0..100
+        failure_threshold = int(round(skill.failure_rate * 100))
+        if rng_mm.number_percent() <= failure_threshold:
             cooldowns[name] = skill.cooldown
             caster.cooldowns = cooldowns
             return False
@@ -69,4 +73,3 @@ skill_registry = SkillRegistry()
 
 def load_skills(path: Path) -> None:
     skill_registry.load(path)
-

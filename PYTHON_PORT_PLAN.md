@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: combat -->
+<!-- LAST-PROCESSED: time_daynight -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -185,12 +185,14 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.88)
 KEY RISKS: tick_cadence
 TASKS:
-- [P0] Align hour advancement to ROM PULSE_TICK — acceptance: hour only increments when game loop reaches PULSE_TICK; sunrise/sunset messages occur on that tick.
-  EVIDENCE: C src/merc.h:L142-L170 (PULSE_PER_SECOND=4; PULSE_TICK=60*PPS)
-  EVIDENCE: C src/update.c:L1185-L1209 (update_handler decrements pulse_point; on 0 runs weather_update/char_update)
-  EVIDENCE: PY mud/game_loop.py:L60-L86 (hour advances every 4 pulses)
-  RATIONALE: Current Python advances hour every 4 pulses; ROM advances on PULSE_TICK (240 pulses). Tests may use a scale factor but engine semantics must match ROM.
-  FILES: mud/game_loop.py, mud/time.py, tests/test_time_daynight.py
+- ✅ [P0] Align hour advancement to ROM PULSE_TICK — done 2025-09-08
+  EVIDENCE: C src/merc.h:L155-L160 (PULSE_PER_SECOND=4; PULSE_TICK=60*PPS)
+  EVIDENCE: C src/update.c:L1161-L1189 (pulse_point starts at PULSE_TICK; hour updates when it hits 0)
+  EVIDENCE: PY mud/game_loop.py:L63-L84 (advance hour only when pulses % get_pulse_tick()==0)
+  EVIDENCE: PY mud/config.py:L17-L27 (get_pulse_tick returns 60*PULSE_PER_SECOND)
+  EVIDENCE: TEST tests/test_time_daynight.py::test_time_tick_advances_hour_and_triggers_sunrise
+  RATIONALE: Match ROM cadence (hour changes on PULSE_TICK boundary); sunrise/sunset broadcast occurs at that moment.
+  FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
 - [P1] Introduce configurable tick scaling for tests — acceptance: tests can set TIME_SCALE to accelerate PULSE_TICK without affecting production cadence.
   EVIDENCE: C src/update.c comment notes randomization around PULSE_TICK; parity permits test-only scaling.
   FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
@@ -228,9 +230,10 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.80)
 KEY RISKS: RNG, side_effects
 TASKS:
-- [P0] Replace Random.random() with rng_mm.number_percent() in SkillRegistry — acceptance: failure path compares percent roll to failure threshold; tests deterministic under seed.
-  EVIDENCE: PY mud/skills/registry.py:L7-L15; L34-L55; L59-L76 (uses Random.random())
-  EVIDENCE: C src/skills.c and general ROM skill checks use number_percent against learned chance.
+- ✅ [P0] Replace Random.random() with rng_mm.number_percent() in SkillRegistry — done 2025-09-08
+  EVIDENCE: PY mud/skills/registry.py:L1-L25; L38-L63 (rng_mm.number_percent; threshold ≤ percent)
+  EVIDENCE: TEST tests/test_skills.py::test_cast_fireball_failure
+  EVIDENCE: C src/skills.c (skill checks compare number_percent against thresholds)
   FILES: mud/skills/registry.py; tests/test_skills.py; tests/test_skill_registry.py
 - [P1] Model failure chance via learned % where available — acceptance: skill with learned=75% succeeds on average with roll ≤75 via number_percent; add golden test.
   EVIDENCE: C src/skills.c:do_practice and skill improvement paths tied to number_percent
