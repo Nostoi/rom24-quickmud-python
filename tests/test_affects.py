@@ -171,6 +171,30 @@ def test_check_immune_specific_bits_acid_poison_light_sound(monkeypatch):
         assert saves_spell(10, imm, dtype) is True
 
 
+def test_check_immune_specific_bits_holy_energy_mental_drowning(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 51)
+    for dtype, bit in [
+        (DamageType.HOLY, DefenseBit.HOLY),
+        (DamageType.ENERGY, DefenseBit.ENERGY),
+        (DamageType.MENTAL, DefenseBit.MENTAL),
+        (DamageType.DROWNING, DefenseBit.DROWNING),
+    ]:
+        base = Character(level=10, ch_class=2)  # thief → no fMana reduction, same as earlier test
+        assert saves_spell(10, base, dtype) is False  # 51 !< 50 baseline
+
+        res = Character(level=10, ch_class=2)
+        res.res_flags |= int(bit)
+        assert saves_spell(10, res, dtype) is True
+
+        vul = Character(level=10, ch_class=2)
+        vul.vuln_flags |= int(bit)
+        assert saves_spell(10, vul, dtype) is False
+
+        imm = Character(level=10, ch_class=2)
+        imm.imm_flags |= int(bit)
+        assert saves_spell(10, imm, dtype) is True
+
+
 def test_affect_persistence(tmp_path):
     # Arrange a character with multiple affect flags, save and reload.
     persistence.PLAYERS_DIR = tmp_path
