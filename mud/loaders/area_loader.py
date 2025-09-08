@@ -1,4 +1,3 @@
-from pathlib import Path
 from .base_loader import BaseTokenizer
 from .room_loader import load_rooms
 from .mob_loader import load_mobiles

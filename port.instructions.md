@@ -61,9 +61,14 @@
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
-- RULE: Advance time at four pulses per in-game hour.
-  RATIONALE: ROM updates the hour every four ticks; parity requires same cadence.
-  EXAMPLE: if pulse % 4 == 0: time_info.hour = (time_info.hour + 1) % 24
+
+- RULE: Hour advances on ROM `PULSE_TICK` (60 × `PULSE_PER_SECOND`), not every 4 pulses; tests may scale ticks but engine cadence must match ROM.
+  RATIONALE: `update_handler` increments time on `pulse_point == 0` (i.e., `PULSE_TICK`), which triggers `weather_update` and sunrise/sunset.
+  EXAMPLE: if pulses_since_tick >= PULSE_TICK: advance_hour(); pulses_since_tick = 0
+
+- RULE: Skill/spell success and failure must roll with `rng_mm.number_percent()` (1..100); forbid `Random.random()` in skills.
+  RATIONALE: ROM evaluates against a percent roll; using floats changes distribution and parity.
+  EXAMPLE: if rng_mm.number_percent() <= learned: succeed()
 
  - RULE: Conversions from `area/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
    RATIONALE: Prevent silent data loss.

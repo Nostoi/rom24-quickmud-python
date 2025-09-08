@@ -1,5 +1,3 @@
-import os
-
 from mud.imc import imc_enabled, maybe_open_socket
 from mud.imc.protocol import parse_frame, serialize_frame, Frame
 from mud.world import initialize_world, create_test_character
