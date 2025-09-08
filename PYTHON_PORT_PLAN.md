@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: wiznet_imm -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -13,40 +13,40 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- COVERAGE-START -->
 | subsystem | status | evidence | tests |
 |---|---|---|---|
-| combat | present_wired | C: src/fight.c:one_hit(); PY: mud/combat/engine.py:attack_round(); mud/commands/combat.py:do_kill() | tests/test_combat.py |
-| skills_spells | present_wired | C: src/skills.c:do_practice(); PY: mud/skills/registry.py:register_skill(); mud/skills/handlers.py | tests/test_skill_registry.py; tests/test_skills.py |
-| affects_saves | present_wired | C: src/fight.c:saves_spell(); PY: mud/affects/saves.py:check_saving_throw(); mud/models/constants.py:AffectFlag | tests/test_affects.py |
-| command_interpreter | present_wired | C: src/interp.c:interpret(); PY: mud/commands/dispatcher.py:process_command() | tests/test_commands.py |
-| socials | present_wired | C: src/act_info.c:do_socials(); PY: mud/models/social.py:Social; mud/commands/socials.py:perform_social() | tests/test_socials.py; tests/test_social_conversion.py |
-| channels | present_wired | C: src/act_comm.c:do_say()/do_tell()/do_shout(); PY: mud/commands/communication.py:do_say()/do_tell()/do_shout() | tests/test_communication.py |
-| wiznet_imm | present_wired | C: src/act_wiz.c:do_wiznet()/wiznet(); PY: mud/wiznet.py:cmd_wiznet() | tests/test_wiznet.py; tests/test_logging_admin.py |
-| world_loader | present_wired | C: src/db.c:load_area()/new_load_area(); PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/__init__.py:load_area_list() | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
-| resets | present_wired | C: src/db.c:load_resets()/reset_area(); PY: mud/loaders/reset_loader.py:load_resets(); mud/spawning/reset_handler.py:reset_tick() | tests/test_spawning.py |
-| weather | present_wired | C: src/update.c:weather_update(); PY: mud/game_loop.py:weather_tick() | tests/test_game_loop.py |
-| time_daynight | present_wired | C: src/update.c:weather_update() sunrise states; PY: mud/time.py:TimeInfo.advance_hour(); mud/game_loop.py:time_tick() | tests/test_time_daynight.py |
-| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance checks; PY: mud/world/movement.py:move_character() | tests/test_world.py; tests/test_encumbrance.py |
-| stats_position | present_wired | C: src/merc.h: Position enum; PY: mud/models/constants.py:Position | tests/test_advancement.py |
-| shops_economy | present_wired | C: src/act_obj.c:do_buy()/do_sell() (profit multipliers); PY: mud/commands/shop.py | tests/test_shops.py; tests/test_shop_conversion.py |
-| boards_notes | present_wired | C: src/board.c (board system); PY: mud/notes.py:load_boards()/save_board() | tests/test_boards.py |
-| help_system | present_wired | C: src/act_info.c:do_help(); DOC: doc/area.txt §#HELPS; PY: mud/loaders/help_loader.py:load_help_file(); mud/commands/help.py:do_help() | tests/test_help_system.py |
-| mob_programs | present_wired | C: src/mob_prog.c (trigger engine); PY: mud/mobprog.py | tests/test_mobprog.py |
-| npc_spec_funs | present_wired | C: src/special.c:spec_table; PY: mud/spec_funs.py:run_npc_specs() | tests/test_spec_funs.py |
-| game_update_loop | present_wired | C: src/update.c:update_handler(); PY: mud/game_loop.py:game_tick() | tests/test_game_loop.py |
-| persistence | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PY: mud/persistence.py:save_character()/load_character() | tests/test_persistence.py; tests/test_player_save_format.py; tests/test_inventory_persistence.py |
-| login_account_nanny | present_wired | C: src/nanny.c (login flow); PY: mud/account/account_service.py:create_account()/login() | tests/test_account_auth.py |
-| networking_telnet | present_wired | C: src/comm.c main loop; src/telnet.h; PY: mud/net/telnet_server.py:start_server() | tests/test_telnet_server.py |
-| security_auth_bans | present_wired | C: src/ban.c:check_ban()/do_ban(); src/nanny.c ban checks; PY: mud/security/bans.py:add_banned_host()/is_host_banned(); mud/account/account_service.py:login_with_ban_checks() | tests/test_account_auth.py; tests/test_bans.py |
-| logging_admin | present_wired | C: src/act_wiz.c administrative actions; PY: mud/logging/admin.py:log_admin_command() | tests/test_logging_admin.py |
-| olc_builders | present_wired | C: src/olc*.c; PY: mud/commands/build.py:cmd_redit() | tests/test_building.py |
-| area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA/#ROOMS/#RESETS; ARE: area/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
-| imc_chat | present_wired | C: src/imc.c:imc_read_socket(); PY: mud/imc/protocol.py:parse_frame(); mud/commands/imc.py:do_imc() | tests/test_imc.py |
-| player_save_format | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PLAYER: player/Shemp; PY: mud/persistence.py:PlayerSave | tests/test_player_save_format.py; tests/test_persistence.py |
+| combat | present_wired | C: src/fight.c:violence_update/one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py |
+| skills_spells | present_wired | C: src/skills.c:do_practice; PY: mud/skills/registry.py:SkillRegistry | tests/test_skill_registry.py; tests/test_skills.py |
+| affects_saves | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell | tests/test_affects.py |
+| command_interpreter | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command | tests/test_commands.py |
+| socials | present_wired | C: src/interp.c:check_social; PY: mud/commands/socials.py:perform_social | tests/test_socials.py; tests/test_social_conversion.py |
+| channels | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py | tests/test_communication.py |
+| wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; C: src/interp.c:wiznet calls; PY: mud/wiznet.py | tests/test_wiznet.py |
+| world_loader | present_wired | C: src/db.c:load_area/new_load_area; PY: mud/loaders/area_loader.py:load_area_file | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
+| resets | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick | tests/test_spawning.py |
+| weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
+| time_daynight | present_wired | C: src/update.c:weather_update sunrise; PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py |
+| movement_encumbrance | present_wired | C: src/act_move.c encumbrance; PY: mud/world/movement.py:move_character | tests/test_world.py; tests/test_encumbrance.py |
+| stats_position | present_wired | C: merc.h: enum position; PY: mud/models/constants.py:Position | tests/test_advancement.py |
+| shops_economy | present_wired | C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py | tests/test_shops.py; tests/test_shop_conversion.py |
+| boards_notes | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board | tests/test_boards.py |
+| help_system | present_wired | C: src/act_info.c:do_help; DOC: doc/area.txt §#HELPS; PY: mud/loaders/help_loader.py | tests/test_help_system.py |
+| mob_programs | present_wired | C: src/mob_prog.c; PY: mud/mobprog.py | tests/test_mobprog.py |
+| npc_spec_funs | present_wired | C: src/special.c:spec_table; PY: mud/spec_funs.py | tests/test_spec_funs.py |
+| game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick | tests/test_game_loop.py |
+| persistence | present_wired | C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_player_save_format.py; tests/test_inventory_persistence.py |
+| login_account_nanny | present_wired | C: src/nanny.c; PY: mud/account/account_service.py:create_account/login | tests/test_account_auth.py |
+| networking_telnet | present_wired | C: src/comm.c main loop; PY: mud/net/telnet_server.py:start_server | tests/test_telnet_server.py |
+| security_auth_bans | present_wired | C: src/ban.c:check_ban/do_ban; PY: mud/security/bans.py | tests/test_bans.py; tests/test_account_auth.py |
+| logging_admin | present_wired | C: src/act_wiz.c admin logs; PY: mud/logging/admin.py:log_admin_command | tests/test_logging_admin.py |
+| olc_builders | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit | tests/test_building.py |
+| area_format_loader | present_wired | DOC: doc/area.txt; C: src/db.c:load_area; PY: mud/scripts/convert_are_to_json.py | tests/test_are_conversion.py; tests/test_area_loader.py |
+| imc_chat | present_wired | C: src/imc.h; PY: mud/imc/ — feature-flagged | tests/test_imc.py |
+| player_save_format | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj; PY: mud/persistence.py | tests/test_player_save_format.py |
+<!-- COVERAGE-END -->
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- affects_saves: Implement `check_immune` with IMM/RES/VULN flags; golden tests for RIV adjustments.
-- socials: Use `not_found` message when arg is given but target missing; add unit test.
+<!-- none: all current P0s completed in this run -->
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -69,19 +69,27 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Parity Gaps & Corrections
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: affects_saves, socials, wiznet_imm, time_daynight, movement_encumbrance, help_system, npc_spec_funs, logging_admin, world_loader, imc_chat, area_format_loader, player_save_format, security_auth_bans -->
+<!-- AUDITED: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 <!-- SUBSYSTEM: affects_saves START -->
 ### affects_saves — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.78)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: flags, RNG, RIV
 TASKS:
-- [P0] Implement `check_immune` with IMM/RES/VULN flags — acceptance: golden tests for IS_IMMUNE/RESISTANT/VULNERABLE across dam_types; saves_spell uses returned value.
+- ✅ [P0] Implement `check_immune` with IMM/RES/VULN flags — done 2025-09-08
+  EVIDENCE: C src/handler.c:check_immune
+  EVIDENCE: C src/magic.c:saves_spell
+  EVIDENCE: PY mud/affects/saves.py:L18-L91 (check_immune)
+  EVIDENCE: PY mud/affects/saves.py:L94-L123 (saves_spell RIV adjustments)
+  EVIDENCE: TEST tests/test_affects.py::test_check_immune_riv_adjustments
   RATIONALE: ROM adjusts save chance based on resist/immune/vuln; currently stubbed to normal.
   FILES: mud/affects/saves.py (implement `_check_immune`), mud/models/constants.py (flag definitions), mud/models/character.py (uses flags)
   TESTS: tests/test_affects.py::test_check_immune_riv_adjustments
   REFERENCES: C src/handler.c:213-320 (check_immune); C src/magic.c:212-243 (saves_spell)
-- [P1] Define IMM/RES/VULN IntFlags with ROM bit values — acceptance: masks match merc.h letters; unit tests assert representative bits.
+- ✅ [P1] Define IMM/RES/VULN IntFlags with ROM bit values — done 2025-09-08
+  EVIDENCE: PY mud/models/constants.py: ImmFlag/ResFlag/VulnFlag (lines near end)
+  EVIDENCE: TEST tests/test_defense_flags.py::test_imm_res_vuln_intflags_match_defense_bits
+  EVIDENCE: C src/merc.h: IMM_*/RES_*/VULN_* letter bits (A..Z)
   RATIONALE: Preserve bit widths and parity semantics; avoid magic numbers.
   FILES: mud/models/constants.py
   TESTS: tests/test_affects.py::test_imm_res_vuln_flag_values
@@ -90,14 +98,14 @@ TASKS:
   FILES: tests/test_affects.py
 NOTES:
 - C: src/magic.c:saves_spell() L212-L243; src/handler.c:213-320 check_immune sets default from WEAPON/MAGIC globals then dam_type-specific bits.
-- PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` is currently a stub returning normal.
+- PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` implemented; tests cover RIV.
 - Applied tiny fix: added `imm_flags`, `res_flags`, `vuln_flags` to Character (mud/models/character.py) to enable RIV checks.
 - Applied tiny fix: corrected RIV mapping in saves_spell to ROM values (IS_IMMUNE=1, IS_RESISTANT=2, IS_VULNERABLE=3).
 <!-- SUBSYSTEM: affects_saves END -->
 
 <!-- SUBSYSTEM: socials START -->
 ### socials — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.80)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
 KEY RISKS: file_formats, side_effects
 TASKS:
 - ✅ [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages — done 2025-09-08
@@ -107,7 +115,10 @@ TASKS:
   EVIDENCE: TEST tests/test_social_conversion.py::test_convert_social_are_to_json_matches_layout
   EVIDENCE: DOC doc/command.txt § Social Commands
   EVIDENCE: ARE area/social.are
-- [P0] Use `not_found` message when arg given but target missing — acceptance: unit test passes asserting char receives `not_found` text; room not notified.
+- ✅ [P0] Use `not_found` message when arg given but target missing — done 2025-09-08
+  EVIDENCE: C src/interp.c:501-520 (check_social not-found path)
+  EVIDENCE: PY mud/commands/socials.py:L27-L33
+  EVIDENCE: TEST tests/test_socials.py::test_social_not_found_message
   RATIONALE: ROM `check_social` uses char_not_found when argument doesn’t resolve to a target.
   FILES: mud/commands/socials.py
   TESTS: tests/test_socials.py::test_social_not_found_message
@@ -134,7 +145,10 @@ TASKS:
 - ✅ [P1] Persist wiznet subscriptions to player saves with bit widths — done 2025-09-07
   EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
   EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_persistence
-- [P1] Add gating tests for WIZ_SECURE and WIZ_TICKS — acceptance: messages only received when corresponding flags are set in addition to WIZ_ON.
+- ✅ [P1] Add gating tests for WIZ_SECURE and WIZ_TICKS — done 2025-09-08
+  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_requires_specific_flag
+  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_secure_flag_gating
+  EVIDENCE: C src/act_wiz.c:wiznet; C src/interp.c wiznet calls
   RATIONALE: Match ROM per-flag subscription behavior.
   FILES: tests/test_wiznet.py
   REFERENCES: C src/act_wiz.c wiznet levels/flags; C src/interp.c logging to wiznet
