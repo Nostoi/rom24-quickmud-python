@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: resets -->
+<!-- LAST-PROCESSED: command_interpreter -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -51,6 +51,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
 - [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
 - [P0][command_interpreter] Enforce per-command required position gating and denial messages.
+- [P0][movement_encumbrance] Implement enter/portal/gate flows per act_enter.c and door/exit checks.
+- [P0][command_interpreter] Implement user-defined aliases (create/list/remove, expand, persist).
+- [P0][command_interpreter] Implement scan command semantics with range/visibility rules.
+- [P0][shops_economy] Port healer NPC shop logic (spell services and pricing).
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -372,19 +376,17 @@ TASKS:
   - tests: new tests for water/air movement gating; verify move points reduced and message parity
   - acceptance_criteria: moving from CITY→FOREST reduces `move` by average sector cost; water-noswim requires boat unless flying; sets short wait
   - references: C src/act_move.c:movement_loss table and checks L41-L118; do_move/move_char logic and WAIT_STATE(1) L95-L140, L191-L218
-- [P1] Apply wait-state penalties on overweight move attempts
-  - rationale: ROM sets wait/daze via WAIT_STATE when actions are constrained
-  - files: mud/world/movement.py (return path to also increment char.wait), mud/models/character.py (ensure wait field), tests/test_world.py
-  - acceptance_criteria: after failed overweight move, char.wait increases by ≥1 pulse; subsequent move denied until wait decremented
-  - references: C src/merc.h: WAIT_STATE macro; C src/act_move.c movement checks
-  - estimate: S; risk: low
+- [P0] Implement enter/portal/gate flows (act_enter)
+  - rationale: ROM supports `enter` for portals/doors and auto-movement via `gate`/`portal` object types; parity requires command + movement integration
+  - files: mud/commands/movement.py (add `do_enter`), mud/world/movement.py (handle portal/door traversal), mud/models/object.py (PORTAL semantics)
+  - tests: tests/test_world.py add `enter` portal tests; verify flags, keys, and fail messages when target invalid/closed
+  - acceptance_criteria: `enter <portal>` moves character to destination when open/valid; deny with ROM-like messages otherwise
+  - references: C src/act_enter.c:do_enter L1-L220; C src/act_move.c:door/exit checks
 - [P1] Replace fixed limits with STR-based carry caps (can_carry_w/n)
   - rationale: ROM derives carry caps from character stats/tables
   - files: mud/world/movement.py (can_carry_w/can_carry_n), mud/models/constants.py (strength table), tests/test_encumbrance.py
   - acceptance_criteria: higher STR increases capacity; test asserts monotonic relation matching ROM doc table
   - references: DOC Rom2.4.doc (carry caps); C src/handler.c:can_carry_w/can_carry_n
-- [P2] Coverage ≥80% for movement_encumbrance
-  - acceptance_criteria: coverage report ≥80% for mud/world/movement.py
 NOTES:
 - Movement now blocks when over caps; add wait-state and stat-derived caps.
 - C: act_move.c and macros in merc.h govern movement and WAIT_STATE.
@@ -770,6 +772,12 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.64)
 KEY RISKS: pricing_rules, file_formats
 TASKS:
+- [P0] Port healer NPC shop logic (healer.c)
+  - rationale: ROM healer offers spell services priced by spell and level; parity requires command integration and price rules
+  - files: mud/commands/shop.py (add healer commands or separate module), mud/models/shop.py (service catalog), mud/skills/handlers.py (invocation)
+  - tests: tests/test_shops.py add healer service purchase cases (e.g., cure light, heal, refresh)
+  - acceptance_criteria: prices and effects match C healer behavior for sample spells; insufficient gold paths deny with correct messages
+  - references: C src/healer.c:do_heal L1-L260; DOC doc/area.txt § #SHOPS (context)
 - [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount
   - rationale: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters)
   - files: mud/commands/shop.py (price computation), mud/models/shop.py (profits/types)
@@ -805,6 +813,20 @@ TASKS:
   - tests: extend tests/test_commands.py to verify messages for POS_SLEEPING/RESTING/FIGHTING cases
   - acceptance_criteria: for representative commands, Python returns ROM-like denial messages based on position
   - references: C src/interp.c: position checks L530-L576 (switch on ch->position vs cmd_table[cmd].position)
+
+- [P0] Implement user-defined aliases (alias.c)
+  - rationale: ROM supports per-character aliases expanded before dispatch; parity needs create/list/remove and persistence
+  - files: mud/commands/dispatcher.py (alias expansion), mud/commands/admin_commands.py (if admin alias mgmt), mud/persistence.py (persist per-player aliases)
+  - tests: tests/test_commands.py add create/list/remove and expansion tests; saved aliases reload on login
+  - acceptance_criteria: `alias k kill` creates alias; `k orc` dispatches to kill orc; removal and persistence verified
+  - references: C src/alias.c:do_alias/do_unalias L1-L220; C src/interp.c: preprocess alias before interpret
+
+- [P0] Implement scan command semantics (scan.c)
+  - rationale: `scan` shows nearby mobiles/exits; parity requires range-limited, sector-aware output
+  - files: mud/commands/inspection.py (or new scan module), mud/world/look.py (helpers), mud/models/constants.py (range/sector aids)
+  - tests: tests/test_commands.py or tests/test_world.py add scan cases with adjacent rooms/mobs
+  - acceptance_criteria: `scan` output matches ROM ordering for simple corridor topology; respects darkness/invisibility
+  - references: C src/scan.c:do_scan L1-L180; DOC doc/command.txt § Scan (if present)
 
 - [P1] Align abbreviation semantics with ROM
   - rationale: ROM allows 1–2 letter abbreviations based on command table order and str_prefix matching
