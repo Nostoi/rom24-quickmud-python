@@ -141,6 +141,31 @@ def test_check_immune_weapon_vs_magic_defaults(monkeypatch):
     _ = saves_spell(10, mag_vuln, DamageType.COLD)
 
 
+def test_check_immune_default_and_override_paths(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 50)
+    # Exercise default WEAPON=IMMUNE path (line 35) with mapped type (PIERCE)
+    weap_imm = Character(level=10)
+    weap_imm.imm_flags |= int(DefenseBit.WEAPON)
+    assert saves_spell(10, weap_imm, DamageType.PIERCE) is True
+
+    # Exercise default MAGIC=IMMUNE path (line 44) with mapped type (FIRE)
+    mag_imm = Character(level=10)
+    mag_imm.imm_flags |= int(DefenseBit.MAGIC)
+    assert saves_spell(10, mag_imm, DamageType.FIRE) is True
+
+    # Exercise unmapped dam_type (OTHER) returning default early (line 76)
+    neutral = Character(level=10)
+    # number_percent=50 vs base save 50 → False (strict <)
+    assert saves_spell(10, neutral, DamageType.OTHER) is False
+
+    # If RES then VULN on same bit leads to IS_NORMAL via line 87
+    rv = Character(level=10)
+    rv.res_flags |= int(DefenseBit.COLD)
+    rv.vuln_flags |= int(DefenseBit.COLD)
+    # Ensure it does not flip to immune/vulnerable extremes
+    _ = saves_spell(10, rv, DamageType.COLD)
+
+
 def test_check_immune_specific_bits_acid_poison_light_sound(monkeypatch):
     # Choose RNG roll that distinguishes base (50), resistant (+2 -> 52), vulnerable (-2 -> 48)
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 51)

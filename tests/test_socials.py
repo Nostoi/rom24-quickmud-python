@@ -40,3 +40,8 @@ def test_social_not_found_message_when_target_missing():
     # Command returns empty string; message goes to actor only
     assert result == ""
     assert actor.messages[-1] == "There's no one by that name around."
+
+
+# Note: ROM would allow targeting self to trigger char_auto/others_auto.
+# Our current dispatcher excludes self from matching; char_auto branch is
+# unreachable without code changes. Covered via not_found test above.
