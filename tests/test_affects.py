@@ -141,6 +141,36 @@ def test_check_immune_weapon_vs_magic_defaults(monkeypatch):
     _ = saves_spell(10, mag_vuln, DamageType.COLD)
 
 
+def test_check_immune_specific_bits_acid_poison_light_sound(monkeypatch):
+    # Choose RNG roll that distinguishes base (50), resistant (+2 -> 52), vulnerable (-2 -> 48)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 51)
+
+    for dtype, bit in [
+        (DamageType.ACID, DefenseBit.ACID),
+        (DamageType.POISON, DefenseBit.POISON),
+        (DamageType.LIGHT, DefenseBit.LIGHT),
+        (DamageType.SOUND, DefenseBit.SOUND),
+    ]:
+        # Baseline: no flags
+        base = Character(level=10, ch_class=2)  # thief → no fMana reduction
+        assert saves_spell(10, base, dtype) is False  # 51 !< 50
+
+        # Resistant: +2 → should pass at 51
+        res = Character(level=10, ch_class=2)
+        res.res_flags |= int(bit)
+        assert saves_spell(10, res, dtype) is True
+
+        # Vulnerable: -2 → should fail at 51
+        vul = Character(level=10, ch_class=2)
+        vul.vuln_flags |= int(bit)
+        assert saves_spell(10, vul, dtype) is False
+
+        # Immune: auto success
+        imm = Character(level=10, ch_class=2)
+        imm.imm_flags |= int(bit)
+        assert saves_spell(10, imm, dtype) is True
+
+
 def test_affect_persistence(tmp_path):
     # Arrange a character with multiple affect flags, save and reload.
     persistence.PLAYERS_DIR = tmp_path

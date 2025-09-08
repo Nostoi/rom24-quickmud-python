@@ -85,3 +85,16 @@ def test_wiznet_requires_specific_flag():
     imm.wiznet |= int(WiznetFlag.WIZ_TICKS)
     wiznet("tick2", WiznetFlag.WIZ_TICKS)
     assert "tick2" in imm.messages
+
+
+def test_wiznet_secure_flag_gating():
+    # Without WIZ_SECURE bit, immortal should not receive WIZ_SECURE messages
+    imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
+    character_registry.append(imm)
+    wiznet("secure", WiznetFlag.WIZ_SECURE)
+    assert "secure" not in imm.messages
+
+    # After subscribing to WIZ_SECURE, message should be delivered
+    imm.wiznet |= int(WiznetFlag.WIZ_SECURE)
+    wiznet("secure2", WiznetFlag.WIZ_SECURE)
+    assert "secure2" in imm.messages
