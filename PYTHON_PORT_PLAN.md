@@ -243,14 +243,14 @@ TASKS:
   EVIDENCE: TEST tests/test_combat.py::test_visibility_and_position_modifiers
   RATIONALE: Sleeping targets are easier to hit; invisible targets harder.
   FILES: mud/combat/engine.py, tests/test_combat.py
- - ✅ [P0] Introduce THAC0 interpolation (class-based) and tests — done 2025-09-08
+- ✅ [P0] Introduce THAC0 interpolation (class-based) and tests — done 2025-09-08
   EVIDENCE: C src/const.c: class_table thac0_00/thac0_32 values (mage 20→6; cleric 20→2; thief 20→-4; warrior 20→-10)
   EVIDENCE: C src/fight.c:L463-L472 (interpolate and negative adjustments)
   EVIDENCE: PY mud/combat/engine.py:THAC0_TABLE, interpolate(), compute_thac0()
   EVIDENCE: TEST tests/test_combat_thac0.py::test_thac0_interpolation_at_levels; ::test_thac0_hitroll_and_skill_adjustments
   RATIONALE: Ground hit calculations in ROM class progression and skill/hitroll effects.
   FILES: mud/combat/engine.py, tests/test_combat_thac0.py
- - ✅ [P0] Integrate compute_thac0 into hit resolution behind feature flag — done 2025-09-08
+- ✅ [P0] Integrate compute_thac0 into hit resolution behind feature flag — done 2025-09-08
   EVIDENCE: C src/fight.c:L510-L520 (diceroll vs thac0 - victim_ac; diceroll==0 auto-miss)
   EVIDENCE: PY mud/combat/engine.py (COMBAT_USE_THAC0 path with number_bits loop)
   EVIDENCE: PY mud/config.py:COMBAT_USE_THAC0 default False
@@ -258,6 +258,10 @@ TASKS:
   EVIDENCE: TEST tests/test_combat_thac0_engine.py::test_thac0_path_hit_and_miss
   RATIONALE: Preserve existing behavior by default; allow ROM-authentic hit logic when enabled.
   FILES: mud/combat/engine.py, mud/config.py, mud/utils/rng_mm.py, tests/test_combat_thac0_engine.py
+ - ✅ [P2] Coverage ≥80% for combat — done 2025-09-08
+  EVIDENCE: TEST coverage run — mud/combat/engine.py 97% (3 missed) via `pytest -q --cov=mud.combat.engine --cov-report=term-missing`
+  EVIDENCE: TEST tests/test_combat.py, tests/test_combat_thac0.py, tests/test_combat_thac0_engine.py
+  FILES: tests/*
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
