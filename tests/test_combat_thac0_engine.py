@@ -15,8 +15,8 @@ def setup_thac0_env():
 
 
 def test_thac0_path_hit_and_miss(monkeypatch):
-    # Enable THAC0 feature flag
-    monkeypatch.setattr('mud.config.COMBAT_USE_THAC0', True)
+    # Enable THAC0 feature flag (patch engine's imported flag)
+    monkeypatch.setattr('mud.combat.engine.COMBAT_USE_THAC0', True)
 
     # Deterministic dicerolls
     monkeypatch.setattr('mud.utils.rng_mm.number_bits', lambda bits: 10)
@@ -47,4 +47,3 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     vic.hit = 10
     out = process_command(atk, 'kill vic')
     assert out == 'You miss Vic.'
-
