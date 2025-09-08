@@ -22,6 +22,16 @@ def test_rotate_admin_log_by_function(tmp_path, monkeypatch):
     assert active.read_text(encoding='utf-8') == ''
 
 
+def test_rotate_no_active_returns_path(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    # No log directory or file yet
+    from mud.logging.admin import rotate_admin_log
+    path = rotate_admin_log(today=datetime(2099, 1, 2))
+    assert path == Path('log') / 'admin.log'
+    # Path not created by early-return branch
+    assert not path.exists()
+
+
 def test_rotate_on_midnight_tick(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     character_registry.clear()
@@ -39,3 +49,21 @@ def test_rotate_on_midnight_tick(tmp_path, monkeypatch):
     # Use current UTC date for naming
     today = datetime.utcnow().strftime('%Y%m%d')
     assert (Path('log') / f'admin-{today}.log').exists()
+
+
+def test_rotate_appends_when_dated_exists(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    from mud.logging.admin import rotate_admin_log
+    log_dir = Path('log')
+    log_dir.mkdir(exist_ok=True)
+    active = log_dir / 'admin.log'
+    dated = log_dir / 'admin-20990102.log'
+    dated.write_text('old\n', encoding='utf-8')
+    active.write_text('new\n', encoding='utf-8')
+
+    rotate_admin_log(today=datetime(2099, 1, 2))
+    # Dated file now contains both
+    assert dated.read_text(encoding='utf-8') == 'old\nnew\n'
+    # Active removed then recreated empty
+    assert active.exists()
+    assert active.read_text(encoding='utf-8') == ''

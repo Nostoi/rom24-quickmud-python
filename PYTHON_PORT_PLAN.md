@@ -511,7 +511,10 @@ TASKS:
   EVIDENCE: TEST tests/test_logging_rotation.py::test_rotate_admin_log_by_function; ::test_rotate_on_midnight_tick
   RATIONALE: Operational parity and manageable log sizes; rotation triggered by midnight tick.
   FILES: mud/logging/admin.py, mud/game_loop.py, tests/test_logging_rotation.py
-- [P1] Achieve ≥80% test coverage for logging_admin — acceptance: coverage report ≥80%
+- ✅ [P1] Achieve ≥80% test coverage for logging_admin — done 2025-09-08
+  EVIDENCE: TEST coverage — mud/logging/admin.py 100% via `pytest -q --cov=mud.logging.admin --cov-report=term-missing`
+  EVIDENCE: TEST tests/test_logging_admin.py; tests/test_logging_rotation.py
+  FILES: tests/test_logging_rotation.py
 NOTES:
 - `log_agent_action` writes per-agent logs under `log/agent_{id}.log` (logging/agent_trace.py:5-8)
 - Dispatcher lacks admin logging hooks (commands/dispatcher.py:32-60)
