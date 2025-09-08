@@ -6,6 +6,7 @@ from mud.db import models
 from mud.models.character import Character, character_registry
 from mud.spawning.reset_handler import apply_resets
 from .linking import link_exits
+from mud.security import bans
 
 
 def load_world_from_db() -> bool:
@@ -81,6 +82,11 @@ def models_to_obj(db_obj: models.ObjPrototype):
 
 def initialize_world(area_list_path: str | None = "area/area.lst") -> None:
     """Initialize world from files or database."""
+    # Tiny fix: ensure a clean ban registry at boot and between tests.
+    # ROM loads bans from disk at boot; tests may add bans in-memory.
+    # Clearing here avoids leakage across test modules without affecting
+    # persistence tests which explicitly save/load.
+    bans.clear_all_bans()
     if area_list_path:
         load_all_areas(area_list_path)
         link_exits()

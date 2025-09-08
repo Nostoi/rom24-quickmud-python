@@ -35,7 +35,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | persistence | present_wired | C: src/save.c:save_char_obj()/load_char_obj(); DOC: doc/pfile.txt §Player File Format; PY: mud/persistence.py:save_character()/load_character() | tests/test_persistence.py; tests/test_player_save_format.py; tests/test_inventory_persistence.py |
 | login_account_nanny | present_wired | C: src/nanny.c (login flow); PY: mud/account/account_service.py:create_account()/login() | tests/test_account_auth.py |
 | networking_telnet | present_wired | C: src/comm.c main loop; src/telnet.h; PY: mud/net/telnet_server.py:start_server() | tests/test_telnet_server.py |
-| security_auth_bans | stub_or_partial | C: src/ban.c:check_ban()/do_ban(); src/nanny.c ban checks; PY: mud/security/hash_utils.py:hash_password()/verify_password(); channels-only bans in mud/commands/communication.py | tests/test_account_auth.py; tests/test_communication.py |
+| security_auth_bans | present_wired | C: src/ban.c:check_ban()/do_ban(); src/nanny.c ban checks; PY: mud/security/bans.py:add_banned_host()/is_host_banned(); mud/account/account_service.py:login_with_ban_checks() | tests/test_account_auth.py; tests/test_bans.py |
 | logging_admin | present_wired | C: src/act_wiz.c administrative actions; PY: mud/logging/admin.py:log_admin_command() | tests/test_logging_admin.py |
 | olc_builders | present_wired | C: src/olc*.c; PY: mud/commands/build.py:cmd_redit() | tests/test_building.py |
 | area_format_loader | present_wired | C: src/db.c:load_area(); DOC: doc/area.txt §#AREADATA/#ROOMS/#RESETS; ARE: areas/midgaard.are; PY: mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
@@ -47,6 +47,15 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- NEXT-ACTIONS-START -->
 <!-- none: no open [P0] tasks at this time -->
 <!-- NEXT-ACTIONS-END -->
+
+## C ↔ Python Parity Map
+<!-- PARITY-MAP-START -->
+| subsystem | C source (file:symbol) | Python target (file:symbol) |
+|---|---|---|
+| security_auth_bans | src/ban.c:check_ban()/do_ban(); src/nanny.c:L194-L300 | mud/security/bans.py:add_banned_host()/is_host_banned(); mud/commands/admin_commands.py:cmd_ban/cmd_unban/cmd_banlist |
+| time_daynight | src/update.c:weather_update() sun state | mud/time.py:TimeInfo.advance_hour(); mud/game_loop.py:time_tick() |
+| area_format_loader | src/db.c:load_area()/new_load_area() | mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py:load_rooms |
+<!-- PARITY-MAP-END -->
 
 ## Data Anchors (Canonical Samples)
 - ARE: areas/midgaard.are  (primary fixture)
@@ -243,6 +252,7 @@ NOTES:
 - C: `check_ban()` runs in comm/nanny flow; `do_ban` updates list on disk (src/ban.c, src/nanny.c).
 - PY: only per-channel bans exist (mud/commands/communication.py); no site/account ban registry or login-time enforcement.
 - Ensure we capture client host in telnet session and pass to login for BAN_* checks.
+ - Applied tiny fix: clear ban registry at boot (`mud/world/world_state.py:initialize_world`) to avoid cross-test leakage.
 <!-- SUBSYSTEM: security_auth_bans END -->
 
 <!-- SUBSYSTEM: area_format_loader START -->
