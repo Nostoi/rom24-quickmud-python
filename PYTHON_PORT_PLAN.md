@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: help_system -->
+<!-- LAST-PROCESSED: combat -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -13,34 +13,34 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- COVERAGE-START -->
 | subsystem | status | evidence | tests |
 |---|---|---|---|
-| combat | present_wired | C: src/fight.c:violence_update/one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py |
-| skills_spells | present_wired | C: src/skills.c:do_practice; PY: mud/skills/registry.py:SkillRegistry | tests/test_skill_registry.py; tests/test_skills.py |
-| affects_saves | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell | tests/test_affects.py |
+| combat | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py; tests/test_combat_thac0.py |
+| skills_spells | present_wired | C: src/skills.c:do_practice; PY: mud/skills/registry.py:SkillRegistry.use | tests/test_skills.py; tests/test_skill_registry.py |
+| affects_saves | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/_check_immune | tests/test_affects.py |
 | command_interpreter | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command | tests/test_commands.py |
-| socials | present_wired | C: src/interp.c:check_social; PY: mud/commands/socials.py:perform_social | tests/test_socials.py; tests/test_social_conversion.py |
+| socials | present_wired | C: src/interp.c:check_social; DOC: doc/command.txt § Socials; PY: mud/commands/socials.py:perform_social | tests/test_socials.py; tests/test_social_conversion.py |
 | channels | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py | tests/test_communication.py |
-| wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet | tests/test_wiznet.py |
+| wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet | tests/test_wiznet.py |
 | world_loader | present_wired | DOC: doc/area.txt; C: src/db.c:load_area; PY: mud/loaders/area_loader.py:load_area_file | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py |
 | resets | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick | tests/test_spawning.py |
 | weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
-| time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py |
+| time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
 | movement_encumbrance | present_wired | C: src/act_move.c:encumbrance checks; PY: mud/world/movement.py:move_character | tests/test_world.py; tests/test_encumbrance.py |
-| stats_position | present_wired | C: merc.h:enum position; PY: mud/models/constants.py:Position | tests/test_advancement.py |
+| stats_position | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position | tests/test_advancement.py |
 | shops_economy | present_wired | C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py | tests/test_shops.py; tests/test_shop_conversion.py |
 | boards_notes | present_wired | C: src/board.c; PY: mud/notes.py | tests/test_boards.py |
-| help_system | present_wired | DOC: doc/area.txt §#HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py; mud/commands/help.py | tests/test_help_system.py |
+| help_system | present_wired | DOC: doc/area.txt § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py; mud/commands/help.py | tests/test_help_system.py |
 | mob_programs | present_wired | C: src/mob_prog.c; PY: mud/mobprog.py | tests/test_mobprog.py |
-| npc_spec_funs | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py | tests/test_spec_funs.py |
+| npc_spec_funs | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py |
 | game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick | tests/test_game_loop.py |
-| persistence | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_player_save_format.py; tests/test_inventory_persistence.py |
+| persistence | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_inventory_persistence.py |
 | login_account_nanny | present_wired | C: src/nanny.c; PY: mud/account/account_service.py | tests/test_account_auth.py |
-| networking_telnet | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py | tests/test_telnet_server.py |
-| security_auth_bans | present_wired | C: src/ban.c:check_ban/do_ban/save_bans; PY: mud/security/bans.py | tests/test_bans.py; tests/test_account_auth.py |
-| logging_admin | present_wired | C: src/act_wiz.c (wiznet/admin flows); PY: mud/logging/admin.py | tests/test_logging_admin.py |
+| networking_telnet | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py/start_server | tests/test_telnet_server.py |
+| security_auth_bans | present_wired | C: src/ban.c:check_ban/do_ban/save_bans; PY: mud/security/bans.py:save_bans_file/load_bans_file | tests/test_bans.py; tests/test_account_auth.py |
+| logging_admin | present_wired | C: src/act_wiz.c (admin flows); PY: mud/logging/admin.py:log_admin_command/rotate_admin_log | tests/test_logging_admin.py; tests/test_logging_rotation.py |
 | olc_builders | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit | tests/test_building.py |
-| area_format_loader | present_wired | DOC: doc/area.txt; C: src/db.c:load_area; PY: mud/scripts/convert_are_to_json.py | tests/test_are_conversion.py; tests/test_area_loader.py |
-| imc_chat | present_wired | C: src/imc.c/src/imc.h; PY: mud/imc/ (feature-flagged) | tests/test_imc.py |
-| player_save_format | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj; PY: mud/persistence.py | tests/test_player_save_format.py |
+| area_format_loader | present_wired | DOC: doc/area.txt; ARE: area/midgaard.are; C: src/db.c:load_area; PY: mud/loaders/area_loader.py | tests/test_are_conversion.py; tests/test_area_loader.py; tests/test_area_counts.py |
+| imc_chat | present_wired | C: imc/imc.c; PY: mud/imc/__init__.py (feature-flagged), mud/commands/imc.py | tests/test_imc.py |
+| player_save_format | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj; PY: mud/persistence.py (PlayerSave) | tests/test_player_save_format.py |
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
@@ -54,14 +54,34 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- PARITY-MAP-START -->
 | subsystem | C source (file:symbol) | Python target (file:symbol) |
 |---|---|---|
-| security_auth_bans | src/ban.c:check_ban()/do_ban(); src/nanny.c:L194-L300 | mud/security/bans.py:add_banned_host()/is_host_banned(); mud/commands/admin_commands.py:cmd_ban/cmd_unban/cmd_banlist |
-| time_daynight | src/update.c:weather_update() sun state | mud/time.py:TimeInfo.advance_hour(); mud/game_loop.py:time_tick() |
-| area_format_loader | src/db.c:load_area()/new_load_area() | mud/loaders/area_loader.py:load_area_file(); mud/loaders/room_loader.py:load_rooms |
-| affects_saves | src/magic.c:saves_spell(); src/handler.c:check_immune | mud/affects/saves.py:saves_spell/_check_immune |
-| socials | src/db2.c:load_socials(); src/interp.c:check_social | mud/models/social.py; mud/commands/socials.py:perform_social |
-| wiznet_imm | src/act_wiz.c:wiznet(); src/interp.c logging paths | mud/wiznet.py:wiznet/cmd_wiznet |
-| combat | src/fight.c:one_hit()/multi_hit()/check_*(shield/parry/dodge) | mud/combat/engine.py:attack_round() |
-| skills_spells | src/skills.c:do_practice; src/magic.c:saves_spell/skill checks | mud/skills/registry.py:SkillRegistry.use() |
+| combat | src/fight.c:one_hit/multi_hit | mud/combat/engine.py:attack_round |
+| skills_spells | src/skills.c:do_practice; src/magic.c:saves_spell | mud/skills/registry.py:SkillRegistry.use; mud/affects/saves.py:saves_spell |
+| affects_saves | src/magic.c:saves_spell; src/handler.c:check_immune | mud/affects/saves.py:saves_spell/_check_immune |
+| command_interpreter | src/interp.c:interpret | mud/commands/dispatcher.py:process_command |
+| socials | src/db2.c:load_socials; src/interp.c:check_social | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social |
+| channels | src/act_comm.c:do_say/do_tell/do_shout | mud/commands/communication.py:do_say/do_tell/do_shout |
+| wiznet_imm | src/act_wiz.c:wiznet | mud/wiznet.py:wiznet/cmd_wiznet |
+| world_loader | src/db.c:load_area | mud/loaders/area_loader.py:load_area_file |
+| resets | src/db.c:reset_area | mud/spawning/reset_handler.py:reset_tick/reset_area |
+| weather | src/update.c:weather_update | mud/game_loop.py:weather_tick |
+| time_daynight | src/update.c:weather_update sun state | mud/time.py:TimeInfo.advance_hour; mud/game_loop.py:time_tick |
+| movement_encumbrance | src/act_move.c:encumbrance | mud/world/movement.py:move_character |
+| stats_position | merc.h:position enum | mud/models/constants.py:Position |
+| shops_economy | src/act_obj.c:do_buy/do_sell | mud/commands/shop.py:do_buy/do_sell |
+| boards_notes | src/board.c | mud/notes.py:load_boards/save_board; mud/commands/notes.py |
+| help_system | src/act_info.c:do_help | mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help |
+| mob_programs | src/mob_prog.c | mud/mobprog.py:run_prog |
+| npc_spec_funs | src/special.c:spec_table | mud/spec_funs.py:run_npc_specs |
+| game_update_loop | src/update.c:update_handler | mud/game_loop.py:game_tick |
+| persistence | src/save.c:save_char_obj/load_char_obj | mud/persistence.py:save_character/load_character |
+| login_account_nanny | src/nanny.c | mud/account/account_service.py:login/create_character |
+| networking_telnet | src/comm.c | mud/net/telnet_server.py:start_server; mud/net/connection.py:handle_connection |
+| security_auth_bans | src/ban.c:check_ban/do_ban/save_bans | mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py |
+| logging_admin | src/act_wiz.c (admin flows) | mud/logging/admin.py:log_admin_command/rotate_admin_log |
+| olc_builders | src/olc_act.c | mud/commands/build.py:cmd_redit |
+| area_format_loader | src/db.c:load_area/new_load_area | mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py |
+| imc_chat | imc/imc.c | mud/imc/__init__.py:imc_enabled; mud/commands/imc.py:do_imc |
+| player_save_format | src/save.c:save_char_obj | mud/persistence.py:PlayerSave |
 <!-- PARITY-MAP-END -->
 
 ## Data Anchors (Canonical Samples)
@@ -276,6 +296,7 @@ TASKS:
 NOTES:
 - C: one_hit/multi_hit sequence integrates defense checks and AC; current Python engine omits both.
 - PY: attack_round uses rng_mm.number_percent (good), but lacks AC/defense order/RIV integration.
+- Applied tiny fix: use c_div for AC contribution to hit chance (mud/combat/engine.py) to ensure C-style division with negative AC.
 <!-- SUBSYSTEM: combat END -->
 
 <!-- SUBSYSTEM: skills_spells START -->
