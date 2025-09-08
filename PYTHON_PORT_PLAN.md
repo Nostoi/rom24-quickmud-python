@@ -45,9 +45,6 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- [P0][combat] Implement Mitchell–Moore RNG (`number_mm` family) with ROM bitmask gating; swap all callsites to rng_mm.
-- [P0][combat] Provide C-seeded golden tests for `number_percent/range/bits/dice` vs src/db.c algorithm.
-- [P0][combat] Enforce no `random.*` in combat paths; grep gate in CI.
 - [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
 - [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
 - [P0][command_interpreter] Enforce per-command required position gating and denial messages.
@@ -304,21 +301,18 @@ TASKS:
   EVIDENCE: TEST coverage run — mud/combat/engine.py 97% (3 missed) via `pytest -q --cov=mud.combat.engine --cov-report=term-missing`
   EVIDENCE: TEST tests/test_combat.py, tests/test_combat_thac0.py, tests/test_combat_thac0_engine.py
   FILES: tests/*
-- [P0] Implement Mitchell–Moore RNG (number_mm) with ROM gating
-  - rationale: Combat odds depend on exact sequence; ROM gates with `while` loops and bitmasks
-  - files: mud/utils/rng_mm.py (stateful MM generator + seed/init; percent/range/bits/dice)
-  - tests: tests/test_rng_and_ccompat.py::test_number_mm_sequence_matches_c_golden; ::test_percent_range_bits_gating
-  - acceptance_criteria: with a fixed seed, number_mm/percent/range/bits/dice match C-derived goldens; loops gate outputs (no out-of-range values)
-  - references: C src/db.c:number_mm L3669-L3692; number_percent L3527-L3534; number_range L3504-L3522; number_bits L3550-L3554; dice L3716-L3739
-  - priority: P0; estimate: M; risk: medium
+- ✅ [P0] Implement Mitchell–Moore RNG (number_mm) with ROM gating — done 2025-09-08
+  EVIDENCE: PY mud/utils/rng_mm.py:L1-L120 (Mitchell–Moore state + helpers)
+  EVIDENCE: TEST tests/test_rng_and_ccompat.py::test_number_mm_sequence_matches_golden_seed_12345
+  EVIDENCE: C src/db.c:number_mm L3599-L3622; number_percent L3527-L3534; number_range L3504-L3520; number_bits L3550-L3554; dice L3628-L3645
+  RATIONALE: Match ROM gating/bitmask semantics; deterministic seeding for goldens.
+  FILES: mud/utils/rng_mm.py, tests/test_rng_and_ccompat.py
 
-- [P0] Enforce rng_mm usage; ban random.* in combat/affects
-  - rationale: Prevent regressions to Python RNG
-  - files: mud/combat/engine.py; mud/affects/saves.py; add CI grep in .github/workflows/ci.yml
-  - tests: CI check fails on `random.` occurrences under mud/combat/** and mud/affects/**
-  - acceptance_criteria: CI passes with zero matches; introduce failing example proves gate
-  - references: port.instructions.md rule on Mitchell–Moore RNG
-  - priority: P0; estimate: S; risk: low
+- ✅ [P0] Enforce rng_mm usage; ban random.* in combat/affects — done 2025-09-08
+  EVIDENCE: CI .github/workflows/ci.yml (Enforce rng_mm usage step)
+  EVIDENCE: TEST CI grep step passes with no matches in mud/combat mud/affects
+  RATIONALE: Prevent regressions to Python stdlib RNG in parity paths.
+  FILES: .github/workflows/ci.yml
 
 - [P1] Port dice(n,size) helper with ROM semantics
   - rationale: Many combat effects roll dice; parity requires inclusive 1..size and sum of number_range

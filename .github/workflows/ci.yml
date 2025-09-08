@@ -23,6 +23,14 @@ jobs:
           flake8 mud/net/ansi.py mud/net/protocol.py mud/security/hash_utils.py \
             tests/test_telnet_server.py tests/test_ansi.py \
             tests/test_scripted_session.py tests/test_hash_utils.py
+      - name: Enforce rng_mm usage (no random in combat/affects)
+        run: |
+          if grep -R -n "\\brandom\\." mud/combat mud/affects; then
+            echo "Forbidden Python random.* usage found in combat/affects." >&2
+            exit 1
+          else
+            echo "OK: no random.* usage in combat/affects"
+          fi
       - name: Type check
         run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py mud/security/hash_utils.py --follow-imports=skip
       - name: Test
