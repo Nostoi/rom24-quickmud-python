@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional
 
 from mud.models.character import Character
 from .movement import do_north, do_south, do_east, do_west, do_up, do_down
-from .inspection import do_look
+from .inspection import do_look, do_scan
 from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say, do_tell, do_shout
 from .combat import do_kill
@@ -56,6 +56,7 @@ COMMANDS: List[Command] = [
     Command("tell", do_tell),
     Command("shout", do_shout),
     Command("kill", do_kill, aliases=("attack",)),
+    Command("scan", do_scan),
     Command("list", do_list),
     Command("buy", do_buy),
     Command("sell", do_sell),

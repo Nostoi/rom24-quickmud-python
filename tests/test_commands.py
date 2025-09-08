@@ -56,6 +56,19 @@ def test_abbreviations_and_quotes():
     assert out3 == "You say, 'hello world'"
 
 
+def test_scan_lists_adjacent_characters():
+    initialize_world('area/area.lst')
+    # Place player in temple, another to the north
+    char = create_test_character('Scanner', 3001)
+    north_room = room_registry[3054]
+    other = create_test_character('Target', north_room.vnum)
+
+    out = process_command(char, 'scan')
+    assert 'You scan for life signs' in out
+    # Should list Target under north (possibly with other names)
+    assert 'north:' in out and 'Target' in out
+
+
 def test_alias_create_expand_and_unalias():
     initialize_world('area/area.lst')
     char = create_test_character('AliasUser', 3001)
