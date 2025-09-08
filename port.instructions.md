@@ -70,6 +70,10 @@
   RATIONALE: ROM evaluates against a percent roll; using floats changes distribution and parity.
   EXAMPLE: if rng_mm.number_percent() <= learned: succeed()
 
+- RULE: THAC0-based hit resolution uses `number_bits(5)` diceroll and `compute_thac0` (class-based) when `COMBAT_USE_THAC0` is enabled; tests must patch the engine module flag.
+  RATIONALE: Mirrors ROM hit calculation while keeping default behavior stable.
+  EXAMPLE: monkeypatch.setattr('mud.combat.engine.COMBAT_USE_THAC0', True)
+
  - RULE: Conversions from `area/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
    RATIONALE: Prevent silent data loss.
    EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`

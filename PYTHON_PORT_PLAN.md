@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: time_daynight -->
+<!-- LAST-PROCESSED: help_system -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -309,7 +309,7 @@ NOTES:
 
 <!-- SUBSYSTEM: help_system START -->
 ### help_system — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:absent correctness:fails (confidence 0.70)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
 KEY RISKS: file_formats, indexing
 TASKS:
 - ✅ [P0] Load help entries from JSON and populate registry — acceptance: pytest loads `help.json` and finds `murder` topic — done 2025-09-08
@@ -319,10 +319,8 @@ TASKS:
 - [P1] Preserve ROM help file widths in JSON conversion — acceptance: golden file matches `help.are`
 - [P2] Achieve ≥80% test coverage for help_system — acceptance: coverage report ≥80%
 NOTES:
-- `HelpEntry` and `help_registry` placeholder exist without loader (help.py:8-28)
-- Dispatcher lacks `help` command (commands/dispatcher.py:32-60)
-- No `data/help.json` present for topics (data/)
-- No tests exercise help lookup
+- Loader populates registry from JSON; dispatcher wires `help` command.
+- Tests cover loading and command output; add P1/P2 tasks for format preservation and coverage.
 <!-- SUBSYSTEM: help_system END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->
