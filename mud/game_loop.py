@@ -9,6 +9,7 @@ from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
 from mud.config import get_pulse_tick
 from mud.net.protocol import broadcast_global
+from mud.logging.admin import rotate_admin_log
 from mud.spec_funs import run_npc_specs
 
 
@@ -68,7 +69,13 @@ def weather_tick() -> None:
 
 def time_tick() -> None:
     """Advance world time and broadcast day/night transitions."""
-    for message in time_info.advance_hour():
+    messages = time_info.advance_hour()
+    if time_info.hour == 0:
+        try:
+            rotate_admin_log()
+        except Exception:
+            pass
+    for message in messages:
         broadcast_global(message, channel="info")
 
 
