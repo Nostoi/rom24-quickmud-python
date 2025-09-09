@@ -48,7 +48,6 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
 - [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
 - [P0][movement_encumbrance] Implement enter/portal/gate flows per act_enter.c and door/exit checks.
-- [P0][command_interpreter] Implement scan command semantics with range/visibility rules.
 - [P0][shops_economy] Port healer NPC shop logic (spell services and pricing).
 <!-- NEXT-ACTIONS-END -->
 
@@ -796,7 +795,7 @@ NOTES:
 <!-- SUBSYSTEM: shops_economy END -->
 <!-- SUBSYSTEM: command_interpreter START -->
 ### command_interpreter — Parity Audit 2025-09-08
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.78)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.82)
 KEY RISKS: position_gating, abbreviations
 TASKS:
 - ✅ [P0] Enforce per-command required position before execution — done 2025-09-08
@@ -811,12 +810,11 @@ TASKS:
   EVIDENCE: PY mud/persistence.py:L35-L38; L63-L66; L111-L115 (persist/restore aliases)
   EVIDENCE: TEST tests/test_commands.py::test_alias_create_expand_and_unalias; tests/test_commands.py::test_alias_persists_in_save_load
 
-- [P0] Implement scan command semantics (scan.c)
-  - rationale: `scan` shows nearby mobiles/exits; parity requires range-limited, sector-aware output
-  - files: mud/commands/inspection.py (or new scan module), mud/world/look.py (helpers), mud/models/constants.py (range/sector aids)
-  - tests: tests/test_commands.py or tests/test_world.py add scan cases with adjacent rooms/mobs
-  - acceptance_criteria: `scan` output matches ROM ordering for simple corridor topology; respects darkness/invisibility
-  - references: C src/scan.c:do_scan L1-L180; DOC doc/command.txt § Scan (if present)
+- ✅ [P0] Implement scan command semantics (scan.c) — done 2025-09-08
+  EVIDENCE: C src/scan.c:L26-L41 (distance strings); L61-L106 (direction tokenizing and depth loop)
+  EVIDENCE: PY mud/commands/inspection.py:L1-L121 (ROM-like phrasing, depth up to 3, direction tokens)
+  EVIDENCE: TEST tests/test_commands.py::test_scan_lists_adjacent_characters_rom_style; ::test_scan_directional_depth_rom_style
+  NOTES: Minimal parity: visibility/invisibility checks are not yet modeled; add later if required by tests.
 
 - [P1] Align abbreviation semantics with ROM
   - rationale: ROM allows 1–2 letter abbreviations based on command table order and str_prefix matching

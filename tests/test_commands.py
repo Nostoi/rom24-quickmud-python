@@ -57,17 +57,29 @@ def test_abbreviations_and_quotes():
     assert out3 == "You say, 'hello world'"
 
 
-def test_scan_lists_adjacent_characters():
+def test_scan_lists_adjacent_characters_rom_style():
     initialize_world('area/area.lst')
     # Place player in temple, another to the north
     char = create_test_character('Scanner', 3001)
     north_room = room_registry[3054]
-    other = create_test_character('Target', north_room.vnum)
+    create_test_character('Target', north_room.vnum)
 
     out = process_command(char, 'scan')
-    assert 'You scan for life signs' in out
-    # Should list Target under north (possibly with other names)
-    assert 'north:' in out and 'Target' in out
+    # ROM-style header
+    assert 'Looking around you see:' in out
+    # Depth 1 phrasing
+    assert 'Target, nearby to the north.' in out
+
+
+def test_scan_directional_depth_rom_style():
+    initialize_world('area/area.lst')
+    char = create_test_character('Scanner', 3001)
+    north_room = room_registry[3054]
+    create_test_character('Target', north_room.vnum)
+
+    out = process_command(char, 'scan north')
+    assert 'Looking north you see:' in out
+    assert 'Target, nearby to the north.' in out
 
 
 def test_alias_create_expand_and_unalias():
@@ -117,7 +129,7 @@ def test_position_gating_sleeping_blocks_look_allows_scan():
     assert out1 == 'In your dreams, or what?'
 
     out2 = process_command(char, 'scan')
-    assert 'You scan for life signs' in out2
+    assert 'Looking around you see:' in out2
 
 
 def test_position_gating_resting_blocks_movement():
