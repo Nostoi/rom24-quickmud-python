@@ -315,3 +315,7 @@ class VulnFlag(IntFlag):
     IRON = int(DefenseBit.IRON)
 
 # END imm_res_vuln_flags
+# --- Exit/portal flags (merc.h) ---
+# Bits map to letters A..Z; EX_ISDOOR=A (1<<0), EX_CLOSED=B (1<<1)
+EX_ISDOOR = 1 << 0
+EX_CLOSED = 1 << 1

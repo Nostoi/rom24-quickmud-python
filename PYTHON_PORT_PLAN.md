@@ -369,12 +369,12 @@ TASKS:
   EVIDENCE: TEST tests/test_movement_costs.py::test_boat_allows_water_noswim
   EVIDENCE: C src/act_move.c:L50-L58 (movement_loss); L173-L196 (cost/WAIT_STATE); L232-L360 (move_char flow)
   RATIONALE: Average movement cost and gating for AIR/BOAT match ROM; apply WAIT_STATE(1) and deduct move.
-- [P0] Implement enter/portal/gate flows (act_enter)
-  - rationale: ROM supports `enter` for portals/doors and auto-movement via `gate`/`portal` object types; parity requires command + movement integration
-  - files: mud/commands/movement.py (add `do_enter`), mud/world/movement.py (handle portal/door traversal), mud/models/object.py (PORTAL semantics)
-  - tests: tests/test_world.py add `enter` portal tests; verify flags, keys, and fail messages when target invalid/closed
-  - acceptance_criteria: `enter <portal>` moves character to destination when open/valid; deny with ROM-like messages otherwise
-  - references: C src/act_enter.c:do_enter L1-L220; C src/act_move.c:door/exit checks
+- ✅ [P0] Implement enter/portal/gate flows (act_enter) — done 2025-09-09
+  EVIDENCE: PY mud/commands/movement.py:do_enter
+  EVIDENCE: TEST tests/test_enter_portal.py::test_enter_closed_portal_denied
+  EVIDENCE: TEST tests/test_enter_portal.py::test_enter_open_portal_moves_character
+  EVIDENCE: C src/act_enter.c:do_enter L66-L220 (portal type/flags, closed check, destination vnum)
+  RATIONALE: Actor can enter portals when open; closed portals deny with ROM-like message; destination uses value[3] vnum.
 - [P1] Replace fixed limits with STR-based carry caps (can_carry_w/n)
   - rationale: ROM derives carry caps from character stats/tables
   - files: mud/world/movement.py (can_carry_w/can_carry_n), mud/models/constants.py (strength table), tests/test_encumbrance.py

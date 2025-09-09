@@ -4,7 +4,7 @@ import shlex
 from typing import Callable, Dict, List, Optional
 
 from mud.models.character import Character
-from .movement import do_north, do_south, do_east, do_west, do_up, do_down
+from .movement import do_north, do_south, do_east, do_west, do_up, do_down, do_enter
 from .inspection import do_look, do_scan
 from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say, do_tell, do_shout
@@ -51,6 +51,7 @@ COMMANDS: List[Command] = [
     Command("west", do_west, aliases=("w",), min_position=Position.STANDING),
     Command("up", do_up, aliases=("u",), min_position=Position.STANDING),
     Command("down", do_down, aliases=("d",), min_position=Position.STANDING),
+    Command("enter", do_enter, min_position=Position.STANDING),
 
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
