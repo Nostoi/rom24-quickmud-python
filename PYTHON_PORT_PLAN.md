@@ -24,9 +24,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | resets | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick | tests/test_spawning.py |
 | weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
 | time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
-| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character | tests/test_world.py; tests/test_encumbrance.py |
+| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py |
 | stats_position | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position | tests/test_advancement.py |
-| shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell | tests/test_shops.py; tests/test_shop_conversion.py |
+| shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py |
 | boards_notes | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py | tests/test_boards.py |
 | help_system | present_wired | DOC: doc/area.txt § #HELPS; ARE: area/help.are § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help | tests/test_help_system.py |
 | mob_programs | present_wired | C: src/mob_prog.c; PY: mud/mobprog.py | tests/test_mobprog.py |
@@ -45,10 +45,8 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- [P0][resets] Implement 'P' reset semantics using LastObj + limits; verify nesting/lock fix against midgaard.are.
-- [P0][movement_encumbrance] Apply sector-based movement costs and boat/fly gating with WAIT_STATE(1).
 - [P0][movement_encumbrance] Implement enter/portal/gate flows per act_enter.c and door/exit checks.
-- [P0][shops_economy] Port healer NPC shop logic (spell services and pricing).
+- [P0][shops_economy] Mirror get_cost() profit/charges adjustments in shop pricing.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -58,6 +56,8 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | combat | src/fight.c:one_hit/multi_hit | mud/combat/engine.py:attack_round |
 | skills_spells | src/skills.c:do_practice; src/magic.c:saves_spell | mud/skills/registry.py:SkillRegistry.use; mud/affects/saves.py:saves_spell |
 | affects_saves | src/magic.c:saves_spell; src/handler.c:check_immune | mud/affects/saves.py:saves_spell/_check_immune |
+| movement_encumbrance | src/act_move.c:move_char/movement_loss | mud/world/movement.py:move_character |
+| shops_economy (healer) | src/healer.c:do_heal | mud/commands/healer.py:do_heal |
 | command_interpreter | src/interp.c:interpret | mud/commands/dispatcher.py:process_command |
 | socials | src/db2.c:load_socials; src/interp.c:check_social | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social |
 | channels | src/act_comm.c:do_say/do_tell/do_shout | mud/commands/communication.py:do_say/do_tell/do_shout |
@@ -361,12 +361,14 @@ TASKS:
   - evidence: PY mud/world/movement.py:L19-L33; TEST tests/test_world.py::test_overweight_character_cannot_move
 - ✅ [P0] Update carry weight/number on pickup/drop/equip — done 2025-09-08
   - evidence: PY mud/models/character.py:L92-L114; TEST tests/test_encumbrance.py::test_carry_weight_updates_on_pickup_equip_drop
-- [P0] Apply sector-based movement costs and resource checks (boat/fly)
-  - rationale: ROM charges movement points by sector pair, requires boat for noswim and fly for air; also applies WAIT_STATE(1)
-  - files: mud/world/movement.py (movement_loss table, move cost, boat/fly checks, WAIT_STATE equivalent), mud/models/constants.py (Sector)
-  - tests: new tests for water/air movement gating; verify move points reduced and message parity
-  - acceptance_criteria: moving from CITY→FOREST reduces `move` by average sector cost; water-noswim requires boat unless flying; sets short wait
-  - references: C src/act_move.c:movement_loss table and checks L41-L118; do_move/move_char logic and WAIT_STATE(1) L95-L140, L191-L218
+ - ✅ [P0] Apply sector-based movement costs and resource checks (boat/fly) — done 2025-09-09
+  EVIDENCE: PY mud/world/movement.py:L43-L92
+  EVIDENCE: TEST tests/test_movement_costs.py::test_sector_move_cost_and_wait
+  EVIDENCE: TEST tests/test_movement_costs.py::test_water_noswim_requires_boat
+  EVIDENCE: TEST tests/test_movement_costs.py::test_air_requires_flying
+  EVIDENCE: TEST tests/test_movement_costs.py::test_boat_allows_water_noswim
+  EVIDENCE: C src/act_move.c:L50-L58 (movement_loss); L173-L196 (cost/WAIT_STATE); L232-L360 (move_char flow)
+  RATIONALE: Average movement cost and gating for AIR/BOAT match ROM; apply WAIT_STATE(1) and deduct move.
 - [P0] Implement enter/portal/gate flows (act_enter)
   - rationale: ROM supports `enter` for portals/doors and auto-movement via `gate`/`portal` object types; parity requires command + movement integration
   - files: mud/commands/movement.py (add `do_enter`), mud/world/movement.py (handle portal/door traversal), mud/models/object.py (PORTAL semantics)
@@ -762,12 +764,13 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.64)
 KEY RISKS: pricing_rules, file_formats
 TASKS:
-- [P0] Port healer NPC shop logic (healer.c)
-  - rationale: ROM healer offers spell services priced by spell and level; parity requires command integration and price rules
-  - files: mud/commands/shop.py (add healer commands or separate module), mud/models/shop.py (service catalog), mud/skills/handlers.py (invocation)
-  - tests: tests/test_shops.py add healer service purchase cases (e.g., cure light, heal, refresh)
-  - acceptance_criteria: prices and effects match C healer behavior for sample spells; insufficient gold paths deny with correct messages
-  - references: C src/healer.c:do_heal L1-L260; DOC doc/area.txt § #SHOPS (context)
+ - ✅ [P0] Port healer NPC shop logic (healer.c) — done 2025-09-09
+  EVIDENCE: PY mud/commands/healer.py:L8-L23; L26-L63; mud/commands/dispatcher.py:L74-L78
+  EVIDENCE: TEST tests/test_healer.py::test_healer_lists_services_and_prices
+  EVIDENCE: TEST tests/test_healer.py::test_healer_refresh_and_heal_effects_and_pricing
+  EVIDENCE: TEST tests/test_healer.py::test_healer_denies_when_insufficient_gold
+  EVIDENCE: C src/healer.c:do_heal L1-L220 (price list and services)
+  RATIONALE: Minimal healer command wired; supports refresh/heal/mana with ROM-like pricing and denial message.
 - [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount
   - rationale: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters)
   - files: mud/commands/shop.py (price computation), mud/models/shop.py (profits/types)

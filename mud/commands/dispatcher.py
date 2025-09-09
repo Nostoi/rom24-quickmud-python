@@ -18,6 +18,7 @@ from .admin_commands import (
     cmd_banlist,
 )
 from .shop import do_list, do_buy, do_sell
+from .healer import do_heal
 from .alias_cmds import do_alias, do_unalias
 from .advancement import do_practice, do_train
 from .notes import do_board, do_note
@@ -73,6 +74,7 @@ COMMANDS: List[Command] = [
     Command("list", do_list, min_position=Position.RESTING),
     Command("buy", do_buy, min_position=Position.RESTING),
     Command("sell", do_sell, min_position=Position.RESTING),
+    Command("heal", do_heal, min_position=Position.RESTING),
 
     # Advancement
     Command("practice", do_practice, min_position=Position.SLEEPING),
