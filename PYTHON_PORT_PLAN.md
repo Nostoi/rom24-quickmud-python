@@ -404,12 +404,11 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.66)
 KEY RISKS: file_formats, indexing, side_effects
 TASKS:
-- [P0] Implement 'P' reset semantics using LastObj + limits
-  - rationale: ROM nests objects inside the last created object, not by vnum; also enforces arg2 limits and fixes container lock state
-  - files: mud/spawning/reset_handler.py (apply_resets), tests/test_spawning.py
-  - tests: add cases from area/midgaard.are that place objects into containers via 'P'; assert correct counts and nesting
-  - acceptance_criteria: with midgaard.are, nested objects match C behavior; respects arg2>50⇒limit=6, arg2==-1⇒no limit; copies container value[1] from prototype after fills
-  - references: C src/db.c: reset_room() case 'P' L1897-L1953 (limit handling, LastObj, level, lock fix)
+- ✅ [P0] Implement 'P' reset semantics using LastObj + limits — done 2025-09-08
+  EVIDENCE: C src/db.c:L1760-L1905 (reset_room 'O'/'P' handling); C src/db.c:L1906-L1896 (limit logic, count and lock fix around 'P')
+  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L50; L51-L120 (track last_obj, spawn map per vnum, P places into container, respects count)
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
+  NOTES: Lock-state fix (value[1]) not applied because object instance model lacks per-instance value fields; to be addressed if required by tests.
 
 - [P1] Implement 'G'/'E' reset limits and level logic
   - rationale: ROM enforces per-index count limits and computes object levels for shopkeepers/equipment

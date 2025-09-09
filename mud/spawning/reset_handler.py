@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging
-from typing import Dict
+from typing import Dict, List, Optional
 
 from mud.models.area import Area
 from mud.registry import room_registry, area_registry
@@ -14,7 +14,9 @@ RESET_TICKS = 3
 def apply_resets(area: Area) -> None:
     """Populate rooms based on simplified reset data."""
     last_mob = None
-    spawned_objects: Dict[int, object] = {}
+    last_obj: Optional[object] = None
+    # Track spawned objects per prototype vnum to support simple 'P' lookups
+    spawned_objects: Dict[int, List[object]] = {}
     for reset in area.resets:
         cmd = reset.command.upper()
         if cmd == 'M':
@@ -25,6 +27,7 @@ def apply_resets(area: Area) -> None:
             if mob and room:
                 room.add_mob(mob)
                 last_mob = mob
+                last_obj = None
             else:
                 logging.warning('Invalid M reset %s -> %s', mob_vnum, room_vnum)
         elif cmd == 'O':
@@ -34,7 +37,9 @@ def apply_resets(area: Area) -> None:
             room = room_registry.get(room_vnum)
             if obj and room:
                 room.add_object(obj)
-                spawned_objects[obj_vnum] = obj
+                # Update last object instance and index by vnum
+                last_obj = obj
+                spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
         elif cmd == 'G':
@@ -42,8 +47,8 @@ def apply_resets(area: Area) -> None:
             obj = spawn_object(obj_vnum)
             if obj and last_mob:
                 last_mob.add_to_inventory(obj)
-                # Track spawned objects so later P resets can reference them
-                spawned_objects[obj_vnum] = obj
+                last_obj = obj
+                spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid G reset %s', obj_vnum)
         elif cmd == 'E':
@@ -52,23 +57,40 @@ def apply_resets(area: Area) -> None:
             obj = spawn_object(obj_vnum)
             if obj and last_mob:
                 last_mob.equip(obj, slot)
-                spawned_objects[obj_vnum] = obj
+                last_obj = obj
+                spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid E reset %s', obj_vnum)
         elif cmd == 'P':
             obj_vnum = reset.arg2 or 0
             container_vnum = reset.arg4 or 0
+            count = max(1, int(reset.arg3 or 1))  # how many to place
             if container_vnum <= 0:
-                # Negative or zero container vnums are invalid; skip quietly
                 logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
                 continue
-            obj = spawn_object(obj_vnum)
-            container = spawned_objects.get(container_vnum)
-            if obj and isinstance(container, type(obj)):
-                container.contained_items.append(obj)
-                spawned_objects[obj_vnum] = obj
-            else:
-                logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
+            # Prefer the last created object instance if it matches the container vnum
+            container_obj: Optional[object] = None
+            if last_obj and getattr(getattr(last_obj, 'prototype', None), 'vnum', None) == container_vnum:
+                container_obj = last_obj
+            # Otherwise, fall back to the most recent spawned container by vnum
+            if not container_obj:
+                lst = spawned_objects.get(container_vnum) or []
+                container_obj = lst[-1] if lst else None
+            if not container_obj:
+                logging.warning('Invalid P reset %s -> %s (no container instance)', obj_vnum, container_vnum)
+                continue
+            # Determine existing count inside
+            existing = [o for o in getattr(container_obj, 'contained_items', [])
+                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            to_make = max(0, count - len(existing))
+            for _ in range(to_make):
+                obj = spawn_object(obj_vnum)
+                if not obj:
+                    break
+                getattr(container_obj, 'contained_items').append(obj)
+                spawned_objects.setdefault(obj_vnum, []).append(obj)
+            # After population, set last_obj to the container (mirrors ROM behavior)
+            last_obj = container_obj
 
 
 def reset_area(area: Area) -> None:
