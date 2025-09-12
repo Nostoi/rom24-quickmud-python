@@ -35,7 +35,13 @@ class SkillRegistry:
         return self.skills[name]
 
     def use(self, caster, name: str, target=None):
-        """Execute a skill and handle resource costs and failure."""
+        """Execute a skill and handle resource costs and failure.
+
+        Parity: If the caster has a learned percentage for this skill in
+        `caster.skills[name]` (0..100), success is determined by a ROM-style
+        percent roll (number_percent) against that learned value. If no
+        learned value is present, fall back to `failure_rate` as before.
+        """
         skill = self.get(name)
         if caster.mana < skill.mana_cost:
             raise ValueError("not enough mana")
@@ -45,10 +51,28 @@ class SkillRegistry:
             raise ValueError("skill on cooldown")
 
         caster.mana -= skill.mana_cost
-        # Use ROM-style percent roll (1..100 inclusive) for failure checks
-        # Convert float failure_rate (0.0..1.0) to percentage threshold 0..100
-        failure_threshold = int(round(skill.failure_rate * 100))
-        if rng_mm.number_percent() <= failure_threshold:
+        # ROM parity: prefer per-character learned% when available
+        learned = None
+        try:
+            learned = caster.skills.get(name)  # 0..100
+        except Exception:
+            # Characters without a `skills` mapping should not error
+            learned = None
+
+        if learned is not None:
+            # Success when roll <= learned (ROM practice mechanics)
+            if rng_mm.number_percent() > int(learned):
+                cooldowns[name] = skill.cooldown
+                caster.cooldowns = cooldowns
+                return False
+        else:
+            # Fallback: use failure_rate gate (legacy behavior)
+            # Convert float failure_rate (0.0..1.0) to percentage threshold 0..100
+            failure_threshold = int(round(skill.failure_rate * 100))
+            if rng_mm.number_percent() <= failure_threshold:
+                cooldowns[name] = skill.cooldown
+                caster.cooldowns = cooldowns
+                return False
             cooldowns[name] = skill.cooldown
             caster.cooldowns = cooldowns
             return False

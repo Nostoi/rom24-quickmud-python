@@ -311,13 +311,11 @@ TASKS:
   RATIONALE: Prevent regressions to Python stdlib RNG in parity paths.
   FILES: .github/workflows/ci.yml
 
-- [P1] Port dice(n,size) helper with ROM semantics
-  - rationale: Many combat effects roll dice; parity requires inclusive 1..size and sum of number_range
-  - files: mud/utils/rng_mm.py (add dice), callsites as needed
-  - tests: tests/test_rng_and_ccompat.py::test_dice_matches_rom
-  - acceptance_criteria: dice(2,6) boundaries and distribution align with C dice
-  - references: C src/db.c:dice L3716-L3739
-  - priority: P1; estimate: S; risk: low
+- ✅ [P1] Port dice(n,size) helper with ROM semantics — done 2025-09-12
+  EVIDENCE: PY mud/utils/rng_mm.py:dice
+  EVIDENCE: TEST tests/test_rng_dice.py::test_dice_rom_special_cases_and_boundaries; tests/test_rng_dice.py::test_dice_matches_sum_of_number_range_calls
+  REFERENCES: C src/db.c:dice L3716-L3739
+  RATIONALE: ROM dice sums number_range(1,size); special-cases size==0→0 and size==1→number.
 - [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
@@ -338,13 +336,11 @@ TASKS:
   - files: mud/skills/registry.py; tests/test_skills.py; tests/test_skill_registry.py
   - acceptance_criteria: failure triggers when number_percent() ≤ threshold; test asserts deterministic failure by forcing threshold=100
   - references: C src/skills.c (do_practice, success/failure checks)
-- [P1] Use learned% for success when available; fallback to failure_rate until learned is wired
-  - rationale: ROM uses per-character learned percent (tables.c/skills.c)
-  - files: mud/models/skill.py (add learned on Skill or per-character learned map), mud/skills/registry.py (success gate), tests/test_skills.py
-  - tests: inject RNG to force boundary cases (1 and 100); success when roll ≤ learned
-  - acceptance_criteria: with learned=75, roll=75 succeeds; roll=76 fails
-  - estimate: M; risk: medium
-  - references: C src/skills.c:do_practice; src/magic.c:saves_spell (percent gating)
+- ✅ [P1] Use learned% for success when available; fallback to failure_rate until learned is wired — done 2025-09-12
+  EVIDENCE: PY mud/skills/registry.py:SkillRegistry.use
+  EVIDENCE: TEST tests/test_skills_learned.py::test_learned_percent_gates_success_boundary
+  REFERENCES: C src/skills.c:do_practice; C src/magic.c:saves_spell (percent gating)
+  RATIONALE: Per-character learned% gates success when present; preserves legacy failure_rate when absent.
 - [P2] Coverage ≥80% for skills
   - acceptance_criteria: coverage report ≥80% for mud/skills/registry.py and handlers
 NOTES:
