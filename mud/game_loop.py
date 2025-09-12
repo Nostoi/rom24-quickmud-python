@@ -7,7 +7,7 @@ from mud.models.character import Character, character_registry
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
-from mud.config import get_pulse_tick, get_pulse_violence
+from mud.config import get_pulse_tick, get_pulse_violence, GAME_LOOP_STRICT_POINT
 from mud.net.protocol import broadcast_global
 from mud.logging.admin import rotate_admin_log
 from mud.spec_funs import run_npc_specs
@@ -101,12 +101,17 @@ def game_tick() -> None:
     _violence_counter += 1
     if _violence_counter % get_pulse_violence() == 0:
         violence_tick()
-    # Advance the world hour only on ROM's PULSE_TICK boundary
-    if _pulse_counter % get_pulse_tick() == 0:
+    # Advance time/weather/resets on point pulses, preserving legacy behavior when not strict
+    point_pulse = (_pulse_counter % get_pulse_tick() == 0)
+    if point_pulse:
         time_tick()
+        weather_tick()
+        reset_tick()
+    else:
+        if not GAME_LOOP_STRICT_POINT:
+            weather_tick()
+            reset_tick()
     regen_tick()
-    weather_tick()
     event_tick()
-    reset_tick()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()

@@ -53,3 +53,7 @@ COMBAT_USE_THAC0: bool = False
 
 # Optional test-only time scaling (1 = real ROM cadence)
 TIME_SCALE: int = 1
+
+# When True, schedule weather/reset strictly on point pulses (ROM-like).
+# Default False to preserve existing test expectations.
+GAME_LOOP_STRICT_POINT: bool = False

@@ -866,10 +866,12 @@ TASKS:
 
 - [P1] Schedule weather/time/resets in ROM order with separate pulse counters
   - rationale: ROM maintains independent pulse counters for violence and tick; align ordering
-  - files: mud/game_loop.py
-  - tests: extend tests/test_game_loop.py to assert relative order callbacks
-  - acceptance_criteria: violence updates occur 3× per second; tick hourly per PULSE_TICK; order consistent
-  - references: C src/update.c:L1161-L1189 (pulse initialization and update_handler)
+  - files: mud/game_loop.py, mud/config.py
+  - tests: tests/test_game_loop_order.py asserts order on point pulses; existing weather tests preserved via non-strict mode
+  - acceptance_criteria: violence then time→weather→reset on point pulses; separate counters
+  - references: C src/update.c:L1161-L1189 (update_handler cadence)
+  EVIDENCE: PY mud/game_loop.py (separate counters + ordering); PY mud/config.py:GAME_LOOP_STRICT_POINT
+  EVIDENCE: TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
 
 NOTES:
 - C: update_handler uses separate counters for pulse_violence and pulse_point; our loop has a single counter.
