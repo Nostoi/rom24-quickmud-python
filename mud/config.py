@@ -32,6 +32,22 @@ def get_pulse_tick() -> int:
     # Ensure at least 1 pulse per tick when scaled up
     return max(1, base // scale)
 
+
+def get_pulse_violence() -> int:
+    """Return pulses per violence update (ROM PULSE_VIOLENCE).
+
+    ROM sets PULSE_VIOLENCE = 3 * PULSE_PER_SECOND.
+    Honor TIME_SCALE in the same way as ticks by dividing the base.
+    """
+    scale = max(1, int(os.getenv("TIME_SCALE", os.getenv("MUD_TIME_SCALE", "1")) or 1))
+    try:
+        from mud import config as _cfg
+        scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
+    except Exception:
+        pass
+    base = 3 * PULSE_PER_SECOND
+    return max(1, base // scale)
+
 # Feature flags
 COMBAT_USE_THAC0: bool = False
 

@@ -853,12 +853,14 @@ NOTES:
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.70)
 KEY RISKS: tick_cadence, wait_daze_consumption
 TASKS:
-- [P1] Decrement wait/daze on PULSE_VIOLENCE cadence
-  - rationale: ROM reduces ch->wait and ch->daze by PULSE_VIOLENCE each violence pulse
-  - files: mud/game_loop.py (introduce violence pulse counter), mud/models/character.py (fields wait/daze), mud/config.py (PULSE_VIOLENCE)
-  - tests: tests/test_game_loop.py add case verifying wait/daze reduce on cadence
-  - acceptance_criteria: after N pulses, wait/daze hit zero matching UMAX(0, value - PULSE_VIOLENCE)
-  - references: C src/fight.c:L193-L196 (UMAX wait/daze decrement); C src/update.c:L1180-L1189 (pulse_violence/pulse_point scheduling)
+- ✅ [P1] Decrement wait/daze on PULSE_VIOLENCE cadence — done 2025-09-12
+  - rationale: ROM reduces ch->wait and ch->daze on violence pulses
+  - files: mud/game_loop.py (violence_tick + counter), mud/models/character.py (add daze), mud/config.py (get_pulse_violence)
+  - tests: tests/test_game_loop_wait_daze.py verifies wait/daze decrement and floor at zero
+  - acceptance_criteria: after N pulses, wait/daze reach zero
+  - references: C src/fight.c:L180-L200 (UMAX wait/daze decrement); C src/update.c:L1166-L1189 (pulse_violence scheduling)
+  EVIDENCE: PY mud/game_loop.py:L73-L112; PY mud/config.py:get_pulse_violence; PY mud/models/character.py (daze)
+  EVIDENCE: TEST tests/test_game_loop_wait_daze.py::test_wait_and_daze_decrement_on_violence_pulse
 
 - [P1] Schedule weather/time/resets in ROM order with separate pulse counters
   - rationale: ROM maintains independent pulse counters for violence and tick; align ordering

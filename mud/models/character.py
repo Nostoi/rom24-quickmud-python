@@ -91,6 +91,8 @@ class Character:
     wiznet: int = 0
     # Wait-state (pulses) applied by actions like movement (ROM WAIT_STATE)
     wait: int = 0
+    # Daze (pulses) — separate action delay used by ROM combat
+    daze: int = 0
     # Armor class per index [AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC]
     armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
     # Per-character command aliases: name -> expansion (pre-dispatch)

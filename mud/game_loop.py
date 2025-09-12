@@ -7,7 +7,7 @@ from mud.models.character import Character, character_registry
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
-from mud.config import get_pulse_tick
+from mud.config import get_pulse_tick, get_pulse_violence
 from mud.net.protocol import broadcast_global
 from mud.logging.admin import rotate_admin_log
 from mud.spec_funs import run_npc_specs
@@ -80,12 +80,27 @@ def time_tick() -> None:
 
 
 _pulse_counter = 0
+_violence_counter = 0
+
+
+def violence_tick() -> None:
+    """Violence cadence updates: decrement wait/daze counters."""
+    for ch in list(character_registry):
+        ch.wait = max(0, int(getattr(ch, "wait", 0)) - 1)
+        # daze is optional in some tests; default to attr when present
+        if hasattr(ch, "daze"):
+            ch.daze = max(0, int(getattr(ch, "daze", 0)) - 1)
 
 
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter
+    global _pulse_counter, _violence_counter
     _pulse_counter += 1
+    # Violence cadence: decrement wait/daze on PULSE_VIOLENCE boundaries
+    # This mirrors ROM's update_handler calling violence_update.
+    _violence_counter += 1
+    if _violence_counter % get_pulse_violence() == 0:
+        violence_tick()
     # Advance the world hour only on ROM's PULSE_TICK boundary
     if _pulse_counter % get_pulse_tick() == 0:
         time_tick()
