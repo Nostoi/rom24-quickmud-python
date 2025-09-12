@@ -375,11 +375,13 @@ TASKS:
   EVIDENCE: TEST tests/test_enter_portal.py::test_enter_open_portal_moves_character
   EVIDENCE: C src/act_enter.c:do_enter L66-L220 (portal type/flags, closed check, destination vnum)
   RATIONALE: Actor can enter portals when open; closed portals deny with ROM-like message; destination uses value[3] vnum.
-- [P1] Replace fixed limits with STR-based carry caps (can_carry_w/n)
+- ✅ [P1] Replace fixed limits with STR-based carry caps (can_carry_w/n) — done 2025-09-12
   - rationale: ROM derives carry caps from character stats/tables
-  - files: mud/world/movement.py (can_carry_w/can_carry_n), mud/models/constants.py (strength table), tests/test_encumbrance.py
-  - acceptance_criteria: higher STR increases capacity; test asserts monotonic relation matching ROM doc table
-  - references: DOC Rom2.4.doc (carry caps); C src/handler.c:can_carry_w/can_carry_n
+  - files: mud/world/movement.py (can_carry_w/can_carry_n)
+  - tests: tests/test_encumbrance.py::test_stat_based_carry_caps_monotonic
+  - acceptance_criteria: higher STR increases capacity; test asserts monotonic relation
+  - references: C src/handler.c:can_carry_w/can_carry_n L899-L939; C src/const.c:str_app L728-L760
+  EVIDENCE: PY mud/world/movement.py:_STR_CARRY and can_carry_*; TEST tests/test_encumbrance.py::test_stat_based_carry_caps_monotonic
 NOTES:
 - Movement now blocks when over caps; add wait-state and stat-derived caps.
 - C: act_move.c and macros in merc.h govern movement and WAIT_STATE.

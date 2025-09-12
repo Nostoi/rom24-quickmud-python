@@ -16,12 +16,47 @@ dir_map: Dict[str, Direction] = {
 }
 
 
+# ROM str_app carry table (carry column only) for STR 0..25.
+# Source: src/const.c:str_app (third field), multiplied by 10 in handler.c.
+_STR_CARRY = [
+    0,   # 0
+    3, 3, 10, 25, 55,  # 1..5
+    80, 90, 100, 100, 115, 115, 130, 130, 140, 150, 165, 180, 200, 225, 250, 300, 350, 400, 450, 500,
+]
+
+
+def _get_curr_stat(ch: Character, idx: int) -> int | None:
+    stats = getattr(ch, "perm_stat", None) or []
+    if idx < len(stats) and stats[idx] > 0:
+        val = stats[idx]
+        return max(0, min(25, int(val)))
+    return None
+
+
 def can_carry_w(ch: Character) -> int:
-    return 100
+    """Carry weight capacity.
+
+    - If STR stat present: use ROM formula `str_app[STR].carry * 10 + level * 25`.
+    - Otherwise: preserve prior fixed cap (100) to avoid changing existing tests.
+    """
+    s = _get_curr_stat(ch, 0)  # STAT_STR
+    if s is None:
+        return 100
+    carry = _STR_CARRY[s]
+    return carry * 10 + ch.level * 25
 
 
 def can_carry_n(ch: Character) -> int:
-    return 30
+    """Carry number capacity.
+
+    - If DEX stat present: use ROM-like `MAX_WEAR + 2*DEX + level` (MAX_WEAR≈19).
+    - Otherwise: preserve prior fixed cap (30).
+    """
+    d = _get_curr_stat(ch, 1)  # STAT_DEX
+    if d is None:
+        return 30
+    MAX_WEAR = 19
+    return MAX_WEAR + 2 * d + ch.level
 
 
 def move_character(char: Character, direction: str) -> str:
