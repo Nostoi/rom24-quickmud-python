@@ -507,9 +507,11 @@ TASKS:
   - estimate: M; risk: medium
 - [P1] Support `#SPECIALS` section to wire spec_funs from areas
   - rationale: ROM areas bind `spec_fun` entries to mob/room prototypes
-  - files: mud/loaders/area_loader.py (add handler), mud/spec_funs.py (registration), tests/test_area_loader.py (specials parsing)
+  - files: mud/loaders/area_loader.py (add handler), mud/loaders/specials_loader.py (parser), mud/spec_funs.py (registration)
+  - tests: tests/test_area_specials.py asserts mapping and invocation via run_npc_specs
   - acceptance_criteria: at least one known SPECIAL from a canonical area maps to a registered Python spec_fun; test asserts registration
   - references: C src/db.c:new_load_area() (SPECIALS parsing); DOC doc/area.txt §#SPECIALS
+  EVIDENCE: PY mud/loaders/area_loader.py; PY mud/loaders/specials_loader.py; TEST tests/test_area_specials.py
 - [P2] Coverage ≥80% for area_format_loader
   - acceptance_criteria: coverage report ≥80% across loader modules
 NOTES:
