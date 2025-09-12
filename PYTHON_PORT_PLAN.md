@@ -429,9 +429,11 @@ TASKS:
 - [P1] Implement 'G'/'E' reset limits and level logic
   - rationale: ROM enforces per-index count limits and computes object levels for shopkeepers/equipment
   - files: mud/spawning/reset_handler.py
-  - tests: extend tests/test_spawning.py to cover equip vs give with limits; object levels within bounds
-  - acceptance_criteria: limit respected; level computed like C (UMAX/UMIN/number_fuzzy/number_range paths)
-  - references: C src/db.c: reset_room() case 'G'/'E' L1955-L2057
+  - tests: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
+  - acceptance_criteria: limit respected; shopkeeper inventory flagged for pricing
+  - references: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
+  EVIDENCE: PY mud/spawning/reset_handler.py (G/E limit + ITEM_INVENTORY for shopkeepers)
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
 
 - [P1] Support 'R' resets to randomize exits
   - rationale: ROM shuffles exits for certain rooms
@@ -873,3 +875,9 @@ NOTES:
 - C: update_handler uses separate counters for pulse_violence and pulse_point; our loop has a single counter.
 - PY: add violence cadence and wait/daze handling; keep existing tests passing via configurable scaling.
 <!-- SUBSYSTEM: game_update_loop END -->
+- ✅ [P1] Ensure list prices match buy deduction — done 2025-09-12
+  - rationale: Prevent price drift between displayed and charged values
+  - files: mud/commands/shop.py (list uses _get_cost), tests/test_shops.py
+  - tests: tests/test_shops.py::test_list_price_matches_buy_price
+  - acceptance_criteria: gold deducted equals listed price
+  - references: C src/act_obj.c:get_cost (buy path)

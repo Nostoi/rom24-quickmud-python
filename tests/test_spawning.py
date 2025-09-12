@@ -1,6 +1,8 @@
 from mud.world import initialize_world
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry
 from mud.spawning.reset_handler import reset_tick, RESET_TICKS
+from mud.models.room_json import ResetJson
+from mud.spawning.mob_spawner import spawn_mob
 
 
 def test_resets_populate_world():
@@ -69,7 +71,6 @@ def test_reset_R_randomizes_exit_order(monkeypatch):
     # Inject an R reset for this room into its area and apply
     area = room.area
     assert area is not None
-    from mud.models.room_json import ResetJson
     area.resets.append(ResetJson(command='R', arg1=room.vnum, arg2=count))
 
     seq = []
@@ -83,3 +84,26 @@ def test_reset_R_randomizes_exit_order(monkeypatch):
     apply_resets(area)
     after = room.exits
     assert after != original
+
+
+def test_reset_GE_limits_and_shopkeeper_inventory_flag():
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    room = room_registry[3001]
+    area = room.area; assert area is not None
+    # Narrow to controlled resets only
+    area.resets = []
+    # Spawn a shopkeeper (3000) in room 3001
+    area.resets.append(ResetJson(command='M', arg2=3000, arg4=room.vnum))
+    # Give two copies of lantern (3031) but limit to 1
+    area.resets.append(ResetJson(command='G', arg2=3031, arg3=1))
+    area.resets.append(ResetJson(command='G', arg2=3031, arg3=1))
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+    keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
+    assert keeper is not None
+    inv = [getattr(o.prototype, 'vnum', None) for o in getattr(keeper, 'inventory', [])]
+    assert inv.count(3031) == 1
+    # The inventory copy should be flagged as ITEM_INVENTORY (1<<18) on prototype
+    item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
+    assert getattr(item.prototype, 'extra_flags', 0) & (1 << 18)

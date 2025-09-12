@@ -18,6 +18,23 @@ def test_buy_from_grocer():
     assert any((obj.short_descr or '').lower().startswith('a hooded brass lantern') for obj in char.inventory)
 
 
+def test_list_price_matches_buy_price():
+    initialize_world('area/area.lst')
+    assert 3002 in shop_registry
+    char = create_test_character('Buyer', 3010)
+    char.gold = 100
+    out = process_command(char, 'list')
+    # Extract first price number from list output
+    import re
+    m = re.search(r"(\d+) gold", out)
+    assert m
+    price = int(m.group(1))
+    before = char.gold
+    name = 'lantern' if 'lantern' in out.lower() else out.split(':')[-1].split()[0]
+    out2 = process_command(char, f'buy {name}')
+    assert char.gold == before - price
+
+
 def test_sell_to_grocer():
     initialize_world('area/area.lst')
     char = create_test_character('Seller', 3010)

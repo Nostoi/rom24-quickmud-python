@@ -45,8 +45,28 @@ def apply_resets(area: Area) -> None:
                 logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
         elif cmd == 'G':
             obj_vnum = reset.arg2 or 0
+            limit = int(reset.arg3 or 1)
+            if not last_mob:
+                logging.warning('Invalid G reset %s (no LastMob)', obj_vnum)
+                continue
+            # Respect simple per-mob limit for this vnum
+            existing = [o for o in getattr(last_mob, 'inventory', [])
+                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            if len(existing) >= limit:
+                continue
             obj = spawn_object(obj_vnum)
-            if obj and last_mob:
+            if obj:
+                # Shopkeepers receive inventory copies
+                # Detect shopkeeper by registry since pShop not wired on prototype
+                try:
+                    from mud.registry import shop_registry
+                    is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+                except Exception:
+                    is_shopkeeper = False
+                if is_shopkeeper:
+                    ITEM_INVENTORY = 1 << 18
+                    if hasattr(obj.prototype, 'extra_flags'):
+                        obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
@@ -54,9 +74,26 @@ def apply_resets(area: Area) -> None:
                 logging.warning('Invalid G reset %s', obj_vnum)
         elif cmd == 'E':
             obj_vnum = reset.arg2 or 0
+            limit = int(reset.arg3 or 1)
             slot = reset.arg4 or 0
+            if not last_mob:
+                logging.warning('Invalid E reset %s (no LastMob)', obj_vnum)
+                continue
+            existing = [o for o in getattr(last_mob, 'inventory', [])
+                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            if len(existing) >= limit:
+                continue
             obj = spawn_object(obj_vnum)
-            if obj and last_mob:
+            if obj:
+                try:
+                    from mud.registry import shop_registry
+                    is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+                except Exception:
+                    is_shopkeeper = False
+                if is_shopkeeper:
+                    ITEM_INVENTORY = 1 << 18
+                    if hasattr(obj.prototype, 'extra_flags'):
+                        obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
