@@ -7,6 +7,7 @@ from mud.registry import room_registry, area_registry
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
 from .templates import MobInstance
+from mud.utils import rng_mm
 
 RESET_TICKS = 3
 
@@ -91,6 +92,18 @@ def apply_resets(area: Area) -> None:
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             # After population, set last_obj to the container (mirrors ROM behavior)
             last_obj = container_obj
+        elif cmd == 'R':
+            room_vnum = reset.arg1 or 0
+            max_dirs = int(reset.arg2 or 0)
+            room = room_registry.get(room_vnum)
+            if not room or not room.exits:
+                logging.warning("Invalid R reset %s", room_vnum)
+                continue
+            n = min(max_dirs, len(room.exits))
+            # Fisher–Yates-like partial shuffle matching ROM loop
+            for d0 in range(0, max(0, n - 1)):
+                d1 = rng_mm.number_range(d0, n - 1)
+                room.exits[d0], room.exits[d1] = room.exits[d1], room.exits[d0]
 
 
 def reset_area(area: Area) -> None:

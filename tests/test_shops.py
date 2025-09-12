@@ -35,3 +35,54 @@ def test_sell_to_grocer():
     assert any(
         (obj.short_descr or '').lower().startswith('a hooded brass lantern') for obj in keeper.inventory
     )
+
+
+def test_wand_staff_price_scales_with_charges_and_inventory_discount():
+    from mud.spawning.obj_spawner import spawn_object
+    from mud.spawning.mob_spawner import spawn_mob
+    from mud.models.constants import ItemType
+    initialize_world('area/area.lst')
+    # Move to a room and spawn an alchemist-type shopkeeper who buys wands
+    ch = create_test_character('Seller', 3001)
+    keeper = spawn_mob(3000)
+    assert keeper is not None
+    keeper.move_to_room(ch.room)
+
+    # Create a wand with partial charges: total=10, remaining=5
+    wand = spawn_object(3031)
+    assert wand is not None
+    wand.prototype.short_descr = 'a test wand'
+    wand.prototype.item_type = int(ItemType.WAND)
+    wand.prototype.cost = 100
+    vals = wand.prototype.value
+    vals[1] = 10  # total
+    vals[2] = 5   # remaining
+    ch.add_object(wand)
+
+    # Shop profit_sell for keeper 3000 is 15%; base sell price = 100*15/100 = 15
+    # With 5/10 charges remaining → 15 * 5 / 10 = 7 (integer division)
+    out = process_command(ch, 'sell wand')
+    assert out.endswith('7 gold.')
+
+    # If shop already has an inventory copy of the same wand, price halves
+    copy = spawn_object(3031)
+    assert copy is not None
+    copy.prototype.short_descr = 'a test wand'
+    copy.prototype.item_type = int(ItemType.WAND)
+    copy.prototype.cost = 100
+    copy.prototype.value[1] = 10
+    copy.prototype.value[2] = 5
+    # Mark as ITEM_INVENTORY using the port's bit (1<<18)
+    copy.prototype.extra_flags |= (1 << 18)
+    keeper.inventory.append(copy)
+
+    wand2 = spawn_object(3031)
+    wand2.prototype.short_descr = 'a test wand'
+    wand2.prototype.item_type = int(ItemType.WAND)
+    wand2.prototype.cost = 100
+    wand2.prototype.value[1] = 10
+    wand2.prototype.value[2] = 5
+    ch.add_object(wand2)
+    out2 = process_command(ch, 'sell wand')
+    # Base 15 → charge scaling 7 → inventory half → 3
+    assert out2.endswith('3 gold.')

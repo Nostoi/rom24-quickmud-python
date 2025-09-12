@@ -439,6 +439,8 @@ TASKS:
   - tests: new test asserting exit list permutation after reset on a room with R reset
   - acceptance_criteria: after reset_tick, specified rooms have exits permuted; stable when no R reset
   - references: C src/db.c: reset_room() case 'R' L2059-L2080
+  EVIDENCE: PY mud/spawning/reset_handler.py:L96-L109
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_R_randomizes_exit_order
 
 NOTES:
 - C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.
@@ -785,17 +787,17 @@ TASKS:
   EVIDENCE: TEST tests/test_healer.py::test_healer_denies_when_insufficient_gold
   EVIDENCE: C src/healer.c:do_heal L1-L220 (price list and services)
   RATIONALE: Minimal healer command wired; supports refresh/heal/mana with ROM-like pricing and denial message.
-- [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount
+- ✅ [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount — done 2025-09-12
   - rationale: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters)
-  - files: mud/commands/shop.py (price computation), mud/models/shop.py (profits/types)
-  - tests: extend tests/test_shops.py with fixtures verifying buy/sell prices and inventory discount behavior
+  - files: mud/commands/shop.py (price computation)
+  - tests: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
   - acceptance_criteria: prices match C for given shop setup (types, profits, inventory)
   - references: C src/act_obj.c:get_cost L2468-L2530
 
-- [P1] Adjust wand/staff prices by charges
+- ✅ [P1] Adjust wand/staff prices by charges — done 2025-09-12
   - rationale: ROM scales price by remaining charges; zero-charge quarter price
   - files: mud/commands/shop.py
-  - tests: add cases for staves/wands with different value[1]/value[2]
+  - tests: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
   - acceptance_criteria: price = base * remaining/total; zero-charge → price/4
   - references: C src/act_obj.c:get_cost L2516-L2528
 

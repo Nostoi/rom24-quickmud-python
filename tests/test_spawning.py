@@ -52,3 +52,34 @@ def test_reset_P_places_items_inside_container_in_midgaard():
     assert safe is not None
     safe_contents = [getattr(o.prototype, 'vnum', None) for o in getattr(safe, 'contained_items', [])]
     assert 3132 in safe_contents
+
+
+def test_reset_R_randomizes_exit_order(monkeypatch):
+    # Use a deterministic RNG to force swaps
+    from mud.utils import rng_mm
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    initialize_world('area/area.lst')
+    room = room_registry[3001]
+    original = list(room.exits)
+    # Ensure at least 3 slots considered
+    count = min(3, len(room.exits))
+    # Inject an R reset for this room into its area and apply
+    area = room.area
+    assert area is not None
+    from mud.models.room_json import ResetJson
+    area.resets.append(ResetJson(command='R', arg1=room.vnum, arg2=count))
+
+    seq = []
+    def fake_number_range(a, b):
+        # always pick the last index to maximize change
+        seq.append((a, b))
+        return b
+
+    monkeypatch.setattr(rng_mm, 'number_range', fake_number_range)
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+    after = room.exits
+    assert after != original
