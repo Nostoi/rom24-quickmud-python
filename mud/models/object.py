@@ -15,6 +15,7 @@ class Object:
     prototype: ObjIndex
     location: Optional['Room'] = None
     contained_items: List['Object'] = field(default_factory=list)
+    level: int = 0
 
     @property
     def name(self) -> Optional[str]:

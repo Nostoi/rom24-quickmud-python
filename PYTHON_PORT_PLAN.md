@@ -429,11 +429,11 @@ TASKS:
 - [P1] Implement 'G'/'E' reset limits and level logic
   - rationale: ROM enforces per-index count limits and computes object levels for shopkeepers/equipment
   - files: mud/spawning/reset_handler.py
-  - tests: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  - acceptance_criteria: limit respected; shopkeeper inventory flagged for pricing
+  - tests: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag; tests/test_reset_levels.py
+  - acceptance_criteria: limit respected; shopkeeper inventory flagged for pricing; object levels computed within expected ranges
   - references: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
-  EVIDENCE: PY mud/spawning/reset_handler.py (G/E limit + ITEM_INVENTORY for shopkeepers)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
+  EVIDENCE: PY mud/spawning/reset_handler.py (G/E limit + ITEM_INVENTORY + level compute)
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag; tests/test_reset_levels.py
 
 - [P1] Support 'R' resets to randomize exits
   - rationale: ROM shuffles exits for certain rooms
@@ -443,6 +443,7 @@ TASKS:
   - references: C src/db.c: reset_room() case 'R' L2059-L2080
   EVIDENCE: PY mud/spawning/reset_handler.py:L96-L109
   EVIDENCE: TEST tests/test_spawning.py::test_reset_R_randomizes_exit_order
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_uses_last_container_instance_when_multiple
 
 NOTES:
 - C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.

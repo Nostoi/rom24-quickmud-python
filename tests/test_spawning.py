@@ -86,6 +86,27 @@ def test_reset_R_randomizes_exit_order(monkeypatch):
     assert after != original
 
 
+def test_reset_P_uses_last_container_instance_when_multiple():
+    # Build a controlled sequence: two desks (3130) into Captain's Office (3142),
+    # then put a key (3123) into each using P after each O.
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    office = room_registry[3142]
+    area = office.area; assert area is not None
+    area.resets = []
+    office.contents.clear()
+    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
+    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
+    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
+    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+    desks = [o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130]
+    assert len(desks) == 2
+    counts = [sum(1 for it in getattr(d, 'contained_items', []) if getattr(getattr(it, 'prototype', None), 'vnum', None) == 3123) for d in desks]
+    assert counts == [1, 1]
+
+
 def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
     initialize_world('area/area.lst')

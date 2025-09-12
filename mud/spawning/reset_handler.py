@@ -12,6 +12,36 @@ from mud.utils import rng_mm
 RESET_TICKS = 3
 
 
+def _compute_object_level(obj: object, mob: object) -> int:
+    """Approximate ROM object level computation for G/E resets.
+
+    Mirrors src/db.c case 'G'/'E' for shopkeepers and equips (simplified):
+    - WAND: 10..20
+    - STAFF: 15..25
+    - ARMOR: 5..15
+    - WEAPON: 5..15
+    - TREASURE: 10..20
+    - Default: 0
+    For new-format objects, or unrecognized types, return 0.
+    """
+    try:
+        item_type = int(getattr(getattr(obj, 'prototype', None), 'item_type', 0))
+    except Exception:
+        item_type = 0
+    from mud.models.constants import ItemType
+    if item_type == int(ItemType.WAND):
+        return rng_mm.number_range(10, 20)
+    if item_type == int(ItemType.STAFF):
+        return rng_mm.number_range(15, 25)
+    if item_type == int(ItemType.ARMOR):
+        return rng_mm.number_range(5, 15)
+    if item_type == int(ItemType.WEAPON):
+        return rng_mm.number_range(5, 15)
+    if item_type == int(ItemType.TREASURE):
+        return rng_mm.number_range(10, 20)
+    return 0
+
+
 def apply_resets(area: Area) -> None:
     """Populate rooms based on simplified reset data."""
     last_mob = None
@@ -56,6 +86,7 @@ def apply_resets(area: Area) -> None:
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
+                obj.level = _compute_object_level(obj, last_mob)
                 # Shopkeepers receive inventory copies
                 # Detect shopkeeper by registry since pShop not wired on prototype
                 try:
@@ -85,6 +116,7 @@ def apply_resets(area: Area) -> None:
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
+                obj.level = _compute_object_level(obj, last_mob)
                 try:
                     from mud.registry import shop_registry
                     is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
