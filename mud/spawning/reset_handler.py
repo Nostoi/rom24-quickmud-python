@@ -160,6 +160,11 @@ def apply_resets(area: Area) -> None:
                 getattr(container_obj, 'contained_items').append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             # After population, set last_obj to the container (mirrors ROM behavior)
+            # Lock-state fix: reset container instance's value[1] to prototype's value[1]
+            try:
+                container_obj.value[1] = container_obj.prototype.value[1]
+            except Exception:
+                pass
             last_obj = container_obj
         elif cmd == 'R':
             room_vnum = reset.arg1 or 0

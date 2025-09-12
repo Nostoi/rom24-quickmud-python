@@ -56,6 +56,26 @@ def test_reset_P_places_items_inside_container_in_midgaard():
     assert 3132 in safe_contents
 
 
+def test_p_reset_lock_state_fix_resets_container_value_field():
+    # Ensure container instance's value[1] mirrors prototype after P population
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    office = room_registry[3142]
+    area = office.area; assert area is not None
+    area.resets = []
+    office.contents.clear()
+    # Spawn desk (3130), then put key (3123) to trigger P logic
+    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
+    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+    desk = next((o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130), None)
+    assert desk is not None
+    # Instance value[1] equals prototype value[1]
+    assert hasattr(desk, 'value')
+    assert desk.value[1] == desk.prototype.value[1]
+
+
 def test_reset_R_randomizes_exit_order(monkeypatch):
     # Use a deterministic RNG to force swaps
     from mud.utils import rng_mm

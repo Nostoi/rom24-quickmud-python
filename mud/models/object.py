@@ -16,6 +16,8 @@ class Object:
     location: Optional['Room'] = None
     contained_items: List['Object'] = field(default_factory=list)
     level: int = 0
+    # Instance values — copy of prototype.value for runtime mutations (e.g., locks/charges)
+    value: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
 
     @property
     def name(self) -> Optional[str]:
