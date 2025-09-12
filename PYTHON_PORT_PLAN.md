@@ -397,6 +397,12 @@ TASKS:
   EVIDENCE: TEST tests/test_help_conversion.py::test_convert_help_are_preserves_wizlock_entry
   EVIDENCE: DOC doc/area.txt § #HELPS (around L166-L190)
   EVIDENCE: ARE area/help.are (WIZLOCK/NEWLOCK entry around L920-990)
+- ✅ [P1] Add help sync target and CI drift check — done 2025-09-12
+  - rationale: Keep data/help.json synchronized with canonical area/help.are
+  - files: mud/scripts/convert_help_are_to_json.py; .github/workflows/ci.yml
+  - tests: reuse tests/test_help_system.py; CI step regenerates and verifies no diff
+  - references: DOC doc/area.txt § #HELPS; ARE area/help.are
+  EVIDENCE: CI .github/workflows/ci.yml ("Help data drift check" step)
 - [P2] Achieve ≥80% test coverage for help_system — acceptance: coverage report ≥80%
 NOTES:
 - Loader populates registry from JSON; dispatcher wires `help` command.
