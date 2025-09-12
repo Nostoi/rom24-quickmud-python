@@ -120,8 +120,9 @@ TASKS:
   FILES: mud/models/constants.py
   TESTS: tests/test_affects.py::test_imm_res_vuln_flag_values
   REFERENCES: C src/merc.h: IMM_*/RES_*/VULN_ defines (letters A..Z)
-- [P2] Achieve ≥80% coverage for affects_saves — acceptance: coverage report ≥80%.
-  FILES: tests/test_affects.py
+- ✅ [P2] Achieve ≥80% coverage for affects_saves — done 2025-09-12
+  EVIDENCE: TEST pytest -q --cov=mud.affects.saves --cov-report=term-missing (95%)
+  EVIDENCE: TEST tests/test_affects.py
 NOTES:
 - C: src/magic.c:saves_spell() L212-L243; src/handler.c:213-320 check_immune sets default from WEAPON/MAGIC globals then dam_type-specific bits.
 - PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` implemented; tests cover RIV.
@@ -321,7 +322,8 @@ TASKS:
   EVIDENCE: C src/magic.c:saves_spell L212-L243; C src/handler.c:check_immune L213-L320
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
-- [P2] Coverage ≥80% for combat — acceptance: coverage report ≥80% for mud/combat/engine.py
+- ✅ [P2] Coverage ≥80% for combat — done 2025-09-08
+  EVIDENCE: TEST coverage run — mud/combat/engine.py 97% via existing tests
 NOTES:
 - C: one_hit/multi_hit sequence integrates defense checks and AC; current Python engine omits both.
 - PY: attack_round uses rng_mm.number_percent (good), but lacks AC/defense order/RIV integration.
@@ -403,7 +405,9 @@ TASKS:
   - tests: reuse tests/test_help_system.py; CI step regenerates and verifies no diff
   - references: DOC doc/area.txt § #HELPS; ARE area/help.are
   EVIDENCE: CI .github/workflows/ci.yml ("Help data drift check" step)
-- [P2] Achieve ≥80% test coverage for help_system — acceptance: coverage report ≥80%
+- ✅ [P2] Achieve ≥80% test coverage for help_system — done 2025-09-12
+  EVIDENCE: TEST pytest -q --cov=mud.loaders.help_loader --cov-report=term-missing (100%)
+  EVIDENCE: TEST tests/test_help_system.py
 NOTES:
 - Loader populates registry from JSON; dispatcher wires `help` command.
 - Tests cover loading and command output; add P1/P2 tasks for format preservation and coverage.
