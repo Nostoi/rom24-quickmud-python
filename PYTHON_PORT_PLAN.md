@@ -45,8 +45,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Next Actions (Aggregated P0s)
 <!-- NEXT-ACTIONS-START -->
-- [P0][movement_encumbrance] Implement enter/portal/gate flows per act_enter.c and door/exit checks.
-- [P0][shops_economy] Mirror get_cost() profit/charges adjustments in shop pricing.
+<!-- no open [P0] tasks this run -->
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -316,7 +315,10 @@ TASKS:
   EVIDENCE: TEST tests/test_rng_dice.py::test_dice_rom_special_cases_and_boundaries; tests/test_rng_dice.py::test_dice_matches_sum_of_number_range_calls
   REFERENCES: C src/db.c:dice L3716-L3739
   RATIONALE: ROM dice sums number_range(1,size); special-cases size==0→0 and size==1→number.
-- [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — acceptance: unit test verifies damage halving/doubling rules prior to on-hit procs.
+- ✅ [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — done 2025-09-12
+  EVIDENCE: PY mud/combat/engine.py:L63-L88 (RIV scaling and on_hit order)
+  EVIDENCE: TEST tests/test_combat.py::test_riv_scaling_applies_before_side_effects
+  EVIDENCE: C src/magic.c:saves_spell L212-L243; C src/handler.c:check_immune L213-L320
   EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
 - [P2] Coverage ≥80% for combat — acceptance: coverage report ≥80% for mud/combat/engine.py
@@ -390,7 +392,11 @@ TASKS:
   EVIDENCE: mud/loaders/help_loader.py:L1-L17; tests/test_help_system.py::test_load_help_file_populates_registry
 - ✅ [P0] Wire `help` command into dispatcher — acceptance: test runs `help murder` and receives topic text — done 2025-09-08
   EVIDENCE: mud/commands/dispatcher.py:L18-L56; tests/test_help_system.py::test_help_command_returns_topic_text
-- [P1] Preserve ROM help file widths in JSON conversion — acceptance: golden file matches `help.are`
+- ✅ [P1] Preserve ROM help file widths in JSON conversion — done 2025-09-12
+  EVIDENCE: PY mud/scripts/convert_help_are_to_json.py:parse_help_are
+  EVIDENCE: TEST tests/test_help_conversion.py::test_convert_help_are_preserves_wizlock_entry
+  EVIDENCE: DOC doc/area.txt § #HELPS (around L166-L190)
+  EVIDENCE: ARE area/help.are (WIZLOCK/NEWLOCK entry around L920-990)
 - [P2] Achieve ≥80% test coverage for help_system — acceptance: coverage report ≥80%
 NOTES:
 - Loader populates registry from JSON; dispatcher wires `help` command.
