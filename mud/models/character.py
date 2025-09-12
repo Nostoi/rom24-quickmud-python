@@ -97,6 +97,10 @@ class Character:
     armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
     # Per-character command aliases: name -> expansion (pre-dispatch)
     aliases: Dict[str, str] = field(default_factory=dict)
+    # Optional defense chances (percent) for parity-friendly tests
+    shield_block_chance: int = 0
+    parry_chance: int = 0
+    dodge_chance: int = 0
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"

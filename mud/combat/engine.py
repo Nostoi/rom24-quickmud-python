@@ -105,16 +105,31 @@ def on_hit_effects(attacker: Character, victim: Character, damage: int) -> None:
 
 
 # --- Defense checks (override in tests as needed) ---
-def check_shield_block(attacker: Character, victim: Character) -> bool:  # pragma: no cover - default stub
-    return False
+def check_shield_block(attacker: Character, victim: Character) -> bool:
+    """Basic shield block chance using victim.shield_block_chance (percent).
+
+    Defaults to 0 if not set. Uses rng_mm.number_percent() ≤ chance.
+    """
+    chance = getattr(victim, "shield_block_chance", 0) or 0
+    if chance <= 0:
+        return False
+    return rng_mm.number_percent() <= chance
 
 
-def check_parry(attacker: Character, victim: Character) -> bool:  # pragma: no cover - default stub
-    return False
+def check_parry(attacker: Character, victim: Character) -> bool:
+    """Basic parry chance using victim.parry_chance (percent)."""
+    chance = getattr(victim, "parry_chance", 0) or 0
+    if chance <= 0:
+        return False
+    return rng_mm.number_percent() <= chance
 
 
-def check_dodge(attacker: Character, victim: Character) -> bool:  # pragma: no cover - default stub
-    return False
+def check_dodge(attacker: Character, victim: Character) -> bool:
+    """Basic dodge chance using victim.dodge_chance (percent)."""
+    chance = getattr(victim, "dodge_chance", 0) or 0
+    if chance <= 0:
+        return False
+    return rng_mm.number_percent() <= chance
 
 
 # --- AC mapping helpers ---

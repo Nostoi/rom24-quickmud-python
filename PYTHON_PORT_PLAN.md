@@ -324,6 +324,11 @@ TASKS:
   FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
 - ✅ [P2] Coverage ≥80% for combat — done 2025-09-08
   EVIDENCE: TEST coverage run — mud/combat/engine.py 97% via existing tests
+ - ✅ [P1] Wire basic shield/parry/dodge probabilities (test-only flags) — done 2025-09-12
+  EVIDENCE: PY mud/combat/engine.py:check_shield_block/check_parry/check_dodge
+  EVIDENCE: PY mud/models/character.py (defense chance fields)
+  EVIDENCE: TEST tests/test_combat_defenses_prob.py
+  RATIONALE: Provide parity-aligned hooks and ordering without requiring full skill system; probabilities default to 0.
 NOTES:
 - C: one_hit/multi_hit sequence integrates defense checks and AC; current Python engine omits both.
 - PY: attack_round uses rng_mm.number_percent (good), but lacks AC/defense order/RIV integration.
