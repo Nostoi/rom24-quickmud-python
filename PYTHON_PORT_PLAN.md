@@ -830,12 +830,15 @@ TASKS:
   EVIDENCE: TEST tests/test_commands.py::test_scan_lists_adjacent_characters_rom_style; ::test_scan_directional_depth_rom_style
   NOTES: Minimal parity: visibility/invisibility checks are not yet modeled; add later if required by tests.
 
-- [P1] Align abbreviation semantics with ROM
-  - rationale: ROM allows 1–2 letter abbreviations based on command table order and str_prefix matching
-  - files: mud/commands/dispatcher.py (resolve_command); ensure unambiguous prefix selection mirrors ROM behavior
-  - tests: add cases where multiple commands share prefix; behavior matches ROM (first match)
+- ✅ [P1] Align abbreviation semantics with ROM — done 2025-09-12
+  - rationale: ROM allows 1–2+ letter abbreviations via str_prefix; resolution picks the first command in table order
+  - files: mud/commands/dispatcher.py (resolve_command, added exits registration); mud/commands/inspection.py (do_exits)
+  - tests: tests/test_command_abbrev.py asserts 'ex' → exits and 'sa' → say (first in table order)
   - acceptance_criteria: specific abbreviation examples resolve as in C table (e.g., 'ex' → exits)
-  - references: C src/interp.c: command table ordering and str_prefix usage L40-L130 and usage in check_social/interpret
+  - references: C src/interp.c (str_prefix/command table order), check_social/interpret
+  EVIDENCE: PY mud/commands/dispatcher.py:L29-L33 (exits command registration), L69-L75 (prefix resolution)
+  EVIDENCE: PY mud/commands/inspection.py:do_exits
+  EVIDENCE: TEST tests/test_command_abbrev.py::{test_ex_abbreviation_resolves_to_exits_command,test_prefix_tie_breaker_uses_first_in_table_order_for_say}
 
 NOTES:
 - C: interpret() gates by `ch->position` vs command `position`, returning specific strings; Python now mirrors this for representative commands.

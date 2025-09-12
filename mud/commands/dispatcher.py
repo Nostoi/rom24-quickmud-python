@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional
 
 from mud.models.character import Character
 from .movement import do_north, do_south, do_east, do_west, do_up, do_down, do_enter
-from .inspection import do_look, do_scan
+from .inspection import do_look, do_scan, do_exits
 from .inventory import do_get, do_drop, do_inventory, do_equipment
 from .communication import do_say, do_tell, do_shout
 from .combat import do_kill
@@ -55,6 +55,7 @@ COMMANDS: List[Command] = [
 
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
+    Command("exits", do_exits, aliases=("ex",), min_position=Position.RESTING),
     Command("get", do_get, aliases=("g",), min_position=Position.RESTING),
     Command("drop", do_drop, min_position=Position.RESTING),
     Command("inventory", do_inventory, aliases=("inv",), min_position=Position.DEAD),
@@ -114,10 +115,10 @@ def resolve_command(name: str) -> Optional[Command]:
     name = name.lower()
     if name in COMMAND_INDEX:
         return COMMAND_INDEX[name]
+    # ROM str_prefix behavior: choose the first command in table order
+    # whose name starts with the provided prefix. If none match, return None.
     matches = [cmd for cmd in COMMANDS if cmd.name.startswith(name)]
-    if len(matches) == 1:
-        return matches[0]
-    return None
+    return matches[0] if matches else None
 
 
 def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> str:
