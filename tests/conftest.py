@@ -27,3 +27,22 @@ def movable_char_factory():
         return ch
 
     return _factory
+
+@pytest.fixture
+def movable_mob_factory():
+    """Factory fixture that spawns a mob and ensures it can move.
+
+    Example:
+        mob = movable_mob_factory(3000, 3001, points=150)
+    """
+    from mud.spawning.mob_spawner import spawn_mob
+    from mud.registry import room_registry
+
+    def _factory(vnum: int, room_vnum: int, *, points: int = 100):
+        mob = spawn_mob(vnum)
+        room = room_registry[room_vnum]
+        room.add_mob(mob)
+        _ensure_can_move_helper(mob, points)
+        return mob
+
+    return _factory

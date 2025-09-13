@@ -1,13 +1,11 @@
 from mud.world import initialize_world, create_test_character
 from mud.agent.character_agent import CharacterAgentAdapter
-from mud.spawning.mob_spawner import spawn_mob
 from mud.registry import room_registry
 
 
-def test_character_agent_actions(ensure_can_move):
+def test_character_agent_actions(movable_char_factory):
     initialize_world('area/area.lst')
-    char = create_test_character('Tester', 3001)
-    ensure_can_move(char)
+    char = movable_char_factory('Tester', 3001)
     adapter = CharacterAgentAdapter(char)
     obs = adapter.get_observation()
     assert obs['name'] == 'Tester'
@@ -21,12 +19,9 @@ def test_character_agent_actions(ensure_can_move):
     assert char.room.vnum != 3001
 
 
-def test_mob_agent_movement(ensure_can_move):
+def test_mob_agent_movement(movable_mob_factory):
     initialize_world('area/area.lst')
-    mob = spawn_mob(3000)
-    room = room_registry[3001]
-    room.add_mob(mob)
-    ensure_can_move(mob)
+    mob = movable_mob_factory(3000, 3001)
     adapter = CharacterAgentAdapter(mob)
     move_result = adapter.perform_action('move', ['north'])
     assert mob.room.vnum != 3001

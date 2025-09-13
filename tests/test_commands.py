@@ -5,10 +5,9 @@ from mud.registry import room_registry
 from mud.models.constants import Position
 
 
-def test_process_command_sequence(ensure_can_move):
+def test_process_command_sequence(movable_char_factory):
     initialize_world('area/area.lst')
-    char = create_test_character('Tester', 3001)
-    ensure_can_move(char)
+    char = movable_char_factory('Tester', 3001)
     sword = spawn_object(3022)
     assert sword is not None
     char.room.add_object(sword)
@@ -32,10 +31,9 @@ def test_process_command_sequence(ensure_can_move):
     assert f"{char.name} says, 'hello'" in other.messages
 
 
-def test_equipment_command(ensure_can_move):
+def test_equipment_command(movable_char_factory):
     initialize_world('area/area.lst')
-    char = create_test_character('Tester', 3001)
-    ensure_can_move(char)
+    char = movable_char_factory('Tester', 3001)
     sword = spawn_object(3022)
     assert sword is not None
     char.add_object(sword)
@@ -45,10 +43,9 @@ def test_equipment_command(ensure_can_move):
     assert 'wield' in out
 
 
-def test_abbreviations_and_quotes(ensure_can_move):
+def test_abbreviations_and_quotes(movable_char_factory):
     initialize_world('area/area.lst')
-    char = create_test_character('Tester', 3001)
-    ensure_can_move(char)
+    char = movable_char_factory('Tester', 3001)
 
     out1 = process_command(char, 'l')
     assert 'Temple' in out1
