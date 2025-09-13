@@ -46,3 +46,25 @@ jobs:
         run: mypy mud/net/ansi.py mud/net/protocol.py mud/net/connection.py mud/security/hash_utils.py --follow-imports=skip
       - name: Test
         run: pytest --cov=mud --cov-report=term --cov-fail-under=80
+
+  telnet-tests:
+    name: Telnet Server Tests (Linux-only)
+    runs-on: ubuntu-latest
+    if: runner.os == 'Linux'
+    timeout-minutes: 5
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          check-latest: true
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install project
+        run: pip install -e .[dev] || pip install -e .
+      - name: Run telnet tests with timeout
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          pytest -q -k telnet_server tests/test_telnet_server.py -q
