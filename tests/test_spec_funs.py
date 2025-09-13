@@ -2,6 +2,7 @@ from mud.spec_funs import get_spec_fun, register_spec_fun, spec_fun_registry, ru
 from mud.world import initialize_world, create_test_character
 from mud.spawning.mob_spawner import spawn_mob
 from mud.registry import mob_registry
+from mud.utils import rng_mm
 
 
 def test_case_insensitive_lookup() -> None:
@@ -53,6 +54,27 @@ def test_registry_executes_function():
     finally:
         spec_fun_registry.clear()
         spec_fun_registry.update(prev)
+
+
+def test_spec_cast_adept_rng():
+    """RNG sequence parity anchor for spec_cast_adept using Mitchell–Moore.
+
+    Seeds the MM generator and verifies the first several number_percent
+    outputs match known-good values derived from ROM semantics. Also asserts
+    that spec_cast_adept returns True/False in lockstep with a <=25 threshold
+    over that sequence, proving it uses rng_mm.number_percent().
+    """
+    from mud.spec_funs import spec_cast_adept
+
+    rng_mm.seed_mm(12345)
+    expected = [24, 97, 90, 83, 45, 44, 43, 87, 2, 89]
+    produced = [rng_mm.number_percent() for _ in range(len(expected))]
+    assert produced == expected
+
+    # Re-seed and check spec behavior corresponds to the same sequence
+    rng_mm.seed_mm(12345)
+    outcomes = [spec_cast_adept(object()) for _ in range(len(expected))]
+    assert outcomes == [v <= 25 for v in expected]
 
 
 def test_mob_spec_fun_invoked():

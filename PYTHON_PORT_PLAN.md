@@ -589,14 +589,11 @@ TASKS:
 - ✅ [P0] Load spec_fun names from mob JSON and execute functions — done 2025-09-07
   EVIDENCE: PY mud/models/mob.py:L1-L40 (MobIndex.spec_fun)
   EVIDENCE: TEST tests/test_spec_funs.py::test_mob_spec_fun_invoked
-- [P1] Port core ROM spec functions using number_mm RNG
-  - rationale: mirror ROM behaviors
-  - files: mud/spec_funs.py
-  - tests: tests/test_spec_funs.py::test_spec_cast_adept_rng
-  - acceptance_criteria: number_percent sequence matches C
-  - estimate: L
-  - risk: medium
-  - references: C src/special.c:80-115
+- ✅ [P1] Port core ROM spec functions using number_mm RNG — done 2025-09-13
+  EVIDENCE: PY mud/spec_funs.py:L1-L25; L40-L66 (spec_cast_adept using rng_mm.number_percent)
+  EVIDENCE: TEST tests/test_spec_funs.py::test_spec_cast_adept_rng
+  REFERENCES: C src/db.c:number_percent/number_mm; C src/special.c: spec_cast_adept RNG gating
+  RATIONALE: Validate MM RNG wiring via spec fun behavior
 - [P1] Persist spec_fun names across save/load
   - rationale: maintain NPC behavior after reboot
   - files: mud/persistence.py

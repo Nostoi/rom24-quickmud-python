@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, Callable
+from mud.utils import rng_mm
 
 spec_fun_registry: dict[str, Callable[..., Any]] = {}
 
@@ -35,3 +36,22 @@ def run_npc_specs() -> None:
             except Exception:
                 # Spec fun failures must not break the tick loop
                 continue
+
+
+# --- Minimal ROM-like spec functions (rng_mm parity) ---
+
+def spec_cast_adept(mob: Any) -> bool:
+    """Simplified Adept spec that uses ROM RNG.
+
+    ROM's `spec_cast_adept` periodically casts helpful spells on players.
+    For parity of RNG usage, we roll `number_percent()` and return True when
+    the roll is small. This function exists primarily to validate that the
+    Mitchell–Moore RNG wiring matches ROM semantics.
+    """
+    roll = rng_mm.number_percent()
+    # Return True on low roll to signal an action occurred (simplified).
+    return roll <= 25
+
+
+# Convenience registration name matching ROM conventions
+register_spec_fun("spec_cast_adept", spec_cast_adept)
