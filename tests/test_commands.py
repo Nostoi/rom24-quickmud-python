@@ -8,8 +8,8 @@ from mud.models.constants import Position
 def test_process_command_sequence():
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    # Ensure movement points for directional command assertions
-    char.move = char.max_move = 100
+    from tests.helpers import ensure_can_move
+    ensure_can_move(char)
     sword = spawn_object(3022)
     assert sword is not None
     char.room.add_object(sword)
@@ -36,8 +36,8 @@ def test_process_command_sequence():
 def test_equipment_command():
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    # Ensure movement points for abbreviation-based movement
-    char.move = char.max_move = 100
+    from tests.helpers import ensure_can_move
+    ensure_can_move(char)
     sword = spawn_object(3022)
     assert sword is not None
     char.add_object(sword)

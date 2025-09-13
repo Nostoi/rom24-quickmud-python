@@ -2,13 +2,13 @@ from mud.world import initialize_world, create_test_character
 from mud.agent.character_agent import CharacterAgentAdapter
 from mud.spawning.mob_spawner import spawn_mob
 from mud.registry import room_registry
+from tests.helpers import ensure_can_move
 
 
 def test_character_agent_actions():
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    # Ensure the test character can move (ROM requires positive move points)
-    char.move = char.max_move = 100
+    ensure_can_move(char)
     adapter = CharacterAgentAdapter(char)
     obs = adapter.get_observation()
     assert obs['name'] == 'Tester'
@@ -27,10 +27,7 @@ def test_mob_agent_movement():
     mob = spawn_mob(3000)
     room = room_registry[3001]
     room.add_mob(mob)
-    # Ensure the mob has movement points and required attrs for movement
-    mob.move = mob.max_move = 100
-    mob.affected_by = 0  # allow movement checks that read this flag
-    mob.wait = 0  # provide wait-state field used by movement
+    ensure_can_move(mob)
     adapter = CharacterAgentAdapter(mob)
     move_result = adapter.perform_action('move', ['north'])
     assert mob.room.vnum != 3001
