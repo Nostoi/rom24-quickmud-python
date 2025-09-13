@@ -47,3 +47,10 @@ portal_factory(3001, to_vnum=3054, closed=False)
 
 Guideline
 - Prefer these fixtures for new tests. If you see hand‑rolled object creation or room placement, consider replacing with `object_factory` / `place_object_factory` / `portal_factory` for consistency and clarity.
+
+Telnet Tests
+- Telnet tests open sockets and are marked with `@pytest.mark.telnet`.
+- CI runs them in a dedicated Linux-only job with a short timeout.
+- Run locally:
+  - Only telnet tests: `pytest -m telnet -q`
+  - With a timeout per test (optional): install `pytest-timeout` and run `pytest -m telnet --timeout=10`.

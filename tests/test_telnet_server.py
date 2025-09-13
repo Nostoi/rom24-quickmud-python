@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 from contextlib import suppress
 
 from mud.net.telnet_server import create_server
@@ -11,6 +12,7 @@ def setup_module(module):
     Base.metadata.create_all(engine)
 
 
+@pytest.mark.telnet
 def test_telnet_server_handles_look_command():
     async def run():
         server = await create_server(host="127.0.0.1", port=0)
@@ -51,6 +53,7 @@ def test_telnet_server_handles_look_command():
     asyncio.run(run())
 
 
+@pytest.mark.telnet
 def test_telnet_server_handles_multiple_connections():
     async def run():
         server = await create_server(host="127.0.0.1", port=0)

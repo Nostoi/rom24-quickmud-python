@@ -67,4 +67,4 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          pytest -q -k telnet_server tests/test_telnet_server.py -q
+          pytest -q -m telnet

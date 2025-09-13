@@ -32,3 +32,8 @@ mud = "mud.__main__:cli"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["mud*"]
+
+[tool.pytest.ini_options]
+markers = [
+  "telnet: Telnet server tests that open sockets",
+]
