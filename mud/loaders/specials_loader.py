@@ -43,3 +43,21 @@ def load_specials(tokenizer: BaseTokenizer, area) -> None:
                     proto.spec_fun = spec_name
     # No return value needed; registry updated in place
 
+
+def apply_specials_from_json(entries: list[dict]) -> None:
+    """Attach spec_fun names from a JSON "specials" list to mob prototypes.
+
+    Each entry must be a dict with keys: {"mob_vnum": int, "spec": str}.
+    Unknown vnums are ignored (matching ROM's tolerant loaders).
+    """
+    for entry in entries or []:
+        try:
+            vnum = int(entry.get("mob_vnum"))
+        except Exception:
+            continue
+        spec = entry.get("spec")
+        if not spec:
+            continue
+        proto = mob_registry.get(vnum)
+        if proto is not None:
+            proto.spec_fun = str(spec)

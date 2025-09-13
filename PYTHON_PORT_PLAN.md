@@ -579,8 +579,8 @@ NOTES:
 
 
 <!-- SUBSYSTEM: npc_spec_funs START -->
-### npc_spec_funs — Parity Audit 2025-09-07
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.78)
+### npc_spec_funs — Parity Audit 2025-09-13
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: side_effects
 TASKS:
 - ✅ [P0] Build spec_fun registry and invoke during NPC updates — done 2025-09-07
@@ -596,26 +596,22 @@ TASKS:
   EVIDENCE: TEST tests/test_spec_funs.py::test_spec_cast_adept_rng
   REFERENCES: C src/db.c:number_percent/number_mm; C src/special.c: spec_cast_adept RNG gating
   RATIONALE: Validate MM RNG wiring via spec fun behavior
-- [P1] Persist spec_fun names across save/load
-  - rationale: maintain NPC behavior after reboot
-  - files: mud/persistence.py
-  - tests: tests/test_spec_funs.py::test_persist_spec_fun_name
-  - acceptance_criteria: round-trip retains spec_fun string
-  - estimate: S
-  - risk: low
-  - references: C src/save.c:save_char_obj; PY mud/persistence.py:save_player
-  - Needs Clarification: Repository does not persist NPCs; `mud/persistence.py` saves players only. Propose scope: persist mob prototypes/spec_fun as part of area serialization or introduce NPC save file. Provide desired hook and format to implement and test.
-- [P2] Achieve ≥80% test coverage for npc_spec_funs
-  - rationale: ensure reliability
-  - files: tests/test_spec_funs.py
-  - tests: coverage report
-  - acceptance_criteria: coverage ≥80%
-  - estimate: M
-  - risk: low
+- ✅ [P1] Persist spec_fun names across area conversion & loader — done 2025-09-13
+  EVIDENCE: PY mud/scripts/convert_are_to_json.py:L1-L40; L70-L88 (emit specials list)
+  EVIDENCE: PY mud/loaders/specials_loader.py:L1-L25; L48-L76 (apply_specials_from_json)
+  EVIDENCE: TEST tests/test_are_conversion.py::{test_convert_are_includes_specials_section,test_apply_specials_from_json_overlays_spec_fun_on_prototypes}
+  EVIDENCE: C src/db.c: SPECIALS parsing (M <vnum> <spec>); DOC doc/area.txt §#SPECIALS; ARE area/haon.are §#SPECIALS
+  RATIONALE: Persist ROM SPECIALS mapping via conversion output and read-back helper.
+  FILES: mud/scripts/convert_are_to_json.py; mud/loaders/specials_loader.py; tests/test_are_conversion.py
+
+- ✅ [P2] Achieve ≥80% test coverage for npc_spec_funs — done 2025-09-13
+  EVIDENCE: TEST tests/test_spec_funs_extra.py::{test_get_spec_fun_case_insensitive_and_unknown_returns_none,test_run_npc_specs_ignores_errors}
+  EVIDENCE: COVERAGE `pytest -q --cov=mud.spec_funs --cov-report=term-missing` shows 100%
 NOTES:
 - C: src/update.c: mobile update path and special procedure calls; src/special.c common specs
 - PY: spec_fun registry exists and is now invoked each tick; game loop calls run_npc_specs()
 - Applied tiny fix: spec runner now uses central mud.registry.room_registry to avoid duplicate registries
+ - Applied tiny fix: added JSON read-back helper for specials (mud/loaders/specials_loader.py:apply_specials_from_json)
 <!-- SUBSYSTEM: npc_spec_funs END -->
 
 <!-- SUBSYSTEM: logging_admin START -->

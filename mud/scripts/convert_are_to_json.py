@@ -79,6 +79,11 @@ def convert_area(path: str) -> dict:
     rooms = [room_to_dict(r) for r in room_registry.values() if r.area is area]
     mobiles = [mob_to_dict(m) for m in mob_registry.values() if m.area is area]
     objects = [object_to_dict(o) for o in obj_registry.values() if o.area is area]
+    # Extract #SPECIALS mapping from prototypes for persistence
+    specials: list[dict] = []
+    for m in mob_registry.values():
+        if m.area is area and getattr(m, "spec_fun", None):
+            specials.append({"mob_vnum": m.vnum, "spec": str(m.spec_fun)})
 
     data = {
         "name": area.name or "",
@@ -87,6 +92,7 @@ def convert_area(path: str) -> dict:
         "rooms": rooms,
         "mobiles": mobiles,
         "objects": objects,
+        "specials": specials,
     }
     return data
 
