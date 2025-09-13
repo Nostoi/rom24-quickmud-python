@@ -502,13 +502,11 @@ TASKS:
   - acceptance_criteria: `P` reset places object inside the correct container instance when multiple exist; matches C behavior on midgaard.are sample
   - references: C src/db.c:load_resets; DOC Rom2.4.doc reset rules; ARE area/midgaard.are §#RESETS
   - estimate: M; risk: medium
-- [P1] Support `#SPECIALS` section to wire spec_funs from areas
-  - rationale: ROM areas bind `spec_fun` entries to mob/room prototypes
-  - files: mud/loaders/area_loader.py (add handler), mud/loaders/specials_loader.py (parser), mud/spec_funs.py (registration)
-  - tests: tests/test_area_specials.py asserts mapping and invocation via run_npc_specs
-  - acceptance_criteria: at least one known SPECIAL from a canonical area maps to a registered Python spec_fun; test asserts registration
-  - references: C src/db.c:new_load_area() (SPECIALS parsing); DOC doc/area.txt §#SPECIALS
-  EVIDENCE: PY mud/loaders/area_loader.py; PY mud/loaders/specials_loader.py; TEST tests/test_area_specials.py
+- ✅ [P1] Support `#SPECIALS` section to wire spec_funs from areas — done 2025-09-13
+  EVIDENCE: PY mud/loaders/area_loader.py:L1-L24 (SECTION_HANDLERS includes `#SPECIALS`)
+  EVIDENCE: PY mud/loaders/specials_loader.py:L1-L60 (parse `M <vnum> <spec>` and attach to MobIndex.spec_fun)
+  EVIDENCE: TEST tests/test_area_specials.py::{test_load_specials_sets_spec_fun_on_mob_prototypes,test_run_npc_specs_invokes_registered_function}
+  EVIDENCE: C src/db.c: SPECIALS parsing in load/new_load_area; DOC doc/area.txt §#SPECIALS; ARE area/haon.are §#SPECIALS
 - [P2] Coverage ≥80% for area_format_loader
   - acceptance_criteria: coverage report ≥80% across loader modules
 NOTES:
@@ -862,14 +860,11 @@ TASKS:
   EVIDENCE: PY mud/game_loop.py:L73-L112; PY mud/config.py:get_pulse_violence; PY mud/models/character.py (daze)
   EVIDENCE: TEST tests/test_game_loop_wait_daze.py::test_wait_and_daze_decrement_on_violence_pulse
 
-- [P1] Schedule weather/time/resets in ROM order with separate pulse counters
-  - rationale: ROM maintains independent pulse counters for violence and tick; align ordering
-  - files: mud/game_loop.py, mud/config.py
-  - tests: tests/test_game_loop_order.py asserts order on point pulses; existing weather tests preserved via non-strict mode
-  - acceptance_criteria: violence then time→weather→reset on point pulses; separate counters
-  - references: C src/update.c:L1161-L1189 (update_handler cadence)
-  EVIDENCE: PY mud/game_loop.py (separate counters + ordering); PY mud/config.py:GAME_LOOP_STRICT_POINT
+- ✅ [P1] Schedule weather/time/resets in ROM order with separate pulse counters — done 2025-09-13
+  EVIDENCE: PY mud/game_loop.py:L57-L112 (separate counters; order: violence→time→weather→reset)
+  EVIDENCE: PY mud/config.py:L1-L80 (TIME_SCALE handling; `GAME_LOOP_STRICT_POINT` flag)
   EVIDENCE: TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
+  EVIDENCE: C src/update.c:L1161-L1189 (update_handler cadence: pulse_violence then point-pulse updates)
 
 NOTES:
 - C: update_handler uses separate counters for pulse_violence and pulse_point; our loop has a single counter.
