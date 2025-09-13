@@ -44,9 +44,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- COVERAGE-END -->
 
 ## Next Actions (Aggregated P0s)
-<!-- NEXT-ACTIONS-START -->
+<!-- NEXT-ACTIONS-START -->."
 <!-- no open [P0] tasks this run -->
-<!-- NEXT-ACTIONS-END -->
+".<!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
 <!-- PARITY-MAP-START -->
