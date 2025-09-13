@@ -46,3 +46,56 @@ def movable_mob_factory():
         return mob
 
     return _factory
+
+@pytest.fixture
+def place_object_factory():
+    """Factory that places an object in a room.
+
+    Usage:
+        obj = place_object_factory(room_vnum=3001, vnum=3031)
+        obj = place_object_factory(room_vnum=3001, proto_kwargs={"vnum": 9999, "short_descr": "a stone"})
+    """
+    from mud.registry import room_registry
+    from mud.spawning.obj_spawner import spawn_object
+    from mud.models.object import Object
+    from mud.models.obj import ObjIndex
+
+    def _factory(*, room_vnum: int, vnum: int | None = None, proto_kwargs: dict | None = None):
+        room = room_registry[room_vnum]
+        if vnum is not None:
+            obj = spawn_object(vnum)
+            assert obj is not None
+        else:
+            proto_kwargs = proto_kwargs or {}
+            proto = ObjIndex(**proto_kwargs)
+            obj = Object(instance_id=None, prototype=proto)
+        room.add_object(obj)
+        return obj
+
+    return _factory
+
+@pytest.fixture
+def portal_factory(place_object_factory):
+    """Convenience to create a portal object in a room.
+
+    Example:
+        portal_factory(3001, to_vnum=3054, closed=True)
+    """
+    from mud.models.constants import ItemType, EX_CLOSED
+
+    def _factory(room_vnum: int, *, to_vnum: int, closed: bool = False):
+        flags = EX_CLOSED if closed else 0
+        obj = place_object_factory(
+            room_vnum=room_vnum,
+            proto_kwargs={
+                "vnum": 9998,
+                "name": "shimmering portal",
+                "short_descr": "a shimmering portal",
+                "item_type": int(ItemType.PORTAL),
+            },
+        )
+        # value: [charges, exit_flags, key, to_vnum, portal_flags]
+        obj.prototype.value = [1, flags, 0, to_vnum, 0]
+        return obj
+
+    return _factory
