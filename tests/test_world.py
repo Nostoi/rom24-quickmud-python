@@ -4,10 +4,9 @@ from mud.registry import room_registry, area_registry
 from mud.loaders import load_all_areas
 
 
-def test_movement_and_look():
+def test_movement_and_look(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    from tests.helpers import ensure_can_move
     ensure_can_move(char)
     assert char.room.vnum == 3001
     out1 = look(char)
@@ -19,10 +18,9 @@ def test_movement_and_look():
     assert 'temple' in out2.lower() or 'altar' in out2.lower()
 
 
-def test_overweight_character_cannot_move():
+def test_overweight_character_cannot_move(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    from tests.helpers import ensure_can_move
     ensure_can_move(char)
     char.carry_weight = 200
     msg = move_character(char, 'north')

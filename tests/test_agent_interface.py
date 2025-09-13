@@ -2,10 +2,9 @@ from mud.world import initialize_world, create_test_character
 from mud.agent.character_agent import CharacterAgentAdapter
 from mud.spawning.mob_spawner import spawn_mob
 from mud.registry import room_registry
-from tests.helpers import ensure_can_move
 
 
-def test_character_agent_actions():
+def test_character_agent_actions(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
     ensure_can_move(char)
@@ -22,7 +21,7 @@ def test_character_agent_actions():
     assert char.room.vnum != 3001
 
 
-def test_mob_agent_movement():
+def test_mob_agent_movement(ensure_can_move):
     initialize_world('area/area.lst')
     mob = spawn_mob(3000)
     room = room_registry[3001]

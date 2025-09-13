@@ -5,10 +5,9 @@ from mud.registry import room_registry
 from mud.models.constants import Position
 
 
-def test_process_command_sequence():
+def test_process_command_sequence(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    from tests.helpers import ensure_can_move
     ensure_can_move(char)
     sword = spawn_object(3022)
     assert sword is not None
@@ -33,10 +32,9 @@ def test_process_command_sequence():
     assert f"{char.name} says, 'hello'" in other.messages
 
 
-def test_equipment_command():
+def test_equipment_command(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    from tests.helpers import ensure_can_move
     ensure_can_move(char)
     sword = spawn_object(3022)
     assert sword is not None
@@ -47,11 +45,10 @@ def test_equipment_command():
     assert 'wield' in out
 
 
-def test_abbreviations_and_quotes():
+def test_abbreviations_and_quotes(ensure_can_move):
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
-    # Ensure movement points for abbreviation-based movement
-    char.move = char.max_move = 100
+    ensure_can_move(char)
 
     out1 = process_command(char, 'l')
     assert 'Temple' in out1
