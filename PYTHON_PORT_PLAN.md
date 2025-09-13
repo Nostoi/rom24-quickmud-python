@@ -431,24 +431,15 @@ TASKS:
   EVIDENCE: TEST tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
   NOTES: Lock-state fix (value[1]) not applied because object instance model lacks per-instance value fields; to be addressed if required by tests.
 
-- [P1] Implement 'G'/'E' reset limits and level logic
-  - rationale: ROM enforces per-index count limits and computes object levels for shopkeepers/equipment
-  - files: mud/spawning/reset_handler.py
-  - tests: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag; tests/test_reset_levels.py
-  - acceptance_criteria: limit respected; shopkeeper inventory flagged for pricing; object levels computed within expected ranges
-  - references: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
-  EVIDENCE: PY mud/spawning/reset_handler.py (G/E limit + ITEM_INVENTORY + level compute)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag; tests/test_reset_levels.py
+ - ✅ [P1] Implement 'G'/'E' reset limits and level logic — done 2025-09-13
+  EVIDENCE: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
+  EVIDENCE: PY mud/spawning/reset_handler.py:L45-L118 ('G'/'E' handling with per-mob limit, ITEM_INVENTORY flag, level compute)
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
 
-- [P1] Support 'R' resets to randomize exits
-  - rationale: ROM shuffles exits for certain rooms
-  - files: mud/spawning/reset_handler.py; mud/world/room.py (exit order utility)
-  - tests: new test asserting exit list permutation after reset on a room with R reset
-  - acceptance_criteria: after reset_tick, specified rooms have exits permuted; stable when no R reset
-  - references: C src/db.c: reset_room() case 'R' L2059-L2080
-  EVIDENCE: PY mud/spawning/reset_handler.py:L96-L109
+ - ✅ [P1] Support 'R' resets to randomize exits — done 2025-09-13
+  EVIDENCE: C src/db.c: reset_room() case 'R' L2059-L2080
+  EVIDENCE: PY mud/spawning/reset_handler.py:L119-L142 ('R' partial Fisher–Yates shuffle using rng_mm.number_range)
   EVIDENCE: TEST tests/test_spawning.py::test_reset_R_randomizes_exit_order
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_uses_last_container_instance_when_multiple
 
 NOTES:
 - C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.
