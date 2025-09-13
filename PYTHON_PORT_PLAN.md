@@ -496,12 +496,10 @@ TASKS:
 - ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — done 2025-09-07
   - evidence: PY mud/loaders/__init__.py (sentinel); PY mud/loaders/area_loader.py (duplicate vnum)
   - tests: tests/test_world.py::test_area_list_requires_sentinel
-- [P1] Preserve `#RESETS` semantics for nested `P` (put) into spawned containers
-  - rationale: ROM allows multiple identical vnums; loader must track specific instance linkage
-  - files: mud/spawning/reset_handler.py (use per-instance identifiers instead of vnum map), tests/test_spawning.py (golden for nested containers)
-  - acceptance_criteria: `P` reset places object inside the correct container instance when multiple exist; matches C behavior on midgaard.are sample
-  - references: C src/db.c:load_resets; DOC Rom2.4.doc reset rules; ARE area/midgaard.are §#RESETS
-  - estimate: M; risk: medium
+- ✅ [P1] Preserve `#RESETS` semantics for nested `P` (put) into spawned containers — done 2025-09-13
+  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L120; L121-L213 (`P` uses last_obj or most recent container instance; updates last_obj)
+  EVIDENCE: TEST tests/test_spawning.py::{test_reset_P_places_items_inside_container_in_midgaard,test_reset_P_uses_last_container_instance_when_multiple,test_p_reset_lock_state_fix_resets_container_value_field}
+  REFERENCES: C src/db.c: load_resets `P` handling (lastobj semantics); DOC Rom2.4.doc reset rules; ARE area/midgaard.are §#RESETS
 - ✅ [P1] Support `#SPECIALS` section to wire spec_funs from areas — done 2025-09-13
   EVIDENCE: PY mud/loaders/area_loader.py:L1-L24 (SECTION_HANDLERS includes `#SPECIALS`)
   EVIDENCE: PY mud/loaders/specials_loader.py:L1-L60 (parse `M <vnum> <spec>` and attach to MobIndex.spec_fun)
@@ -602,6 +600,7 @@ TASKS:
   - estimate: S
   - risk: low
   - references: C src/save.c:save_char_obj; PY mud/persistence.py:save_player
+  - Needs Clarification: Repository does not persist NPCs; `mud/persistence.py` saves players only. Propose scope: persist mob prototypes/spec_fun as part of area serialization or introduce NPC save file. Provide desired hook and format to implement and test.
 - [P2] Achieve ≥80% test coverage for npc_spec_funs
   - rationale: ensure reliability
   - files: tests/test_spec_funs.py
