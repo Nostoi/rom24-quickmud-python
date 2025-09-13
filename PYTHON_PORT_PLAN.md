@@ -799,11 +799,12 @@ TASKS:
   - acceptance_criteria: price = base * remaining/total; zero-charge → price/4
   - references: C src/act_obj.c:get_cost L2516-L2528
 
-- [P2] Preserve #SHOPS data in conversion and loader
-  - rationale: Ensure shop entries (keeper/profit_buy/profit_sell/buy_type list) round-trip
-  - files: mud/scripts/convert_are_to_json.py; mud/loaders/area_loader.py
-  - tests: tests/test_shop_conversion.py asserts counts/fields
-  - references: C src/db.c:load_shops (around L1280-L1320); DOC doc/area.txt §#SHOPS
+- ✅ [P2] Preserve #SHOPS data in conversion and loader — done 2025-09-13
+  EVIDENCE: PY mud/loaders/shop_loader.py:L1-L60 (parse keeper/buy_types/profit/open/close); mud/loaders/area_loader.py:L1-L24 (SECTION_HANDLERS includes #SHOPS)
+  EVIDENCE: PY mud/scripts/convert_shops_to_json.py:L1-L90 (conversion CLI preserves counts/fields)
+  EVIDENCE: TEST tests/test_shop_conversion.py::{test_convert_shops_produces_grocer,test_shops_json_matches_legacy_counts}
+  EVIDENCE: C src/db.c:load_shops (around L1280-L1320)
+  EVIDENCE: DOC doc/area.txt §#SHOPS
 
 NOTES:
 - C: get_cost handles inventory-based discounting and charge scaling; prices feed do_buy/do_sell flows.
