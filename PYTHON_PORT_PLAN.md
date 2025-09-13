@@ -531,7 +531,6 @@ TASKS:
   EVIDENCE: PY mud/models/player_json.py (fields plr_flags, comm_flags)
   EVIDENCE: PY mud/scripts/convert_player_to_json.py (Act/Comm → bitmasks; HMV parsing)
   EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip
-- [P1] Reject malformed legacy saves with precise errors — acceptance: tests cover missing header/footer and bad widths
 - ✅ [P1] Reject malformed legacy saves with precise errors — done 2025-09-07
   EVIDENCE: PY mud/scripts/convert_player_to_json.py (header/footer + HMV/flags validation)
   EVIDENCE: TEST tests/test_player_save_format.py::test_missing_header_footer_and_bad_hmv
