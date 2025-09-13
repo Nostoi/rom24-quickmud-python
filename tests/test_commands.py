@@ -5,12 +5,10 @@ from mud.registry import room_registry
 from mud.models.constants import Position
 
 
-def test_process_command_sequence(movable_char_factory):
+def test_process_command_sequence(movable_char_factory, place_object_factory):
     initialize_world('area/area.lst')
     char = movable_char_factory('Tester', 3001)
-    sword = spawn_object(3022)
-    assert sword is not None
-    char.room.add_object(sword)
+    sword = place_object_factory(room_vnum=3001, vnum=3022)
 
     out1 = process_command(char, 'look')
     assert 'Temple' in out1

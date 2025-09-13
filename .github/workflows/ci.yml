@@ -31,6 +31,9 @@ jobs:
           flake8 mud/net/ansi.py mud/net/protocol.py mud/security/hash_utils.py \
             tests/test_telnet_server.py tests/test_ansi.py \
             tests/test_scripted_session.py tests/test_hash_utils.py
+      - name: Test fixtures lint
+        run: |
+          python3 scripts/lint_test_fixtures.py
       - name: Enforce rng_mm usage (no random in combat/affects)
         run: |
           if grep -R -n "\\brandom\\." mud/combat mud/affects; then

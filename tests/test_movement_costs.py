@@ -4,8 +4,6 @@ from mud.world import initialize_world, create_test_character
 from mud.world import move_character as move
 from mud.registry import room_registry
 from mud.models.constants import Sector, AffectFlag, ItemType
-from mud.models.obj import ObjIndex
-from mud.models.object import Object
 
 
 def setup_world_at(vnum_from: int, vnum_to: int) -> tuple:
