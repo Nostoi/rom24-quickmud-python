@@ -49,12 +49,11 @@ def test_air_requires_flying():
     assert ch.room is room_from
 
 
-def test_boat_allows_water_noswim():
+def test_boat_allows_water_noswim(object_factory):
     ch, room_from, room_to = setup_world_at(3001, 3054)
     room_to.sector_type = int(Sector.WATER_NOSWIM)
-    # Add a BOAT object to inventory
-    boat_proto = ObjIndex(vnum=9999, name="boat", short_descr="a small boat", item_type=int(ItemType.BOAT))
-    boat = Object(instance_id=None, prototype=boat_proto)
+    # Add a BOAT object to inventory via object factory
+    boat = object_factory({"vnum": 9999, "name": "boat", "short_descr": "a small boat", "item_type": int(ItemType.BOAT)})
     ch.add_object(boat)
     ch.move = 20
     out = move(ch, "north")
@@ -62,4 +61,3 @@ def test_boat_allows_water_noswim():
     assert ch.room is room_to
     # Cost average of CITY(2) and WATER_NOSWIM(1) = 1
     assert ch.move == 19
-

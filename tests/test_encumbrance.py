@@ -1,13 +1,10 @@
 from mud.models.character import Character
-from mud.models.obj import ObjIndex
-from mud.models.object import Object
 from mud.world.movement import can_carry_w, can_carry_n
 
 
-def test_carry_weight_updates_on_pickup_equip_drop():
+def test_carry_weight_updates_on_pickup_equip_drop(object_factory):
     ch = Character(name="Tester")
-    proto = ObjIndex(vnum=1, weight=5)
-    obj = Object(instance_id=None, prototype=proto)
+    obj = object_factory({"vnum": 1, "weight": 5})
 
     ch.add_object(obj)
     assert ch.carry_number == 1

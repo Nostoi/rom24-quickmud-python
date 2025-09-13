@@ -75,6 +75,22 @@ def place_object_factory():
     return _factory
 
 @pytest.fixture
+def object_factory():
+    """Factory that returns an object instance without placing it in a room.
+
+    Usage:
+        obj = object_factory({"vnum": 9999, "short_descr": "a stone"})
+    """
+    from mud.models.object import Object
+    from mud.models.obj import ObjIndex
+
+    def _factory(proto_kwargs: dict):
+        proto = ObjIndex(**proto_kwargs)
+        return Object(instance_id=None, prototype=proto)
+
+    return _factory
+
+@pytest.fixture
 def portal_factory(place_object_factory):
     """Convenience to create a portal object in a room.
 
