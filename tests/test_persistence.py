@@ -4,14 +4,13 @@ from mud.models.character import character_registry
 import mud.persistence as persistence
 
 
-def test_character_json_persistence(tmp_path):
+def test_character_json_persistence(tmp_path, inventory_object_factory):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     initialize_world('area/area.lst')
     char = create_test_character('Saver', 3001)
-    sword = spawn_object(3022)
-    helm = spawn_object(3356)
-    assert sword and helm
+    sword = inventory_object_factory(3022)
+    helm = inventory_object_factory(3356)
     char.add_object(sword)
     char.equip_object(helm, 'head')
 

@@ -6,7 +6,7 @@ from mud.db.session import engine, SessionLocal
 from mud.models.character import to_orm
 
 
-def test_inventory_and_equipment_persistence(tmp_path):
+def test_inventory_and_equipment_persistence(tmp_path, inventory_object_factory):
     # use fresh in-memory sqlite database
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -21,9 +21,8 @@ def test_inventory_and_equipment_persistence(tmp_path):
     session.add(db_char)
     session.commit()
     session.close()
-    sword = spawn_object(3022)
-    helmet = spawn_object(3356)
-    assert sword and helmet
+    sword = inventory_object_factory(3022)
+    helmet = inventory_object_factory(3356)
     char.add_object(sword)
     char.equip_object(helmet, 'head')
 

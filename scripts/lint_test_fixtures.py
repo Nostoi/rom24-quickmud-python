@@ -19,6 +19,14 @@ def main() -> int:
     bad: list[tuple[Path, int, str]] = []
     import_re = re.compile(r"^\s*from\s+mud\.models\.(obj|object)\s+import\s+(ObjIndex|Object)")
     place_re = re.compile(r"room\.add_object\(\s*spawn_object\(")
+    allow_move_files = {
+        "test_movement_costs.py",
+        "test_healer.py",
+        "test_game_loop.py",
+        "test_game_loop_wait_daze.py",
+        "test_player_save_format.py",
+        "test_advancement.py",
+    }
     for path in TESTS.rglob("*.py"):
         # allow in conftest where fixtures are defined
         if path.name in {"conftest.py"}:
@@ -35,6 +43,10 @@ def main() -> int:
                 bad.append((path, i, line.strip()))
             if place_re.search(line):
                 bad.append((path, i, line.strip()))
+            # Detect manual movement fields initializations in non-allowlisted files
+            if path.name not in allow_move_files:
+                if re.search(r"\b(move|max_move|affected_by|wait)\s*=\s*\d+", line):
+                    bad.append((path, i, line.strip()))
     if bad:
         print("Test fixture lint failures (prefer fixtures over raw constructs):", file=sys.stderr)
         for p, i, l in bad:
@@ -47,4 +59,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

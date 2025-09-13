@@ -91,6 +91,21 @@ def object_factory():
     return _factory
 
 @pytest.fixture
+def inventory_object_factory():
+    """Factory that spawns a ROM object by vnum for inventory use.
+
+    Wraps spawn_object(vnum) for clarity in tests.
+    """
+    from mud.spawning.obj_spawner import spawn_object
+
+    def _factory(vnum: int):
+        obj = spawn_object(vnum)
+        assert obj is not None
+        return obj
+
+    return _factory
+
+@pytest.fixture
 def portal_factory(place_object_factory):
     """Convenience to create a portal object in a room.
 
