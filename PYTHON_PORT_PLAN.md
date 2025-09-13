@@ -350,8 +350,10 @@ TASKS:
   EVIDENCE: TEST tests/test_skills_learned.py::test_learned_percent_gates_success_boundary
   REFERENCES: C src/skills.c:do_practice; C src/magic.c:saves_spell (percent gating)
   RATIONALE: Per-character learned% gates success when present; preserves legacy failure_rate when absent.
-- [P2] Coverage ≥80% for skills
-  - acceptance_criteria: coverage report ≥80% for mud/skills/registry.py and handlers
+ - ✅ [P2] Coverage ≥80% for skills — done 2025-09-13
+  EVIDENCE: TEST tests/test_skills.py; tests/test_skill_registry.py
+  EVIDENCE: COVERAGE mud/skills/registry.py 89% via: pytest -q --cov=mud.skills.registry --cov-report=term-missing tests/test_skills.py tests/test_skill_registry.py
+  NOTES: Applied tiny fix to success path when using failure_rate gating to execute handler on success (mud/skills/registry.py:L47-L68)
 NOTES:
 - C: success/failure checks compare percent rolls to thresholds derived from skill knowledge.
 - PY: SkillRegistry uses rng_mm now (good); learned% not yet modeled — add without breaking existing JSON by defaulting to failure_rate when learned absent.
@@ -505,8 +507,10 @@ TASKS:
   EVIDENCE: PY mud/loaders/specials_loader.py:L1-L60 (parse `M <vnum> <spec>` and attach to MobIndex.spec_fun)
   EVIDENCE: TEST tests/test_area_specials.py::{test_load_specials_sets_spec_fun_on_mob_prototypes,test_run_npc_specs_invokes_registered_function}
   EVIDENCE: C src/db.c: SPECIALS parsing in load/new_load_area; DOC doc/area.txt §#SPECIALS; ARE area/haon.are §#SPECIALS
-- [P2] Coverage ≥80% for area_format_loader
-  - acceptance_criteria: coverage report ≥80% across loader modules
+- ✅ [P2] Coverage ≥80% for area_format_loader — done 2025-09-13
+  EVIDENCE: TEST tests/test_specials_loader_ext.py::test_load_specials_handles_braces_and_invalid_lines
+  EVIDENCE: TEST tests/test_convert_are_to_json_cli.py::test_convert_are_cli_writes_output
+  EVIDENCE: COVERAGE mud/loaders/area_loader.py 98%, mud/loaders/specials_loader.py 87%, mud/scripts/convert_are_to_json.py 93%, mud/spawning/reset_handler.py 82% via: pytest -q --cov=mud.loaders.area_loader --cov=mud.loaders.specials_loader --cov=mud.scripts.convert_are_to_json --cov=mud.spawning.reset_handler --cov-report=term-missing tests/test_area_loader.py tests/test_area_counts.py tests/test_area_exits.py tests/test_spawning.py tests/test_area_specials.py tests/test_are_conversion.py tests/test_specials_loader_ext.py tests/test_convert_are_to_json_cli.py
 NOTES:
 - C: src/db.c:load_area() handles `#AREADATA`, `#ROOMS`, `#RESETS`, `#SPECIALS`, sentinel `$`.
 - DOC: doc/area.txt sections for block layouts; Rom2.4.doc reset rules.

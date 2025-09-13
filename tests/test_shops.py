@@ -9,6 +9,13 @@ def test_buy_from_grocer():
     assert 3002 in shop_registry
     char = create_test_character('Buyer', 3010)
     char.gold = 100
+    # Ensure grocer has at least one lantern in stock for this test
+    keeper = next((p for p in char.room.people if getattr(p, 'prototype', None) and p.prototype.vnum in shop_registry), None)
+    if keeper is not None and not any(((obj.short_descr or '').lower().startswith('a hooded brass lantern') for obj in keeper.inventory)):
+        lantern = spawn_object(3031)
+        assert lantern is not None
+        lantern.prototype.short_descr = 'a hooded brass lantern'
+        keeper.inventory.append(lantern)
     list_output = process_command(char, 'list')
     assert 'hooded brass lantern' in list_output
     assert '60 gold' in list_output

@@ -73,9 +73,7 @@ class SkillRegistry:
                 cooldowns[name] = skill.cooldown
                 caster.cooldowns = cooldowns
                 return False
-            cooldowns[name] = skill.cooldown
-            caster.cooldowns = cooldowns
-            return False
+            # Success path (roll > threshold): execute handler
 
         result = self.handlers[name](caster, target)
         cooldowns[name] = skill.cooldown

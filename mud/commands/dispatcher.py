@@ -194,6 +194,8 @@ def run_test_session() -> list[str]:
 
     initialize_world('area/area.lst')
     char = create_test_character('Tester', 3001)
+    # Ensure sufficient movement points for the scripted walk
+    char.move = char.max_move = 100
     sword = spawn_object(3022)
     if sword:
         char.room.add_object(sword)
