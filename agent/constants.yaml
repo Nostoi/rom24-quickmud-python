@@ -1,0 +1,49 @@
+# agent/constants.yaml — shared knobs and catalog for Auditor & Executor
+
+# Subsystem audit order (ROM 2.4 canonical + project-specific data subsystems)
+catalog:
+  - combat
+  - skills_spells
+  - affects_saves
+  - command_interpreter
+  - socials
+  - channels
+  - wiznet_imm
+  - world_loader
+  - resets
+  - weather
+  - time_daynight
+  - movement_encumbrance
+  - stats_position
+  - shops_economy
+  - boards_notes
+  - help_system
+  - mob_programs
+  - npc_spec_funs
+  - game_update_loop
+  - persistence
+  - login_account_nanny
+  - networking_telnet
+  - security_auth_bans
+  - logging_admin
+  - olc_builders
+  - area_format_loader
+  - imc_chat
+  - player_save_format
+
+# Risk taxonomy (don’t invent new labels)
+risks: [RNG, c_div/c_mod, AC mapping, defense_order, RIV, tick_cadence, file_formats, flags, indexing, lag_wait, side_effects]
+
+# Auditor knobs
+MAX_DISCOVERY_SUBSYSTEMS: 3
+MAX_SUBSYSTEMS_PER_RUN: 3
+MAX_TASKS_PER_SUBSYSTEM: 5
+MAX_TINY_FIXES_PER_RUN: 3
+MAX_AUDITOR_FILES_TOUCHED: 5
+MAX_AUDITOR_LINES_CHANGED: 300
+
+# Executor knobs
+MAX_TASKS_PER_RUN: 2
+MAX_FILES_TOUCHED: 8
+MAX_LINES_CHANGED: 400
+ALLOW_TINY_FIXES_OUTSIDE_TASK: false

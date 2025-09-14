@@ -8,3 +8,7 @@ game.db
 dist/
 build/
 *.egg-info/
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

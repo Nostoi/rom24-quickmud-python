@@ -1,0 +1,1 @@
+I’ve reviewed constants and the current plan; I’ll apply one tiny safe fix in movement and update the plan markers and notes, then run lint/tests to validate.

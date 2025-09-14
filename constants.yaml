@@ -1,0 +1,30 @@
+catalog:
+  - combat
+  - skills_spells
+  - affects_saves
+  - command_interpreter
+  - socials
+  - channels
+  - wiznet_imm
+  - world_loader
+  - resets
+  - weather
+  - time_daynight
+  - movement_encumbrance
+  - stats_position
+  - shops_economy
+  - boards_notes
+  - help_system
+  - mob_programs
+  - npc_spec_funs
+  - game_update_loop
+  - persistence
+  - login_account_nanny
+  - networking_telnet
+  - security_auth_bans
+  - logging_admin
+  - olc_builders
+  - area_format_loader
+  - imc_chat
+  - player_save_format
+risks: [RNG, c_div/c_mod, AC mapping, defense_order, RIV, tick_cadence, file_formats, flags, indexing, lag_wait, side_effects]

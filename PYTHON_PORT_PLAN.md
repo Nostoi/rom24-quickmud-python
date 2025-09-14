@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: command_interpreter -->
+<!-- LAST-PROCESSED: COMPLETE -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
@@ -873,3 +873,7 @@ NOTES:
   - tests: tests/test_shops.py::test_list_price_matches_buy_price
   - acceptance_criteria: gold deducted equals listed price
   - references: C src/act_obj.c:get_cost (buy path)
+
+## ✅ Completion Note (2025-09-13)
+All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
+<!-- LAST-PROCESSED: COMPLETE -->

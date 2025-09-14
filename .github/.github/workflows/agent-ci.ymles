@@ -1,0 +1,62 @@
+name: QuickMUD Agent Loop
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *" # every 6 hours (optional)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      MODEL_AUDITOR: ${{ vars.MODEL_AUDITOR || 'gpt-4o-mini' }}
+      MODEL_EXECUTOR: ${{ vars.MODEL_EXECUTOR || 'gpt-4o-mini' }}
+      MAX_ROUNDS: "4"
+      BRANCH_PREFIX: "agent"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai ruamel.yaml pytest ruff mypy
+
+      - name: Run Agent Loop
+        run: |
+          python scripts/agent_loop.py \
+            --auditor-prompt AGENT.md \
+            --executor-prompt AGENT.EXECUTOR.md \
+            --max-rounds "${MAX_ROUNDS}" \
+            --branch-prefix "${BRANCH_PREFIX}" \
+            --model-auditor "${MODEL_AUDITOR}" \
+            --model-executor "${MODEL_EXECUTOR}"
+
+      - name: Archive agent logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-logs
+          path: .agent_logs/
+
+      - name: Open or update PR
+        if: ${{ steps.check.outputs.any_changes == 'true' }}
+        run: |
+          git config user.name "quickmud-agent"
+          git config user.email "quickmud-agent@users.noreply.github.com"
+          BRANCH=$(cat .agent_logs/branch_name.txt)
+          git push -u origin "$BRANCH" || true
+          gh pr create --title "Agent: parity updates" --body "Automated parity updates" --head "$BRANCH" --base main || \
+          gh pr edit "$(gh pr list --head "$BRANCH" --json number -q '.[0].number')" --add-label "agent"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
