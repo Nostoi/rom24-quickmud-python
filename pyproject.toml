@@ -3,28 +3,68 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quickmud"
-version = "0.1.1"
-description = "Python port of the ROM 2.4b6 MUD engine"
+name = "rom24-quickmud-python"
+version = "1.2.1"
+description = "A modern Python port of the ROM 2.4b6 MUD engine with full telnet server and JSON world loading"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.10"
+authors = [
+    {name = "Mark Jedrzejczyk", email = "mark.jedrzejczyk@gmail.com"}
+]
+maintainers = [
+    {name = "Mark Jedrzejczyk", email = "mark.jedrzejczyk@gmail.com"}
+]
+keywords = ["mud", "rom", "game", "mmo", "telnet", "server"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: No Input/Output (Daemon)",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment :: Multi-User Dungeons (MUD)",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
 dependencies = [
     "SQLAlchemy>=2.0,<3",
     "typer>=0.9",
     "python-dotenv>=1.0",
-    "fastapi",
-    "uvicorn",
+    "fastapi>=0.68.0",
+    "uvicorn>=0.15.0",
+    "pytest-timeout>=2.1.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=6.0",
-    "mypy",
-    "ruff",
-    "flake8",
-    "jsonschema",
+    "pytest-timeout>=2.1.0",
+    "mypy>=1.0",
+    "ruff>=0.1.0",
+    "black>=22.0",
+    "jsonschema>=4.0",
+    "build>=0.10.0",
+    "twine>=4.0.0",
 ]
+test = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0", 
+    "pytest-timeout>=2.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Nostoi/rom24-quickmud-python"
+Repository = "https://github.com/Nostoi/rom24-quickmud-python.git"
+Documentation = "https://github.com/Nostoi/rom24-quickmud-python/blob/master/README.md"
+"Bug Tracker" = "https://github.com/Nostoi/rom24-quickmud-python/issues"
+Changelog = "https://github.com/Nostoi/rom24-quickmud-python/releases"
 
 [project.scripts]
 mud = "mud.__main__:cli"
