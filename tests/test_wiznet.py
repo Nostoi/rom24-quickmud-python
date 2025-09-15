@@ -28,11 +28,12 @@ def test_wiznet_flag_values():
         'WIZ_RESTORE': 0x00008000,
         'WIZ_LOAD': 0x00010000,
         'WIZ_NEWBIE': 0x00020000,
-        'WIZ_SPAM': 0x00040000,
-        'WIZ_DEBUG': 0x00080000,
-        'WIZ_MEMORY': 0x00100000,
-        'WIZ_SKILLS': 0x00200000,
-        'WIZ_TESTING': 0x00400000,
+        'WIZ_PREFIX': 0x00040000,  # Newly added
+        'WIZ_SPAM': 0x00080000,   # Moved from 0x00040000
+        'WIZ_DEBUG': 0x00100000,  # Moved from 0x00080000
+        'WIZ_MEMORY': 0x00200000,
+        'WIZ_SKILLS': 0x00400000,
+        'WIZ_TESTING': 0x00800000,
     }
     for name, value in expected.items():
         assert getattr(WiznetFlag, name).value == value
@@ -54,7 +55,7 @@ def test_wiznet_command_toggles_flag():
     character_registry.append(imm)
     result = process_command(imm, "wiznet")
     assert imm.wiznet & int(WiznetFlag.WIZ_ON)
-    assert "wiznet is now on" in result.lower()
+    assert "welcome to wiznet" in result.lower()
 
 
 def test_wiznet_persistence(tmp_path):
@@ -98,3 +99,75 @@ def test_wiznet_secure_flag_gating():
     imm.wiznet |= int(WiznetFlag.WIZ_SECURE)
     wiznet("secure2", WiznetFlag.WIZ_SECURE)
     assert "secure2" in imm.messages
+
+
+def test_wiznet_status_command():
+    imm = Character(name="Imm", is_admin=True, level=60)
+    character_registry.append(imm)
+    
+    # Test status with WIZ_ON off
+    result = process_command(imm, "wiznet status")
+    assert "off" in result
+    
+    # Turn on wiznet and add some flags
+    imm.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS | WiznetFlag.WIZ_DEATHS)
+    result = process_command(imm, "wiznet status")
+    assert "off" not in result
+    assert "ticks" in result
+    assert "deaths" in result
+
+
+def test_wiznet_show_command():
+    imm = Character(name="Imm", is_admin=True, level=60) 
+    character_registry.append(imm)
+    
+    result = process_command(imm, "wiznet show")
+    assert "available to you" in result
+    assert "on" in result  # Should show available options
+    assert "ticks" in result
+
+
+def test_wiznet_individual_flag_toggle():
+    imm = Character(name="Imm", is_admin=True, level=60)
+    character_registry.append(imm)
+    
+    # Test turning on a flag
+    result = process_command(imm, "wiznet ticks")
+    assert "will now see ticks" in result.lower()
+    assert imm.wiznet & int(WiznetFlag.WIZ_TICKS)
+    
+    # Test turning off the same flag
+    result = process_command(imm, "wiznet ticks")
+    assert "will no longer see ticks" in result.lower()
+    assert not (imm.wiznet & int(WiznetFlag.WIZ_TICKS))
+
+
+def test_wiznet_on_off_commands():
+    imm = Character(name="Imm", is_admin=True)
+    character_registry.append(imm)
+    
+    # Test explicit "on"
+    result = process_command(imm, "wiznet on")
+    assert "welcome to wiznet" in result.lower()
+    assert imm.wiznet & int(WiznetFlag.WIZ_ON)
+    
+    # Test explicit "off"
+    result = process_command(imm, "wiznet off")
+    assert "signing off" in result.lower()
+    assert not (imm.wiznet & int(WiznetFlag.WIZ_ON))
+
+
+def test_wiznet_prefix_formatting():
+    imm_with_prefix = Character(name="ImmPrefix", is_admin=True, 
+                               wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_PREFIX))
+    imm_without_prefix = Character(name="ImmPlain", is_admin=True,
+                                  wiznet=int(WiznetFlag.WIZ_ON))
+    character_registry.extend([imm_with_prefix, imm_without_prefix])
+    
+    wiznet("Test prefix", WiznetFlag.WIZ_ON)
+    
+    # Check that prefix character gets formatted message
+    assert any("{Z-->" in msg for msg in imm_with_prefix.messages)
+    # Check that non-prefix character gets plain message 
+    assert "Test prefix" in imm_without_prefix.messages
+    assert not any("{Z-->" in msg for msg in imm_without_prefix.messages)

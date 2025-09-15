@@ -5,7 +5,7 @@ Provides flag definitions and broadcast filtering for immortal channels.
 from __future__ import annotations
 
 from enum import IntFlag
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 
 class WiznetFlag(IntFlag):
@@ -29,46 +29,190 @@ class WiznetFlag(IntFlag):
     WIZ_RESTORE = 0x00008000
     WIZ_LOAD = 0x00010000
     WIZ_NEWBIE = 0x00020000
-    WIZ_SPAM = 0x00040000
-    WIZ_DEBUG = 0x00080000
-    WIZ_MEMORY = 0x00100000
-    WIZ_SKILLS = 0x00200000
-    WIZ_TESTING = 0x00400000
+    WIZ_PREFIX = 0x00040000
+    WIZ_SPAM = 0x00080000
+    WIZ_DEBUG = 0x00100000  # This was originally WIZ_SPAM value, moving it down 
+    WIZ_MEMORY = 0x00200000
+    WIZ_SKILLS = 0x00400000
+    WIZ_TESTING = 0x00800000
 
 
 if TYPE_CHECKING:  # pragma: no cover - for type hints only
     pass
 
 
-def wiznet(message: str, flag: WiznetFlag) -> None:
+# Wiznet table mapping names to flags and minimum levels (mirroring C const.c)
+WIZNET_TABLE = [
+    {"name": "on", "flag": WiznetFlag.WIZ_ON, "level": 1},  # IM = 1 (immortal)
+    {"name": "prefix", "flag": WiznetFlag.WIZ_PREFIX, "level": 1}, 
+    {"name": "ticks", "flag": WiznetFlag.WIZ_TICKS, "level": 1},
+    {"name": "logins", "flag": WiznetFlag.WIZ_LOGINS, "level": 1},
+    {"name": "sites", "flag": WiznetFlag.WIZ_SITES, "level": 54},  # L4
+    {"name": "links", "flag": WiznetFlag.WIZ_LINKS, "level": 57},  # L7
+    {"name": "newbies", "flag": WiznetFlag.WIZ_NEWBIE, "level": 1},
+    {"name": "spam", "flag": WiznetFlag.WIZ_SPAM, "level": 55},  # L5
+    {"name": "deaths", "flag": WiznetFlag.WIZ_DEATHS, "level": 1},
+    {"name": "resets", "flag": WiznetFlag.WIZ_RESETS, "level": 54},
+    {"name": "mobdeaths", "flag": WiznetFlag.WIZ_MOBDEATHS, "level": 54},
+    {"name": "flags", "flag": WiznetFlag.WIZ_FLAGS, "level": 55},
+    {"name": "penalties", "flag": WiznetFlag.WIZ_PENALTIES, "level": 55},
+    {"name": "saccing", "flag": WiznetFlag.WIZ_SACCING, "level": 55},
+    {"name": "levels", "flag": WiznetFlag.WIZ_LEVELS, "level": 1},
+    {"name": "load", "flag": WiznetFlag.WIZ_LOAD, "level": 52},  # L2
+    {"name": "restore", "flag": WiznetFlag.WIZ_RESTORE, "level": 52},
+    {"name": "snoops", "flag": WiznetFlag.WIZ_SNOOPS, "level": 52},
+    {"name": "switches", "flag": WiznetFlag.WIZ_SWITCHES, "level": 52},
+    {"name": "secure", "flag": WiznetFlag.WIZ_SECURE, "level": 51},  # L1
+]
+
+
+def wiznet_lookup(name: str) -> int:
+    """Look up wiznet flag by name, return index or -1 if not found."""
+    for i, entry in enumerate(WIZNET_TABLE):
+        if entry["name"].startswith(name.lower()):
+            return i
+    return -1
+
+
+def wiznet(message: str, sender_ch_or_flag: Any = None, obj: Any = None, flag: WiznetFlag | None = None, 
+           flag_skip: WiznetFlag | None = None, min_level: int = 0) -> None:
     """Broadcast *message* to immortals subscribed to *flag*.
 
+    Supports both old signature: wiznet(message, flag) 
+    and new C-compatible signature: wiznet(message, sender_ch, obj, flag, flag_skip, min_level)
+    
+    - sender_ch_or_flag: for backward compatibility - if WiznetFlag, treated as flag; if Character, treated as sender
+    - obj: object context (currently unused but maintains C signature)
+    - flag: required flag subscription (if None, only WIZ_ON is checked)
+    - flag_skip: if set, skip characters who have this flag
+    - min_level: minimum trust level required
+    
     Immortals must have WIZ_ON and the given *flag* set to receive the message.
     """
     from mud.models.character import character_registry
 
+    # Handle backward compatibility
+    sender_ch = None
+    if sender_ch_or_flag is not None:
+        if isinstance(sender_ch_or_flag, WiznetFlag):
+            # Old signature: wiznet(message, flag)
+            flag = sender_ch_or_flag
+        else:
+            # New signature: sender_ch is provided
+            sender_ch = sender_ch_or_flag
+
     for ch in list(character_registry):
+        # Skip sender
+        if ch == sender_ch:
+            continue
+            
+        # Must be immortal/admin
         if not getattr(ch, "is_admin", False):
             continue
+            
+        # Must have WIZ_ON
         if not getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_ON:
             continue
-        if not getattr(ch, "wiznet", 0) & flag:
+            
+        # Check required flag
+        if flag and not getattr(ch, "wiznet", 0) & flag:
             continue
+            
+        # Check skip flag
+        if flag_skip and getattr(ch, "wiznet", 0) & flag_skip:
+            continue
+            
+        # Check min level (get_trust equivalent)
+        ch_level = getattr(ch, "level", 0)
+        if ch_level < min_level:
+            continue
+            
+        # Format message - only use colors if WIZ_PREFIX is set
         if hasattr(ch, "messages"):
-            ch.messages.append(message)
+            if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
+                formatted_msg = f"{{Z--> {message}{{x"
+            else:
+                # For backward compatibility, send plain message if no PREFIX
+                formatted_msg = message
+            ch.messages.append(formatted_msg)
 
 
-def cmd_wiznet(char, args: str) -> str:
-    """Toggle WIZ_ON for immortal *char*.
+def cmd_wiznet(char: Any, args: str) -> str:
+    """Complete wiznet command implementation mirroring C do_wiznet.
 
-    Only immortals may use this command.  With no arguments it flips the
-    :class:`WiznetFlag.WIZ_ON` bit and reports the new state.
+    Supports:
+    - wiznet (no args): toggle WIZ_ON
+    - wiznet on/off: explicitly set WIZ_ON
+    - wiznet status: show current subscriptions  
+    - wiznet show: show available options
+    - wiznet <flag>: toggle individual flag subscription
     """
     from mud.models.character import Character  # local import to avoid cycle
 
     if not isinstance(char, Character) or not getattr(char, "is_admin", False):
         return "Huh?"
 
-    char.wiznet ^= int(WiznetFlag.WIZ_ON)
-    state = "on" if char.wiznet & int(WiznetFlag.WIZ_ON) else "off"
-    return f"Wiznet is now {state}."
+    args = args.strip()
+    
+    # No arguments: toggle WIZ_ON
+    if not args:
+        if getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON:
+            char.wiznet &= ~int(WiznetFlag.WIZ_ON)
+            return "Signing off of Wiznet."
+        else:
+            char.wiznet |= int(WiznetFlag.WIZ_ON)
+            return "Welcome to Wiznet!"
+    
+    # Explicit on/off
+    if args.lower().startswith("on"):
+        char.wiznet |= int(WiznetFlag.WIZ_ON) 
+        return "Welcome to Wiznet!"
+        
+    if args.lower().startswith("off"):
+        char.wiznet &= ~int(WiznetFlag.WIZ_ON)
+        return "Signing off of Wiznet."
+    
+    # Show status
+    if args.lower().startswith("status"):
+        result = "Wiznet status:\n"
+        
+        if not (getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON):
+            result += "off "
+            
+        char_level = getattr(char, "level", 0)
+        for entry in WIZNET_TABLE:
+            if (getattr(char, "wiznet", 0) & int(entry["flag"])) and entry["name"] != "on":
+                result += f"{entry['name']} "
+                
+        return result.strip()
+    
+    # Show available options
+    if args.lower().startswith("show"):
+        result = "Wiznet options available to you are:\n"
+        
+        char_level = getattr(char, "level", 0)
+        options = []
+        for entry in WIZNET_TABLE:
+            if char_level >= entry["level"]:
+                options.append(entry["name"])
+                
+        return result + " ".join(options)
+    
+    # Individual flag toggle
+    flag_index = wiznet_lookup(args)
+    if flag_index == -1:
+        return "No such option."
+        
+    entry = WIZNET_TABLE[flag_index]
+    char_level = getattr(char, "level", 0)
+    
+    if char_level < entry["level"]:
+        return "No such option."
+    
+    # Toggle the flag
+    if getattr(char, "wiznet", 0) & int(entry["flag"]):
+        char.wiznet &= ~int(entry["flag"])
+        return f"You will no longer see {entry['name']} on wiznet."
+    else:
+        char.wiznet |= int(entry["flag"])
+        return f"You will now see {entry['name']} on wiznet."

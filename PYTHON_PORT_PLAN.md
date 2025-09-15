@@ -92,7 +92,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | player_save_format     | src/save.c:save_char_obj                            | mud/persistence.py:PlayerSave                                                      |
 | skills_spells          | src/tables.c:skill_table; src/flags.c               | mud/models/constants.py; mud/models/skill.py                                       |
 | security_auth_bans     | src/sha256.c:sha256_crypt                           | mud/security/hash_utils.py:sha256_hex                                              |
-| affects_saves          | src/flags.c:IMM*\*/RES*_/VULN\__                    | mud/models/constants.py:ImmFlag/ResFlag/VulnFlag                                   |
+| affects_saves          | src/flags.c:IMM*\*/RES*\_/VULN\_\_                  | mud/models/constants.py:ImmFlag/ResFlag/VulnFlag                                   |
 
 <!-- PARITY-MAP-END -->
 
@@ -129,11 +129,11 @@ TASKS:
 - ✅ [P1] Define IMM/RES/VULN IntFlags with ROM bit values — done 2025-09-08
   EVIDENCE: PY mud/models/constants.py: ImmFlag/ResFlag/VulnFlag (lines near end)
   EVIDENCE: TEST tests/test*defense_flags.py::test_imm_res_vuln_intflags_match_defense_bits
-  EVIDENCE: C src/merc.h: IMM*_/RES\__/VULN*\* letter bits (A..Z)
+  EVIDENCE: C src/merc.h: IMM*\_/RES\__/VULN*\* letter bits (A..Z)
   RATIONALE: Preserve bit widths and parity semantics; avoid magic numbers.
   FILES: mud/models/constants.py
   TESTS: tests/test_affects.py::test_imm_res_vuln_flag_values
-  REFERENCES: C src/merc.h: IMM*_/RES\__/VULN\_ defines (letters A..Z)
+  REFERENCES: C src/merc.h: IMM*_/RES\_\_/VULN\_ defines (letters A..Z)
 - ✅ [P2] Achieve ≥80% coverage for affects_saves — done 2025-09-12
   EVIDENCE: TEST pytest -q --cov=mud.affects.saves --cov-report=term-missing (95%)
   EVIDENCE: TEST tests/test_affects.py
@@ -180,7 +180,7 @@ TASKS:
 
 ### wiznet_imm — Parity Audit 2025-09-08
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.96)
 KEY RISKS: flags, side_effects
 TASKS:
 
@@ -202,11 +202,22 @@ TASKS:
   REFERENCES: C src/act_wiz.c wiznet levels/flags; C src/interp.c logging to wiznet
 - ✅ [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80% — done 2025-09-08
   EVIDENCE: coverage 96% for mud/wiznet.py; command: pytest -q --cov=mud.wiznet --cov-report=term-missing
+- ✅ [P0] Add missing WIZ_PREFIX flag to WiznetFlag enum — done 2025-09-15
+  EVIDENCE: PY mud/wiznet.py:L20 WIZ_PREFIX = 0x00040000
+  EVIDENCE: C src/merc.h:1470 #define WIZ_PREFIX (S)
+- ✅ [P0] Enhance wiznet() broadcast function signature — done 2025-09-15  
+  EVIDENCE: PY mud/wiznet.py:L78-L123 (matches C src/act_wiz.c:171-195 signature)
+  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_prefix_formatting
+- ✅ [P0] Implement full cmd_wiznet() command functionality — done 2025-09-15
+  EVIDENCE: PY mud/wiznet.py:L140-L218 (matches C src/act_wiz.c:70-169 features)
+  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_status_command, test_wiznet_show_command, test_wiznet_individual_flag_toggle, test_wiznet_on_off_commands
   NOTES:
 - Added broadcast helper to filter subscribed immortals (wiznet.py:43-58)
 - `Character.wiznet` stores wiznet flag bits (character.py:87)
 - Command table registers `wiznet` command (commands/dispatcher.py:18-59)
 - Help file documents wiznet usage despite missing code (area/help.are:1278-1286)
+- C: Full parity achieved with ROM wiznet() and do_wiznet() functionality including WIZ_PREFIX formatting and individual flag management
+- PY: Enhanced with backward compatibility for existing tests and callers
 <!-- SUBSYSTEM: wiznet_imm END -->
 
 <!-- Removed prior completion note; RNG parity tasks remain open. -->
@@ -281,8 +292,8 @@ TASKS:
   FILES: mud/combat/engine.py; tests/test_combat.py
 - ✅ [P0] Map dam*type → AC index and apply AC sign correctly — done 2025-09-08
   EVIDENCE: C src/merc.h: AC_PIERCE/AC_BASH/AC_SLASH/AC_EXOTIC defines
-  EVIDENCE: C src/const.c: attack table → DAM*_ mappings
-  EVIDENCE: PY mud/models/constants.py (AC\__ indices); mud/combat/engine.py:L73-L94 (ac_index_for_dam_type, is_better_ac)
+  EVIDENCE: C src/const.c: attack table → DAM*\_ mappings
+  EVIDENCE: PY mud/models/constants.py (AC\_\_ indices); mud/combat/engine.py:L73-L94 (ac_index_for_dam_type, is_better_ac)
   EVIDENCE: TEST tests/test_combat.py::test_ac_mapping_and_sign_semantics
   RATIONALE: Ensure unarmed defaults to BASH; EXOTIC for non-physical; negative AC is better.
   FILES: mud/models/constants.py, mud/combat/engine.py, tests/test_combat.py
@@ -913,6 +924,7 @@ NOTES:
 
 - ✅ [P0] Fix undefined name errors in models (Area, Room forward references) — done 2025-09-15
   EVIDENCE: PY mud/models/mob.py:L1-L6 (TYPE_CHECKING Area import); PY mud/models/obj.py:L1-L8 (TYPE_CHECKING Area import); PY mud/spawning/templates.py:L1-L11 (TYPE_CHECKING Room import)
+
   - rationale: Critical runtime error prevention - undefined names would cause import/runtime failures
   - files: mud/models/mob.py, mud/models/obj.py, mud/spawning/templates.py
   - tests: All existing tests continue to pass (200 passed)

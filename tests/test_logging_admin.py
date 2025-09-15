@@ -15,7 +15,7 @@ def test_wiznet_toggle_is_logged():
     admin.is_admin = True
 
     out = process_command(admin, 'wiznet')
-    assert 'Wiznet is now' in out
+    assert 'Welcome to Wiznet' in out
 
     assert log_path.exists()
     text = log_path.read_text(encoding='utf-8')
