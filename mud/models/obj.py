@@ -24,7 +24,7 @@ class ObjIndex:
     description: Optional[str] = None
     material: Optional[str] = None
     item_type: str = 'trash'
-    extra_flags: str = ''
+    extra_flags: int = 0
     wear_flags: str = ''
     level: int = 0
     condition: str = 'P'

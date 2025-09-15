@@ -1,12 +1,10 @@
 {
-  "area": {
-    "vnum": 3000,
-    "name": "Midgaard",
-    "filename": "midgaard.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Midgaard",
+  "vnum_range": {
+    "min": 3000,
+    "max": 3399
   },
+  "builders": [],
   "rooms": [
     {
       "id": 3001,
@@ -39,7 +37,6 @@
           "description": "This entire world has been integrated, modified, debugged, and enhanced by\nHatchet, Kahn, and Furey of MERC Industries to be run by any MERC Mud.\n1992 December 17\nROM enhancements by Alander.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -63,7 +60,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -92,7 +88,6 @@
           "description": "The sign reads:\nFree instructions provided by the waiter:\nBuy  - Buy something (drinkable) from the waiter.\nList - The waiter will show you all the different drinks and\nspecialties, and tell the price of each.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -116,7 +111,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -158,7 +152,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -188,7 +181,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -215,7 +207,6 @@
           "description": "The sign reads:\nFree instructions provided by the Grunting Boar Inn.\nBuy  - Buy something (drinkable) from the bartender.\nList - The bartender will show you all the different drinks and\nspecialties, and tell the price of each.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -233,7 +224,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -260,7 +250,6 @@
           "description": "You see that this is truly delicious pastry.  Must be made by a Dane from\nDenmark (which surely is not the capital of Sweden!).  Former ruler of\nScandinavia, England, Northern Germany, Northern France, Russia, Greenland,\nIceland, Estonia etc. etc.\nThe sight of those large, wholesome chokoladeboller makes your mouth water\nand your soul sing.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -283,7 +272,6 @@
           "description": "The note reads:\nList  - Show which various items are in the store.\nBuy   - Buy an item.\nValue - The shopkeeper will (free of charge) tell how much he will\npay for your item.\nSell  - Sell an item.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -306,7 +294,6 @@
           "description": "The note reads:\nList  - Show which various items are in the store.\nBuy   - Buy an item.\nValue - The shopkeeper will (free of charge) tell how much he will\npay for your item.\nSell  - Sell an item.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -342,7 +329,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -378,7 +364,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -419,7 +404,6 @@
           "description": "What you see is the Midgaard Worm, stretching around the Palace of Midgaard.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -455,7 +439,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -491,7 +474,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -515,7 +497,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -539,7 +520,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -563,7 +543,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -586,7 +565,6 @@
           "description": "You can use these commands for trading:\nvalue <item>     To get the price of an item in your possession.\nsell <item>      To sell something.\nbuy <item>       To buy something (provided that the shop has it in store).\nlist             Gives you a listing of the shop's inventory.\nWE DON'T GIVE CREDIT; WE DON'T EXPECT TO RECEIVE CREDIT!\nNO HAGGLING\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -610,7 +588,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -634,7 +611,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -658,7 +634,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -694,7 +669,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -730,7 +704,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -771,7 +744,6 @@
           "description": "It is the thieves guild, don't enter if you care about your health or money.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -795,7 +767,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -824,7 +795,6 @@
           "description": "As you look at the furniture, the chair you sit on disappears.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -848,7 +818,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -878,7 +847,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -901,7 +869,6 @@
           "description": "The sign reads:\nUse 'List' to see the available pets.\nUse 'Buy <pet> <name>' to buy yourself a pet and name it.\nYou can use 'order <pet> <instructions>' to order your pets around.\nIf you abuse your pet, it will no longer regard you as its master.\nIf you have several pets you may use 'order all <instructions>'\nRegards,\nThe Shopkeeper\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -912,7 +879,6 @@
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -943,7 +909,6 @@
           "description": "Some of them are transparent enabling you to see that some contain colored\npowders while others contain body parts of various animals.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -974,7 +939,6 @@
           "description": "They are made from polished gold and looks as if they are securely fastened\nto the smooth stone walls.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1009,7 +973,6 @@
           "description": "It is a rather large fireplace made from heavy granite rocks.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1063,7 +1026,6 @@
           "description": "It is too high up to reach but it looks as if one easily could walk across it\nfrom one tower to the other.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1116,7 +1078,6 @@
           "description": "It is too high up to reach but it looks as if one easily could walk across it\nfrom one tower to the other.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1145,7 +1106,6 @@
           "description": "It is built from large grey rocks that have been fastened to each other with\nsome kind of mortar.  It is far too high to climb.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1184,7 +1144,6 @@
           "description": "It says 'Who watches the watchmen?'\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1220,7 +1179,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1255,7 +1213,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1290,7 +1247,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1325,7 +1281,6 @@
           "description": "It is built from large grey rocks that have been fastened to each other with\nsome kind of mortar.  It is far too high to climb.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1343,7 +1298,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1367,7 +1321,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1390,7 +1343,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1427,7 +1379,6 @@
           "description": "It is built from large grey rocks that have been fastened to each other with\nsome kind of mortar, just like the wall.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1475,7 +1426,6 @@
           "description": "It is too high up to reach but it looks as if one easily could walk across it\nfrom one tower to the other.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1523,7 +1473,6 @@
           "description": "It is too high up to reach but it looks as if one easily could walk across it\nfrom one tower to the other.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1556,7 +1505,6 @@
           "description": "Even though the altar is more than ten feet long it appears to be made from a\nsingle block of white virgin marble.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1574,7 +1522,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1596,7 +1543,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1626,7 +1572,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1656,7 +1601,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1692,7 +1636,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1728,7 +1671,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1763,7 +1705,6 @@
           "description": "It is built from large grey rocks that have been fastened to each other with\nsome kind of mortar.  It is far too high to climb.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1793,7 +1734,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1811,7 +1751,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1833,7 +1772,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1861,7 +1799,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1883,7 +1820,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1909,7 +1845,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1949,7 +1884,6 @@
           "description": "The sign on the door says:-\nCityguard Head Quarters\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -1971,7 +1905,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2000,7 +1933,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2022,7 +1954,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2049,7 +1980,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2071,7 +2001,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2103,7 +2032,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2125,7 +2053,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2153,7 +2080,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2200,7 +2126,6 @@
           "description": "The sign points in all directions:\nNorth - Emerald Avenue.\nEast  - Park Road.\nSouth - Emerald Avenue.\nWest  - Park Road.\nSomeone has added the following with red paint:\nUp    - Redferne's Flying Citadel.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2222,7 +2147,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2249,7 +2173,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2271,7 +2194,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2320,7 +2242,6 @@
           "description": "Looks heavy.  A small sign is hanging on it.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2342,7 +2263,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2364,7 +2284,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2386,7 +2305,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2415,7 +2333,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2443,7 +2360,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2465,7 +2381,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2487,7 +2402,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2514,7 +2428,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2536,7 +2449,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2558,7 +2470,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2580,7 +2491,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2602,7 +2512,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2626,7 +2535,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2649,7 +2557,6 @@
           "description": "This chair is really a masterpiece.  A chair where one can sit as comfortably\nas in a bed.  All lecture halls should be equipped with these things.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2671,7 +2578,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2699,7 +2605,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2716,7 +2621,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2747,7 +2651,6 @@
           "description": "Although a bit dusty the Coat of Arms is an excellent piece of work.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2771,7 +2674,6 @@
           "description": "The walls are marked with lots of scratches.  Some of them spell sentences\nlike \"JAIL IS BETTER THAN SQL\" and \"BIGFOOTDAMOOSE IS ALIVE\".\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2795,7 +2697,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2830,7 +2731,6 @@
           "description": "You can see a rickety bridge to your northwest, leading back into\nCentral Midgaard.  A rustic dock connects the Diner with the Midgaard\nRiver, and a boat or two floats lazily past.  Across the river you can see\nthe Levee and the Guild of Thieves, but they seem very far away from all\nof this...\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2864,7 +2764,6 @@
           "description": "You see many cartographer journals and topographical studies.  You also see\nquite a few tomes written by someone named \"Anson MacDonald\".\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2893,7 +2792,6 @@
           "description": "This chest is firmly locked, and the device by which it opens is beyond your\nreckoning.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2921,7 +2819,6 @@
           "description": "The puddles on the floor are filthy and exude a foul stench.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2949,7 +2846,6 @@
           "description": "It is built from large grey rocks that have been fastened to each other with\nsome kind of mortar.  Looks pretty solid.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2971,7 +2867,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -2993,7 +2888,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3026,7 +2920,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3048,7 +2941,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3071,7 +2963,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3095,7 +2986,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3125,7 +3015,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3149,7 +3038,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3178,7 +3066,6 @@
           "description": "Hmm...some of the bars have been ripped out of the wall.  Enough to pass a\ngood sized raft or canoe, or perhaps even a barge.  You wonder what sort of\nbeast had the strength to do this.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3201,7 +3088,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3231,7 +3117,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3255,7 +3140,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3279,7 +3163,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3309,7 +3192,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3333,7 +3215,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3357,7 +3238,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3381,7 +3261,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3411,7 +3290,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3435,7 +3313,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3459,7 +3336,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3483,7 +3359,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3513,7 +3388,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3537,7 +3411,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3561,7 +3434,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3585,7 +3457,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3609,7 +3480,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3639,7 +3509,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3669,7 +3538,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3693,7 +3561,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3723,7 +3590,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3747,7 +3613,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3771,7 +3636,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3801,7 +3665,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3825,7 +3688,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3852,7 +3714,6 @@
           "description": "Give me your coins, and I shall change them for you, taking but 1 in 20 for\nmy fee.  --- Otho the Changer\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3878,7 +3739,6 @@
           "description": "You find a table that's relatively vomit-free.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3902,7 +3762,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3938,7 +3797,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3961,7 +3819,6 @@
           "description": "The sign says: Don't forget our dinner menu.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -3984,7 +3841,6 @@
           "description": "The sign says: Don't forget our dinner menu.\n"
         }
       ],
-      "resets": [],
       "area": 3000
     },
     {
@@ -4002,11 +3858,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3000
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 3000,
       "name": "the wizard",
@@ -10049,6 +9904,2550 @@
       ],
       "affects": [],
       "extra_descriptions": []
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3011,
+      "arg3": 1,
+      "arg4": 3001
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3005,
+      "arg3": 1,
+      "arg4": 16
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3010,
+      "arg3": 1,
+      "arg4": 3054
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3000,
+      "arg3": 1,
+      "arg4": 3033
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3040,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3041,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3039,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3042,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3043,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3044,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3003,
+      "arg3": 1,
+      "arg4": 3011
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3020,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3021,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3023,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3024,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3025,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3026,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3027,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3028,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3029,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3004,
+      "arg3": 1,
+      "arg4": 3020
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3072,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3073,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3074,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3075,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3076,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3077,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3110,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3111,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3112,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3113,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3114,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3115,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3116,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3097,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3117,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3002,
+      "arg3": 1,
+      "arg4": 3010
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3030,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3031,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3138,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3032,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3033,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": 900,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3001,
+      "arg3": 1,
+      "arg4": 3009
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3009,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3011,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3012,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3013,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3014,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": 100,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3008,
+      "arg3": 1,
+      "arg4": 3031
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3009,
+      "arg3": 1,
+      "arg4": 3034
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3378,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3377,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3376,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3375,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3374,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3373,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3010,
+      "arg3": 1,
+      "arg4": 3035
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3060,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3061,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3062,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3063,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3064,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3065,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3066,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3067,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3068,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3069,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3070,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3071,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3052,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3053,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3054,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3006,
+      "arg3": 1,
+      "arg4": 3049
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3050,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3051,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3007,
+      "arg3": 1,
+      "arg4": 3050
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3070,
+      "arg3": 5,
+      "arg4": 3056
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3080,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3081,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3082,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3083,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3084,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3085,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3086,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3087,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3088,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3089,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3090,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3091,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3092,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3040,
+      "arg3": 1,
+      "arg4": 3007
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3000,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3001,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3043,
+      "arg3": 1,
+      "arg4": 3003
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3002,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3004,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3042,
+      "arg3": 1,
+      "arg4": 3018
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3002,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3003,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3045,
+      "arg3": 1,
+      "arg4": 3022
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3002,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3003,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3004,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3044,
+      "arg3": 1,
+      "arg4": 3028
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3003,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3004,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3046,
+      "arg3": 1,
+      "arg4": 3048
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3003,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3004,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3022,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3163,
+      "arg3": 1,
+      "arg4": 3048
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3020,
+      "arg3": 1,
+      "arg4": 3019
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3021,
+      "arg3": 1,
+      "arg4": 3002
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3022,
+      "arg3": 1,
+      "arg4": 3029
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3023,
+      "arg3": 1,
+      "arg4": 3023
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3024,
+      "arg3": 1,
+      "arg4": 3017
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3025,
+      "arg3": 1,
+      "arg4": 3004
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3026,
+      "arg3": 1,
+      "arg4": 3027
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3349,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3027,
+      "arg3": 1,
+      "arg4": 3021
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3349,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3150,
+      "arg3": 1,
+      "arg4": 3150
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3154,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3152,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3153,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3151,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 1103,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3150,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3100,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3160,
+      "arg3": 1,
+      "arg4": 3160
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3168,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3167,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3166,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3165,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3164,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3163,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3162,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3161,
+      "arg3": 1,
+      "arg4": 3160
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3160,
+      "arg3": 0,
+      "arg4": 2
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3161,
+      "arg3": 2,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3162,
+      "arg3": 1,
+      "arg4": 3334
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3004
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3355,
+      "arg3": -1,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3014
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3356,
+      "arg3": -1,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3017
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3357,
+      "arg3": -1,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3021
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3358,
+      "arg3": -1,
+      "arg4": 8
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3027
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3359,
+      "arg3": -1,
+      "arg4": 9
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3067,
+      "arg3": 2,
+      "arg4": 3041
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3360,
+      "arg3": -1,
+      "arg4": 10
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3067,
+      "arg3": 2,
+      "arg4": 3041
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3354,
+      "arg3": -1,
+      "arg4": 11
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3068,
+      "arg3": 2,
+      "arg4": 3040
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3361,
+      "arg3": -1,
+      "arg4": 12
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3068,
+      "arg3": 2,
+      "arg4": 3040
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3362,
+      "arg3": -1,
+      "arg4": 13
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3071,
+      "arg3": 2,
+      "arg4": 3255
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3361,
+      "arg3": -1,
+      "arg4": 12
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3071,
+      "arg3": 2,
+      "arg4": 3255
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3362,
+      "arg3": -1,
+      "arg4": 13
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3072,
+      "arg3": 1,
+      "arg4": 3262
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3354,
+      "arg3": -1,
+      "arg4": 11
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3063,
+      "arg3": 5,
+      "arg4": 3026
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3021,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3066,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3052,
+      "arg3": -1,
+      "arg4": 15
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3064,
+      "arg3": 3,
+      "arg4": 3007
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3065,
+      "arg3": 2,
+      "arg4": 3044
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3065,
+      "arg3": 2,
+      "arg4": 3048
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3062,
+      "arg3": 16,
+      "arg4": 3024
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3062,
+      "arg3": 16,
+      "arg4": 3025
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3062,
+      "arg3": 16,
+      "arg4": 3016
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3062,
+      "arg3": 16,
+      "arg4": 3012
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3066,
+      "arg3": 1,
+      "arg4": 3026
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3061,
+      "arg3": 5,
+      "arg4": 3006
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3090,
+      "arg3": 1,
+      "arg4": 3032
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3091,
+      "arg3": 1,
+      "arg4": 3032
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3092,
+      "arg3": 1,
+      "arg4": 3032
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3093,
+      "arg3": 1,
+      "arg4": 3032
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3094,
+      "arg3": 1,
+      "arg4": 3032
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3005,
+      "arg3": 4,
+      "arg4": 3027
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3351,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3005,
+      "arg3": 4,
+      "arg4": 3128
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3351,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3135,
+      "arg3": 10,
+      "arg4": 1200
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 1200
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3135,
+      "arg3": 10,
+      "arg4": 3005
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3139,
+      "arg3": 15,
+      "arg4": 3008
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3140,
+      "arg3": 15,
+      "arg4": 3008
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3110,
+      "arg3": 3,
+      "arg4": 2
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3142,
+      "arg3": 1,
+      "arg4": 2
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3142,
+      "arg3": 2,
+      "arg4": 2
+    },
+    {
+      "command": "D",
+      "arg1": 0,
+      "arg2": 3143,
+      "arg3": 0,
+      "arg4": 2
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3134,
+      "arg3": 3,
+      "arg4": 3101
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3134,
+      "arg3": 3,
+      "arg4": 3102
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3134,
+      "arg3": 3,
+      "arg4": 3103
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3100,
+      "arg3": 1,
+      "arg4": 3106
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3100,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3101,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3102,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3120,
+      "arg3": 1,
+      "arg4": 3106
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3121,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3121,
+      "arg3": 1,
+      "arg4": 3114
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3122,
+      "arg3": 1,
+      "arg4": 3114
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3123,
+      "arg3": 1,
+      "arg4": 3109
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3124,
+      "arg3": 2,
+      "arg4": 3113
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3124,
+      "arg3": 2,
+      "arg4": 3115
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3140,
+      "arg3": 1,
+      "arg4": 3142
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3122,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3137,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3141,
+      "arg3": 4,
+      "arg4": 3142
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3141,
+      "arg3": 4,
+      "arg4": 3142
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3141,
+      "arg3": 4,
+      "arg4": 3142
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3141,
+      "arg3": 4,
+      "arg4": 3142
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3130,
+      "arg3": 1,
+      "arg4": 3142
+    },
+    {
+      "command": "P",
+      "arg1": 1,
+      "arg2": 3123,
+      "arg3": 1,
+      "arg4": 3130
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3131,
+      "arg3": 1,
+      "arg4": 3142
+    },
+    {
+      "command": "P",
+      "arg1": 1,
+      "arg2": 3132,
+      "arg3": 1,
+      "arg4": 3131
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3111
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "G",
+      "arg1": 1,
+      "arg2": 3120,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3111
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3363,
+      "arg3": -1,
+      "arg4": 15
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3117
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3109
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3363,
+      "arg3": -1,
+      "arg4": 15
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3120
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3060,
+      "arg3": 18,
+      "arg4": 3125
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3353,
+      "arg3": -1,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3142,
+      "arg3": 1,
+      "arg4": 3137
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3143,
+      "arg3": 1,
+      "arg4": 3138
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3124,
+      "arg3": 5,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3069,
+      "arg3": 4,
+      "arg4": 3138
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3069,
+      "arg3": 4,
+      "arg4": 3138
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3069,
+      "arg3": 4,
+      "arg4": 3138
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3069,
+      "arg3": 4,
+      "arg4": 3138
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3365,
+      "arg3": -1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3364,
+      "arg3": -1,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1,
+      "arg2": 3350,
+      "arg3": -1,
+      "arg4": 16
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3144,
+      "arg3": 1,
+      "arg4": 3120
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3135,
+      "arg3": 2,
+      "arg4": 3141
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3136,
+      "arg3": -1,
+      "arg4": 3141
+    },
+    {
+      "command": "M",
+      "arg1": 0,
+      "arg2": 3012,
+      "arg3": 5,
+      "arg4": 3054
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3003
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3007
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3018
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3022
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3028
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3106
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3150
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3352
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3355
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 3356
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 1116
+    },
+    {
+      "command": "O",
+      "arg1": 0,
+      "arg2": 3200,
+      "arg3": -1,
+      "arg4": 1144
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 3000,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3005,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 3011,
+      "spec": "spec_executioner"
+    },
+    {
+      "mob_vnum": 3012,
+      "spec": "spec_cast_adept"
+    },
+    {
+      "mob_vnum": 3020,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3021,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 3024,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3042,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3043,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 3060,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 3061,
+      "spec": "spec_janitor"
+    },
+    {
+      "mob_vnum": 3062,
+      "spec": "spec_fido"
+    },
+    {
+      "mob_vnum": 3067,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 3068,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 3069,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 3100,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 3120,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 3143,
+      "spec": "spec_mayor"
+    },
+    {
+      "mob_vnum": 3163,
+      "spec": "spec_nasty"
     }
   ]
 }

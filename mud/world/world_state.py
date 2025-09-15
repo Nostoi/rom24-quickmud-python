@@ -113,6 +113,41 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
             print(f"Warning: Failed to load skills from {skills_path}: {e}")
             skill_registry = None
     
+    # Load shops from JSON (needed for shopkeeper detection in resets)
+    from mud.registry import shop_registry
+    from mud.loaders.shop_loader import Shop
+    import json
+    shops_path = Path("data/shops.json")
+    if shops_path.exists():
+        try:
+            with open(shops_path, 'r') as f:
+                shops_data = json.load(f)
+            shop_registry.clear()
+            for shop_data in shops_data:
+                # Convert string buy_types back to int list for compatibility
+                buy_types = []
+                for bt in shop_data.get('buy_types', []):
+                    if isinstance(bt, str):
+                        from mud.models.constants import ItemType
+                        try:
+                            buy_types.append(ItemType[bt.upper()].value)
+                        except (KeyError, AttributeError):
+                            buy_types.append(0)  # unknown type
+                    else:
+                        buy_types.append(bt)
+                
+                shop_registry[shop_data['keeper']] = Shop(
+                    keeper=shop_data['keeper'],
+                    buy_types=buy_types,
+                    profit_buy=shop_data.get('profit_buy', 100),
+                    profit_sell=shop_data.get('profit_sell', 100),
+                    open_hour=shop_data.get('open_hour', 0),
+                    close_hour=shop_data.get('close_hour', 23),
+                )
+            print(f"✅ Loaded {len(shop_registry)} shops from {shops_path}")
+        except Exception as e:
+            print(f"Warning: Failed to load shops from {shops_path}: {e}")
+    
     if area_list_path:
         if use_json:
             # Load from JSON files using enhanced field mapping

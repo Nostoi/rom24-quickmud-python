@@ -145,6 +145,6 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     assert keeper is not None
     inv = [getattr(o.prototype, 'vnum', None) for o in getattr(keeper, 'inventory', [])]
     assert inv.count(3031) == 1
-    # The inventory copy should be flagged as ITEM_INVENTORY (1<<18) on prototype
+    # The inventory copy should be flagged as ITEM_INVENTORY (1<<13) on prototype
     item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
-    assert getattr(item.prototype, 'extra_flags', 0) & (1 << 18)
+    assert getattr(item.prototype, 'extra_flags', 0) & (1 << 13)

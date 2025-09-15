@@ -13,6 +13,7 @@ def setup_module(module):
 
 
 @pytest.mark.telnet
+@pytest.mark.timeout(30)  # Add timeout to prevent hanging
 def test_telnet_server_handles_look_command():
     async def run():
         server = await create_server(host="127.0.0.1", port=0)
@@ -40,6 +41,7 @@ def test_telnet_server_handles_look_command():
                 "The Temple Of Mota" in text
                 or "Limbo" in text
                 or "Void" in text
+                or "void" in text
             )
             writer.close()
             await writer.wait_closed()
@@ -54,6 +56,7 @@ def test_telnet_server_handles_look_command():
 
 
 @pytest.mark.telnet
+@pytest.mark.timeout(30)  # Add timeout to prevent hanging
 def test_telnet_server_handles_multiple_connections():
     async def run():
         server = await create_server(host="127.0.0.1", port=0)

@@ -4,12 +4,16 @@ from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
 from mud.models.constants import ItemType
-from mud.registry import shop_registry
+from mud.registry import shop_registry, area_registry, room_registry, mob_registry, obj_registry
 
 
 def clear_registries() -> None:
-    """Reset global shop registry."""
+    """Reset all global registries."""
     shop_registry.clear()
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
 
 
 def shop_to_dict(shop) -> dict:

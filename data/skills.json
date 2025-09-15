@@ -1,12 +1,1855 @@
 [
   {
+    "name": "acid blast",
+    "type": "spell",
+    "function": "acid_blast",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "acid blast",
+      "wear_off": "!Acid Blast!"
+    }
+  },
+  {
+    "name": "armor",
+    "type": "spell",
+    "function": "armor",
+    "target": "friendly",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less armored."
+    }
+  },
+  {
+    "name": "bless",
+    "type": "spell",
+    "function": "bless",
+    "target": "character_or_object",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less righteous.",
+      "object": "$p's holy aura fades."
+    }
+  },
+  {
+    "name": "blindness",
+    "type": "spell",
+    "function": "blindness",
+    "target": "victim",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You can see again."
+    }
+  },
+  {
+    "name": "burning hands",
+    "type": "spell",
+    "function": "burning_hands",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "burning hands",
+      "wear_off": "!Burning Hands!"
+    }
+  },
+  {
+    "name": "call lightning",
+    "type": "spell",
+    "function": "call_lightning",
+    "target": "ignore",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "lightning bolt",
+      "wear_off": "!Call Lightning!"
+    }
+  },
+  {
+    "name": "calm",
+    "type": "spell",
+    "function": "calm",
+    "target": "ignore",
+    "mana_cost": 30,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You have lost your peace of mind."
+    }
+  },
+  {
+    "name": "cause critical",
+    "type": "spell",
+    "function": "cause_critical",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "spell",
+      "wear_off": "!Cause Critical!"
+    }
+  },
+  {
+    "name": "cause light",
+    "type": "spell",
+    "function": "cause_light",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "spell",
+      "wear_off": "!Cause Light!"
+    }
+  },
+  {
+    "name": "cause serious",
+    "type": "spell",
+    "function": "cause_serious",
+    "target": "victim",
+    "mana_cost": 17,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "spell",
+      "wear_off": "!Cause Serious!"
+    }
+  },
+  {
+    "name": "chain lightning",
+    "type": "spell",
+    "function": "chain_lightning",
+    "target": "victim",
+    "mana_cost": 25,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "lightning",
+      "wear_off": "!Chain Lightning!"
+    }
+  },
+  {
+    "name": "change sex",
+    "type": "spell",
+    "function": "change_sex",
+    "target": "friendly",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "Your body feels familiar again."
+    }
+  },
+  {
+    "name": "charm person",
+    "type": "spell",
+    "function": "charm_person",
+    "target": "victim",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel more self-confident."
+    }
+  },
+  {
+    "name": "chill touch",
+    "type": "spell",
+    "function": "chill_touch",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "chilling touch",
+      "wear_off": "You feel less cold."
+    }
+  },
+  {
+    "name": "colour spray",
+    "type": "spell",
+    "function": "colour_spray",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "colour spray",
+      "wear_off": "!Colour Spray!"
+    }
+  },
+  {
+    "name": "continual light",
+    "type": "spell",
+    "function": "continual_light",
+    "target": "ignore",
+    "mana_cost": 7,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Continual Light!"
+    }
+  },
+  {
+    "name": "control weather",
+    "type": "spell",
+    "function": "control_weather",
+    "target": "ignore",
+    "mana_cost": 25,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Control Weather!"
+    }
+  },
+  {
+    "name": "create food",
+    "type": "spell",
+    "function": "create_food",
+    "target": "ignore",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Create Food!"
+    }
+  },
+  {
+    "name": "create rose",
+    "type": "spell",
+    "function": "create_rose",
+    "target": "ignore",
+    "mana_cost": 30,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Create Rose!"
+    }
+  },
+  {
+    "name": "create spring",
+    "type": "spell",
+    "function": "create_spring",
+    "target": "ignore",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Create Spring!"
+    }
+  },
+  {
+    "name": "create water",
+    "type": "spell",
+    "function": "create_water",
+    "target": "object",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Create Water!"
+    }
+  },
+  {
+    "name": "cure blindness",
+    "type": "spell",
+    "function": "cure_blindness",
+    "target": "friendly",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Blindness!"
+    }
+  },
+  {
+    "name": "cure critical",
+    "type": "spell",
+    "function": "cure_critical",
+    "target": "friendly",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Critical!"
+    }
+  },
+  {
+    "name": "cure disease",
+    "type": "spell",
+    "function": "cure_disease",
+    "target": "friendly",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Disease!"
+    }
+  },
+  {
+    "name": "cure light",
+    "type": "spell",
+    "function": "cure_light",
+    "target": "friendly",
+    "mana_cost": 10,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Light!"
+    }
+  },
+  {
+    "name": "cure poison",
+    "type": "spell",
+    "function": "cure_poison",
+    "target": "friendly",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Poison!"
+    }
+  },
+  {
+    "name": "cure serious",
+    "type": "spell",
+    "function": "cure_serious",
+    "target": "friendly",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cure Serious!"
+    }
+  },
+  {
+    "name": "curse",
+    "type": "spell",
+    "function": "curse",
+    "target": "character_or_object",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "curse",
+      "wear_off": "The curse wears off.",
+      "object": "$p is no longer impure."
+    }
+  },
+  {
+    "name": "demonfire",
+    "type": "spell",
+    "function": "demonfire",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "torments",
+      "wear_off": "!Demonfire!"
+    }
+  },
+  {
+    "name": "detect evil",
+    "type": "spell",
+    "function": "detect_evil",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "The red in your vision disappears."
+    }
+  },
+  {
+    "name": "detect good",
+    "type": "spell",
+    "function": "detect_good",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "The gold in your vision disappears."
+    }
+  },
+  {
+    "name": "detect hidden",
+    "type": "spell",
+    "function": "detect_hidden",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less aware of your surroundings."
+    }
+  },
+  {
+    "name": "detect invis",
+    "type": "spell",
+    "function": "detect_invis",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You no longer see invisible objects."
+    }
+  },
+  {
+    "name": "detect magic",
+    "type": "spell",
+    "function": "detect_magic",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "The detect magic wears off."
+    }
+  },
+  {
+    "name": "detect poison",
+    "type": "spell",
+    "function": "detect_poison",
+    "target": "object",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Detect Poison!"
+    }
+  },
+  {
+    "name": "dispel evil",
+    "type": "spell",
+    "function": "dispel_evil",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "dispel evil",
+      "wear_off": "!Dispel Evil!"
+    }
+  },
+  {
+    "name": "dispel good",
+    "type": "spell",
+    "function": "dispel_good",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "dispel good",
+      "wear_off": "!Dispel Good!"
+    }
+  },
+  {
+    "name": "dispel magic",
+    "type": "spell",
+    "function": "dispel_magic",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Dispel Magic!"
+    }
+  },
+  {
+    "name": "earthquake",
+    "type": "spell",
+    "function": "earthquake",
+    "target": "ignore",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "earthquake",
+      "wear_off": "!Earthquake!"
+    }
+  },
+  {
+    "name": "enchant armor",
+    "type": "spell",
+    "function": "enchant_armor",
+    "target": "object",
+    "mana_cost": 100,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Enchant Armor!"
+    }
+  },
+  {
+    "name": "enchant weapon",
+    "type": "spell",
+    "function": "enchant_weapon",
+    "target": "object",
+    "mana_cost": 100,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Enchant Weapon!"
+    }
+  },
+  {
+    "name": "energy drain",
+    "type": "spell",
+    "function": "energy_drain",
+    "target": "victim",
+    "mana_cost": 35,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "energy drain",
+      "wear_off": "!Energy Drain!"
+    }
+  },
+  {
+    "name": "faerie fire",
+    "type": "spell",
+    "function": "faerie_fire",
+    "target": "victim",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "faerie fire",
+      "wear_off": "The pink aura around you fades away."
+    }
+  },
+  {
+    "name": "faerie fog",
+    "type": "spell",
+    "function": "faerie_fog",
+    "target": "ignore",
+    "mana_cost": 12,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "faerie fog",
+      "wear_off": "!Faerie Fog!"
+    }
+  },
+  {
+    "name": "farsight",
+    "type": "spell",
+    "function": "farsight",
+    "target": "ignore",
+    "mana_cost": 36,
+    "lag": 20,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "farsight",
+      "wear_off": "!Farsight!"
+    }
+  },
+  {
     "name": "fireball",
     "type": "spell",
     "function": "fireball",
     "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "fireball",
+      "wear_off": "!Fireball!"
+    }
+  },
+  {
+    "name": "fireproof",
+    "type": "spell",
+    "function": "fireproof",
+    "target": "object",
     "mana_cost": 10,
     "lag": 12,
-    "cooldown": 2,
-    "failure_rate": 0.0
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "",
+      "object": "$p's protective aura fades."
+    }
+  },
+  {
+    "name": "flamestrike",
+    "type": "spell",
+    "function": "flamestrike",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "flamestrike",
+      "wear_off": "!Flamestrike!"
+    }
+  },
+  {
+    "name": "fly",
+    "type": "spell",
+    "function": "fly",
+    "target": "friendly",
+    "mana_cost": 10,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You slowly float to the ground."
+    }
+  },
+  {
+    "name": "floating disc",
+    "type": "spell",
+    "function": "floating_disc",
+    "target": "ignore",
+    "mana_cost": 40,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Floating disc!"
+    }
+  },
+  {
+    "name": "frenzy",
+    "type": "spell",
+    "function": "frenzy",
+    "target": "friendly",
+    "mana_cost": 30,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "Your rage ebbs."
+    }
+  },
+  {
+    "name": "gate",
+    "type": "spell",
+    "function": "gate",
+    "target": "ignore",
+    "mana_cost": 80,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Gate!"
+    }
+  },
+  {
+    "name": "giant strength",
+    "type": "spell",
+    "function": "giant_strength",
+    "target": "friendly",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel weaker."
+    }
+  },
+  {
+    "name": "haste",
+    "type": "spell",
+    "function": "haste",
+    "target": "friendly",
+    "mana_cost": 30,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel yourself slow down."
+    }
+  },
+  {
+    "name": "heal",
+    "type": "spell",
+    "function": "heal",
+    "target": "friendly",
+    "mana_cost": 50,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Heal!"
+    }
+  },
+  {
+    "name": "heat metal",
+    "type": "spell",
+    "function": "heat_metal",
+    "target": "victim",
+    "mana_cost": 25,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "spell",
+      "wear_off": "!Heat Metal!"
+    }
+  },
+  {
+    "name": "holy word",
+    "type": "spell",
+    "function": "holy_word",
+    "target": "ignore",
+    "mana_cost": 200,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "divine wrath",
+      "wear_off": "!Holy Word!"
+    }
+  },
+  {
+    "name": "identify",
+    "type": "spell",
+    "function": "identify",
+    "target": "object",
+    "mana_cost": 12,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Identify!"
+    }
+  },
+  {
+    "name": "infravision",
+    "type": "spell",
+    "function": "infravision",
+    "target": "friendly",
+    "mana_cost": 5,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You no longer see in the dark."
+    }
+  },
+  {
+    "name": "invisibility",
+    "type": "spell",
+    "function": "invis",
+    "target": "character_or_object",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You are no longer invisible.",
+      "object": "$p fades into view."
+    }
+  },
+  {
+    "name": "know alignment",
+    "type": "spell",
+    "function": "know_alignment",
+    "target": "friendly",
+    "mana_cost": 9,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Know Alignment!"
+    }
+  },
+  {
+    "name": "lightning bolt",
+    "type": "spell",
+    "function": "lightning_bolt",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "lightning bolt",
+      "wear_off": "!Lightning Bolt!"
+    }
+  },
+  {
+    "name": "locate object",
+    "type": "spell",
+    "function": "locate_object",
+    "target": "ignore",
+    "mana_cost": 20,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Locate Object!"
+    }
+  },
+  {
+    "name": "magic missile",
+    "type": "spell",
+    "function": "magic_missile",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "magic missile",
+      "wear_off": "!Magic Missile!"
+    }
+  },
+  {
+    "name": "mass healing",
+    "type": "spell",
+    "function": "mass_healing",
+    "target": "ignore",
+    "mana_cost": 100,
+    "lag": 36,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Mass Healing!"
+    }
+  },
+  {
+    "name": "mass invis",
+    "type": "spell",
+    "function": "mass_invis",
+    "target": "ignore",
+    "mana_cost": 20,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You are no longer invisible."
+    }
+  },
+  {
+    "name": "nexus",
+    "type": "spell",
+    "function": "nexus",
+    "target": "ignore",
+    "mana_cost": 150,
+    "lag": 36,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Nexus!"
+    }
+  },
+  {
+    "name": "pass door",
+    "type": "spell",
+    "function": "pass_door",
+    "target": "self",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel solid again."
+    }
+  },
+  {
+    "name": "plague",
+    "type": "spell",
+    "function": "plague",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "sickness",
+      "wear_off": "Your sores vanish."
+    }
+  },
+  {
+    "name": "poison",
+    "type": "spell",
+    "function": "poison",
+    "target": "character_or_object",
+    "mana_cost": 10,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "poison",
+      "wear_off": "You feel less sick.",
+      "object": "The poison on $p dries up."
+    }
+  },
+  {
+    "name": "portal",
+    "type": "spell",
+    "function": "portal",
+    "target": "ignore",
+    "mana_cost": 100,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Portal!"
+    }
+  },
+  {
+    "name": "protection evil",
+    "type": "spell",
+    "function": "protection_evil",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less protected."
+    }
+  },
+  {
+    "name": "protection good",
+    "type": "spell",
+    "function": "protection_good",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less protected."
+    }
+  },
+  {
+    "name": "ray of truth",
+    "type": "spell",
+    "function": "ray_of_truth",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "ray of truth",
+      "wear_off": "!Ray of Truth!"
+    }
+  },
+  {
+    "name": "recharge",
+    "type": "spell",
+    "function": "recharge",
+    "target": "object",
+    "mana_cost": 60,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Recharge!"
+    }
+  },
+  {
+    "name": "refresh",
+    "type": "spell",
+    "function": "refresh",
+    "target": "friendly",
+    "mana_cost": 12,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "refresh",
+      "wear_off": "!Refresh!"
+    }
+  },
+  {
+    "name": "remove curse",
+    "type": "spell",
+    "function": "remove_curse",
+    "target": "character_or_object",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Remove Curse!"
+    }
+  },
+  {
+    "name": "sanctuary",
+    "type": "spell",
+    "function": "sanctuary",
+    "target": "friendly",
+    "mana_cost": 75,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "The white aura around your body fades."
+    }
+  },
+  {
+    "name": "shield",
+    "type": "spell",
+    "function": "shield",
+    "target": "friendly",
+    "mana_cost": 12,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "Your force shield shimmers then fades away."
+    }
+  },
+  {
+    "name": "shocking grasp",
+    "type": "spell",
+    "function": "shocking_grasp",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "shocking grasp",
+      "wear_off": "!Shocking Grasp!"
+    }
+  },
+  {
+    "name": "sleep",
+    "type": "spell",
+    "function": "sleep",
+    "target": "victim",
+    "mana_cost": 15,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel less tired."
+    }
+  },
+  {
+    "name": "slow",
+    "type": "spell",
+    "function": "slow",
+    "target": "victim",
+    "mana_cost": 30,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel yourself speed up."
+    }
+  },
+  {
+    "name": "stone skin",
+    "type": "spell",
+    "function": "stone_skin",
+    "target": "self",
+    "mana_cost": 12,
+    "lag": 18,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "Your skin feels soft again."
+    }
+  },
+  {
+    "name": "summon",
+    "type": "spell",
+    "function": "summon",
+    "target": "ignore",
+    "mana_cost": 50,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Summon!"
+    }
+  },
+  {
+    "name": "teleport",
+    "type": "spell",
+    "function": "teleport",
+    "target": "self",
+    "mana_cost": 35,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Teleport!"
+    }
+  },
+  {
+    "name": "ventriloquate",
+    "type": "spell",
+    "function": "ventriloquate",
+    "target": "ignore",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Ventriloquate!"
+    }
+  },
+  {
+    "name": "weaken",
+    "type": "spell",
+    "function": "weaken",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "spell",
+      "wear_off": "You feel stronger."
+    }
+  },
+  {
+    "name": "word of recall",
+    "type": "spell",
+    "function": "word_of_recall",
+    "target": "self",
+    "mana_cost": 5,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Word of Recall!"
+    }
+  },
+  {
+    "name": "acid breath",
+    "type": "spell",
+    "function": "acid_breath",
+    "target": "victim",
+    "mana_cost": 100,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "blast of acid",
+      "wear_off": "!Acid Breath!"
+    }
+  },
+  {
+    "name": "fire breath",
+    "type": "spell",
+    "function": "fire_breath",
+    "target": "victim",
+    "mana_cost": 200,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "blast of flame",
+      "wear_off": "The smoke leaves your eyes."
+    }
+  },
+  {
+    "name": "frost breath",
+    "type": "spell",
+    "function": "frost_breath",
+    "target": "victim",
+    "mana_cost": 125,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "blast of frost",
+      "wear_off": "!Frost Breath!"
+    }
+  },
+  {
+    "name": "gas breath",
+    "type": "spell",
+    "function": "gas_breath",
+    "target": "ignore",
+    "mana_cost": 175,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "blast of gas",
+      "wear_off": "!Gas Breath!"
+    }
+  },
+  {
+    "name": "lightning breath",
+    "type": "spell",
+    "function": "lightning_breath",
+    "target": "victim",
+    "mana_cost": 150,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "blast of lightning",
+      "wear_off": "!Lightning Breath!"
+    }
+  },
+  {
+    "name": "general purpose",
+    "type": "spell",
+    "function": "general_purpose",
+    "target": "victim",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "general purpose ammo",
+      "wear_off": "!General Purpose Ammo!"
+    }
+  },
+  {
+    "name": "high explosive",
+    "type": "spell",
+    "function": "high_explosive",
+    "target": "victim",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "high explosive ammo",
+      "wear_off": "!High Explosive Ammo!"
+    }
+  },
+  {
+    "name": "axe",
+    "type": "skill",
+    "function": "axe",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Axe!"
+    }
+  },
+  {
+    "name": "dagger",
+    "type": "skill",
+    "function": "dagger",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Dagger!"
+    }
+  },
+  {
+    "name": "flail",
+    "type": "skill",
+    "function": "flail",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Flail!"
+    }
+  },
+  {
+    "name": "mace",
+    "type": "skill",
+    "function": "mace",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Mace!"
+    }
+  },
+  {
+    "name": "polearm",
+    "type": "skill",
+    "function": "polearm",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Polearm!"
+    }
+  },
+  {
+    "name": "shield block",
+    "type": "skill",
+    "function": "shield_block",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Shield!"
+    }
+  },
+  {
+    "name": "spear",
+    "type": "skill",
+    "function": "spear",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Spear!"
+    }
+  },
+  {
+    "name": "sword",
+    "type": "skill",
+    "function": "sword",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!sword!"
+    }
+  },
+  {
+    "name": "whip",
+    "type": "skill",
+    "function": "whip",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Whip!"
+    }
+  },
+  {
+    "name": "backstab",
+    "type": "skill",
+    "function": "backstab",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "backstab",
+      "wear_off": "!Backstab!"
+    }
+  },
+  {
+    "name": "bash",
+    "type": "skill",
+    "function": "bash",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "bash",
+      "wear_off": "!Bash!"
+    }
+  },
+  {
+    "name": "berserk",
+    "type": "skill",
+    "function": "berserk",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You feel your pulse slow down."
+    }
+  },
+  {
+    "name": "dirt kicking",
+    "type": "skill",
+    "function": "dirt_kicking",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "kicked dirt",
+      "wear_off": "You rub the dirt out of your eyes."
+    }
+  },
+  {
+    "name": "disarm",
+    "type": "skill",
+    "function": "disarm",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Disarm!"
+    }
+  },
+  {
+    "name": "dodge",
+    "type": "skill",
+    "function": "dodge",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Dodge!"
+    }
+  },
+  {
+    "name": "enhanced damage",
+    "type": "skill",
+    "function": "enhanced_damage",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Enhanced Damage!"
+    }
+  },
+  {
+    "name": "envenom",
+    "type": "skill",
+    "function": "envenom",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 36,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Envenom!"
+    }
+  },
+  {
+    "name": "hand to hand",
+    "type": "skill",
+    "function": "hand_to_hand",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Hand to Hand!"
+    }
+  },
+  {
+    "name": "kick",
+    "type": "skill",
+    "function": "kick",
+    "target": "victim",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "kick",
+      "wear_off": "!Kick!"
+    }
+  },
+  {
+    "name": "parry",
+    "type": "skill",
+    "function": "parry",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Parry!"
+    }
+  },
+  {
+    "name": "rescue",
+    "type": "skill",
+    "function": "rescue",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Rescue!"
+    }
+  },
+  {
+    "name": "trip",
+    "type": "skill",
+    "function": "trip",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "trip",
+      "wear_off": "!Trip!"
+    }
+  },
+  {
+    "name": "second attack",
+    "type": "skill",
+    "function": "second_attack",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Second Attack!"
+    }
+  },
+  {
+    "name": "third attack",
+    "type": "skill",
+    "function": "third_attack",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Third Attack!"
+    }
+  },
+  {
+    "name": "fast healing",
+    "type": "skill",
+    "function": "fast_healing",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Fast Healing!"
+    }
+  },
+  {
+    "name": "haggle",
+    "type": "skill",
+    "function": "haggle",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Haggle!"
+    }
+  },
+  {
+    "name": "hide",
+    "type": "skill",
+    "function": "hide",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Hide!"
+    }
+  },
+  {
+    "name": "lore",
+    "type": "skill",
+    "function": "lore",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 36,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Lore!"
+    }
+  },
+  {
+    "name": "meditation",
+    "type": "skill",
+    "function": "meditation",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "Meditation"
+    }
+  },
+  {
+    "name": "peek",
+    "type": "skill",
+    "function": "peek",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 0,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Peek!"
+    }
+  },
+  {
+    "name": "pick lock",
+    "type": "skill",
+    "function": "pick_lock",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Pick!"
+    }
+  },
+  {
+    "name": "sneak",
+    "type": "skill",
+    "function": "sneak",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "You no longer feel stealthy."
+    }
+  },
+  {
+    "name": "steal",
+    "type": "skill",
+    "function": "steal",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Steal!"
+    }
+  },
+  {
+    "name": "scrolls",
+    "type": "skill",
+    "function": "scrolls",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 24,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Scrolls!"
+    }
+  },
+  {
+    "name": "staves",
+    "type": "skill",
+    "function": "staves",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Staves!"
+    }
+  },
+  {
+    "name": "wands",
+    "type": "skill",
+    "function": "wands",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Wands!"
+    }
+  },
+  {
+    "name": "recall",
+    "type": "skill",
+    "function": "recall",
+    "target": "ignore",
+    "mana_cost": 0,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Recall!"
+    }
   }
 ]

@@ -168,12 +168,14 @@ character_registry: list[Character] = []
 
 def from_orm(db_char: 'DBCharacter') -> Character:
     from mud.registry import room_registry
+    from mud.models.constants import Position
 
     room = room_registry.get(db_char.room_vnum)
     char = Character(
         name=db_char.name,
         level=db_char.level or 0,
         hit=db_char.hp or 0,
+        position=int(Position.STANDING),  # Default to standing for loaded chars
     )
     char.room = room
     if db_char.player is not None:

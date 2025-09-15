@@ -3,6 +3,7 @@ import logging
 from typing import Dict, List, Optional
 
 from mud.models.area import Area
+from mud.models.constants import ITEM_INVENTORY
 from mud.registry import room_registry, area_registry
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
@@ -94,10 +95,17 @@ def apply_resets(area: Area) -> None:
                     is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
                 except Exception:
                     is_shopkeeper = False
+                
                 if is_shopkeeper:
-                    ITEM_INVENTORY = 1 << 18
                     if hasattr(obj.prototype, 'extra_flags'):
-                        obj.prototype.extra_flags |= ITEM_INVENTORY
+                        from mud.models.constants import ExtraFlag
+                        if isinstance(obj.prototype.extra_flags, str):
+                            # Legacy .are format uses flag letters - convert to proper flags
+                            from mud.models.constants import convert_flags_from_letters
+                            current_flags = convert_flags_from_letters(obj.prototype.extra_flags, ExtraFlag)
+                            obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
+                        else:
+                            obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
@@ -123,9 +131,15 @@ def apply_resets(area: Area) -> None:
                 except Exception:
                     is_shopkeeper = False
                 if is_shopkeeper:
-                    ITEM_INVENTORY = 1 << 18
                     if hasattr(obj.prototype, 'extra_flags'):
-                        obj.prototype.extra_flags |= ITEM_INVENTORY
+                        from mud.models.constants import ExtraFlag
+                        if isinstance(obj.prototype.extra_flags, str):
+                            # Legacy .are format uses flag letters - convert to proper flags
+                            from mud.models.constants import convert_flags_from_letters
+                            current_flags = convert_flags_from_letters(obj.prototype.extra_flags, ExtraFlag)
+                            obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
+                        else:
+                            obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)

@@ -15,6 +15,8 @@ dir_names = {
 
 def look(char: Character) -> str:
     room = char.room
+    if not room:
+        return "You are floating in a void..."
     exit_list = [dir_names[Direction(i)] for i, ex in enumerate(room.exits) if ex]
     lines = [room.name or "", room.description or ""]
     if exit_list:

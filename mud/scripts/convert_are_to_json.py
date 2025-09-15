@@ -35,15 +35,7 @@ def room_to_dict(room) -> dict:
     for ed in room.extra_descr:
         if ed.keyword and ed.description:
             extra.append({"keyword": ed.keyword, "description": ed.description})
-    resets = []
-    for r in room.resets:
-        resets.append({
-            "command": r.command,
-            "arg1": r.arg1,
-            "arg2": r.arg2,
-            "arg3": r.arg3,
-            "arg4": r.arg4,
-        })
+    # Note: Resets are stored at area level, not per-room in ROM format
     try:
         sector = Sector(room.sector_type).name.lower()
     except ValueError:
@@ -56,7 +48,6 @@ def room_to_dict(room) -> dict:
         "flags": room.room_flags or 0,
         "exits": exits,
         "extra_descriptions": extra,
-        "resets": resets,
         "area": room.area.vnum if room.area else 0,
     }
 
@@ -127,6 +118,17 @@ def convert_area(path: str) -> dict:
         if m.area is area and getattr(m, "spec_fun", None):
             specials.append({"mob_vnum": m.vnum, "spec": str(m.spec_fun)})
 
+    # Convert area-level resets 
+    resets = []
+    for r in area.resets:
+        resets.append({
+            "command": r.command,
+            "arg1": r.arg1,
+            "arg2": r.arg2,
+            "arg3": r.arg3,
+            "arg4": r.arg4,
+        })
+
     data = {
         "name": area.name or "",
         "vnum_range": {"min": area.min_vnum, "max": area.max_vnum},
@@ -134,6 +136,7 @@ def convert_area(path: str) -> dict:
         "rooms": rooms,
         "mobiles": mobiles,
         "objects": objects,
+        "resets": resets,
         "specials": specials,
     }
     return data

@@ -15,8 +15,46 @@ from ..models.room import Room, Exit, ExtraDescr
 from ..models.mob import MobIndex  
 from ..models.obj import ObjIndex, Affect
 from ..models.room_json import ResetJson
-from mud.models.constants import Direction, Sector, Sex
+from mud.models.constants import Direction, Sector, Sex, ITEM_INVENTORY
 from mud.registry import area_registry, room_registry, mob_registry, obj_registry
+
+
+def _rom_flags_to_int(flags_str: str) -> int:
+    """Convert ROM-style letter flags to integer bitfield.
+    
+    ROM uses letters A-Z and aa-dd to represent bit positions:
+    A=1<<0, B=1<<1, ..., Z=1<<25, aa=1<<26, bb=1<<27, cc=1<<28, dd=1<<29
+    """
+    if not flags_str or flags_str == '0':
+        return 0
+    
+    result = 0
+    
+    # Handle single characters and double characters
+    i = 0
+    while i < len(flags_str):
+        if i + 1 < len(flags_str) and flags_str[i:i+2] in ['aa', 'bb', 'cc', 'dd']:
+            # Double character flags (26-29)
+            double_char = flags_str[i:i+2]
+            if double_char == 'aa':
+                result |= 1 << 26
+            elif double_char == 'bb':
+                result |= 1 << 27
+            elif double_char == 'cc':
+                result |= 1 << 28
+            elif double_char == 'dd':
+                result |= 1 << 29
+            i += 2
+        else:
+            # Single character flags (0-25)
+            char = flags_str[i]
+            if 'A' <= char <= 'Z':
+                result |= 1 << (ord(char) - ord('A'))
+            elif 'a' <= char <= 'z':
+                result |= 1 << (ord(char) - ord('a'))
+            i += 1
+    
+    return result
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +116,20 @@ def load_area_from_json(json_file_path: str) -> Area:
     # Load objects
     _load_objects_from_json(data.get(objects_key, []), area)
     
+    # Load area-level resets
+    for reset_data in data.get('resets', []):
+        reset = ResetJson(
+            command=reset_data['command'],
+            arg1=reset_data['arg1'],
+            arg2=reset_data['arg2'],
+            arg3=reset_data['arg3'],
+            arg4=reset_data['arg4'],
+        )
+        area.resets.append(reset)
+    
     logger.info(f"Loaded area {area.name} from JSON with {len(data.get(rooms_key, []))} rooms, "
-               f"{len(data.get(mobs_key, []))} mobs, {len(data.get(objects_key, []))} objects")
+               f"{len(data.get(mobs_key, []))} mobs, {len(data.get(objects_key, []))} objects, "
+               f"{len(data.get('resets', []))} resets")
     
     return area
 
@@ -132,17 +182,6 @@ def _load_rooms_from_json(rooms_data: List[Dict[str, Any]], area: Area) -> None:
                 description=extra_data['description']
             )
             room.extra_descr.append(extra_desc)
-        
-        # Load resets
-        for reset_data in room_data.get('resets', []):
-            reset = ResetJson(
-                command=reset_data['command'],
-                arg1=reset_data['arg1'],
-                arg2=reset_data['arg2'],
-                arg3=reset_data['arg3'],
-                arg4=reset_data['arg4'],
-            )
-            room.resets.append(reset)
         
         room_registry[room.vnum] = room
 
@@ -211,7 +250,7 @@ def _load_objects_from_json(objects_data: List[Dict[str, Any]], area: Area) -> N
             description=obj_data.get('description', ''),
             material=obj_data.get('material', ''),
             item_type=obj_data.get('item_type', 'trash'),
-            extra_flags=obj_data.get('extra_flags', ''),
+            extra_flags=_rom_flags_to_int(obj_data.get('extra_flags', '')),
             wear_flags=obj_data.get('wear_flags', ''),
             weight=obj_data.get('weight', 0),
             cost=obj_data.get('cost', 0),

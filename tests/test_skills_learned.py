@@ -15,7 +15,7 @@ def load_registry() -> SkillRegistry:
 
 def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     reg = load_registry()
-    caster = Character(mana=20)
+    caster = Character(mana=40)  # Increased to handle two casts (15 + 15 = 30 mana needed)
     target = Character()
     # Learned 75% should succeed when roll == 75, fail when 76
     caster.skills["fireball"] = 75
