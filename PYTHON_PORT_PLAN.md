@@ -874,6 +874,14 @@ NOTES:
   - acceptance_criteria: gold deducted equals listed price
   - references: C src/act_obj.c:get_cost (buy path)
 
+### Post-Completion Critical Fixes
+- ✅ [P0] Fix undefined name errors in models (Area, Room forward references) — done 2025-09-15
+  EVIDENCE: PY mud/models/mob.py:L1-L6 (TYPE_CHECKING Area import); PY mud/models/obj.py:L1-L8 (TYPE_CHECKING Area import); PY mud/spawning/templates.py:L1-L11 (TYPE_CHECKING Room import)
+  - rationale: Critical runtime error prevention - undefined names would cause import/runtime failures
+  - files: mud/models/mob.py, mud/models/obj.py, mud/spawning/templates.py
+  - tests: All existing tests continue to pass (200 passed)
+  - acceptance_criteria: ruff check passes with no undefined name errors
+
 ## ✅ Completion Note (2025-09-13)
 All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
 <!-- LAST-PROCESSED: COMPLETE -->

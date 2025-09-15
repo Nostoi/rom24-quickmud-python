@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mud.models.mob import MobIndex
+    from mud.models.room import Room
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
 
