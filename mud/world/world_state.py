@@ -11,6 +11,9 @@ from mud.spawning.reset_handler import apply_resets
 from .linking import link_exits
 from mud.security import bans
 
+# Global skill registry for world initialization
+skill_registry = None
+
 
 def load_world_from_db() -> bool:
     """Populate registries from the database."""
@@ -95,6 +98,20 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     # Clearing here avoids leakage across test modules without affecting
     # persistence tests which explicitly save/load.
     bans.clear_all_bans()
+    
+    # Load skills registry from JSON
+    from mud.skills.registry import SkillRegistry
+    from pathlib import Path
+    skills_path = Path("data/skills.json")
+    if skills_path.exists():
+        try:
+            global skill_registry
+            skill_registry = SkillRegistry()
+            skill_registry.load(skills_path)
+            print(f"✅ Loaded {len(skill_registry.skills)} skills from {skills_path}")
+        except Exception as e:
+            print(f"Warning: Failed to load skills from {skills_path}: {e}")
+            skill_registry = None
     
     if area_list_path:
         if use_json:

@@ -193,6 +193,29 @@ class DamageType(IntEnum):
     SOUND = 19
 
 
+# ROM-style DAM_* constants for parity
+DAM_NONE = DamageType.NONE
+DAM_BASH = DamageType.BASH
+DAM_PIERCE = DamageType.PIERCE
+DAM_SLASH = DamageType.SLASH
+DAM_FIRE = DamageType.FIRE
+DAM_COLD = DamageType.COLD
+DAM_LIGHTNING = DamageType.LIGHTNING
+DAM_ACID = DamageType.ACID
+DAM_POISON = DamageType.POISON
+DAM_NEGATIVE = DamageType.NEGATIVE
+DAM_HOLY = DamageType.HOLY
+DAM_ENERGY = DamageType.ENERGY
+DAM_MENTAL = DamageType.MENTAL
+DAM_DISEASE = DamageType.DISEASE
+DAM_DROWNING = DamageType.DROWNING
+DAM_LIGHT = DamageType.LIGHT
+DAM_OTHER = DamageType.OTHER
+DAM_HARM = DamageType.HARM
+DAM_CHARM = DamageType.CHARM
+DAM_SOUND = DamageType.SOUND
+
+
 class DefenseBit(IntFlag):
     """IMM/RES/VULN bit positions (letters A..Z) mapped to explicit bits.
 
