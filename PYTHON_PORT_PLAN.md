@@ -918,6 +918,13 @@ NOTES:
   - tests: All existing tests continue to pass (200 passed)
   - acceptance_criteria: ruff check passes with no undefined name errors
 
+- ✅ [P0] Modernize deprecated datetime.utcnow() to datetime.now(UTC) — done 2025-09-15
+  EVIDENCE: PY mud/logging/admin.py:L3,L14,L30 (UTC import and datetime.now(UTC) calls); PY tests/test_logging_rotation.py:L2,L50 (UTC import and datetime.now(UTC) call)
+  - rationale: Future compatibility - datetime.utcnow() deprecated and scheduled for removal
+  - files: mud/logging/admin.py, tests/test_logging_rotation.py
+  - tests: All existing tests continue to pass (200 passed), no deprecation warnings
+  - acceptance_criteria: pytest runs with no DeprecationWarning for datetime.utcnow()
+
 ## ✅ Completion Note (2025-09-13)
 
 All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.

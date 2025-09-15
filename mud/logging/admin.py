@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 
@@ -11,7 +11,7 @@ def log_admin_command(actor: str, command: str, args: str) -> None:
     Creates the log directory if missing.
     """
     Path("log").mkdir(exist_ok=True)
-    line = f"{datetime.utcnow().isoformat()}Z\t{actor}\t{command}\t{args}\n"
+    line = f"{datetime.now(UTC).isoformat()}Z\t{actor}\t{command}\t{args}\n"
     (Path("log") / "admin.log").open("a", encoding="utf-8").write(line)
 
 
@@ -27,7 +27,7 @@ def rotate_admin_log(today: datetime | None = None) -> Path:
     active = log_dir / "admin.log"
     if not active.exists():
         return active
-    dt = today or datetime.utcnow()
+    dt = today or datetime.now(UTC)
     dated = log_dir / f"admin-{dt.strftime('%Y%m%d')}.log"
     # Avoid clobbering: if dated file exists, append current log and remove active
     if dated.exists():

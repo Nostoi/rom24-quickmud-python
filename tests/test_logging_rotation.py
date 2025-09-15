@@ -1,11 +1,10 @@
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, UTC
 
 from mud.logging.admin import log_admin_command, rotate_admin_log
 from mud import game_loop
 from mud.models.character import Character, character_registry
 from mud.time import time_info
-from mud import config as mud_config
 
 
 def test_rotate_admin_log_by_function(tmp_path, monkeypatch):
@@ -47,7 +46,7 @@ def test_rotate_on_midnight_tick(tmp_path, monkeypatch):
     game_loop.game_tick()
     # After midnight, admin.log should be rotated to today's date
     # Use current UTC date for naming
-    today = datetime.utcnow().strftime('%Y%m%d')
+    today = datetime.now(UTC).strftime('%Y%m%d')
     assert (Path('log') / f'admin-{today}.log').exists()
 
 
