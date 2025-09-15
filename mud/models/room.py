@@ -26,6 +26,7 @@ class Exit:
     key: int = 0
     keyword: Optional[str] = None
     description: Optional[str] = None
+    flags: str = '0'  # String representation of exit flags
     rs_flags: int = 0
     orig_door: int = 0
 

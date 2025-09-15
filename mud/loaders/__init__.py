@@ -1,4 +1,5 @@
 from .area_loader import load_area_file
+from .json_area_loader import load_all_areas_from_json
 from pathlib import Path
 
 from mud.registry import area_registry

@@ -23,21 +23,23 @@ class ObjIndex:
     short_descr: Optional[str] = None
     description: Optional[str] = None
     material: Optional[str] = None
-    item_type: int = 0
-    extra_flags: int = 0
-    wear_flags: int = 0
+    item_type: str = 'trash'
+    extra_flags: str = ''
+    wear_flags: str = ''
     level: int = 0
-    condition: int = 0
+    condition: str = 'P'
     count: int = 0
     weight: int = 0
     cost: int = 0
     value: List[int] = field(default_factory=lambda: [0] * 5)
-    affected: List[Affect] = field(default_factory=list)
-    extra_descr: List['ExtraDescr'] = field(default_factory=list)
+    affects: List[dict] = field(default_factory=list)  # {'location': int, 'modifier': int}
+    extra_descr: List[dict] = field(default_factory=list)  # {'keyword': str, 'description': str}
     area: Optional['Area'] = None
     new_format: bool = False
     reset_num: int = 0
     next: Optional['ObjIndex'] = None
+    # Legacy compatibility
+    affected: List[Affect] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"<ObjIndex vnum={self.vnum} name={self.short_descr!r}>"

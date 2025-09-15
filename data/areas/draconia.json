@@ -1,0 +1,1407 @@
+{
+  "name": "Dragon Tower",
+  "vnum_range": {
+    "min": 2200,
+    "max": 2299
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 2201,
+      "name": "The Tower Gates",
+      "description": "You are at the entrance to a tall tower.  Lightning flashes periodically and\nit is raining.  You think it might be a good idea to turn back into the grove.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2202,
+          "description": "You see a large steel gate.  Beyond is the Foyer of the Tower.\n",
+          "keyword": "gate steel",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1304,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "gate",
+          "description": "The gate is tall and secure.  Whoever built it values privacy.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2202,
+      "name": "The Foyer",
+      "description": "This is the entrance to the Tower.  The hallway continues to the north,\nleading towards a staircase.  You notice a grim painting on the wall,  and\nquickly look away.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2203,
+          "description": "You see a long hallway.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2201,
+          "description": "You see the gate.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "painting",
+          "description": "This painting depicts the grisly death of a foolish human.  You hope you do\nnot share his fate.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2203,
+      "name": "Hallway",
+      "description": "This hallway seems to stretch on forever.  You notice a stairway in\nthe distance.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2204,
+          "description": "The hall continues.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2202,
+          "description": "You see the foyer.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2204,
+      "name": "Hallway",
+      "description": "You trudge down the hallway.  You notice doors to the east and west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2207,
+          "description": "The hall continues.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2205,
+          "description": "You see a door.  You notice a sign.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2203,
+          "description": "The hall continues.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2206,
+          "description": "You see an oak door.  There is an inscription on it.\n",
+          "keyword": "oak",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "inscription",
+          "description": "It says \"STORAGE\"\n"
+        },
+        {
+          "keyword": "sign",
+          "description": "The sign says \"NURSERY\" in bold letters.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2205,
+      "name": "Nursery",
+      "description": "It looks like a tornado has been through here.  Toys are scattered everywhere,\nand a small group of dragon hatchlings are fighting over a bone.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2223,
+          "description": "You see a large stone door.\n",
+          "keyword": "door stone",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2204,
+          "description": "You see the hallway.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2206,
+      "name": "Storage Room",
+      "description": "This room is covered with dust, it looks as if no one has been here in ages.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2204,
+          "description": "You see the hallway.\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2208,
+          "description": "You see nothing special.\n",
+          "keyword": "trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "dust",
+          "description": "As you look closely at the dust, you notice the outline of a trapdoor!\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2207,
+      "name": "End of the Hallway",
+      "description": "You have finally reached the end of the hallway.  A huge staircase leads up.\nYou see a sign at the base of the staircase.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2204,
+          "description": "The hall continues.\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2210,
+          "description": "The second floor.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "The sign reads:\nThis area is kind of tough.  You probably shouldn't go up these stairs\nalone if you are under 18th level, or at all if you under 14th level.\nHave fun! -- Wench\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2208,
+      "name": "Guardian's Room",
+      "description": "You climb down the rickety stairs and find yourself face to face with a\ngargantuan hydra.  How fast can you climb UP stairs?\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2209,
+          "description": "A large grey door.\n",
+          "keyword": "grey",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2206,
+          "description": "You see the storage room.\n",
+          "keyword": "door trap trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2209,
+      "name": "The Treasure Room",
+      "description": "You have made it past the hydra into the vault.  You are astounded by\nthe treasure here.  Not only are you now rich, you can probably rest here\nsafely.  The west wall seems to have a large door made entirely of ruby.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2208,
+          "description": "You see nothing special.\n",
+          "keyword": "grey",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2218,
+          "description": "You see a ruby door!\n",
+          "keyword": "door ruby",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2210,
+      "name": "The Second Floor",
+      "description": "You have made it up to the second floor.  You hear hissing and see several\ndragon men rushing you.  You wonder how long you will be staying here.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2211,
+          "description": "You see the court.\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2207,
+          "description": "You see the first floor.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2211,
+      "name": "The Court",
+      "description": "You have entered what seems to be a large court.  The people guarding it\ndon't seem happy to see you ...\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2210,
+          "description": "You see nothing special.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2212,
+          "description": "You see a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2212,
+      "name": "Hall O' Pleasure",
+      "description": "You stop dead in your tracks as you enter this ornately decorated room - it\nis populated with the king's harem.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 2211,
+          "description": "You see the Court.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2213,
+      "name": "The Court",
+      "description": "You are continuing down the hall.  To the east and west you see ornate doors.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2211,
+          "description": "You see the court.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2214,
+          "description": "You see a black door.\n",
+          "keyword": "door black",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2216,
+          "description": "You see the court.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2215,
+          "description": "You see a white door.\n",
+          "keyword": "door white",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2214,
+      "name": "The Library",
+      "description": "You have entered a huge room, filled with books.  A peaceful man is\nsitting at a table, studying.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "keyword": "door black",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2215,
+      "name": "The Sanctum",
+      "description": "This small room is modestly decorated with small dragon icons.  Its sole\noccupant is deep in thought.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2213,
+          "description": "You see the Court.\n",
+          "keyword": "door white",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2216,
+      "name": "The Court Ends",
+      "description": "You have reached the end of the court.  A huge Draconian is sitting in a\nchair here.  As you enter, he motions with his hand and you are rushed by three\nof his bodyguards.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2217,
+          "description": "You see a private chamber.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2217,
+      "name": "bedroom",
+      "description": "This is the personal room of the draconian king.  It is not empty.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 2216,
+          "description": "You see Court.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2218,
+      "name": "Entrance to the Crypt",
+      "description": "You have entered a large room which smells heavily of reptile.  You wonder\nwhat awaits you here.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2209,
+          "description": "You see the Treasure Vault.\n",
+          "keyword": "door ruby",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2219,
+          "description": "You see the Crypt.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2219,
+      "name": "Crypt",
+      "description": "You are in a large room which continues to the west.  You notice many\ncoffins here.  Open coffins reveal remains of something other than man.\nThe smell of reptile is very strong here.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2218,
+          "description": "You see the entrance.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2222,
+          "description": "You see nothing special.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2220,
+      "name": "The Lair",
+      "description": "You have entered a large room dominated by a great white dragon.  It growls\nat you before it attacks.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2235,
+          "description": "You the cave opening.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2221,
+      "name": "A Lair",
+      "description": "You have entered a large room dominated by a great black dragon.  It looks\nas though it is amused by your presence.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2241,
+          "description": "You the cave opening.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2222,
+      "name": "The Crypt Ends",
+      "description": "You have come to the end of the Crypt.  It seems deserted.  There is a\nstrange coffin lying against the wall.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2219,
+          "description": "You see the Crypt.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2232,
+          "keyword": "coffin",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "coffin",
+          "description": "A coffin lies a against the east wall.  It is closed.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2223,
+      "name": "Entrance to the Great Hall",
+      "description": "You have entered a huge hall.  It has been carefully decorated with\nbeautiful tapestries depicting a great battle between dragons and men.  The\ndragons appear to be the victors.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2224,
+          "description": "The Hall continues.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2205,
+          "description": "You see the Nursery.\n",
+          "keyword": "door stone",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2224,
+      "name": "The Great Hall",
+      "description": "You are working your way down the Hall.  To the north, you notice a smaller\npassageway, while the main hall continues to the east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2225,
+          "description": "You see a narrow passageway.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2229,
+          "description": "You see the Hall.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2225,
+      "name": "A Narrow Passageway",
+      "description": "This Passageway branches off from the main hall and leads somewhere ... where?\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2226,
+          "description": "You see a large Lair.  It looks dangerous.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2224,
+          "description": "You see the great hall.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2226,
+      "name": "Lair",
+      "description": "You have entered a large lair with bones strewn about the ground.  You\nnotice the source of these as you come face to face with a rather large red\ndragon.  You notice a trap door in the floor.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2225,
+          "description": "The narrow passageway.\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2227,
+          "description": "You see a trap door.\n",
+          "keyword": "door trap trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2227,
+      "name": "Underground Tunnel",
+      "description": "You have entered an underground tunnel.  It is dark and dirty, and you find\nyourself wishing you were back in Midgaard.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2228,
+          "description": "You see the tunnel.\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2226,
+          "description": "You see the red dragon's lair.\n",
+          "keyword": "door trap trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2228,
+      "name": "Underground Tunnel",
+      "description": "This tunnel has come to a dead end.  You feel nervous about being trapped here.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2227,
+          "description": "You see the tunnel.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2229,
+      "name": "The Great Hall Ends.",
+      "description": "You have come to the end of the great hall.  You see before you a huge\ngolden door, it must be at least twenty feet tall!  It has beautiful etchings\nof dragons.  You see a sign on the door.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2230,
+          "description": "You see a great golden door.\n",
+          "keyword": "door great golden",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2224,
+          "description": "You see the hall.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Congratulations on making it this far!  Watch out, it gets a little\nnasty here... :) - Wench\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2230,
+      "name": "THE Lair",
+      "description": "You have entered a huge lair.  You feel that something big lives here or at least did.  The golden door lies back to the west.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 2229,
+          "description": "You see a great golden door.\n",
+          "keyword": "door golden great",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2231,
+      "name": "The End...",
+      "description": "You have reached the final lair.  It is dominated by a huge five headed\ndragon.  You suddenly realize that you have SERIOUS problems...\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2243,
+          "description": "You see the top of the mountain.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2232,
+      "name": "Stairwell",
+      "description": "This is an old decrepit stairwell that leads to the wine cellar.  It looks\nlike it hasn't been used for decades.  Well, at least not by anything living.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2222,
+          "description": "The crypt",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2233,
+          "description": "A wine cellar",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2233,
+      "name": "Wine cellar",
+      "description": "This is the old wine cellar of the Dragon Tower.  The shelves are empty.\nNothing living has been in here for a long time.  You see a tunnel leading\noff to the east and boy does it smell bad.  Kinda of like rotting flesh.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2234,
+          "description": "A tunnel\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2232,
+          "description": "The stairwell\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2234,
+      "name": "Tunnel",
+      "description": "This tunnel seems to stretch for miles.  You try to distinguish the end but\nyour eyes soon tire from the strain.  The smell here has increased two fold.\nThe tunnel continues to go to the east.  The wine cellar lies back to the\nwest.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2235,
+          "description": "A cave opening\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 2236,
+          "description": "A tunnel\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2233,
+          "description": "A tunnel\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2235,
+      "name": "A cave opening",
+      "description": "You stand at the opening of a giant cave.  There are many bones strewn across\nthe room.  Some human, some indistinguishable.  It smells very bad in here.\nYou can hear movement in the cave to the north.  The tunnel goes back to the\nsouth.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2220,
+          "description": "The lair\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2234,
+          "description": "The tunnel\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2236,
+      "name": "The End of the tunnel",
+      "description": "You have finally come to the end of the tunnel.  Back to the west lies\nthe miles of tunnels you have walked through.  You see the faint outline of\na trapdoor above you.  A bridge over an underground river lies to the south.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 2237,
+          "description": "bridge\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2234,
+          "description": "The tunnel\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2202,
+          "description": "trapdoor\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2237,
+      "name": "The Bridge",
+      "description": "You are walking along an old wooden bridge.  Its not that secure.  You\nmight want to hurry along.  To the south, on the other side of the bridge,\nlies a small opening.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2236,
+          "description": "The tunnel end\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2238,
+          "description": "A small opening\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2238,
+      "name": "A small opening",
+      "description": "You are standing in a small opening.  To the north lies the old wooden\nbridge.  To your south the you can see a clearing.  You can see sunlight\nagain.  What a welcome relief!\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2237,
+          "description": "bridge\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2239,
+          "description": "clearing\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2239,
+      "name": "Clearing",
+      "description": "You stand out in a clearing.  Mountains are all around you.  There is a\nwell in the middle of the clearing.  Lying against the well is a sign.  A\npath leads up the mountain.  The small opening is back to the north.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2238,
+          "description": "the small opening\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2240,
+          "description": "A path\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2244,
+          "description": "The well\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "The sign reads:\nThis is a bottomless pit cleverly disguised as a well.  People have\nfallen in and never been heard from again.  Trust me, you don't want to go\ndown there.\nThe All Powerful Well Keeper\n"
+        },
+        {
+          "keyword": "well",
+          "description": "You peer over the side of the well.  It looks VERY, VERY deep.  It appears\nto be ENDLESS.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2240,
+      "name": "A path",
+      "description": "This path leads up the side of the mountain.  A clearing lies below you.\nThere is a cave opening to the west.  The path continues up the mountain.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 2241,
+          "description": "cave opening\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 2242,
+          "description": "the path continues\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2239,
+          "description": "clearing\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2241,
+      "name": "A cave opening",
+      "description": "You stand before a huge cave opening.  You hearing heavy breathing from\nwithin the cave.  There are a few skeletons lying about.  The cave lies to\nthe south.  The path is back to the east.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 2240,
+          "description": "the path\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 2221,
+          "description": "A lair\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2242,
+      "name": "The path continues",
+      "description": "The path continues up the mountain to the top.  The path also goes down.\nThats it, nothing more to see.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 2243,
+          "description": "top of the mountain\n",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2240,
+          "description": "path\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2243,
+      "name": "The top of the mountain",
+      "description": "You are standing at the top of the mountain.  It feels more like the top of\nthe world.  To your north lies a huge platinum door.  You hear very pronounced\ngrumbling from behind the doors.  It sounds like something huge and hungry.\nBut if you don't have the key you don't have to worry because you can't get in.\nIf you do have the key I would suggest not going in.  Some believe the Five\nHeaded dragon Tiamat was imprisoned here by the gods.  But who believes in\nfairy tales.  Well, if you're scared, you can always go down the mountain.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 2231,
+          "description": "The platinum door\n",
+          "keyword": "door platinum",
+          "flags": []
+        },
+        "down": {
+          "to_room": 2242,
+          "description": "The path continues\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door platinum",
+          "description": "A huge platinum door separates you from harm"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2244,
+      "name": "Well",
+      "description": "O\nh\n!\nN\no\n!\nI warned you!  You have fallen into the bottomless pit.  You life flashes\nright before your eyes.  Pretty pathetic isn't it?  Next time you'll know\nto listen to the God of Laughs.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 2200,
+      "name": "the dragon hatchling",
+      "description": "A dragon hatchling is here, chewing on a bone.\n"
+    },
+    {
+      "id": 2201,
+      "name": "the Draconian",
+      "description": "The Draconian is standing here.\n"
+    },
+    {
+      "id": 2202,
+      "name": "the dragon master",
+      "description": "The lord of this crypt is here.\n"
+    },
+    {
+      "id": 2203,
+      "name": "a powerful mage",
+      "description": "A man is here, studying some books.\n"
+    },
+    {
+      "id": 2204,
+      "name": "the holy Draconian",
+      "description": "A Draconian is here, deep in thought.\n"
+    },
+    {
+      "id": 2205,
+      "name": "the Draconian King",
+      "description": "A Draconian wearing fine clothes is here, pondering his greatness.\n"
+    },
+    {
+      "id": 2206,
+      "name": "a concubine",
+      "description": "A concubine is resting here.\n"
+    },
+    {
+      "id": 2207,
+      "name": "A bodyguard",
+      "description": "A bodyguard is here, staring at you menacingly.\n"
+    },
+    {
+      "id": 2220,
+      "name": "Tiamat",
+      "description": "A five headed dragon hisses at you as you enter this room.\n"
+    },
+    {
+      "id": 2221,
+      "name": "the Great Red Dragon",
+      "description": "A red dragon is here, contemplating your existence.\n"
+    },
+    {
+      "id": 2222,
+      "name": "the Great Black Dragon",
+      "description": "A black dragon is here, laughing at your insolence.\n"
+    },
+    {
+      "id": 2223,
+      "name": "the Great White Dragon",
+      "description": "A white dragon is here, waiting for you.\n"
+    },
+    {
+      "id": 2225,
+      "name": "the Ancient Green Dragon",
+      "description": "A green dragon is here, looking distraught.\n"
+    },
+    {
+      "id": 2226,
+      "name": "a large hydra",
+      "description": "A hydra is here, blocking the doorway.\n"
+    },
+    {
+      "id": 2227,
+      "name": "A human slave",
+      "description": "A Human slave is here, hard at work.\n"
+    },
+    {
+      "id": 2240,
+      "name": "a Draconian zombie",
+      "description": "A Draconian zombie is here, staring at nothing in particular.\n"
+    },
+    {
+      "id": 2241,
+      "name": "the phase dragon",
+      "description": "A Phase Dragon is darting around the room.\n"
+    },
+    {
+      "id": 2242,
+      "name": "the draconian fool",
+      "description": "A Fool is here, making fun of you.\n"
+    },
+    {
+      "id": 2243,
+      "name": "the Draconian Queen",
+      "description": "A Female Draconian sits, here, looking very important.\n"
+    }
+  ],
+  "objects": [
+    {
+      "id": 2200,
+      "name": "a jagged spear",
+      "description": "A jagged spear has been left here."
+    },
+    {
+      "id": 2201,
+      "name": "a silver dagger",
+      "description": "A silver dagger is lying here."
+    },
+    {
+      "id": 2202,
+      "name": "a dragon's tooth knife",
+      "description": "A dangerous looking knife made from a dragon's tooth has been left here."
+    },
+    {
+      "id": 2203,
+      "name": "a dragon skin bracelet",
+      "description": "A scaly bracelet lies on the ground."
+    },
+    {
+      "id": 2204,
+      "name": "a black silk belt",
+      "description": "A black belt made of the finest silk is hanging here."
+    },
+    {
+      "id": 2210,
+      "name": "a white silk belt",
+      "description": "A white belt made of the finest silk is hanging here."
+    },
+    {
+      "id": 2211,
+      "name": "a platinum bracelet.",
+      "description": "A tarnished platinum bracelet has been dropped here."
+    },
+    {
+      "id": 2220,
+      "name": "a holy symbol",
+      "description": "A golden holy symbol is here."
+    },
+    {
+      "id": 2221,
+      "name": "a plain black robe",
+      "description": "A black robe is hanging on a hook on the wall."
+    },
+    {
+      "id": 2222,
+      "name": "an emerald sword",
+      "description": "An emerald long sword is leaning against the wall."
+    },
+    {
+      "id": 2223,
+      "name": "a stone club",
+      "description": "A heavy looking stone club is here."
+    },
+    {
+      "id": 2224,
+      "name": "a diamond ring",
+      "description": "A diamond ring lies gleaming on the ground."
+    },
+    {
+      "id": 2230,
+      "name": "a copper ring",
+      "description": "A copper ring is here."
+    },
+    {
+      "id": 2231,
+      "name": "a steel key",
+      "description": "A steel key."
+    },
+    {
+      "id": 2232,
+      "name": "a ruby key",
+      "description": "A ruby key."
+    },
+    {
+      "id": 2233,
+      "name": "a white key",
+      "description": "A white key."
+    },
+    {
+      "id": 2234,
+      "name": "a grey key",
+      "description": "A grey key is resting on the ground here."
+    },
+    {
+      "id": 2237,
+      "name": "a stone key",
+      "description": "A stone key."
+    },
+    {
+      "id": 2240,
+      "name": "a black key",
+      "description": "A black key."
+    },
+    {
+      "id": 2241,
+      "name": "a platinum key",
+      "description": "A platinum key."
+    },
+    {
+      "id": 2242,
+      "name": "a crested shield",
+      "description": "A large crested shield draws your attention."
+    },
+    {
+      "id": 2243,
+      "name": "a golden wand",
+      "description": "A golden wand has been dropped here."
+    },
+    {
+      "id": 2244,
+      "name": "a silver staff",
+      "description": "A silver staff."
+    },
+    {
+      "id": 2245,
+      "name": "the staff of the dragon",
+      "description": "A powerful oak staff has been left here."
+    },
+    {
+      "id": 2246,
+      "name": "scale mail",
+      "description": "A set of scale mail has been abandoned here."
+    },
+    {
+      "id": 2250,
+      "name": "a black staff",
+      "description": "You notice the faint outline of a staff."
+    },
+    {
+      "id": 2251,
+      "name": "a cyan potion",
+      "description": "A small cyan potion has been left here."
+    },
+    {
+      "id": 2252,
+      "name": "a magenta potion",
+      "description": "A magenta potion."
+    },
+    {
+      "id": 2254,
+      "name": "a pair of spiked gauntlets",
+      "description": "A pair of spiked gauntlets."
+    },
+    {
+      "id": 2260,
+      "name": "a golden scimitar",
+      "description": "A golden scimitar."
+    },
+    {
+      "id": 2261,
+      "name": "a diamond brooch",
+      "description": "A diamond brooch."
+    },
+    {
+      "id": 2270,
+      "name": "a runed scroll",
+      "description": "A runed scroll."
+    },
+    {
+      "id": 2271,
+      "name": "a pair of dragon skin gloves",
+      "description": "A pair of dragon skin gloves are lying on the ground."
+    },
+    {
+      "id": 2275,
+      "name": "a helm of dragon kind",
+      "description": "A helm made of a dragon's skull is lying on the ground."
+    },
+    {
+      "id": 2276,
+      "name": "a fur cloak",
+      "description": "A large mound of fur is lying here."
+    },
+    {
+      "id": 2280,
+      "name": "a pair of dragon scale leggings",
+      "description": "A pair of dragon scale leggings is lying on the ground."
+    },
+    {
+      "id": 2281,
+      "name": "a set of dragon scale sleeves",
+      "description": "A set of dragon scale sleeves is lying on the ground."
+    },
+    {
+      "id": 2285,
+      "name": "a dragon tailed whip",
+      "description": "A dragon tailed whip is lying on the ground."
+    },
+    {
+      "id": 2286,
+      "name": "a copper hammer",
+      "description": "A copper hammer is lying on the ground."
+    },
+    {
+      "id": 2287,
+      "name": "a silver dagger",
+      "description": "A silver dagger is lying here."
+    },
+    {
+      "id": 2299,
+      "name": "a tarnished gold key",
+      "description": "A tarnished gold key lies here."
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 2200,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2203,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 2204,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 2205,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2220,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2221,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 2222,
+      "spec": "spec_breath_acid"
+    },
+    {
+      "mob_vnum": 2223,
+      "spec": "spec_breath_frost"
+    },
+    {
+      "mob_vnum": 2225,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 2226,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 2227,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 2240,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2241,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 2242,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 2243,
+      "spec": "spec_breath_any"
+    }
+  ]
+}

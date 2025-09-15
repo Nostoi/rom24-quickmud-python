@@ -1,0 +1,2732 @@
+{
+  "area": {
+    "vnum": 2200,
+    "name": "Dragon Tower",
+    "filename": "draconia.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 2201,
+      "name": "The Tower Gates",
+      "description": "You are at the entrance to a tall tower.  Lightning flashes periodically and\nit is raining.  You think it might be a good idea to turn back into the grove.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2202,
+          "description": "You see a large steel gate.  Beyond is the Foyer of the Tower.\n",
+          "keyword": "gate steel",
+          "flags": "1",
+          "key": 2231
+        },
+        "east": {
+          "to_room": 1304,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "gate",
+          "description": "The gate is tall and secure.  Whoever built it values privacy.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2202,
+      "name": "The Foyer",
+      "description": "This is the entrance to the Tower.  The hallway continues to the north,\nleading towards a staircase.  You notice a grim painting on the wall,  and\nquickly look away.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2203,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2201,
+          "description": "You see the gate.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "painting",
+          "description": "This painting depicts the grisly death of a foolish human.  You hope you do\nnot share his fate.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2203,
+      "name": "Hallway",
+      "description": "This hallway seems to stretch on forever.  You notice a stairway in\nthe distance.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2204,
+          "description": "The hall continues.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2202,
+          "description": "You see the foyer.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2204,
+      "name": "Hallway",
+      "description": "You trudge down the hallway.  You notice doors to the east and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2207,
+          "description": "The hall continues.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2205,
+          "description": "You see a door.  You notice a sign.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2203,
+          "description": "The hall continues.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2206,
+          "description": "You see an oak door.  There is an inscription on it.\n",
+          "keyword": "oak",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "inscription",
+          "description": "It says \"STORAGE\"\n"
+        },
+        {
+          "keyword": "sign",
+          "description": "The sign says \"NURSERY\" in bold letters.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2205,
+      "name": "Nursery",
+      "description": "It looks like a tornado has been through here.  Toys are scattered everywhere,\nand a small group of dragon hatchlings are fighting over a bone.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2223,
+          "description": "You see a large stone door.\n",
+          "keyword": "door stone",
+          "flags": "2",
+          "key": 2297
+        },
+        "west": {
+          "to_room": 2204,
+          "description": "You see the hallway.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2206,
+      "name": "Storage Room",
+      "description": "This room is covered with dust, it looks as if no one has been here in ages.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2204,
+          "description": "You see the hallway.\n",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 2208,
+          "description": "You see nothing special.\n",
+          "keyword": "trapdoor",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "dust",
+          "description": "As you look closely at the dust, you notice the outline of a trapdoor!\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2207,
+      "name": "End of the Hallway",
+      "description": "You have finally reached the end of the hallway.  A huge staircase leads up.\nYou see a sign at the base of the staircase.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2204,
+          "description": "The hall continues.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 2210,
+          "description": "The second floor.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "The sign reads:\nThis area is kind of tough.  You probably shouldn't go up these stairs\nalone if you are under 18th level, or at all if you under 14th level.\nHave fun! -- Wench\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2208,
+      "name": "Guardian's Room",
+      "description": "You climb down the rickety stairs and find yourself face to face with a\ngargantuan hydra.  How fast can you climb UP stairs?\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2209,
+          "description": "A large grey door.\n",
+          "keyword": "grey",
+          "flags": "1",
+          "key": 2234
+        },
+        "up": {
+          "to_room": 2206,
+          "description": "You see the storage room.\n",
+          "keyword": "door trap trapdoor",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2209,
+      "name": "The Treasure Room",
+      "description": "You have made it past the hydra into the vault.  You are astounded by\nthe treasure here.  Not only are you now rich, you can probably rest here\nsafely.  The west wall seems to have a large door made entirely of ruby.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2208,
+          "description": "You see nothing special.\n",
+          "keyword": "grey",
+          "flags": "2",
+          "key": 2234
+        },
+        "west": {
+          "to_room": 2218,
+          "description": "You see a ruby door!\n",
+          "keyword": "door ruby",
+          "flags": "2",
+          "key": 2232
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2210,
+      "name": "The Second Floor",
+      "description": "You have made it up to the second floor.  You hear hissing and see several\ndragon men rushing you.  You wonder how long you will be staying here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2211,
+          "description": "You see the court.\n",
+          "flags": "0",
+          "key": 1
+        },
+        "down": {
+          "to_room": 2207,
+          "description": "You see the first floor.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2211,
+      "name": "The Court",
+      "description": "You have entered what seems to be a large court.  The people guarding it\ndon't seem happy to see you ...\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2210,
+          "description": "You see nothing special.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2212,
+          "description": "You see a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2212,
+      "name": "Hall O' Pleasure",
+      "description": "You stop dead in your tracks as you enter this ornately decorated room - it\nis populated with the king's harem.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2211,
+          "description": "You see the Court.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2213,
+      "name": "The Court",
+      "description": "You are continuing down the hall.  To the east and west you see ornate doors.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2211,
+          "description": "You see the court.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2214,
+          "description": "You see a black door.\n",
+          "keyword": "door black",
+          "flags": "1",
+          "key": 2240
+        },
+        "south": {
+          "to_room": 2216,
+          "description": "You see the court.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2215,
+          "description": "You see a white door.\n",
+          "keyword": "door white",
+          "flags": "1",
+          "key": 2233
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2214,
+      "name": "The Library",
+      "description": "You have entered a huge room, filled with books.  A peaceful man is\nsitting at a table, studying.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "keyword": "door black",
+          "flags": "1",
+          "key": 2240
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2215,
+      "name": "The Sanctum",
+      "description": "This small room is modestly decorated with small dragon icons.  Its sole\noccupant is deep in thought.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2213,
+          "description": "You see the Court.\n",
+          "keyword": "door white",
+          "flags": "1",
+          "key": 2233
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2216,
+      "name": "The Court Ends",
+      "description": "You have reached the end of the court.  A huge Draconian is sitting in a\nchair here.  As you enter, he motions with his hand and you are rushed by three\nof his bodyguards.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2213,
+          "description": "You see the court.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2217,
+          "description": "You see a private chamber.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2217,
+      "name": "bedroom",
+      "description": "This is the personal room of the draconian king.  It is not empty.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2216,
+          "description": "You see Court.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2218,
+      "name": "Entrance to the Crypt",
+      "description": "You have entered a large room which smells heavily of reptile.  You wonder\nwhat awaits you here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2209,
+          "description": "You see the Treasure Vault.\n",
+          "keyword": "door ruby",
+          "flags": "2",
+          "key": 2232
+        },
+        "west": {
+          "to_room": 2219,
+          "description": "You see the Crypt.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2219,
+      "name": "Crypt",
+      "description": "You are in a large room which continues to the west.  You notice many\ncoffins here.  Open coffins reveal remains of something other than man.\nThe smell of reptile is very strong here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2218,
+          "description": "You see the entrance.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2222,
+          "description": "You see nothing special.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2220,
+      "name": "The Lair",
+      "description": "You have entered a large room dominated by a great white dragon.  It growls\nat you before it attacks.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2235,
+          "description": "You the cave opening.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2221,
+      "name": "A Lair",
+      "description": "You have entered a large room dominated by a great black dragon.  It looks\nas though it is amused by your presence.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2241,
+          "description": "You the cave opening.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2222,
+      "name": "The Crypt Ends",
+      "description": "You have come to the end of the Crypt.  It seems deserted.  There is a\nstrange coffin lying against the wall.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2219,
+          "description": "You see the Crypt.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2232,
+          "keyword": "coffin",
+          "flags": "1"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "coffin",
+          "description": "A coffin lies a against the east wall.  It is closed.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2223,
+      "name": "Entrance to the Great Hall",
+      "description": "You have entered a huge hall.  It has been carefully decorated with\nbeautiful tapestries depicting a great battle between dragons and men.  The\ndragons appear to be the victors.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2224,
+          "description": "The Hall continues.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2205,
+          "description": "You see the Nursery.\n",
+          "keyword": "door stone",
+          "flags": "1",
+          "key": 2297
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2224,
+      "name": "The Great Hall",
+      "description": "You are working your way down the Hall.  To the north, you notice a smaller\npassageway, while the main hall continues to the east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2225,
+          "description": "You see a narrow passageway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2229,
+          "description": "You see the Hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2225,
+      "name": "A Narrow Passageway",
+      "description": "This Passageway branches off from the main hall and leads somewhere ... where?\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2226,
+          "description": "You see a large Lair.  It looks dangerous.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2224,
+          "description": "You see the great hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2226,
+      "name": "Lair",
+      "description": "You have entered a large lair with bones strewn about the ground.  You\nnotice the source of these as you come face to face with a rather large red\ndragon.  You notice a trap door in the floor.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2225,
+          "description": "The narrow passageway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 2227,
+          "description": "You see a trap door.\n",
+          "keyword": "door trap trapdoor",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2227,
+      "name": "Underground Tunnel",
+      "description": "You have entered an underground tunnel.  It is dark and dirty, and you find\nyourself wishing you were back in Midgaard.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2228,
+          "description": "You see the tunnel.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 2226,
+          "description": "You see the red dragon's lair.\n",
+          "keyword": "door trap trapdoor",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2228,
+      "name": "Underground Tunnel",
+      "description": "This tunnel has come to a dead end.  You feel nervous about being trapped here.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2227,
+          "description": "You see the tunnel.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2229,
+      "name": "The Great Hall Ends.",
+      "description": "You have come to the end of the great hall.  You see before you a huge\ngolden door, it must be at least twenty feet tall!  It has beautiful etchings\nof dragons.  You see a sign on the door.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2230,
+          "description": "You see a great golden door.\n",
+          "keyword": "door great golden",
+          "flags": "2",
+          "key": 2299
+        },
+        "west": {
+          "to_room": 2224,
+          "description": "You see the hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Congratulations on making it this far!  Watch out, it gets a little\nnasty here... :) - Wench\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2230,
+      "name": "THE Lair",
+      "description": "You have entered a huge lair.  You feel that something big lives here or at least did.  The golden door lies back to the west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2229,
+          "description": "You see a great golden door.\n",
+          "keyword": "door golden great",
+          "flags": "2",
+          "key": 2299
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2231,
+      "name": "The End...",
+      "description": "You have reached the final lair.  It is dominated by a huge five headed\ndragon.  You suddenly realize that you have SERIOUS problems...\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2243,
+          "description": "You see the top of the mountain.\n",
+          "flags": "2",
+          "key": 2241
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2232,
+      "name": "Stairwell",
+      "description": "This is an old decrepit stairwell that leads to the wine cellar.  It looks\nlike it hasn't been used for decades.  Well, at least not by anything living.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2222,
+          "description": "The crypt",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2233,
+          "description": "A wine cellar",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2233,
+      "name": "Wine cellar",
+      "description": "This is the old wine cellar of the Dragon Tower.  The shelves are empty.\nNothing living has been in here for a long time.  You see a tunnel leading\noff to the east and boy does it smell bad.  Kinda of like rotting flesh.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2234,
+          "description": "A tunnel\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2232,
+          "description": "The stairwell\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2234,
+      "name": "Tunnel",
+      "description": "This tunnel seems to stretch for miles.  You try to distinguish the end but\nyour eyes soon tire from the strain.  The smell here has increased two fold.\nThe tunnel continues to go to the east.  The wine cellar lies back to the\nwest.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2235,
+          "description": "A cave opening\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2236,
+          "description": "A tunnel\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2233,
+          "description": "A tunnel\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2235,
+      "name": "A cave opening",
+      "description": "You stand at the opening of a giant cave.  There are many bones strewn across\nthe room.  Some human, some indistinguishable.  It smells very bad in here.\nYou can hear movement in the cave to the north.  The tunnel goes back to the\nsouth.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2220,
+          "description": "The lair\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2234,
+          "description": "The tunnel\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2236,
+      "name": "The End of the tunnel",
+      "description": "You have finally come to the end of the tunnel.  Back to the west lies\nthe miles of tunnels you have walked through.  You see the faint outline of\na trapdoor above you.  A bridge over an underground river lies to the south.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2237,
+          "description": "bridge\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2234,
+          "description": "The tunnel\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2202,
+          "description": "trapdoor\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2237,
+      "name": "The Bridge",
+      "description": "You are walking along an old wooden bridge.  Its not that secure.  You\nmight want to hurry along.  To the south, on the other side of the bridge,\nlies a small opening.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2236,
+          "description": "The tunnel end\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2238,
+          "description": "A small opening\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2238,
+      "name": "A small opening",
+      "description": "You are standing in a small opening.  To the north lies the old wooden\nbridge.  To your south the you can see a clearing.  You can see sunlight\nagain.  What a welcome relief!\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2237,
+          "description": "bridge\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2239,
+          "description": "clearing\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2239,
+      "name": "Clearing",
+      "description": "You stand out in a clearing.  Mountains are all around you.  There is a\nwell in the middle of the clearing.  Lying against the well is a sign.  A\npath leads up the mountain.  The small opening is back to the north.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2238,
+          "description": "the small opening\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2240,
+          "description": "A path\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2244,
+          "description": "The well\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "The sign reads:\nThis is a bottomless pit cleverly disguised as a well.  People have\nfallen in and never been heard from again.  Trust me, you don't want to go\ndown there.\nThe All Powerful Well Keeper\n"
+        },
+        {
+          "keyword": "well",
+          "description": "You peer over the side of the well.  It looks VERY, VERY deep.  It appears\nto be ENDLESS.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2240,
+      "name": "A path",
+      "description": "This path leads up the side of the mountain.  A clearing lies below you.\nThere is a cave opening to the west.  The path continues up the mountain.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2241,
+          "description": "cave opening\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2242,
+          "description": "the path continues\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2239,
+          "description": "clearing\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2241,
+      "name": "A cave opening",
+      "description": "You stand before a huge cave opening.  You hearing heavy breathing from\nwithin the cave.  There are a few skeletons lying about.  The cave lies to\nthe south.  The path is back to the east.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2240,
+          "description": "the path\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2221,
+          "description": "A lair\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2242,
+      "name": "The path continues",
+      "description": "The path continues up the mountain to the top.  The path also goes down.\nThats it, nothing more to see.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 2243,
+          "description": "top of the mountain\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2240,
+          "description": "path\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2243,
+      "name": "The top of the mountain",
+      "description": "You are standing at the top of the mountain.  It feels more like the top of\nthe world.  To your north lies a huge platinum door.  You hear very pronounced\ngrumbling from behind the doors.  It sounds like something huge and hungry.\nBut if you don't have the key you don't have to worry because you can't get in.\nIf you do have the key I would suggest not going in.  Some believe the Five\nHeaded dragon Tiamat was imprisoned here by the gods.  But who believes in\nfairy tales.  Well, if you're scared, you can always go down the mountain.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2231,
+          "description": "The platinum door\n",
+          "keyword": "door platinum",
+          "flags": "2",
+          "key": 2241
+        },
+        "down": {
+          "to_room": 2242,
+          "description": "The path continues\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door platinum",
+          "description": "A huge platinum door separates you from harm"
+        }
+      ],
+      "resets": [],
+      "area": 2200
+    },
+    {
+      "id": 2244,
+      "name": "Well",
+      "description": "O\nh\n!\nN\no\n!\nI warned you!  You have fallen into the bottomless pit.  You life flashes\nright before your eyes.  Pretty pathetic isn't it?  Next time you'll know\nto listen to the God of Laughs.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2200
+    }
+  ],
+  "mobs": [
+    {
+      "id": 2200,
+      "name": "the dragon hatchling",
+      "player_name": "oldstyle hatchling dragon baby",
+      "long_description": "A dragon hatchling is here, chewing on a bone.\n",
+      "description": "This small dragon hisses at you as you enter the room.  Although it is only a\nfew feet long, its sharp teeth make you think twice about petting it.\n",
+      "race": "dragon",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": -900,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2201,
+      "name": "the Draconian",
+      "player_name": "oldstyle draconian",
+      "long_description": "The Draconian is standing here.\n",
+      "description": "This horrible creature is a bizarre cross between a man and a dragon.  He\nhas black scales and a seven foot wingspan.  He scowls at you and hefts his\nspear as you enter the room.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "D",
+      "alignment": -900,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+170",
+      "hit_dice": "6d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2202,
+      "name": "the dragon master",
+      "player_name": "oldstyle lord crypt master",
+      "long_description": "The lord of this crypt is here.\n",
+      "description": "He doesn't look happy to see you.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "T",
+      "alignment": -1000,
+      "group": 0,
+      "level": 27,
+      "thac0": 0,
+      "ac": "5d10+650",
+      "hit_dice": "13d9+100",
+      "mana_dice": "5d4+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2203,
+      "name": "a powerful mage",
+      "player_name": "oldstyle man mage wizard",
+      "long_description": "A man is here, studying some books.\n",
+      "description": "A powerful looking mage is standing in this room studying his spells.  You are\nsurprised at the fact that he is human, and realize that he must be very\npowerful to have been accepted by the creatures which live here.\n",
+      "race": "human",
+      "act_flags": "ABR",
+      "affected_by": "BDH",
+      "alignment": -900,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "4d10+360",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 3,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 30,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2204,
+      "name": "the holy Draconian",
+      "player_name": "oldstyle cleric draconian",
+      "long_description": "A Draconian is here, deep in thought.\n",
+      "description": "A Draconian stands here, dressed in simple robes.  Around his neck you\nnotice a golden medallion in the shape of a five headed dragon.\n",
+      "race": "human",
+      "act_flags": "ABCFQ",
+      "affected_by": "DH",
+      "alignment": -900,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 20,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2205,
+      "name": "the Draconian King",
+      "player_name": "oldstyle king draconian",
+      "long_description": "A Draconian wearing fine clothes is here, pondering his greatness.\n",
+      "description": "The king of the draconians sits here on a golden throne.  He looks as\nthough he could crush your head with a single blow.  Yet you sense that he\nis controlled by a greater power.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "DH",
+      "alignment": -900,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+600",
+      "hit_dice": "13d9+100",
+      "mana_dice": "3d7+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 40,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2206,
+      "name": "a concubine",
+      "player_name": "oldstyle concubine draconian",
+      "long_description": "A concubine is resting here.\n",
+      "description": "This is a concubine of the king.  She is lounging here, wearing nothing at\nall.  You find yourself strangely repulsed as she draws a knife and\nprepares to defend herself.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2207,
+      "name": "A bodyguard",
+      "player_name": "oldstyle bodyguard draconian",
+      "long_description": "A bodyguard is here, staring at you menacingly.\n",
+      "description": "This creature has devoted its life to defending the king.  Your intrusion has\nnot pleased it.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "CDF",
+      "alignment": -800,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2220,
+      "name": "Tiamat",
+      "player_name": "oldstyle tiamat dragon",
+      "long_description": "A five headed dragon hisses at you as you enter this room.\n",
+      "description": "You see before you the master of this Tower, Tiamat.  She frowns at you as she\nprepares to make you pay for your insolence ... with your lives!\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "DFTV",
+      "alignment": -1000,
+      "group": 0,
+      "level": 52,
+      "thac0": 0,
+      "ac": "50d10+5500",
+      "hit_dice": "26d9+100",
+      "mana_dice": "6d7+20",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -22,
+      "ac_bash": -22,
+      "ac_slash": -22,
+      "ac_exotic": 2,
+      "offensive": "EFNU",
+      "immune": "AB",
+      "resist": "CD",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2221,
+      "name": "the Great Red Dragon",
+      "player_name": "oldstyle dragon red",
+      "long_description": "A red dragon is here, contemplating your existence.\n",
+      "description": "This huge red dragon dominates the chamber.  As you turn to flee, he grins at\nyou and invites you to stay ... forever!\n",
+      "race": "dragon",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 45,
+      "thac0": 0,
+      "ac": "25d10+3000",
+      "hit_dice": "22d9+100",
+      "mana_dice": "8d4+16",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": 4,
+      "offensive": "EFNR",
+      "immune": "H",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2222,
+      "name": "the Great Black Dragon",
+      "player_name": "oldstyle dragon black",
+      "long_description": "A black dragon is here, laughing at your insolence.\n",
+      "description": "This huge black wyrm laughs at your puny weapons.  You realize that he is not\ngoing to roll over and die for you.\n",
+      "race": "dragon",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -900,
+      "group": 0,
+      "level": 39,
+      "thac0": 0,
+      "ac": "15d10+1700",
+      "hit_dice": "19d9+100",
+      "mana_dice": "5d6+13",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -13,
+      "ac_bash": -13,
+      "ac_slash": -13,
+      "ac_exotic": 5,
+      "offensive": "EFNR",
+      "immune": "K",
+      "resist": "0",
+      "vuln": "J",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2223,
+      "name": "the Great White Dragon",
+      "player_name": "oldstyle dragon white",
+      "long_description": "A white dragon is here, waiting for you.\n",
+      "description": "This dragon towers over you.  Recalling your previous experiences with white\ndragons, you are not afraid.  She smiles at you and says 'I think you will find\nme a greater challenge than my offspring.'\n",
+      "race": "dragon",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 37,
+      "thac0": 0,
+      "ac": "10d10+1500",
+      "hit_dice": "18d9+100",
+      "mana_dice": "3d10+12",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -12,
+      "ac_bash": -12,
+      "ac_slash": -12,
+      "ac_exotic": 5,
+      "offensive": "EFNR",
+      "immune": "I",
+      "resist": "0",
+      "vuln": "H",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2225,
+      "name": "the Ancient Green Dragon",
+      "player_name": "oldstyle dragon green",
+      "long_description": "A green dragon is here, looking distraught.\n",
+      "description": "This huge beast appears to be the most directly related to the draconians.\nShe looks at you with sorrow in her eyes and says 'You have slaughtered my\nchildren.  Prepare to die.'\n",
+      "race": "dragon",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 41,
+      "thac0": 0,
+      "ac": "25d10+2000",
+      "hit_dice": "20d9+100",
+      "mana_dice": "4d8+14",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -14,
+      "ac_bash": -14,
+      "ac_slash": -14,
+      "ac_exotic": 4,
+      "offensive": "EFNR",
+      "immune": "L",
+      "resist": "0",
+      "vuln": "P",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2226,
+      "name": "a large hydra",
+      "player_name": "oldstyle hydra",
+      "long_description": "A hydra is here, blocking the doorway.\n",
+      "description": "A hydra is here, guarding the entrance to a sealed vault.  You have the feeling\nit isn't happy to see you.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -800,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2227,
+      "name": "A human slave",
+      "player_name": "oldstyle slave human",
+      "long_description": "A Human slave is here, hard at work.\n",
+      "description": "He looks like he's under a lot of stress.  He would probably like it if you\nleft him alone.\n",
+      "race": "human",
+      "act_flags": "ABS",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2240,
+      "name": "a Draconian zombie",
+      "player_name": "oldstyle zombie draconian",
+      "long_description": "A Draconian zombie is here, staring at nothing in particular.\n",
+      "description": "This used to be one of the warriors of this tribe.  He was denied his final\nrest, however, and now guards this corridor tirelessly as a zombie.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "DF",
+      "alignment": -400,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2241,
+      "name": "the phase dragon",
+      "player_name": "oldstyle dragon phase",
+      "long_description": "A Phase Dragon is darting around the room.\n",
+      "description": "This small dragon looks like he's up to no good.\n",
+      "race": "dragon",
+      "act_flags": "ACFGH",
+      "affected_by": "DF",
+      "alignment": -300,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2242,
+      "name": "the draconian fool",
+      "player_name": "oldstyle fool draconian",
+      "long_description": "A Fool is here, making fun of you.\n",
+      "description": "This dragon man looks VERY foolish, dressed in a green and blue striped\nsuit.  As you enter the room, he points at you and laughs.\n",
+      "race": "human",
+      "act_flags": "AGHS",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2243,
+      "name": "the Draconian Queen",
+      "player_name": "oldstyle queen draconian",
+      "long_description": "A Female Draconian sits, here, looking very important.\n",
+      "description": "This draconian looks VERY busy as she orders her slaves around.  You think\nit might be a good idea to leave her alone.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "DFH",
+      "alignment": -600,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 2200,
+      "name": "a jagged spear",
+      "description": "A jagged spear has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 10,
+      "cost": 150,
+      "condition": "153",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2201,
+      "name": "a silver dagger",
+      "description": "A silver dagger is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 22,
+      "cost": 10,
+      "condition": "2000",
+      "values": [
+        0,
+        3,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2202,
+      "name": "a dragon's tooth knife",
+      "description": "A dangerous looking knife made from a dragon's tooth has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 30,
+      "cost": 80,
+      "condition": "3200",
+      "values": [
+        0,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 2,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2203,
+      "name": "a dragon skin bracelet",
+      "description": "A scaly bracelet lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AM",
+      "weight": 15,
+      "cost": 100,
+      "condition": "1170",
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2204,
+      "name": "a black silk belt",
+      "description": "A black belt made of the finest silk is hanging here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AL",
+      "weight": 17,
+      "cost": 250,
+      "condition": "3900",
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2210,
+      "name": "a white silk belt",
+      "description": "A white belt made of the finest silk is hanging here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AL",
+      "weight": 17,
+      "cost": 250,
+      "condition": "3900",
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2211,
+      "name": "a platinum bracelet.",
+      "description": "A tarnished platinum bracelet has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "A",
+      "wear_flags": "AM",
+      "weight": 20,
+      "cost": 50,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2220,
+      "name": "a holy symbol",
+      "description": "A golden holy symbol is here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "A",
+      "wear_flags": "ACO",
+      "weight": 10,
+      "cost": 20,
+      "condition": "270",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 15
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2221,
+      "name": "a plain black robe",
+      "description": "A black robe is hanging on a hook on the wall.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AK",
+      "weight": 21,
+      "cost": 30,
+      "condition": "2000",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2222,
+      "name": "an emerald sword",
+      "description": "An emerald long sword is leaning against the wall.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 240,
+      "condition": "2300",
+      "values": [
+        0,
+        4,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2223,
+      "name": "a stone club",
+      "description": "A heavy looking stone club is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 18,
+      "cost": 180,
+      "condition": "940",
+      "values": [
+        0,
+        3,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2224,
+      "name": "a diamond ring",
+      "description": "A diamond ring lies gleaming on the ground.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "0",
+      "wear_flags": "AB",
+      "weight": 37,
+      "cost": 60,
+      "condition": "6800",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2230,
+      "name": "a copper ring",
+      "description": "A copper ring is here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "0",
+      "wear_flags": "AB",
+      "weight": 15,
+      "cost": 10,
+      "condition": "2600",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2231,
+      "name": "a steel key",
+      "description": "A steel key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2232,
+      "name": "a ruby key",
+      "description": "A ruby key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2233,
+      "name": "a white key",
+      "description": "A white key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2234,
+      "name": "a grey key",
+      "description": "A grey key is resting on the ground here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2237,
+      "name": "a stone key",
+      "description": "A stone key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2240,
+      "name": "a black key",
+      "description": "A black key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2241,
+      "name": "a platinum key",
+      "description": "A platinum key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2242,
+      "name": "a crested shield",
+      "description": "A large crested shield draws your attention.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AJ",
+      "weight": 25,
+      "cost": 200,
+      "condition": "3900",
+      "values": [
+        8,
+        8,
+        8,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2243,
+      "name": "a golden wand",
+      "description": "A golden wand has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 14,
+      "cost": 50,
+      "condition": "5500",
+      "values": [
+        25,
+        10,
+        10,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2244,
+      "name": "a silver staff",
+      "description": "A silver staff.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "AG",
+      "wear_flags": "AO",
+      "weight": 14,
+      "cost": 50,
+      "condition": "11700",
+      "values": [
+        25,
+        20,
+        20,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2245,
+      "name": "the staff of the dragon",
+      "description": "A powerful oak staff has been left here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "AG",
+      "wear_flags": "AO",
+      "weight": 15,
+      "cost": 50,
+      "condition": "10200",
+      "values": [
+        25,
+        10,
+        10,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2246,
+      "name": "scale mail",
+      "description": "A set of scale mail has been abandoned here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "A",
+      "wear_flags": "AD",
+      "weight": 25,
+      "cost": 200,
+      "condition": "3900",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2250,
+      "name": "a black staff",
+      "description": "You notice the faint outline of a staff.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "AJ",
+      "wear_flags": "AO",
+      "weight": 14,
+      "cost": 250,
+      "condition": "5300",
+      "values": [
+        30,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2251,
+      "name": "a cyan potion",
+      "description": "A small cyan potion has been left here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 9,
+      "cost": 10,
+      "condition": "1060",
+      "values": [
+        30,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2252,
+      "name": "a magenta potion",
+      "description": "A magenta potion.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "H",
+      "wear_flags": "A",
+      "weight": 7,
+      "cost": 10,
+      "condition": "600",
+      "values": [
+        30,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2254,
+      "name": "a pair of spiked gauntlets",
+      "description": "A pair of spiked gauntlets.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AH",
+      "weight": 20,
+      "cost": 100,
+      "condition": "2500",
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        },
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2260,
+      "name": "a golden scimitar",
+      "description": "A golden scimitar.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 16,
+      "cost": 100,
+      "condition": "2500",
+      "values": [
+        0,
+        3,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 3,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2261,
+      "name": "a diamond brooch",
+      "description": "A diamond brooch.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AC",
+      "weight": 25,
+      "cost": 20,
+      "condition": "980",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2270,
+      "name": "a runed scroll",
+      "description": "A runed scroll.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "G",
+      "wear_flags": "AO",
+      "weight": 12,
+      "cost": 10,
+      "condition": "1960",
+      "values": [
+        30,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2271,
+      "name": "a pair of dragon skin gloves",
+      "description": "A pair of dragon skin gloves are lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AH",
+      "weight": 17,
+      "cost": 50,
+      "condition": "4000",
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2275,
+      "name": "a helm of dragon kind",
+      "description": "A helm made of a dragon's skull is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 35,
+      "cost": 150,
+      "condition": "4100",
+      "values": [
+        10,
+        10,
+        10,
+        5,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 15
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2276,
+      "name": "a fur cloak",
+      "description": "A large mound of fur is lying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AK",
+      "weight": 16,
+      "cost": 100,
+      "condition": "1910",
+      "values": [
+        6,
+        6,
+        6,
+        1,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 10
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2280,
+      "name": "a pair of dragon scale leggings",
+      "description": "A pair of dragon scale leggings is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 20,
+      "cost": 150,
+      "condition": "1590",
+      "values": [
+        7,
+        7,
+        7,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2281,
+      "name": "a set of dragon scale sleeves",
+      "description": "A set of dragon scale sleeves is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 20,
+      "cost": 120,
+      "condition": "1590",
+      "values": [
+        7,
+        7,
+        7,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2285,
+      "name": "a dragon tailed whip",
+      "description": "A dragon tailed whip is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "BJ",
+      "wear_flags": "AN",
+      "weight": 24,
+      "cost": 140,
+      "condition": "1530",
+      "values": [
+        0,
+        4,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2286,
+      "name": "a copper hammer",
+      "description": "A copper hammer is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 15,
+      "cost": 120,
+      "condition": "750",
+      "values": [
+        0,
+        3,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2287,
+      "name": "a silver dagger",
+      "description": "A silver dagger is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 5,
+      "cost": 10,
+      "condition": "360",
+      "values": [
+        0,
+        2,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2299,
+      "name": "a tarnished gold key",
+      "description": "A tarnished gold key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

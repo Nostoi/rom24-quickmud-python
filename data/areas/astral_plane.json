@@ -1,0 +1,4501 @@
+{
+  "area": {
+    "vnum": 7700,
+    "name": "Astral Plane",
+    "filename": "astral.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 7700,
+      "name": "The Bottom of the Rainbow",
+      "description": "You are standing before a shimmering rainbow arching high up into the\nsky.  You feel somehow separated from the natural world, even though the\ntemple spire is only a few meters below you.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7701,
+          "description": "The rainbow extends above you, fading out of existence only meters away.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 1036,
+          "description": "You can see the Temple of Midgaard below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow softly glows with beams of light, in colours that defie\ndescription.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7701,
+      "name": "On the Rainbow",
+      "description": "You are standing on the rainbow, surrounded by many beams of multicoloured\nlight.  Through the bottom of the rainbow you can barely make out the Temple\nof Midgaard, which is now quite far away.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7702,
+          "description": "The rainbow extends far above you, slowly fading into darkness.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7700,
+          "description": "The rainbow extends below you towards Midgaard.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow softly glows with beams of light, in colours that defie\ndescription.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7702,
+      "name": "On the Rainbow",
+      "description": "You are standing on the rainbow, surrounded by many beams of multicoloured\nlight.  Through the bottom of the rainbow you see the City of Midgaard and the\nland surrounding it.  It seems to be miles below you.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7703,
+          "description": "The rainbow extends far above you, slowly fading into darkness.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7701,
+          "description": "The rainbow extends below you towards the land you once knew as home.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow softly glows with beams of light, in colours that\ndefie description.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7703,
+      "name": "On the Rainbow",
+      "description": "You are standing on the rainbow, surrounded by many beams of multicoloured\nlight.  The rainbow extends above and below you as far as you can see.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7704,
+          "description": "The rainbow extends far above you.  You see a glowing white light at the\nrainbow's end.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7702,
+          "description": "The rainbow extends far below you, slowly fading into darkness.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow brightly glows with beams of light, in colours that defie any\ndescription.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7704,
+      "name": "On the Rainbow",
+      "description": "You are nearing the end of the rainbow.  The beams of multicoloured\nlight have begun to merge and solidify.  All around you you see glowing\nstarlike motes of dust.  Ahead of you is a bridge.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7705,
+          "description": "The rainbow extends above you, merging into a brilliant glowing\nbridge.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7703,
+          "description": "The rainbow extends far below you, slowly fading into darkness.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "bridge",
+          "description": "The colors of the rainbow seem to converge into a glowing bridge that leads\nto a massive white gate.\n"
+        },
+        {
+          "keyword": "motes star stars dust",
+          "description": "The star-like motes dance before your eyes.  They are incredibly beautiful yet\nintangible -- your hand passes right through them.\n"
+        },
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow brilliantly glows with beams of blinding light, in colours that\nsweep together and merge before your eyes.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7705,
+      "name": "The Glowing Bridge at the Rainbow's End",
+      "description": "After a long climb you have reached the end of the rainbow.  The brilliant\ncolours have twisted and merged into a beautiful glowing bridge that leads\ntoward a massive white gate to the north.  All around you is a soft, peaceful\nglow interrupted only by the passing of starlike dust motes before your eyes.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7706,
+          "description": "The bridge leads on to a massive white gate.  You see a large grey figure\nstanding there.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7704,
+          "description": "The bridge disassociates into a beautiful spectrum of colours that\ndrop out of sight below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "gate",
+          "description": "The gate towers tens of feet above your heads.  Beyond it is a field of utter\nblackness, from which the motes of light seem to issue forth.\n"
+        },
+        {
+          "keyword": "bridge",
+          "description": "The bridge glows with an unearthly light.\n"
+        },
+        {
+          "keyword": "motes star stars dust",
+          "description": "The star-like motes dance before your eyes.  They are incredibly beautiful yet\nintangible -- your hand passes right through them.\n"
+        },
+        {
+          "keyword": "rainbow",
+          "description": "The rainbow seems to be forming directly from the light of the bridge.  It\ndrops out of sight below you.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7706,
+      "name": "The Astral Gate",
+      "description": "Here the bridge ends before a massive, pearly-coloured gate beyond which\nyou can see a field of blackness filled with silvery snake-like tendrils,\nstars, and occasional flashes of of light.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7707,
+          "description": "Through the gate you see a massive field of blackness that extends as far\nas you can see.\n",
+          "keyword": "gate",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7705,
+          "description": "The bridge extends towards the rainbow, which drops out of sight\nbelow you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "plaque",
+          "description": "The plaque reads:\nLet this gate stand to protect mortal man for all time against the perils of\nthe outer planes of existence and the creatures fair and foul that dwell within.\n(The Astral Plane and Githyanki Keep were written by Andersen.)\n"
+        },
+        {
+          "keyword": "gate",
+          "description": "You see a huge, glowing gate wrought from an incredibly hard translucent\nmaterial.  Each of the intricately carved bars of this mighty gate are about\nas thick as a man's wrist, rising from the floor to a height of forty feet.\nA plaque is inset into the wall next to one side of the gate.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7707,
+      "name": "Into the Astral Plane",
+      "description": "You step through the gate, and into another reality...\nYou find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, although it is not too late to return\nthrough the gate to the south.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7708,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7706,
+          "description": "The astral gate leads back to your world.\n",
+          "keyword": "gate",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "gate",
+          "description": ">From here the pearly-coloured gate seems very small and insubstantial.  Through\nits bars you can see the Astral Guardian, protecting your world from the perils\nof this plane of existence.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7708,
+      "name": "Exploring the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, and it is difficult to maintain your\nbearings and sense of direction.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7707,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7709,
+      "name": "Exploring the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, and it is difficult to maintain your\nbearings and sense of direction.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7707,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7710,
+      "name": "Exploring the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, and it is difficult to maintain your\nbearings and sense of direction.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7707,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7708,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7711,
+      "name": "Exploring the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, and it is difficult to maintain your\nbearings and sense of direction.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7707,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7712,
+      "name": "Exploring the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, and it is difficult to maintain your\nbearings and sense of direction.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7708,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7707,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7713,
+      "name": "Roaming the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is somewhat disorienting.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7718,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7708,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7714,
+      "name": "Roaming the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is somewhat disorienting.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7719,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7718,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7708,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7715,
+      "name": "Roaming the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is somewhat disorienting, though your instincts say you are\nclose to home.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7722,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7716,
+      "name": "Roaming the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is somewhat disorienting, though your instincts say you are\nclose to home.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7721,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7719,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7717,
+      "name": "Roaming the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is somewhat disorienting, though your instincts say you are\nclose to home.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7722,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7721,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7718,
+      "name": "Wandering the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is highly disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7719,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7736,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7719,
+      "name": "Wandering the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is highly disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7718,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7734,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7738,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7720,
+      "name": "Wandering the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is highly disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7711,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7721,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7740,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7721,
+      "name": "Wandering the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is highly disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7742,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7722,
+      "name": "Wandering the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is highly disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7744,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7734,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7723,
+      "name": "Travelling the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7724,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7728,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7737,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7724,
+      "name": "Travelling the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7725,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7739,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7725,
+      "name": "Travelling the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7741,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7724,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7734,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7728,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7726,
+      "name": "Travelling the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7731,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7743,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7727,
+      "name": "Travelling the Astral Plane",
+      "description": "You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting.  Nearby you see a large silvery\nstrand of light.\nMost exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7725,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7731,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7744,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7728,
+      "name": "Traversing the Astral Plane",
+      "description": "You find yourself deep within in a dark field filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting, and you are having trouble\nkeeping your sense of direction.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7709,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7747,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7734,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7745,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7725,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7729,
+      "name": "Traversing the Astral Plane",
+      "description": "You find yourself deep within in a dark field filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting, and you are having trouble\nkeeping your sense of direction.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7749,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7724,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7746,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7730,
+      "name": "Traversing the Astral Plane",
+      "description": "You find yourself deep within in a dark field filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting, and you are having trouble\nkeeping your sense of direction.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7747,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7745,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7725,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7724,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7731,
+      "name": "Traversing the Astral Plane",
+      "description": "You find yourself deep within in a dark field filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting, and you are having trouble\nkeeping your sense of direction.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7734,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7748,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7746,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7732,
+      "name": "Traversing the Astral Plane",
+      "description": "You find yourself deep within in a dark field filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is extremely disorienting, and you are having trouble\nkeeping your sense of direction.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7749,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7731,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7748,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7733,
+      "name": "Lost in the Astral Plane",
+      "description": "You find yourself in in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is incredibly disorienting, and you are having trouble\nkeeping your senses straight.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7724,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7721,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7718,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7734,
+      "name": "Lost in the Astral Plane",
+      "description": "You find yourself in in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is incredibly disorienting, and you are having trouble\nkeeping your senses straight.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7728,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7725,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7731,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7722,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7719,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7735,
+      "name": "Lost in the Astral Plane",
+      "description": "You find yourself in in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is incredibly disorienting, and you are having trouble\nkeeping your senses straight.\nAll exits lead off into the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7736,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7737,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7718,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7737,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7723,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7736,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7738,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7739,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7719,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7739,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 7738,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7724,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7740,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7741,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7720,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7741,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7725,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7740,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7742,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7743,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7721,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7743,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7742,
+          "description": "The strand of light twists and turns out of sight.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7726,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7744,
+      "name": "Walking the Silvery Strand",
+      "description": "You are standing atop a silvery strand of light that twists and turns\nthrough the astral field.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7727,
+          "description": "You see the endless expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7722,
+          "description": "You see the infinite expanse of the astral field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7745,
+      "name": "Deep Within the Astral Plane",
+      "description": "You have travelled deep inside the astral field.  Here the fabric of the\nfield has become twisted and warped due to the proximity of another plane of\nexistence.  Some of the tendrils of light that line the astral field have been\nwarped and twisted into portals to other worlds.\nTake care before you step through one -- you might never return.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7746,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7730,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7749,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7750,
+          "description": "Through the nexial link you can see a stony keep.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7728,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7746,
+      "name": "Deep Within the Astral Plane",
+      "description": "You have travelled deep inside the astral field.  Here the fabric of the\nfield has become twisted and warped due to the proximity of another plane of\nexistence.  Some of the tendrils of light that line the astral field have been\nwarped and twisted into portals to other worlds.\nTake care before you step through one -- you might never return.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7733,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7745,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7747,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7729,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7731,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7747,
+      "name": "Deep Within the Astral Plane",
+      "description": "You have travelled deep inside the astral field.  Here the fabric of the\nfield has become twisted and warped due to the proximity of another plane of\nexistence.  Some of the tendrils of light that line the astral field have been\nwarped and twisted into portals to other worlds.\nTake care before you step through one -- you might never return.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7734,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7746,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7730,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7728,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7748,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7748,
+      "name": "Deep Within the Astral Plane",
+      "description": "You have travelled deep inside the astral field.  Here the fabric of the\nfield has become twisted and warped due to the proximity of another plane of\nexistence.  Some of the tendrils of light that line the astral field have been\nwarped and twisted into portals to other worlds.\nTake care before you step through one -- you might never return.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7735,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7731,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7749,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7747,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7732,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7749,
+      "name": "Deep Within the Astral Plane",
+      "description": "You have travelled deep inside the astral field.  Here the fabric of the\nfield has become twisted and warped due to the proximity of another plane of\nexistence.  Some of the tendrils of light that line the astral field have been\nwarped and twisted into portals to other worlds.\nTake care before you step through one -- you might never return.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7748,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7745,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7732,
+          "description": "The astral field leads on into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7729,
+          "description": "The astral field leads on into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": -1,
+          "description": "The nexial link has been blocked by the gods for your protection.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7750,
+      "name": "Inside the Githyanki Keep",
+      "description": "You are standing just inside a nexial portal that leads out onto the\nAstral Plane.  It seems that you have found the lair of the Githyanki,\nthe once-human followers of Lord Gith.  Ahead of you stands a steel door\nleading into the keep hewn from stone.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7751,
+          "description": "You see a rusty steel door which leads into the keep.\n",
+          "keyword": "steel",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7745,
+          "description": "Below you is the nexial portal that leads into the astral plane.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "steel",
+          "description": "The door is made from a set of rusting steel plates set deep into the stone.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7751,
+      "name": "A guard station",
+      "description": "This is a small building just inside the keep.  Doors lead out to the east\nand west.  Some small weapons hang on hooks on the walls, for use in defense\nof the keep.\nDoors stand in all directions save north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7761,
+          "description": "You see an iron door which leads out onto a grey stone road.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7750,
+          "description": "You see a rusty steel door which leads out to the nexial link.\n",
+          "keyword": "steel",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7752,
+          "description": "You see an iron door which leads out onto a grey stone road.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from a set of iron plates set deep into the stone.\n"
+        },
+        {
+          "keyword": "steel",
+          "description": "The door is made from a set of rusting steel plates set deep into the stone.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7752,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road turns to the north, ending to the east at an iron door.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7753,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7751,
+          "description": "You see an iron door which leads into a small stone building set into the wall\nof the keep.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from a set of iron plates set deep into the stone.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7753,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road continues to the north and south.  Doors to the east\nand west lead into stone buildings.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7754,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7762,
+          "description": "You see a small stone building with a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7752,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7769,
+          "description": "An iron door blocks your entrance into a large stone building.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is fashioned from many iron plates and set deep into the stone wall.\n"
+        },
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7754,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road turns to the south and continues on to the east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7755,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7753,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7755,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road continues to the east and west.  To the north you see a\nmassive building and a pair of large doors.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7774,
+          "description": "Looming before you is a forbidding pair of metal doors.\n",
+          "keyword": "doors metal",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7756,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7754,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "doors metal",
+          "description": "The doors are formed from a silvery substance that feels very hard yet almost\nslippery to the touch.  They are covered in images in bas-relief, depicting\nscenes of combat between humans and strange tentacle-mouthed humanoids.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7756,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road continues to the east and west.  A door to the south\nleads into a tall stone building.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7757,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7764,
+          "description": "You see a tall stone building with a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7755,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7757,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road turns to the west and continues to the south.  A door\nto the north leads into a tall stone building.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7773,
+          "description": "You see a tall stone building with a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7758,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7756,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7758,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road continues to the north and south.  To the east is a\ndoor in a large stone building.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7757,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7767,
+          "description": "An iron door blocks your entrance into a large stone building.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7759,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from many hammered iron plates, set deep into the stone wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7759,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road continues to the north and south.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7758,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7760,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7760,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road turns to the north and continues on to the west.  To\nthe east is a door in a large stone building.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7759,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7765,
+          "description": "An iron door blocks your entrance into a large stone building.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7761,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from many hammered iron plates, set deep into the stone wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7761,
+      "name": "A grey road",
+      "description": "The ground beneath your feet is a uniformly grey cobblestone.  A dull red\nsun hangs in an orange sky above your head; you hear none of the sounds you\nwould commonly associate with a normal city.\nThe cobblestone road goes on to the east, ending to the west at an iron door.\nA door to the north leads into a small stone building.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7763,
+          "description": "You see a small stone building with a wooden door.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7760,
+          "description": "The grey cobblestones continue.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7751,
+          "description": "You see an iron door which leads into a small stone building set into the wall\nof the keep.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from a set of iron plates set deep into the stone.\n"
+        },
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7762,
+      "name": "A small building",
+      "description": "You have stepped inside a dimly lit building, which apparently serves as\nliving quarters for several githyanki gish.  The walls are heavy stone blocks,\ncovered with panels of strangely knotted and twisted wood.  A couple of candles\nburn dimly in sconces here and there.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 7753,
+          "description": "The wooden door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7763,
+      "name": "A small building",
+      "description": "You have stepped inside a dimly lit building, which apparently serves as\nliving quarters for several githyanki gish.  The walls are heavy stone blocks,\ncovered with panels of strangely knotted and twisted wood.  A couple of candles\nburn dimly in sconces here and there.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7761,
+          "description": "The wooden door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7764,
+      "name": "A large dwelling",
+      "description": "You have stepped inside a dimly lit building with vaulted ceilings and high\nwindows.  The walls are heavy stone blocks that rise tens of feet above your\nhead, covered with panels of strangely knotted and twisted wood.  On the floor\nare charcoal stencils of pentagrams and various other ominous sigils.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7756,
+          "description": "The wooden door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7765,
+      "name": "The Githyanki Weaponry",
+      "description": "A large chamber, full of weapons in various states of completion.  Strange\nglowing blocks of silvery metal are being pounded and rolled out into deadly\nrazor-sharp knives, daggers, and swords.\nSounds of hammering and blasts of heat and strange smells come from the open\ndoorway to the north.  An iron door stands to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7766,
+          "description": "You see a massive forgeroom, lit by a white-hot furnace.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7760,
+          "description": "The iron door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from many hammered iron plates, set deep into the stone wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7766,
+      "name": "The Forge",
+      "description": "In the center of the room is a massive furnace which emits great gouts of\nheat and a strange smell which comes from the melting of the silvery metal used\nby the githyanki.  A large trough of icy water stands to the west, used for\nquenching hot metal.\nDoorways stand to the north and south.  The furnace door lies to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7767,
+          "description": "You see the armoury.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7768,
+          "description": "Through the grille in the furnace door you see only flames.\n",
+          "keyword": "door furnace",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7765,
+          "description": "You see the weaponry.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door furnace",
+          "description": "The entire furnace is glowing white-hot to the touch.\nThe furnace door looks too hot to even attempt to open.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7767,
+      "name": "The Githyanki Armoury",
+      "description": "A large chamber, full of suits of armor in various states of completion.  In\nthis chamber the hard steels of the githyanki are shaped into ornately fashioned\nsuits of mail.\nSounds of hammering and blasts of heat and strange smells come from the open\ndoorway to the south.  An iron door stands to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7766,
+          "description": "You see a massive forgeroom, lit by a white-hot furnace.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7758,
+          "description": "The iron door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is made from many hammered iron plates, set deep into the stone wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7768,
+      "name": "Inside the furnace",
+      "description": "You gasp for breath and choke on toxic sulphur and brimstone.  The sweat\non your forehead is instantly vaporized by the flames that surround you.  You\nbegin to feel faint and dizzy from the heat...\n... you'd better leave before you pass out and burn to a cinder!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7768,
+          "description": "The flames blind you and obscure your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": -1,
+          "description": "The flames blind you and obscure your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7768,
+          "description": "The flames blind you and obscure your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7766,
+          "description": "The flames blind you and obscure your vision.\n",
+          "keyword": "door furnace",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7769,
+      "name": "A guard station",
+      "description": "You are standing in a small, fairly empty building that serves as the prison\nfor the keep.  The building is small because the githyanki do not make a habit\nof taking prisoners, and those that they do capture do not last long.\nThe cellblock lies to the west and the grey stone road is to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 7753,
+          "description": "You see an iron door which leads back out onto the grey cobblestone road.\n",
+          "keyword": "door iron",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7770,
+          "description": "You see the cellblock.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door iron",
+          "description": "The door is fashioned from many iron plates and set deep into the stone wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7770,
+      "name": "The cellblock",
+      "description": "A torch flickers in the western wall, providing some illumination for this\ndim corridor.  Some whips, manacles, and chains hang on the walls -- they seem\nto have been used recently.\nCell doors stand to the north and south.  The guard station is to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7771,
+          "description": "You see a small cell.\n",
+          "keyword": "door cell",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 7769,
+          "description": "You see the guard station.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7772,
+          "description": "You see a small cell.\n",
+          "keyword": "door cell",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door cell",
+          "description": "The cell door is wooden and about 4' high, with a slot in the bottom to pass\nfood underneath to the prisoner.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7771,
+      "name": "A cramped cell",
+      "description": "You are in a tiny, cold, dank cell.\nThe only exit is back through the door to the south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7770,
+          "description": "You see the cellblock.\n",
+          "keyword": "door cell",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door cell",
+          "description": "The cell door is wooden and about 4' high, with a slot in the bottom to pass\nfood underneath to the prisoner.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7772,
+      "name": "A tiny cell",
+      "description": "You are in a cold, dank, cramped cell.\nThe only exit is back through the door to the north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7770,
+          "description": "You see the cellblock.\n",
+          "keyword": "door cell",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door cell",
+          "description": "The cell door is wooden and about 4' high, with a slot in the bottom to pass\nfood underneath to the prisoner.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7773,
+      "name": "A large dwelling",
+      "description": "You have stepped inside a dimly lit building with vaulted ceilings and high\nwindows.  The walls are heavy stone blocks that rise tens of feet above your\nhead, covered with panels of strangely knotted and twisted wood.  On the floor\nare charcoal stencils of pentagrams and various other ominous sigils.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7757,
+          "description": "The wooden door leads back out onto the grey cobblestone road.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door wooden",
+          "description": "The door is thick, made from a knotted and twisted greyish wood.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7774,
+      "name": "South End of the Hall",
+      "description": "This is a massive stone hall, lit by flaming blue stones set into the walls.\nMassive suits of armor line the walls, holding weapons fashioned from a strange\nsilvery metal.\nThe great hall continues to the north and ends in a pair of huge metal doors\nto the south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7775,
+          "description": "The great hall continues to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7755,
+          "description": "The metal doors lead out onto the grey cobblestone road.\n",
+          "keyword": "doors metal",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "doors metal",
+          "description": "The doors are formed from a silvery substance that feels very hard yet almost\nslippery to the touch.  They are covered in images in bas-relief, depicting\nscenes of combat between humans and strange tentacle-mouthed humanoids.\n"
+        },
+        {
+          "keyword": "weapons",
+          "description": "Massive pole arms, spears, mighty swords, all kinds of death-dealing devices.\n"
+        },
+        {
+          "keyword": "armor suits",
+          "description": "The suits of armor are very intricately and ornately fashioned splint mail.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7775,
+      "name": "North End of the Hall",
+      "description": "This is a massive stone hall, lit by flaming blue stones set into the walls.\nMassive suits of armor line the walls, holding weapons fashioned from a strange\nsilvery metal.\nThe great hall continues to the south.  An archway leads into a dimly lit\nroom to the north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7776,
+          "description": "You think you can see some steps leading up to an altar...\n",
+          "keyword": "mist door",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7774,
+          "description": "The great hall continues to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "arch archway door",
+          "description": "The archway is shrouded in a strange black mist that obscures your vision.\n"
+        },
+        {
+          "keyword": "weapons",
+          "description": "Massive pole arms, spears, mighty swords, all kinds of death-dealing devices.\n"
+        },
+        {
+          "keyword": "armor suits",
+          "description": "The suits of armor are very intricately and ornately fashioned splint mail.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7776,
+      "name": "The Altar Chamber",
+      "description": "Your eyes have trouble adjusting to the dim lighting.  All around you are\ncolumnar statues of githyanki turned towards the altar standing at the top\nof a series of steps.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7777,
+          "description": "The steps lead north and up to a massive sacrificial altar.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7775,
+          "description": "You think you can see the hall.\n",
+          "keyword": "mist door",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "arch archway door",
+          "description": "The archway is shrouded in a strange black mist that obscures your vision.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7777,
+      "name": "Before the Altar",
+      "description": "You have climbed the mighty steps of the altar chamber and stand before a\nhuge altar use to pay tribute to Lord Gish, long-dead ruler of the githyanki.\nThe altar is covered in blood and radiates unspeakable power that is absorbed\nby the horrible presence which stands before you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 7776,
+          "description": "The steps lie to the south, leading back down to the altar chamber floor.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7778,
+          "description": "The floor of the altar is pockmarked with small holes, draining blood.\n",
+          "keyword": "hole",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "hole holes",
+          "description": "The holes have passed countless amounts of blood down below the altar.\n"
+        },
+        {
+          "keyword": "blood bloodstains stains",
+          "description": "The stains of blood run down off the altar towards your feet, oozing quietly.\n"
+        },
+        {
+          "keyword": "altar",
+          "description": "The altar is a huge sacrificial altar covered in bloodstains.\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7778,
+      "name": "A Gateway to the Underworld",
+      "description": "You step through the tiny hole in the altar, and stand before a swirling\nfield of blackness.  Through the field you can hear the howls of lost souls\nand long-dead beings.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 7777,
+          "description": "You see the altar chamber.\n",
+          "keyword": "hole",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7779,
+          "description": "You look down into the field of blackness, and feel a tangible wave of evil wash\nover you.  Stepping into the field would be a bad idea.\n",
+          "keyword": "gateway",
+          "flags": "2",
+          "key": 7724
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "field gateway",
+          "description": "The field pulses and feeds on the blood dripping from above.\nA tangible wave of hatred washes over you, striking fear into your very soul.\n"
+        },
+        {
+          "keyword": "blood",
+          "description": "The blood drips from above your head and falls through the field...\n"
+        }
+      ],
+      "resets": [],
+      "area": 7700
+    },
+    {
+      "id": 7779,
+      "name": "Utter darkness and despair",
+      "description": "It is pitch black...\nYou are overwhelmed by the sensation of death and horrible pain as a shape\nbegins to coalesce before you.\n",
+      "sector_type": "air",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 7700
+    }
+  ],
+  "mobs": [
+    {
+      "id": 7700,
+      "name": "The Astral Guardian",
+      "player_name": "oldstyle astral guardian",
+      "long_description": "A grey figure guards the entrance to the astral plane.\n",
+      "description": "You see a slate grey vaguely humanoid shape, devoid of any true features.\nIt stands before you with arms folded, seemingly uninterested in you.\n",
+      "race": "human",
+      "act_flags": "ABT",
+      "affected_by": "DFHN",
+      "alignment": 0,
+      "group": 0,
+      "level": 37,
+      "thac0": 0,
+      "ac": "10d10+1500",
+      "hit_dice": "18d9+100",
+      "mana_dice": "3d10+12",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -12,
+      "ac_bash": -12,
+      "ac_slash": -12,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7701,
+      "name": "A pitch-black nightmare",
+      "player_name": "oldstyle nightmare",
+      "long_description": "A nightmare is here, kicking at you with its flaming hooves.\n",
+      "description": "The nightmare is a wholly evil being, sent out by the rulers of the lower\nplanes to torment mortals.  It vaguely resembles a horse, with a hide blacker\nthan the darkest night, and hooves that burn with unholy fires.\n",
+      "race": "human",
+      "act_flags": "AD",
+      "affected_by": "DJT",
+      "alignment": -950,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 300,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7702,
+      "name": "An evil night hag",
+      "player_name": "oldstyle night hag",
+      "long_description": "A night hag reaches out to steal your soul.\n",
+      "description": "You see a shadowy creature with long talons and an evil grin, whose sole\npurpose is to hunt down and slay mortals in order to obtain souls for her foul\nmaster to torment.\n",
+      "race": "human",
+      "act_flags": "ADFR",
+      "affected_by": "DJ",
+      "alignment": -1000,
+      "group": 0,
+      "level": 24,
+      "thac0": 0,
+      "ac": "5d10+450",
+      "hit_dice": "24d9+100",
+      "mana_dice": "4d4+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 2,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 625,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7703,
+      "name": "An invisible stalker",
+      "player_name": "oldstyle stalker invisible",
+      "long_description": "You see a wavy distortion in the air.\n",
+      "description": "You see only a wavy distortion in the air.  You reach out to touch it, and\nfeel nothing, not even the slightest of motions.\n",
+      "race": "human",
+      "act_flags": "AD",
+      "affected_by": "BT",
+      "alignment": 200,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "8d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7704,
+      "name": "A poor soulless being",
+      "player_name": "oldstyle soulless one",
+      "long_description": "The soulless one wanders mindlessly.\n",
+      "description": "This unfortunate being has had its very soul torn from its body.  It now roams\nmindlessly, unaware of its surroundings.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 12,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7705,
+      "name": "A githyanki hunter",
+      "player_name": "oldstyle githyanki hunter",
+      "long_description": "A githyanki hunter searches for signs of the githzerai.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands almost as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow\nand sunken.\n",
+      "race": "human",
+      "act_flags": "ACS",
+      "affected_by": "DFJP",
+      "alignment": -500,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 7,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7706,
+      "name": "A githyanki warrior",
+      "player_name": "oldstyle githyanki warrior",
+      "long_description": "You see a humanoid figure clad in splinted armor.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands as tall as a normal\nman.  Like all githyanki, his teeth are fanged and his eyes hollow and sunken.\nHe is clad in ornately designed splinted armor, and wields a sword that\nwhistles through the air as it slices towards your neck.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 125,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7707,
+      "name": "A githyanki guardian",
+      "player_name": "oldstyle githyanki guardian",
+      "long_description": "A humanoid figure clad in splinted armor blocks your way.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands as tall as a normal\nman.  Like all githyanki, his teeth are fanged and his eyes hollow and sunken.\nHe is clad in ornately designed splinted armor, and wields a sword that\nwhistles through the air as it slices towards your neck.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 300,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7708,
+      "name": "A githyanki knight",
+      "player_name": "oldstyle githyanki knight",
+      "long_description": "A tall figure armored in black observes you quietly.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands a full foot taller\nthan a normal man.  His features are obscured by a suit of ornately designed\nsplinted armor -- you only hear the hissing of his breath and the scraping\nof his sword against its scabbard as it is unsheathed.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7709,
+      "name": "A githyanki protector",
+      "player_name": "oldstyle githyanki protector",
+      "long_description": "A black knight of the githyanki protects his queen.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands a full foot taller\nthan a normal man.  His features are obscured by a suit of ornately designed\nsplinted armor -- you only hear the hissing of his breath and the scraping\nof his sword against its scabbard as it is unsheathed.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7710,
+      "name": "An evil gish",
+      "player_name": "oldstyle githyanki gish",
+      "long_description": "A small githyanki laughs at you through fanged teeth.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands nearly as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow and\nsunken.  The gish are well-versed in the arcane arts, unlike the normal gith\npeople.  You notice this from the blast of lightning headed towards you.\n",
+      "race": "human",
+      "act_flags": "AR",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "11d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 6,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7711,
+      "name": "An evil gish",
+      "player_name": "oldstyle githyanki gish",
+      "long_description": "A gish laughs as flame leaps from his hands towards your face.\n",
+      "description": "You see a leathery-skinned humanoid creature that stands nearly as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow and\nsunken.  The gish are well-versed in the arcane arts, unlike the normal gith\npeople.  You notice this from the blast of lightning headed towards you.\n",
+      "race": "human",
+      "act_flags": "ACFR",
+      "affected_by": "J",
+      "alignment": -500,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "11d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 6,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7712,
+      "name": "A warlock of the Gith",
+      "player_name": "oldstyle githyanki warlock",
+      "long_description": "A humanoid figure stands here, holding a silvery sword.\n",
+      "description": "You see a leathery-skinned creature, clad all in black and bearing a silvery-\ncolored sword.  Like all githyanki, his teeth are fanged and his eyes hollow\nand sunken.  As you turn to flee, you feel the impact of a fireball against\nyour back.\n",
+      "race": "human",
+      "act_flags": "AFR",
+      "affected_by": "DEJ",
+      "alignment": -500,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "20d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 3,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7713,
+      "name": "The lich-queen",
+      "player_name": "oldstyle githyanki lich queen",
+      "long_description": "The evil lich-queen of the Gith reaches out to destroy you.\n",
+      "description": "The lich-queen of the githyanki was once human, but no longer.  Her skin has\ncompletely shrunken around her skull, held together solely by the force of\nunholy magic and the powers of this plane of existence.  The cold glare of her\nhollow eyes sends you into paroxysms of fright.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DEFHJ",
+      "alignment": -750,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7714,
+      "name": "Lord Gith",
+      "player_name": "oldstyle lord gith",
+      "long_description": "Lord Gith suddenly forms from a cloud of blackness.\nHe stares right through you with deadly, cold eyes.\n",
+      "description": "Lord Gith is the dead savior of the githyanki people, the warrior who led them\nto freedom from their former enslavers, the mind flayers.  He has been dead\nfor centuries and stands before you now due to an unholy alliance with powers\nbeyond mortal ken.\nHe gestures towards you.  You feel your heart tremble and your throat begin\nto tighten.  You are about to die.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "BDFHJ",
+      "alignment": -900,
+      "group": 0,
+      "level": 35,
+      "thac0": 0,
+      "ac": "10d10+1300",
+      "hit_dice": "17d9+100",
+      "mana_dice": "4d7+11",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7715,
+      "name": "An insubstantial ghost",
+      "player_name": "oldstyle ghost",
+      "long_description": "A ghost wanders here, intent on destroying all life.\n",
+      "description": "The ghost makes no sound.  It is a shadowy shell of its former self, cursed\nnow to roam forever without rest.  The mind of this creature has been twisted\nand destroyed in this torment, and it now envys and intends to destroy all the\ntrue living beings it encounters, including you.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "JTU",
+      "alignment": -1000,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7716,
+      "name": "An imprisoned githzerai",
+      "player_name": "oldstyle githzerai prisoner",
+      "long_description": "A githzerai plots his escape plan.\n",
+      "description": "You see a conniving humanoid, a descendant of a race of humans once enslaved\nby the mindflayers and related to the githyanki.  Unfortunately, the two races\nare bitter enemies, and this one happened to get caught.  He intends to escape.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "J",
+      "alignment": -250,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7717,
+      "name": "A tortured mindflayer prisoner",
+      "player_name": "oldstyle mindflayer prisoner",
+      "long_description": "A mindflayer lies here, scarred from the torture inflicted by the Gith.\n",
+      "description": "You see a formerly tall humanoid creature, with four tentacles hanging from the\nmiddle of its head.  It is hunched over, bent and scarred from torture inflicted\nby the githyanki.  It cringes as you approach.\n",
+      "race": "human",
+      "act_flags": "ABR",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "8d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 7,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7718,
+      "name": "The enslaved red dragon",
+      "player_name": "oldstyle dragon red slave",
+      "long_description": "A giant red dragon is chained here, his breath heating the furnace.\n",
+      "description": "The mighty scaled beast has been magically bound and subdued by the residents\nof the keep.  Nevertheless, he is still an impressive sight, some twenty feet\nin length with an even more massive wingspan.  He watches you, smoke drifting\nfrom his open mouth.\n",
+      "race": "dragon",
+      "act_flags": "ABR",
+      "affected_by": "D",
+      "alignment": -400,
+      "group": 0,
+      "level": 28,
+      "thac0": 0,
+      "ac": "5d10+650",
+      "hit_dice": "28d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 1,
+      "offensive": "FR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 7719,
+      "name": "A massive blast of fire",
+      "player_name": "oldstyle fire furnace flame",
+      "long_description": "The fires of the furnace burn away at your skin!\n",
+      "description": "The fire feeds on your skin like a living being, licking out at your hair.\n",
+      "race": "human",
+      "act_flags": "ABDF",
+      "affected_by": "J",
+      "alignment": 0,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+170",
+      "hit_dice": "6d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 7700,
+      "name": "a massive slate-grey sledgehammer",
+      "description": "The ground cracks under the weight of a grey hammer lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "JK",
+      "wear_flags": "AN",
+      "weight": 38,
+      "cost": 550,
+      "condition": "5200",
+      "values": [
+        0,
+        4,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 6
+        },
+        {
+          "location": 18,
+          "modifier": -2
+        },
+        {
+          "location": 2,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "hammer sledge grey",
+          "description": "This massive hammer is incredibly hard, heavy, and utterly grey and featureless.\n"
+        }
+      ]
+    },
+    {
+      "id": 7701,
+      "name": "a violet scroll",
+      "description": "A rolled piece of violet parchment lies on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "I",
+      "wear_flags": "A",
+      "weight": 11,
+      "cost": 10,
+      "condition": "1510",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "scroll violet",
+          "description": "The scroll is written on soft violet parchment that has a pleasing smell to it.\n"
+        }
+      ]
+    },
+    {
+      "id": 7702,
+      "name": "a black etched tablet",
+      "description": "Lying on the ground is a jet black stone tablet.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "E",
+      "wear_flags": "A",
+      "weight": 12,
+      "cost": 50,
+      "condition": "2100",
+      "values": [
+        30,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "tablet scroll black",
+          "description": "The tablet is an unreflective black rectangular piece of stone, with strange\nwritings etched deep into its surface.\n"
+        }
+      ]
+    },
+    {
+      "id": 7703,
+      "name": "a scroll with githyanki writings on it",
+      "description": "You see a scroll written in an alien tongue.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 7,
+      "cost": 10,
+      "condition": "1240",
+      "values": [
+        24,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "scroll githyanki",
+          "description": "The scroll has writings on it that you cannot comprehend.\n"
+        }
+      ]
+    },
+    {
+      "id": 7704,
+      "name": "a small demon's amulet",
+      "description": "A small amulet lies here in the dirt.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "EH",
+      "wear_flags": "AO",
+      "weight": 11,
+      "cost": 50,
+      "condition": "2600",
+      "values": [
+        25,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": -1
+        },
+        {
+          "location": 3,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "amulet demon",
+          "description": "The amulet is a small circular object made from some bizarre metallic alloy.\nIt is inscribed with various symbols and raised images of snakes, tortured\nvictims, and other things too horrible to describe.\nStenciled in the center is an unpronounceable name which it would behoove you\nnot to utter aloud.\n"
+        }
+      ]
+    },
+    {
+      "id": 7705,
+      "name": "a devilish talisman",
+      "description": "On the ground is a small talisman which radiates a tangible evil.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "EH",
+      "wear_flags": "AO",
+      "weight": 14,
+      "cost": 50,
+      "condition": "5300",
+      "values": [
+        25,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": -10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "talisman devilish",
+          "description": "The talisman is a red circular stone object hanging from a metallic chain.  It\nseems to pulse with a life of its own, and you feel uncomfortable being anywhere\nnear it.\nEngraved in the center is one word.  Merely reading the word induces fright.\n"
+        }
+      ]
+    },
+    {
+      "id": 7706,
+      "name": "a silvery knife",
+      "description": "A flat-bladed silvery knife lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 6,
+      "cost": 30,
+      "condition": "480",
+      "values": [
+        0,
+        2,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "knife silvery",
+          "description": "The knife is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
+        }
+      ]
+    },
+    {
+      "id": 7707,
+      "name": "a silvery dagger",
+      "description": "A sharp-looking silvery dagger lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 13,
+      "cost": 30,
+      "condition": "980",
+      "values": [
+        0,
+        3,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "dagger silvery",
+          "description": "The dagger is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
+        }
+      ]
+    },
+    {
+      "id": 7708,
+      "name": "an extremely sharp and thin sword",
+      "description": "Light glints off the edge of a razor-sharp sword.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 16,
+      "cost": 30,
+      "condition": "2300",
+      "values": [
+        0,
+        4,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword thin",
+          "description": "The sword is forged from a strange silvery metal.  It barely measures an inch\nacross at its widest point, yet it is totally inflexible and razor-sharp.  It\ncould probably cut through stone.\n"
+        }
+      ]
+    },
+    {
+      "id": 7709,
+      "name": "a thin two-handed sword",
+      "description": "A heavy yet thinly bladed two-handed sword lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 24,
+      "cost": 160,
+      "condition": "2600",
+      "values": [
+        0,
+        2,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword thin two two-handed",
+          "description": "The sword is forged from a strange silvery metal.  It barely measures two inches\nacross at its widest point, yet it is totally inflexible and razor sharp.  It\ncould probably cut through stone.\n"
+        }
+      ]
+    },
+    {
+      "id": 7710,
+      "name": "a silvery sword",
+      "description": "A silvery sword gleams unnaturally with an alien light.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 19,
+      "cost": 130,
+      "condition": "4600",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword silvery",
+          "description": "The sword is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
+        }
+      ]
+    },
+    {
+      "id": 7711,
+      "name": "an iron barbed flail",
+      "description": "A rusty iron flail with wicked barbs on it tears at the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "BE",
+      "wear_flags": "AN",
+      "weight": 29,
+      "cost": 140,
+      "condition": "2800",
+      "values": [
+        0,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "flail barbed iron",
+          "description": "This hideous weapon has claimed many lives.  You can tell from the bloodstains\ndried into the iron and from the residue of flesh that hangs from the many\nbarbs on it.\n"
+        }
+      ]
+    },
+    {
+      "id": 7712,
+      "name": "the unholy sword of the githyanki",
+      "description": "You feel tendrils of evil emanating from a wicked blade.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "EHM",
+      "wear_flags": "AN",
+      "weight": 31,
+      "cost": 250,
+      "condition": "5100",
+      "values": [
+        0,
+        9,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 4
+        },
+        {
+          "location": 4,
+          "modifier": -1
+        },
+        {
+          "location": 3,
+          "modifier": -1
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword gith",
+          "description": "The blade of this sword is a featureless gray.  As you touch it you feel an\nevil presence reaching out to consume your soul.\nMaybe picking it up wasn't such a good idea.\n"
+        }
+      ]
+    },
+    {
+      "id": 7713,
+      "name": "a brightly flaming stone",
+      "description": "The room is lit by a hot blue flame coming from a small stone.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 20,
+      "cost": 10,
+      "condition": "1440",
+      "values": [
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        },
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "stone flame",
+          "description": "This stone burns with an flame that emits great heat, yet it can be held with\nease.  The flame creates a light that allows you to see for miles.\n"
+        }
+      ]
+    },
+    {
+      "id": 7714,
+      "name": "some astral powder",
+      "description": "Twinkling powder floats before your eyes.",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "100",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "powder astral",
+          "description": "You see the residue of the astral plane.\n"
+        }
+      ]
+    },
+    {
+      "id": 7715,
+      "name": "a splint mail vest",
+      "description": "An intricately fashioned splint mail vest lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 15,
+      "cost": 450,
+      "condition": "2100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "vest splint",
+          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
+        }
+      ]
+    },
+    {
+      "id": 7716,
+      "name": "a splint mail skirt",
+      "description": "An intricately fashioned splint mail skirt lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 20,
+      "cost": 200,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "skirt splint",
+          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
+        }
+      ]
+    },
+    {
+      "id": 7717,
+      "name": "a pair of splint mail sleeves",
+      "description": "A pair of intricately fashioned splint mail sleeves lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 20,
+      "cost": 150,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sleeves splint",
+          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
+        }
+      ]
+    },
+    {
+      "id": 7718,
+      "name": "a pair of ornately designed gauntlets",
+      "description": "A pair of painstakingly designed ornate gauntlets lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AH",
+      "weight": 20,
+      "cost": 50,
+      "condition": "2700",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "gauntlets ornate",
+          "description": "These gauntlets have been expertly and ornately fashioned from the highest\nquality of steels.\n"
+        }
+      ]
+    },
+    {
+      "id": 7719,
+      "name": "a decaying vest made from cracked leather",
+      "description": "A decaying hunk of cracked leather has been discarded here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 31,
+      "cost": 50,
+      "condition": "8500",
+      "values": [
+        9,
+        9,
+        9,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        },
+        {
+          "location": 17,
+          "modifier": -6
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "vest cracked leather",
+          "description": "The ancient vest is barely intact.  All of the leather has cracked and dried\nto a husk.  It is covered with stains, burns, scorch marks, and blood.\n"
+        }
+      ]
+    },
+    {
+      "id": 7720,
+      "name": "a violet potion",
+      "description": "A tall glass flask holds a translucent violet fluid.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 2,
+      "cost": 20,
+      "condition": "320",
+      "values": [
+        18,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion violet",
+          "description": "The violet fluid inside shifts and swirls.\n"
+        }
+      ]
+    },
+    {
+      "id": 7721,
+      "name": "a vial of murky fluid",
+      "description": "A small vial contains a murky, sludge-like substance.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 10,
+      "cost": 10,
+      "condition": "760",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion vial murky",
+          "description": "The murky liquid inside this vial looks a lot like sewer water.\n"
+        }
+      ]
+    },
+    {
+      "id": 7722,
+      "name": "a silvery-colored potion",
+      "description": "An octagonal vial holds a silvery-colored fluid that reflects light.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 1,
+      "cost": 20,
+      "condition": "320",
+      "values": [
+        20,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion silvery",
+          "description": "The octagonal vial contains a silvery-colored liquid that shimmers in the light.\n"
+        }
+      ]
+    },
+    {
+      "id": 7723,
+      "name": "a tasty-looking chocolate mint",
+      "description": "Someone has dropped a delicious-looking chocolate mint here.",
+      "material": "oldstyle",
+      "item_type": "pill",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 11,
+      "cost": 0,
+      "condition": "990",
+      "values": [
+        35,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "mint chocolate",
+          "description": "This mint is made from the finest of chocolates, surrounding a cool peppermint\ninterior that must be savored, not swallowed.\n"
+        }
+      ]
+    },
+    {
+      "id": 7724,
+      "name": "a black pentagram",
+      "description": "A small black metal pentagram has been left here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "F",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 100,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "pentagram",
+          "description": "The pentagram is a small circular hoop that surrounds a five-pointed star.\nInscribed on its exterior loop are markings in an alien tongue.\n"
+        }
+      ]
+    },
+    {
+      "id": 7725,
+      "name": "a rotting pouch",
+      "description": "A small pouch rots away on the floor here.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "pouch rotting",
+          "description": "You think you see glints of metal through the holes...\n"
+        }
+      ]
+    }
+  ]
+}

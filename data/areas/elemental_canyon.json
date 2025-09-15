@@ -1,0 +1,3479 @@
+{
+  "area": {
+    "vnum": 9200,
+    "name": "Elemental Canyon",
+    "filename": "canyon.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 9201,
+      "name": "A Mountain Path",
+      "description": "You are on a mountain path which ascends a steep mountainside.  The trail\ncurves around the mountain so that you cannot really see what lies ahead.\nYou do sense great power though coming from the area behind the mountain.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5267,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9202,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9202,
+      "name": "A Mountain Path",
+      "description": "You are on a rocky mountain path leading up and around a steep mountainside.\nYou sense a glow from the area beyond the mountain, which you cannot see yet.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9203,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9201,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9203,
+      "name": "Mountainside Tombs",
+      "description": "There are a few stone heaps here and there, the tombs of those who did not\nlast the arduous journey up the mountain.  Curiously you notice a few\nuncovered bodies which don't seem to have died of exhaustion.  The path curves\neast around the mountain.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9204,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9202,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "bodies body dead",
+          "description": "They look as if their necks have been broken and their flesh, chewed.\n"
+        },
+        {
+          "keyword": "heaps stones tombs",
+          "description": "You are sure glad that YOU aren't under one of those piles!\nMany of the tombstones have the same name on them, 'Raff'.  He must come\nhere a lot.\n"
+        }
+      ],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9204,
+      "name": "A Blind Curve on the Mountain Path.",
+      "description": "This looks like a normal mountain path, but it is NOT!  This section of the\npath is habitated by a huge (and of course, man-eating) Cyclops.  The path\nmakes its final ascent to an overlook.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9205,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9203,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9205,
+      "name": "Vista",
+      "description": "This is a stunning vista overlooking a canyon.  There is a sign here that says:\nBEHOLD -- ELEMENTAL CANYON\nFire leaps up from firepits in the western part of the canyon.  The sky looks\nfunny, and the air seems hazy to the northwest.  Electricity sparks\nintermittently in the northeast.  To the east you see a strong, magic-looking\nriver flowing through the canyon.  Also to the east you spy a cave entrance\nleading into the canyon wall.  The path descends to the north to another\noverlook.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9206,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9204,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9206,
+      "name": "The Overlook",
+      "description": "You see various elemental servants wandering around the canyon.  The noise of\nhumming coming from the canyon gets louder.  The path makes a steep descent\ninto the canyon here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9205,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9207,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9207,
+      "name": "Entrance to Elemental Canyon",
+      "description": "You are awed by the sounds and sights of great powers at works here.\nElemental servants bustle back and forth doing the biddings of the elemental\nrulers.  You see a sort of cross roads to the north, and you can climb up to\nthe overlook here.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9209,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9206,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9208,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at all.\nIn general, it is calm, yet there is always a incessant buzz of things\ngoing on about.  The canyon continues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9211,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9209,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9209,
+      "name": "Elemental Gateway",
+      "description": "To the west a path dips and winds among some flowing firepits.  To the\nnortheast a path goes toward the river.  Beyond toward the northeast and\nnorthwest are outcrops which rise up from the canyon floor. To the east there\nis a cave mouth which leads into the canyon wall.  And to the south the path\nleads up, away, and out of the canyon.  Various pure and cross-breeds of\nelemental forms wander the canyon floor, which extends in a wide swath\nnorthwards.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9212,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9210,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9207,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9208,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9210,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always a incessant buzz of\nthings going on about.  The canyon floor extends north and west.  There is a\ncave mouth set into the canyon wall to the east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9213,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9220,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9209,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9211,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends off to the north, east,\nand south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9214,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9212,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9208,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9212,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends in all directions.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9215,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9213,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9209,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9211,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9213,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends north, south, and west.\nA path follows a stream to the east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9216,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9228,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9210,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9212,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9214,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about. The canyon floor extends north, east, and south.\nTo the west a garden is on fire.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9217,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9215,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9211,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9237,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9215,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends in all directions.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9218,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9216,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9212,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9214,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9216,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The Canyon floor extends north, south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9219,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9213,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9215,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9217,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about. The canyon floor extends east and south.  You can\nclimb a rise in the canyon floor to the north.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9253,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9218,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9214,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9218,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends east, south, and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9219,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9215,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9217,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9219,
+      "name": "The Floor of the Canyon",
+      "description": "Various elemental forms wander the floor of the canyon.  Some seem to be\ngoing about their business, while others seem to have no business at\nall.  In general, it is calm, yet there is always an incessant buzz of\nthings going on about.  The canyon floor extends south and west.  You can\nclimb a rise in the canyon floor to the north.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9254,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9216,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9218,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9220,
+      "name": "Dark Cave",
+      "description": "You notice a path winding east among some huge boulders.  You feel a powerful\nsource of energy from that direction.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9221,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9210,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9221,
+      "name": "Darker Caves",
+      "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around\nyou.  Cave paths go south and east roughly, its hard to tell exactly when you\ncan't see where you are going.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9222,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9223,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9220,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9222,
+      "name": "Darker Caves",
+      "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around\nyou.  Cave paths go south and west roughly; it's hard to tell exactly when you\ncan't see where you are going.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9224,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9221,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9223,
+      "name": "Darker Caves",
+      "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around you.\nCave paths go north, south and east roughly; it's hard to tell exactly when\nyou can't see where you are going.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9221,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9224,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9225,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9224,
+      "name": "Darker Caves",
+      "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around you.\nCave paths go north, south and west roughly, it's hard to tell exactly when you\ncan't see where you are going.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9222,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9226,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9223,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9225,
+      "name": "Darkest Caves",
+      "description": "Your light doesn't even seem to work here.  Even magical light sources seem\nonly to illuminate about a foot ahead of you.  You suddenly realize that the\npath has descended quite a bit but you didn't notice before because of the\ndarkness.  You sense a great presence off to the east aways.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9223,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9226,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9226,
+      "name": "Darkest Caves",
+      "description": "Your light doesn't even seem to work here.  Even magical light sources seem\nonly to illuminate about a foot ahead of you.  You suddenly realize that the\npath has descended quite a bit but you didn't notice before because of the\ndarkness.  You sense a great presence directly to the east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9224,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9227,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9225,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9227,
+      "name": "Earth Chamber",
+      "description": "This is the abode of the Earth Ruler.  He decides about earthquakes,\nlandslides, and avalanches.  The Earth Ruler sits upon a huge marble throne\ncarved into the wall.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9226,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "marble throne",
+          "description": "The ruler notices your stare, and doesn't like it one bit!  The whole\nearth seems to shake with his emotion.\n"
+        }
+      ],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9228,
+      "name": "By the River",
+      "description": "The water in the river seems to bubble and froth with magic.  Though it\nsplashes playfully on you, it does not seem wet.  The path leads north closer\nto the water. To the west you see a T-intersection.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9229,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9213,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9229,
+      "name": "In the River",
+      "description": "To continue you had to walk right in the river.  Though you walk along in\nwater up to your knees, you do not seem to get wet.  A bay stretches out to\nthe north and the river goes south.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9230,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9228,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9230,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9233,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9231,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9229,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9231,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9234,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9232,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9230,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9232,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9235,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9231,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9233,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9234,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9230,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9234,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9235,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9231,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9233,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9235,
+      "name": "Elemental Bay",
+      "description": "The water is crystal clear here and you can see the bottom of the bay 30 feet\nbelow you.  Then you realize you are walking on the water itself.  Truly\nmagical water indeed.  Though you splash through the bay you do not get wet.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9232,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9234,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9236,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9236,
+      "name": "Water Chamber",
+      "description": "This chamber was magically created here on the floor of the bay.  It looks\nlike it's been here for a long, long time.  Though you are 'under water' there\nis no difficulty breathing normally, and oddly you do not feel the pressure of\nthe water above you.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9235,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9237,
+      "name": "A Fiery Pathway",
+      "description": "You tread carefully along a path which dips and turns among geysers of fire.\nMiniature volcanoes spew lava in rivers.  The fire is hot but not altogether\ndangerous.  The path extends east and south.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9214,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9238,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9238,
+      "name": "A Fiery Pathway",
+      "description": "You tread carefully along a path which dips and turns among pits of fire and\nbeds of coals.  A garden to the west glows with an everlasting fire.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9237,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9242,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9242,
+      "name": "The Burning Gardens",
+      "description": "Everywhere around you the landscape is afire; the rocks, the shrubs and even\nthe air seems to be aflame.  Curiously, the magical fire does not seem to\nconsume its hosts.  A path leads east among some fire pits.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9238,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9245,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9245,
+      "name": "The Fire Chamber",
+      "description": "The fire ruler sits upon a throne made of blue flame.  Little flickers of\nflame dance to and fro for the entertainment of the ruler.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9242,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9246,
+      "name": "Electric Pathway",
+      "description": "The pathway glows and hums because of the electricity pulsing through it.\nIt seems almost soothing to your weary feet.  To the north there is a\nsunken-in area.  A path leads east also.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9248,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9253,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9247,
+      "name": "The Electric Playground",
+      "description": "Though there is a seemingly carefree atmosphere here, you sense that\nsomething much more important takes place near by.  The electric playground\nextends north and east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9249,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9248,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9248,
+      "name": "The Electric Playground",
+      "description": "Though there is a seemingly carefree atmosphere here, you sense that\nsomething much more important takes place near by.  There is an electric\npath heading away south.  The playground extends north and west.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9250,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9246,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9247,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9249,
+      "name": "The Electric Playground",
+      "description": "Though there is a seemingly carefree atmosphere here, you sense that\nsomething much more important takes place near by.  The playground continues\nsouth and east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9250,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9247,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9250,
+      "name": "The Electric Playground",
+      "description": "Though there is a seemingly carefree atmosphere here, you sense that\nsomething much more important takes place near by.  The playground is\nsouth and west.  Something more important catches your eye to the east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9251,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9248,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9249,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9251,
+      "name": "Lightning Causeway",
+      "description": "Up a set of stairs carved into the hill you see intermittent flashes of\nlightning.  A continuous hum also comes form that direction.  To the west\nis the electric playground.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9250,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9252,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9252,
+      "name": "Lightning Chamber",
+      "description": "There is some sort of control panel here. Apparently the Lightning Ruler\nobserves and controls electric forces from here.  A set of steps carved into\nthe hill lead down to a causeway.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 9251,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9253,
+      "name": "Mesa West",
+      "description": "An electric path starts to the west.  The mesa continues to the east.\nOr you can climb down to the canyon floor to the south.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9254,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9217,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9246,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9254,
+      "name": "Mesa East",
+      "description": "A path starts to the north.  The mesa continues to the west.\nOr you can climb down to the canyon floor to the south.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9255,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9219,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9253,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9255,
+      "name": "Floating in Air",
+      "description": "Last you knew, you were walking on the mesa.  Abruptly the path dropped\nfrom beneath your feet much to quick for you to recover.  Instead of\nplunging to your death, you seemingly miss the ground and begin walking\non air.  The space to the north and east seems just thin air, but you can\nwalk there.  The pathway you came from is to the south.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9257,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9256,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9254,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9256,
+      "name": "Floating in Air",
+      "description": "You look down and see the ground 100 feet below you.  The wind whispering\nin your ear seems to reassure you that this is fine.  To the north aways\nyou spy a portal of sorts.  To the west is more thin air.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9258,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9255,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9257,
+      "name": "Floating in Air",
+      "description": "You look down and see the ground 100 feet below you.  The wind whispering\nin your ear seems to reassure you that this is fine.  To the east aways\nyou spy a portal of sorts.  To the south is more thin air.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9258,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9255,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9258,
+      "name": "Floating in Air",
+      "description": "You look down and see the ground 100 feet below you.  The wind whispering\nin your ear seems to reassure you that this is fine. There is a portal\nhanging in midair here. It is to the east.  You can float south or west\nif you'd like.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9259,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9256,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9257,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "portal",
+          "description": "Through the portal you see a tunnel.\n"
+        }
+      ],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9259,
+      "name": "Windy Tunnel",
+      "description": "A tunnel leads east.  To the west you can enter a portal. The wind in\nthis tunnel is quite fierce, it seems as if it's forced.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9260,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9258,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "portal",
+          "description": "Through the portal you see nothing but sky.\n"
+        }
+      ],
+      "resets": [],
+      "area": 9200
+    },
+    {
+      "id": 9260,
+      "name": "Air Chamber",
+      "description": "Tiny tornadoes come and go and dance along the ground here.  At the back\nof the chamber you notice a huge throne made of swirling clouds.\nA tunnel leads west.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9259,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "throne clouds",
+          "description": "Although the cloud throne appears solid enough to sit on, I wouldn't try\nit if I were you!\n"
+        }
+      ],
+      "resets": [],
+      "area": 9200
+    }
+  ],
+  "mobs": [
+    {
+      "id": 9201,
+      "name": "the mountain climber",
+      "player_name": "mountain climber mountainclimber",
+      "long_description": "A mountain climber is making the same trek that you are.\n",
+      "description": "He wants to see what's on the other side of the mountain too.\n",
+      "race": "human",
+      "act_flags": "ACGT",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 3,
+      "thac0": 1,
+      "ac": "10d5+15",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+1",
+      "damage_dice": "punch",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 8,
+      "offensive": "JN",
+      "immune": "0",
+      "resist": "HIJR",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 30,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9202,
+      "name": "the cyclops",
+      "player_name": "cyclops",
+      "long_description": "A hungry cyclops snarls at you!\n",
+      "description": "He looks like he's about to have dinner (maybe it's you?).\n",
+      "race": "giant",
+      "act_flags": "ABFQT",
+      "affected_by": "DF",
+      "alignment": -700,
+      "group": 0,
+      "level": 22,
+      "thac0": 7,
+      "ac": "10d10+600",
+      "hit_dice": "10d10+100",
+      "mana_dice": "6d4+10",
+      "damage_dice": "smash",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": -2,
+      "offensive": "ACDIO",
+      "immune": "AB",
+      "resist": "CD",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 600,
+      "form": "0",
+      "parts": "0",
+      "size": "huge",
+      "material": "0"
+    },
+    {
+      "id": 9203,
+      "name": "a tiny elemental",
+      "player_name": "oldstyle tiny elemental",
+      "long_description": "A tiny elemental form wanders about.\n",
+      "description": "Rather small for an elemental form, looks like a reject.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "2d6+10",
+      "hit_dice": "0d9+100",
+      "mana_dice": "1d4+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9204,
+      "name": "the elemental guardian",
+      "player_name": "oldstyle elemental guardian",
+      "long_description": "The elemental guardian of the canyon.\n",
+      "description": "You can't tell which kind of elemental it is, maybe it's a bit o' all of them?\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9205,
+      "name": "a small elemental",
+      "player_name": "oldstyle small elemental",
+      "long_description": "A small, rather non-descript elemental.\n",
+      "description": "A small elemental, a resident of the canyon.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 12,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9206,
+      "name": "a medium elemental",
+      "player_name": "oldstyle medium elemental",
+      "long_description": "A medium-sized elemental.\n",
+      "description": "A medium elemental, a resident of the canyon.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 10,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 37,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9207,
+      "name": "a large elemental",
+      "player_name": "oldstyle large elemental",
+      "long_description": "A large elemental.\n",
+      "description": "A large elemental, a resident of the canyon.",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 20,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9208,
+      "name": "the Earth Ruler",
+      "player_name": "oldstyle earth elemental ruler",
+      "long_description": "The Ruler of the earth elementals.\n",
+      "description": "He looks as old as the earth itself.  He seems to know all the\nsecrets and knowledge of the Earth.  You can't really tell where\nhe begins and the rock wall ends.\n",
+      "race": "human",
+      "act_flags": "ABQ",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "30d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 4,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9209,
+      "name": "the Fire Ruler",
+      "player_name": "oldstyle fire elemental ruler",
+      "long_description": "The Ruler of the fire elementals.\n",
+      "description": "As you look at him he seems to blend in with the fire in his throne.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9210,
+      "name": "The Air Ruler",
+      "player_name": "oldstyle air elemental ruler",
+      "long_description": "The Ruler of the air elementals.\n",
+      "description": "As you peer at him you seem to be looking at the sky itself.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9211,
+      "name": "The Lightning Ruler",
+      "player_name": "oldstyle lightning elemental ruler",
+      "long_description": "The Ruler of the lightning elementals.\n",
+      "description": "As you examine him there is a blinding flash of light and a deafening boom!\nYou rub your eyes and look and the ruler is there grinning at you.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9212,
+      "name": "The Water Ruler",
+      "player_name": "oldstyle water elemental ruler",
+      "long_description": "The Ruler of the water elementals.\n",
+      "description": "As you look at him he changes to mist, which swirls around you.  Just\nas you get scared, it reforms in elemental form.\n",
+      "race": "water fowl",
+      "act_flags": "AB",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9214,
+      "name": "a puddle",
+      "player_name": "oldstyle water puddle elemental",
+      "long_description": "A small puddle of water elemental.\n",
+      "description": "It trickles along the ground and gets your feet wet.\n",
+      "race": "water fowl",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 11,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9215,
+      "name": "a flame",
+      "player_name": "oldstyle fire flame elemental",
+      "long_description": "A small flickering flame elemental.\n",
+      "description": "It smolders along the grass aimlessly.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 7,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9216,
+      "name": "a small snowflake",
+      "player_name": "oldstyle snowflake snow flake ice elemental",
+      "long_description": "A frozen snowflake water elemental.\n",
+      "description": "It looks a little blue.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 520,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9217,
+      "name": "a small rock",
+      "player_name": "oldstyle pebble rock earth stone elemental",
+      "long_description": "A small rock.\n",
+      "description": "It seems to be a small living pebble!\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 4,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9218,
+      "name": "a small spark",
+      "player_name": "oldstyle spark lightning energy elemental",
+      "long_description": "A small spark of electricity fizzles here.\n",
+      "description": "Zipping from place to place at the speed of light is tough work.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 7,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9219,
+      "name": "a small blob of acid",
+      "player_name": "oldstyle acid blob elemental",
+      "long_description": "A small blob of acid aimlessly eats away at the stone.\n",
+      "description": "The magical blob of acid is a cross between lightning and water.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9220,
+      "name": "a lava beast",
+      "player_name": "oldstyle lava elemental",
+      "long_description": "A lava beast spews from place to place.\n",
+      "description": "The magical lava beast is a cross between fire and earth.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 15,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9221,
+      "name": "a mud monster",
+      "player_name": "oldstyle mud elemental",
+      "long_description": "A mud monster slops around.\n",
+      "description": "The magical mud monster is a cross between water and earth.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 20,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9222,
+      "name": "an elemental mist",
+      "player_name": "oldstyle mist elemental",
+      "long_description": "The air is magically misty here.\n",
+      "description": "The magical mist is a cross between water and air.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 15,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9223,
+      "name": "a particle",
+      "player_name": "oldstyle particle elemental",
+      "long_description": "A sub-atomic particle is too small for you to see.\n",
+      "description": "The magical manifestation of energy.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9224,
+      "name": "a dust cloud",
+      "player_name": "oldstyle dust elemental",
+      "long_description": "A dust cloud blowing by makes you sneeze.\n",
+      "description": "The magical dust cloud is a cross between air and earth.\n",
+      "race": "human",
+      "act_flags": "AGS",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9225,
+      "name": "an eddie",
+      "player_name": "oldstyle eddie elemental",
+      "long_description": "A small eddie current swirls junk around here.\n",
+      "description": "The magical eddie current is a manifestation of an air elemental.\n",
+      "race": "human",
+      "act_flags": "AGS",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d6+10",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d4+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9226,
+      "name": "the Blue Flame",
+      "player_name": "oldstyle blue flame",
+      "long_description": "The Blue Flame burns mysteriously here.\n",
+      "description": "As you look you see what seems to be a face and almost a\nhumanoid figure somehow trapped in the fire.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": -100,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+600",
+      "hit_dice": "13d9+100",
+      "mana_dice": "3d7+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9227,
+      "name": "the Magneto",
+      "player_name": "oldstyle magneto",
+      "long_description": "The Magneto considers zapping you for the heck of it.\n",
+      "description": "A humanoid figure seems to be trapped in the field of the Magneto.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": -150,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "11d9+100",
+      "mana_dice": "4d4+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9228,
+      "name": "the Ice Bandit",
+      "player_name": "oldstyle ice bandit",
+      "long_description": "The Ice Bandit strikes cold fear in your heart.\n",
+      "description": "A humanoid figure encased in ice but still apparently alive.\n",
+      "race": "human",
+      "act_flags": "ABGH",
+      "affected_by": "P",
+      "alignment": -250,
+      "group": 0,
+      "level": 24,
+      "thac0": 0,
+      "ac": "5d10+500",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9229,
+      "name": "the Rock Monster",
+      "player_name": "oldstyle rock monster",
+      "long_description": "The Rock Monster considers you in stoney silence.\n",
+      "description": "A humanoid figure trapped in stone seems alive.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": -310,
+      "group": 0,
+      "level": 23,
+      "thac0": 0,
+      "ac": "5d10+450",
+      "hit_dice": "11d9+100",
+      "mana_dice": "3d6+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 950,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9230,
+      "name": "the Hurricane",
+      "player_name": "oldstyle hurricane",
+      "long_description": "A Hurricane rages across the sky.\n",
+      "description": "A humanoid figure is trapped in the rushing wind.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "P",
+      "alignment": -10,
+      "group": 0,
+      "level": 28,
+      "thac0": 0,
+      "ac": "6d12+703",
+      "hit_dice": "14d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 2054,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9231,
+      "name": "an elemental magician",
+      "player_name": "oldstyle magician",
+      "long_description": "An elemental magician seeks magical stones for a spell.\n",
+      "description": "The elemental magician has come here in search of the fabled\nStone of Surrender which can be used to render opponents senseless.\n",
+      "race": "human",
+      "act_flags": "ABGR",
+      "affected_by": "B",
+      "alignment": -50,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "17d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 4,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 400,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9232,
+      "name": "a rainbow warrior",
+      "player_name": "oldstyle rainbow warrior",
+      "long_description": "A warrior of the Rainbow Cult swears his loyalty.\n",
+      "description": "The Rainbow Cult has received special powers for their service to\nthe elemental forces.\n",
+      "race": "human",
+      "act_flags": "AGQ",
+      "affected_by": "0",
+      "alignment": 150,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "18d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 400,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9233,
+      "name": "an illusionist",
+      "player_name": "oldstyle illusionist",
+      "long_description": "The illusionist seeks the aid of the elemental forces.\n",
+      "description": "He seeks their aid for a powerful new spell of deception.\n<wielded>            The Sword of Illusions\n",
+      "race": "human",
+      "act_flags": "ABGR",
+      "affected_by": "0",
+      "alignment": -50,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "12d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 6,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 95,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9234,
+      "name": "an alchemist",
+      "player_name": "oldstyle alchemist",
+      "long_description": "An alchemist wanders by in search of magical herbs.\n",
+      "description": "Rare herbs are rumored to grow only in the canyon.\n",
+      "race": "human",
+      "act_flags": "AGS",
+      "affected_by": "DF",
+      "alignment": -50,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 7,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 95,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9235,
+      "name": "a baby rainbow dragon",
+      "player_name": "oldstyle baby rainbow dragon",
+      "long_description": "A baby rainbow dragon plays among the elements here.\n",
+      "description": "It's only a baby by dragon standards.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9236,
+      "name": "a little imp",
+      "player_name": "oldstyle imp",
+      "long_description": "A little imp runs along being annoying.\n",
+      "description": "The little bugger steals stuff and is generally obnoxious.\n",
+      "race": "human",
+      "act_flags": "ACGH",
+      "affected_by": "PQ",
+      "alignment": -500,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9237,
+      "name": "a HUGE elemental",
+      "player_name": "oldstyle HUGE elemental",
+      "long_description": "A HUGE elemental form stands here.\n",
+      "description": "HUGE, need i say more?\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 30,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9238,
+      "name": "the elixir vendor",
+      "player_name": "oldstyle vendor",
+      "long_description": "A vendor is willing to sell you elixirs.\n",
+      "description": "I WOULD NOT suggest you attack me ...!\n",
+      "race": "human",
+      "act_flags": "ABEGR",
+      "affected_by": "0",
+      "alignment": 900,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+778",
+      "hit_dice": "30d9+100",
+      "mana_dice": "5d4+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 1,
+      "offensive": "FU",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 9201,
+      "name": "the earth ring",
+      "description": "A dark ring which seems to absorb all the light around it lies here.",
+      "material": "oldstyle",
+      "item_type": "furniture",
+      "extra_flags": "I",
+      "wear_flags": "AB",
+      "weight": 7,
+      "cost": 50,
+      "condition": "1140",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 3,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9202,
+      "name": "a stoney breastplate",
+      "description": "A breastplate made of the stone from deep within the earth lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 31,
+      "cost": 700,
+      "condition": "5500",
+      "values": [
+        10,
+        10,
+        10,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9203,
+      "name": "a fiery dagger",
+      "description": "A dagger made of fire crackles mysteriously here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 29,
+      "cost": 20,
+      "condition": "2800",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 4
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9204,
+      "name": "a flame red cape",
+      "description": "A cape made of ethereal red fiber lies neatly folded on the ground here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "A",
+      "wear_flags": "AC",
+      "weight": 30,
+      "cost": 30,
+      "condition": "3100",
+      "values": [
+        9,
+        9,
+        9,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9205,
+      "name": "the wind boots",
+      "description": "A pair of boots that look fast standing still are here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AG",
+      "weight": 26,
+      "cost": 10,
+      "condition": "5200",
+      "values": [
+        8,
+        8,
+        8,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9206,
+      "name": "a hurricane helmet",
+      "description": "A helmet that looks like it has weathered many storms has been set here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "B",
+      "wear_flags": "AE",
+      "weight": 31,
+      "cost": 40,
+      "condition": "3800",
+      "values": [
+        9,
+        9,
+        9,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9207,
+      "name": "a sparking lightning sword",
+      "description": "A lightning bolt fashioned into a sword spits sparks here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AB",
+      "wear_flags": "AN",
+      "weight": 25,
+      "cost": 100,
+      "condition": "2200",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9208,
+      "name": "an electric shield",
+      "description": "A shield made entirely of energy buzzes here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "B",
+      "wear_flags": "AJ",
+      "weight": 28,
+      "cost": 80,
+      "condition": "4500",
+      "values": [
+        9,
+        9,
+        9,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        },
+        {
+          "location": 1,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9209,
+      "name": "an icy girth",
+      "description": "A girth made of magical ice has been left here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AL",
+      "weight": 31,
+      "cost": 100,
+      "condition": "1540",
+      "values": [
+        10,
+        10,
+        10,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9210,
+      "name": "a waterfall cloak",
+      "description": "A cloak fashioned from a small magical waterfall is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AK",
+      "weight": 30,
+      "cost": 60,
+      "condition": "3000",
+      "values": [
+        9,
+        9,
+        9,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -2
+        },
+        {
+          "location": 12,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9211,
+      "name": "an elemental amulet",
+      "description": "An amulet depicting fire, water, lightning, earth, and air lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "A",
+      "wear_flags": "AC",
+      "weight": 20,
+      "cost": 10,
+      "condition": "860",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9212,
+      "name": "an elemental bracelet",
+      "description": "A bracelet made of elemental magic lies here.",
+      "material": "oldstyle",
+      "item_type": "gem",
+      "extra_flags": "0",
+      "wear_flags": "AM",
+      "weight": 20,
+      "cost": 40,
+      "condition": "580",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 20
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9213,
+      "name": "a platinum arm band",
+      "description": "A platinum arm band, once worn by the Cyclops, lie here.",
+      "material": "platinum",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AM",
+      "weight": 26,
+      "cost": 40,
+      "condition": "1700",
+      "values": [
+        9,
+        9,
+        9,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": -2
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9214,
+      "name": "some platinum leg bands",
+      "description": "A pair of platinum leg bands, once worn by the Cyclops, lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 26,
+      "cost": 40,
+      "condition": "1700",
+      "values": [
+        9,
+        9,
+        9,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": -2
+        },
+        {
+          "location": 2,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9215,
+      "name": "elemental wand of fire",
+      "description": "A fire wand lies forgotten on the ground.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 16,
+      "cost": 70,
+      "condition": "3900",
+      "values": [
+        15,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9216,
+      "name": "an ice staff",
+      "description": "An ice staff lies forgotten on the ground.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 25,
+      "cost": 70,
+      "condition": "13700",
+      "values": [
+        12,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9217,
+      "name": "an elemental rod of earthquake",
+      "description": "An earthquake rod lies forgotten on the ground.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 7,
+      "cost": 70,
+      "condition": "1000",
+      "values": [
+        7,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9218,
+      "name": "elemental wand of wind and air",
+      "description": "An air wand lies forgotten on the ground.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 27,
+      "cost": 70,
+      "condition": "12600",
+      "values": [
+        11,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9219,
+      "name": "elemental wand of lightning",
+      "description": "A lightning wand lies forgotten on the ground.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "A",
+      "wear_flags": "AO",
+      "weight": 7,
+      "cost": 70,
+      "condition": "1420",
+      "values": [
+        9,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9220,
+      "name": "a stone club",
+      "description": "A large stone club lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 13,
+      "cost": 160,
+      "condition": "730",
+      "values": [
+        0,
+        2,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9221,
+      "name": "a lodestone",
+      "description": "A dull red rock lies here amid the weeds.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 13,
+      "cost": 20,
+      "condition": "2800",
+      "values": [
+        19,
+        2,
+        2,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9222,
+      "name": "a lava lamp",
+      "description": "A lantern which glows with a red glowing light has been dumped.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": "A",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 40,
+      "condition": "250",
+      "values": [
+        0,
+        0,
+        1000,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9223,
+      "name": "an energy scroll",
+      "description": "A scroll of energy replacement lies here.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "B",
+      "wear_flags": "A",
+      "weight": 5,
+      "cost": 10,
+      "condition": "860",
+      "values": [
+        19,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9224,
+      "name": "a water jug",
+      "description": "A large but surprisingly light jug of water stands here.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "200",
+      "values": [
+        150,
+        150,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9225,
+      "name": "magic dust",
+      "description": "A pile of dust of appearance has gathered here.",
+      "material": "oldstyle",
+      "item_type": "pill",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "300",
+      "values": [
+        20,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9226,
+      "name": "a flame lance",
+      "description": "A lance of blue flame burns the ground around it.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 29,
+      "cost": 140,
+      "condition": "220",
+      "values": [
+        0,
+        2,
+        15,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 2
+        },
+        {
+          "location": 13,
+          "modifier": -20
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9227,
+      "name": "an icicle",
+      "description": "A glowing icicle dagger lies here amid a patch of frost.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 10,
+      "condition": "1630",
+      "values": [
+        0,
+        7,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": -1
+        },
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9228,
+      "name": "the avalanche",
+      "description": "An avalanche is about to crush you!",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 24,
+      "cost": 160,
+      "condition": "3000",
+      "values": [
+        0,
+        1,
+        25,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9229,
+      "name": "the morning star",
+      "description": "A chain with a star on the end lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "A",
+      "wear_flags": "AN",
+      "weight": 23,
+      "cost": 110,
+      "condition": "3300",
+      "values": [
+        0,
+        6,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -3
+        },
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9230,
+      "name": "the Shock Whip",
+      "description": "A whip hums innocently too itself.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "B",
+      "wear_flags": "AN",
+      "weight": 20,
+      "cost": 100,
+      "condition": "64",
+      "values": [
+        0,
+        4,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": -2
+        },
+        {
+          "location": 19,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9231,
+      "name": "anti-cyclops elixir",
+      "description": "An elixir to ward off cyclopi has been bought then left behind here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 10,
+      "condition": "250",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

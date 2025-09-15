@@ -1,0 +1,205 @@
+{
+  "area": {
+    "vnum": 5500,
+    "name": "Ofcol",
+    "filename": "ofcol.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 5550,
+      "name": "Village street",
+      "description": "You stand at the small village street in Ofcol.\nFrom here you see small houses and only few people.\nNorth of here the village street continues up to the small\nsquare where some people are gathered as always.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5551,
+          "description": "You look up the village street noticing nothing special at all.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 314,
+          "description": "The wide road leads south here towards the T-crossing.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5551,
+      "name": "Village street",
+      "description": "You are standing on the village street of Ofcol.\nEast from here is a small alley and north you enter the village\nsquare. Towards the south you can leave Ofcol.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5552,
+          "description": "The village square is as usual not overcrowded.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5553,
+          "description": "The small alley looks relative peaceful.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 5550,
+          "description": "You see the village street eventually becoming the wide road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5552,
+      "name": "Village square",
+      "description": "The village square is a place where inhabitants of Ofcol gather\nto talk, trade and sell items and just have a good time.\nYou see a small shop to the west and the local inn to the north.\nIf you leave south you go to village street.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5556,
+          "description": "You see a local inn called 'The Ofcol Local Inn'. Looks nice.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 5551,
+          "description": "You see the village street of Ofcol.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5555,
+          "description": "A small shop with the sign 'Luxan's Mixed goods' hanging in front of it.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5553,
+      "name": "The small alley",
+      "description": "You are in a small, quiet alley.  From here you see the village street\nto the west and a small room lies to the south.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 601,
+          "description": "You see a big intersection.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5554,
+          "description": "It looks like the future site of a training room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5551,
+          "description": "You notice nothing but the village street.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5554,
+      "name": "The future training room",
+      "description": "This is the future site of a training room.  The only exit is north\nleading to the small alley.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5553,
+          "description": "You are able to see the small alley, really not very interesting.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5555,
+      "name": "Luxan's mixed shop",
+      "description": "You are standing in a small shop, filled with all kinds of goods.\nHere you might be able to find just the thing you're looking for.\nThe only exit is east to village square.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5552,
+          "description": "The village square is as usual not overcrowded.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5556,
+      "name": "The Local Inn",
+      "description": "You are in the local inn, where the peaceful citizens of Ofcol\ngather to have a drink or 5 if they have dry throats.\nYou can't help thinking that Ofcol is a dry city, when you see the\nmany people here.\nThe only exit is south to the village square.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5552,
+          "description": "The village square is as usual not overcrowded.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5500
+    },
+    {
+      "id": 5577,
+      "name": "Ravan's hideout",
+      "description": "This place is a small, cosy place where no one disturbs you all\nthe time. The room has little decoration except for some pictures\non the wall.\nYou notice that there are no exits from this room.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [
+        {
+          "keyword": "friend friends",
+          "description": "The list include such prominent names as : God, Lottie, Kurgan,\nEzzard, Mike, Sprocket and Stormbringer.\n"
+        },
+        {
+          "keyword": "foe foes enemies",
+          "description": "There is only one picture yet... Dim.\nIt pictures him hanging from a gallow, north of the town.\nIt has the letters R.I.P. inscripted underneath.\n"
+        },
+        {
+          "keyword": "pictures picture decoration",
+          "description": "These pictures show the friend's and foe's of Ravan.\nThey are easy to separate, as most of the foe's have the letters\nR.I.P. inscripted underneath them.\n"
+        }
+      ],
+      "resets": [],
+      "area": 5500
+    }
+  ],
+  "mobs": [],
+  "objects": []
+}

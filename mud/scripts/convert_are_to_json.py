@@ -28,7 +28,9 @@ def room_to_dict(room) -> dict:
             exits[direction]["description"] = exit_obj.description
         if exit_obj.keyword:
             exits[direction]["keyword"] = exit_obj.keyword
-        exits[direction]["flags"] = []
+        exits[direction]["flags"] = getattr(exit_obj, 'flags', '0')
+        if exit_obj.key:
+            exits[direction]["key"] = exit_obj.key
     extra = []
     for ed in room.extra_descr:
         if ed.keyword and ed.description:
@@ -51,7 +53,7 @@ def room_to_dict(room) -> dict:
         "name": room.name or "",
         "description": room.description or "",
         "sector_type": sector,
-        "flags": [],
+        "flags": room.room_flags or 0,
         "exits": exits,
         "extra_descriptions": extra,
         "resets": resets,
@@ -63,7 +65,37 @@ def mob_to_dict(mob) -> dict:
     return {
         "id": mob.vnum,
         "name": mob.short_descr or "",
-        "description": mob.long_descr or "",
+        "player_name": mob.player_name or "",
+        "long_description": mob.long_descr or "",
+        "description": mob.description or "",
+        "race": getattr(mob, 'race', ''),
+        "act_flags": getattr(mob, 'act_flags', ''),
+        "affected_by": getattr(mob, 'affected_by', ''),
+        "alignment": getattr(mob, 'alignment', 0),
+        "group": getattr(mob, 'group', 0),
+        "level": getattr(mob, 'level', 1),
+        "thac0": getattr(mob, 'thac0', 20),
+        "ac": getattr(mob, 'ac', '1d1+0'),
+        "hit_dice": getattr(mob, 'hit_dice', '1d1+0'),
+        "mana_dice": getattr(mob, 'mana_dice', '1d1+0'),
+        "damage_dice": getattr(mob, 'damage_dice', '1d4+0'),
+        "damage_type": getattr(mob, 'damage_type', 'beating'),
+        "ac_pierce": getattr(mob, 'ac_pierce', 0),
+        "ac_bash": getattr(mob, 'ac_bash', 0),
+        "ac_slash": getattr(mob, 'ac_slash', 0),
+        "ac_exotic": getattr(mob, 'ac_exotic', 0),
+        "offensive": getattr(mob, 'offensive', ''),
+        "immune": getattr(mob, 'immune', ''),
+        "resist": getattr(mob, 'resist', ''),
+        "vuln": getattr(mob, 'vuln', ''),
+        "start_pos": getattr(mob, 'start_pos', 'standing'),
+        "default_pos": getattr(mob, 'default_pos', 'standing'),
+        "sex": getattr(mob, 'sex', 'neutral'),
+        "wealth": getattr(mob, 'wealth', 0),
+        "form": getattr(mob, 'form', '0'),
+        "parts": getattr(mob, 'parts', '0'),
+        "size": getattr(mob, 'size', 'medium'),
+        "material": getattr(mob, 'material', '0'),
     }
 
 def object_to_dict(obj) -> dict:
@@ -71,6 +103,16 @@ def object_to_dict(obj) -> dict:
         "id": obj.vnum,
         "name": obj.short_descr or "",
         "description": obj.description or "",
+        "material": obj.material or "",
+        "item_type": getattr(obj, 'item_type', 'trash'),
+        "extra_flags": getattr(obj, 'extra_flags', ''),
+        "wear_flags": getattr(obj, 'wear_flags', ''),
+        "weight": getattr(obj, 'weight', 0),
+        "cost": getattr(obj, 'cost', 0),
+        "condition": getattr(obj, 'condition', 'P'),
+        "values": getattr(obj, 'value', [0, 0, 0, 0, 0]),
+        "affects": getattr(obj, 'affects', []),
+        "extra_descriptions": getattr(obj, 'extra_descr', []),
     }
 
 def convert_area(path: str) -> dict:

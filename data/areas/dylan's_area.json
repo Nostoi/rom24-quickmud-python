@@ -1,0 +1,2493 @@
+{
+  "area": {
+    "vnum": 9100,
+    "name": "Dylan's Area",
+    "filename": "dylan.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 9101,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\nA floating sign says:\n\"Scubdu's Area--Tread carefully! Only high levels should attempt\nthis place. Leave messages on the board if you have problems.\"\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 7900,
+          "description": "The way back to solid footing, it seems.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9102,
+          "description": "There is another cloud above you.  If you jump you might make it...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9102,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9103,
+          "description": "There is another cloud east of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9101,
+          "description": "There is another cloud below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9103,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9128,
+          "description": "You can barely make out a cloud to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9104,
+          "description": "You see a cloud somewhere south of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9102,
+          "description": "You see a cloud somewhere west of you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9104,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9103,
+          "description": "You can barely make out a cloud to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9105,
+          "description": "There is another cloud east of you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9105,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9106,
+          "description": "There is another cloud east of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9104,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9106,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9107,
+          "description": "You can barely make out a cloud to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9105,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9107,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9108,
+          "description": "There is another cloud east of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9106,
+          "description": "You see a cloud somewhere south of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9126,
+          "description": "There is another cloud below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9108,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9109,
+          "description": "An ominous storm cloud looms to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9107,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9109,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9108,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9110,
+          "description": "An ominous storm cloud looms below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9110,
+      "name": "An ominous storm cloud.",
+      "description": "You find yourself in a storm.  Lightning flashes and thunder\ncrashes, making you wish you were dry and warm.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9111,
+          "description": "There is a crag, high and rocky.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9125,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9109,
+          "description": "There is another cloud above you.  If you jump you might make it...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9111,
+      "name": "High and perilous cliff",
+      "description": "You are on a high and rocky cliff.  To the west you see a huge\nominous storm cloud moving this way.  You might want to take cover\nbefore the storm hits.  You think that there is a narrow trail\nleading to the south.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9112,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9110,
+          "description": "An ominous storm cloud looms to the east.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9112,
+      "name": "Narrow rocky trail.",
+      "description": "A narrow trail leads down towards the mountain and north toward the\ncliff.  It seems to fade in and out as it winds up the hill.\nObviously, it has not been maintained in years.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9111,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9113,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9113,
+      "name": "Small valley.",
+      "description": "You are in a lush valley full of trees and other vegetation and the\nodd carcass or two.  The trail leads south and it leads up.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9114,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9112,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9114,
+      "name": "Small valley.",
+      "description": "You are in a lush valley full of trees and other vegetation and the\nodd carcass or three.  The trail leads north and it leads down into\na crevasse.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9113,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9115,
+          "description": "The crevice looks a little slippery.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9115,
+      "name": "Deep, slippery crevice.",
+      "description": "The crevice is deep and a little dim and it is hard to make your\nway around.  A mist makes everything a little damp and slippery.\nBetter take your time climbing through here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9117,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9116,
+          "description": "The mist looks thicker in this direction.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9114,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9116,
+      "name": "Incredibly slippery crevice.",
+      "description": "The crevice is getting more and more slippery.  You are getting\nincredibly nervous and want to turn back.  To the east is the\ncrevice and trail you were following.  Below, you can just see the\nedge of a cliff through the mist.  There is no trail leading there,\njust a smooth, flat, dew-covered rock that almost resembles a\nslide ...\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9115,
+          "description": "The way back to safety.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9199,
+          "description": "Only fools would dare tread here!\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9117,
+      "name": "Steep mountainside.",
+      "description": "From here, you can see forever.  Clouds, birds, the forest.\nMidgaard is far, far to the west.  What a postcard perfect view!\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9115,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9118,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9118,
+      "name": "Steep mountainside.",
+      "description": "From here, you can see forever.  Clouds, birds, the forest.\nMidgaard is far, far to the west.  What a postcard perfect view!\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9119,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9117,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9119,
+      "name": "Treacherous Cliff.",
+      "description": "The cliff is rocky and difficult to negotiate.  One wrong slip and\nyou could fall and break a leg or impale yourself or something else\nnasty.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9118,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9120,
+          "description": "Above you is an almost vertical cliff.  It looks dangerous but\nclimbable.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9120,
+      "name": "Cliff Face.",
+      "description": "You are more than a little nervous climbing on this almost vertical\ncliff face.  You miraculously find places to grab onto and little\nledges to rest on.  You see a small cave here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9121,
+          "description": "A dank, dark, smelly hole.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9122,
+          "description": "A large ledge that looks pretty safe.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9119,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9121,
+      "name": "Dank, dark, smelly hole.",
+      "description": "This hole must have been used as a lair or nest.  There are\nfeathers and bones everywhere and the floor is covered with\nsomething disgusting.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9120,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9122,
+      "name": "Large, sturdy ledge.",
+      "description": "You are on a ledge above a steep cliff face.  You can climb down\nif you want, but be careful!  After viewing the scenery, you notice\ntwo small caves here, one north and one west.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9124,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9123,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9120,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9123,
+      "name": "Absolutely disgusting lair.",
+      "description": "The stench in here is quite foul.  There are feathers, bones and\nrotting carcasses everywhere.  This place is absolutely gross and\nyou have to strain yourself not to lose your lunch.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9122,
+          "description": "Your only hope to keep your lunch down is to head this way...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9124,
+      "name": "Absolutely disgusting lair.",
+      "description": "The stench in here is quite foul.  There are feathers, bones and\nrotting carcasses everywhere.  This place is absolutely gross and\nyou have to strain yourself not to lose your lunch.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9122,
+          "description": "Your only hope to keep your lunch down is to head this way...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9125,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9110,
+          "description": "An ominous storm cloud looms to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9126,
+          "description": "There is another cloud above you.  If you jump you might make it...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9126,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9131,
+          "description": "A cirrus cloud hums peacefully to itself.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9127,
+          "description": "You spy a tiny cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9107,
+          "description": "There is another cloud above you.  If you jump you might make it...\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9125,
+          "description": "There is another cloud below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9127,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9130,
+          "description": "To the north you see an angry cloud lashing out.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9126,
+          "description": "There is another cloud east of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9128,
+          "description": "There is another cloud above you.  If you jump you might make it...\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9128,
+      "name": "A fluffy white cloud.",
+      "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9103,
+          "description": "You see a cloud somewhere south of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9127,
+          "description": "There is another cloud below you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9129,
+      "name": "Sleepy little cloud.",
+      "description": "This cloud is peacefully snoozing away, enjoying himself.  There\nis grumpy cloud to the east and a rather shy cloud north of here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9132,
+          "description": "The cloud to the north blushes and tries to hide when you look at\nit.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9130,
+          "description": "The cloud to the east mutters and grumbles at you.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9130,
+      "name": "Grumpy little cloud.",
+      "description": "This cloud mutters and grumbles at you.  You have to jump quickly\nto avoid a lightning bolt that passes by your toe.  Your aren't\nsure but you think you hear the cloud snicker.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9131,
+          "description": "A happy little cloud is humming peacefully to itself.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9127,
+          "description": "You see a cloud somewhere south of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9129,
+          "description": "A sleepy little cloud to the west yawns and rolls over.  You hear\nsnoring.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9131,
+      "name": "Happy little cloud.",
+      "description": "You hear the cloud humming a little song to itself, but you can't\nfigure out the song.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9136,
+          "description": "There is a pure white cloud north of you.  It is snowing!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9126,
+          "description": "You see a cloud somewhere south of you.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9130,
+          "description": "You see an angry little cloud muttering and grumbling to itself.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9132,
+      "name": "Bashful little cloud.",
+      "description": "This cloud blushes and tries to avoid your glance as you look at\nyour surroundings.  You decide that overall it is a peaceful little\ncloud.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9133,
+          "description": "The cloud to the north sneezes!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9129,
+          "description": "A sleepy little cloud to the south yawns and rolls over.  You hear\nsnoring.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9142,
+          "description": "An isolated little raincloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9133,
+      "name": "Sneezing little cloud.",
+      "description": "The cloud is wracked with sneezes.  At first you thought you were\nin an earthquake before you realize where you are!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9145,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9134,
+          "description": "This cloud is, like, totally lost, you know?\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9132,
+          "description": "The cloud to the south blushes and tries to hide when you look at\nit.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9143,
+          "description": "You see a cirrus maximus cloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9134,
+      "name": "Dopey little cloud.",
+      "description": "This cloud is too busy daydreaming to watch where its going.  It\ndoesn't even notice you landing on it.  It looks like it couldn't\nfigure its way out of an open box.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9135,
+          "description": "You see a very scientific cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9133,
+          "description": "The cloud sneezes!  Yuck.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9135,
+      "name": "Doc-like little cloud.",
+      "description": "The cloud looks at you through its Lennon like specs and examines\nyou quite scientifically.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9136,
+          "description": "There is a pure white cloud south of you.  It is snowing!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9134,
+          "description": "This cloud is, like, totally lost, you know?\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9136,
+      "name": "Snowy, white cloud.",
+      "description": "You shiver as you stand here.  This beautiful, fluffy, pure white\ncloud is snowing.  The snow is pure and sweet as it melts in your\nmouth.  What a nifty cloud to be on.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9135,
+          "description": "You see a very scientific cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9131,
+          "description": "A happy, peaceful little cloud humming to itself.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9137,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9137,
+      "name": "Cold, damp cloud.",
+      "description": "Your mood grows grumpy as you find yourself cold and wet from this\ndismal cloud.  You notice a rock outcropping above you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9136,
+          "description": "There is a pure white cloud east of you.  It is snowing!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9138,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9138,
+      "name": "Mysterious rock outcropping.",
+      "description": "This rock outcropping just seems to hang in midair.  To the north\nyou see a house and if you ease yourself down, you can land on a\nrather damp, dismal cloud.  The door to the house is closed.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9139,
+          "description": "Eerie looking house.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9137,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9139,
+      "name": "Foyer.",
+      "description": "Shadows play tricks on your eyes.  Everytime you think you see\nsomething in a corner and turn to get a better look, nothing is\nthere.  The place is very dark.  Even with a torch, you have\ntrouble making out the room to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9140,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9138,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9140,
+      "name": "Tower.",
+      "description": "You are in a musty old tower.  The smell of mold and mildew is\nalmost overpowering.  You hear strange creaks and groans ... is it\nthe wind or did someone (something?) make that noise.  To the west\nis the house and there is a stairway leading up into the tower.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9139,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9141,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9141,
+      "name": "Witches Tower",
+      "description": "Here you see strange things of arcane value.  There is a cauldron in the\ncorner bubbling madly, belching a foul brew that must have come from hell.\nOn shelves lie jars of strange creatures you have never seen before, or\nhope to again.  A picture of a familiar temple hangs on the east wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3001,
+          "keyword": "picture",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9140,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "picture",
+          "description": "The picture is in on the east wall.  It is very complex in detail, and you\nalmost see people walking around the temple in the picture.\n"
+        }
+      ],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9142,
+      "name": "Suspicious little raincloud.",
+      "description": "On second glance, this cloud doesn't seem much like a raincloud.\nA balloon sticks out of the top and you think you hear it humming\nsomething like, 'Tut, tut!  It looks like rain!'\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9143,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9132,
+          "description": "A bashful little cloud that tries to avoid your notice.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9143,
+      "name": "Cirrus maximus cloud.",
+      "description": "This cloud looks like it is of the cirrus maximus genre of clouds.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9133,
+          "description": "The cloud to the east sneezes!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9142,
+          "description": "A suspicious little raincloud with a balloon.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9144,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9148,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9146,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9145,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9133,
+          "description": "You see a sneezy little cloud.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9150,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9148,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9146,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9147,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9144,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9147,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9148,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9146,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9148,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9144,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9147,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9145,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9149,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9152,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9150,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9157,
+          "description": "You see a cumulative nimbus cloud.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9150,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9151,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9145,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9149,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9151,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9150,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9152,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9152,
+      "name": "Raging hurricane.",
+      "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9151,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9149,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9153,
+      "name": "Calm cloud.",
+      "description": "This cloud is just outside the hurricane.  It looks like it might\nget sucked in, but you feel safe for the moment.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9154,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9152,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9154,
+      "name": "Mountainside.",
+      "description": "You find yourself on the side of a huge granite mountain.  The air\nis quite thin so you know you are at a very high altitude.  There\nis no plant life beyond moss and lichen in this lonely, barren\nplace.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9153,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9155,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9155,
+      "name": "Mountainside.",
+      "description": "You find yourself on the side of a huge granite mountain.  The air\nis quite thin so you know you are at a very high altitude.  There\nis no plant life beyond moss and lichen in this lonely, barren\nplace.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9154,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9156,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9156,
+      "name": "Roc's Nest.",
+      "description": "You are standing in a nest.  It is huge, at least two spear-lengths\nwide.  You see three eggs in the center.  They are knee high, brown\nand look almost leathery.  Better hope mom isn't around!\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 9155,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9157,
+      "name": "Cumulative nimbus cloud.",
+      "description": "This cloud looks like it belongs to the phylum of cumulative nimbus clouds.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9159,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9158,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9149,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9158,
+      "name": "Dark hidden cloud.",
+      "description": "This cloud looks like the perfect place to hide.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9157,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9159,
+      "name": "Yet another cloud",
+      "description": "You find yourself in yet another cloud.  Will the madness never\nend?  There is a rope ladder leading up.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9157,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9160,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9160,
+      "name": "Front gate",
+      "description": "There is a gate here.  It is huge, towering over you.  It creaks\nas it sways in the breeze.  To the south you see a huge lawn.\nThere is a rope ladder leading down.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9161,
+          "description": "You see a huge lawn.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9159,
+          "description": "There is a rope ladder leading down.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9161,
+      "name": "Lawn",
+      "description": "The lawn seems to stretch and stretch to the south and to the west.\nNorth of you is a gate.  The grass is emerald green and luscious,\nobviously well cared for.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9160,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9163,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9162,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9162,
+      "name": "Croquet game",
+      "description": "A croquet game has been set up and carelessly left out.  Who ever\nwas playing blue was in the lead before they quit.  Benches have\nbeen set up for spectators and players to enjoy themselves.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9161,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9164,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9163,
+      "name": "Huge, gorgeous fountain.",
+      "description": "An enormous golden fountain is here.  You see swans, angels,\ngryphons and a host of other creatures in the fountain.  The\nfountain empties into a huge pool that looks quite inviting.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9161,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9164,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9164,
+      "name": "Patio.",
+      "description": "A huge patio overlooks the lawn area.  There are enough tables and\nchairs for a party of 100.  The tables and chairs are ornate and\nexpensive, tasteful and elegant.  Stairs lead up to the main\nhouse.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9162,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9163,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9165,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9165,
+      "name": "Long stairway.",
+      "description": "This stairway is suspended on clouds.  It leads from the house to\nthe front lawn.  The banisters are made of ornate gold and silver\ninlays.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9166,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9164,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9166,
+      "name": "Front door",
+      "description": "You stand at the front door of an immense, sprawling mansion made\nof granite and marble.  The door is at least 10 feet high and is\nmade of oak.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9173,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9177,
+          "description": "You see an ornate oak door.\n",
+          "keyword": "oak door",
+          "flags": "2",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9167,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9165,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9167,
+      "name": "Lawn northwest of house.",
+      "description": "You stand just outside the northwest corner of the house.  You try\nto peek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9166,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9168,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9168,
+      "name": "Lawn west of house.",
+      "description": "You stand just outside the west corner of the house.  You try to\npeek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9167,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9169,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9169,
+      "name": "Lawn southwest of house.",
+      "description": "You stand just outside the southwest corner of the house.  You try\nto peek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9168,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9170,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9174,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9170,
+      "name": "Lawn south of house.",
+      "description": "You stand just outside the south corner of the house.  You try to\npeek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9171,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9169,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9171,
+      "name": "Lawn southeast of house.",
+      "description": "You stand just outside the southeast corner of the house.  You try\nto peek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9172,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9170,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9172,
+      "name": "Lawn east of house.",
+      "description": "You stand just outside the east corner of the house.  You try to\npeek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9173,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9171,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9173,
+      "name": "Lawn northeast of house.",
+      "description": "You stand just outside the northeast corner of the house.  You try\nto peek in a window, but it is a little too high to see anything.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9172,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9166,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9174,
+      "name": "Dirty, dusty tunnel.",
+      "description": "This dirty dusty tunnel must lead somewhere.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9175,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9169,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9175,
+      "name": "Basement.",
+      "description": "This seems like your average basement.  Old Christmas decorations,\nsuitcases, bicycles litter your way.  You hear the squeaking of\nrats in the corners.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9176,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9174,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9176,
+      "name": "Bottom of the stairs.",
+      "description": "You stand at the bottom of a long staircase leading up to the main\nhouse.  To the south you can barely make out the accumulated\nclutter gathered throughout the years.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9175,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9177,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9177,
+      "name": "Foyer.",
+      "description": "\"Magnificent\" does not even begin to describe the foyer.  Lavishly\ndecorated, yet elegant, it gives an impression of indescribable\nwealth.  Paintings and tapestries line the walls depicting scenes\nfrom throughout history.  Antiques furnitures and oriental rugs are\ntastefully placed in ideal spots.  The door is at least 10 feet\nhigh and is made of oak.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9166,
+          "description": "You see an ornate oak door.\n",
+          "keyword": "oak door",
+          "flags": "2",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9183,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9178,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9176,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9178,
+      "name": "Elegant hallway.",
+      "description": "You are in a long, sprawling hallway connecting the eastern and\nwestern wings of the house.  There are several chairs and sofas in\nthe hallway and some gorgeous, handwoven drapes.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9177,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9179,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9180,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9179,
+      "name": "Library",
+      "description": "You are overwhelmed by the sheer volumes of books here.  The\nshelves stretch all the way to the ceiling and are on every wall,\neven above the doorway.  There are chairs for sitting and reading\nand a desk for more intense studies.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9178,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9180,
+      "name": "Arboretum.",
+      "description": "A small indoor garden so that the residents don't have to go\noutside to enjoy plants and commune with nature.  There are several\ntrees, a small pond and flowers of every kind.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9178,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9181,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9181,
+      "name": "Western tower.",
+      "description": "You are in the bottom part of a tower.  A draft brings a chill to\nyour spine and causes creaks and groans.  Curtains flutter in the\nwind, causing quite a distraction.  When you go to shut the window,\nyou see that the window is closed.  An old, wooden staircase leads\nup into darkness.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9180,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9182,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9182,
+      "name": "Western tower.",
+      "description": "The tower creaks and groans, almost as if it were muttering to\nitself.  There are windows displaying a full moon, reigning over\nthe night sky.  The room is dark and there is almost a musty odor\nto it.  You are surprised that you can't detect any dust or dirt,\nalthough there are a couple of cobwebs in the corner.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 9181,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9183,
+      "name": "Elegant hallway.",
+      "description": "You are in a long, sprawling hallway connecting the eastern and\nwestern wings of the house.  There are several chairs and sofas in\nthe hallway and some gorgeous, handwoven drapes.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9185,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9184,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9177,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9184,
+      "name": "Conservatory",
+      "description": "Here was the rehearsal and recital room for the residents of the\nestate.  There is a Steinway piano in the corner and various gilded\ninstruments are on display in a glass cabinet.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9183,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9185,
+      "name": "Office",
+      "description": "You find yourself in a lavish office.  The desk is absolutely huge,\nat least ten feet by five feet and made of ebony and inlaid with\nmother of pearl.  A grandfather clock towers over the room,\nmechanically ticking and tocking the hours away.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9186,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9183,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9186,
+      "name": "Eastern tower.",
+      "description": "You are in the bottom part of a tower.  A draft brings a chill to\nyour spine and causes creaks and groans.  Curtains flutter in the\nwind, causing quite a distraction.  When you go to shut the window,\nyou see that the window is closed.  An old, wooden staircase leads\nup into darkness.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9185,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9187,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9187,
+      "name": "Eastern tower.",
+      "description": "The tower creaks and groans, almost as if it were muttering to\nitself.  There are windows displaying a full moon, reigning over\nthe night sky.  The room is dark and there is almost a musty odor\nto it.  You are surprised that you can't detect any dust or dirt,\nalthough there are a couple of cobwebs in the corner.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 9186,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    },
+    {
+      "id": 9199,
+      "name": "Mid-Air.",
+      "description": "You slide down the moisture covered rock, gaining speed as you\napproach the cliff.  Realizing your foolish error, you madly claw\nat the rock, vainly trying to get a precious hold and save your\nworthless hide.  Next time, heed your conscience.\nYou've fallen, and you can't get up!!!\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9100
+    }
+  ],
+  "mobs": [
+    {
+      "id": 9101,
+      "name": "the screaming, filthy harpy",
+      "player_name": "oldstyle harpy",
+      "long_description": "The screaming, filthy harpy claws madly at your face!\n",
+      "description": "The harpy looks at you with blood in her eyes.  Her entire body is\ncaked in filth and grime and she stinks to high heaven.  Her razor-\nsharp talons flex as she considers you for her dinner.\n",
+      "race": "human",
+      "act_flags": "ACF",
+      "affected_by": "DFP",
+      "alignment": -500,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1525,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9102,
+      "name": "the screaming harpy leader",
+      "player_name": "oldstyle harpy leader",
+      "long_description": "The screaming harpy leader tries to scratch your eyes out!\n",
+      "description": "The harpy leader looks at you and grins menacingly.  She stretches\nher wings and you see insects crawling around them.  Her hair is\nmatted and greasy and you are sickened by the stench that pervades\nher presence.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "DFP",
+      "alignment": -750,
+      "group": 0,
+      "level": 23,
+      "thac0": 0,
+      "ac": "5d10+450",
+      "hit_dice": "11d9+100",
+      "mana_dice": "3d6+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 2125,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9103,
+      "name": "the ghostly air elemental",
+      "player_name": "oldstyle air elemental",
+      "long_description": "The ghostly air elemental.\n",
+      "description": "The air elemental is hard to see.  You know that it is there\nbecause objects behind it seem to waver and are slightly blurred.\n",
+      "race": "human",
+      "act_flags": "ACF",
+      "affected_by": "DFPQ",
+      "alignment": 0,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9104,
+      "name": "the mysterious efreeti",
+      "player_name": "oldstyle mysterious efreeti",
+      "long_description": "The mysterious efreeti grins in delight at its new prey.\n",
+      "description": "The efreeti towers menacingly over you.  It is dressed in the\nfinest ghostly silks and a headdress with an elaborate brooch.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "DHP",
+      "alignment": -100,
+      "group": 0,
+      "level": 27,
+      "thac0": 0,
+      "ac": "5d10+650",
+      "hit_dice": "13d9+100",
+      "mana_dice": "5d4+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9105,
+      "name": "the gigantic roc",
+      "player_name": "oldstyle roc",
+      "long_description": "The gigantic roc.\n",
+      "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 50,
+      "group": 0,
+      "level": 24,
+      "thac0": 0,
+      "ac": "5d10+500",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9106,
+      "name": "the gigantic roc",
+      "player_name": "oldstyle roc",
+      "long_description": "The gigantic roc stares menacingly at you.\n",
+      "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 50,
+      "group": 0,
+      "level": 28,
+      "thac0": 0,
+      "ac": "6d12+703",
+      "hit_dice": "14d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9107,
+      "name": "the ugly, wicked witch",
+      "player_name": "oldstyle wicked witch",
+      "long_description": "The ugly, wicked witch cackles maniacally.\n",
+      "description": "The witch has jet black hair and sickly green skin.  She is covered\nwith warts and boils.  Her nails are long and sharp and look like\nthey would be quite painful.  Her eyes pierce your very soul.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "DH",
+      "alignment": -600,
+      "group": 0,
+      "level": 31,
+      "thac0": 0,
+      "ac": "6d12+928",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+9",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -10,
+      "ac_bash": -10,
+      "ac_slash": -10,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 3000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 9101,
+      "name": "a pair of winged boots",
+      "description": "A pair of winged boots flutters about",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AG",
+      "weight": 13,
+      "cost": 100,
+      "condition": "2800",
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9102,
+      "name": "A carved bronze bracer",
+      "description": "A carved bronze bracer lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AM",
+      "weight": 10,
+      "cost": 200,
+      "condition": "820",
+      "values": [
+        3,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9103,
+      "name": "an ornate brooch",
+      "description": "An ornate brooch was carelessly left here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "F",
+      "wear_flags": "AC",
+      "weight": 7,
+      "cost": 100,
+      "condition": "1140",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 3,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9104,
+      "name": "magenta potion",
+      "description": "Bright magenta potion gathers dust.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "J",
+      "wear_flags": "AO",
+      "weight": 3,
+      "cost": 20,
+      "condition": "320",
+      "values": [
+        8,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9105,
+      "name": "an ancient illustrated parchment",
+      "description": "An ancient illustrated parchment in the corner",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "AH",
+      "wear_flags": "AO",
+      "weight": 12,
+      "cost": 50,
+      "condition": "1330",
+      "values": [
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

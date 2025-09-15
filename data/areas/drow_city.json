@@ -1,0 +1,1944 @@
+{
+  "area": {
+    "vnum": 5100,
+    "name": "Drow City",
+    "filename": "drow.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 5100,
+      "name": "City Entrance",
+      "description": "You are at the entrance to a small underground city. A great adamantite\ngate lies open to the west allowing entrance into the city.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 5101,
+          "description": "A huge gate opens to the west allowing entrance into the city.",
+          "keyword": "gate",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 5270,
+          "description": "A small hole in the ceiling leads up into darkness.",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "hole",
+          "description": "A small hole that looks to have been sealed at one time.\n"
+        },
+        {
+          "keyword": "gate",
+          "description": "A large adamantite gate with giant spider shaped emblems stands here.\n"
+        }
+      ],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5101,
+      "name": "City street",
+      "description": "You walk along a highly ornate street going north-south. A large gate\nlies to the east while a building lies to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5123,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5100,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5102,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5122,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5102,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going north and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5101,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5103,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5103,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. A large house\nstands to the south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5102,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5104,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5106,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5104,
+      "name": "3rd House",
+      "description": "You stand inside the 3rd house of the city; it is fairly well decorated\nby drow standards having a few statues, murals and such. A door leads to the\nsouth.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5103,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5105,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5105,
+      "name": "Throne Room",
+      "description": "The throne room of the 3rd house is about as decorated as the inner\ncourtyard except with a blood covered altar in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5104,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5106,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. To the north\nis a large building.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5118,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5103,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5107,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5107,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading north and east. To the\nsouth is an extremely large house.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5110,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5106,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5108,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5108,
+      "name": "2nd House",
+      "description": "You stand inside the 2nd house of the city. The room is highly decorated\nwith statues of spiders and murals everywhere.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5107,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5109,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5109,
+      "name": "Throne Room",
+      "description": "The throne room of the 2nd house is just a little more decorative than\nthe inner courtyard having an altar in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5108,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5110,
+      "name": "Main Gate",
+      "description": "You are at the entrance to the 1st house of the city. A large gate, almost\nas big and elegant as the one at the entrance to the city, stands here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5114,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5107,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5111,
+          "description": "A large gate lies to the west.",
+          "keyword": "gate",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5111,
+      "name": "1st House",
+      "description": "You stand in the inner courtyard of the 1st and largest house in the city.\nThe room is extremely large and decorative. Mural and paintings hang on the\nwalls depicting some battles and a spider queen.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5110,
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5112,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5112,
+      "name": "Throne Room",
+      "description": "The throne room of the 1st house is in one word...awesome. It is so\nhorrifying it is almost beautiful.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5113,
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5111,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5113,
+      "name": "Main Chamber",
+      "description": "This is the council chamber for the Matron Mother herself. A huge table\nand chairs surrounding it sits in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5112,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5114,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading north-south and east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5115,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5117,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5110,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5115,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading south. A building is\nto the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5114,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5116,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5116,
+      "name": "Cleric Academy",
+      "description": "This is the most lavish of the academies being that it is for the clerics.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5115,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5117,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. To the north\nis a giant temple.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5119,
+          "description": "The entrance to the temple of Lloth.",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5121,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5114,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5118,
+      "name": "Warrior's Academy",
+      "description": "This looks more like a barracks than a school.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5106,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5119,
+      "name": "Entrance to the Temple of Lloth",
+      "description": "The temple is the largest building in the city. Even it's doors are beyond\nimagination. Inside of the temple entrance, the walls are made of gold and\nadamantite.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5117,
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 5126,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5120,
+      "name": "Mage's Academy",
+      "description": "The mages academy is fairly well decorated see that the drow prefer magic\nover physical power greatly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5121,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5121,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going eastward. To the north is\na building.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5120,
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5123,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5122,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5117,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5122,
+      "name": "Slave Chamber",
+      "description": "The room is in shambles. Straw is strewn all about the room as beds for the\nunfortunate creatures who have fallen prey to drow imperialism.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5121,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5101,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5123,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading west and south. To the\nnorth is a relatively small house.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5124,
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 5101,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5121,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5124,
+      "name": "4th house",
+      "description": "You stand inside the 4th house of the city. Its inner courtyard is rather\ndull by drow standards and rather small as well.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5125,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5123,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5125,
+      "name": "Throne Room",
+      "description": "The throne room is basically similar to the inner courtyard in regards\nto decor. there is a small throne behind the altar but that is about it.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 5124,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5126,
+      "name": "Entrance Way",
+      "description": "You stand in the entrance way to the temple which opens up to the north\ninto a large hallway going east and west. Small statues of spiders line the\nentrance way's walls.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5127,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 5119,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5127,
+      "name": "Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the north is a obsidian stairway.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5135,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5128,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5126,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5131,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5128,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5129,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5127,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5129,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the north is a door.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5150,
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5130,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5128,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5130,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5134,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5129,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5131,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5127,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5132,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5132,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the south is a door.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5131,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5133,
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5134,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5133,
+      "name": "Warrior's Barracks",
+      "description": "The room is a complete mess. None of the beds are made, clothes and other\nitems have been left all about the room. Well drow warriors never were known\nfor neatness.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5132,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5134,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5132,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5130,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5135,
+      "name": "Grand Stairway",
+      "description": "You are standing at the bottom of a giant obsidian and adamantite\nstairway. The edges are trimmed with gold.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5127,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 5136,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5136,
+      "name": "Grand Hallway",
+      "description": "You are standing in the middle of a grand hallway. The walls are\nof the purest adamantite with gold trim. Mosaics line the walls.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5138,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5137,
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 5135,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5137,
+      "name": "Mage's Barracks",
+      "description": "The mage's living quarters is rather clean with the exception of a few\nused component containers. It is rather well decorated as well. Cots line the\nfloor for the mages to sleep on. the only door is to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 5136,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5138,
+      "name": "Grand Hallway",
+      "description": "You are walking down a grand hallway, heavily decorated with adamantite\nand gold. To the north the hall goes down a flight of stairs while a door is\ntoo the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5136,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5139,
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 5140,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5139,
+      "name": "Cleric's Barracks",
+      "description": "The bed chamber is brightly decorated with spider shaped statues, murals\nand the like. Large beds line the floor making this a comfortable room to live\nin.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5138,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5140,
+      "name": "Grand Stairway",
+      "description": "You are climbing a set of obsidian stairs surrounded by adamantite walls.\nTo the north are a set of large golden doors.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5141,
+          "flags": "1",
+          "key": -1
+        },
+        "up": {
+          "to_room": 5138,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5141,
+      "name": "Main Chamber",
+      "description": "This is the south side of a large auditorium used for services by the\ndrow priestesses. In the center is a large sacrificial pit and beyond that is\nan altar.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5142,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5140,
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5144,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5142,
+      "name": "Eastern side of Chamber",
+      "description": "You are on the eastern side of the chamber overlooking the pit. To the east\nis a door while to the north is an altar.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5145,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5146,
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 5141,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5143,
+      "name": "Sacrificial Pit",
+      "description": "A you climb down into the pit thousands of spiders cover you tearing your\nbody to shreds.\nLloth thanks you for your sacrifice.\nYou've fallen, and you can't get up!!!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5144,
+      "name": "Western side of Chamber",
+      "description": "You are on the western side of the main chamber overlooking a sacrificial\npit. To the north is an altar.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5145,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 5141,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5145,
+      "name": "The Altar",
+      "description": "You are standing in front of a highly and freshly bloodstained altar.\nEngraved on the top of the altar is a giant spider with a human head. Looking\ndown from the altar you see a large sacrificial pit.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5148,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 5142,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5144,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 5143,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5146,
+      "name": "Slave Cells",
+      "description": "This is the main room to the cell chambers for the slaves to be\nsacrificed. You notice there are no guards around.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5147,
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5142,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5147,
+      "name": "Slave Pen",
+      "description": "Rotten meat and breads lie about the floor while shackles hang from the\nwalls. The room wreaks of death. You almost become nauseous and decide to leave\nthe room since you were obviously too late to save the slave.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5146,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5148,
+      "name": "Dais",
+      "description": "You stand upon a dais behind the altar. Above you is a enormous illusion\nof a female drow turning into a giant spider and back again. There is a door\nto the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5145,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5149,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5149,
+      "name": "The Treasury",
+      "description": "This is obviously only a temporary storage place for the collected\ntreasure being rather bare.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 5148,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5150,
+      "name": "Weaponsmaster's Chamber",
+      "description": "This one person bedchamber is very elegant. The owner must be held in high\nto get this kind of treatment.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 5129,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    }
+  ],
+  "mobs": [
+    {
+      "id": 5100,
+      "name": "the goblin slave",
+      "player_name": "oldstyle goblin slave",
+      "long_description": "A goblin slave lies here asleep.\n",
+      "description": "The defenseless goblin begs for mercy.\n",
+      "race": "goblin",
+      "act_flags": "ABH",
+      "affected_by": "0",
+      "alignment": -450,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "2d6+10",
+      "hit_dice": "0d9+100",
+      "mana_dice": "1d4+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sleep",
+      "default_pos": "sleep",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5101,
+      "name": "the drow commoner",
+      "player_name": "oldstyle drow commoner",
+      "long_description": "A drow commoner walks on guard duty.\n",
+      "description": "I doubt he is the type to give directions.\n",
+      "race": "human",
+      "act_flags": "ADFG",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 15,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5102,
+      "name": "the drow warrior noble",
+      "player_name": "oldstyle drow noble warrior",
+      "long_description": "The drow warrior noble stands here guarding his home.\n",
+      "description": "He looks pissed off!\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 14,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5103,
+      "name": "the drow mage noble",
+      "player_name": "oldstyle drow noble mage",
+      "long_description": "The drow mage noble is here protecting his home.\n",
+      "description": "The mage prepares to cast a spell ... at you!!\n",
+      "race": "human",
+      "act_flags": "ABFR",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "15d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 5,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5104,
+      "name": "the drow priestess",
+      "player_name": "oldstyle drow priestess",
+      "long_description": "The drow priestess is here shouting orders.\n",
+      "description": "I wouldn't want go get on her bad side!\n",
+      "race": "human",
+      "act_flags": "ABFQ",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "17d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 200,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5105,
+      "name": "The drow master",
+      "player_name": "oldstyle drow master",
+      "long_description": "The drow master stares at you angrily.\n",
+      "description": "The drow master is ALWAYS ready for a fight.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 21,
+      "thac0": 0,
+      "ac": "4d10+360",
+      "hit_dice": "10d9+100",
+      "mana_dice": "4d4+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5106,
+      "name": "The weapons master",
+      "player_name": "oldstyle drow weapons master",
+      "long_description": "The drow weapons master is here shadow boxing.\n",
+      "description": "He definitely knows his way around in combat.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 23,
+      "thac0": 0,
+      "ac": "5d10+450",
+      "hit_dice": "11d9+100",
+      "mana_dice": "3d6+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5107,
+      "name": "the matron mother",
+      "player_name": "oldstyle drow matron mother",
+      "long_description": "The matron mother of the house is standing here.\n",
+      "description": "She looks really pissed off!\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 24,
+      "thac0": 0,
+      "ac": "5d10+500",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5108,
+      "name": "the matron mother",
+      "player_name": "oldstyle drow matron mother",
+      "long_description": "The matron mother of the 1st house is waiting for you.\n",
+      "description": "She looks like she is about to rip your head off and eat it.\n",
+      "race": "human",
+      "act_flags": "ABFQ",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+600",
+      "hit_dice": "26d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5109,
+      "name": "the yochlol",
+      "player_name": "oldstyle yochlol",
+      "long_description": "A yochlol forms out of a swirling mist.\n",
+      "description": "The yochlol is not in a good mood.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 35,
+      "thac0": 0,
+      "ac": "10d10+1300",
+      "hit_dice": "17d9+100",
+      "mana_dice": "4d7+11",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5110,
+      "name": "the drow guard",
+      "player_name": "oldstyle drow guard",
+      "long_description": "The drow guard is here staring at you ominously.\n",
+      "description": "The drow guard blends so well with his environment, you barely see his form.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "JQ",
+      "alignment": -1000,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 5111,
+      "name": "the drow scout",
+      "player_name": "oldstyle drow scout",
+      "long_description": "The drow scout is here sneaking among the shadows.\n",
+      "description": "The drow scout blends so well with her environment, you barely see her form.\n",
+      "race": "human",
+      "act_flags": "AFH",
+      "affected_by": "PQ",
+      "alignment": -1000,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d10+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 5100,
+      "name": "a commoner's longsword",
+      "description": "A commoner's longsword made of adamantite has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 11,
+      "cost": 20,
+      "condition": "910",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5101,
+      "name": "a noble's longsword",
+      "description": "A drow noble's longsword made of adamantite lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 15,
+      "cost": 10,
+      "condition": "1510",
+      "values": [
+        0,
+        2,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5102,
+      "name": "a snake headed whip",
+      "description": "A whip with two snakes heads lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 11,
+      "cost": 10,
+      "condition": "920",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5103,
+      "name": "a snake headed whip",
+      "description": "A whip with three snake heads has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 15,
+      "cost": 10,
+      "condition": "1020",
+      "values": [
+        0,
+        2,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5104,
+      "name": "a snake headed whip",
+      "description": "A whip with four snake heads has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 24,
+      "cost": 10,
+      "condition": "1530",
+      "values": [
+        0,
+        4,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5105,
+      "name": "a black longsword",
+      "description": "A black longsword has been carelessly left here.",
+      "material": "adamantite",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 21,
+      "cost": 0,
+      "condition": "2100",
+      "values": [
+        0,
+        3,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5106,
+      "name": "a snake headed whip",
+      "description": "A whip with five snake heads is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGJ",
+      "wear_flags": "AN",
+      "weight": 14,
+      "cost": 0,
+      "condition": "10",
+      "values": [
+        0,
+        3,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": -1
+        },
+        {
+          "location": 1,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5107,
+      "name": "a snake headed whip",
+      "description": "A whip with six snake heads has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGJ",
+      "wear_flags": "AN",
+      "weight": 13,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        0,
+        4,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": -2
+        },
+        {
+          "location": 1,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5108,
+      "name": "an iron bracer",
+      "description": "An iron bracer has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AM",
+      "weight": 15,
+      "cost": 30,
+      "condition": "1150",
+      "values": [
+        4,
+        7,
+        7,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5109,
+      "name": "a pair of gauntlets",
+      "description": "A pair of gauntlets has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "A",
+      "wear_flags": "AH",
+      "weight": 17,
+      "cost": 20,
+      "condition": "3600",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5110,
+      "name": "a silvery blue wand",
+      "description": "A silvery blue wand has been dropped in the dirt.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "G",
+      "wear_flags": "AO",
+      "weight": 9,
+      "cost": 10,
+      "condition": "1550",
+      "values": [
+        10,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5111,
+      "name": "a small helmet",
+      "description": "A small helmet lies up against a rock.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AE",
+      "weight": 16,
+      "cost": 50,
+      "condition": "3300",
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5112,
+      "name": "a small ruby ring",
+      "description": "A small ruby ring lies in the dirt.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 25,
+      "cost": 10,
+      "condition": "980",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5113,
+      "name": "a spider shaped dagger",
+      "description": "A dagger with spider leg shaped blades lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "GJ",
+      "wear_flags": "AN",
+      "weight": 30,
+      "cost": 20,
+      "condition": "3300",
+      "values": [
+        0,
+        4,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5114,
+      "name": "a small bright green hat",
+      "description": "A small bright green hat lies in the dirt.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "H",
+      "wear_flags": "AE",
+      "weight": 12,
+      "cost": 10,
+      "condition": "1180",
+      "values": [
+        4,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    }
+  ]
+}

@@ -1,0 +1,616 @@
+{
+  "area": {
+    "vnum": 2800,
+    "name": "Troll Den",
+    "filename": "trollden.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 2801,
+      "name": "Wastedump",
+      "description": "This room is filled with bone shards and fragments.  Something (or things)\nvery big lives here.  A small plaque is on the wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6124,
+          "description": "You reach civilization again.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2803,
+          "description": "You find the stench is stronger inside.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "plaque",
+          "description": "This zone (trollden) is created by MERC for any MERC Mud.\ncopyright 1992\n"
+        }
+      ],
+      "resets": [],
+      "area": 2800
+    },
+    {
+      "id": 2802,
+      "name": "Troll's Larder",
+      "description": "This room has blood and grime all over the walls.  You see maggots and other\ninsects crawling up them.  The resident is definitely uncivilized.  Half-eaten\nand rotting body parts scatter the floor, each having its own colony of flies,\nworms, and maggots.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2803,
+          "description": "You welcome the fresh breeze coming from the east, but wrinkle your nose when\nthe stench bears down on you once more.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "Half-eaten body rotting corpse",
+          "description": "YUCK!  You find worms crawling in and out this poor unfortunate former human.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2800
+    },
+    {
+      "id": 2803,
+      "name": "Troll's Living Room",
+      "description": "This small cave opens to the north, south, east, and west.  You are\novercome by the stench and consider turning around.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2801,
+          "description": "There is a trail of bone shards and fragments leading north.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2804,
+          "description": "Good God!  You spy corpses all over the floor in there.  It looks like a\nvirtual graveyard in there.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2805,
+          "description": "Whoa!  You reel back from the stench.  You believe you have found the source\nof this bad smell.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2802,
+          "description": "You puke as you watch worms crawl between this room and the room west of here\nas they bore new holes into a corpse laying on the far wall of the west room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2800
+    },
+    {
+      "id": 2804,
+      "name": "The Playpen",
+      "description": "The walls are covered with blood (and body parts!?!?).  Plastered on the far\nwall you see what looks like a human arm.  A half-eaten body lies here with\nits chest ripped out.  The predator seems disinterested in it.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2803,
+          "description": "You welcome the fresh breeze coming from the west, but wrinkle your nose when\nthe stench bears down on you once more.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "arm rotting",
+          "description": "This reminds you of what a baby would do to its formula during dinnertime,\nplastering it on the wall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2800
+    },
+    {
+      "id": 2805,
+      "name": "Troll's Bedroom",
+      "description": "Obviously something REALLY big lives here.  The stench is quite unbearable.\nThere are piles and piles of rotten and half-eaten body parts of animals,\norcs, (and humans?) strewn across the floor.  There is a larger, more\nprominent pile of rotten parts over in a corner.  It seems to have been\nflattened by something.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2803,
+          "description": "You welcome the fresh breeze coming from the north, but wrinkle your nose when\nthe stench bears down on you once more.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2800
+    }
+  ],
+  "mobs": [
+    {
+      "id": 2800,
+      "name": "the guardian beast",
+      "player_name": "oldstyle guardian beast",
+      "long_description": "A guardian beast stares at you and snarls in rage.\n",
+      "description": "Jet black fur covers this beast.  You stare at his two huge red eyes.  You can\ncount at least 50 teeth on this monster.  You can't tell whether it is blood or\nsaliva dripping from the beast's jaw.  The guardian beast snarls again.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "DPQ",
+      "alignment": -200,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2801,
+      "name": "the young troll",
+      "player_name": "oldstyle young troll",
+      "long_description": "A young troll is sitting down, chewing on a bone.\n",
+      "description": "He is a tall, wiry, furry humanoid.\nYour eyes lock with his.  He smiles, puts down his bone, and reaches for one\nof yours!!\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "P",
+      "alignment": -500,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2802,
+      "name": "the medium troll",
+      "player_name": "oldstyle medium troll",
+      "long_description": "A troll is grooming his pet, a guardian beast.\n",
+      "description": "He is a tall, lean, furry humanoid.\nHe is busy licking the ticks off of his beast.\nHis eyes dart toward you, as he realizes you are one third his size.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "P",
+      "alignment": -500,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2803,
+      "name": "a baby troll",
+      "player_name": "oldstyle baby troll",
+      "long_description": "A baby troll is playing Doctor with a cadaver.\n",
+      "description": "He is a large, chubby, furry humanoid.\nHe is trying to stuff an arm in a hole in the wall.\nHe notices you and gargles \"WANNA JOIN?\".\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "P",
+      "alignment": -100,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 12,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2804,
+      "name": "the giant troll",
+      "player_name": "oldstyle giant troll",
+      "long_description": "A giant troll is lying on a pile of carnage, pleasing his mistress.\n",
+      "description": "He is a gigantic, muscular, furry humanoid.\nHe gasps as he notices your intrusion.\nYou gasp as you realize you have intruded upon his acts of passion!\n",
+      "race": "giant",
+      "act_flags": "ABCFG",
+      "affected_by": "P",
+      "alignment": -1000,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+170",
+      "hit_dice": "6d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2805,
+      "name": "the large female troll",
+      "player_name": "oldstyle large troll female",
+      "long_description": "A large female troll is lying on the pile of carnage, blissfully writhing.\n",
+      "description": "She is a huge, grotesque, furry humanoid.\nShe moans in passion but gasps as she notices you.\nHer smiles turn into snarls as she screams at you!\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "P",
+      "alignment": -800,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d10+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 125,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2806,
+      "name": "a fat worm",
+      "player_name": "oldstyle fat worm",
+      "long_description": "A fat worm scurries around, looking for food.\n",
+      "description": "It is thick and long.  You can't find a head on this thing.\nIt moves quickly, from corpse to corpse.\n",
+      "race": "human",
+      "act_flags": "ACFH",
+      "affected_by": "PQ",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2807,
+      "name": "the roving beast",
+      "player_name": "oldstyle roving beast",
+      "long_description": "A roving beast is searching for prey.\n",
+      "description": "Jet black fur covers this beast.\nYou stare at his two huge red eyes.  You can count at least 50 teeth on this\nbeast.  You can't tell whether it is blood or saliva dripping from the beast's\njaw.  The roving beast snarls at you.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "DP",
+      "alignment": -200,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2808,
+      "name": "the medium troll",
+      "player_name": "oldstyle medium troll",
+      "long_description": "A troll is wandering around, attending to his duties.\n",
+      "description": "He is a tall, lean, furry humanoid.\nHe notices you, and is satisfied to find what he is looking for.\nHe advances toward you.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "P",
+      "alignment": -500,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 2800,
+      "name": "the cadaver-toy",
+      "description": "A half eaten corpse is laying here",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 500,
+      "condition": "1",
+      "values": [
+        30,
+        0,
+        0,
+        30,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2801,
+      "name": "the heap of carnage",
+      "description": "There is a bed made of carnage here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        30,
+        0,
+        0,
+        30,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2802,
+      "name": "the troll skin",
+      "description": "The filthy hide of a beast is laying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AK",
+      "weight": 12,
+      "cost": 200,
+      "condition": "1380",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "troll skin",
+          "description": "This is the skin from a huge (and dead) beast.  It looks bad, smells bad,\nand feels bad.\n"
+        }
+      ]
+    },
+    {
+      "id": 2803,
+      "name": "an opal ring",
+      "description": "A ring of black opal lies here gathering dust.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 20,
+      "cost": 10,
+      "condition": "1150",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "ring opal",
+          "description": "It is a full circle of opal, smooth and simple.\n"
+        }
+      ]
+    },
+    {
+      "id": 2804,
+      "name": "a leather belt",
+      "description": "An old leather belt is left on the floor.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AL",
+      "weight": 15,
+      "cost": 50,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "leather belt",
+          "description": "This old, smelly belt looks like it is barely better than rotting cloth.\n"
+        }
+      ]
+    },
+    {
+      "id": 2805,
+      "name": "a cracked bone",
+      "description": "A cracked piece of bone lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 6,
+      "cost": 30,
+      "condition": "350",
+      "values": [
+        0,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -1
+        },
+        {
+          "location": 19,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "bone",
+          "description": "This piece of bone looks sturdy enough to be used as a weapon, but you\nwouldn't want to entrust your life to it.\n"
+        }
+      ]
+    }
+  ]
+}

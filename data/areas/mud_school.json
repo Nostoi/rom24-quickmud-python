@@ -1,0 +1,3076 @@
+{
+  "area": {
+    "vnum": 3700,
+    "name": "mud school",
+    "filename": "school.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 3700,
+      "name": "Entrance to Mud School",
+      "description": "This is the entrance to the Merc Mud School.  Go north to go through mud\nschool.  If you have been here before and want to go directly to the arena,\ngo south.\nA sign warns 'You may not pass these doors once you have passed level 5.'\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3757,
+          "description": "You see the doorway into the Mud School Building.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3744,
+          "description": "You see the one way door into the Arena of Mud School.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 3001,
+          "description": "You see the Temple of Midgaard.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3701,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The exits are west and south.  A small plaque is on the\nwall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3757,
+          "description": "You see a path into another room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3702,
+          "description": "You see a path into another room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Equipment check time!  Type 'EQUIPMENT' to see your current equipment.  Right\nnow, you have just a vest, a shield, and a weapon.  As you go through Mud\nSchool you will acquire a complete set of equipment.\nTo pick up items on the ground as you see them, type 'GET item'.\nTo wear a piece of armor, type 'WEAR item'.\nTo hold a light source, type 'HOLD item'.\nTo wield a weapon, type 'WIELD weapon'.\nTo wear, hold, and wield everything you have, type 'WEAR ALL'.\nTo stop using a piece of equipment, type 'REMOVE item'.\nFinally, to see the items in your inventory, type 'INVENTORY'.\nWhen you are ready to continue, go west.\n"
+        },
+        {
+          "keyword": "plaque",
+          "description": "This zone (Mud School) is created by Hatchet for any Merc Mud.\nCopyright 1992, 1993.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3702,
+      "name": "The Center Room",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits lead in ALL directions.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3703,
+          "description": "You see the room north that will lead you to the next section.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3701,
+          "description": "You see a room.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3705,
+          "description": "You see a room.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3704,
+          "description": "You see a room.\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3708,
+          "description": "You see a room.\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 3707,
+          "description": "You see a room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "This is the direction practicing room.  The directions you can go in any\nroom are: north, south, east, west, up, or down.  Of course, not all rooms\nhave all exits available.\nTo see the obvious exits in a room, type 'EXITS'.\nSometimes doors are closed, or locked, or secret.  Then you have to notice\nclues in the room description, or try going into that direction and seeing\nif you bump into a door.\nTry going into each direction from here.  When you are done, go NORTH.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3703,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits lead north and south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3709,
+          "description": "You see the next station ahead.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3702,
+          "description": "You see the central room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Since you are here, let us have another lesson.  You can see the statistics on\nyourself by typing 'SCORE'.  Do that right now.  At higher levels, 'SCORE'\ngives you more information.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3704,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3702,
+          "description": "You see the central room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Just go east to the central room.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3705,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3702,
+          "description": "You see the central room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Just go north to the central room.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3707,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is up.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 3702,
+          "description": "You see the central room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Just go up to the central room.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3708,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is down.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 3702,
+          "description": "You see the central room.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Just go down to the central room.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3709,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits reach west and down.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 3711,
+          "description": "You see the next station of Mud School.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 3710,
+          "description": "You see a cage.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Welcome to combat training.\nThe first lesson is knowing whom to fight.  Use the command 'CONSIDER' to\nconsider killing a monster.  Avoid fighting monsters that will kill you\neasily.\nThe second lesson is running away.  There is a monster in the room down.\nHe is too strong for you to kill, but he won't kill you.  So go 'DOWN' from\nhere, then 'CONSIDER' him, then 'KILL' him.  After a while, type 'FLEE' to\nescape from him.\nYou can also set your character to flee automatically with the 'WIMPY' command.\nType 'HELP WIMPY' to find out more about 'WIMPY'.\nAfter you flee, you will be back in this room.  When you are ready to go on\nto the next station, go 'WEST'.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3710,
+      "name": "The Blob Cage",
+      "description": "You are in a smelly cage.  Strangely, the walls are still clean!\nYou see a sign here.  The only exit is up.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 3709,
+          "description": "You see a safe room up.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Remember, don't fight the blob to the finish!  Just type 'KILL BLOB', then\nwhen you are fighting, type 'FLEE', until you flee and are out of here.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3711,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3709,
+          "description": "You see the next station of Mud School.\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 3712,
+          "description": "You see the combat hall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Welcome to the next station.  Here, you will actually fight real monsters,\nwithout fleeing!  Kill every mob, since they hold some equipment you need.\nTo start, go down.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3712,
+      "name": "The Cage Room",
+      "description": "You are in the cage room.  All around are 4 cages.  Light fluoresces off the\nceiling in soft white tones.  Of course, there is a big sign on the wall.\nExits lead into the cardinal directions plus down.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3713,
+          "description": "You see the aggressive monster inside!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 3716,
+          "description": "You see the unmodified monster inside!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3715,
+          "description": "You see the wimpy monster inside!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3714,
+          "description": "You see the aggressive wimpy monster inside!\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 3717,
+          "description": "You see the next station below.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Welcome to the cage room.  The adepts of mud school have captured some\nmonsters for you to kill.  In the four cages are four monsters of various\ntypes.  Kill them all!\nAfter you kill each monster, get all of the equipment from their corpses\nwith the command 'GET ALL CORPSE'.  You can then use the command 'WEAR ALL'\nto wear your newly won equipment.\nWhen you are done with the corpse, 'SACRIFICE CORPSE' to give it to your God.\nGod will reward you for this.\nBetween combat, you may need to rest or sleep to regenerate hit points.\nYou can 'REST' to regenerate hit points, or you can 'SLEEP'.  'SLEEP' will\nrefresh you faster than 'REST', but you will be less aware of your\nsurroundings.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3713,
+      "name": "A Cage",
+      "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3712,
+          "description": "You see the Cage Room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "There is an aggressive monster in this room.  Kill him and get out of here\nfast!  Remember to loot and sacrifice the corpse.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3714,
+      "name": "A Cage",
+      "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3712,
+          "description": "You see the Cage Room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "There is a wimpy, aggressive monster in this room.  Kill him and get out of\nhere fast!  Remember to loot and sacrifice the corpse.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3715,
+      "name": "A Cage",
+      "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3712,
+          "description": "You see the Cage Room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "There is a wimpy monster in this room.  Kill him and get out of here fast!\nRemember to loot and sacrifice the corpse.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3716,
+      "name": "A Cage",
+      "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 3712,
+          "description": "You see the Cage Room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "There is a monster in this room.  Kill him and get out of here fast!\nRemember to loot and sacrifice the corpse.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3717,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Find your own exit here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3719,
+          "description": "You see the next station of Mud School.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3718,
+          "description": "You see the Shop.\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3712,
+          "description": "You see the Cage room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "By now, you must be hungry and thirsty.  Time to buy groceries!\nTo the south is a store.  Inside the store, you can use these commands:\nBUY    Buy an item\nLIST   List what is for sale\nAfter buying some food and drink, you can 'EAT' and 'DRINK' it.\nAfter that, find the next exit yourself.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3718,
+      "name": "The Store in Mud School",
+      "description": "You are in a cramped room.  Stacked neatly on shelves everywhere are items\nand packages.  Light fluoresces off the ceiling in soft white tones.  Of\ncourse, there is a sign on the wall.  The only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3717,
+          "description": "You see the only exit out of here.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "The sign reads:\nBuy   - Buy something from the storekeeper.\nList  - The storekeeper will tell you what's for sale.\nValue - The storekeeper will tell you how much he will give to you for\nthat item.\nSell  - Sell that item to the storekeeper.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3719,
+      "name": "A Room in Mud School",
+      "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The exits are north and west, with a door to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3720,
+          "description": "You see a darkened room inside.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3721,
+          "description": "You see the next station of Mud School.\n",
+          "keyword": "door",
+          "flags": "2",
+          "key": 3714
+        },
+        "west": {
+          "to_room": 3717,
+          "description": "You see the room you just came from.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "North of you is a dark room.  I hope you still have the lantern!  If not,\nyou have to back to the store and buy one.\nIn the room is a monster with a key that you need.  After killing the\nmonster and getting the key, come back here, UNLOCK EAST, OPEN EAST,\nand continue east.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3720,
+      "name": "The Darkened Room",
+      "description": "This room was purposefully darkened so that you would need to hold on to a\nlight source to go through.  The walls are, of course, blank, and white.\nThe only exit is south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3719,
+          "description": "You see the room that you have come from.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3721,
+      "name": "The End of Mud School!",
+      "description": "This is a very bright room, with a marble pedestal in the center.  Behind\nthe pedestal stands a person cloaked in Silver.  Tapestries flow from every\nwall, and you feel very happy to be here right now.  There is a big sign here.\nThe only exit is on the other side of the gate north of you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3722,
+          "description": "You see the Arena ahead.\n",
+          "keyword": "gate",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "You have graduated from Mud School!  Take your diploma...if you can.\nGo 'NORTH' from here to visit our arena.  There are plenty of low-level\nmonsters, but DON'T attack other players.\nIf you want to go directly back to the temple at any time, type 'RECALL'.\nDon't forget to type save to protect your character.  You won't be saved after\nquitting until you reach level 2, so also type save before you type quit.\nIf you need more help during the game, type 'HELP'.  If you see something\nwrong or have comments, use 'BUG', 'IDEA', or 'TYPO' to report them.\nMay your visit here be ... mercenary.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3722,
+      "name": "South Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3729,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3725,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3723,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3723,
+      "name": "South Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3728,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3722,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3724,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3724,
+      "name": "South West Corner of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3727,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3723,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3725,
+      "name": "South Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3730,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3726,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3722,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3726,
+      "name": "South East Corner of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3731,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3725,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3727,
+      "name": "West Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3732,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3728,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3724,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3728,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3733,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3729,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3723,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3727,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3729,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3734,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3730,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3722,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3728,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3730,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3735,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3731,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3725,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3729,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3731,
+      "name": "East Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3736,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3726,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3730,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3732,
+      "name": "West Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3737,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3733,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3727,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3733,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3738,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3734,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3728,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3732,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3734,
+      "name": "Center of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.  There is a BIG SIGN here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3739,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3735,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3729,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3733,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 3748,
+          "description": "You see a dark murky dungeon below.\n",
+          "keyword": "grate",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Those with high bravery or low senses of cautiousness might wish to go below\nto the Dungeon.  However, know that there are aggressive monsters down there,\nand there is no quick escape back out of here when you are in the dungeon.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3735,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3740,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3736,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3730,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3734,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3736,
+      "name": "East Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3741,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3731,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3735,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3737,
+      "name": "West Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3742,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3738,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3732,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3738,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3743,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3739,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3733,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3737,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3739,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3744,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3740,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3734,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3738,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3740,
+      "name": "Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3745,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3741,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3735,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3739,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3741,
+      "name": "East Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3746,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3736,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3740,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3742,
+      "name": "North West Corner of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3743,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3737,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3743,
+      "name": "North Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  You can barely see the ceiling.  You feel as if you are being watched\nby some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3744,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3738,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3742,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3744,
+      "name": "North Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3745,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3739,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3743,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3745,
+      "name": "North Wall of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3746,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3740,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3744,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3746,
+      "name": "North East Corner of Arena",
+      "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3741,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3745,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3760,
+          "description": "You see the EXIT.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3748,
+      "name": "The Center of the Dungeon",
+      "description": "You are in the center of a large room.  A faint light from above shows that\nthe floors are all covered with slime.  A feeling of dread comes over you as\nyou notice that this is NOT a great place to go.  Exits go in all directions.\nOf special note is the one that brings you back up!!!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3750,
+          "description": "You see the north wall.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3753,
+          "description": "You see the east wall.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3755,
+          "description": "You see the south wall.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3752,
+          "description": "You see the west wall.\n",
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3734,
+          "description": "You see safety!\n",
+          "keyword": "grate",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3749,
+      "name": "The North West Corner of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3750,
+          "description": "You see the north wall.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3752,
+          "description": "You see the south wall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3750,
+      "name": "The North Wall of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3751,
+          "description": "You see the north east corner.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3748,
+          "description": "You see the center of the dungeon.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3749,
+          "description": "You see the north west corner.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3751,
+      "name": "The North East Corner of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3753,
+          "description": "You see the east wall.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3750,
+          "description": "You see the north wall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3752,
+      "name": "The West Wall of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3749,
+          "description": "You see the north west corner.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3748,
+          "description": "You see the center of the dungeon.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3754,
+          "description": "You see the south west corner.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3753,
+      "name": "The East Wall of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3751,
+          "description": "You see the north east corner.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3756,
+          "description": "You see the south east corner.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3748,
+          "description": "You see the center of the dungeon.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3754,
+      "name": "The South West Corner of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3752,
+          "description": "You see the north wall.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3755,
+          "description": "You see the south wall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3755,
+      "name": "The South Wall of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3748,
+          "description": "You see the center of the dungeon.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3756,
+          "description": "You see the south east corner.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3754,
+          "description": "You see the south west corner.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3756,
+      "name": "The South East Corner of the Dungeon",
+      "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3753,
+          "description": "You see the east wall.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3755,
+          "description": "You see the south wall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3757,
+      "name": "A Room in Mud School",
+      "description": "You are in a room in Mud School.  Paintings of the heroic graduates of mud\nschool adorn the walls. To the west is Furey's Training Room, and to the east\nis Zump's Guild Room.  North of you is the next Station of Mud School.\nThere is a sign on the wall (type 'LOOK SIGN' to read it).\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3701,
+          "description": "You see the next station of Mud School.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3759,
+          "description": "You see Zump's Guild Room.  Go there to practice your skills.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3700,
+          "description": "You see the entrance to Mud School.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3758,
+          "description": "You see Furey's Training Room.  Go there to train your attributes.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "To find out your attributes, type 'score'.  You can improve your attributes\nin Furey's Training Room to the west.  You can practice your skills and spells\nin Zump's Guild Room to the east.  You can continue through mud school by\ngoing north.\nIf you are a new character, you should go 'WEST' from here, train your\nabilities, and then come back here and go 'NORTH'.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3758,
+      "name": "Furey's Training Room",
+      "description": "You are in Furey's Training Room.  Around you are all sorts of physical\nand mental training tools.  The whole room is filled with magic, holiness,\nand sweat.  There is a sign on the wall.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3757,
+          "description": "You see the room you came from, and the room you should go to.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Welcome to Furey's Training Room.  Here you can train your attributes.  To\ntrain an attribute, you need enough practices.  To find out how many practice\nsessions you have, type 'train' while you are in this room.  To train for a\nspecific attribute, type 'train <attr>' where attr is the first 3 letters of\nthe attribute you want increased.  Type 'help train' for more information.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3759,
+      "name": "Zump's Guild Room",
+      "description": "You are in a room filled with weapons, books, and many combat dummies, some\ncut and stabbed many times, others burnt to a crisp.  The room is filled with\nsweat and an aura of magic.  There is a sign on the wall.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 3757,
+          "description": "You see the room you came from and the room you should go to.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Welcome to Zump's Guild Room.  Here you will learn your skills and spells.\nTo find out what skills and spells you can practice and how many practice\nsessions you have, type 'practice'.  To practice the specific skill, type\n'practice <skill>', where 'skill' is the skill or spell you wish to practice.\nPracticing increases the amount you know of that skill or spell, up to a\ncertain maximum.  When you have practiced all you wish to practice, go west.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3700
+    },
+    {
+      "id": 3760,
+      "name": "A Safe Room",
+      "description": "You are in a safe room, away from all the mean rabbits and snails of the Arena.\nYou can rest here, and go up to go back to the Temple of Midgaard.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 3001,
+          "description": "You see the Temple of Midgaard.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3700
+    }
+  ],
+  "mobs": [
+    {
+      "id": 3700,
+      "name": "the acolyte of Zump",
+      "player_name": "acolyte cleric",
+      "long_description": "An acolyte of Zump welcomes you to mud school.\n",
+      "description": "He's big and bad.  Don't mess with him.\n",
+      "race": "human",
+      "act_flags": "ABGQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3701,
+      "name": "the blob",
+      "player_name": "blob",
+      "long_description": "The blob is here, waiting to eat you up.\n",
+      "description": "He is big, he is bad.  You don't want to fight him when he isn't chained up.\nPerhaps now would be a good time to flee from him!!!  If you don't flee, you\nwould really suffer the consequences.\n",
+      "race": "unique",
+      "act_flags": "ABG",
+      "affected_by": "C",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": -5,
+      "ac": "1d1+49",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d1+0",
+      "damage_dice": "digestion",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "AN",
+      "immune": "AB",
+      "resist": "CD",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "BSc",
+      "parts": "0",
+      "size": "large",
+      "material": "0"
+    },
+    {
+      "id": 3702,
+      "name": "the monster",
+      "player_name": "monster",
+      "long_description": "There is a monster leashed here.\n",
+      "description": "He looks mean, but you feel comfortable that you can kill him, especially since\nhe is leashed up, and you are not.\n",
+      "race": "school monster",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d1+7",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d3+0",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "0",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3703,
+      "name": "the wimpy monster",
+      "player_name": "monster wimpy",
+      "long_description": "There is a wimpy monster leashed here.\n",
+      "description": "He looks wimpy.  You feel comfortable that you can kill him, especially since\nhe is leashed up, and you are not.\n",
+      "race": "school monster",
+      "act_flags": "ABH",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d1+7",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d2+0",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "O",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3704,
+      "name": "the aggressive monster",
+      "player_name": "monster aggressive",
+      "long_description": "There is an aggressive monster leashed here.\n",
+      "description": "He looks mean, but you feel comfortable that you can kill him, especially since\nhe is leashed up, and you are not.\n",
+      "race": "school monster",
+      "act_flags": "ABF",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d1+7",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+0",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "EK",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3705,
+      "name": "the wimpy aggressive monster",
+      "player_name": "monster wimpy aggressive",
+      "long_description": "There is a wimpy aggressive monster leashed here.\n",
+      "description": "He looks mean, but you feel comfortable that you can kill him, especially since\nhe is leashed up, and you are not.\n",
+      "race": "school monster",
+      "act_flags": "ABFH",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d1+7",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d3+0",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "J",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3706,
+      "name": "the big creature",
+      "player_name": "big creature",
+      "long_description": "There is a big creature hulking over your form.\n",
+      "description": "He looks mean, and you just might have a small problem killing him, but he\nlooks like a great prize!!!\n",
+      "race": "school monster",
+      "act_flags": "AB",
+      "affected_by": "JZ",
+      "alignment": 0,
+      "group": 0,
+      "level": 2,
+      "thac0": 1,
+      "ac": "2d2+20",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+1",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "FN",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3707,
+      "name": "the adept of Satin",
+      "player_name": "adept cleric",
+      "long_description": "An adept of the mighty goddess Satin is here, contemplating your progress.\n",
+      "description": "She is big and bad.  Don't mess with her.\n",
+      "race": "human",
+      "act_flags": "ABGQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3708,
+      "name": "the adept of Alander",
+      "player_name": "adept",
+      "long_description": "An adept of Alander is here, smiling at you.\n",
+      "description": "He is big and bad.  Don't mess with him.\n",
+      "race": "human",
+      "act_flags": "ABGQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3709,
+      "name": "the rabbit",
+      "player_name": "rabbit",
+      "long_description": "A rabbit is bouncing around here.\n",
+      "description": "The rabbit smiles at you, completely harmless!\n",
+      "race": "rabbit",
+      "act_flags": "AGHU",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d1+10",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d3+0",
+      "damage_dice": "bite",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "0",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "tiny",
+      "material": "0"
+    },
+    {
+      "id": 3710,
+      "name": "the lizard",
+      "player_name": "lizard",
+      "long_description": "A lizard slithers up to you.\n",
+      "description": "It smiles at you, and tries to eat your leg.\n",
+      "race": "lizard",
+      "act_flags": "AGU",
+      "affected_by": "0",
+      "alignment": -100,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d2+20",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+1",
+      "damage_dice": "bite",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "R",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "0"
+    },
+    {
+      "id": 3711,
+      "name": "the boar",
+      "player_name": "boar",
+      "long_description": "A boar tries to run you over.\n",
+      "description": "It grunts at you.\n",
+      "race": "pig",
+      "act_flags": "AGU",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 1,
+      "ac": "3d3+30",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+1",
+      "damage_dice": "charge",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 9,
+      "offensive": "CDFR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3712,
+      "name": "the fox",
+      "player_name": "fox",
+      "long_description": "A fox is here staring at you.\n",
+      "description": "It's fur might be worth money.\n",
+      "race": "fox",
+      "act_flags": "AGHU",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 1,
+      "thac0": 1,
+      "ac": "1d1+12",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d3+1",
+      "damage_dice": "bite",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "NR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "0"
+    },
+    {
+      "id": 3713,
+      "name": "the snail",
+      "player_name": "snail",
+      "long_description": "A snail is trying to get out of your way.\n",
+      "description": "You don't see much but slime about it.\n",
+      "race": "unique",
+      "act_flags": "AGU",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 0,
+      "thac0": 0,
+      "ac": "1d1+0",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d1+0",
+      "damage_dice": "digestion",
+      "damage_type": "beating",
+      "ac_pierce": 10,
+      "ac_bash": 10,
+      "ac_slash": 10,
+      "ac_exotic": 10,
+      "offensive": "0",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "AGQc",
+      "parts": "AFHM",
+      "size": "tiny",
+      "material": "0"
+    },
+    {
+      "id": 3714,
+      "name": "the beast",
+      "player_name": "beast",
+      "long_description": "A beast tries to feed off of you.\n",
+      "description": "It looks mean.  You'd better run.\n",
+      "race": "school monster",
+      "act_flags": "AFT",
+      "affected_by": "Z",
+      "alignment": 0,
+      "group": 0,
+      "level": 5,
+      "thac0": 1,
+      "ac": "5d5+55",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+3",
+      "damage_dice": "bite",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 8,
+      "offensive": "EKM",
+      "immune": "0",
+      "resist": "HI",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "large",
+      "material": "0"
+    },
+    {
+      "id": 3715,
+      "name": "the bear",
+      "player_name": "bear",
+      "long_description": "A bear is here growling at you.\n",
+      "description": "The bear must be bigger than you!  It wants to rip your head off.\n",
+      "race": "bear",
+      "act_flags": "AGU",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 4,
+      "thac0": 1,
+      "ac": "4d4+44",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+2",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 5,
+      "ac_slash": 6,
+      "ac_exotic": 7,
+      "offensive": "CR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "large",
+      "material": "0"
+    },
+    {
+      "id": 3716,
+      "name": "the wolf",
+      "player_name": "wolf",
+      "long_description": "A wolf is here snarling at you.\n",
+      "description": "The wolf doesn't want to be bothered.\n",
+      "race": "wolf",
+      "act_flags": "AGU",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "4d4+44",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+2",
+      "damage_dice": "bite",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "NR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3717,
+      "name": "the adept of Selene",
+      "player_name": "adept cleric",
+      "long_description": "An adept of Selene is here, grinning and selling you things.\n",
+      "description": "He is big and bad.  Don't mess with him.\n",
+      "race": "human",
+      "act_flags": "ABCQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3718,
+      "name": "the adept of Furey",
+      "player_name": "adept cleric",
+      "long_description": "An adept of Furey is here, training young students.\n",
+      "description": "He is big and bad.  Don't mess with him.\n",
+      "race": "human",
+      "act_flags": "ABCJQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3719,
+      "name": "the priest of Circe",
+      "player_name": "priest cleric",
+      "long_description": "The priest of Circe is ready to help you practice.\n",
+      "description": "He is big and bad.  Don't mess with him.\n",
+      "race": "human",
+      "act_flags": "ABCKQTV",
+      "affected_by": "CH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 10,
+      "ac": "1d1+999",
+      "hit_dice": "1d1+999",
+      "mana_dice": "2d4+30",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
+      "offensive": "ACEFHIKN",
+      "immune": "ABCD",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3720,
+      "name": "the diploma beast",
+      "player_name": "diploma beast",
+      "long_description": "The hideous diploma beast is here, holding your graduation present!\n",
+      "description": "This horrible creature is your final test for mud school.  Kill him, and the\ndiploma is yours.\n",
+      "race": "school monster",
+      "act_flags": "AB",
+      "affected_by": "J",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 1,
+      "ac": "2d4+30",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+1",
+      "damage_dice": "claw",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "EFN",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 30,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 3700,
+      "name": "a sub issue mace",
+      "description": "You see a sub issue mace here.",
+      "material": "bronze",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 60,
+      "condition": "250",
+      "values": [
+        0,
+        1,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "mace",
+          "description": "You see a mace of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3701,
+      "name": "a sub issue dagger",
+      "description": "You see a sub issue dagger here.",
+      "material": "bronze",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 0,
+      "cost": 10,
+      "condition": "210",
+      "values": [
+        0,
+        1,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "dagger",
+          "description": "You see a dagger of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3702,
+      "name": "a sub issue sword",
+      "description": "You see a sub issue sword here.",
+      "material": "bronze",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 30,
+      "condition": "360",
+      "values": [
+        0,
+        1,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword",
+          "description": "You see a sword of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3703,
+      "name": "a sub issue vest",
+      "description": "You see a sub issue vest here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AD",
+      "weight": 0,
+      "cost": 50,
+      "condition": "144",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "vest",
+          "description": "You see a vest of great but cheap craftsmanship.  Stamped on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3704,
+      "name": "a sub issue shield",
+      "description": "You see a sub issue shield here.",
+      "material": "wood",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AJ",
+      "weight": 0,
+      "cost": 30,
+      "condition": "108",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "shield",
+          "description": "You see a shield of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3705,
+      "name": "a sub issue cloak",
+      "description": "You see a sub issue cloak here.",
+      "material": "cloth",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AC",
+      "weight": 0,
+      "cost": 40,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        1
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "cloak",
+          "description": "You see a cloak of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3706,
+      "name": "a sub issue helmet",
+      "description": "You see a sub issue helmet here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AE",
+      "weight": 0,
+      "cost": 30,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "helmet",
+          "description": "You see a helmet of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3707,
+      "name": "a pair of sub issue leggings",
+      "description": "You see a pair of sub issue leggings here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AF",
+      "weight": 0,
+      "cost": 30,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "leggings",
+          "description": "You see leggings of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3708,
+      "name": "a pair of sub issue boots",
+      "description": "You see a pair of sub issue boots here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AG",
+      "weight": 0,
+      "cost": 30,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "boots",
+          "description": "You see boots of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3709,
+      "name": "a pair of sub issue gloves",
+      "description": "You see a pair of sub issue gloves here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AH",
+      "weight": 0,
+      "cost": 10,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "gloves",
+          "description": "You see gloves of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3710,
+      "name": "a pair of sub issue sleeves",
+      "description": "You see a pair of sub issue sleeves here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AI",
+      "weight": 0,
+      "cost": 20,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sleeves",
+          "description": "You see sleeves of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3711,
+      "name": "a sub issue cape",
+      "description": "You see a sub issue cape here.",
+      "material": "cloth",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AK",
+      "weight": 0,
+      "cost": 20,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "cape",
+          "description": "You see a cape of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3712,
+      "name": "a sub issue belt",
+      "description": "You see a sub issue belt here.",
+      "material": "leather",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AL",
+      "weight": 0,
+      "cost": 10,
+      "condition": "72",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "belt",
+          "description": "You see a belt of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3713,
+      "name": "a sub issue bracer",
+      "description": "You see a sub issue bracer here.",
+      "material": "bronze",
+      "item_type": "armor",
+      "extra_flags": "U",
+      "wear_flags": "AM",
+      "weight": 0,
+      "cost": 10,
+      "condition": "48",
+      "values": [
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "bracer",
+          "description": "You see a bracer of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3714,
+      "name": "a key",
+      "description": "You see a very important key here!",
+      "material": "brass",
+      "item_type": "key",
+      "extra_flags": "P",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 3715,
+      "name": "a mud school diploma",
+      "description": "You see a mud school diploma here.",
+      "material": "vellum",
+      "item_type": "treasure",
+      "extra_flags": "GU",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 10,
+      "condition": "1140",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 5,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "diploma",
+          "description": "This document shows that you have graduated from Mud School.\nIt also has magical effects on your abilities if you hold it!\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3716,
+      "name": "a war banner",
+      "description": "A war banner is on the floor here.",
+      "material": "cloth",
+      "item_type": "light",
+      "extra_flags": "AG",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "380",
+      "values": [
+        0,
+        0,
+        200,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -1
+        },
+        {
+          "location": 20,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "banner",
+          "description": "This is the official Merc war banner to see you through the darkest realm!\n"
+        }
+      ]
+    },
+    {
+      "id": 3717,
+      "name": "a sub issue spear",
+      "description": "You see a sub issue spear here.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 50,
+      "condition": "111",
+      "values": [
+        0,
+        1,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "spear",
+          "description": "You see a spear of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3718,
+      "name": "a sub issue staff",
+      "description": "You see a sub issue staff here.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 40,
+      "condition": "290",
+      "values": [
+        0,
+        1,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 2
+        },
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "staff",
+          "description": "You see a staff of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3719,
+      "name": "a sub issue axe",
+      "description": "You see a sub issue axe here.",
+      "material": "bronze",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 50,
+      "condition": "350",
+      "values": [
+        0,
+        1,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "axe",
+          "description": "You see an axe of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3720,
+      "name": "a sub issue flail",
+      "description": "You see a sub issue flail here.",
+      "material": "bronze",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 50,
+      "condition": "310",
+      "values": [
+        0,
+        1,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "flail",
+          "description": "You see a flail of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3721,
+      "name": "a sub issue whip",
+      "description": "You see a sub issue whip here.",
+      "material": "leather",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 20,
+      "condition": "330",
+      "values": [
+        0,
+        2,
+        2,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "whip",
+          "description": "You see a whip of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    },
+    {
+      "id": 3722,
+      "name": "a sub issue glaive",
+      "description": "You see a sub issue glaive here.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "U",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 80,
+      "condition": "183",
+      "values": [
+        0,
+        1,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "glaive",
+          "description": "You see a glaive of great but cheap craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
+        }
+      ]
+    }
+  ]
+}

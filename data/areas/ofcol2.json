@@ -1,0 +1,2835 @@
+{
+  "name": "New Ofcol",
+  "vnum_range": {
+    "min": 600,
+    "max": 699
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 600,
+      "name": "Granny's Still Room",
+      "description": "You are in Granny Jenkins' still room.  The smell of whiskey is heady, and\nthe bottles of it on the floor make your mouth water and your mind swirl.  You\nalso see a very large still.  So THIS is why there are so many grain fields!\nThe exit is to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 616,
+          "description": "You see the storage shed.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 601,
+      "name": "The Big Intersection",
+      "description": "You are in the big intersection between Raff Way and Impy Way.  Crowds\nof people walk past you as they go on their daily tasks.  Raff Way continues\neast and west, and Impy Way runs north and south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 625,
+          "description": "Impy Way continues north.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 666,
+          "description": "Raff Way continues east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 602,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 5553,
+          "description": "Raff Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 602,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  You can see a leather shop east and a blacksmith\nwest.  To the north you see a big intersection, and Impy Way continues south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 601,
+          "description": "You see the big intersection.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 604,
+          "description": "You see the leather shop.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 605,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 603,
+          "description": "You see the blacksmith.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 603,
+      "name": "The Blacksmith",
+      "description": "You are in a black and smelly room.  Pieces of metal are strewn all over\nthe floor, and a wave of heat from a big furnace hits you.  An anvil sits on\none side of the room, and on the other side is a workbench.  The exit is east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 602,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 604,
+      "name": "The Leather Shop",
+      "description": "You are in a brown and smelly room.  Pieces of leather are strewn all over\nthe floor.  The smell of burnt hide assaults your nose.  You can tell by the\nlooks that the tanning is done VERY CLOSE to here!   A table is near the\nentrance.  The exit is west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 602,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 605,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  To the east is a meat store, and to the west is a\npawn shop.  Impy Way continues north and south.  People are rushing around you\nto go to these stores.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 602,
+          "description": "Impy Way continues North.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 607,
+          "description": "You see the Meat Store.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 608,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 606,
+          "description": "You see the Pawn Shop.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 606,
+      "name": "The Pawn Shop.",
+      "description": "You are in a little shop filled with a lot of knick knacks and semi-\nvaluable goods.  There is a display case full of little treasures that you are\nsure that you or any other little kid would like to touch!  The exit is east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 605,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 607,
+      "name": "The Meat Store",
+      "description": "You are in a meat store.  Hanging on hooks are meats of many kinds of\nanimals.  In the background, you can hear the sound of blade against flesh.\nIt smells like meat here (which is not a good smell).  The exit is west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 605,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 608,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  To the east is Farmer's Market, and to the west is\nNyles' House of Ale.  Impy Way runs north and ends south of here.  You can hear\nthe sound of housewives gossiping at the market.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 605,
+          "description": "Impy Way continues north.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 610,
+          "description": "You see the Farmer's Market.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 611,
+          "description": "You see the end of Impy Way.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 609,
+          "description": "You see Nyles' House of Ale.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 609,
+      "name": "Nyles' House of Ale",
+      "description": "This is a very busy bar, with everyone holding homemade bottles of\nale.  You see even the more gentile persons here, laughing along with\nNyles, who offers you a quart of ale too.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 608,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 610,
+      "name": "Farmer's Market",
+      "description": "You see many carts filled with fruits and vegetables.  Many farmers are\nall trying to sell you their produce, each saying their's is better.  The exit\nis west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 608,
+          "description": "You see Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 611,
+      "name": "The End of Impy Way",
+      "description": "You are at the end of Impy and of the city part of Ofcol.  To the east is\na dirt road leading toward the farm animals.  West from here are fields.  Impy\nWay continues north.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 608,
+          "description": "Impy Way continues north.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 668,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 612,
+          "description": "You see the fields.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 612,
+      "name": "Fields",
+      "description": "You are in a corn field.  You can't see far, since the corn stalks are\ntaller than you are.  You remember that the end of Impy Way is east of here,\nand you think you see a building to the north.  The field continues south and\nwest.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 616,
+          "description": "You think you see a building north of here.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 611,
+          "description": "You remember that the end of Impy Way is east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 613,
+          "description": "You can make a path to the fields south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 615,
+          "description": "You can make a path to the fields west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 613,
+      "name": "Fields",
+      "description": "You are among fruit trees in a field.  You see many apple and orange\ntrees.  You can make out the corn fields north and some vegetable patches west.\nThe sight of the fruit makes your mouth water.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 612,
+          "description": "You see the corn fields.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 614,
+          "description": "You see the vegetable fields.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 614,
+      "name": "Fields",
+      "description": "You are among the vegetable fields.  You see many cabbage and lettuce\npatches, along with tomato bushes and potato plants.  To the east are some\nfruit trees, and north are some wheat fields.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 615,
+          "description": "You see the wheat fields.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 613,
+          "description": "You see the fruit trees.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 615,
+      "name": "Fields",
+      "description": "You are among the wheat fields.  The gentle caress of the wheat and the\ncool shadow from the tall stalks and scarecrow lulls you to sleep and dream\nof a little girl and little dog from a faraway place.  To the east are the corn\nstalks, and south of you are the vegetable patches.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 612,
+          "description": "You see the corn fields.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 614,
+          "description": "You see the vegetable patches.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 616,
+      "name": "The Shed",
+      "description": "You are in the storage shed.  Bales of wheat, corn and hay are piled\nagainst the wall, and some vegetables are in carts.  You see a small door\nto the west.  The main exit is south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 612,
+          "description": "You see the corn fields.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 600,
+          "description": "You see the door.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 617,
+      "name": "Slaughterhouse",
+      "description": "You are in the slaughterhouse, where all the animals are slaughtered so\nthat they can be sold or their skins be tanned.  The scream of dying animals\nmakes your stomach churn.  The exit is to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 668,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 618,
+      "name": "Dirt Road",
+      "description": "You are on a dirt road.  To the east is a barn, and you see a big chicken\ncoop south of you.  The dirt road continues north and west.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 668,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 620,
+          "description": "You see the barn.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 619,
+          "description": "You see the chicken coop.\n",
+          "keyword": "coop",
+          "flags": []
+        },
+        "west": {
+          "to_room": 621,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 619,
+      "name": "Chicken Coop",
+      "description": "You are in the chicken coop.  The smell of chickens and chicken droppings\nmakes you gasp.  The exit is north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 618,
+          "description": "You can sense the fresh air.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 620,
+      "name": "Barn",
+      "description": "You are in a barn.  There are some cows here, munching on mounds of hay.\nMilk is milked and bottled here.  You see the exit west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 618,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 621,
+      "name": "Dirt Road",
+      "description": "You are on a dirt road.  To the north and south, you see some grass\nfields.  There is a pigsty west, and the dirt road continues east.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 622,
+          "description": "You see some grass fields.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 618,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 623,
+          "description": "You see some grass fields.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 624,
+          "description": "You see the pigsty.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 622,
+      "name": "Grass Field",
+      "description": "You are in a grass field.  Fences block the way north, east, and west.\nThe dirt road is to the south.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 621,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 623,
+      "name": "Grass Field",
+      "description": "You are in a grass field.  Fences block the way south, east, and west.\nThe dirt road is to the north.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 621,
+          "description": "You see the dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 624,
+      "name": "Pig Sty",
+      "description": "For some reason, you are in a pig sty.  You wonder why you are standing in\nmuck.  To realize your senses and notice the dirt road is to the east.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 621,
+          "description": "You see the dry dirt road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 625,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  East and west of you are big houses.  Impy Way\ncontinues north and reaches a big intersection south.  Children are running to\nfrom home to home.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 632,
+          "description": "Impy Way continues north.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 626,
+          "description": "You see a big house.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 601,
+          "description": "You see a big intersection.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 629,
+          "description": "You see a big house.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 626,
+      "name": "Big House",
+      "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen east, and a bedroom is upstairs.  The exit is to the\nwest.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 628,
+          "description": "You see the kitchen.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 625,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "up": {
+          "to_room": 627,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 627,
+      "name": "Bedroom",
+      "description": "You are in the bedroom.  There isn't much of interest except for a bed and\na closet.  The stairs lead back down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "down": {
+          "to_room": 626,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 628,
+      "name": "Kitchen",
+      "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis west of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 626,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 629,
+      "name": "Big House",
+      "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen west, and a bedroom is upstairs.  The exit is to the\neast.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 625,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "west": {
+          "to_room": 631,
+          "description": "You see the kitchen.\n",
+          "flags": []
+        },
+        "up": {
+          "to_room": 630,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 630,
+      "name": "Bedroom",
+      "description": "You are in the bedroom.  There isn't much of interest except for a bed and\na closet.  The stairs lead back down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "down": {
+          "to_room": 629,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 631,
+      "name": "Kitchen",
+      "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis east of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 629,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 632,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  Houses are to the east and west of here.  Impy Way\ncontinues north and south.  There are many people walking along the streets.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 637,
+          "description": "Impy Way continues north.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 633,
+          "description": "You see a house.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 625,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 635,
+          "description": "You see a house.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 633,
+      "name": "House",
+      "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 634,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 632,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 634,
+      "name": "Bedroom",
+      "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 633,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 635,
+      "name": "House",
+      "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 632,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 636,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 636,
+      "name": "Bedroom",
+      "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 635,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 637,
+      "name": "Impy Way",
+      "description": "You are on Impy Way.  Houses are to the east and west of here.  Impy Way\ncontinues south.  To the north is a big intersection.  There are many people\nwalking along the streets.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 642,
+          "description": "You see a big intersection.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 638,
+          "description": "You see a house.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 632,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 640,
+          "description": "You see a house.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 638,
+      "name": "House",
+      "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 639,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 637,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 639,
+      "name": "Bedroom",
+      "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 638,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 640,
+      "name": "House",
+      "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 637,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 641,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 641,
+      "name": "Bedroom",
+      "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 640,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 642,
+      "name": "The Big Intersection",
+      "description": "You are on the intersection of Impy Way and Swiftest Way.  To the north of\nyou is a big house.  Swiftest Way runs east and west, and Impy way continues\nsouth.  There are quite a few people on this intersection.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 643,
+          "description": "You see the big house.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "east": {
+          "to_room": 646,
+          "description": "Swiftest Way continues east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 637,
+          "description": "Impy Way continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 649,
+          "description": "Swiftest Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 643,
+      "name": "Big House",
+      "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen north, and a bedroom is upstairs.  The exit is to\nthe south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 645,
+          "description": "You see the kitchen.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 642,
+          "description": "You see Impy Way.\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "up": {
+          "to_room": 644,
+          "description": "You see the bedroom.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 644,
+      "name": "Bedroom",
+      "description": "You are in the bedroom.  There isn't much of interest except for a bed\nand a closet.  The stairs lead back down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "down": {
+          "to_room": 643,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 645,
+      "name": "Kitchen",
+      "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis east of here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 643,
+          "description": "You see the main room of the house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 646,
+      "name": "Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north and south of you.  Swiftest Way continues east, and west is a big\nintersection.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 652,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 647,
+          "description": "Swiftest Way continues east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 653,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 642,
+          "description": "You see a big intersection.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 647,
+      "name": "Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north and south of you.  Swiftest Way continues east and west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 654,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 648,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 655,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 646,
+          "description": "Swiftest Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 648,
+      "name": "End of Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north, south, and east of you.  Swiftest Way continues west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 656,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 657,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 658,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 647,
+          "description": "Swiftest Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 649,
+      "name": "Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north and south of you.  Swiftest Way continues west, and to the east you\nsee a big intersection.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 659,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 642,
+          "description": "You see the big intersection.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 660,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 650,
+          "description": "Swiftest Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 650,
+      "name": "Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north and south of you.  Swiftest Way continues east and west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 661,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 649,
+          "description": "Swiftest Way continues east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 662,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 651,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 651,
+      "name": "The end of Swiftest Way",
+      "description": "You are on Swiftest Way, the commoner's residential area.  Small houses\nare north, south, and west of you.  Swiftest Way continues east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 663,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 650,
+          "description": "Swiftest Way continues east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 664,
+          "description": "You see a small house.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 665,
+          "description": "You see a small house.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 652,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 646,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 653,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 646,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 654,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 647,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 655,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 647,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 656,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 648,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 657,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 648,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 658,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 648,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 659,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 649,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 660,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 649,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 661,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 650,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 662,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 650,
+          "description": "You see Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 663,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 651,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 664,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 651,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 665,
+      "name": "Small House",
+      "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 651,
+          "description": "You see the end of Swiftest Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 666,
+      "name": "Raff Way",
+      "description": "You are on Raff Way.  To the west, you can see a big intersection.  To\nthe east, you see Raff Way continue toward the Golden Citadel.  There are\nbeautiful flowers growing along the road here, making this more of a garden\nthan a road.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 667,
+          "description": "Raff Way continues east.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 601,
+          "description": "You see the big intersection.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 667,
+      "name": "Raff Way",
+      "description": "You are on Raff Way.  Raff Way continues west to the city of Ofcol.  To\nthe east, you see Raff Way continue toward the Golden Citadel.  There are\nbeautiful flowers growing along the road here, making this more of a garden\nthan a road.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 699,
+          "description": "You see the entrance of the Golden Citadel.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 666,
+          "description": "Raff Way continues west.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 668,
+      "name": "Dirt Road",
+      "description": "You are on a dirt road.  To the east is a large building with a bad smell\nemanating from it.  To the west is the end of Impy Way, and this road continues\nsouth.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 617,
+          "description": "You see the large building with the bad smell.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 618,
+          "description": "The dirt road continues south.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 611,
+          "description": "You see the end of Impy Way.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 669,
+      "name": "The Temple of Ofcol",
+      "description": "You are in the Temple of Ofcol.  Golden tiles cover the floor, and solid\ngold columns reach the twelve foot ceiling of this vast chamber.  Servants in\ngolden livery wander this place, making even the raggiest messenger boy look\nricher than you are.  Exits lead to the anterooms in the cardinal directions.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 670,
+          "flags": []
+        },
+        "east": {
+          "to_room": 672,
+          "flags": []
+        },
+        "south": {
+          "to_room": 673,
+          "flags": []
+        },
+        "west": {
+          "to_room": 671,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 670,
+      "name": "The Anteroom to the Temple of Ofcol",
+      "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe south, and to the north is a hallway.  A stairways leads up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 675,
+          "flags": []
+        },
+        "south": {
+          "to_room": 669,
+          "flags": []
+        },
+        "up": {
+          "to_room": 686,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 671,
+      "name": "The Anteroom to the Temple of Ofcol",
+      "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe east, and to the west is a hallway.  A stairways leads up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 669,
+          "flags": []
+        },
+        "west": {
+          "to_room": 679,
+          "flags": []
+        },
+        "up": {
+          "to_room": 687,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 672,
+      "name": "The Anteroom to the Temple of Ofcol",
+      "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe west, and to the east is a hallway.  A stairways leads up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 680,
+          "flags": []
+        },
+        "west": {
+          "to_room": 669,
+          "flags": []
+        },
+        "up": {
+          "to_room": 689,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 673,
+      "name": "The Anteroom to the Temple of Ofcol",
+      "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe north, and to the south is a hallway.  A stairways leads up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 669,
+          "flags": []
+        },
+        "south": {
+          "to_room": 684,
+          "flags": []
+        },
+        "up": {
+          "to_room": 690,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 674,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 675,
+          "flags": []
+        },
+        "south": {
+          "to_room": 677,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 675,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east, west, and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 676,
+          "flags": []
+        },
+        "south": {
+          "to_room": 670,
+          "flags": []
+        },
+        "west": {
+          "to_room": 674,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 676,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 678,
+          "flags": []
+        },
+        "west": {
+          "to_room": 675,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 677,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 674,
+          "flags": []
+        },
+        "south": {
+          "to_room": 679,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 678,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 676,
+          "flags": []
+        },
+        "south": {
+          "to_room": 680,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 679,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead to the cardinal directions, with the east leading\ntoward the Temple of Ofcol, and west leading toward the City of Ofcol.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 677,
+          "flags": []
+        },
+        "east": {
+          "to_room": 671,
+          "flags": []
+        },
+        "south": {
+          "to_room": 681,
+          "flags": []
+        },
+        "west": {
+          "to_room": 698,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 680,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west, north and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 678,
+          "flags": []
+        },
+        "south": {
+          "to_room": 682,
+          "flags": []
+        },
+        "west": {
+          "to_room": 672,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 681,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 679,
+          "flags": []
+        },
+        "south": {
+          "to_room": 683,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 682,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 680,
+          "flags": []
+        },
+        "south": {
+          "to_room": 685,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 683,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 681,
+          "flags": []
+        },
+        "east": {
+          "to_room": 684,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 684,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east, west, and north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 673,
+          "flags": []
+        },
+        "east": {
+          "to_room": 685,
+          "flags": []
+        },
+        "west": {
+          "to_room": 683,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 685,
+      "name": "A Hallway of the Golden Citadel",
+      "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west and north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 682,
+          "flags": []
+        },
+        "west": {
+          "to_room": 684,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 686,
+      "name": "An Upper Chamber of the Golden Citadel",
+      "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 688,
+          "flags": []
+        },
+        "up": {
+          "to_room": 691,
+          "flags": []
+        },
+        "down": {
+          "to_room": 670,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 687,
+      "name": "An Upper Chamber of the Golden Citadel",
+      "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 688,
+          "flags": []
+        },
+        "up": {
+          "to_room": 692,
+          "flags": []
+        },
+        "down": {
+          "to_room": 671,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 688,
+      "name": "The Hall of the DragonLords",
+      "description": "You are in a vast hall, filled with the commanders of the Golden Citadel.\nGolden tiles etched with platinum cover the floors, and weapons of all types\nare mounted on the walls of this meeting hall.  Surrounding a solid gold table\nare four sons of the Keeper of the Golden Citadel.  They smile at you and ask\nyou to join them in lunch.  Exits lead to the cardinal directions.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 686,
+          "flags": []
+        },
+        "east": {
+          "to_room": 689,
+          "flags": []
+        },
+        "south": {
+          "to_room": 690,
+          "flags": []
+        },
+        "west": {
+          "to_room": 687,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 689,
+      "name": "An Upper Chamber of the Golden Citadel",
+      "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 688,
+          "flags": []
+        },
+        "up": {
+          "to_room": 694,
+          "flags": []
+        },
+        "down": {
+          "to_room": 672,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 690,
+      "name": "An Upper Chamber of the Golden Citadel",
+      "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 688,
+          "flags": []
+        },
+        "up": {
+          "to_room": 695,
+          "flags": []
+        },
+        "down": {
+          "to_room": 673,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 691,
+      "name": "A Top Chamber of the Golden Citadel",
+      "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 693,
+          "flags": []
+        },
+        "down": {
+          "to_room": 686,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 692,
+      "name": "A Top Chamber of the Golden Citadel",
+      "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 693,
+          "flags": []
+        },
+        "down": {
+          "to_room": 687,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 693,
+      "name": "The Dragon Chamber",
+      "description": "You are in a vast chamber carved from gold and platinum.  Gems the size of\na man's fist protrude from the walls, ceiling, and the floor, making your step\npainful.  A vast open sky-light lets fresh air come in from the top.  In the\ncenter of this chamber, you see a great wealth of coins, and on top of that\npile of coins, you see a golden dragon squinting at you.  Exits lead to the\ncardinal directions to the anterooms.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 691,
+          "flags": []
+        },
+        "east": {
+          "to_room": 694,
+          "flags": []
+        },
+        "south": {
+          "to_room": 695,
+          "flags": []
+        },
+        "west": {
+          "to_room": 692,
+          "flags": []
+        },
+        "up": {
+          "to_room": 696,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 694,
+      "name": "A Top Chamber of the Golden Citadel",
+      "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 693,
+          "flags": []
+        },
+        "down": {
+          "to_room": 689,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 695,
+      "name": "A Top Chamber of the Golden Citadel",
+      "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 693,
+          "flags": []
+        },
+        "down": {
+          "to_room": 690,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 696,
+      "name": "Above the Dragon Chamber",
+      "description": "You are above the Dragon Chamber.  You curiously note that this shaft that\nconnects the chamber to the sky is wide enough that even a dragon can fit\nthrough.  This shaft leads up and down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 697,
+          "flags": []
+        },
+        "down": {
+          "to_room": 693,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 697,
+      "name": "In the Shaft from the Dragon Chamber",
+      "description": "You are in the shaft leading from the Dragon Chamber.  Below you lies the\nDragon Chamber of the Golden Citadel.  Above you, you see the sky, but\ncurrently, the way out is sealed by a layer of diamond that looks impenetrable.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "down": {
+          "to_room": 696,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 698,
+      "name": "Inside the Entrance to the Golden Citadel",
+      "description": "You are inside the entrance to the Golden Citadel.  Rich golden tapestries\nline the walls, and golden tiles cover the floors.  The exit to this citadel is\nto the west, while the citadel itself is to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 679,
+          "flags": []
+        },
+        "west": {
+          "to_room": 699,
+          "keyword": "gate",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    },
+    {
+      "id": 699,
+      "name": "Outside the Entrance to the Golden Citadel",
+      "description": "You are outside the entrance to the Golden Citadel.  A great gate is to\nto the east, marking the entranceway into the citadel.  The road also leads\nback west to Raff Way.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 698,
+          "flags": []
+        },
+        "west": {
+          "to_room": 667,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 600
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 600,
+      "name": "the Ofcol cityguard",
+      "description": "An Ofcol cityguard is standing here, making sure there is no trouble.\n"
+    },
+    {
+      "id": 601,
+      "name": "Marshall Diana",
+      "description": "Diana, the Marshall of Ofcol, stands here proudly.\n"
+    },
+    {
+      "id": 602,
+      "name": "Captain Derrick",
+      "description": "Derrick, Captain of the Guard, is here disciplining his guards.\n"
+    },
+    {
+      "id": 603,
+      "name": "Captain Jacklyn",
+      "description": "Jacklyn, Captain of the Citadel Guard, is here raising morale.\n"
+    },
+    {
+      "id": 604,
+      "name": "Jim the Blacksmith",
+      "description": "Jim the Blacksmith is here, selling his latest works of metal.\n"
+    },
+    {
+      "id": 605,
+      "name": "Sam",
+      "description": "Sam is here, selling his leather works.\n"
+    },
+    {
+      "id": 606,
+      "name": "Madam Tracy",
+      "description": "Madam Tracy is here, selling and buying little treasures.\n"
+    },
+    {
+      "id": 607,
+      "name": "Marty",
+      "description": "Marty the meat store owner is here, selling you his choice meats.\n"
+    },
+    {
+      "id": 608,
+      "name": "Farmer Elizabeth",
+      "description": "Farmer Elizabeth is here, selling the latest crop.\n"
+    },
+    {
+      "id": 609,
+      "name": "Granny Jenkins",
+      "description": "Granny Jenkins is here, running the still.\n"
+    },
+    {
+      "id": 610,
+      "name": "Jack",
+      "description": "Jack is here slaughtering away at the animals.\n"
+    },
+    {
+      "id": 611,
+      "name": "Farmer Sara",
+      "description": "Farmer Sara is here, milking the cows.\n"
+    },
+    {
+      "id": 612,
+      "name": "a hen",
+      "description": "A hen is here, squawking at your intrusion.\n"
+    },
+    {
+      "id": 613,
+      "name": "the cow",
+      "description": "A cow is here, munching on grass.\n"
+    },
+    {
+      "id": 614,
+      "name": "the cow",
+      "description": "A cow is here, waiting to be milked.\n"
+    },
+    {
+      "id": 615,
+      "name": "the young horse",
+      "description": "A young horse is here, grazing.\n"
+    },
+    {
+      "id": 616,
+      "name": "the pig",
+      "description": "A pig is playing here, getting itself and you dirty.\n"
+    },
+    {
+      "id": 617,
+      "name": "the citizen",
+      "description": "A citizen is here, smiling at you.\n"
+    },
+    {
+      "id": 618,
+      "name": "the citizen",
+      "description": "A citizen is here, smiling at you.\n"
+    },
+    {
+      "id": 619,
+      "name": "the boy",
+      "description": "A boy is here, playing tag and other kids' games.\n"
+    },
+    {
+      "id": 620,
+      "name": "the girl",
+      "description": "A girl is here, playing jump jacks and other kids' games.\n"
+    },
+    {
+      "id": 621,
+      "name": "the maid",
+      "description": "A maid is here, cleaning the house and preparing the next meal.\n"
+    },
+    {
+      "id": 622,
+      "name": "Nyles the Bartender",
+      "description": "Nyles the Bartender is here, ready to serve you up a good brew.\n"
+    },
+    {
+      "id": 623,
+      "name": "the Ofcol cityguard",
+      "description": "An Ofcol cityguard is posted here to guard the gate.\n"
+    },
+    {
+      "id": 624,
+      "name": "a bard",
+      "description": "A bard is here, singing of the glories of Ofcol.\n"
+    },
+    {
+      "id": 625,
+      "name": "a servant",
+      "description": "A servant is here, carrying the duties of the Keeper of the Golden Citadel.\n"
+    },
+    {
+      "id": 626,
+      "name": "a squire",
+      "description": "A squire is here, scurrying from duty to duty.\n"
+    },
+    {
+      "id": 627,
+      "name": "a page",
+      "description": "A page is here, sending a message to his knight.\n"
+    },
+    {
+      "id": 628,
+      "name": "the Priestess of Ofcol",
+      "description": "The Priestess of Ofcol is here, blessing you\nwith her beatific smile.\n"
+    },
+    {
+      "id": 629,
+      "name": "Chaplain Jerrold",
+      "description": "Jerrold, the chaplain of this Citadel, is here\ndirecting the activities of the people around here.\n"
+    },
+    {
+      "id": 630,
+      "name": "a Dragonlord",
+      "description": "A knight wearing the scales of a dragon stands here.\n"
+    },
+    {
+      "id": 631,
+      "name": "The Ancient Gold Dragon",
+      "description": "An old dragon shimmering with the colors of this\ncavern peers at you sleepily.\n"
+    },
+    {
+      "id": 632,
+      "name": "an attendant of the dragon",
+      "description": "A person robed in gold is attending to the Keeper of the Citadel.\n"
+    },
+    {
+      "id": 633,
+      "name": "a Dragonknight",
+      "description": "A person dressed in the scales of a gold dragon\nstands here, guarding the Golden Citadel.\n"
+    },
+    {
+      "id": 634,
+      "name": "the Ofcol cityguard",
+      "description": "An Ofcol cityguard is posted here to guard the gate.\n"
+    }
+  ],
+  "objects": [
+    {
+      "id": 600,
+      "name": "a hand axe",
+      "description": "A hand axe is on the floor here."
+    },
+    {
+      "id": 601,
+      "name": "a meat cleaver",
+      "description": "A sharp meat cleaver is just lying on the floor here!"
+    },
+    {
+      "id": 602,
+      "name": "a side of beef",
+      "description": "A side of beef is here on the floor."
+    },
+    {
+      "id": 603,
+      "name": "a side of pork",
+      "description": "A side of pork is here on the floor."
+    },
+    {
+      "id": 604,
+      "name": "a side of horse",
+      "description": "A side of horse is here on the floor."
+    },
+    {
+      "id": 605,
+      "name": "a defeathered chicken",
+      "description": "A defeathered chicken is here on the floor."
+    },
+    {
+      "id": 606,
+      "name": "an emerald ring",
+      "description": "An emerald ring is on the floor, gathering dust."
+    },
+    {
+      "id": 607,
+      "name": "a glass trinket",
+      "description": "A glass trinket is on the floor, gathering dust."
+    },
+    {
+      "id": 608,
+      "name": "a golden necklace",
+      "description": "A golden necklace is on the floor, gathering dust."
+    },
+    {
+      "id": 609,
+      "name": "a head of cabbage",
+      "description": "Some fresh cabbage is here, get it while it lasts!"
+    },
+    {
+      "id": 610,
+      "name": "a head of lettuce",
+      "description": "Some fresh lettuce is here, get it while it lasts!"
+    },
+    {
+      "id": 611,
+      "name": "a bottle of milk",
+      "description": "A glass bottle of milk is on a shelf here, fresh from the cow."
+    },
+    {
+      "id": 612,
+      "name": "an apple",
+      "description": "An apple is on the ground."
+    },
+    {
+      "id": 613,
+      "name": "an ear of corn",
+      "description": "An ear of corn is on the ground."
+    },
+    {
+      "id": 614,
+      "name": "a pile of hay",
+      "description": "There is a big pile of hay here."
+    },
+    {
+      "id": 615,
+      "name": "a pitchfork",
+      "description": "A pitchfork is on the floor."
+    },
+    {
+      "id": 616,
+      "name": "a leather vest",
+      "description": "A leather vest is on the floor."
+    },
+    {
+      "id": 617,
+      "name": "some leather sleeves",
+      "description": "Some leather sleeves are on the floor."
+    },
+    {
+      "id": 618,
+      "name": "some leather leggings",
+      "description": "Some leather leggings are on the floor."
+    },
+    {
+      "id": 619,
+      "name": "some leather boots",
+      "description": "Some leather boots are on the floor."
+    },
+    {
+      "id": 620,
+      "name": "an Ofcol signet ring",
+      "description": "A shiny ring of gold is in the dirt."
+    },
+    {
+      "id": 621,
+      "name": "brass plate",
+      "description": "A pile of brass plates is against the wall here."
+    },
+    {
+      "id": 622,
+      "name": "a brass helm",
+      "description": "A brass helm is against the wall here."
+    },
+    {
+      "id": 623,
+      "name": "brass leggings",
+      "description": "A pile of brass plates is against the wall here."
+    },
+    {
+      "id": 624,
+      "name": "brass boots",
+      "description": "Some brass boots are against the wall here."
+    },
+    {
+      "id": 625,
+      "name": "brass gauntlets",
+      "description": "Some brass gauntlets are against the wall here."
+    },
+    {
+      "id": 626,
+      "name": "brass sleeves",
+      "description": "A pile of brass plates is against the wall here."
+    },
+    {
+      "id": 627,
+      "name": "a brass shield",
+      "description": "A big plate of brass is against the wall here."
+    },
+    {
+      "id": 628,
+      "name": "a brass girth",
+      "description": "A brass girth is against the wall here."
+    },
+    {
+      "id": 629,
+      "name": "a brass bracer",
+      "description": "A brass bracer is against the wall here."
+    },
+    {
+      "id": 630,
+      "name": "a claymore",
+      "description": "A VERY big sword is against the wall here."
+    },
+    {
+      "id": 631,
+      "name": "silver plate",
+      "description": "A pile of silver plating and chain is on the floor."
+    },
+    {
+      "id": 632,
+      "name": "a silver helm",
+      "description": "A shiny helm is on the floor."
+    },
+    {
+      "id": 633,
+      "name": "silver leggings",
+      "description": "Some shiny leggings are on the floor."
+    },
+    {
+      "id": 634,
+      "name": "silver boots",
+      "description": "Some shiny boots are on the floor."
+    },
+    {
+      "id": 635,
+      "name": "silver gauntlets",
+      "description": "Some shiny gauntlets are on the floor."
+    },
+    {
+      "id": 636,
+      "name": "silver sleeves",
+      "description": "Some shiny sleeves are on the floor."
+    },
+    {
+      "id": 637,
+      "name": "the silver shield",
+      "description": "A shiny shield is on the floor."
+    },
+    {
+      "id": 638,
+      "name": "the silver girth",
+      "description": "A shiny girth is on the floor."
+    },
+    {
+      "id": 639,
+      "name": "platinum plate",
+      "description": "A pile of silvery metal is on the floor."
+    },
+    {
+      "id": 640,
+      "name": "the platinum helmet",
+      "description": "A silvery helmet is on the floor."
+    },
+    {
+      "id": 641,
+      "name": "platinum leggings",
+      "description": "Some silvery leggings are on the floor."
+    },
+    {
+      "id": 642,
+      "name": "platinum boots",
+      "description": "Some silvery boots are on the floor."
+    },
+    {
+      "id": 643,
+      "name": "platinum gauntlets",
+      "description": "A pair of silvery gauntlets are on the floor."
+    },
+    {
+      "id": 644,
+      "name": "platinum sleeves",
+      "description": "A pair of silvery sleeves are on the floor."
+    },
+    {
+      "id": 645,
+      "name": "the platinum spiked shield",
+      "description": "A jagged, silvery shield is on the floor."
+    },
+    {
+      "id": 646,
+      "name": "the platinum girth",
+      "description": "A silvery girth is on the floor."
+    },
+    {
+      "id": 647,
+      "name": "holy Avenger",
+      "description": "A glowing silvery sword is hovering here, ready to possess an owner."
+    },
+    {
+      "id": 648,
+      "name": "a shot of whiskey",
+      "description": "A shot of whiskey is on the table."
+    },
+    {
+      "id": 649,
+      "name": "a quart of ale",
+      "description": "A quart of ale is on the table."
+    },
+    {
+      "id": 650,
+      "name": "a quart of port brew",
+      "description": "A quart of port brew is on the table."
+    },
+    {
+      "id": 651,
+      "name": "the citadel key",
+      "description": "A key is on the floor."
+    },
+    {
+      "id": 652,
+      "name": "the Holy Symbol of Bahamut",
+      "description": "A very shiny symbol is on the floor."
+    },
+    {
+      "id": 653,
+      "name": "a ranseur",
+      "description": "A heavy polearm is against the wall here, ready to inflict damage."
+    },
+    {
+      "id": 654,
+      "name": "a golden dragonscale torso",
+      "description": "A golden dragonscale torso is on the floor!"
+    },
+    {
+      "id": 655,
+      "name": "a golden dragonhelm",
+      "description": "A golden dragonhelm is on the floor!"
+    },
+    {
+      "id": 656,
+      "name": "golden dragonscale leggings",
+      "description": "Some golden dragonscale leggings are on the floor!"
+    },
+    {
+      "id": 657,
+      "name": "golden dragonscale boots",
+      "description": "Some golden dragonscale boots are on the floor!"
+    },
+    {
+      "id": 658,
+      "name": "golden dragonscale gauntlets",
+      "description": "Some golden dragonscale gauntlets are on the floor!"
+    },
+    {
+      "id": 659,
+      "name": "golden dragonscale sleeves",
+      "description": "Some golden dragonscale sleeves are on the floor!"
+    },
+    {
+      "id": 660,
+      "name": "a golden dragonscale shield",
+      "description": "A golden dragonscale shield is on the floor!"
+    },
+    {
+      "id": 661,
+      "name": "a golden dragonscale girth",
+      "description": "A golden dragonscale girth is on the floor!"
+    },
+    {
+      "id": 662,
+      "name": "the golden claw",
+      "description": "A small golden claw is on the floor"
+    },
+    {
+      "id": 663,
+      "name": "the Gold Dragon Orb",
+      "description": "A very large pearl-like sphere is in the center of this room."
+    },
+    {
+      "id": 664,
+      "name": "a golden robe",
+      "description": "A golden robe is on the floor."
+    },
+    {
+      "id": 665,
+      "name": "a house key",
+      "description": "A house key is on the floor."
+    },
+    {
+      "id": 666,
+      "name": "a broom",
+      "description": "A broom is against the wall here."
+    },
+    {
+      "id": 667,
+      "name": "a chest",
+      "description": "A chest is on the floor here."
+    },
+    {
+      "id": 668,
+      "name": "the Golden Claw",
+      "description": "A huge golden claw is on the floor"
+    },
+    {
+      "id": 669,
+      "name": "the golden claw",
+      "description": "A large golden claw is on the floor"
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 600,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 601,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 602,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 603,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 621,
+      "spec": "spec_janitor"
+    },
+    {
+      "mob_vnum": 623,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 628,
+      "spec": "spec_cast_adept"
+    },
+    {
+      "mob_vnum": 629,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 630,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 631,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 632,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 633,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 634,
+      "spec": "spec_guard"
+    }
+  ]
+}

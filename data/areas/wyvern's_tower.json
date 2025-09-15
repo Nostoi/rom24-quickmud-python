@@ -1,0 +1,2818 @@
+{
+  "area": {
+    "vnum": 1600,
+    "name": "Wyvern's Tower",
+    "filename": "wyvern.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 1601,
+      "name": "Rough East-West Path",
+      "description": "You are on a very rough and overgrown path heading east-west over rugged\nterrain.  To the east the path passes between low hills.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1602,
+          "description": "The road heads into low hills this way.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1702,
+          "description": "The cross-roads and a trading post lie in this direction.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1602,
+      "name": "Rough Path Between the Hills",
+      "description": "Here the path passes between low hills. The going is very rough, but\nto the east the ground is smoother. In that direction a pair of tower\nlooms above the hills.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1603,
+          "description": "You see a pair of tall towers in the distance.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1601,
+          "description": "The road continues.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1603,
+      "name": "Path through an Open Area",
+      "description": "You are on a path through an open area. East of here loom two tall towers,\njoined by a barbican and surrounded by a murky moat. West the path passes\nbetween low hills.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1604,
+          "description": "Two fantastic towers surrounded by a moat rise before you.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1602,
+          "description": "The road continues.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1604,
+      "name": "West Side of Moat",
+      "description": "You stand on the west side of a moat that encircles two towers, each\nover 50 feet high. You will need a boat to go east across the moat. A\nrugged path heads west, and another one heads north to a cluster of low\nbuildings.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1605,
+          "description": "A worn path leads to a cluster of low buildings.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1620,
+          "description": "The Towers loom directly over you, just beyond the moat.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1603,
+          "description": "An old ill-kept roads leads away to the west.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1605,
+      "name": "Path North of Moat",
+      "description": "You walk on a faint path heading south toward the west side of the moat,\nand north to three small buildings.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1606,
+          "description": "Several low buildings lie this way.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1604,
+          "description": "The path ends west of the moat.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1606,
+      "name": "Cluster of Buildings",
+      "description": "You are in the middle of a cluster of small buildings. There is a building\nto the north, east, and west.  A sign over the eastern building says\n'House of Pancakes'.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1609,
+          "description": "There is an entrance to a building.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1607,
+          "description": "A sign over the door reads 'House of Pancakes'.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1605,
+          "description": "A path heads south toward the west side of the towers.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1608,
+          "description": "There is an entrance to a building here.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1607,
+      "name": "House of Pancakes",
+      "description": "The moment you enter this room, the ceiling descends and crushes you\ninto a pancake.  Don't you hate it when that happens?\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1608,
+      "name": "Old Store Room",
+      "description": "You have entered what appears to be an old storeroom. Most of the items\nthat were in here appear to have been ruined long ago.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1606,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1609,
+      "name": "Empty Room",
+      "description": "This room appears to be completely empty. The only exit seems to be the\nway you came.  There are some scratches around the floor.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1606,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1610,
+          "description": "You see a concealed opening leading down.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1610,
+      "name": "Minotaur's Room",
+      "description": "You have entered a secret chamber under the empty room. In this room is\nthe worn but cared-for gear and trappings of some large humanoid.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 1609,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1620,
+      "name": "Western Moat",
+      "description": "You are in the middle of the moat, on the west side of the tower.  There is a\nlanding on both sides of the moat.  Deep throated 'ribbids' come from the\nwater all around you.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1621,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1623,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1622,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1604,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1621,
+      "name": "Northern Moat",
+      "description": "You are in the middle of the moat, on the north side of the tower.  There is\nno place to land here.  Deep throated 'ribbids' come from the water all\naround you.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1620,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1622,
+      "name": "Southern Moat",
+      "description": "You are in the middle of the moat, on the south side of the tower.  There is\nno place to land here.  Deep throated 'ribbids' come from the water all\naround you.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1620,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1623,
+      "name": "Tower Foyer",
+      "description": "You are on a foyer on the west side of the structure. The moat is west of\nhere. There is also a large door eastward into the structure.  You notice that\nthe walls are ornately decorated with very life-like stone gargoyles.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1624,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1620,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1624,
+      "name": "The Grand Lobby",
+      "description": "You have entered a vast lobby. This lobby appears to have once been very\nornately furnished, but now everything is decayed and moldering.  A highly\nornate balcony surrounds the lobby. To the east, below the balcony, is an\nopening. The door leading out is west.  You notice that the balcony is\ncovered in highly ornate and life-like stone gargoyles.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1625,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1623,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1625,
+      "name": "Base of the Western Tower",
+      "description": "You stand in the center of the Western tower's base. Torch brackets occupy\nthe four corners of this huge room. Above each torch is a lifelike ornate\nstone gargoyle.  There are doors north and south, and passages east and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1627,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1626,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1628,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1624,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1626,
+      "name": "The Musty Corridor",
+      "description": "You are walking along a musty east-west corridor joining the two towers.\nThere are room on each side of the corridor, and openings at each end.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1629,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1631,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1630,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1625,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1627,
+      "name": "Kitchen",
+      "description": "You have entered what must once have been a kitchen. The rusting remains of\nvarious utensils lie on countertops. There is also an old wash basin and a\npot-belly stove.  There is a door south, and a serving hatch east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1625,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1628,
+      "name": "Conservatory",
+      "description": "You are in the tower's private conservatory. However, through years of neglect,\nthe plants have grown into a hideous jungle.  The only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1625,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1629,
+      "name": "The Dining Hall",
+      "description": "You have entered a fabulous dining hall.  The wrecked remains of a long table\ndominate the room. A horrible odor pervades the room, like some foul-smelling\nbeast has been eating and shitting in here.  There is a serving hatch west and\na door south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1626,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1630,
+      "name": "Art Gallery",
+      "description": "You are in the ruined remains of an art gallery. Everything appears to\nhave been stolen long ago, however.  The only exit is north.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1626,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1631,
+      "name": "Base of the Eastern Tower",
+      "description": "You stand in the center of the Eastern tower's base. Torch brackets occupy the\nfour corners of this huge room.  Above each torch is a lifelike ornate stone\ngargoyle.  There are are open doors to the north and south, and passages east\nand west.  In addition, a spiral staircase leads up to the next level of this\ntower.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1632,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1633,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1626,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 1635,
+          "description": "You see a spiral staircase leading up.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1632,
+      "name": "The Common Room",
+      "description": "You are in what must once have been a common room for all residents of the\ntower. There is a huge fire pit with a chimney in the center, and the smashed\nremains of a great many table and chairs.  The exit is south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1631,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1634,
+          "description": "You notice a grate in the bottom of the fire pit.  Maybe it's an opening ...\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1633,
+      "name": "Servant's Quarters",
+      "description": "You are in what once was the servant's quarters, as evidenced by the shabby\nbelongings and decor. What little remains is rotting and of little value\nanyway.  The only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1631,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1634,
+      "name": "A Large Murky Cellar",
+      "description": "You are in a large, murky cellar. An almost tangible air of horror pervades\nthe room.  A thin layer of nitre covers the walls and ceiling.  Rotting\nfurniture looms obliquely about the room.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 1632,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1635,
+      "name": "On the First Staircase",
+      "description": "You are on a Spiral staircase connecting the first and second levels of\nthe eastern tower. You can go up or down.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 1636,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1631,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1636,
+      "name": "Second Level of the Eastern Tower",
+      "description": "You are in the center of the second level of the Eastern tower. This large\nroom appears quite empty, except for the candle abras firmly fixed to the\nwalls.  An opening leads westward, and a spiral staircase leads down.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1637,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1635,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1637,
+      "name": "The Elegant Hall",
+      "description": "You are in what was once a elegant hall, although everything is moldering now.\nThe rotted remains of a plush carpet covers the floor, while several moldy\ntapestries adorn the each side of the hall.  There are door north and south,\nand openings east and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1638,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1636,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1639,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1640,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1638,
+      "name": "The Shaman's Room",
+      "description": "You have entered an elegantly furnished room that looks to be still in use!\nCostly paintings and pieces of furniture are tastefully situated.  On the\nnorth wall is an altar to Knar, the ghastly patron of Gargoyles.  The only\nexit is south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1637,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1639,
+      "name": "The Library",
+      "description": "This room appears to have been a library.  Empty book shelves line each wall.\nThe only exit is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1637,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1640,
+      "name": "Second Level of the Western Tower",
+      "description": "You are in the center of the western tower's second floor.  A large spiral\nstaircase of 29 steps connects this level with the third.  There are doors\nto the east and west.  Except for a torch bracket in each corner, the\nroom is barren.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1637,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1641,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 1642,
+          "description": "You see the spiral staircase leading up.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1641,
+      "name": "On the Balcony",
+      "description": "You are on the balcony overlooking the Grand lobby.  You have a fabulous\nview of the entire room.  The only exit is the way you came in.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1640,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1642,
+      "name": "The Spiral Stairs",
+      "description": "You are on a large spiral staircase of 29 steps, leading between the\nsecond and third floors.  You can go up or down.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 1643,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1640,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1643,
+      "name": "Third Level of Western Tower",
+      "description": "You stand in the center of the western tower's third floor.  This large room\nglows mysteriously with a strange light all its own.  From a door to the east\ncomes a strange inky blackness.  A spiral staircase leads down.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1644,
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 1642,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1644,
+      "name": "It's too dark to see anything!",
+      "description": "",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1645,
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1647,
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1646,
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1643,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1645,
+      "name": "The Armory",
+      "description": "In this room, which has somehow evaded the ravages of time, are neatly stored\nracks of common weapons.  They appear to be quite ordinary; however, a chest\nin one corner catches your eye.  The only exit is the way you came in.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1644,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1646,
+      "name": "The Officer's Quarters",
+      "description": "You have entered a lavish but functional room decked out in a military style.\nMurals on the wall show battle scenes in gargoyles, minotaurs, and huge,\nflying snake-like reptiles with poisonous tails fight humans and dwarves.\nVarious objects in the room give evidence that it is occupied by individuals\nof authority.  The only door is north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1644,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1647,
+      "name": "Third Level of Eastern Tower",
+      "description": "You are in the center of the Eastern Tower's third floor.  The room you are in\nglows with a mysterious light that has no source.  In the center of the room a\nladder climbs up to a hatchway in the ceiling.  The hatchway is a strange\nlooking keyhole.  There is also a door to the west.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1644,
+          "flags": "1",
+          "key": -1
+        },
+        "up": {
+          "to_room": 1648,
+          "description": "The hatchway appears securely fastened.  In it is a strange keyhole.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1648,
+      "name": "Turret of the Eastern Tower",
+      "description": "You stand in the turret of the eastern tower.  A huge hole has been\nmade in the roof by some enormous beast, letting the daylight (or moonlight)\nin.  There is a hatchway in the floor, and an opening to the west leading out\nonto a catwalk.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1649,
+          "description": "There is a small opening this way.\n",
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 1647,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1649,
+      "name": "On the Catwalk",
+      "description": "You are outdoors on a catwalk between the turrets of the eastern and\nwestern towers.  There is a 40 foot drop to the north and south.  You have\na fabulous view of the surrounding countryside, which consists of a bleak\nwilderness.  At the east end of the catwalk is a small opening leading\ninside the eastern turret.  At the western end, a strange mirror-like portal\nleads into the western turret.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1648,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1650,
+          "description": "A mirror-like portal glimmers, allowing entry into the western turret.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1650,
+      "name": "Turret of the Western Tower",
+      "description": "You are in the turret of the western tower.  You feel very strange here.\nScattered about this room are a great many coins and valuable articles.\nYet you can't get rid of a feeling of dread!  A mirror-like portal is in the\nwestern wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1649,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1651,
+          "description": "A mirror-like portal glimmers in this wall.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1651,
+      "name": "On the Other Side",
+      "description": "You are outdoors on a catwalk between the turrets of the Eastern and Western\ntowers.  There is no opening into the western tower of any kind.  You have a\nfabulous view of your surroundings, a murky city partially obscured by strange\nsmoke that creeps along the ground instead of rising. The city stretches as far\nas the eye can see under the conditions.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1650,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1652,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1652,
+      "name": "The Chamber",
+      "description": "You are in a small carpeted chamber. The chamber is empty except for a single\nchair facing a mirror on the wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1651,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1701,
+      "name": "Main Eastern Road",
+      "description": "You are on the old Eastern Road.  The crossroads to the east joins ANOTHER\nnorthern route to this road, which continues east.  South of the crossroads is\nan old building.  The area around here is lightly timbered.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1702,
+          "description": "You see a cross roads and an old building.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 5267,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1702,
+      "name": "Crossroads to the Wilderness",
+      "description": "You are at a crossroads to the wilderness areas east and north of here,\nand the more civilized areas to the west. The main road is west, an\nolder road continues east, and a simple trail heads north.  To the south,\nan old ram-shackle building is being used as a trading post for the\nsurrounding wilderness.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1704,
+          "description": "You see a trail leading north.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1601,
+          "description": "The old Eastern road continues this way.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1703,
+          "description": "An old, ram-shackle building serves as a trading post here.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1701,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1703,
+      "name": "Trading Post",
+      "description": "You are in a trading post just south of the crossroads, where rangers,\ntrappers and hunters from the surrounding area come to buy, sell, and\nbarter goods.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1702,
+          "description": "The door opens out on the crossroads.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1704,
+      "name": "Trail north of crossroads",
+      "description": "You are on a primitive north-south trail. South of here is a major cross-\nroads and an old building. To the north the trail continues toward a\ndeep, dark forest.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1705,
+          "description": "The trail continues toward a deep, dark, forest.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1702,
+          "description": "A major crossroads and a building lie in this direction.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1705,
+      "name": "Trail south of forest",
+      "description": "You are on a primitive north-south trail.  Just north of here looms the\nentrance to a deep, dark forest. To the south the trail continues.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1706,
+          "description": "The trail enters a dark forest of thick oaks this way.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1704,
+          "description": "The trail continues.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1706,
+      "name": "Entrance to the forest",
+      "description": "You are at the entrance to dark forest comprised mostly of huge black oak\nand towering firs.  A trail from the south continues north on into the\nwoods at this point.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1707,
+          "description": "You see the trail continuing into the forest.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1705,
+          "description": "You see the trail head back on south.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1707,
+      "name": "Trail in Dark Oak Forest",
+      "description": "The trail here passes through groves of closely knit Black Oak. Some of\nthese trees are of enormous size.  Rustling and other low noises come\nfrom the forest on either side of the trail.  The trail continues on north\nand south.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1708,
+          "description": "You see the trail continue into thick, dark forest.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1706,
+          "description": "The edge of the forest is visible in this direction.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1708,
+      "name": "Junction in Dark Forest",
+      "description": "You are in the midst of a deep dark forest of huge oak trees.  There is a\njunction of trails here, with paths leading south, west and east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1720,
+          "description": "A path disappears into thick forest.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1707,
+          "description": "A path disappears into thick forest.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1709,
+          "description": "You see the path to the Centaur village.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1709,
+      "name": "Path to Centaur Village",
+      "description": "You are on an east-west path in the forest.  Here the forest is mostly\ntowering firs, not quite as dense as the oak groves that can be seen eastward.\nWestward, the trail heads toward a small clearing.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1708,
+          "description": "A path disappears into thick forest.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1710,
+          "description": "There is a small clearing in this direction.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1710,
+      "name": "The East side of the Centaur Clearing",
+      "description": "You are on the east side of a clearing.  Small primitive huts are scattered\nabout the edges of this clearing.  Beyond these on all sides are towering\nfir trees.  A path leads east out of the clearing. The clearing continues to\nthe west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1712,
+          "description": "There is a hut here.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1709,
+          "description": "A path leads away through the forest.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1713,
+          "description": "There is a hut here.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1711,
+          "description": "You see the west side of the clearing.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1711,
+      "name": "West side of the Centaur Clearing",
+      "description": "You are on the west side of the clearing in the center of the Centaur village.\nHuts surround the clearing on all sides, and beyond are towering firs.  The\nclearing continues to the east.  To the west is a very large hut.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1714,
+          "description": "There is a hut here.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 1710,
+          "description": "You see the east side of the clearing.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 1715,
+          "description": "There is a hut here.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1716,
+          "description": "There is a hut here.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1712,
+      "name": "A Centaur's Hut",
+      "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1710,
+          "description": "The opening leads out onto the clearing.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1713,
+      "name": "A Centaur's Hut",
+      "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1710,
+          "description": "The opening leads out onto the clearing.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1714,
+      "name": "A Centaur's Hut",
+      "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1711,
+          "description": "The opening leads out onto the clearing.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1715,
+      "name": "A Centaur's Hut",
+      "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1711,
+          "description": "The opening leads out onto the clearing.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1716,
+      "name": "Entrance to a Large Hut",
+      "description": "You are in the entry foyer of a large hut.  A curtain separates this section\nof the hut from the next section to the west.  To the east is an opening out\nonto the clearing.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1711,
+          "description": "The opening leads out onto the clearing.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 1717,
+          "description": "There is a curtain here separating this section from the next.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1717,
+      "name": "Back of a Large Hut",
+      "description": "You are in the back of a large hut.  A curtain separates this section from\nthe front of the hut to the east.  This room is finely decorated, if\nsomewhat primitive.  The decor suggests someone of authority lives here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1716,
+          "description": "There is a curtain here separating this room from the front of the hut.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    },
+    {
+      "id": 1720,
+      "name": "Eastern Path in Dark Forest",
+      "description": "You are on an east-west path through extremely old growths of oak.  The path\nis fairly faint here.  Undergrowth closes in so closely that little can\nbe seen in any direction.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1708,
+          "description": "The path continues west through thick forest.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1600
+    }
+  ],
+  "mobs": [
+    {
+      "id": 1601,
+      "name": "a killer frog",
+      "player_name": "oldstyle killer frog",
+      "long_description": "A killer frog rises up out of the water.\n",
+      "description": "The killer frog looks ravenous.\n",
+      "race": "human",
+      "act_flags": "ABFG",
+      "affected_by": "0",
+      "alignment": -300,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1602,
+      "name": "the stone gargoyle",
+      "player_name": "oldstyle stone gargoyle",
+      "long_description": "A stone gargoyle looms over you.\n",
+      "description": "As you look, the figure seems to shift and move ...\n",
+      "race": "human",
+      "act_flags": "ABFGH",
+      "affected_by": "0",
+      "alignment": -400,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 20,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1603,
+      "name": "an angry gargoyle",
+      "player_name": "oldstyle angry gargoyle",
+      "long_description": "An angry gargoyle glares at you.\n",
+      "description": "He looks ready to attack!\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -600,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1604,
+      "name": "the elite gargoyle",
+      "player_name": "oldstyle elite gargoyle",
+      "long_description": "An elite gargoyle guards this room against intrusion.\n",
+      "description": "He snarls at you and says LEAVE OR DIE!\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": -600,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 40,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1605,
+      "name": "the gargoyle shaman",
+      "player_name": "oldstyle gargoyle shaman",
+      "long_description": "The gargoyle shaman is here, preparing to do battle.\n",
+      "description": "She says 'I can SEE you! I have been waiting ...'.\n",
+      "race": "human",
+      "act_flags": "ABCGQ",
+      "affected_by": "DF",
+      "alignment": -900,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+170",
+      "hit_dice": "13d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 7,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1606,
+      "name": "a carnivorous plant",
+      "player_name": "oldstyle carnivorous plant",
+      "long_description": "Amidst the jungle here, a huge Carnivorous plant reaches out to grab you!\n",
+      "description": "The plant looks something like a Venus fly-trap, only MUCH larger.\n",
+      "race": "human",
+      "act_flags": "ABFG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1607,
+      "name": "a gruesome ogre",
+      "player_name": "oldstyle gruesome ogre",
+      "long_description": "A huge, gruesome ogre is sprawled here, gnawing some strange meat.\n",
+      "description": "It thinks that perhaps you would make a better meal.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 60,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1608,
+      "name": "a shadow",
+      "player_name": "oldstyle shadow",
+      "long_description": "A dark shadow moves about the room.\n",
+      "description": "The Shadow is vaguely humanoid. Two glowing pinpoints look at you.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "BDF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 45,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1609,
+      "name": "an evil wight",
+      "player_name": "oldstyle evil wight",
+      "long_description": "An evil wight lurks in the shadows!\n",
+      "description": "He glares at you savagely and charges!\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 110,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1610,
+      "name": "A burly minotaur",
+      "player_name": "oldstyle burly minotaur",
+      "long_description": "A burly minotaur watches you solemnly.\n",
+      "description": "This powerful creature wonders whether to kill you or not ...\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "D",
+      "alignment": -600,
+      "group": 0,
+      "level": 14,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1612,
+      "name": "the savage minotaur",
+      "player_name": "oldstyle savage minotaur",
+      "long_description": "A bloodthirsty minotaur slowly counts his loot\n",
+      "description": "He looks up at you and screams 'SO! Coming to steal my hoard!'\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "D",
+      "alignment": -600,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1613,
+      "name": "the captain",
+      "player_name": "oldstyle minotaur captain",
+      "long_description": "Sitting here in this room is the Minotaur Captain.\n",
+      "description": "He looks at you, and a sinister grin slowly spreads on his face ...\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "D",
+      "alignment": -900,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "8d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1614,
+      "name": "the black pudding",
+      "player_name": "oldstyle black pudding",
+      "long_description": "A huge black pudding fills the center of the room!!\n",
+      "description": "It is a huge black blob that oozes about the room. Its heading toward YOU!\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -1000,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1615,
+      "name": "a lesser golem",
+      "player_name": "oldstyle lesser golem",
+      "long_description": "A lesser Golem stands guarding the entrance.\n",
+      "description": "The golem appears to be made of some kind of clay, enchanted to come to life!\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "D",
+      "alignment": 0,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1616,
+      "name": "the ancient wyvern",
+      "player_name": "oldstyle ancient wyvern",
+      "long_description": "An enormous, ancient wyvern stares down at your tiny form...\n",
+      "description": "It thunders loudly 'I must protect my Master's wealth!'\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "rest",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1617,
+      "name": "the spectre",
+      "player_name": "oldstyle spectre",
+      "long_description": "A spectre has begun to materialize in front of you!\n",
+      "description": "Terror fills your heart as you view this master of the undead.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "BDH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 19,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1702,
+      "name": "a trapper",
+      "player_name": "oldstyle trapper",
+      "long_description": "A trapper stands here, bartering his pelts.\n",
+      "description": "The trapper is clad mostly in the fur of various animals he's caught.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 6,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1704,
+      "name": "a hunter",
+      "player_name": "oldstyle hunter",
+      "long_description": "A hunter rests in here, carrying a fresh kill.\n",
+      "description": "The hunter is rugged and sturdy from his occupation.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 6,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1706,
+      "name": "a ranger",
+      "player_name": "oldstyle ranger",
+      "long_description": "A grim ranger reclines at a table.\n",
+      "description": "The years of wanderings have left the ranger hardened and strong.\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "D",
+      "alignment": 200,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1707,
+      "name": "a ranger leader",
+      "player_name": "oldstyle ranger leader",
+      "long_description": "A leader of the Rangers is watching you solemnly.\n",
+      "description": "This individual has quite a reputation at the local trading posts!\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "D",
+      "alignment": 300,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1708,
+      "name": "the Lord of the Rangers",
+      "player_name": "oldstyle ranger lord",
+      "long_description": "The Lord of the Rangers catches your eye.\n",
+      "description": "",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "D",
+      "alignment": 400,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1710,
+      "name": "a centaur",
+      "player_name": "oldstyle male centaur",
+      "long_description": "A male centaur wanders about this area.\n",
+      "description": "The centaur has the upper torso of a man and lower body of a horse.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 200,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 6,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1711,
+      "name": "a centaur",
+      "player_name": "oldstyle female centaur",
+      "long_description": "A female centaur wanders about this area.\n",
+      "description": "The centaur has the upper torso of a woman and lower body of a horse.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 200,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1712,
+      "name": "an old centaur",
+      "player_name": "oldstyle old centaur",
+      "long_description": "An old centaur is resting in a corner.\n",
+      "description": "This centaur has lived a full life.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 200,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "rest",
+      "sex": "male",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1714,
+      "name": "an elder centaur",
+      "player_name": "oldstyle centaur elder",
+      "long_description": "One of the centaur elders is here, watching you.\n",
+      "description": "The elders act as counselors and advisors to the chief.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "B",
+      "alignment": 200,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1715,
+      "name": "a centaur guard",
+      "player_name": "oldstyle centaur guard",
+      "long_description": "A strong centaur is standing guard here.\n",
+      "description": "He appears to be blocking entrance to the next room.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "B",
+      "alignment": 200,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1716,
+      "name": "the centaur chief",
+      "player_name": "oldstyle centaur chief",
+      "long_description": "The chief of the centaur villagers reclines here.\n",
+      "description": "He has been the leader of this tribe for many years, and has acquired much\nwisdom.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "B",
+      "alignment": 200,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1720,
+      "name": "a displacer beast",
+      "player_name": "oldstyle displacer beast",
+      "long_description": "A displacer beast is grazing nearby.\n",
+      "description": "As you watch this strange creature, its position seems to flicker and shift.\n",
+      "race": "human",
+      "act_flags": "AH",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 1601,
+      "name": "a rusty cleaver",
+      "description": "A rusty cleaver lies on a counter top.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 1,
+      "cost": 20,
+      "condition": "230",
+      "values": [
+        0,
+        1,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1602,
+      "name": "the fine mace",
+      "description": "There is a large mace of fine quality here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 10,
+      "cost": 110,
+      "condition": "570",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1603,
+      "name": "a long elven dagger",
+      "description": "A long elven dagger made of adamantite is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 8,
+      "cost": 20,
+      "condition": "700",
+      "values": [
+        0,
+        2,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1604,
+      "name": "a steel broad sword",
+      "description": "A fine steel broad sword is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 11,
+      "cost": 120,
+      "condition": "910",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1605,
+      "name": "a steel broad sword",
+      "description": "A very fine steel broad sword is lying on the ground.",
+      "material": "steel",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 15,
+      "cost": 120,
+      "condition": "1510",
+      "values": [
+        0,
+        2,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1606,
+      "name": "the rod of might",
+      "description": "A Rod of Might is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "BG",
+      "wear_flags": "AN",
+      "weight": 14,
+      "cost": 130,
+      "condition": "1550",
+      "values": [
+        0,
+        2,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1612,
+      "name": "a black kite shield",
+      "description": "There is a large black kite shield lying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AJ",
+      "weight": 13,
+      "cost": 60,
+      "condition": "1530",
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1614,
+      "name": "a commander's helm",
+      "description": "A commander's helm rests on a table here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AE",
+      "weight": 20,
+      "cost": 40,
+      "condition": "2300",
+      "values": [
+        7,
+        7,
+        7,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "helm",
+          "description": "This elegant helm is plated in mithril and silver."
+        }
+      ]
+    },
+    {
+      "id": 1615,
+      "name": "a mithril bracer",
+      "description": "A magical bracer made from mithril lies on the ground!",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "BG",
+      "wear_flags": "AM",
+      "weight": 12,
+      "cost": 20,
+      "condition": "1540",
+      "values": [
+        4,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1616,
+      "name": "a dark blue cloak",
+      "description": "A valuable cloak of dark blue cloth lies on the floor.",
+      "material": "oldstyle",
+      "item_type": "clothing",
+      "extra_flags": "AG",
+      "wear_flags": "AC",
+      "weight": 0,
+      "cost": 20,
+      "condition": "100",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": 6
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1621,
+      "name": "a dark red potion",
+      "description": "A dark red potion rests on the ground.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "AG",
+      "wear_flags": "AO",
+      "weight": 5,
+      "cost": 10,
+      "condition": "320",
+      "values": [
+        9,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1651,
+      "name": "a bronze chest",
+      "description": "There is a sturdy bronze chest in the corner.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 100,
+      "condition": "100",
+      "values": [
+        30,
+        0,
+        0,
+        10,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1652,
+      "name": "a barrel of ale",
+      "description": "There is a small barrel in one corner.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 80,
+      "condition": "10",
+      "values": [
+        150,
+        2,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1691,
+      "name": "the twin towers key",
+      "description": "There is a shiny skeleton key on the ground here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1692,
+      "name": "a strange key",
+      "description": "There is a very strange-looking key on the ground here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "AG",
+      "wear_flags": "AO",
+      "weight": 12,
+      "cost": 10,
+      "condition": "750",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "strange key",
+          "description": "This key is of an unusual shape ... must go to an unusual lock!"
+        }
+      ]
+    },
+    {
+      "id": 1701,
+      "name": "a short bow",
+      "description": "A short bow has been carelessly left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 5,
+      "cost": 50,
+      "condition": "730",
+      "values": [
+        0,
+        2,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "short bow",
+          "description": "It looks like the bows used by rustin hunters.\n"
+        }
+      ]
+    },
+    {
+      "id": 1702,
+      "name": "a long bow",
+      "description": "A long bow has been foolishly abandoned here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 12,
+      "cost": 70,
+      "condition": "220",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 5
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1704,
+      "name": "an ancient long sword",
+      "description": "An ancient long sword has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "BG",
+      "wear_flags": "AN",
+      "weight": 19,
+      "cost": 100,
+      "condition": "2500",
+      "values": [
+        0,
+        2,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1711,
+      "name": "a fur cap",
+      "description": "A fur cap lies here on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 0,
+      "cost": 10,
+      "condition": "168",
+      "values": [
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1712,
+      "name": "a pair of travelling boots",
+      "description": "A sturdy pair of travelling boots lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AG",
+      "weight": 12,
+      "cost": 20,
+      "condition": "880",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1713,
+      "name": "a bronze ring",
+      "description": "A ring of etched bronze gleams dimly on the ground.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 5,
+      "cost": 10,
+      "condition": "55",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 5
+        }
+      ],
+      "extra_descriptions": []
+    }
+  ]
+}

@@ -1,0 +1,3421 @@
+{
+  "area": {
+    "vnum": 6000,
+    "name": "Haon Dor",
+    "filename": "haon.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 6000,
+      "name": "The edge of the forest",
+      "description": "You are standing at the eastern edge of a big forest.  To the east is the West\nGate of Midgaard and to the west is a narrow trail, leading in through the\nforest.  A dimly lit path leads north.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1100,
+          "description": "You see a dimly lit path.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3052,
+          "description": "You see the West Gate of the City of Midgaard.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6001,
+          "description": "You see the narrow forest trail winding westwards in between the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are quite tall considering most of them appear to be quite young.\nOn one of the trees, crude letters forming the word \"Haon-Dor\" have been\ncarved into the bark.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The forest trail winds westwards through the trees.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6001,
+      "name": "A trail through the light forest",
+      "description": "You are on a trail leading through the forest.  To the east is the forest edge\nand to the west, the trail leads further into the forest.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6000,
+          "description": "The trail continues eastwards out of the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6002,
+          "description": "You see the narrow forest trail winding westwards in between the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "birds insects animals",
+          "description": "Very cute little creatures, they seem to enjoy life.\n"
+        },
+        {
+          "keyword": "tree trees",
+          "description": "The trees here are quite young and fresh.  They seem to accommodate many kinds\nof birds, insects and other small animals.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The forest trail winds east-west through the trees.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6002,
+      "name": "A trail through the light forest",
+      "description": "You are on a narrow trail leading east and west through the forest.  To the\nwest, the forest gradually becomes more dense.  A small forest path leads\nsouth.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6001,
+          "description": "The trail continues eastwards through the young trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6011,
+          "description": "The small path leads south through the young trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6003,
+          "description": "You see the narrow forest trail winding westwards into the dense forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The young, slender trees look beautiful, their fresh, green leaves moving\nlightly in the wind.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The forest trail winds east-west through the trees.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6003,
+      "name": "A trail through the dense forest",
+      "description": "You are on a trail leading east and west through the dense forest.  To the\neast, the forest gradually seems to become lighter.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6002,
+          "description": "The trail continues eastwards to the younger part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6004,
+          "description": "You see the narrow trail winding westwards through the dense forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The dense crowns of the mature trees leave only a fraction of the sky to be\nseen through the leaves.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The forest trail seems almost fragile compared to the massive trunks.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6004,
+      "name": "A trail through the dense forest",
+      "description": "You are on a trail leading east and west through the dense forest.  To the\nwest, the trees are so huge and their crowns so dense that forest remains in\ntotal darkness.  A small path leads south through the trees.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6003,
+          "description": "The trail continues eastwards through the dense forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6005,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6100,
+          "description": "The narrow trail almost seems to disappear between the enormous trunks.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The crowns of the old trees almost cut out all light.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The forest trail seems almost fragile compared to the massive trunks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6005,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues north and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6004,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6006,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6006,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6005,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6007,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6007,
+      "name": "An intersection in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The forest\ngradually lightens to the east.  Paths lead east, west and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6008,
+          "description": "You can barely make out a clearing to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6012,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6006,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6008,
+      "name": "The forest clearing",
+      "description": "You are in a clearing in the forest.  Lots of fresh stumps of varying sizes\nprotrude from the ground and heavy logs are stacked neatly in a big pile\nsupported by stakes set into the ground.  Paths lead north, east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6011,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6009,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6007,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "stump stumps",
+          "description": "There are more stumps than logs and some of the stumps are partly covered in\nmoss.\n"
+        },
+        {
+          "keyword": "stake stakes",
+          "description": "The stakes keep the logs from rolling down.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        },
+        {
+          "keyword": "log logs",
+          "description": "Even though the logs have been chopped to shorter pieces, they are quite heavy\nas they are fresh and still filled with sap.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6009,
+      "name": "Outside a small cabin in the forest",
+      "description": "You are outside a small cabin built entirely from heavy logs.  There is a\nwooden door to the north and small paths lead west and south through the trees.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6010,
+          "description": "The wooden door is quite sturdy but does not appear to be equipped with a lock.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6014,
+          "description": "The small path leads south through the dense forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6008,
+          "description": "The small path leads west through the light forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are fairly young, not much more than a hundred years or so.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The path is probably used by the cabin's inhabitants.\n"
+        },
+        {
+          "keyword": "cabin logs",
+          "description": "It looks simple but comfortable and the slender trees make the whole place seem\npretty idyllic.  It's a cabin built from logs.  Wooden logs, not system logs.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6010,
+      "name": "Inside the cabin",
+      "description": "You are inside a small one-room cabin made entirely from heavy logs.  It is\nvery sparsely furnished, containing only most basic housekeeping equipment,\nsuch as a bed, a chair and a table.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6009,
+          "description": "The wooden door leads south.\n",
+          "keyword": "door wooden",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "table",
+          "description": "A heavy table that doesn't even appear to rock.\n"
+        },
+        {
+          "keyword": "chair",
+          "description": "It is made from oak and looks strong and sturdy.\n"
+        },
+        {
+          "keyword": "bed",
+          "description": "It is definitely not the most comfortable bed you have seen in your life.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6011,
+      "name": "A small path through the light forest",
+      "description": "You are on a small path leading through the forest.  The trees are tall and\nslender.  Paths lead north and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6002,
+          "description": "The path leads north through the young trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6008,
+          "description": "The path leads south through the young trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are fairly young, not much more than a hundred years or so.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6012,
+      "name": "An intersection in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest floor in an unreal twilight illumination.  Paths\nlead north, east and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6007,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6013,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6021,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6013,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6014,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6012,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6014,
+      "name": "An intersection in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The forest gradually\nlightens to the north.  Paths lead north, east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6009,
+          "description": "The path leads north to a lighter part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6015,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6013,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The crowns of the old trees leave the forest in an unreal twilight\nillumination.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6015,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6016,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6014,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6016,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues north and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6015,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6017,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6017,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The forest seems to\nbecome lighter to the west.  The path continues north and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6016,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6018,
+          "description": "The small path leads west through the trees to a lighter part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The crowns of the old trees leave the forest in an unreal twilight\nillumination.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6018,
+      "name": "An intersection in the light forest",
+      "description": "You are on a small path leading through the forest.  A path leads north to a\nsmall field and other paths lead east and west into the dense forest.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6023,
+          "description": "The path leads north to a small, grassy field.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6017,
+          "description": "The path leads east to a dense part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6019,
+          "description": "The path leads west to a dense part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The tall trees are young and slender, not much more than a hundred years or so.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6019,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The forest seems to\nbecome lighter to the east.  The path continues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6020,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6018,
+          "description": "The small path leads east through the trees to a lighter part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The crowns of the old trees leave the forest in an unreal twilight\nillumination.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6020,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  The crowns of the\nold trees leave the forest in an unreal twilight illumination.  The path\ncontinues south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6019,
+          "description": "The small path leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6021,
+          "description": "The small path leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees",
+          "description": "The trees are mostly old beeches and oaks.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6021,
+      "name": "A small path in the dense forest",
+      "description": "You are on a small path leading through the dense forest.  To the west there is\na cave entrance.  The path continues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6012,
+          "description": "The small path leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6020,
+          "description": "The small path leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6022,
+          "description": "The cave is very dark.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "cave entrance",
+          "description": "The irregular opening is eight feet wide and six feet tall.  An acrid smell\nemanates from within.\n"
+        },
+        {
+          "keyword": "tree trees",
+          "description": "The crowns of the old trees leave the forest in an unreal twilight\nillumination.\n"
+        },
+        {
+          "keyword": "path paths",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6022,
+      "name": "Inside the cave",
+      "description": "You are in a natural cave.  Various sorts of debris cover the stone floor,\nemitting a rather unpleasant smell that makes the air thick and hard to\nbreathe.  The only obvious exit is east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6021,
+          "description": "The cave opening is to the east.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "air smell",
+          "description": "Kind of transparent, but quite noticeable nevertheless.\n"
+        },
+        {
+          "keyword": "cave walls floor stone",
+          "description": "Quite uninteresting.\n"
+        },
+        {
+          "keyword": "debris",
+          "description": "It consists mostly of gnawed bones mixed with small pieces of torn fur.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6023,
+      "name": "On a small, grassy field",
+      "description": "You are in a small, grassy field somewhere in the forest.  The tall grass\nnearly reaches your waist, and the surrounding oaks and beeches form an almost\nwall-like thicket on all sides of the field.  A small path leads south through\nthe trees.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6018,
+          "description": "The small path leads south in between the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees thicket",
+          "description": "The trees form a close thicket.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The narrow path is probably used by the animals living in the forest.\n"
+        },
+        {
+          "keyword": "grass",
+          "description": "The tall grass makes a nice hiding place for animals.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6100,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a narrow trail winding its way between the enormous, grey trunks.\nThe crowns of the trees must be very dense, as they leave the forest floor in\nutter darkness.  The trail leads east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6004,
+          "description": "The narrow trail leads east to a somewhat lighter part of the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6101,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6101,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nwhose grey trunks remind you of ancient pillars in a enormous, deserted hall.\nTo the south, a frail path leads away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6100,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6104,
+          "description": "The path leads south - away from the trail.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6102,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6102,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6101,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6103,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6103,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are where the dusty trail bends, as to avoid conflict with a colossal\ntrunk to the west.  Not a sound is to be heard - everything is ominously quiet.\nThe trail leads east and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6150,
+          "description": "You see a dark trail north.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 6102,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6108,
+          "description": "The narrow, dusty trail leads south through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "trees trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6104,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  You feel as if\nthe ancient trees observe you in watchful silence.  The path continues north\nand south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6101,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6105,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6105,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The path continues north and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6104,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6106,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6106,
+      "name": "A junction in the deep, dark forest",
+      "description": "You are by a junction where three paths meet.  Ancient grey trees tower above\nyou on all sides.  Paths lead east, south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6105,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6117,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6107,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path paths",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6107,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The path continues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6108,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6106,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6108,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads north and west and to the south,\na frail path leads away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6103,
+          "description": "The narrow, dusty trail leads north through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6107,
+          "description": "The path leads south - away from the trail.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6109,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6109,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6108,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6110,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6110,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way between huge, ancient trees that stand\nclose on all sides.  The trail leads east and south.  To the north, a narrow\npath leads away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6144,
+          "description": "The narrow path leads west between the giant trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6109,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6111,
+          "description": "The narrow, dusty trail leads south through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "Some of the trunks to the west are covered in a thin, almost transparent\nsubstance.  It looks like small threads woven carefully together.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6111,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way north-south between huge, ancient\ntrees that loom ominously above you.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6110,
+          "description": "The narrow, dusty trail leads north through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6112,
+          "description": "The narrow, dusty trail leads south through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6112,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads north and west and to the east,\na frail path leads away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6111,
+          "description": "The narrow, dusty trail leads north through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6113,
+          "description": "The path leads east - away from the trail.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6127,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6113,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom in all directions.  The path continues south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6114,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6112,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6114,
+      "name": "A junction in the deep, dark forest",
+      "description": "You are by a junction where three paths meet.  Ancient grey trees tower above\nyou on all sides.  Paths lead north, east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6113,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6115,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6122,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path paths",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6115,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  You feel as\nif the ancient trees observe you in watchful silence.  The path continues north\nand west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6116,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6114,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6116,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Giant, grey\ntrees loom ominously on all sides.  The path continues east and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6117,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6115,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6117,
+      "name": "A junction in the deep, dark forest",
+      "description": "You are by a junction where three paths meet.  Ancient, grey trees seem to\nobserve you silently you from all sides.  Paths lead north, east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6106,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6118,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6116,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path paths",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6118,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The path continues south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6119,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6117,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6119,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Huge, ancient\ntrees are on all sides.  The path continues north and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6118,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6120,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "You feel as if they are watching you.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6120,
+      "name": "On the river bank in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  To the south a\nfast river is flowing westwards through the forest.  Ancient grey trees loom on\nboth banks.  The path continues north and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6119,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6121,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "bank banks tree trees trunk trunks",
+          "description": "The ancient crowns of trees on both banks reach together forming a dense roof\nabove the dark river.\n"
+        },
+        {
+          "keyword": "river",
+          "description": "The river flows fast and strong.  It is black or looks so in the gloom.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6121,
+      "name": "A dead end path on the river bank in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  The ancient\ntrees stand so close that the path disappears between the dusty roots.  To the\nsouth a dark river flows from east to west.  The only exit appears to be east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6120,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "bank banks tree trees trunk trunks",
+          "description": "The ancient crowns of trees on both banks reach together forming a dense roof\nabove the dark river.\n"
+        },
+        {
+          "keyword": "river",
+          "description": "The river flows fast and strong.  It is black or looks so in the gloom.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6122,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Giant, grey\ntrees loom ominously all around.  The path continues east and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6114,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6123,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6123,
+      "name": "A junction on the river bank in the deep, dark forest",
+      "description": "You are by a junction where three paths meet.  Ancient, grey trees seem to\nobserve you silently you from all around.  To the south a dark river flows from\neast to west through the forest.  Paths lead north, east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6122,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6124,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9774,
+          "description": "You see a dark river.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6125,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path paths",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "bank banks tree trees trunk trunks",
+          "description": "The ancient crowns of trees on both banks reach together forming a dense roof\nabove the dark river.\n"
+        },
+        {
+          "keyword": "river",
+          "description": "The river flows fast and strong.  It is black or looks so in the gloom.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6124,
+      "name": "A dead end path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  The ancient\ntrees stand so close that the path disappears between the dusty roots.  To the\nsouth a dark river flows from east to west.  The only exit appears to be west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2801,
+          "description": "It stinks in there.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6123,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "bank banks tree trees trunk trunks",
+          "description": "The ancient crowns of trees on both banks reach together forming a dense roof\nabove the dark river.\n"
+        },
+        {
+          "keyword": "river",
+          "description": "The river flows fast and strong.  It is black or looks so in the gloom.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6125,
+      "name": "A small path on the river bank in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom everywhere.  To the south you smell marsh gas.  The path continues\nnorth and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6126,
+          "description": "The narrow path winds its way through the trees to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6123,
+          "description": "The narrow path winds its way through the trees to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8301,
+          "description": "You smell marsh gas.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "bank banks tree trees trunk trunks",
+          "description": "The ancient crowns of trees on both banks reach together forming a dense roof\nabove the dark river.\n"
+        },
+        {
+          "keyword": "river",
+          "description": "The river flows fast and strong.  It is black or looks so in the gloom.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6126,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way between huge, ancient trees standing\nclose on all sides.  The trail leads north and west, and to the south a frail\npath leads away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6127,
+          "description": "The narrow, dusty trail leads north through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6125,
+          "description": "The path leads south - away from the trail.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6128,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The path seems fragile and unsafe compared to the enormous trunks that loom\naround it.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6127,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads east and south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6112,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6126,
+          "description": "The narrow, dusty trail leads south through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6128,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6126,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6129,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6129,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6128,
+          "description": "The narrow, dusty trail leads east through the forest.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6135,
+          "description": "The narrow, dusty trail leads west through the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "These ancient trees must have been here for many, many years.  It is impossible\nto catch even a glimpse of anything above the lowest branches.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6130,
+      "name": "A narrow trail through the deep, dark forest",
+      "description": "You are on a dusty trail winding its way westwards just below huge sticky\nwires suspended like ropes between the trees.  To the west the path seems to\nbe completely covered in a giant web made from huge threads covered with glue.\nThis place gives you the creeps.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6144,
+          "description": "The narrow, dusty trail leads east through the forest, away from the web.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6131,
+          "description": "The structure to the west looks most of all like an immense spider web.\nIt does not look as if you can go further without getting caught in it.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 6132,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "substance wire wires rope ropes tree trees trunk trunks",
+          "description": "The sticky substance is hanging like ropes between the ancient trees, crossing\nthe path just out of reach.  It might be possible to climb one of the sticky\ntrunks.\n"
+        },
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6131,
+      "name": "The spider web",
+      "description": "You are walking along the narrow path, ducking under the sticky ropes as you\nadvance...\n>\nA huge, poisonous spider drops from above!\nA huge, poisonous spider drops from above!\nA huge, poisonous spider drops from above!\n>\nThe huge, poisonous spider stings you!  You resist the poison!\nThe huge, poisonous spider stings you!  You are poisoned!\nThe huge, poisonous spider stings you!  You are poisoned!\n>\nYou've fallen, and you can't get up!!!!!\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6132,
+      "name": "Up in the tree",
+      "description": "You are hanging on the outside of a huge tree trunk covered in a sticky\nsubstance.  Directly to the west is an immense spider web suspended between\nnumerous of the giant trees including the one you are hanging on.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 6133,
+          "description": "To the west is the immense spider web.  It seems to move softly.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 6130,
+          "description": "Downwards is the narrow forest path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "web",
+          "description": "The spider web stretches out to the west.  It looks as if it is possible to\nwalk on it.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6133,
+      "name": "On the spider web",
+      "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place.  To the east is a giant tree trunk and to the west is an entrance\nto a cave-like structure made from many layers of spider web.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6200,
+          "description": "The web continues to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6132,
+          "description": "To the east is the giant tree trunk.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6134,
+          "description": "To the west is the entrance to the cave-like structure.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "cave structure",
+          "description": "It covers a ground area corresponding to an irregular circle with a diameter of\nabout 20 feet and is nearly 10 feet tall.  It looks very old.\n"
+        },
+        {
+          "keyword": "web",
+          "description": "The immense spider web moves softly.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6134,
+      "name": "The Den of the Queen Spider",
+      "description": "You are inside a cave-like structure that seems to be made entirely from\ncountless layers of spider web.  Temperature and humidity is very high making\nit hard to breathe the foul air that lingers here.  The walls are covered with\nopen cocoons.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6133,
+          "description": "Compared to this place the east exit looks inviting.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "cocoon cocoons",
+          "description": "The cocoons are burst open as if something inside really wanted to get out.\nThey are at the size of a human head.\n"
+        },
+        {
+          "keyword": "web wall walls",
+          "description": "The sticky walls are covered with open cocoons.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6135,
+      "name": "A dusty trail in the deep, dark forest",
+      "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The trail continues north and east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6136,
+          "description": "The dusty trail leads north through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6129,
+          "description": "The dusty trail leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6136,
+      "name": "A dusty trail in the deep, dark forest",
+      "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The trail continues south and west.  A broad\nirregular path leads eastwards away from the trail.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6142,
+          "description": "The trees standing on the sides of the path have scratch marks on them.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6135,
+          "description": "The dusty trail leads south through the trees.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6137,
+          "description": "The dusty trail leads west through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "trail",
+          "description": "The dark and dusty trail seems fragile compared to the massive trunks, and in\nsome places, giant grey roots have broken up through its surface.\n"
+        },
+        {
+          "keyword": "path",
+          "description": "The trees standing on the sides of the path have scratch marks on them.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "To the east the ancient grey giants have many marks as if something with huge\nclaws has been tearing at them in rage.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6137,
+      "name": "At the end of the trail through the deep, dark forest",
+      "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  You see a dark grove north of you.\nThe only other exit is east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1300,
+          "description": "You see a dark grove north.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 6136,
+          "description": "The dusty trail leads east through the trees.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6142,
+      "name": "Outside a cave in the deep, dark forest",
+      "description": "You are at the end of a broad, irregular path.  To the north is a very large\nominous-looking cave opening.  The trees here have many marks as if something\nwith huge claws has been tearing at them in rage.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6143,
+          "description": "The disgusting smell of a large reptile emanates from the cave opening.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6136,
+          "description": "The path winds its way westwards.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "cave opening",
+          "description": "The disgusting smell of a large reptile emanates from the cave opening.\n"
+        },
+        {
+          "keyword": "tree trees",
+          "description": "The ancient grey giants have many marks as if something with huge claws has\nbeen tearing at them in rage.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6143,
+      "name": "The cave of the Green Dragon",
+      "description": "You are in a big natural cave.  The floor is littered with bones of all sorts\nand the stench is so massive that you could cut it with a knife.  The only exit\nis to the south.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6142,
+          "description": "The exit leads out into the forest.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "bone bones floor",
+          "description": "Most of the bones on the floor appear to be of human origin.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6144,
+      "name": "A small path in the deep, dark forest",
+      "description": "You are on a narrow path leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The tree trunks here seem to be covered in some\nsticky substance.  The path continues south and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6110,
+          "description": "The narrow path winds its way through the trees to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6130,
+          "description": "The narrow path winds its way through the trees to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "path",
+          "description": "The path seems all too frail.  One of the giant roots could probably crush it\nin a single blow.\n"
+        },
+        {
+          "keyword": "tree trees trunk trunks",
+          "description": "The ancient grey giants seem to observe you silently.\n"
+        },
+        {
+          "keyword": "substance rope ropes thread threads",
+          "description": "The substance reminds you of giant threads covered with glue.  If it had not\nbeen for the size you could have sworn it was part of a spider web.\n"
+        }
+      ],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6150,
+      "name": "The narrow trail.",
+      "description": "This trail looks much spookier than any other thats you have seen.  The usual\nanimal claw marks and bites on the trees are getting far and few between. The\ntrail continues north.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6151,
+          "description": "the narrow trail continues north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6103,
+          "description": "the trail intersects the main forest path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6151,
+      "name": "The narrow trail.",
+      "description": "This area of the trail is also very peculiar.  You can see no signs of animal\nlife what so ever.  The structure of the surrounding trees forces the path to\nmake a sharp turn to the east.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6152,
+          "description": "the trail bends east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6150,
+          "description": "the start of the trail.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6152,
+      "name": "The circle of trees.",
+      "description": "The trees here seem to form a circle around a HUGE tree that is in the center\nof them.  You notice a wooden door carved into the huge tree to the east.  The\ntrail that you followed to get here seems to end at the base of the tree.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6153,
+          "description": "The tree door is carved beautifully.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6151,
+          "description": "the bend on the trail.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6153,
+      "name": "Inside the great tree.",
+      "description": "You have stepped inside of this hollowed tree.  From here steps lead down into\ndarkness or you can exit the tree by going west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 6152,
+          "description": "the door is carved beautifully.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 6154,
+          "description": "The steps look appear like they will hold your weight.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6154,
+      "name": "The underground hallway.",
+      "description": "This hallway is apparently one of the roots of the tree hollowed out.  The hall\nleads south to a room where you hear strange noises or you can go up the steps.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6155,
+          "description": "the hallway looks quite grand.\n",
+          "flags": "1",
+          "key": -1
+        },
+        "up": {
+          "to_room": 6153,
+          "description": "the steps appear like they will hold your weight.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    },
+    {
+      "id": 6155,
+      "name": "The cultist temple.",
+      "description": "This temple is built to some god that you don't worship.  It is a nice place\nto visit but you feel very uncomfortable about spending much time here.\nThe wooden altar seems almost to glow as you enter the room.  The only exit is\nthe way you came in.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6154,
+          "description": "the hallway looks quite grand.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6000
+    }
+  ],
+  "mobs": [
+    {
+      "id": 6000,
+      "name": "John the Lumberjack",
+      "player_name": "oldstyle john lumberjack",
+      "long_description": "John the Lumberjack is here, looking for some trees to chop down.\n",
+      "description": "He is six feet tall and looks quite strong, muscles bulging under his heavy,\nchequered shirt.  His features are worn with hard work and his expression is\none of a peaceful man leading a simple life.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 350,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6002,
+      "name": "the brown bear",
+      "player_name": "oldstyle bear",
+      "long_description": "A big, brown, angry-looking bear is here.\n",
+      "description": "The bear is a big, brown, furry animal with very large claws and very sharp\nteeth.  It doesn't resemble those cute little thingies from toy shops at all.\n",
+      "race": "bear",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -50,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "FNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sleep",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6003,
+      "name": "the ferocious rabbit",
+      "player_name": "oldstyle rabbit",
+      "long_description": "A ferocious rabbit is here, glaring hungrily at you.\n",
+      "description": "This small, furry creature with long ears and big feet has been attacked by\nthe dreaded rabbit rabies, a horrible disease that turns helpless and innocent\nrabbits into ferocious and bloodthirsty monsters.\n",
+      "race": "rabbit",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -150,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sleep",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6004,
+      "name": "the fallow deer",
+      "player_name": "oldstyle deer",
+      "long_description": "A fallow deer is grazing peacefully here.\n",
+      "description": "She is a graceful creature on long, slender legs, and with large, brown eyes\nlooking back at you with an air of watchful interest.\n",
+      "race": "human",
+      "act_flags": "ABEGI",
+      "affected_by": "D",
+      "alignment": 350,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d7+21",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6005,
+      "name": "the brown fox",
+      "player_name": "oldstyle fox",
+      "long_description": "A brown fox is here, looking for some rabbits to chew up.\n",
+      "description": "It is a large fox with beautiful, red-brown fur and a long, thick brush.\n",
+      "race": "fox",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": -50,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d7+21",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6100,
+      "name": "the vicious warg",
+      "player_name": "oldstyle warg vicious",
+      "long_description": "A vicious warg is here, snarling angrily at you.\n",
+      "description": "It is an exceptionally large wolf with thick, black fur.  Saliva is dripping\nquickly from its long, white fangs.  It looks quite dangerous and very angry.\n",
+      "race": "human",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -350,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6101,
+      "name": "the ferocious warg",
+      "player_name": "oldstyle warg ferocious",
+      "long_description": "A ferocious warg is here, snarling angrily at you.\n",
+      "description": "It is an exceptionally large wolf with thick, black fur.  Saliva is dripping\nquickly from its long, white fangs.  It looks quite dangerous and very angry.\n",
+      "race": "human",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -350,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6102,
+      "name": "the large, grey wolf",
+      "player_name": "oldstyle wolf grey",
+      "long_description": "A large, grey wolf is here, glaring hungrily at you.\n",
+      "description": "The large, grey wolf eyes you with interest while licking its lips.\n",
+      "race": "wolf",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -150,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6103,
+      "name": "the large, black wolf",
+      "player_name": "oldstyle wolf black",
+      "long_description": "A large, black wolf is here, glaring hungrily at you.\n",
+      "description": "The large, black wolf eyes you with interest while licking its lips.\n",
+      "race": "wolf",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": -150,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6112,
+      "name": "the huge, green dragon",
+      "player_name": "oldstyle dragon green",
+      "long_description": "A huge green dragon is here, its narrow yellow eyes glowing with rage.\n",
+      "description": "This enormous winged serpent has dark green scales covering most of its\ncolossal body.  Numerous holes in its heavy wings tell of many fights as does\nthe nicks in the horns on its head.  It smells as disgusting as only dragons\ndo.\n",
+      "race": "dragon",
+      "act_flags": "ABFG",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6115,
+      "name": "Shargugh",
+      "player_name": "oldstyle shargugh brownie",
+      "long_description": "Shargugh the Forest Brownie is here, grinning broadly at you.\n",
+      "description": "This little fellow is only three foot tall with wild matted brown hair and long\ntangled brown beard.  He wears ragged brown and green clothing and looks as if\nhe is having great fun.\n",
+      "race": "human",
+      "act_flags": "ACEH",
+      "affected_by": "BDP",
+      "alignment": 1000,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6116,
+      "name": "the elder druid",
+      "player_name": "oldstyle elder druid",
+      "long_description": "The elder druid is here ... he looks very upset at your presence in his home.\n",
+      "description": "The druid looks quite old.  You would think him venerable, but you know\nhe would be a tough foe.\n",
+      "race": "human",
+      "act_flags": "ABCFQ",
+      "affected_by": "D",
+      "alignment": 0,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "17d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 6000,
+      "name": "a lumber axe",
+      "description": "A heavy lumber axe lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 8,
+      "cost": 100,
+      "condition": "820",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "axe lumber",
+          "description": "It is a heavy axe of the kind lumberjacks use to chop down trees.\n"
+        }
+      ]
+    },
+    {
+      "id": 6001,
+      "name": "a chequered shirt",
+      "description": "A chequered shirt lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 3,
+      "cost": 20,
+      "condition": "610",
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "shirt",
+          "description": "It is an extra large, chequered shirt made from heavy cloth.\n"
+        }
+      ]
+    },
+    {
+      "id": 6002,
+      "name": "a pair of leather boots",
+      "description": "A pair of leather boots lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AG",
+      "weight": 3,
+      "cost": 40,
+      "condition": "310",
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "boots",
+          "description": "They are fashioned from rough leather that has been oiled frequently to make\nit stay waterproof.  They look worn but quite functional.\n"
+        }
+      ]
+    },
+    {
+      "id": 6003,
+      "name": "a fireplace",
+      "description": "A fireplace made from stone is set against the east wall.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        200,
+        0,
+        0,
+        200,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "fireplace",
+          "description": "It is fashioned from stones of various sizes that have been stacked on top of\neach other and fastened with mortar.  Its chimney is constructed likewise and\nleads the smoke out through the low cabin ceiling.\n"
+        }
+      ]
+    },
+    {
+      "id": 6005,
+      "name": "a wooden chest",
+      "description": "A wooden chest stands in the corner.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 400,
+      "condition": "100",
+      "values": [
+        100,
+        0,
+        6006,
+        20,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "chest",
+          "description": "It is a robust chest made from short, heavy planks that have been fastened\ntogether with tenons.  It is equipped with a simple brass lock.\n"
+        }
+      ]
+    },
+    {
+      "id": 6006,
+      "name": "a small brass key",
+      "description": "A small brass key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        6005,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key",
+          "description": "It is a small, simple brass key with no inscriptions or marks of any kind.\n"
+        }
+      ]
+    },
+    {
+      "id": 6007,
+      "name": "a heap of silver coins",
+      "description": "Some silver coins lie piled up in a heap on the floor.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        89,
+        1,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "coins",
+          "description": "The coins seem to be gold.  They are obviously valuable.\n"
+        }
+      ]
+    },
+    {
+      "id": 6010,
+      "name": "some blackberries",
+      "description": "Some blackberries grow on a bush nearby.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        3,
+        3,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "blackberries",
+          "description": "They look very tasty indeed.\n"
+        }
+      ]
+    },
+    {
+      "id": 6011,
+      "name": "a mushroom",
+      "description": "A small mushroom grows nearby.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        6,
+        6,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "mushroom",
+          "description": "It is a tasty little thing.\n"
+        }
+      ]
+    },
+    {
+      "id": 6013,
+      "name": "the barrel",
+      "description": "A water barrel has been left here.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 200,
+      "condition": "20",
+      "values": [
+        256,
+        256,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6102,
+      "name": "a colossal tree",
+      "description": "A colossal tree blocks the way westwards.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        1000,
+        0,
+        0,
+        400,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "opening",
+          "description": "The opening is far too narrow for you to squeeze through but it looks as if the\ntree is hollow.\n"
+        },
+        {
+          "keyword": "tree",
+          "description": "This enormous tree must be a thousand years old.  Its rough bark looks grey\nand pale and is decorated with scratches and claw marks.  On its west side is a\nsmall opening just above ground level.\n"
+        }
+      ]
+    },
+    {
+      "id": 6103,
+      "name": "a long, grey branch",
+      "description": "A long, grey branch rests heavily on the ground.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 200,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        25,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6104,
+      "name": "a long, grey branch",
+      "description": "A long, grey branch rests heavily on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 6,
+      "cost": 300,
+      "condition": "290",
+      "values": [
+        0,
+        2,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6105,
+      "name": "a long, grey branch",
+      "description": "A long, grey branch rests heavily on the ground.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 400,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6106,
+      "name": "a toadstool",
+      "description": "A large toadstool grows nearby.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        12,
+        12,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "toadstool",
+          "description": "It is a large, brown boletus that must weigh nearly five pounds.  The top\nsurface is covered in a thin layer of transparent slime that emits a weak,\nmusty smell.  Not the most delicious thing you have seen.\n"
+        }
+      ]
+    },
+    {
+      "id": 6107,
+      "name": "a toadstool",
+      "description": "A large toadstool grows nearby.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        12,
+        12,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "toadstool",
+          "description": "It is a large, brown boletus that must weigh nearly five pounds.  It has small\nwhite spots and the top surface is covered in a thin layer of transparent slime\nthat emits a weak, musty smell.  Not the most delicious thing you have seen.\n"
+        }
+      ]
+    },
+    {
+      "id": 6110,
+      "name": "a yellow potion",
+      "description": "A yellow potion has been left here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "G",
+      "wear_flags": "A",
+      "weight": 4,
+      "cost": 20,
+      "condition": "350",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion yellow",
+          "description": "It has a deep yellow colour and and a strong spicy smell.\n"
+        }
+      ]
+    },
+    {
+      "id": 6111,
+      "name": "a large round shield",
+      "description": "A large round shield has been left here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AJ",
+      "weight": 15,
+      "cost": 150,
+      "condition": "1760",
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "shield large",
+          "description": "It is made from hard wood that has been reinforced with heavy iron bands.\n"
+        }
+      ]
+    },
+    {
+      "id": 6112,
+      "name": "an iron crown",
+      "description": "An iron crown rests on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AE",
+      "weight": 15,
+      "cost": 100,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "crown iron",
+          "description": "It is a heavy human-sized crown made from solid iron.\n"
+        }
+      ]
+    },
+    {
+      "id": 6114,
+      "name": "an iron ring",
+      "description": "An iron ring has been left here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 0,
+      "cost": 10,
+      "condition": "50",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "ring iron",
+          "description": "It is a quite heavy human-sized ring made from solid iron.  It lacks\ndecorations of any kind.\n"
+        }
+      ]
+    },
+    {
+      "id": 6155,
+      "name": "the morning star",
+      "description": "The morning star is here collecting dust while it lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 15,
+      "cost": 100,
+      "condition": "750",
+      "values": [
+        0,
+        2,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

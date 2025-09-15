@@ -1,5 +1,7 @@
 from __future__ import annotations
 from mud.loaders import load_all_areas
+from mud.loaders.json_area_loader import load_all_areas_from_json
+from mud.loaders.json_loader import load_all_areas_from_json as load_enhanced_json
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry
 from mud.db.session import SessionLocal
 from mud.db import models
@@ -81,15 +83,28 @@ def models_to_obj(db_obj: models.ObjPrototype):
     )
 
 
-def initialize_world(area_list_path: str | None = "area/area.lst") -> None:
-    """Initialize world from files or database."""
+def initialize_world(area_list_path: str | None = "area/area.lst", use_json: bool = True) -> None:
+    """Initialize world from files or database.
+    
+    Args:
+        area_list_path: Path to area.lst file (for legacy .are loading)
+        use_json: If True, load from JSON files in data/areas/. If False, use legacy .are files.
+    """
     # Tiny fix: ensure a clean ban registry at boot and between tests.
     # ROM loads bans from disk at boot; tests may add bans in-memory.
     # Clearing here avoids leakage across test modules without affecting
     # persistence tests which explicitly save/load.
     bans.clear_all_bans()
+    
     if area_list_path:
-        load_all_areas(area_list_path)
+        if use_json:
+            # Load from JSON files using enhanced field mapping
+            from mud.loaders.json_loader import load_all_areas_from_json
+            json_areas = load_all_areas_from_json("data/areas")
+            # Areas are already registered in area_registry by the JSON loader
+        else:
+            # Load from legacy .are files
+            load_all_areas(area_list_path)
         link_exits()
         for area in area_registry.values():
             apply_resets(area)

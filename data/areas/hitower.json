@@ -1,0 +1,5036 @@
+{
+  "name": "High Tower",
+  "vnum_range": {
+    "min": 1300,
+    "max": 1499
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 1300,
+      "name": "Entrance to the Shadow Grove",
+      "description": "Before you, the grove of shadows lies. Giant grey trees are all that\ncan be seen through the thick shadows. A great sense of both power and\nmenace permeates the surrounding area. You have a strange urge to turn\nback and go back the way you've come.\nA small path leads north into the shadows and back south to the road.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1308,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 6137,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1301,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1307,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1302,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1304,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1303,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1302,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1311,
+          "description": "You see a small clearing in the shadows.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1303,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1305,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1301,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1303,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem the glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1309,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1301,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1306,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1302,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1304,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1301,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1305,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1307,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 2201,
+          "description": "Dark gates loom in the mist.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1305,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1302,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1306,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1308,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1304,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1306,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1303,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 9301,
+          "description": "You see a shadowy tavern.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1309,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1305,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1307,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1304,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1308,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1301,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1309,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1308,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll exits lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1305,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1309,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1300,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1307,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1309,
+      "name": "The Shadow Grove",
+      "description": "You are inside the shadow grove. Giant trees seem to glare at you\nfrom all sides. The shadowy mist obscures most of your vision. Strange\nsounds of moaning and growling come from all directions.\nAll directions lead into shadows, you are very confused.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1306,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1307,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1303,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1308,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1311,
+      "name": "A small clearing",
+      "description": "You are in a small clearing in the shadow grove. There is charred grass\nunderfoot, and the signs of fire here and there. It is almost as if the\nplant life shuns this spot. The shadowy mist hovers all around, obscuring\nyour view into the grove.\nA small path leads north to some shadowy structure. All other exits are\nshrouded in shadowy mist.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1312,
+          "description": "You can barely make out some sort of building to the north.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1302,
+          "description": "The shadows cloud your vision.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1312,
+      "name": "Entrance to the High Tower",
+      "description": "You have reached the entrance to the high tower of sorcery. The\ntower looms above you at an incredible height. It seems to disappear\ninto the storm clouds above.\nA diamond gate is to the north, guarded by a huge golem. The trail\nback south has disappeared behind you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1313,
+          "description": "The diamond gate looks incredibly strong.\n",
+          "keyword": "gate diamond",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1313,
+      "name": "Inside the High Tower of Sorcerery",
+      "description": "You are inside the high tower of sorcery. The sight is truly amazing.\nFrom here, it is obvious that somehow, the tower is much larger on the\ninside than it is on the outside. Young mages walk about, completely\noblivious to your presence.\nExits lead north to the common room, west to the dinning room, east to\na plain hallway and back south through the gate.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1314,
+          "description": "The common room looks quite busy and noisy.\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1315,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1312,
+          "keyword": "diamond gate",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1316,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1314,
+      "name": "Common Room",
+      "description": "You are in the common room. There are many apprentice warlocks here\ntalking and resting, playing games, comparing notes. Obviously they\nare taking a break from their rigorous studies. There are benches,\ntables and a small water fountain here, otherwise the room is quite\nunremarkable.\nExits lead off in all directions.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1317,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1318,
+          "description": "The mages bar can be seen to the east.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1313,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1319,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1315,
+      "name": "The Hallway",
+      "description": "You are in a long hallway, it seems rather unremarkable.\nThe hallway continues east and back west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1330,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1313,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1316,
+      "name": "Dining Room",
+      "description": "You are in the dining area of the student mages. From the number of\ntables and chairs here, you can see that this room could easily seat\nseveral hundred people. It is oddly deserted here, obviously not meal time.\nExits lead west to the kitchen, and back east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1313,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1320,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1317,
+      "name": "Dark Hallway",
+      "description": "You are in a dark hallway. It is apparent that this area is seldom\nused by the regular occupants of the tower. Dust covers the floors\nhere.\nThe faint outline of a trapdoor can be seen in the dust.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1314,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1321,
+          "keyword": "trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1318,
+      "name": "Mages Tavern",
+      "description": "You are in mages tavern. The air is smokey and filled with the smells\nof foreign food and drink. The other patrons pay you little heed, as\nthey obviously have more interesting things to contemplate. Strick the\nbartender is here waiting to take your order.\nThe only exit leads back west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1314,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1319,
+      "name": "The Magic Shop",
+      "description": "You are in the High Tower's store of magic. Tatorious stands behind\nthe counter, selling all sorts of herbs, parchment and other reagents\nused in magical studies.\nThe only exit leads back east to the common room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1314,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1320,
+      "name": "the kitchen",
+      "description": "You are in a small kitchen. All the usual kitchen type utensils and\nequipment is here, including some not so usual ones. Among the later,\na huge black oven against one wall, it must be at least 12 feet high.\nOpposite the oven is an equally enormous meat locker, large enough to\ncomfortably store several hapless adventurers no doubt. In the middle of\nthe room, hanging in mid-air is a spice rack.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1316,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1321,
+      "name": "Below the trapdoor",
+      "description": "You are below the trapdoor. It is very dark and dusty here, very little\nlight filters through from above. A faint sound of dripping water can be\nheard in the distance below.\nA rope ladder leads down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 1317,
+          "keyword": "trapdoor",
+          "flags": []
+        },
+        "down": {
+          "to_room": 1322,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1322,
+      "name": "A damp intersection",
+      "description": "You are in a damp intersection of what seems to be the basement of the\ntower. The sound of running water can be heard coming from the south,\nother than that, an almost tangible stillness fills the air.\nPassages lead off in all directions, and a ladder leads up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1323,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1324,
+          "description": "A faint light can be seen in the distance up the east passage.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1325,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1326,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1321,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1323,
+      "name": "A dark passage",
+      "description": "You are at the end of a dark passage which ends in a stout wooden door.\nOther then through the door, the only apparent exit is back the way you\ncame.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1327,
+          "keyword": "oak door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1322,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1324,
+      "name": "A dark passage",
+      "description": "You are at the end of a dark passage. A half opened door is to the east,\nshedding soft light around the edges. Faint snoring sounds can be heard\nbehind the door.\nExits lead east through the door, or back west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1328,
+          "keyword": "door",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1322,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1325,
+      "name": "The stagnant pool",
+      "description": "You are at the edge of a stagnant pool of water. The smell here is quite\nnauseating. This is apparently where the denizens of the tower dispose of\ntheir garbage. Faint gurgling can be heard from beneath the surface of the\npool.\nExits lead back north, or perhaps for the very adventurous, down into the\npool.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1322,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1329,
+          "description": "No light penetrates the gloom of the stagnant pool.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1326,
+      "name": "A dark passage",
+      "description": "You are in a dark passage, which comes to an abrupt stop at what appears\nto be a cave-in to the west. It is certainly unpassable, and perhaps quite\ndangerous just being this close.\nThe only exit leads back east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1322,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1327,
+      "name": "A dark cell",
+      "description": "You are in a dark cell. Straw and dirt cover the floors here, it is\nvery dark. Someone, or something seems to be chained to the far wall.\nThe only exit is back south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1323,
+          "keyword": "oak door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1328,
+      "name": "The Jailor's office",
+      "description": "You are in the Jailor's office. It is rather messy here. Judging by the\nsleeping form of the Jailor on duty, you can surmise that very few, if any\nprisoners survive long enough to spend much time in these dank dungeons.\nThe only exit leads back west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1324,
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1329,
+      "name": "Below the stagnant pool",
+      "description": "As you dive beneath the putrid waters, you feel a strong tug and a whirlpool\ndrags you under.  You are sucked into blackness.  You feel your lungs burst\nfrom lack of oxygen.  Just as you feel your life fading, you notice a change in\ndirection ... and are sucked under by a rip tide.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1330,
+      "name": "The hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1332,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1331,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1333,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1315,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1331,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1334,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1336,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1335,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1330,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1332,
+      "name": "A store room",
+      "description": "You are in a small store room. Assorted junk is piled on shelves or\nleaning against walls.\nThe only apparent exit it back south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1330,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1333,
+      "name": "A broom closet",
+      "description": "You are in a dark broom closet. Many straw brooms and other cleaning\ninstruments have been left here, apparently unused (perhaps the maid quit?).\nThe only exit leads back north to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1330,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1334,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a\nfaint magical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1338,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1337,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1331,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "walls wall",
+          "description": "The walls shed a warm light\n"
+        }
+      ],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1335,
+      "name": "Guardians chamber",
+      "description": "You are in the chamber of the tower guardians. It is rather sparsely\nfurnished, but then again the odd occupants don't look to need furniture.\nHere and there a disembodied pair of hands or eyes flits about.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1331,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1336,
+      "name": "A guest bedroom",
+      "description": "You are in a small guest bedroom. A small cot is in one corner, and a\ndusty mirror on one wall, other than that the room looks quite bare, and\nunused.\nThe only apparent exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1331,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "mirror",
+          "description": "Why, someone seems to be looking back at you from the other side!\n"
+        }
+      ],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1337,
+      "name": "A guest bedroom",
+      "description": "You are in a comfortable looking bedroom. A small globe of magical energy\nfloats overhead, providing light. A small cot is in one corner looking\never so comfortable, so comfortable in fact ...someone is sleeping in it.\nThe only apparent exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1334,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1338,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading from the south. The walls emit a faint\nmagical glow which provides enough light to see by.\nStairs lead up to the next level and the hallway leads back south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1339,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1334,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1340,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1339,
+      "name": "The burnt room",
+      "description": "You are in what looks to have once been a guest bed room. The walls are\nblackened and burnt by what you could only imagine to be magical fire.\nThere is no sign of the previous occupant, undoubtedly he left in a hurry.\nThe only exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1338,
+          "keyword": "door charred",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1340,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading west from here. The walls emit a faint\nmagical glow which provides enough light to see by. Some faint moonlight\ncan be seen in the culdesac to the east.\nThe hallway continues west and stairs lead down to the level below.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1342,
+          "keyword": "door oak",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1341,
+          "description": "Faint moonlight can be seen to the east\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1343,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1338,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1341,
+      "name": "A culdesac",
+      "description": "You are in a small culdesac. A window to the east is letting in moonlight\nand a pleasant breeze. Through it, the surrounding country side can be seen.\nThe only apparent exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1340,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "window east",
+          "description": "Stretching out as far as the eye can see is a canopy of dark tree tops\nwhich can only be the Haon-Dor-Dark Forest. A faint light in the distance\nto the northeast marks what is probably the city of midgaard.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1342,
+      "name": "The Apprentice's Barracks",
+      "description": "You are in the barracks of the apprentice magic users. Here and there, a\nyoung apprentice sits engrossed in magical study, or practicing a feeble\ncantrip. Cots line the walls, and the room continues west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1340,
+          "keyword": "door oak",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1344,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1343,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nThere is a door to the north, and the hallway continues west or back east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1344,
+          "keyword": "door oak",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1340,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1345,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1344,
+      "name": "The Apprentice's barracks",
+      "description": "You are in the barracks of the apprentice magic users. Here and there, a\nyoung apprentice sits engrossed in magical study, or practicing a feeble\ncantrip. Cots line the walls, and the room continues east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1342,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1343,
+          "keyword": "door oak",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1345,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by. Flashes of light can\nbe seen under the doorway to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1346,
+          "description": "A flash of blue light momentarily lights up the doors outline\n",
+          "keyword": "door oak",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1343,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1347,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1346,
+      "name": "The apprentice's workshop",
+      "description": "You are in a small workshop. Writing implements and parchment are strewn\nabout on a few worktables. In the far corner several young mages have a\nsmall kitten cornered and seem to be testing spells upon it.\nThe only apparent exit leads back south to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1345,
+          "keyword": "door oak",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1347,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\nThe hallway continues south and back east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1345,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1348,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1348,
+      "name": "The hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nThere is a closed metal door to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1347,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1350,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1349,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1349,
+      "name": "A classroom",
+      "description": "You are in a large classroom filled with bored looking students of the\nart. The instructor stops in his lecture on the fine uses of magic missile\nat your entry and lunges to attack you.\nThe only apparent exit is back east to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1348,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1350,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1348,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1351,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1352,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1351,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1350,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1353,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1354,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1352,
+      "name": "An empty classroom",
+      "description": "You are in an empty classroom. Some strange sigils are written on a\nblackboard which is floating in the air here. Other than a few desks,\nit is bare of furnishings.\nThe only apparent exit leads back east to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1350,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1353,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\nThe hallway continues east and north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1351,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1355,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1354,
+      "name": "An empty classroom",
+      "description": "You are in an apparently empty classroom. A strange feeling of being\nwatched comes over you, and you hear the faint rustle of robes.\nThe only apparent exit is back east to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1351,
+          "keyword": "door metal",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1355,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA sturdy iron door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1356,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1357,
+          "keyword": "door sturdy iron",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1353,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1356,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nThere is a large oaken door to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1358,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1359,
+          "keyword": "door large oaken",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1355,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1357,
+      "name": "The Amphitheater",
+      "description": "You are in a small amphitheater. Rows of comfortable looking chairs circle\na large podium. The echos of your footsteps seem very loud here.\nThe only apparent exit leads north to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1355,
+          "keyword": "door sturdy iron",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1358,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow providing enough light to see by.\nA small door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1360,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1361,
+          "keyword": "door small",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1356,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1359,
+      "name": "The training room",
+      "description": "You are in a large training room. It is filled with battle scared manikins\n, and many other devices used in the practice of fighting.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1356,
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1360,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\nThe hallway continues north and west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1362,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1358,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1361,
+      "name": "A dueling room",
+      "description": "You are in a large room used for duals arcane. The walls, ceiling and\nfloor all bare the scars of many fiery spells, but still look quite strong\nand hold fast.\nThe only exit leads north to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1358,
+          "keyword": "door small",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1362,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA doorway can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1363,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1364,
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1360,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1363,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA wooden door can been seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1366,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1365,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1362,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1364,
+      "name": "The spellmaster's lounge",
+      "description": "You are in a large comfortable looking lounge. Off duty spell teachers\nare here relaxing in their idle time. A large coffee machine is against\nthe far wall.\nThe only apparent exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1362,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1365,
+      "name": "A bedroom",
+      "description": "You are in a large, plush bedroom. The owner is obviously someone of high\nstanding in the magical community here. An ice mirror is on one wall, and\na scrying globe sit on a stand in the middle of the room. An enormous bed\ncan be seen floating about a meter above the floor.\nThe only exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1363,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1366,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow providing enough light to see by.\nA glass door can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1368,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1367,
+          "keyword": "door glass",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1363,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1367,
+      "name": "The study",
+      "description": "You are in a small, well kept study. Ancient tomes are on shelves on the\nwalls, A huge table sits in the middle of the room, with maps weighted\ndown upon it. The only light source here comes from an interestingly non-\nmagical oil lamp.\nThe only apparent exit leads back west to the hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1366,
+          "keyword": "door glass",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1368,
+      "name": "Below the stairs",
+      "description": "You are at the end of a long hallway. The walls emit a faint magical glow\nwhich provides enough light to see by. A lesser guardian is here keeping\nsilent watch on the entrance to the levels above.\nStairs lead up and the hallway continues back south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1366,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1369,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1369,
+      "name": "Atop the stairway",
+      "description": "You are atop a stairway. The halls here look quite a bit less used than\nthose below. Obviously access to these magic filled corridors is limited\nto those of the upper echelon of mages. The walls here emit a faint blue\nmagical aura which provides some light.\nThe hallway leads west from here and the stairs go down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1370,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1368,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1370,
+      "name": "A hallway",
+      "description": "You are in a long hallway stretching east and west. The walls here emit\na faint magical energy providing enough light to see by.\nThere is a thick looking wooden door to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1371,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1369,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1372,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1371,
+      "name": "A small office",
+      "description": "You are in a small office. It looks like a calligrapher's study, there\nare quills, inkpots and parchments all about on desks and worktables.\nA section to the west seems to be curtained off, but the flicker of a\ncandle can be seen through the curtain.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1370,
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1373,
+          "keyword": "curtain",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1372,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1370,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1374,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1373,
+      "name": "The master scribe's workshop",
+      "description": "You are in the workshop of the tower's master scribe. Many half finished\nscrolls lay on the writing table in the center of the room. A giant candle\nflickering with soft blue flames provides the only light here.\nThe only apparent exit is the way you came in.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1371,
+          "keyword": "curtain",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1374,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA half closed door can be seen to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1375,
+          "description": "A dark room can be seen through the half opened door\n",
+          "keyword": "door wooden",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1372,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1376,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1375,
+      "name": "A store room",
+      "description": "You are in a small dark store room. A few common items are stacked upon\nthe shelves here, but very little looks interesting.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1374,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1376,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the long hallway. The walls emit a faint magical\nglow which provides enough light to see by.\nThe hallway continues south and east from here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1374,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1377,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1377,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nAn iron bound door can be seen to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1376,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1378,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1379,
+          "keyword": "door iron",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1378,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nThe sharp sound of metal on metal can be heard to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1377,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1380,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1381,
+          "keyword": "door iron",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1379,
+      "name": "A store room",
+      "description": "You are in a large store room. Bins of ores, minerals and other rare\nmaterials are here along with many neatly stacked piles of precious metals.\nA large cabinet with sigils of warding is bolted to one wall.\nThe ring of metal on metal can be heard to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1377,
+          "keyword": "door iron",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1381,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1380,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1378,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1383,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1381,
+      "name": "A very hot room",
+      "description": "You are in a very hot room. Against one wall is a large forge, magical\nfires crackle within and heavy blue smoke pours into a vent in the ceiling.\nA rune-encrusted mithril anvil is in the center of the room, looking well\nused. Other tools of metallurgy hang on a rack which floats about three\nmeters in the air of its own force.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1379,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1378,
+          "keyword": "door iron",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1382,
+          "keyword": "door ",
+          "flags": []
+        },
+        "up": {
+          "to_room": 1412,
+          "keyword": "vent",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1382,
+      "name": "The master Enchanter's chamber",
+      "description": "You have entered the master enchanter's chamber. Upon all the walls here\nare racks of finely crafted weapons. A huge chest with a glowing lock is\nset to one side. Several unfinished looking blades rest atop a small work\ntable.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1381,
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1383,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in a long hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\nThe hallway continues north and east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1380,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1384,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1384,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA steel door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1385,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1386,
+          "keyword": "door steel",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1383,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1385,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1387,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1384,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1386,
+      "name": "A laboratory",
+      "description": "You are in a small laboratory. Many strange instruments, vials, bottles\nand some scrawled notes are piled about a workbench. This room is very\nuntidy, looking almost abandoned, or used by a madman.\nThe only apparent exits are east and north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1384,
+          "keyword": "door steel",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1388,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1387,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nYou can see a steel door to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1389,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1390,
+          "keyword": "door steel",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1385,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1388,
+      "name": "The Mad Alchemist's workroom",
+      "description": "You are in the workroom of The Mad Alchemist. Bubbling braziers, long\nglass tubes and scores of oddly shaped vials and bottles are everywhere.\nIt is incredibly messy here, crushed glass and other trash litter the floor.\nThe only apparent exit is the one you entered by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1386,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1389,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in a long hallway. The walls emit a faint magical glow\nwhich provides enough light to see by.\nThe hallway continues north and west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1391,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1387,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1390,
+      "name": "The pentagram chamber",
+      "description": "You are in a large room with a five pointed star etched into the floor.\nA crackling energy field can be seen to the south, it looks quite dangerous.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1387,
+          "keyword": "door steel",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1392,
+          "description": "The energy field crackles and glows, nothing seems to be beyond.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1391,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA bronze door can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1393,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1394,
+          "keyword": "door bronze",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1389,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1392,
+      "name": "Inside the Energy Field",
+      "description": "You feel a stomach twisting sensation as you enter the energy field.\nNice going!  You might as well wait here until the wizard who built this\ntrap comes back to imprison your soul as well as your body.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5113,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9141,
+          "flags": []
+        },
+        "west": {
+          "to_room": 7428,
+          "flags": []
+        },
+        "up": {
+          "to_room": 938,
+          "flags": []
+        },
+        "down": {
+          "to_room": 3460,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1393,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA bronze door can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1396,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1395,
+          "keyword": "door bronze",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1391,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1394,
+      "name": "An empty room",
+      "description": "You are in an empty room. It is both quiet and comfortable here, it looks\nlike a safe place to rest.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1391,
+          "keyword": "door bronze",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1395,
+      "name": "The charm master's chamber",
+      "description": "You are in the chambers of the tower's master of charm. Some straw and\ndirt litters the floor here, it looks to have been recently used by wild\nanimals.\nStrange sounds can be heard through the bars to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1397,
+          "keyword": "cage bars",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1393,
+          "keyword": "door bronze",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1396,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1398,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1393,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1397,
+      "name": "The animal pens",
+      "description": "You are in the animal pens. Many caged animals are here looking unhappy.\nObviously they are destined to be enslaved, or used in some cruel magical\nexperimentation.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1395,
+          "keyword": "cage bars",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1398,
+      "name": "The end of the hallway",
+      "description": "You are at the end of a long north-south hallway. The walls emit a faint\nmagical glow which provides enough light to see by.\nStairs here lead up to the next level, and the hallway continues south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1396,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1399,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1399,
+      "name": "Atop the stairway",
+      "description": "You are atop the stairway to the upper levels of the high tower. The walls\nemit a faint magical glow which provides enough light to see by.\nA hallway leads west from here, and the stairs lead down.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1400,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1398,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1400,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA silver door can be seen to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1401,
+          "keyword": "door silver",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1399,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1404,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1401,
+      "name": "A store room",
+      "description": "You are in a large store room. Raw materials are neatly bundled and piled\nhere and here. Many freshly cut staves rods and wands of different sizes\nare here.\nYou can see a silver door to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1400,
+          "keyword": "door silver",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1402,
+          "keyword": "door silver",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1402,
+      "name": "The master spellbinder's chamber",
+      "description": "You are in the chambers of the master spell binder. Unlike other work\nshops of similar nature, this one is without furnishings or tools. The\nspell binder obviously needs none for the working of his art.\nA silver door can be seen to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1401,
+          "keyword": "door silver",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1403,
+          "keyword": "door silver",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1403,
+      "name": "The spellbinder's cache",
+      "description": "You have discovered the cache of the master spell binder. There are two\nvery large silver chased cabinets here, other than that, the room is bare.\nA silver door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1402,
+          "keyword": "door silver",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1405,
+          "keyword": "door silver",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1404,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1400,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1405,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1405,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA silver door can be seen to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1403,
+          "keyword": "door silver",
+          "flags": []
+        },
+        "east": {
+          "to_room": 1404,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1406,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1406,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the long hallway. The walls emit a faint magical\nglow which provides enough light to see by.\nThe hallway continues east and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1405,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1407,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1407,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1406,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1408,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1408,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA rusty old door can be seen to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1407,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1413,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1409,
+          "keyword": "door rusty",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1409,
+      "name": "The golem master's workshop",
+      "description": "You are in the golem master's workshop. A few unfinished looking humanoid\nforms of different make are here, some moving, some not. The animated forms\nlunge to attack you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1410,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1408,
+          "keyword": "door rusty",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1411,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1412,
+          "keyword": "trapdoor",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1410,
+      "name": "A store room",
+      "description": "You are in a small store room. Large chunks of clay, stone, wood and many\nother raw materials are here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1409,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1411,
+      "name": "The golem chamber",
+      "description": "You are in the golem chamber. Golems made of every imaginable material\nare here, ranging in size from a hand-span to nearly the ceiling. They all\nseem to be sleeping.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1409,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1412,
+      "name": "It is very dark here...",
+      "description": "It is very dark here...\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 1409,
+          "keyword": "trapdoor",
+          "flags": []
+        },
+        "down": {
+          "to_room": 1381,
+          "keyword": "vent",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1413,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1408,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1414,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1414,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the long hallway. The walls emit a faint magical\nglow which provides enough light to see by.\nThe hallway continues north and east from here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1413,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1415,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1415,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1416,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1414,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1416,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nAn emerald door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1419,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1417,
+          "keyword": "door emerald",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1415,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1417,
+      "name": "The master of illusion's chamber",
+      "description": "You are in the chamber of the master of illusions. The walls here are\never-changing in color and texture, as if they were reforming before your\nvery eyes. Many splendorous treasures lie all around in heaps and piles, or\nat least they seem to be treasures...\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1416,
+          "keyword": "door emerald",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1418,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1418,
+      "name": "A bedroom",
+      "description": "You are in the bedroom of the master of illusions. Strange looking items\nand artifacts float here and there in the air. The ripples of strong magic\ncan be felt everywhere.\nThe room seems much larger than it looks...\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": -1,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1417,
+          "flags": []
+        },
+        "south": {
+          "to_room": -1,
+          "flags": []
+        },
+        "west": {
+          "to_room": -1,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1419,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading east and west. The walls emit a faint\nmagical glow which provides enough light to see by.\nA glass door can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1421,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1420,
+          "keyword": "door glass",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1416,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1420,
+      "name": "The meditation chamber",
+      "description": "You are in a meditation chamber. It is very silent here, in fact you\ncan not even hear your own footsteps.\nYou feel very peaceful.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1419,
+          "keyword": "door glass",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1421,
+      "name": "A bend in the hallway",
+      "description": "You are at a bend in the long hallway. The walls emit a faint magical\nglow which provides enough light to see by.\nThe hallway continues north and west from here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1422,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1419,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1422,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\nA blackened door can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1426,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1423,
+          "keyword": "door black",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1421,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1423,
+      "name": "A dark room",
+      "description": "You are in a large dark room. The air here seems quite stale, and a sense\nof extreme dread comes over you. The stench of rotten flesh seems to be\nwafting in from the open doorway to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1424,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1422,
+          "keyword": "door black",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1424,
+      "name": "A dark room",
+      "description": "You are in a large dark room. The stench here makes you gag and wretch.\nThere are body parts and half rotted corpses strewn about with complete\nabandon. Several operating tables with still forms that resemble nothing\nyou've ever seen alive are here.\nTortured screams can be heard from the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1425,
+          "description": "Upon gazing northwards, you are filled with deep dread\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1423,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1425,
+      "name": "The Necromancer's Lair",
+      "description": "You are in the lair of the evil Necromancer. Undead minions of all types,\nhuman and otherwise stand here waiting to do their master's bidding. Some\nglowing arcane sigils have been etched into walls and floor, no doubt to\nprotect the evil master from his own ungodly creations.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1424,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1426,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1427,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1422,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1427,
+      "name": "A hallway",
+      "description": "You are in a long hallway leading north and south. The walls emit a faint\nmagical glow which provides enough light to see by.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1428,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1426,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1428,
+      "name": "The end of the hallway",
+      "description": "You are at the end of a long hallway. The walls here glow with a faint\nmagical energy which provides plenty of light.\nStairs lead up to the next level here and the hallway continues south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1427,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1429,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1429,
+      "name": "A corridor",
+      "description": "You are at the east end of a long corridor. Obsidian walls engraved with\nancient runes of power stretch out before you. Magical energies seem to\ncrackle with power all around and whisper in tongues long forgotten, almost\nas if the corridor it self were alive.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1430,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1428,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1430,
+      "name": "A corridor",
+      "description": "You are in a long corridor. Obsidian walls engraved with ancient runes\nof power stretch out before you. Magical energies seem to crackle with\npower all around and whisper in tongues long forgotten, almost as if the\ncorridor itself were alive.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1429,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1431,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1431,
+      "name": "A bend in the corridor",
+      "description": "You are at a bend in the long corridor. Obsidian walls engraved with\nancient runes of power stretch out before you. Magical energies seem to\ncrackle with power all around and whisper in tongues long forgotten, almost\nas if the corridor itself were alive.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1430,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1432,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1432,
+      "name": "A corridor",
+      "description": "You are in a long corridor leading north and south. Obsidian walls\nengraved with ancient runes of power stretch out before you. Magical\nenergies seem to crackle with power all around and whisper in tongues\nlong forgotten, almost as if the corridor itself were alive.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1431,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1433,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1433,
+      "name": "An intersection",
+      "description": "You are at an intersection in the corridor. The obsidian walled halls\nlead off in every direction from here, pulsing with the power of their\nancient runes.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1432,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1434,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1446,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1436,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1434,
+      "name": "A corridor",
+      "description": "You are at the end of a long corridor. Obsidian walls engraved with\nancient runes of power stretch out before you. A darkened door is to the\neast. Tendrils of mist cling to the floor here, they seem to be seeping\nfrom under the door.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1435,
+          "keyword": "door black",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1433,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1435,
+      "name": "The scrying chamber",
+      "description": "You are in the scrying chamber of the high tower of sorcerery. It is here\nthat arcane rituals are performed to enable those of the art to look in\nupon denizens throughout the world and spy out their darkest secrets.\nA huge black cauldron is in the center of the room, bubbling and gurgling,\nit pours forth a constant stream of smokey fog into the air about you. Here\nand there on stands of different sizes are crystal balls and oddly shaped\nmirrors.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1434,
+          "keyword": "door black",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1436,
+      "name": "A corridor",
+      "description": "You have reached an end in the long corridor. Obsidian walls engraved\nwith ancient runes of power stretch out before you. The sound of snoring\ncan barely be heard through the door to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1433,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1437,
+          "keyword": "door wooden",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1437,
+      "name": "The entrance to the library",
+      "description": "You are in the entrance to the great library of magic. A giant desk is\nhere, covered with books parchments and scrolls. Long shelves loaded with\nrow upon row of books stretch out in every direction as far as the eye can\nsee.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1439,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1436,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1440,
+          "description": "All you can see are books\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1438,
+          "description": "All you can see are books\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1438,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1441,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1437,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1442,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1443,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1439,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1440,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1442,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1437,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1441,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1440,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1437,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1441,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1439,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1442,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1441,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1442,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1439,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1438,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1440,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1442,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1438,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1440,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1441,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1439,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1443,
+      "name": "In the library",
+      "description": "You are in the great library of magic. A strong musty smell permeates the\nentire area. Upon shelves which float just out of reach are hundreds of\nbooks, tomes and scrolls of every possible shape size and color. The elusive\nbooks seem to wink in and out of existence before your untrained eyes.\nIt is very quiet here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1438,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1444,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1444,
+      "name": "Between the shelves",
+      "description": "You are in the great library of magic. The shelves seem uncomfortably\nclose here, you can barely maneuver between them. The musty smell is still\nstrong, and the elusive books still hover just out of reach.\nA faint flicker of light can barely be made out to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1445,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1443,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1445,
+      "name": "The reading room",
+      "description": "You are in a small room completely devoid of furnishings. The only thing\nhere is an enormous tome, lying face open on the floor. The great book looks\nboth heavy and ancient. Its jewel encrusted bindings are well worn as the\nbark of a tree. Spidery writings seem to crawls across the pages, totally\nincomprehensible to your mortal eye. Something seems to be wedged between\nthe pages.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1444,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1446,
+      "name": "A corridor",
+      "description": "You are in a long corridor leading north and south. Obsidian walls\nengraved with ancient runes of power stretch out before you. Magical\nenergies seem to crackle with power all around and whisper in tongues\nlong forgotten, almost as if the corridor itself were alive.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1433,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1447,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1447,
+      "name": "The end of the corridor",
+      "description": "You are at the end of a long corridor. The obsidian walls come to an\nabrupt halt at the edge of a golden archway here. The hum of power is so\nstrong it nearly numbs your body.\nThe archway lies before you, glowing and pulsing with energy.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1446,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1448,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1448,
+      "name": "The arched entrance",
+      "description": "You feel a slight tingle as you pass through the archway, as if the living\nmagical energies here had infused your body, found it wanting and left. The\nintense glow from the arch above you is almost blinding. Through the light\nyou can barely make out a stairway leading up.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1447,
+          "flags": []
+        },
+        "up": {
+          "to_room": 1449,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1449,
+      "name": "The landing",
+      "description": "You are on a small landing in the middle of a long stairway leading up.\nYour senses seem dulled here, no sound or smell can be detected at all, and\nthe only thing you can see in any direction is endless stairway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 1450,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1448,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1450,
+      "name": "An intersection",
+      "description": "You are at an intersection of several hallways. You feel as if strange\nmystical forces are pushing and pulling at each other from all around you.\nThe sensation of being trapped, in the middle is almost tangible in the air\nhere.\nA grey tiled hallway leads south, black tiled east, white tiled west, and\na multi-colored hallway swirling with patterns that remain just barely\nunrecognizable is to the north.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1473,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1458,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1451,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1465,
+          "flags": []
+        },
+        "down": {
+          "to_room": 1449,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1451,
+      "name": "A grey tiled hallway",
+      "description": "You are in a grey tiled hallway leading north and south. Dim balls of\nenergy float here and there shedding a warm light, and showing the way.\nA feeling of peace and balance comes over you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1450,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1452,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1452,
+      "name": "A grey tiled hallway",
+      "description": "You are in a grey tiled hallway leading north and south. Dim balls of\nenergy float here and there shedding a warm light, and showing the way.\nA feeling of peace and balance comes over you.\nLarge grey metal double doors can be seen to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1451,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1453,
+          "keyword": "door grey",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1453,
+      "name": "The antechamber",
+      "description": "You are in the antechamber of the master magician of the grey light. A\nfeeling of strong magic floats in the air about you, almost as if you could\ntaste the power held within these walls.\nOnce your eyes adjust to the semi-light, you can make out a larger room\nto the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1452,
+          "keyword": "door grey",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1454,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1454,
+      "name": "The main chamber",
+      "description": "A feeling of tranquility comes over you as you enter the main chamber of\nneutrality. Some artifacts are hung on the walls here, or set on stands.\nThe room in general looks both comfortable and official. Probably where the\nmaster of neutrality holds audience.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1453,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1456,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1457,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1455,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1455,
+      "name": "The study",
+      "description": "You are in a large study. Shelves filled with many books or arcane\nknowledge are on every wall. A large oaken desk is in the center, with\nmany parchments and scrolls on it. The most notable thing in the room is\na small set of scales, which floats about eye level. In perfect balance,\nthe scales are no doubt a sign of the master's neutrality.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1454,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1456,
+      "name": "A closet",
+      "description": "You are in a small closet. It is filled with many cloaks, and some other\napparel.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1454,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1457,
+      "name": "A bedroom",
+      "description": "You are in the bedroom of the master magician of neutrality. Curtained\nwindows can be seen on the south wall. A large comfortable looking bed\ntakes up most of the room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1454,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1458,
+      "name": "A dark hallway",
+      "description": "You are in a long dark hallway leading east and west. Not much can be\nseen in the unnatural darkness here, but you get a deep sense of dread\nthe further you go.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1459,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1450,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1459,
+      "name": "A dark hallway",
+      "description": "You are in a long dark hallway leading east and west. Not much can be\nseen in the unnatural darkness here, but you get a deep sense of dread\nthe further you go.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1460,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1458,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1460,
+      "name": "The end of the hallway",
+      "description": "You are at the end of a long dark hallway. The darkness here is almost\ntangible in its thickness. A deep sense of fear and loathing comes over\nyou.\nA pair of obsidian doors can be seen to the east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1461,
+          "keyword": "door obsidian",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1459,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1461,
+      "name": "The chamber of darkness",
+      "description": "You are in a vast chamber. The walls fade into darkness, leaving you\nwith a very vague idea of the actual size of the room. Swirling here and\nthere in the dark, are patches of pure black which seem to suck in your\nlight and leave it that much darker here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1462,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1464,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1463,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1460,
+          "keyword": "door obsidian",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1462,
+      "name": "It is very dark here...",
+      "description": "It is very dark here...\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1461,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1463,
+      "name": "Torture chamber",
+      "description": "You are in an ill lit chamber. Instruments of torture hang from a rack\non the wall, they seem to quiver with anticipation of a victim as if they\nhad a mind of their own. An operating table is here, though it is bare.\nAn extreme feeling of evil permeates the entire area.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1461,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1464,
+      "name": "The inner chamber",
+      "description": "You are in a small dark chamber. Upon the walls are glowing sigils of\ndark power, scrawled and traced in an evil language no longer known to most\nof this plane of existence. There is an obsidian altar here which seems to\nglow, but does not shed any light, in fact it seems to be taking light in.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1461,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1465,
+      "name": "A bright hallway",
+      "description": "You are in a long well lit hallway leading east and west. The walls here\nare a milky white color, and glow with a warm luminescence, as does the\nfloor. A feeling of goodness permeates the area, and you feel unworthy to\ntread upon these sacred floors.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1450,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1466,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1466,
+      "name": "A bright hallway",
+      "description": "You are in a long well lit hallway leading east and west. The walls here\nare a milky white color, and glow with a warm luminescence, as does the\nfloor. A feeling of goodness permeates the area, and you feel unworthy to\ntread upon these sacred floors.\nA huge set of double doors in finely worked ivory can be seen to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1465,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1467,
+          "keyword": "door ivory",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1467,
+      "name": "An antechamber",
+      "description": "You are in a small antechamber. It is well lit here, though the source\nof light cannot be seen. It is almost as if the room itself exudes a warm\nglow of goodness. A larger chamber can be seen to the west, but you do not\nfeel worthy to pass into it.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1466,
+          "keyword": "door ivory",
+          "flags": []
+        },
+        "west": {
+          "to_room": 1469,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1469,
+      "name": "The chamber of the white light",
+      "description": "You are in a vast chamber, its walls floor and ceiling are of an unknown\nmetallic material, the brightest white, almost blindingly stark. A flickering\nflame is in the center of the room, seeming to feed off of darkness and\ncleansing the room of any evil. You feel a slight tug at your being as the\nflame flickers towards you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1470,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1467,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1471,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1472,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1470,
+      "name": "The meditation chamber",
+      "description": "You are in a small meditation chamber. White silk cushions are everywhere,\nlooking very comfortable. You get an easy peaceful feeling of relaxation\nhere, almost making you want to lie down and fall asleep.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 1469,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1471,
+      "name": "A study",
+      "description": "You are in a spacious study. It is extremely tidy here, to an almost\nantiseptic nature. One would wonder how anyone could study without a\nmess all around them, the master of this chamber obviously can.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1469,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1472,
+      "name": "A closet",
+      "description": "You are in a small closet. Cloaks and vests hang from hooks in the wall,\nand a few old boots are all that can be seen here. Rather featureless.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1469,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1473,
+      "name": "A wide hallway",
+      "description": "You are in a large hallway, wide enough to accommodate several people\nstanding abreast. The floor here is a swirl of multicolored patterns, in\nconstant motion.\nA huge grey metal door blocks the way north, it looks quite sturdy.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1474,
+          "keyword": "door metal grey",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1450,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1474,
+      "name": "A wide hallway",
+      "description": "You are in a large hallway, wide enough to accommodate several people\nstanding abreast. The floor here is a swirl of multicolored patterns, in\nconstant motion.\nA huge black obsidian door blocks the way north, it looks quite sturdy.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1475,
+          "keyword": "door obsidian black",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1473,
+          "keyword": "door metal grey",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1475,
+      "name": "A wide hallway",
+      "description": "You are in a large hallway, wide enough to accommodate several people\nstanding abreast. The floor here is a swirl of multicolored patterns, in\nconstant motion.\nA huge white ivory door blocks the way north, it looks quite sturdy.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1476,
+          "keyword": "door ivory white",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1474,
+          "keyword": "door obsidian black",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1476,
+      "name": "The entranceway",
+      "description": "You are at the entrance to the audience chamber of the grand master of\nmagic. Beautiful tapestries displaying the ancient masters of lore are on\nthe walls, and the floor is covered with a plush multicolored carpet, which\nseems to rustle and move at the touch of your boots.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1477,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1475,
+          "keyword": "door white ivory",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1477,
+      "name": "The audience chamber",
+      "description": "You are in a large chamber. Small bolts of energy leap from wall to wall,\ncrackling with power. The floor is a swirl of indeterminable colors and\npatterns ever changing. Bright bursts of color seem to explode into the air\nand fade again at random times. All this splendor plays about and draws\nattention to a large throne in the center of the room, it seems to be cut\nfrom a single enormous emerald.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 1480,
+          "flags": []
+        },
+        "east": {
+          "to_room": 1478,
+          "flags": []
+        },
+        "south": {
+          "to_room": 1476,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1479,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "throne",
+          "description": "The giant emerald is flawless, and must be incredibly valuable.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1478,
+      "name": "A dressing room",
+      "description": "You are in a plush dressing room. Fine garments of many styles and some\noutlandish colors hang from a rack suspended in mid air at eye level. The\nonly other interesting feature in the room is a large silver mirror on a\nfinely crafted gold stand.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1477,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1479,
+      "name": "The library",
+      "description": "You are in a small cozy looking library. A few well made books sit atop\nshelves which span every wall. A large oaken writing table is in the center\nof the room with odd papers and parchments on it. The illumination here,\nto your surprise is a quite un-magical oil lamp.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1477,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1480,
+      "name": "The altar",
+      "description": "You are in a small chapel designed around a beautifully crafted golden\naltar. Many icons to lesser deities line the room, but it is obvious by one\nglance at the symbols on the altar, that this room was designed for the\nworship of Mystra, the goddess of magic.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 1481,
+          "keyword": "door secret",
+          "flags": []
+        },
+        "south": {
+          "to_room": 1477,
+          "flags": []
+        },
+        "west": {
+          "to_room": 1482,
+          "keyword": "door secret",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1481,
+      "name": "The treasury",
+      "description": "You are in a small chamber, the stale air here is testament to the fact\nthat it has gone undisturbed for many years.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1480,
+          "keyword": "door secret",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1482,
+      "name": "A passage",
+      "description": "You are in a small dark passage, which would be unremarkable if not for\nthe fact that it ends in a blinding blue light to the west. On hooks set\ninto the wall here there hang several travel worthy cloaks, and a small\nleather backpack.  It looks as if someone has prepared this room to be used\nin the event speedy of a evacuation.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 1483,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1483,
+      "name": "In the light",
+      "description": "You seem to be floating in a magical energy field, though you cannot see\nthe source of the energy, you can feel its power pushing at you from all\nsides, completely negating the effects of gravity.\nAn imperfection in the uniform blue can be seen overhead, it might be an\nexit.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 3001,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    },
+    {
+      "id": 1499,
+      "name": "Skylar's Hideout",
+      "description": "You are in a small, very messy room. An unmade bed is against one wall, and\nbooks and papers cover every available flat surface. Empty beer cans lie here\nand there, discarded with total abandon. A few over full ashtrays can be seen\non a desk.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "down": {
+          "to_room": -1,
+          "description": "You can see mortals pitifully begging for help below.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1300
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 1300,
+      "name": "a shadow guardian",
+      "description": "A shadow guardian screams a challenge and attacks.\n"
+    },
+    {
+      "id": 1301,
+      "name": "a lost adventurer",
+      "description": "An emaciated adventurer is here looking lost and hopeless.\n"
+    },
+    {
+      "id": 1302,
+      "name": "Edgar",
+      "description": "Edgar the Human Swordpupil\n"
+    },
+    {
+      "id": 1303,
+      "name": "the golem",
+      "description": "A huge diamond golem is standing guard here.\n"
+    },
+    {
+      "id": 1304,
+      "name": "a mage",
+      "description": "A young mage wanders about, oblivious to all.\n"
+    },
+    {
+      "id": 1305,
+      "name": "Strick the bartender",
+      "description": "Strick is here levitating drinks to his customers.\n"
+    },
+    {
+      "id": 1306,
+      "name": "Tatorious",
+      "description": "Tatorious the wizard is here counting his earnings.\n"
+    },
+    {
+      "id": 1307,
+      "name": "Ezmerelda",
+      "description": "Ezmerelda the cook is here stirring a large pot of something.\n"
+    },
+    {
+      "id": 1308,
+      "name": "The cook's assistant",
+      "description": "The cook's assistant is here assisting the cook.\n"
+    },
+    {
+      "id": 1309,
+      "name": "The prisoner",
+      "description": "A prisoner is chained to the wall here.\n"
+    },
+    {
+      "id": 1310,
+      "name": "the Jailor",
+      "description": "The Jailor is here enjoying a comfortable nap.\n"
+    },
+    {
+      "id": 1311,
+      "name": "a broom",
+      "description": "A straw broom is here leaning against the wall.\n"
+    },
+    {
+      "id": 1312,
+      "name": "a pair of disembodied hands",
+      "description": "A pair of disembodied hands floats in the air here.\n"
+    },
+    {
+      "id": 1313,
+      "name": "a pair of disembodied eyes",
+      "description": "A pair of disembodied eyes floats here glaring at you.\n"
+    },
+    {
+      "id": 1314,
+      "name": "the mage",
+      "description": "A visiting mage is here snoring away in peaceful slumber.\n"
+    },
+    {
+      "id": 1315,
+      "name": "a young apprentice magic user",
+      "description": "A young apprentice magic user is here doing magical studies.\n"
+    },
+    {
+      "id": 1316,
+      "name": "a young apprentice",
+      "description": "A young apprentice is here mumbling words of magic to himself.\n"
+    },
+    {
+      "id": 1317,
+      "name": "a young apprentice",
+      "description": "A young apprentice is sleeping here.\n"
+    },
+    {
+      "id": 1318,
+      "name": "A young apprentice",
+      "description": "A young apprentice is here teasing a cornered kitten.\n"
+    },
+    {
+      "id": 1319,
+      "name": "a small kitten",
+      "description": "A small kitten is here meowing in terror.\n"
+    },
+    {
+      "id": 1320,
+      "name": "a student",
+      "description": "A student of spells is here looking quite bored\n"
+    },
+    {
+      "id": 1321,
+      "name": "an instructor of magic",
+      "description": "The instructor screams at your interruption and attacks you.\n"
+    },
+    {
+      "id": 1322,
+      "name": "a student of spells",
+      "description": "A student of spells is here trying to master invisibility.\n"
+    },
+    {
+      "id": 1323,
+      "name": "a spell teacher",
+      "description": "A spell teacher screams at your interruption and attacks.\n"
+    },
+    {
+      "id": 1324,
+      "name": "a student of spells",
+      "description": "A student of spells has fallen asleep at her desk here.\n"
+    },
+    {
+      "id": 1325,
+      "name": "a wizard",
+      "description": "An old wizard is here making a speech\n"
+    },
+    {
+      "id": 1326,
+      "name": "a young mage",
+      "description": "A young mage is here learning hand to hand combat.\n"
+    },
+    {
+      "id": 1327,
+      "name": "the battle mistress",
+      "description": "The battle mistress is here teaching the fine uses of a dagger.\n"
+    },
+    {
+      "id": 1328,
+      "name": "a spell teacher",
+      "description": "A spell teacher is here relaxing.\n"
+    },
+    {
+      "id": 1329,
+      "name": "an aged wizard",
+      "description": "An aged wizard is sleeping here.\n"
+    },
+    {
+      "id": 1330,
+      "name": "a scribe",
+      "description": "A scribe is here working on some manuscripts.\n"
+    },
+    {
+      "id": 1331,
+      "name": "a scribe",
+      "description": "A scribe is here working diligently on some translations.\n"
+    },
+    {
+      "id": 1332,
+      "name": "the master scribe",
+      "description": "The master scribe is here looking a little upset\n"
+    },
+    {
+      "id": 1333,
+      "name": "the scribe's assistant",
+      "description": "The scribe's assistant is here folding parchments.\n"
+    },
+    {
+      "id": 1334,
+      "name": "the Enchanter",
+      "description": "The Enchanter is here placing a dweomer upon well made sword.\n"
+    },
+    {
+      "id": 1335,
+      "name": "a dancing sword",
+      "description": "A well crafted sword lies on the work table here.\n"
+    },
+    {
+      "id": 1336,
+      "name": "the Mad Alchemist",
+      "description": "The Mad Alchemist babbles something incomprehensible and attacks.\n"
+    },
+    {
+      "id": 1337,
+      "name": "the master summoner",
+      "description": "The master summoner is here holding gateways open to other planes.\n"
+    },
+    {
+      "id": 1338,
+      "name": "the master charmer",
+      "description": "The master charmer utters the words, 'uuuzzldctz'.\n"
+    },
+    {
+      "id": 1339,
+      "name": "a wooden golem",
+      "description": "A wooden golem stands a silent vigil here, guarding the stairs.\n"
+    },
+    {
+      "id": 1340,
+      "name": "the master spell binder",
+      "description": "The master spell binder is here re-charging a blackened wand.\n"
+    },
+    {
+      "id": 1341,
+      "name": "the golem maker",
+      "description": "The golem maker is here chiseling some stone.\n"
+    },
+    {
+      "id": 1342,
+      "name": "a granite golem",
+      "description": "A granite golem stands here waiting to do its master's bidding.\n"
+    },
+    {
+      "id": 1343,
+      "name": "a bronze golem",
+      "description": "A bronze golem stands here shining in the light.\n"
+    },
+    {
+      "id": 1344,
+      "name": "a flesh golem",
+      "description": "A flesh golem stands guard here\n"
+    },
+    {
+      "id": 1345,
+      "name": "a cloth golem",
+      "description": "A cloth golem wanders around here.\n"
+    },
+    {
+      "id": 1346,
+      "name": "an adamantite golem",
+      "description": "An adamantite golem stands here looking very dangerous.\n"
+    },
+    {
+      "id": 1347,
+      "name": "a clay golem",
+      "description": "A clay golem stands guard here.\n"
+    },
+    {
+      "id": 1348,
+      "name": "the master of illusions",
+      "description": "An enormous multi-colored three-headed dragon growls at you.\n"
+    },
+    {
+      "id": 1349,
+      "name": "the Necromancer",
+      "description": "The Necromancer is here raising undead servants\n"
+    },
+    {
+      "id": 1350,
+      "name": "an animated skeleton",
+      "description": "An animated skeleton screams silently and attacks.\n"
+    },
+    {
+      "id": 1351,
+      "name": "an undead giant",
+      "description": "An undead giant lumbers towards you.\n"
+    },
+    {
+      "id": 1352,
+      "name": "an ugly witch",
+      "description": "An ugly witch is here scrying out secrets.\n"
+    },
+    {
+      "id": 1353,
+      "name": "the Librarian",
+      "description": "The Librarian has fallen asleep at his desk here.\n"
+    },
+    {
+      "id": 1354,
+      "name": "the master's apprentice",
+      "description": "The master's apprentice leaps to halt your passage.\n"
+    },
+    {
+      "id": 1355,
+      "name": "a grey cat",
+      "description": "A grey cat is lounging lazily here.\n"
+    },
+    {
+      "id": 1356,
+      "name": "the master of Neutrality",
+      "description": "The master of Neutrality stands here contemplating the balance of the universe.\n"
+    },
+    {
+      "id": 1357,
+      "name": "a black robed apprentice",
+      "description": "A black robed apprentice jumps from the shadows and attacks.\n"
+    },
+    {
+      "id": 1358,
+      "name": "a black cat",
+      "description": "A black cat with its fur up hisses at you.\n"
+    },
+    {
+      "id": 1359,
+      "name": "the master of the black robes",
+      "description": "The master of the black robes is here plotting vile deeds.\n"
+    },
+    {
+      "id": 1360,
+      "name": "a white robed apprentice",
+      "description": "A white robed apprentice screams at your desecration of goodness.\n"
+    },
+    {
+      "id": 1361,
+      "name": "a white cat",
+      "description": "A white cat is here preening its fur.\n"
+    },
+    {
+      "id": 1362,
+      "name": "The master of goodness",
+      "description": "The master of goodness is here frowning at your intrusion.\n"
+    },
+    {
+      "id": 1363,
+      "name": "A calico cat",
+      "description": "A large calico cat is here\n"
+    },
+    {
+      "id": 1364,
+      "name": "The Grand Mistress",
+      "description": "The Grand Mistress of Magic is sitting here.\n"
+    },
+    {
+      "id": 1365,
+      "name": "a wizard",
+      "description": "A wandering wizard is here mumbling to himself.\n"
+    }
+  ],
+  "objects": [
+    {
+      "id": 1301,
+      "name": "an oven",
+      "description": "A huge black oven is here."
+    },
+    {
+      "id": 1302,
+      "name": "a meat locker",
+      "description": "An enormous meat locker is here."
+    },
+    {
+      "id": 1304,
+      "name": "a slice of pizza",
+      "description": "A slice of pizza is here looking very tasty."
+    },
+    {
+      "id": 1305,
+      "name": "a large chunk of meat",
+      "description": "A large chunk of meat is here."
+    },
+    {
+      "id": 1306,
+      "name": "a finger sandwich",
+      "description": "A finger sandwich is here."
+    },
+    {
+      "id": 1307,
+      "name": "a straw broom",
+      "description": "A straw broom is here leaning against the wall."
+    },
+    {
+      "id": 1308,
+      "name": "a coffee machine",
+      "description": "A coffee machine is here."
+    },
+    {
+      "id": 1309,
+      "name": "a cabinet",
+      "description": "A cabinet is here."
+    },
+    {
+      "id": 1310,
+      "name": "a bar of silver",
+      "description": "A bar of silver has been left here."
+    },
+    {
+      "id": 1311,
+      "name": "a bar of gold",
+      "description": "A bar of gold has been left here."
+    },
+    {
+      "id": 1312,
+      "name": "a bar of mithril",
+      "description": "A bar of mithril has been left here."
+    },
+    {
+      "id": 1313,
+      "name": "a bar of adamantite",
+      "description": "A bar of adamantite has been left here."
+    },
+    {
+      "id": 1314,
+      "name": "a mithril hammer",
+      "description": "A mithril hammer has been left here"
+    },
+    {
+      "id": 1315,
+      "name": "a chest",
+      "description": "A chest is here."
+    },
+    {
+      "id": 1316,
+      "name": "a small key",
+      "description": "A small key has been left here."
+    },
+    {
+      "id": 1317,
+      "name": "a long sword",
+      "description": "A long sword has been left here."
+    },
+    {
+      "id": 1318,
+      "name": "a silver dagger",
+      "description": "A finely crafted dagger made of silver is on the ground here."
+    },
+    {
+      "id": 1319,
+      "name": "a curved scimitar",
+      "description": "A curved scimitar is here in a jewel-covered sheath."
+    },
+    {
+      "id": 1320,
+      "name": "a wooden staff",
+      "description": "A wooden staff is against the wall here."
+    },
+    {
+      "id": 1321,
+      "name": "a silver chased cabinet",
+      "description": "A large cabinet with a silver finish is here."
+    },
+    {
+      "id": 1322,
+      "name": "a silver chased cabinet",
+      "description": "A large cabinet with a silver finish is here."
+    },
+    {
+      "id": 1323,
+      "name": "an old key",
+      "description": "An old key is here"
+    },
+    {
+      "id": 1324,
+      "name": "a silvery key",
+      "description": "A silvery key has been left here."
+    },
+    {
+      "id": 1325,
+      "name": "a silvery key",
+      "description": "A silvery key has been left here."
+    },
+    {
+      "id": 1326,
+      "name": "a red and white staff",
+      "description": "A red and white staff is leaning against the wall here"
+    },
+    {
+      "id": 1327,
+      "name": "a burnt staff",
+      "description": "A burnt staff is leaning against the wall here."
+    },
+    {
+      "id": 1328,
+      "name": "a black rod",
+      "description": "A black rod has been left here."
+    },
+    {
+      "id": 1329,
+      "name": "a wooden stick",
+      "description": "A wooden stick is here"
+    },
+    {
+      "id": 1330,
+      "name": "a metal wand",
+      "description": "A metal wand is here."
+    },
+    {
+      "id": 1331,
+      "name": "a black cauldron",
+      "description": "A large black cauldron is here bubbling."
+    },
+    {
+      "id": 1332,
+      "name": "a small pair of bat wings",
+      "description": "A small pair of bat wings is here."
+    },
+    {
+      "id": 1333,
+      "name": "an eyeball",
+      "description": "An eyeball has been left here"
+    },
+    {
+      "id": 1334,
+      "name": "the book of magic",
+      "description": "An enormous book is lying open here"
+    },
+    {
+      "id": 1335,
+      "name": "a pair of spectacles",
+      "description": "A pair of wire-rimmed spectacles has been left here."
+    },
+    {
+      "id": 1336,
+      "name": "a golden altar",
+      "description": ""
+    },
+    {
+      "id": 1337,
+      "name": "a heart shaped medallion",
+      "description": "A heart shaped medallion is here."
+    },
+    {
+      "id": 1338,
+      "name": "a large chest",
+      "description": "A large chest is here."
+    },
+    {
+      "id": 1339,
+      "name": "an intricately carved key",
+      "description": "An intricately carved key has been left here."
+    },
+    {
+      "id": 1340,
+      "name": "a pile of coins",
+      "description": "A pile of coins is here."
+    },
+    {
+      "id": 1341,
+      "name": "a brown cloak",
+      "description": "A travel worn cloak has carelessly been left here."
+    },
+    {
+      "id": 1342,
+      "name": "a chameleon poncho",
+      "description": "Some multicolored cloth is on the ground here"
+    },
+    {
+      "id": 1343,
+      "name": "a pair of old boots",
+      "description": "A pair of old boots is here, they look very comfortable."
+    },
+    {
+      "id": 1344,
+      "name": "a seashell ring",
+      "description": "A small seashell has been left here."
+    },
+    {
+      "id": 1345,
+      "name": "a leather backpack",
+      "description": "A leather backpack is here."
+    },
+    {
+      "id": 1351,
+      "name": "a herbal brew",
+      "description": "A herbal brew is here."
+    },
+    {
+      "id": 1352,
+      "name": "a waybread",
+      "description": "A loaf of waybread has been left here."
+    },
+    {
+      "id": 1355,
+      "name": "a meat cleaver",
+      "description": "A meat cleaver is sticking in the wall here."
+    },
+    {
+      "id": 1356,
+      "name": "some chain shackles",
+      "description": "Some chain shackles have been discarded here"
+    },
+    {
+      "id": 1357,
+      "name": "a silvery dagger",
+      "description": "A long dagger that seems to be made of silver is here."
+    },
+    {
+      "id": 1359,
+      "name": "a scroll",
+      "description": "A scroll is here."
+    },
+    {
+      "id": 1360,
+      "name": "a bound scroll",
+      "description": "A bound scroll is here blowing in the breeze."
+    },
+    {
+      "id": 1361,
+      "name": "a long cylindrical tube",
+      "description": "A long cylindrical tube is rolling around here."
+    },
+    {
+      "id": 1362,
+      "name": "an old scroll",
+      "description": "An old scroll has been left here."
+    },
+    {
+      "id": 1363,
+      "name": "a scroll written on blue paper",
+      "description": "A blue scroll has been left here."
+    },
+    {
+      "id": 1364,
+      "name": "a leather pouch",
+      "description": "A leather pouch is on the ground here."
+    },
+    {
+      "id": 1365,
+      "name": "a silver stirring spoon",
+      "description": "A silver stirring spoon has been left here."
+    },
+    {
+      "id": 1366,
+      "name": "a blue potion",
+      "description": "A blue potion is here."
+    },
+    {
+      "id": 1367,
+      "name": "a bright red potion",
+      "description": "A bright red potion is here."
+    },
+    {
+      "id": 1368,
+      "name": "a green potion",
+      "description": "A green potion is here."
+    },
+    {
+      "id": 1369,
+      "name": "an effervescent potion",
+      "description": "An effervescent potion is bubbling away here"
+    },
+    {
+      "id": 1370,
+      "name": "a milky white potion",
+      "description": "A milky white potion is here."
+    },
+    {
+      "id": 1371,
+      "name": "a black staff",
+      "description": "A black staff is leaning against the wall here."
+    },
+    {
+      "id": 1372,
+      "name": "a golden flute",
+      "description": "A golden flute has been left here."
+    },
+    {
+      "id": 1373,
+      "name": "a small figurine",
+      "description": "A small figurine in the shape of a humanoid is standing here."
+    },
+    {
+      "id": 1374,
+      "name": "a holstered belt",
+      "description": "A holstered belt is here."
+    },
+    {
+      "id": 1375,
+      "name": "a blackened wand",
+      "description": "A blackened wand is here."
+    },
+    {
+      "id": 1376,
+      "name": "a runed chisel",
+      "description": "A runed chisel is here."
+    },
+    {
+      "id": 1377,
+      "name": "a beltpouch",
+      "description": "A beltpouch is here."
+    },
+    {
+      "id": 1378,
+      "name": "some sparkling dust",
+      "description": "Some sparkling dust is in a pile here."
+    },
+    {
+      "id": 1379,
+      "name": "a dark cowl",
+      "description": "A dark cowl is here."
+    },
+    {
+      "id": 1380,
+      "name": "an ashen wand",
+      "description": "An ashen wand is here"
+    },
+    {
+      "id": 1381,
+      "name": "a huge spiked club",
+      "description": "A huge spiked club has been left here."
+    },
+    {
+      "id": 1382,
+      "name": "a grey robe",
+      "description": "A pile of grey cloth has been left here."
+    },
+    {
+      "id": 1383,
+      "name": "a long grey cloak",
+      "description": "A pile of grey cloth has been left here."
+    },
+    {
+      "id": 1384,
+      "name": "a glinting silver bracelet",
+      "description": "A glinting hoop of silvery metal is here."
+    },
+    {
+      "id": 1385,
+      "name": "an iron shod staff",
+      "description": "A grey piece of wood shod in iron has been left here."
+    },
+    {
+      "id": 1386,
+      "name": "a ward minor",
+      "description": "A small clear cube is sitting here."
+    },
+    {
+      "id": 1387,
+      "name": "a black robe",
+      "description": "A pile of black cloth is on the ground here."
+    },
+    {
+      "id": 1388,
+      "name": "an onyx bracelet",
+      "description": "A hoop of black onyx is here."
+    },
+    {
+      "id": 1389,
+      "name": "a dark black cloak",
+      "description": "A pile of black cloth is on the ground here."
+    },
+    {
+      "id": 1390,
+      "name": "a sharp shard of obsidian",
+      "description": "A piece of black glass is here."
+    },
+    {
+      "id": 1391,
+      "name": "a white robe",
+      "description": "A pile of white cloth is on the ground here."
+    },
+    {
+      "id": 1392,
+      "name": "a white gold bracelet",
+      "description": "A hoop of silvery metal is here."
+    },
+    {
+      "id": 1393,
+      "name": "a white cloak",
+      "description": "A pile of white cloth is on the ground here."
+    },
+    {
+      "id": 1394,
+      "name": "an ivory hilted dagger",
+      "description": "An ivory hilted dagger has been left here"
+    },
+    {
+      "id": 1395,
+      "name": "a spiked collar",
+      "description": "A small spiked collar is here."
+    },
+    {
+      "id": 1396,
+      "name": "a shimmering cloak of many colors",
+      "description": "A multi-colored pile of cloth is here."
+    },
+    {
+      "id": 1397,
+      "name": "a small emerald ring",
+      "description": "A small ring with a green gemstone is here."
+    },
+    {
+      "id": 1398,
+      "name": "an emerald bracelet",
+      "description": "A beautifully crafted hoop of emerald is here."
+    },
+    {
+      "id": 1399,
+      "name": "a ward major",
+      "description": "A large clear crystal cube is here."
+    },
+    {
+      "id": 1400,
+      "name": "the ebony kris",
+      "description": "A wavy bladed knife made of ebony is here."
+    },
+    {
+      "id": 1401,
+      "name": "a tight fitting green dragon scale shirt",
+      "description": "Some green dragon scales which have been sewn together are here."
+    },
+    {
+      "id": 1402,
+      "name": "a fridge",
+      "description": "A small refrigerator."
+    },
+    {
+      "id": 1403,
+      "name": "a bottle of Absolut vodka",
+      "description": "A bottle of Absolut vodka is here to drink."
+    },
+    {
+      "id": 1404,
+      "name": "a bottle of cranberry juice",
+      "description": "A bottle of cranberry juice is here."
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 1300,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 1301,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 1304,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1306,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1307,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1308,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1309,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1310,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1311,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 1312,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 1313,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 1314,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1315,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1316,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1317,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1318,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1320,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1321,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1322,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1323,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1324,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1325,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1326,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1327,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1328,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1329,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1330,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1331,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1332,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1333,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1334,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1336,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1337,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1338,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1340,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1341,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1348,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1349,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1350,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 1351,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 1352,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1353,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1354,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1355,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1356,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1357,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1358,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1359,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1360,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1361,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1362,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1363,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1364,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1365,
+      "spec": "spec_cast_mage"
+    }
+  ]
+}

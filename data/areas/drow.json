@@ -1,0 +1,1226 @@
+{
+  "name": "Drow City",
+  "vnum_range": {
+    "min": 5100,
+    "max": 5199
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 5100,
+      "name": "City Entrance",
+      "description": "You are at the entrance to a small underground city. A great adamantite\ngate lies open to the west allowing entrance into the city.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 5101,
+          "description": "A huge gate opens to the west allowing entrance into the city.",
+          "keyword": "gate",
+          "flags": []
+        },
+        "up": {
+          "to_room": 5270,
+          "description": "A small hole in the ceiling leads up into darkness.",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "hole",
+          "description": "A small hole that looks to have been sealed at one time.\n"
+        },
+        {
+          "keyword": "gate",
+          "description": "A large adamantite gate with giant spider shaped emblems stands here.\n"
+        }
+      ],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5101,
+      "name": "City street",
+      "description": "You walk along a highly ornate street going north-south. A large gate\nlies to the east while a building lies to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5123,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5100,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5102,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5122,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5102,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going north and west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5101,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5103,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5103,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. A large house\nstands to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5102,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5104,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5106,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5104,
+      "name": "3rd House",
+      "description": "You stand inside the 3rd house of the city; it is fairly well decorated\nby drow standards having a few statues, murals and such. A door leads to the\nsouth.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5103,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5105,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5105,
+      "name": "Throne Room",
+      "description": "The throne room of the 3rd house is about as decorated as the inner\ncourtyard except with a blood covered altar in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5104,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5106,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. To the north\nis a large building.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5118,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5103,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5107,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5107,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading north and east. To the\nsouth is an extremely large house.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5110,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5106,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5108,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5108,
+      "name": "2nd House",
+      "description": "You stand inside the 2nd house of the city. The room is highly decorated\nwith statues of spiders and murals everywhere.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5107,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5109,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5109,
+      "name": "Throne Room",
+      "description": "The throne room of the 2nd house is just a little more decorative than\nthe inner courtyard having an altar in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5108,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5110,
+      "name": "Main Gate",
+      "description": "You are at the entrance to the 1st house of the city. A large gate, almost\nas big and elegant as the one at the entrance to the city, stands here.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5114,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5107,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5111,
+          "description": "A large gate lies to the west.",
+          "keyword": "gate",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5111,
+      "name": "1st House",
+      "description": "You stand in the inner courtyard of the 1st and largest house in the city.\nThe room is extremely large and decorative. Mural and paintings hang on the\nwalls depicting some battles and a spider queen.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5110,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5112,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5112,
+      "name": "Throne Room",
+      "description": "The throne room of the 1st house is in one word...awesome. It is so\nhorrifying it is almost beautiful.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5113,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5111,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5113,
+      "name": "Main Chamber",
+      "description": "This is the council chamber for the Matron Mother herself. A huge table\nand chairs surrounding it sits in the center of the room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5112,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5114,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading north-south and east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5115,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5117,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5110,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5115,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading south. A building is\nto the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5114,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5116,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5116,
+      "name": "Cleric Academy",
+      "description": "This is the most lavish of the academies being that it is for the clerics.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5115,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5117,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going east-west. To the north\nis a giant temple.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5119,
+          "description": "The entrance to the temple of Lloth.",
+          "flags": []
+        },
+        "east": {
+          "to_room": 5121,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5114,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5118,
+      "name": "Warrior's Academy",
+      "description": "This looks more like a barracks than a school.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5106,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5119,
+      "name": "Entrance to the Temple of Lloth",
+      "description": "The temple is the largest building in the city. Even it's doors are beyond\nimagination. Inside of the temple entrance, the walls are made of gold and\nadamantite.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5117,
+          "flags": []
+        },
+        "down": {
+          "to_room": 5126,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5120,
+      "name": "Mage's Academy",
+      "description": "The mages academy is fairly well decorated see that the drow prefer magic\nover physical power greatly.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5121,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5121,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street going eastward. To the north is\na building.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5120,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5123,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5122,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5117,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5122,
+      "name": "Slave Chamber",
+      "description": "The room is in shambles. Straw is strewn all about the room as beds for the\nunfortunate creatures who have fallen prey to drow imperialism.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5121,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5101,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5123,
+      "name": "City street",
+      "description": "You walk along a highly ornate city street leading west and south. To the\nnorth is a relatively small house.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5124,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5101,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5121,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5124,
+      "name": "4th house",
+      "description": "You stand inside the 4th house of the city. Its inner courtyard is rather\ndull by drow standards and rather small as well.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5125,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5123,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5125,
+      "name": "Throne Room",
+      "description": "The throne room is basically similar to the inner courtyard in regards\nto decor. there is a small throne behind the altar but that is about it.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 5124,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5126,
+      "name": "Entrance Way",
+      "description": "You stand in the entrance way to the temple which opens up to the north\ninto a large hallway going east and west. Small statues of spiders line the\nentrance way's walls.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5127,
+          "flags": []
+        },
+        "up": {
+          "to_room": 5119,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5127,
+      "name": "Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the north is a obsidian stairway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5135,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5128,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5126,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5131,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5128,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5129,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5127,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5129,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the north is a door.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5150,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5130,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5128,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5130,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5134,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5129,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5131,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5127,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5132,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5132,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\nTo the south is a door.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5131,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5133,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5134,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5133,
+      "name": "Warrior's Barracks",
+      "description": "The room is a complete mess. None of the beds are made, clothes and other\nitems have been left all about the room. Well drow warriors never were known\nfor neatness.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5132,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5134,
+      "name": "Long Hallway",
+      "description": "You are in a long hallway lined with adamantite. The walls are engraved\nwith pictures of elves and spiders. The hallway continues east and west. As you\nlook down the hallway you can make out one or two figures moving away from you.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5132,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5130,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5135,
+      "name": "Grand Stairway",
+      "description": "You are standing at the bottom of a giant obsidian and adamantite\nstairway. The edges are trimmed with gold.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5127,
+          "flags": []
+        },
+        "up": {
+          "to_room": 5136,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5136,
+      "name": "Grand Hallway",
+      "description": "You are standing in the middle of a grand hallway. The walls are\nof the purest adamantite with gold trim. Mosaics line the walls.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5138,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5137,
+          "flags": []
+        },
+        "down": {
+          "to_room": 5135,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5137,
+      "name": "Mage's Barracks",
+      "description": "The mage's living quarters is rather clean with the exception of a few\nused component containers. It is rather well decorated as well. Cots line the\nfloor for the mages to sleep on. the only door is to the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 5136,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5138,
+      "name": "Grand Hallway",
+      "description": "You are walking down a grand hallway, heavily decorated with adamantite\nand gold. To the north the hall goes down a flight of stairs while a door is\ntoo the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5136,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5139,
+          "flags": []
+        },
+        "down": {
+          "to_room": 5140,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5139,
+      "name": "Cleric's Barracks",
+      "description": "The bed chamber is brightly decorated with spider shaped statues, murals\nand the like. Large beds line the floor making this a comfortable room to live\nin.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5138,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5140,
+      "name": "Grand Stairway",
+      "description": "You are climbing a set of obsidian stairs surrounded by adamantite walls.\nTo the north are a set of large golden doors.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5141,
+          "flags": []
+        },
+        "up": {
+          "to_room": 5138,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5141,
+      "name": "Main Chamber",
+      "description": "This is the south side of a large auditorium used for services by the\ndrow priestesses. In the center is a large sacrificial pit and beyond that is\nan altar.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5142,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5140,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5144,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5142,
+      "name": "Eastern side of Chamber",
+      "description": "You are on the eastern side of the chamber overlooking the pit. To the east\nis a door while to the north is an altar.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5145,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5146,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5141,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5143,
+      "name": "Sacrificial Pit",
+      "description": "A you climb down into the pit thousands of spiders cover you tearing your\nbody to shreds.\nLloth thanks you for your sacrifice.\nYou've fallen, and you can't get up!!!\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5144,
+      "name": "Western side of Chamber",
+      "description": "You are on the western side of the main chamber overlooking a sacrificial\npit. To the north is an altar.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5145,
+          "flags": []
+        },
+        "south": {
+          "to_room": 5141,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5145,
+      "name": "The Altar",
+      "description": "You are standing in front of a highly and freshly bloodstained altar.\nEngraved on the top of the altar is a giant spider with a human head. Looking\ndown from the altar you see a large sacrificial pit.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5148,
+          "flags": []
+        },
+        "east": {
+          "to_room": 5142,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5144,
+          "flags": []
+        },
+        "down": {
+          "to_room": 5143,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5146,
+      "name": "Slave Cells",
+      "description": "This is the main room to the cell chambers for the slaves to be\nsacrificed. You notice there are no guards around.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 5147,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5142,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5147,
+      "name": "Slave Pen",
+      "description": "Rotten meat and breads lie about the floor while shackles hang from the\nwalls. The room wreaks of death. You almost become nauseous and decide to leave\nthe room since you were obviously too late to save the slave.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5146,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5148,
+      "name": "Dais",
+      "description": "You stand upon a dais behind the altar. Above you is a enormous illusion\nof a female drow turning into a giant spider and back again. There is a door\nto the west.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5145,
+          "flags": []
+        },
+        "west": {
+          "to_room": 5149,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5149,
+      "name": "The Treasury",
+      "description": "This is obviously only a temporary storage place for the collected\ntreasure being rather bare.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 5148,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    },
+    {
+      "id": 5150,
+      "name": "Weaponsmaster's Chamber",
+      "description": "This one person bedchamber is very elegant. The owner must be held in high\nto get this kind of treatment.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 5129,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 5100
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 5100,
+      "name": "the goblin slave",
+      "description": "A goblin slave lies here asleep.\n"
+    },
+    {
+      "id": 5101,
+      "name": "the drow commoner",
+      "description": "A drow commoner walks on guard duty.\n"
+    },
+    {
+      "id": 5102,
+      "name": "the drow warrior noble",
+      "description": "The drow warrior noble stands here guarding his home.\n"
+    },
+    {
+      "id": 5103,
+      "name": "the drow mage noble",
+      "description": "The drow mage noble is here protecting his home.\n"
+    },
+    {
+      "id": 5104,
+      "name": "the drow priestess",
+      "description": "The drow priestess is here shouting orders.\n"
+    },
+    {
+      "id": 5105,
+      "name": "The drow master",
+      "description": "The drow master stares at you angrily.\n"
+    },
+    {
+      "id": 5106,
+      "name": "The weapons master",
+      "description": "The drow weapons master is here shadow boxing.\n"
+    },
+    {
+      "id": 5107,
+      "name": "the matron mother",
+      "description": "The matron mother of the house is standing here.\n"
+    },
+    {
+      "id": 5108,
+      "name": "the matron mother",
+      "description": "The matron mother of the 1st house is waiting for you.\n"
+    },
+    {
+      "id": 5109,
+      "name": "the yochlol",
+      "description": "A yochlol forms out of a swirling mist.\n"
+    },
+    {
+      "id": 5110,
+      "name": "the drow guard",
+      "description": "The drow guard is here staring at you ominously.\n"
+    },
+    {
+      "id": 5111,
+      "name": "the drow scout",
+      "description": "The drow scout is here sneaking among the shadows.\n"
+    }
+  ],
+  "objects": [
+    {
+      "id": 5100,
+      "name": "a commoner's longsword",
+      "description": "A commoner's longsword made of adamantite has been left here."
+    },
+    {
+      "id": 5101,
+      "name": "a noble's longsword",
+      "description": "A drow noble's longsword made of adamantite lies here."
+    },
+    {
+      "id": 5102,
+      "name": "a snake headed whip",
+      "description": "A whip with two snakes heads lies here."
+    },
+    {
+      "id": 5103,
+      "name": "a snake headed whip",
+      "description": "A whip with three snake heads has been left here."
+    },
+    {
+      "id": 5104,
+      "name": "a snake headed whip",
+      "description": "A whip with four snake heads has been left here."
+    },
+    {
+      "id": 5105,
+      "name": "a black longsword",
+      "description": "A black longsword has been carelessly left here."
+    },
+    {
+      "id": 5106,
+      "name": "a snake headed whip",
+      "description": "A whip with five snake heads is lying here."
+    },
+    {
+      "id": 5107,
+      "name": "a snake headed whip",
+      "description": "A whip with six snake heads has been dropped here."
+    },
+    {
+      "id": 5108,
+      "name": "an iron bracer",
+      "description": "An iron bracer has been dropped here."
+    },
+    {
+      "id": 5109,
+      "name": "a pair of gauntlets",
+      "description": "A pair of gauntlets has been dropped here."
+    },
+    {
+      "id": 5110,
+      "name": "a silvery blue wand",
+      "description": "A silvery blue wand has been dropped in the dirt."
+    },
+    {
+      "id": 5111,
+      "name": "a small helmet",
+      "description": "A small helmet lies up against a rock."
+    },
+    {
+      "id": 5112,
+      "name": "a small ruby ring",
+      "description": "A small ruby ring lies in the dirt."
+    },
+    {
+      "id": 5113,
+      "name": "a spider shaped dagger",
+      "description": "A dagger with spider leg shaped blades lies on the ground."
+    },
+    {
+      "id": 5114,
+      "name": "a small bright green hat",
+      "description": "A small bright green hat lies in the dirt."
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 5103,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 5104,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 5108,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 5109,
+      "spec": "spec_breath_any"
+    }
+  ]
+}

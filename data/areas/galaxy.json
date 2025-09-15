@@ -1,0 +1,3386 @@
+{
+  "area": {
+    "vnum": 9300,
+    "name": "Galaxy",
+    "filename": "galaxy.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 9301,
+      "name": "Inside a Tavern",
+      "description": "You are inside a dimly-lit room.  The atmosphere makes you feel uncomfortable.\nIn front of you stands a mysterious gypsy.  She whispers 'Your fate and\ndestiny lie beyond this world.'  You are still wondering what she means when\nyou suddenly notice the crystal ball ... it glows fiercely and displays the\nUniverse!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1306,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9302,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9302,
+      "name": "Inside the Crystal Ball",
+      "description": "You have touched the crystal ball and find that you have gone inside it:\na world of stars and wonders!  As you look back you figure out there is no\nchoice but to go forward.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9303,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9303,
+      "name": "Inside the Galaxy",
+      "description": "You are now inside the galaxy, around you you see stars and nebulae smiling\nat your presence, and comets and meteors wandering around you.  You realize\nthat this world may not be the true galaxy after all, but just another\nfantasy zone.  Exits lie virtually in all directions.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9304,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9308,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9302,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9321,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9304,
+      "name": "On an InterGalactic Walkway",
+      "description": "You are on a well-paved path which seems that it was made deliberately for\nvisitors like you.  The walkway continues north and a small exit lies west.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9305,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9303,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9322,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9305,
+      "name": "End of the InterGalactic Walkway",
+      "description": "You notice the walkway has come to an abrupt end and you wonder why. You see\nthat there is still a small path which leads north and one to the west.\nTo the east lies a bridge.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9306,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9309,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9304,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9323,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9306,
+      "name": "At the Undeveloped Part of the Galaxy",
+      "description": "This place looks deserted, covered with space debris.  Not a sign of life\nis around.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9305,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9324,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9308,
+      "name": "On the Bridge of Stars",
+      "description": "This bridge has been made by the stars to honour their ancestors.  The\nbridge itself shines brightly and makes you feel that you are walking on\na path of light.  An entrance to an ancient building lies north and to\nthe east lies the Milky Way.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9331,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9312,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9303,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9309,
+      "name": "On the Bridge of Nebulae",
+      "description": "This bridge, like the other, was made as a memorial.  The nebulae had to\nmake one just to show that they are as capable as the stars.  North lies\na throne room.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9310,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9314,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9305,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9310,
+      "name": "The Throne Room of the Nebula King",
+      "description": "You can only faintly make out that it is a throne room as it is too\ndark in here.  In the middle is an empty throne.  You wonder where\nthe King has gone, maybe he is hiding from you?\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9309,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9312,
+      "name": "At the Start of the Milky Way",
+      "description": "It is here that the famous old Milky Way starts flowing.  You are surrounded\nby streams of mist the moment you tread on it.  You can't see well in\nhere ... luckily you haven't fallen yet!\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9313,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9308,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9313,
+      "name": "Along the Milky Way",
+      "description": "You are still travelling inside this path of mist.  You notice a small\nopening to the east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9314,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9317,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9312,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9314,
+      "name": "At the End of the Milky Way",
+      "description": "Just as you started enjoying this journey inside the mist, you have come to\nthe end of it.  West leads to a bridge and east leads to somewhere else.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9318,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9313,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9309,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9317,
+      "name": "A Small Clearing",
+      "description": "You are inside a small clearing.  You can see that there are signs of a\nliving creature nearby.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9318,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9313,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9318,
+      "name": "An Edge of the Galaxy",
+      "description": "You are on the very edge of the galaxy.  Nothing is here except that there\nis a path which leads down.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9317,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9314,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9319,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9319,
+      "name": "Very Near to a Gigantic Star",
+      "description": "You are very near to a gigantic red star.  While you are still fascinated\nby its beauty, the star keeps on growing ... suddenly you realize that you'd\nbetter leave.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9320,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9320,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9320,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9320,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9320,
+      "name": "Too Bright to Tell",
+      "description": "Indeed it is too bright to tell.  Because what you are witnessing is the\nrare event of a Supernova, how a star explodes itself into galactic dust.\nYou may find yourself lucky to witness this rare event but even luckier,\nyou have finally got out of this galaxy as your body turns into dust.\nThat really HURTS!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9321,
+      "name": "The Star Cluster",
+      "description": "You are inside the home of the stars.  All you can see around you are stars\nand nothing else.  You eyes become pretty hurt as you look at them.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9322,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9303,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9322,
+      "name": "Another Edge of the Galaxy",
+      "description": "This is another uninhabited place.  Exits lie north, east and south.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9323,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9304,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9321,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9323,
+      "name": "Corner of the Galaxy",
+      "description": "You wonder why the galaxy is limited.  All you have done in Astronomy\ncourses now prove worthless.  Well who told you to take one at the start?\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9324,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9305,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9322,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9324,
+      "name": "Lost in Space",
+      "description": "You are now lost in space.  Compasses don't work here, sorry.  What's more\nyou can sense darkness engulfing you.  You'd better get out quick.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9325,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9306,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9323,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9325,
+      "name": "Black Hole",
+      "description": "Well you have chosen the wrong path, sorry.  Nothing can escape from this\nmonster, not even light.\nPANIC!  You can't escape!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9326,
+      "name": "The Homes of the Pleiades",
+      "description": "This is where the famous Seven Sisters live.  You'd better not disturb them.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9329,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9327,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9327,
+      "name": "Western Side of the Temple",
+      "description": "You are still wandering around this temple.  You notice exits lie in all\ndirections except west.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9326,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9330,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9328,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9328,
+      "name": "Orion's Hunting Lodge",
+      "description": "This is dedicated to the Great Hunter of all time -- Orion.\nScattered on the floor is the famous hunting equipment used by him.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9327,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9331,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9329,
+      "name": "Northern Side of the Temple",
+      "description": "You are still wandering around this temple.  You notice exits lie in all\ndirections except north.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9332,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9330,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9326,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9330,
+      "name": "The Offering Chamber",
+      "description": "This is the sacred offering chamber in which sacrifices are made.  You see a\nyoung girl here, chained to the wall, as if she is waiting for execution.\nYou look up and realize the chains are sent down directly from above.\nBelow you recognize the temple of Thalos.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9329,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9333,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9331,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9327,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9339,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 5250,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9331,
+      "name": "The Entrance of the Ancient Temple",
+      "description": "You have entered into this old temple, which was built originally for the gods\nin Mount Olympia, but it is now deserted as someone took over this part of the\nUniverse.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9330,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9334,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9308,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9328,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9332,
+      "name": "Hercules' Mighty Throne",
+      "description": "You stand before the throne of a long-forgotten hero.  It is full of bounty\nthat he got from the Ten Labours.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9333,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9329,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9333,
+      "name": "Eastern Side of the Temple",
+      "description": "You are still wandering around this temple.  You notice exits lie in all\ndirections except east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9332,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9334,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9330,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9334,
+      "name": "Perseus' Chamber",
+      "description": "It is the chamber of the prince, Perseus.  However, he seems not to be here.\nMaybe he has gone to get Pegasus to save Andromeda?\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9333,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9331,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9339,
+      "name": "On the Mystic Chains",
+      "description": "You are dangling on the chains.  You notice exits lie in all directions.\nUp above you see the chains continue upwards.  But a forcefield prevents\nyou from going further upwards.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9348,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9351,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9342,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9345,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 9354,
+          "description": "You see the forcefield of Spring.\n",
+          "keyword": "forcefield",
+          "flags": "2",
+          "key": 9324
+        },
+        "down": {
+          "to_room": 9330,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9342,
+      "name": "On a Hill",
+      "description": "Suddenly you find yourself on a hillside.  As you look around, you notice\nthat Spring has descended upon you.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9339,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9353,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9343,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9343,
+      "name": "Inside a Spanish Bull-Ring",
+      "description": "You are inside what used to be a ground for bull fighting.  But you notice\nthere are no Matadors around.  Maybe they are all dead?\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9342,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9344,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9344,
+      "name": "Inside a study",
+      "description": "This is a strange study. Besides the desks and chairs you also see a large\nmirror in the middle.  So, you wonder, is this how you make a Gemini into\ntwo Gemini?\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9343,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9345,
+      "name": "Along the seashore",
+      "description": "You start to feel the heat of Summer.  Amongst the rocky beach you notice\nhidden forms which could be camouflaged crabs.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9339,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9346,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9346,
+      "name": "Within the Deep Jungle",
+      "description": "Nearby you can hear the roar of an animal.  Peering through the dense\novergrowth you think you glimpse a pair of menacing eyes.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9345,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9347,
+      "name": "Inside a Luxurious Bedroom",
+      "description": "A peaceful feeling overtakes you.  You see a magnificent four-poster bed.\nIt's a double bed and there is only room for one more!  Well, what now ... ?\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9348,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9348,
+      "name": "The Supreme Court",
+      "description": "You are standing inside the dock of a court.  You feel an overwhelming\nsense of guilt and you want to protest your innocence!  You fear retribution\nand feel yourself exposed, just like the trees in Autumn.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9347,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9339,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9349,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9349,
+      "name": "In the Dry Desert",
+      "description": "You are confused by the shifting sands around you.  Through the shimmering\nheat you see the hazy outline of a giant scorpion ... is this a mirage?\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9348,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9350,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9350,
+      "name": "In the Woods",
+      "description": "You find yourself in the center of a Centaurion hunting party.  You'd better\nhide yourself before you become the 'center attraction'!\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9349,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9351,
+      "name": "On a Mountain Peak",
+      "description": "You are on the highest peak of the Universe.  You look around and notice\nclouds below you.  One of the clouds resembles a goat-like form.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9352,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9339,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9352,
+      "name": "Inside a Waterfall",
+      "description": "The noise is deafening.  You are about to take a drink when you realize\nthat the water is being poured out of a vessel of mind-boggling proportions!\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9351,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9353,
+      "name": "Inside a Gigantic Clam",
+      "description": "You feel uneasy here as if some evil magic is being cast on you.\nYou suspect something fishy is going on in here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 9342,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9354,
+      "name": "End of the Mystic Chains",
+      "description": "You have reached the end of the mystic chains.  Looking up, you notice a\nsmall landing on which you can climb.  However, there seems to be another\nforcefield blocking your way.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 9355,
+          "description": "You see the forcefield of Summer.\n",
+          "keyword": "forcefield",
+          "flags": "2",
+          "key": 9325
+        },
+        "down": {
+          "to_room": 9339,
+          "description": "You see the forcefield of Spring.\n",
+          "flags": "2",
+          "key": 9324
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9355,
+      "name": "On the Draco",
+      "description": "You realize you are standing on scaly ground.  As you wonder what the ground\nis made of, you feel the ground move.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9356,
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 9354,
+          "flags": "2",
+          "key": 9325
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9356,
+      "name": "Tail of the Draco",
+      "description": "At last you realize that you are on a giant snake-like dragon called the\nDraco, the guardian of the inner galaxy.  You realize that the Draco is\nactually flying now!\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9357,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9355,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9357,
+      "name": "Path of the Draco",
+      "description": "As you struggle along this scaly creature you realize that the only way\nyou can reach to the inner galaxy is by going all the way to the head.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9358,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9356,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9358,
+      "name": "Near the Legs of Draco",
+      "description": "You are approaching the leg part of this creature.  You look around and see\nthat the surrounding is all dark except for some faint lights from the\ndistant stars.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9359,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9357,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9359,
+      "name": "On the Back of Draco",
+      "description": "At last you are half way through this long, weary journey. You can see\nthe wings are to the east but it seems that another forcefield is in the way.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9360,
+          "description": "You see the forcefield of Autumn.\n",
+          "keyword": "forcefield",
+          "flags": "2",
+          "key": 9326
+        },
+        "south": {
+          "to_room": 9358,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9360,
+      "name": "Between the Wings of Draco",
+      "description": "You hear some giant flapping sounds nearby.  You desperately try to get hold\nof something as the forceful gusts sweep you away.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9361,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9359,
+          "flags": "2",
+          "key": 9326
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9361,
+      "name": "Near the Arms of Draco",
+      "description": "From above you can faintly make out the gigantic arms which extend far\nbeyond into the darkness.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 9362,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9360,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9362,
+      "name": "On the Neck of Draco",
+      "description": "Your journey is now approaching the end.  However, this neck seems to be\nendless.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9361,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9363,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9363,
+      "name": "Approaching the Head of Draco",
+      "description": "You have come to the end of Draco, but you can't find the head!\nYou see a forcefield to the south, some distance away, beyond reach.\nIf only the head were here ...\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9362,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9364,
+          "description": "You see the forcefield of Winter.",
+          "keyword": "forcefield",
+          "flags": "2",
+          "key": 9327
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9364,
+      "name": "At the Entrance of the Great Dipper",
+      "description": "Now you are in the innermost part of the galaxy.  What you are walking on now\nis the path of the Great Dipper or the Plough.  You notice that there are\nseven rooms in this zone, representing the seven stars of the Dipper.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9363,
+          "description": "You see the forcefield of Winter.",
+          "keyword": "forcefield",
+          "flags": "2",
+          "key": 9327
+        },
+        "south": {
+          "to_room": 9365,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9366,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9365,
+      "name": "Cassiopeia's Throne",
+      "description": "This is the Throne room of the Queen of the Universe.  From here you can see\nevery star and constellation in the Universe.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9364,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9367,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9366,
+      "name": "Along the Path of the Dipper",
+      "description": "You see stars around you but nothing of special interest.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9364,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9367,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9367,
+      "name": "Cepheus' Throne",
+      "description": "This is the Throne room of the King of the Universe.  From here you can see\nevery star and constellation in the Universe.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9366,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 9365,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9368,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9368,
+      "name": "Along the path of the Dipper",
+      "description": "You see stars around you but nothing of special interest.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9367,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 9369,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9369,
+      "name": "Along the path of the Dipper",
+      "description": "You see stars around you but nothing of special interest.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 9368,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9370,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9370,
+      "name": "End of the Dipper",
+      "description": "You have finished the path of the Dipper.  Here, the most prominent feature\nis a set of claw-marks.  You also notice a room to the south; it looks as\nif Polaris could lie here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9369,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9371,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    },
+    {
+      "id": 9371,
+      "name": "The Polar Star",
+      "description": "You have entered the private chamber of Polaris.  This is a room of great\nsignificance.  You can see a powerful telescope pointing down towards the\nUniverse (SNOOPING!).  It is from here that Polaris commands the Universe.\nYou feel you have come to end of your search in this galaxy ...\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 9370,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9300
+    }
+  ],
+  "mobs": [
+    {
+      "id": 9301,
+      "name": "a poor mudder",
+      "player_name": "oldstyle poor mudder",
+      "long_description": "A poor mudder, lost in this place.\n",
+      "description": "You will become him if you are not careful.\n",
+      "race": "human",
+      "act_flags": "ACGS",
+      "affected_by": "DF",
+      "alignment": 0,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 9,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9302,
+      "name": "a beautiful star",
+      "player_name": "oldstyle star",
+      "long_description": "A beautiful white star smiles at you.\n",
+      "description": "You can't tell what the star looks like, she is too bright!\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9303,
+      "name": "a young nebula",
+      "player_name": "oldstyle nebula young",
+      "long_description": "A young nebula, waiting to become a star.\n",
+      "description": "It hasn't got a definite shape, it is just a cloud of mist.\n",
+      "race": "human",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 200,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9304,
+      "name": "a speedy comet",
+      "player_name": "oldstyle comet speedy",
+      "long_description": "A speedy comet is waiting to crush your head in.\n",
+      "description": "You see the offspring of Halley's comet, here just to wipe everything out.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9305,
+      "name": "a red supergiant",
+      "player_name": "oldstyle red supergiant",
+      "long_description": "An enormous, red supergiant is forced to protect the galaxy.\n",
+      "description": "You notice the giant is not as tough as his name sounds ...\nStill he can be very powerful.\n",
+      "race": "human",
+      "act_flags": "ABGH",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sleep",
+      "default_pos": "sleep",
+      "sex": "male",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9306,
+      "name": "a white dwarf",
+      "player_name": "oldstyle white dwarf",
+      "long_description": "A tiny white dwarf is trying to sneak away from duty.\n",
+      "description": "Like the red giant, he is also appointed to stand guard for the galaxy.\nBut somehow he manages to escape.  Though tiny, it can take a lot of hits!\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9307,
+      "name": "a horsehead nebula",
+      "player_name": "oldstyle horsehead nebula",
+      "long_description": "A huge nebula is here, resembling a horsehead.\n",
+      "description": "You can only make out its shape from the darkness.  He was cursed to stay in\nhere and his face may never be seen by anyone again.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "PQ",
+      "alignment": -1000,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "male",
+      "wealth": 300,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9308,
+      "name": "poor Andromeda",
+      "player_name": "oldstyle andromeda",
+      "long_description": "The poor Andromeda is chained to the wall, suffering ...\n",
+      "description": "She was once a princess of beauty.  However, her beauty has led to a Goddess's\njealousy and she has to suffer here endlessly until Perseus comes.\n",
+      "race": "human",
+      "act_flags": "ABEG",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 375,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9309,
+      "name": "the mighty Hercules",
+      "player_name": "oldstyle hercules",
+      "long_description": "The Mighty Hercules is working hard on his extra Labours for the Gods.\n",
+      "description": "He has been put to do the Ten Labours -- ten impossible tasks, by Hera, the\nqueen goddess, who disliked him.  But he finished them all and at the end was\ngranted immortality. He is a very brave and strong fighter.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 19,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 375,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9310,
+      "name": "the wild Pegasus",
+      "player_name": "oldstyle pegasus",
+      "long_description": "The wild pegasus is grazing peacefully.\n",
+      "description": "It is the legendary horse with wings on its back.\n",
+      "race": "human",
+      "act_flags": "ABGH",
+      "affected_by": "0",
+      "alignment": 300,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "8d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9311,
+      "name": "Orion the hunter",
+      "player_name": "oldstyle orion",
+      "long_description": "Orion is still hunting for Scorpio.\n",
+      "description": "He is the legendary hunter who almost defeated Taurus the bull, but got\nkilled by Scorpio.  The gods put them both up as constellations but one\nappears on one side of the sky and the other the other side so they will\nnever meet.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "H",
+      "alignment": 300,
+      "group": 0,
+      "level": 19,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 375,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9312,
+      "name": "the Pleiades",
+      "player_name": "oldstyle pleiades",
+      "long_description": "The Pleiades are here, weeping for the loss of their sisters.\n",
+      "description": "These are the seven sisters of the Myths, and as for why they are here, no\none knows; even the Gods themselves have forgotten.\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "0",
+      "alignment": 300,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d10+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9313,
+      "name": "the Head of Draco",
+      "player_name": "oldstyle draco head",
+      "long_description": "The gigantic Head of Draco lurks out from beneath and prepares to roast you.\n",
+      "description": "This evil-looking head is even larger than a giant.  He is the last guardian\nbefore entering the inner galaxy.  His neck is flexing in a random fashion so\nhitting the head is certainly not easy.\n",
+      "race": "human",
+      "act_flags": "ABFG",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9314,
+      "name": "a baby draco",
+      "player_name": "oldstyle draco baby",
+      "long_description": "A baby draco is crawling on the Draco's body.\n",
+      "description": "You see a tiny creature which looks like a dragon except that its body\nresembles a snake.  Gosh, is this a draco, you wonder, is this the thing\nwe are on now?\n",
+      "race": "human",
+      "act_flags": "ACGH",
+      "affected_by": "0",
+      "alignment": -700,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 200,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9315,
+      "name": "Aries",
+      "player_name": "oldstyle aries",
+      "long_description": "Aries is sitting here, welcoming you.\n",
+      "description": "You see a white goat here, the first guardian of the Zodiac,\nalso the ruler of Spring. He looks as if he is expecting you.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 700,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9316,
+      "name": "Taurus",
+      "player_name": "oldstyle taurus",
+      "long_description": "Taurus wants to leave, but has been forced to stay as a guardian here.\n",
+      "description": "You see a wild-looking bull with a bad temper.  He is well-built and looks like\nhe can fight well ... indeed he has fought with Orion before and survived.\n",
+      "race": "human",
+      "act_flags": "ABFGQ",
+      "affected_by": "DH",
+      "alignment": -100,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9317,
+      "name": "Gemini",
+      "player_name": "oldstyle gemini",
+      "long_description": "Gemini is looking for his brother; have you seen him?\n",
+      "description": "As soon as you see him you know that he is the most perfect man you have seen.\nYou can't find any imperfections on him.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9318,
+      "name": "Gemini",
+      "player_name": "oldstyle gemini",
+      "long_description": "Gemini is hiding from his brother, grinning evilly at you.\n",
+      "description": "As soon as you see him you see the most imperfect man you have ever seen.\nHow can there be such a contrast?  You wonder ...\n",
+      "race": "human",
+      "act_flags": "ABCFGHQ",
+      "affected_by": "DHU",
+      "alignment": -1000,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "15d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9319,
+      "name": "Cancer",
+      "player_name": "oldstyle cancer",
+      "long_description": "Cancer the crab is here, hoarding the treasure away from you.\n",
+      "description": "You see a gigantic crab (YES, it is bigger than you!) with a crushed shell.\nLegend is that he was crushed by Hercules when he was sent by Hera to kill him.\nSo Hera made Cancer a constellation for his work.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 0,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 600,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9320,
+      "name": "Leo",
+      "player_name": "oldstyle leo",
+      "long_description": "Leo the lion is roaring at you, ready for a strike!\n",
+      "description": "His metallic skin means that he could be the one which was killed by Hercules\nduring his first Labour.  His skin is so weapon-proof that Hercules had to use\nhis bare hands to tear the lion into two from its mouth!\n",
+      "race": "human",
+      "act_flags": "ABFGQ",
+      "affected_by": "DH",
+      "alignment": -100,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9321,
+      "name": "Virgo",
+      "player_name": "oldstyle virgo",
+      "long_description": "Virgo is sitting here, winking at you suggestively ... you are alarmed!\n",
+      "description": "From what you have seen, you now realize that legends are legends, and Virgo\nmay not be the maid of chastity and purity at all!  But still she looks\ngorgeous and is waiting for your first move, whatever it is ...\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "female",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9322,
+      "name": "Libra",
+      "player_name": "oldstyle libra",
+      "long_description": "Libra, the fair and just, is staring at you, weighing up the sins of your past.\n",
+      "description": "He is a wise old man and can see people's thoughts through their eyes....\nNow all he can see from you is greed and bloodshed.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9323,
+      "name": "Scorpio",
+      "player_name": "oldstyle scorpio",
+      "long_description": "Scorpio is moving his tail towards you, waiting to put an end to some mortals.\n",
+      "description": "Ever since he killed Orion in the myths, he has been punished by having\nSagittarius' arrow aimed at his heart forever.\n",
+      "race": "human",
+      "act_flags": "ABFGQ",
+      "affected_by": "DH",
+      "alignment": -200,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9324,
+      "name": "Sagittarius",
+      "player_name": "oldstyle sagittarius",
+      "long_description": "Sagittarius the centaur is waiting to let go of his well aimed arrow ...\n",
+      "description": "He is a centaur and a well trained archer. No one can escape his arrows.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9325,
+      "name": "Capricorn",
+      "player_name": "oldstyle capricorn",
+      "long_description": "Capricorn is here, feeling bored ... he wants a fight!\n",
+      "description": "You see a mean-looking ram here.  He used to be a fierce fighter in the ancient\nwar but now the gods have decided to put him here, to live out the rest of his\ndays in peace.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 700,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9326,
+      "name": "Aquarius",
+      "player_name": "oldstyle aquarius",
+      "long_description": "The beautiful Aquarius is standing here, holding THE vessel.\n",
+      "description": "The pretty Water Bearer is smiling at you, you think you'd better give her a\nhand with holding the vessel.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9327,
+      "name": "Pisces the mermaid",
+      "player_name": "oldstyle pisces mermaid",
+      "long_description": "Pisces the mermaid is sitting here, waiting for your help.\n",
+      "description": "She has been forced to serve her husband, who had been cursed to turn into a\nfish and she deserves your pity.\n",
+      "race": "human",
+      "act_flags": "ABGQ",
+      "affected_by": "H",
+      "alignment": 1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "female",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9328,
+      "name": "Pisces the fish",
+      "player_name": "oldstyle pisces fish",
+      "long_description": "Pisces the fish, is jealous of your approach...\n",
+      "description": "He was once a very handsome man but now has turned into an ugly big fish.\nSo he becomes jealous of any living thing which is more handsome than him.\n",
+      "race": "human",
+      "act_flags": "ABFGQ",
+      "affected_by": "H",
+      "alignment": -1000,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "22d9+100",
+      "mana_dice": "2d8+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9329,
+      "name": "Ursa Major the bear",
+      "player_name": "oldstyle bear ursa major",
+      "long_description": "Ursa Major the bear is the last defense against any intruders.\n",
+      "description": "The Huge Bear which resides in the northern skies is here.\nYou think you'd better turn back.  At least you have got a chance of survival.\n",
+      "race": "bear",
+      "act_flags": "ABFGQ",
+      "affected_by": "DH",
+      "alignment": 0,
+      "group": 0,
+      "level": 27,
+      "thac0": 0,
+      "ac": "5d10+650",
+      "hit_dice": "27d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 4,
+      "offensive": "IKR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9330,
+      "name": "Cassiopeia the Queen",
+      "player_name": "oldstyle cassiopeia queen",
+      "long_description": "Cassiopeia, the queen of the Universe, is sitting on her throne.\n",
+      "description": "She is the Queen of Dignity; facing her you feel all your dignity has gone.\n",
+      "race": "human",
+      "act_flags": "ABGR",
+      "affected_by": "DH",
+      "alignment": 700,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "26d9+100",
+      "mana_dice": "3d6+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 2,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "female",
+      "wealth": 600,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9331,
+      "name": "Cepheus the King",
+      "player_name": "oldstyle cepheus king",
+      "long_description": "Cepheus, the king of the Universe, is sitting on his throne.\n",
+      "description": "He is the King of Might as well as of the Universe. You suddenly feel very\nweak and useless in front of him.\n",
+      "race": "human",
+      "act_flags": "ABGR",
+      "affected_by": "H",
+      "alignment": 700,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "26d9+100",
+      "mana_dice": "3d6+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 2,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "male",
+      "wealth": 600,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 9332,
+      "name": "Polaris, the polar star",
+      "player_name": "oldstyle polaris polar star",
+      "long_description": "Polaris, the polar star, who commands the whole Universe, stands before you!\n",
+      "description": "He is the Master of the Universe, (NOT He-Man!), the most powerful!\nEven the King and the Queen obey him.  As you look at him you notice he is\nactually a STAR, with dazzling bright light ... maybe you shouldn't have come\nhere at all?\n",
+      "race": "human",
+      "act_flags": "ABG",
+      "affected_by": "BDH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 9301,
+      "name": "a comet's tail",
+      "description": "A long, slender whip lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AB",
+      "wear_flags": "AN",
+      "weight": 10,
+      "cost": 90,
+      "condition": "390",
+      "values": [
+        0,
+        2,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9302,
+      "name": "the Titanic Arm plates of Hercules",
+      "description": "Arm plates of the Zodiac lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AI",
+      "weight": 22,
+      "cost": 100,
+      "condition": "3100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "arm",
+          "description": "These mighty armors have been worn by this immortal, since the ancient time.\n"
+        }
+      ]
+    },
+    {
+      "id": 9304,
+      "name": "the Titanic Belt of Orion",
+      "description": "A belt of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AL",
+      "weight": 17,
+      "cost": 70,
+      "condition": "3800",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "belt",
+          "description": "You can immediately see that it belongs to Orion, from the three stars\nengraved on it.\n"
+        }
+      ]
+    },
+    {
+      "id": 9305,
+      "name": "an ugly skull of Draco",
+      "description": "A massive skull of a dead Draco lies here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "BGH",
+      "wear_flags": "AO",
+      "weight": 14,
+      "cost": 200,
+      "condition": "4300",
+      "values": [
+        15,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9306,
+      "name": "the Titanic Fleece of Aries",
+      "description": "A fleece of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AC",
+      "weight": 20,
+      "cost": 90,
+      "condition": "2000",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "fleece",
+          "description": "From a look it resembles the Golden Fleece that exists in the Greek myths.\n"
+        }
+      ]
+    },
+    {
+      "id": 9307,
+      "name": "the Titanic Hoof of Taurus",
+      "description": "A hoof of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AG",
+      "weight": 20,
+      "cost": 100,
+      "condition": "1280",
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 14,
+          "modifier": 20
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "hoof",
+          "description": "It is with these hooves that Taurus can stand against Orion's attacks.\n"
+        }
+      ]
+    },
+    {
+      "id": 9308,
+      "name": "the Titanic Mask of Gemini",
+      "description": "A mask of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGHK",
+      "wear_flags": "AE",
+      "weight": 16,
+      "cost": 70,
+      "condition": "3600",
+      "values": [
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 2
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "mask",
+          "description": "You notice the mask has got two faces, one smiling and the other crying.\nYou don't know which way you should wear it.\n"
+        }
+      ]
+    },
+    {
+      "id": 9309,
+      "name": "the Titanic Shell of Cancer",
+      "description": "A shell of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AD",
+      "weight": 20,
+      "cost": 150,
+      "condition": "3800",
+      "values": [
+        7,
+        7,
+        7,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "shell",
+          "description": "A shell which is dented in the middle, resulting from the Hercules' mighty\npound when the Crab was still an enemy of Hercules in ancient times.\n"
+        }
+      ]
+    },
+    {
+      "id": 9310,
+      "name": "the Titanic Skin of Leo",
+      "description": "A skin of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AK",
+      "weight": 20,
+      "cost": 150,
+      "condition": "1740",
+      "values": [
+        7,
+        7,
+        7,
+        5,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "skin",
+          "description": "A skin made of metal, which was worn by Hercules during his Ten Labours.\n"
+        }
+      ]
+    },
+    {
+      "id": 9311,
+      "name": "the Titanic Bracelet of Virgo",
+      "description": "A bracelet of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "AGK",
+      "wear_flags": "AM",
+      "weight": 15,
+      "cost": 10,
+      "condition": "2600",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "bracelet",
+          "description": "A bracelet of purity and youth, only worn by selected virgins.\n"
+        }
+      ]
+    },
+    {
+      "id": 9312,
+      "name": "the Titanic Scale of Libra",
+      "description": "A shield of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AJ",
+      "weight": 25,
+      "cost": 150,
+      "condition": "3900",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 5
+        },
+        {
+          "location": 17,
+          "modifier": -3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "scale",
+          "description": "It is a shield of justice, used in the ancient battle against injustice.\n"
+        }
+      ]
+    },
+    {
+      "id": 9313,
+      "name": "the Titanic Scale of Libra",
+      "description": "A shield of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "BGH",
+      "wear_flags": "AJ",
+      "weight": 0,
+      "cost": 150,
+      "condition": "0",
+      "values": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": -30
+        },
+        {
+          "location": 17,
+          "modifier": 6
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "scale",
+          "description": "It is a shield of injustice, it picks on the innocent.\n"
+        }
+      ]
+    },
+    {
+      "id": 9314,
+      "name": "the Sting of Scorpio",
+      "description": "Sting of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGK",
+      "wear_flags": "AN",
+      "weight": 19,
+      "cost": 70,
+      "condition": "2700",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sting",
+          "description": "This dreadful weapon put a lot of mortals to death before Scorpio was banished.\n"
+        }
+      ]
+    },
+    {
+      "id": 9315,
+      "name": "the Arrow of Sagittarius",
+      "description": "The Arrow of Sagittarius lies here.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "AGK",
+      "wear_flags": "AO",
+      "weight": 11,
+      "cost": 70,
+      "condition": "3400",
+      "values": [
+        10,
+        10,
+        10,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "arrow",
+          "description": "It's an arrow of lightning; it will never miss any target.\n"
+        }
+      ]
+    },
+    {
+      "id": 9316,
+      "name": "the Titanic Bow of Sagittarius",
+      "description": "The Titanic Bow of Sagittarius lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGK",
+      "wear_flags": "AN",
+      "weight": 20,
+      "cost": 200,
+      "condition": "2800",
+      "values": [
+        0,
+        2,
+        9,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "bow",
+          "description": "The gigantic bow used by the Archer; it is a very powerful weapon.\n"
+        }
+      ]
+    },
+    {
+      "id": 9317,
+      "name": "the Titanic Horns of Capricorn",
+      "description": "A pair of horns of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AH",
+      "weight": 22,
+      "cost": 60,
+      "condition": "3000",
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "horn",
+          "description": "These strange horns are the work of gods, shaped to fit on hands.\nThey look powerful indeed.\n"
+        }
+      ]
+    },
+    {
+      "id": 9318,
+      "name": "the Ancient Vessel of Aquarius",
+      "description": "A vessel of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "AGK",
+      "wear_flags": "AO",
+      "weight": 12,
+      "cost": 120,
+      "condition": "5900",
+      "values": [
+        10,
+        10,
+        10,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "vessel",
+          "description": "This vessel has been carried by the Water Bearer ever since she came to the\nZodiac.\n"
+        }
+      ]
+    },
+    {
+      "id": 9319,
+      "name": "the Titanic Tail of Pisces",
+      "description": "A fish tail of the Zodiac lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGK",
+      "wear_flags": "AF",
+      "weight": 21,
+      "cost": 100,
+      "condition": "950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": -2
+        },
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "tail",
+          "description": "This tail can actually be worn by mortals somehow as leggings ... another\nwork of the gods.\n"
+        }
+      ]
+    },
+    {
+      "id": 9320,
+      "name": "the Ring of Dignity",
+      "description": "A ring of specialty lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "ABFGK",
+      "wear_flags": "AB",
+      "weight": 26,
+      "cost": 30,
+      "condition": "4200",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": 2
+        },
+        {
+          "location": 12,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "ring",
+          "description": "This ring belongs to Cassiopeia, queen of the Universe.\nMortals, do not touch!\n"
+        }
+      ]
+    },
+    {
+      "id": 9321,
+      "name": "the Sceptre of Might",
+      "description": "A sceptre of interest lies here.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": "ABFGK",
+      "wear_flags": "ACDEGHIJKLMN",
+      "weight": 22,
+      "cost": 40,
+      "condition": "2400",
+      "values": [
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sceptre",
+          "description": "You'd better give it back, or the king of the Universe will punish you.\n"
+        }
+      ]
+    },
+    {
+      "id": 9322,
+      "name": "the ring of the universe",
+      "description": "Here lies a fortune ... a small ring of power.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "ABFGI",
+      "wear_flags": "AB",
+      "weight": 30,
+      "cost": 30,
+      "condition": "1690",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 30
+        },
+        {
+          "location": 12,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "ring",
+          "description": "It conceals the power of the universe.\n"
+        }
+      ]
+    },
+    {
+      "id": 9323,
+      "name": "the Great Dipper of the Skies",
+      "description": "A dazzling white object lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "ABFGI",
+      "wear_flags": "AN",
+      "weight": 29,
+      "cost": 200,
+      "condition": "4200",
+      "values": [
+        0,
+        4,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9324,
+      "name": "a spring shoot",
+      "description": "A shoot grows here, covered with dew.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "AB",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9325,
+      "name": "a summer flower",
+      "description": "A flower grows here, waiting to be picked up.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "AB",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9326,
+      "name": "an autumn leaf",
+      "description": "A leaf lies here, as if just fallen from a tree.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "AB",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9327,
+      "name": "a winter branch",
+      "description": "A branch lies here, still covered with snow.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "AB",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9328,
+      "name": "chains of Andromeda",
+      "description": "Some chains lie on the floor.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": "AF",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 500,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "chains",
+          "description": "They certainly look important!\n"
+        }
+      ]
+    }
+  ]
+}

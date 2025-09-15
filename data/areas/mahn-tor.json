@@ -1,0 +1,6066 @@
+{
+  "area": {
+    "vnum": 2300,
+    "name": "Mahn-Tor",
+    "filename": "mahntor.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 2300,
+      "name": "The dark woods",
+      "description": "You are travelling through woods that are as dark as night. The trees above\nblock all light and wind. The air is stagnant and smells of death and decay.\nThe lack of sounds and other signs of life make your skin crawl and you feel\nvery much like turning back and heading for safer areas. The path leads north\ninto more open lands while it also leads south into the darkness of the forest.\nA small sign is posted here.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 5280,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2301,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "[]================================[]\n|      BEWARE!      | Hope you   |\n|   Travellers are  | enjoy it!  |\n|  advised to stay  | <------->  |\n|   in groups for   |  Skurge    |\n|      safety.      | Ragnarok   |\n[]================================[]\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2301,
+      "name": "The dark woods",
+      "description": "You wearily travel through the darkness of the forest. Huge skeletal trees\nline the edges of the path and tower above you. Errant rays of light spear\ndown through the gaps in the canopy above and provide small spots of light\nthat seem to attract what little foliage can grow on the dark forest floor.\nThe path winds north and south into darkness.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2300,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2302,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2302,
+      "name": "The small intersection in the forest",
+      "description": "The forest path splits here in three directions. Small paths lead to the east,\nnorth, and south. The trees above leave a gap which allows light to fill the\nintersection. It is almost as though you are in a circle of light that\nprovides sanctuary in this land of darkness.\nSomething has been scrawled in the dirt in blood here.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2301,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2304,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2303,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "blood dirt scrawl",
+          "description": "BeWAre tHe SwAmP oGreS......\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2303,
+      "name": "The edge of the forest and hills",
+      "description": "You stand at the edge of a dark forest. A path leads north into the forest and\nits deadly darkness and silence. Looking west, you see a path that leads up\ninto a foothills region. Standing here on the boundary between light and\ndarkness, you feel very vulnerable and alone.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2302,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2309,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2304,
+      "name": "In the dense forest",
+      "description": "You walk along a small path leading through a dark forest. No sounds can be\nheard and little light penetrates the canopy of trees above you. The air here\nsmells musty and you long for a fresh breath. You see an intersection of paths\nto the west. The path you are on leads south into the darkening woods.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2305,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2302,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2305,
+      "name": "The dark forest path",
+      "description": "You continue on through darkness and gloom. The path below you has become a\nwet quagmire. It is difficult to walk, and you make squishing sounds as you\nmove on. Looking east, you see a swampy path. The main path leads north and\nsouth into darkness.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2304,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2327,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2306,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2306,
+      "name": "A turn in the path",
+      "description": "The forest path turns here towards the north and west. To the north, you see\nthat the ground has become dank and swampy, while the western path appears\nto be entering a hilly area. You hear sounds of swamp creatures to the north\neast.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2305,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2307,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2307,
+      "name": "The bloody intersection",
+      "description": "This is a small intersection. Paths lead east, west, and south. You are struck\nby the carnage here when you enter the clearing. There appears to have been a\ngreat battle here. Blood is everywhere and the ground is all torn up. Pieces\nof beaten armour and broken blades lie all around. Examining the tracks here\nlead you to believe that the dead and wounded were dragged off in two\ndirections, south and east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2306,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2310,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2308,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2308,
+      "name": "The rocky path",
+      "description": "The path here winds among the low rocky hills. The long trek up and down the\nhills begins to tire you greatly. Looking east, you see a small clearing. More\nhills are to the north of here.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2309,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2307,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2309,
+      "name": "The rocky path",
+      "description": "The path here is very rocky and treacherous. The travelling is rough and you\nslip and fall often. Looking south, you see that the path continues into the\nhills. Smoother ground is to the east, but the path seems to lead into a dark\nforest in that direction.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2303,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2308,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2310,
+      "name": "Up the rocky hillside",
+      "description": "You are climbing on a rocky hillside. As you scramble about, loose rocks and\nsmall boulders bounce and fall down below you. Looking to the east and west,\nyou see more stable ground. The hillside itself goes on higher to the south\nand it drops away to the north.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2307,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2312,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2314,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2311,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2311,
+      "name": "The sparse foothills",
+      "description": "You are in foothills that are sparsely covered by scraggly bushes and weather\nbeaten trees. There are little signs of life here. Only bare rock and dry dirt\ncan be seen. Looking east, you see a small pass that will allow you to leave\nthe foothills. The foothills themselves extend to the south.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2310,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2313,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2312,
+      "name": "Standing on level ground",
+      "description": "You are standing at the edge of a steep set of foothills. Looking down, you\nsee what appears to be a marshy, dark forest. It reeks of death and decay.\nEven here, you catch its scent on the winds. From here, you can travel south\ndeeper into the foothills or to the west where a small pass will allow you to\nclimb down.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2315,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2310,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2313,
+      "name": "In the foothills",
+      "description": "You are in a barren set of foothills. Looking around, all you see are dead\nplants and boulders. From the south, you get a whiff of salty air. Barren paths\nlead east, north, and south into more barren hills.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2311,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2314,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2317,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2314,
+      "name": "Before the huge tree",
+      "description": "You enter a large ring of boulders. Sheltered by this wall of stones, a small\ncluster of plants have sprung up. In the center of this group of trees and\nbushes is a huge gnarled tree. It appears to have been twisted and torn by\nthe forces of nature. It sways and moans as a strong wind from the south tears\nthrough its old feeble branches. The hills themselves lead in all directions.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2310,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2315,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2318,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2313,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2315,
+      "name": "Before the dark cave",
+      "description": "You stand directly before a huge dark cave. The rocks and boulders outside the\ncave are covered with blood stains and all types of broken and shattered bones\nlie around. An unbearable stench comes from within the cave itself. The dark\ncave entrance looms to the east. The hills themselves lead towards the\nnorth, south, and west.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2312,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2316,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2319,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2314,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2316,
+      "name": "Inside the horrid cave",
+      "description": "The stench is overwhelming. You can hardly breathe as you enter the cave.\nLooking around, you realize that some bizarre and horrible creature uses this\ncave as a home. Skeletal remains lie all over. Several half-eaten corpses are\nrotting away slowly in the gloomy darkness. In the back of the cave, you see a\nlarge pile of rotting cloth, fur, and plant matter. Light and safety is\ntowards the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2315,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "pile",
+          "description": "It appears to be some sort of nest......\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2317,
+      "name": "The hills overlooking the shore",
+      "description": "Standing at the edge of the foothills, you are able to look down upon a rocky\nshoreline. It appears as though a vast ocean is to the south. Sea birds have\nmade their nests here in the rocks and you are heartened by the presence of\nlife here. It is possible to climb down to the shore here. The hills\nthemselves are to the north. The edge of the hills leads to the east along the\nshoreline.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2313,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2318,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2320,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2318,
+      "name": "The hills overlooking the shoreline",
+      "description": "You stand on a barren section of hills that overlook a rocky shoreline. The\nstiff ocean wind has blown the rocks smooth here and you have to lean forward\na bit to keep your balance. The salty sea air fills your nostrils and you\nnotice signs of life in the rocky crags here. You can climb down towards the\nshore or head north into the hills themselves. The rocky summit you are\nstanding leads east and west along the shoreline.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2314,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2319,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2317,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2321,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2319,
+      "name": "The hills above the shoreline",
+      "description": "You stand on a rocky summit overlooking a rough shoreline below. The sea wind\nblows hard across the rocks here and they have been worn smooth with time.\nLooking around, you notice that you can safely climb down towards the shore.\nThe hills themselves stretch towards the north. The rough summit you stand\nupon leads west along the shoreline.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2315,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2318,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2322,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2320,
+      "name": "The rocky shore",
+      "description": "You are at the base of the rocky hills. Stretching to the south and east, you\nsee a rocky shore. To the southeast, you see a small altar of some sorts that\nglows with an eerie blue light. It is possible to climb up into the hills here.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2321,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2323,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2317,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2321,
+      "name": "The rocky shoreline",
+      "description": "You are on a rocky shore that borders a vast sea. A stiff wind blows here and\nwhistles among the rocks. You see an altar of some sort built on the shore to\nthe south. The shore itself leads east and west. Looking up, you see foothills\nand rocky crags.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2322,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2324,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2320,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2318,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2322,
+      "name": "The rocky shore",
+      "description": "You stand at the base of some rocky hills, where they meet a rocky shore. A\nvast sea is to your south. Looking to the southwest, you see a small altar\nthat glows with a eerie blue light. The shore stretches out to the south and\nwest. It is possible to climb up into the hills here.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2325,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2321,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2319,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2323,
+      "name": "The edge of the sea",
+      "description": "You walk along the water's edge. The vastness of the ocean is staggering as\nyou look out across it. You notice a small altar that glows with blue light\nto the east. The shore itself extends north away from the water's edge.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2320,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2324,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2324,
+      "name": "The Blood Sea Portal",
+      "description": "You stand on a small pedestal like altar that has been built on the shore\nhere. Standing here, you can look out across the sea. You can almost imagine\nthat you see a far away island. Dominating the altar is a small blue portal of\nlight. It is possible to walk south into the portal. The shore itself extends\nto the north, east, and west.\nThere are small inscriptions on the rock at the base of the portal.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2321,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2325,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2326,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2323,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "portal blue",
+          "description": "You see a swirling blue portal of light. You think you can see glimpses of\nsomething moving on the \"other side\".\n"
+        },
+        {
+          "keyword": "small inscriptions inscription",
+          "description": "\"Enter all ye who wish to join the Brotherhood!\"\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2325,
+      "name": "The edge of the sea",
+      "description": "You walk along the water's edge. The tide appears to have risen. Very little\ndebris is washed up on shore. You slip and slide as you tread across the\nslippery rocks that make up the shore. To the west you see a small altar that\nradiates blue light. The shore extends north away from the water's edge.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2322,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2324,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2326,
+      "name": "Floating in blue light",
+      "description": "You seem to be floating in blue weightlessness. You tumble head over heels and\nfinally right yourself. Gaining your bearings, you notice that there are two\n\"windows\" in the sea of blue here. One to the south shows an image of a snowy\nplain. Another window the the north shows an image of a rocky shore.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2324,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2353,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2327,
+      "name": "The swampy path",
+      "description": "This damp path seems to lead into a deep, dark swamp. The trees above block\nout all light and stifle the wind. You smell swamp gas and hear damp squashing\nsounds all around you. The path leads east deeper into the swamp. You also see\na dark forest to the west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2328,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2305,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2328,
+      "name": "The swampy path",
+      "description": "You tread lightly in a wet, swampy path. All around you, you see pools of\nquicksand and rotting vegetation. Unlike the forest to the west, the swamp is\nteeming with life. Some of it is harmless, some is not. The path leads east\nand west into more swamp.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2329,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2327,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2329,
+      "name": "The swampy path",
+      "description": "You weave your way through the treacherous swamp. Gas rises all around you and\na damp mist covers the ground, making it impossible to travel safely, without\ncarefully picking your way around obstacles. Large, gnarled trees rise above\nyou. Their moss covered branches block out all traces of the sun. The path\nhere leads east and west.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2330,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2328,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2330,
+      "name": "The turn in the swampy path",
+      "description": "You come upon a bend in the swampy path. The ground here is fairly sturdy,\nas this place is elevated above the rest of the swamp. Looking around, you see\na dark, mist filled swamp. Small paths lead south and west into the mist.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2331,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2329,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2331,
+      "name": "The swampy path",
+      "description": "You tread lightly through the mirky water and sludge that makes up the path\nyou follow. To the east, there is a thick wall of mist. You can see nothing\nwithin it. Harder ground rises to the north.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2330,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2335,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2332,
+      "name": "Lost in the Mist",
+      "description": "You wander, hopelessly lost. Swirling mist obscures your vision and clouds\nyour mind. You lose all concept of direction. Small, silent giggles can be\nheard all around. You can wander in any direction.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2337,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2334,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2335,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2334,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2333,
+      "name": "Lost in the Mist",
+      "description": "You are in a thick misty area. The mist swirls around you, seeming to taunt\nyou and dare you to escape. You feel a slight electric charge in the mist. It\nalmost caresses your body as it floats about you. You can wander in any\ndirection.......\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2333,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2336,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2333,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2335,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2334,
+      "name": "Lost in the Mist",
+      "description": "You try to peer through the mist......You see nothing. It swirls about you,\ncovering you in a damp sheen. There is no sound, all light is eagerly devoured\nby the mist. You feel totally and hopelessly lost.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2338,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2332,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2336,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2332,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2335,
+      "name": "Lost in the Mist",
+      "description": "You stumble through the marsh here. The swamp seems to have swallowed you up\nand denied you exit. This mist is your jailor. You cannot tell where you are.\nYou hear quiet laughter all about you.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2332,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2333,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2337,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2331,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2336,
+      "name": "Lost in the Mist",
+      "description": "You wander, lost, for what seems an eternity. Then....From nowhere....You see\nwhat appears to be trees and hills to the east. The mist itself thickens to\nthe west, while it grows thin to the east.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2334,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2339,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2338,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2333,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2337,
+      "name": "Lost in the Mist",
+      "description": "You wander through the thick mist. It swirls all about you and makes it hard\nto breathe. The ground below you makes a soft squishing sound as you trudge\non, but this noise is absorbed by the mist and does not travel. You can wander\nin any direction.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2335,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2338,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2332,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2338,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2338,
+      "name": "Lost in the Mist",
+      "description": "You wander, lost hopelessly. The mist swirls all about you. You can discern no\ndirection. You stumble blindly through the mist, oblivious to your\nsurroundings.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2336,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2337,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2334,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2337,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2339,
+      "name": "The solid path",
+      "description": "A solid path rises out of the misty swamp. It leads north, into what appears\nto be a forested area. The trees, above, allow light and air to penetrate and\nyou can see the sky above. A thick bank of mist is to your west.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2340,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2336,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2340,
+      "name": "A forested path",
+      "description": "The path here leads north through a thick forest. High bushes and forest\nundergrowth line both sides of the trail. Looking north, you see a thin line\nof smoke rising up above the tree line. You also notice a crude wooden gate\nfarther north on the trail. The trail itself leads south into murky territory.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2341,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2339,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2341,
+      "name": "The gate before the Ogre Village",
+      "description": "You stand before a huge pair of crude, wooden gates. They are thrown open.\nLooking inside the gates, you see a crude village. Large humanoid creatures\nare milling to and fro.......Ogres! You can head north through the gate or\nsouth into the forest.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2343,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2340,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2342,
+      "name": "Among the crude huts",
+      "description": "You walk among the huts of the ogre village. The village appears to be cut\nfrom the heart of the forest itself. The swamp, nearby, provides the ogres\nwith a prime hunting ground. Small paths lead north and east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2345,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2343,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2343,
+      "name": "Inside the gates",
+      "description": "You stand just north of the gates to the village. Looking around, you see many\ncrude huts and cooking fires. To the north, you see a huge fire pit. Behind\nit, there appears to be a hut of sorts. Small paths lead east and west among\nthe crude huts. The gates to the south provide an exit from the village.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2346,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2344,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2341,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2342,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2344,
+      "name": "Among the crude huts",
+      "description": "You walk through the crude village. Small huts made of wood and thatch\nsurround you. Every so often, you can hear grunts and snarls inside the huts.\nThe smell here is unbearable. You wonder what type of creature could possibly\nlive in such squalor. Small paths lead west and north here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2347,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2343,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2345,
+      "name": "The gathering place",
+      "description": "This appears to be the clearing the ogres use to assemble. It is quite large\nand has a raised mound in the center that contains a crude throne. The ground\nin front of the throne is quite worn, as if it is sat on quite often. You get\nthe impression that this place is a crude sort of auditorium. Small paths lead\neast and south.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2346,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2342,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2346,
+      "name": "The firepit before the lodge",
+      "description": "You stand at the edge of a huge firepit. The heat from the burning embers\nmakes you sweat as you stand here. Large spits above the pit are empty but\nthey appear to be quite large enough to hold hapless adventurers. A large\nlodge is towards the north, while paths lead east, west, and south into the\nvillage itself.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2348,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2347,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2343,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2345,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2347,
+      "name": "The village dump",
+      "description": "The smell here overpowers you. All around you are the rotting remains of the\nvillage's refuse. Partially eaten corpses, rotting food, and other truly\ndisgusting things have been discarded here. Paths lead south and west towards\nfresher air.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2344,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2346,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2348,
+      "name": "The entryway to the lodge",
+      "description": "You are at the entry hall to a large lodge. Animal pelts and other trophies\nline the walls here. Large chests on either side of the door appear to be\nlocked. The lodge stretches north, while the doors to the south provide an\nexit into the village.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2349,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2346,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2349,
+      "name": "The throne room",
+      "description": "You stand in a large, crudely decorated throne room. A huge throne adorned\nwith humanoid skulls sits against the west wall. A crude, blood stained altar\nis against the east wall. A doorway is directly to the north, long strands of\nbeads blocking the view of the other side. Crude torches light the hall and\nsmoke clings to the ceiling.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2350,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2348,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2350,
+      "name": "The chieftain's room",
+      "description": "This appears to be the ogre chieftain's private quarters. A huge pile of furs\nis in the far corner. Large chests fill the room. All of them have heavy pad\nlocks. The room is filled with trophies of dead enemies. It is quite lavishly\ndecorated for such a crude inhabitant as an ogre. A beaded doorway is to the\nsouth.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2349,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2351,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make impossible for you to\ndiscern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2353,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2352,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2355,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2354,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2352,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible to\ndiscern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2357,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2354,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2358,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 2351,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2353,
+      "name": "The Glacier Temple",
+      "description": "You are in a small temple. It appears to be built entirely from ice. The ice\nwalls are frosted and are opaque. There is a small blue portal here. You can\ngo north, to enter the portal. Looking south, you see a world of white outside\nthe open doorway. Swirling snow and bright light obscure your view.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2326,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2351,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2354,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2359,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2351,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2356,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2352,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2355,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2351,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2356,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2357,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2356,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2356,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2354,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2355,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2359,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2355,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2357,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2355,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2358,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2352,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2359,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2358,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any direction.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2352,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2359,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2360,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2357,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2359,
+      "name": "The frigid wastelands",
+      "description": "You wander through the frigid wastelands. Your breath is a cloud before you.\nThe cold cuts to the bone. Swirling snow and wind make it impossible for you\nto discern any directions.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2356,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2357,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2354,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2358,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2360,
+      "name": "The edge of the frigid wastes",
+      "description": "You stand at the base of a steep rocky cliff. To the north, a vast arctic\nwasteland stretches out. The snow falls lightly here and the wind is not\nvery fierce. You can climb up the rocky cliff or head north into the arctic\nwastes.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2358,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 2361,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2361,
+      "name": "On the cliffside",
+      "description": "You cling to the side of the cliff. Looking down, you are terrified by the\nsheer distance to the ground below. You can climb up higher into the cliffs,\nbut the area above is obscured by clouds and you cannot tell what lies waiting\nabove.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 2362,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 2360,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2362,
+      "name": "Before the gates of Mahn-Tor",
+      "description": "You stand at the edge of a high cliff. Directly south, set back off the\ncliff's edge, you see a huge pair of gates. These gates appear to be carved\nalmost completely out of ice. A huge city and keep appear to be on the other\nside of these gates. There is also a possibility of climbing down the cliff\nface.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2364,
+          "keyword": "gate huge gates ice",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 2361,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "gate gates ice huge",
+          "description": "The gates to the city are made almost completely of ice. Looking closely, you\ncan see intricate carvings in the gates. They appear to be of creatures that\nare half man and half bull.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2363,
+      "name": "The city streets of Mahn-Tor",
+      "description": "You walk among the ice and snow covered shops and homes. Most of the doors are\nclosed and only the light from the windows betrays the presence of inhabitants.\nA cold wind blows through here, scattering fine clouds of snow all about. Small\nstreets lead south and east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2364,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2366,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2364,
+      "name": "Inside the gates of Mahn-Tor",
+      "description": "You stand just inside the gates to the city of Mahn-Tor. The city itself\nspreads out in front of you. The buildings are sturdy, as they appear to be\nmade from the very rock of this mountain. Snow falls all around and a fine\nsheet of ice can be seen covering all but the most used walk ways. Small city\nstreets lead east and west, while a main road appears to lead south.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2362,
+          "keyword": "gates gate huge ice",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2365,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2367,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2363,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2365,
+      "name": "The city streets of Mahn-Tor",
+      "description": "You trudge among the icy streets of Mahn-Tor. The streets themselves are made\nof cobblestone and are quite treacherous. Small homes and businesses along\nthe street are closed tight and light from their windows throws eerie shadows\nacross the dark street. Small streets lead west and south here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2368,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2364,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2366,
+      "name": "The city streets of Mahn-Tor",
+      "description": "You trudge through the snow covered streets. The street itself is made of\ncobblestones and the footing is quite treacherous. To the south, you see what\nappears to be a small tavern. Bright lights shine through the windows. Small\nstreets also lead north and east.\nA small sign hangs outside the tavern.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2363,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2367,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 2369,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign small",
+          "description": "[]=============[]\n|   The Inn   |\n|    of the   |\n|    Broken   |\n|     Horn    |\n[]=============[]\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2367,
+      "name": "The Square of Mahn-Tor",
+      "description": "This appears to be the main square of Mahn-Tor. A huge fountain graces the\ncenter of the square, but the extreme cold has turned it into an ice\nsculpture. The water has frozen in arcs through the air. Snow and ice covers\nthe square and small streets lead east and west. To the north, you see\nthe gates to the city. You also notice a small store to the south.\nA small sign hangs outside the store.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2364,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2368,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2370,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2366,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "[]=========[]\n|  Equip  |\n|   Shop  |\n[]=========[]\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2368,
+      "name": "The streets of Mahn-Tor",
+      "description": "You walk among the small stores and homes of Mahn-Tor. The cobblestone streets\nare covered with ice and snow. Small snow drifts have formed at the edges of\nthe streets. The wind blows fiercely. Small streets lead in all directions.\nThere appears to be a large building to the east, but the snow obscures your\nview.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2365,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2375,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2371,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2367,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2369,
+      "name": "The Inn of the Broken Horn",
+      "description": "You enter a warm tavern. The room is lit mainly by two huge fireplaces at each\nend of the room. Small tables and a large bar furnish the room. The\ninhabitants of the inn are all minotaurs of varying size and disposition. Most\nseem to regard you with suspicion. Few approach you. A large door leads\nnorth, out of the bar and back out into the cold.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2366,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2370,
+      "name": "The Mahn-Tor Equipment Shop",
+      "description": "You are in a crude equipment shop. The store is filled with racks of various\nitems that adventurers could use. Large fireplaces light and heat the room.\nA large desk occupies the back of the room. The door to the shop lies to the\nnorth.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2367,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2371,
+      "name": "The Mahn-Tor General Store",
+      "description": "You enter a small store that is dark and cold. Old empty shelves line the\nwalls and snow blows across the dirty stone floor. It is evident that this\nstore was once used, but it is no more. A small doorway leads north out into\nthe chilling snow and wind.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2368,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2372,
+      "name": "Gorak's Training Room",
+      "description": "This room is full of all sorts of weapons and armours. Pieces of old targets\nand practice dummies lie all around. The walls are chipped and scored from\nweapon blows. This is obviously the room of an avid warrior. A red door leads\neast.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2388,
+          "keyword": "red",
+          "flags": "2",
+          "key": 2351
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "red",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2373,
+      "name": "Darkoth's Dark Study",
+      "description": "This room is dark. It reeks of death and evil. Arcane symbols and a small\naltar fill the room. Blood runs from the altar. It is evident that this room\nis used for unholy purposes. A black door leads east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2389,
+          "keyword": "black",
+          "flags": "2",
+          "key": 2352
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "black",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2374,
+      "name": "Tyrgoth's Inner Sanctum",
+      "description": "Idols to the gods of good fill the room. White furniture and decorations give\nthe room a holy appearance. It is evident that some being of supreme goodness\nlives here. A white door leads east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2392,
+          "keyword": "white",
+          "flags": "2",
+          "key": 2353
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "white",
+          "description": "It looks like it leads out to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2375,
+      "name": "The road to the Keep of Mahn-Tor",
+      "description": "You walk up a steep rocky road. It leads up a steep grade to the east. At the\nend of this steep road, you see a huge keep. Snow swirls all about you and you\nfeel your breath freeze as it leaves your lungs. Blurry lights to the east and\nwest are all you can see from here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2377,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2368,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2376,
+      "name": "A small guard house",
+      "description": "You enter a small guard house. A huge fireplace lights and warms the room.\nLooking around, you see that the room is fairly well furnished. Thick rugs\nand curtains help insulate the room and the beds themselves look quite warm.\nA table in the center of the room has the remnants of a card game strewn\nacross it. A small door leads south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2377,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2377,
+      "name": "Before the Keep of Mahn-Tor",
+      "description": "You stand before a huge keep that has been carved into the side of the\nmountain. Huge wooden gates before you provide entrance to the keep. It\nappears as though the cold here has convinced the guards to seek warmth\ninside. You see the lights of the city to the west. You also notice small\nguard houses to the north and south.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2376,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2379,
+          "keyword": "gate",
+          "flags": "2",
+          "key": 2350
+        },
+        "south": {
+          "to_room": 2378,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2375,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2378,
+      "name": "A small guard house",
+      "description": "You enter a small, but warm, guard house. Deep rugs and thick curtains\ninsulate the room. A huge fireplace lights and warms the room. Outside, you\nhear the roar of the freezing wind. A small door leads north out into the cold.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2377,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2379,
+      "name": "The entryway to the Keep of Mahn-Tor",
+      "description": "You are at the entry hall to the huge keep. The high vaulted ceiling is carved\nfrom solid stone. Huge stone pillars rise up from the floor to meet the\nceiling far above. The architecture appears to be dwarven. A huge pair of\ngates stand to the west, protecting the keep from the harsh cold outside. A\nlarge hall leads east, deeper into the keep.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2380,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2377,
+          "keyword": "gate",
+          "flags": "2",
+          "key": 2350
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2380,
+      "name": "The Hall",
+      "description": "You are in a huge hall. Large tapestries line the walls and huge statues of\nvarious make and appearance are spread about. The ceiling above supports huge\ncandelabras, which light the room. To the east, you see a bright light and\nhear sounds of inhabitation. Looking west, you see the entry gates to the keep.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2381,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2379,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2381,
+      "name": "The Grand Hall",
+      "description": "You are in the main hall of the Keep of Mahn-Tor. This hall is huge. The wide\nfloor of the hall is an expanse of marble. It shimmers in the light thrown\noff by the torches that line the walls. To the east, you see what appears to\nbe a huge golden throne. The hall itself stretches south and a smaller hall\nleads to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2383,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2382,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2380,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2382,
+      "name": "The Great Hall",
+      "description": "You stand in the great hall of the keep. Huge pillars rise up to the vaulted\nceiling and torch light glimmers off the marble floor here. You are amazed at\nthe sheer size of the hall. The hall itself leads north and east. You notice a\nsmaller hall leading south, deeper into the keep.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2381,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 2384,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2387,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2383,
+      "name": "Standing before the throne",
+      "description": "You stand before the throne of Mahn-Tor. This golden throne is so huge that it\ntakes up almost the entire wall, stretching far above the floor. Sitting upon\nit, you feel small and feeble. It is evident that this throne is more of a\ndecoration than anything else. Only the largest of kings could sit upon it.\nThe hall leads south and west into other parts of the keep.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2385,
+          "keyword": "throne huge golden gold",
+          "flags": "1"
+        },
+        "south": {
+          "to_room": 2384,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2381,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "throne huge gold golden",
+          "description": "The golden throne is huge. It takes up the whole wall.........\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2384,
+      "name": "The Great Hall",
+      "description": "You are in a great hall. Huge torches light the room and their light shimmers\noff the marble floor below you. To the north, you see a huge golden throne.\nLooking up, you grow dizzy at the height to which the vaulted ceiling rises.\nThe hall itself leads north and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2383,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2382,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2385,
+      "name": "The secret hallway",
+      "description": "You are in a small, torch lit hall. It leads from east to west. A large gold\ndoor is to the west. To the east, you see a heavy stone door.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2386,
+          "keyword": "door huge stone",
+          "flags": "2",
+          "key": 2359
+        },
+        "west": {
+          "to_room": 2383,
+          "keyword": "gold throne huge secret",
+          "flags": "1"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "huge stone",
+          "description": "A very formidable looking door.\n"
+        },
+        {
+          "keyword": "gold",
+          "description": "Looks like the back of a secret door of sorts.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2386,
+      "name": "Entry to the Royal Chambers",
+      "description": "You are at the entrance to the royal chambers of the keep. A plush shag rug\ncovers the stone floor. Large candelabras hang from the ceiling, lighting the\nroom. A huge fireplace warms the room. Beaded doorways lead south and east. A\nhuge stone door stands in the west wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2395,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2393,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2385,
+          "keyword": "door huge stone",
+          "flags": "2",
+          "key": 2359
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door huge stone",
+          "description": "A huge stone door.......\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2387,
+      "name": "The Guard Post",
+      "description": "The hall here has been built into a guard post of sorts. It appears as though\nit would be quite easy to defend in times of emergency. Obviously, something\nimportant lies beyond. A small hall leads south, while the main hall can be\nseen to the north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2382,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 2388,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2388,
+      "name": "The guarded hall",
+      "description": "You walk down a torch lit hallway. It has been carved out of pure stone. It is\nvery quiet in this hall. You notice rows of colored doors on each wall. To\nyour east, you see a yellow door. To your west, you see a red door. The hall\nitself leads south and north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2387,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2390,
+          "keyword": "yellow",
+          "flags": "2",
+          "key": 2355
+        },
+        "south": {
+          "to_room": 2389,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2372,
+          "keyword": "red",
+          "flags": "2",
+          "key": 2351
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "yellow",
+          "description": "You see a yellow door. It has the name \"Sumaron\" written on it.\n"
+        },
+        {
+          "keyword": "red",
+          "description": "You see a red door. It has the name \"Gorak\" written on it.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2389,
+      "name": "The guarded hall",
+      "description": "You walk down a small, quiet, torch lit hallway. Doors of different colors are\nin each wall. To your east, you see a maroon door. To your west, you see a\nblack door. The hall itself leads north and south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2388,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2391,
+          "keyword": "maroon",
+          "flags": "2",
+          "key": 2356
+        },
+        "south": {
+          "to_room": 2392,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2373,
+          "keyword": "black",
+          "flags": "2",
+          "key": 2352
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "maroon",
+          "description": "You see a maroon door here. It has the name \"Amyrok\" written on it.\n"
+        },
+        {
+          "keyword": "black",
+          "description": "You see a black door. It has the name \"Darkoth\" inscribed on it.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2390,
+      "name": "Sumaron's Sanctum",
+      "description": "You enter a temple of sorts. A small altar is here and relics of many\nreligions lie around. It is evident that this is the room of a studying cleric.\nA yellow door leads west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2388,
+          "keyword": "yellow",
+          "flags": "2",
+          "key": 2355
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "yellow",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2391,
+      "name": "Amyrok's Arcane Study",
+      "description": "This room is full of shelves which hold various spell components. The center\nof the room is occupied by a huge pentagram. The entire room smells of smoke\nand incense. The room is obviously used extensively by a practicing mage. A\nmaroon door leads west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2389,
+          "keyword": "maroon",
+          "flags": "2",
+          "key": 2356
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "maroon",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2392,
+      "name": "The guarded hall",
+      "description": "You walk down a quiet hall. The stone walls here are wet with moisture.\nColored doors can be seen in the walls here. To your east, you see a green\ndoor. To your west, you see a white door. The hall itself leads north and\nsouth.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2389,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2394,
+          "keyword": "green",
+          "flags": "2",
+          "key": 2357
+        },
+        "south": {
+          "to_room": 2397,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2374,
+          "keyword": "white",
+          "flags": "2",
+          "key": 2353
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "green",
+          "description": "You see a green door here. It has the name \"Nasturn\" written on it.\n"
+        },
+        {
+          "keyword": "white",
+          "description": "You see a white door here. It has the name \"Tyrgoth\" inscribed on it.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2393,
+      "name": "The Harem Room",
+      "description": "This appears to be the harem room of the Keep. Huge piles of furs and beds\nfill the room. The lighting is dim, but the room is very warm. You can hear\nmusic playing quietly from somewhere. Beaded doorways lead north and east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2386,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2396,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2394,
+      "name": "Nasturn's Humble Abode",
+      "description": "This room is filled with all types of natural items. Trees and plants have\nbeen lovingly cultivated and grown by hand, in large pots. The room is like an\nindoor garden. A green door leads west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2392,
+          "keyword": "green",
+          "flags": "2",
+          "key": 2357
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "green",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2395,
+      "name": "The main living room",
+      "description": "This room is decorated with sturdy stone furniture that is carved and gilded.\nLarge candles light the room. A thick rug covers the floor. Thick furs and\ntapestries decorate the walls. Beaded doorways lead south and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 2396,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2386,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2396,
+      "name": "The Master Bedroom",
+      "description": "This appears to be the master bedroom. A huge bed fills the rooms. Piles of\nfurs and other rich furnishings adorn the room. Candles are everywhere and\nthey help a huge fireplace light the room. The lavishness of the room\noverwhelms you. Beaded doorways lead north and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2395,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 2393,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2397,
+      "name": "The end of the guarded hall",
+      "description": "You are at the end of the hall. Colored doors line the walls to the north. To\nyour west, you see a brown door. To your east, you see a grey door. The hall\nitself leads north back along the rows of doors.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 2392,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 2398,
+          "keyword": "grey",
+          "flags": "2",
+          "key": 2358
+        },
+        "west": {
+          "to_room": 2399,
+          "keyword": "brown",
+          "flags": "2",
+          "key": 2354
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "grey",
+          "description": "You see a grey door here. It has the name \"Dorgar\" written on it.\n"
+        },
+        {
+          "keyword": "brown",
+          "description": "You see a brown door here. It has the name \"Belrak\" written on it.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2398,
+      "name": "Dorgar's Dismal Domicile",
+      "description": "This room is dirty and unkempt. Odds and ends of different items lie all over.\nIt is apparent that some type of pack-rat lives here. It appears as though\nnothing has ever entered this room and ever left again. A grey door leads west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 2397,
+          "keyword": "grey",
+          "flags": "2",
+          "key": 2358
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "grey",
+          "description": "It looks like it leads back to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    },
+    {
+      "id": 2399,
+      "name": "Belrak's Green Room",
+      "description": "This room is full of green. The furniture and all other items show the color\nof nature. The room smells of pine and forest odors. From the items here, it\nappears as though a woodsman of some sorts lives here. A brown door leads east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 2397,
+          "keyword": "brown",
+          "flags": "2",
+          "key": 2354
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "brown",
+          "description": "It looks like it leads to the hall.\n"
+        }
+      ],
+      "resets": [],
+      "area": 2300
+    }
+  ],
+  "mobs": [
+    {
+      "id": 2300,
+      "name": "the Dark Ethereal Knight",
+      "player_name": "oldstyle knight ethereal dark",
+      "long_description": "A dark ethereal knight hovers over the bloody clearing.\n",
+      "description": "The ethereal knight is clad in shadowy black armor. It appears as though he\nwas involved in the carnage that occurred here. His soul is trapped here, as\nhe waits for release.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2301,
+      "name": "the Old Treant",
+      "player_name": "oldstyle treant tree",
+      "long_description": "A huge, gnarled tree stands here, battered by age and nature.\n",
+      "description": "The old tree looks as though the wind has battered and torn at it for years.\nVery few leaves remain. Its limbs are crooked and gnarled. It moans as the\nwind pushes it back and forth.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": 250,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2302,
+      "name": "the Cave Dweller",
+      "player_name": "oldstyle dweller cave creature",
+      "long_description": "A slimy, gross creature is here munching on a corpse.\n",
+      "description": "The cave dweller looks like a mixture of several disgusting monsters. It has\na bird's beak, huge white eyes, a furry body, and long clawed hands and feet.\nIt sees you and snarls.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "CEP",
+      "alignment": 0,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 125,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2303,
+      "name": "the Rock Toad",
+      "player_name": "oldstyle toad rock",
+      "long_description": "A rather large rock toad sits here, croaking loudly.\n",
+      "description": "A grey toad. Its about the size of a cow. Small horns grow all over its body.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": -250,
+      "group": 0,
+      "level": 14,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "none",
+      "wealth": 127,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2304,
+      "name": "the Weeping Willow",
+      "player_name": "oldstyle weeping willow tree",
+      "long_description": "A large willow tree stands here, weeping.\n",
+      "description": "The weeping willow has long thins branches. These branches seem to droop in\nanguish and dismay. You hear a faint sound of crying.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "DH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 1000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2305,
+      "name": "the Mistling",
+      "player_name": "oldstyle mist mistling",
+      "long_description": "A mistling emerges from the mist surrounding you.\n",
+      "description": "It looks like a thin wisp of mist that has gained substance and size.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "Q",
+      "alignment": 0,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2306,
+      "name": "the Swamp Wraith",
+      "player_name": "oldstyle swamp wraith",
+      "long_description": "A swamp wraith emerges from the mist here.\n",
+      "description": "The swamp wraith is made of mist and is in the image of a great warrior. He\nappears to emerge from the mist. You feel the cold radiating from his form as\nhe nears you.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "0",
+      "alignment": -1000,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2307,
+      "name": "the Ogre Villager",
+      "player_name": "oldstyle ogre villager",
+      "long_description": "The ogre villager is here, going about its chores.\n",
+      "description": "You see a pitifully overworked ogre. It is dressed in rags and shuffles along\nwith its head hung low. It sees you and cringes in mortal terror.\n",
+      "race": "human",
+      "act_flags": "AGH",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2308,
+      "name": "the Ogre Warrior",
+      "player_name": "oldstyle warrior ogre",
+      "long_description": "The ogre warrior stands here, growling fiercely.\n",
+      "description": "The ogre warrior is dressed in thick fur armor. He looks quite large and\nformidable.\n",
+      "race": "human",
+      "act_flags": "ACFGH",
+      "affected_by": "0",
+      "alignment": -350,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2309,
+      "name": "the Ogre Guard",
+      "player_name": "oldstyle guard ogre",
+      "long_description": "The ogre guard is here manning his post faithfully.\n",
+      "description": "The ogre guard stands here manning his post. It appears as though he would\nfight to the death before abandoning his post.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 19,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2310,
+      "name": "The Ogre Shaman",
+      "player_name": "oldstyle shaman ogre",
+      "long_description": "The ogre shaman is here chanting arcane words and waving his arms.\n",
+      "description": "The ogre shaman is draped in thick fur cloaks and pelts. He has all types of\ncharms and holy symbols draped about him. He looks at you and snarls.\n",
+      "race": "human",
+      "act_flags": "ABCFGHQ",
+      "affected_by": "DH",
+      "alignment": -750,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "20d9+100",
+      "mana_dice": "2d7+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2311,
+      "name": "the Ogre Chieftain",
+      "player_name": "oldstyle chief chieftain ogre",
+      "long_description": "The ogre chieftain is here, observing his subjects.\n",
+      "description": "This is the biggest ogre you have ever seen. He is heavily equipped and looks\nquite formidable. He towers high above you and growls menacingly.\n",
+      "race": "human",
+      "act_flags": "ABCFGH",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2312,
+      "name": "the Plains Barbarian",
+      "player_name": "oldstyle barbarian",
+      "long_description": "A plains barbarian is here, clad in heavy furs.\n",
+      "description": "The plains barbarian is clad in heavy furs. He seems used to the chilling cold\nand icy wastes.\n",
+      "race": "human",
+      "act_flags": "ABCFGH",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2313,
+      "name": "the White Yeti",
+      "player_name": "oldstyle yeti white",
+      "long_description": "The white yeti crouches here snarling.\n",
+      "description": "The white yeti looks like a huge white snow ape. Its long arms end in long\ncurved talons and its mouth is full of sharp teeth.\n",
+      "race": "human",
+      "act_flags": "ABCFGH",
+      "affected_by": "0",
+      "alignment": -350,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2314,
+      "name": "the Ice Worm",
+      "player_name": "oldstyle worm ice iceworm",
+      "long_description": "A huge ice worm burrows through the ice and snow here. It rears up and\nattacks!\n",
+      "description": "The huge worm is almost 50 feet long. Its huge gaping mouth spews ice and snow\nas it charges directly at you.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 175,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2315,
+      "name": "the Minotaur Citizen",
+      "player_name": "oldstyle citizen minotaur",
+      "long_description": "A minotaur citizen is here, hurrying through the icy streets.\n",
+      "description": "You see a rather ragged and cold minotaur. It appears to be looking for a warm\nplace to seek refuge from the cold.\n",
+      "race": "human",
+      "act_flags": "ABCGH",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2316,
+      "name": "the Minotaur Guard",
+      "player_name": "oldstyle guard minotaur",
+      "long_description": "A minotaur guard catches you trespassing and attacks!\n",
+      "description": "The minotaur is clad in heavy furs. Beneath these furs, you see the gleam of\nhis armor.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "0",
+      "alignment": -330,
+      "group": 0,
+      "level": 22,
+      "thac0": 0,
+      "ac": "5d10+400",
+      "hit_dice": "11d9+100",
+      "mana_dice": "4d4+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2317,
+      "name": "the Minotaur Warrior",
+      "player_name": "oldstyle warrior minotaur",
+      "long_description": "A minotaur warrior is here looking for intruders.\n",
+      "description": "You see a huge minotaur that is dressed in thick furs and armor. He has black\nfur and red eyes. He looks quite capable of protecting the city.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -330,
+      "group": 0,
+      "level": 21,
+      "thac0": 0,
+      "ac": "4d10+360",
+      "hit_dice": "10d9+100",
+      "mana_dice": "4d4+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2318,
+      "name": "the Minotaur Gatekeeper",
+      "player_name": "oldstyle minotaur gatekeeper",
+      "long_description": "A minotaur is here guarding the Keep of Mahn-Tor.\n",
+      "description": "The minotaur stands rigidly before the gates of the keep. It looks quite\nmiserable standing in the driven snow and ice.\n",
+      "race": "human",
+      "act_flags": "ABCG",
+      "affected_by": "D",
+      "alignment": -330,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2319,
+      "name": "the High Minotaur Guard",
+      "player_name": "oldstyle minotaur high guard",
+      "long_description": "The minotaur high guard is here guarding the Keep.\n",
+      "description": "The high guard is dressed in blue plate armour. He looks quite dangerous and\nskilled.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "D",
+      "alignment": -330,
+      "group": 0,
+      "level": 25,
+      "thac0": 0,
+      "ac": "5d10+550",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2320,
+      "name": "the Royal Minotaur Guard",
+      "player_name": "oldstyle minotaur royal guard",
+      "long_description": "The royal minotaur guard considers you an intruder and attacks!\n",
+      "description": "The royal guard is quite huge. He is dressed in heavy red armor and wields a\nhuge glaive. He looks quite capable of protecting the keep.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "D",
+      "alignment": -330,
+      "group": 0,
+      "level": 26,
+      "thac0": 0,
+      "ac": "5d10+600",
+      "hit_dice": "13d9+100",
+      "mana_dice": "3d7+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2321,
+      "name": "the Elite Minotaur Guard",
+      "player_name": "oldstyle guard minotaur elite",
+      "long_description": "The elite minotaur guard sees you and attacks!\n",
+      "description": "This minotaur wields a huge morningstar and is clad in heavy crimson plate and\nfurs.\n",
+      "race": "human",
+      "act_flags": "ABCFG",
+      "affected_by": "D",
+      "alignment": -250,
+      "group": 0,
+      "level": 28,
+      "thac0": 0,
+      "ac": "6d12+703",
+      "hit_dice": "14d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 3750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2322,
+      "name": "the Harem Girl",
+      "player_name": "oldstyle girl haremgirl harem slave",
+      "long_description": "A harem girl cowers here in fear.\n",
+      "description": "She looks quite attractive. Her low cut gown reveals why she was chosen to be\nin the harem.\n",
+      "race": "human",
+      "act_flags": "ABCGH",
+      "affected_by": "0",
+      "alignment": 1000,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d7+21",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2323,
+      "name": "the Minotaur Butler",
+      "player_name": "oldstyle butler minotaur",
+      "long_description": "A minotaur butler stands here rigidly, awaiting orders.\n",
+      "description": "He looks quite regal and refined to be a minotaur.\n",
+      "race": "human",
+      "act_flags": "ABCGH",
+      "affected_by": "0",
+      "alignment": 250,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2324,
+      "name": "the Minotaur Ring-Keeper",
+      "player_name": "oldstyle keeper minotaur ring-keeper",
+      "long_description": "The minotaur ring-keeper stands guarding his post.\n",
+      "description": "The ring-keeper is a huge minotaur. You notice a huge ring of multicolored\nkeys hanging from his belt. He wears huge, spiked brass knuckles.\n",
+      "race": "human",
+      "act_flags": "ABCGR",
+      "affected_by": "DH",
+      "alignment": -300,
+      "group": 0,
+      "level": 29,
+      "thac0": 0,
+      "ac": "6d12+703",
+      "hit_dice": "29d9+100",
+      "mana_dice": "3d7+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 1,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2325,
+      "name": "Gorak",
+      "player_name": "oldstyle gorak minotaur warrior master",
+      "long_description": "Gorak, the Minotaur Master Warrior, is here practicing his skills.\n",
+      "description": "Gorak is HUGE. His bulging muscles are confined beneath heavy armor. He is the\nmaster of the warrior guild of Mahn-Tor.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DH",
+      "alignment": -300,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2326,
+      "name": "Darkoth",
+      "player_name": "oldstyle darkoth minotaur anti-paladin master",
+      "long_description": "Darkoth, the minotaur anti-paladin, stands here grinning wickedly.\n",
+      "description": "Darkoth is a living incarnation of evil. He radiates a dark aura, and a cold\nchill runs down your spine. He is the master of the Mahn-Tor anti-paladins.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DH",
+      "alignment": -1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2327,
+      "name": "Tyrgoth",
+      "player_name": "oldstyle tyrgoth minotaur paladin master",
+      "long_description": "Tyrgoth, the minotaur paladin, is here worshipping silently.\n",
+      "description": "Tyrgoth is the minotaur incarnation of good. You feel safe and at ease in his\npresence. He is the leader of the Mahn-Tor paladins.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "DH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2328,
+      "name": "Amyrok",
+      "player_name": "oldstyle amyrok minotaur mage master",
+      "long_description": "Amyrok, the minotaur archmage, is here chanting arcane spells.\n",
+      "description": "Amyrok is a small minotaur. He is clad in loose robes and emits an aura of\npower. He appears quite dangerous, despite his size. He is the leader of the\nmages of Mahn-Tor.\n",
+      "race": "human",
+      "act_flags": "ABFR",
+      "affected_by": "DH",
+      "alignment": 300,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+778",
+      "hit_dice": "30d9+100",
+      "mana_dice": "5d4+7",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 1,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2329,
+      "name": "Sumaron",
+      "player_name": "oldstyle sumaron minotaur cleric master",
+      "long_description": "Sumaron, master cleric of Mahn-Tor, is here looking holy.\n",
+      "description": "Sumaron is clad in white glowing robes. He is goodness incarnate. He is the\nmaster of all the clerics of Mahn-Tor.\n",
+      "race": "human",
+      "act_flags": "ABFQ",
+      "affected_by": "DH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "30d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 4,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2330,
+      "name": "Nasturn",
+      "player_name": "oldstyle nasturn minotaur druid master",
+      "long_description": "Nasturn, the minotaur druid, is here studying the arts of nature.\n",
+      "description": "Nasturn is quite a natural looking minotaur. He is dressed in leather and\nwears no metal of any type. He looks at you and smiles.\n",
+      "race": "human",
+      "act_flags": "ABQ",
+      "affected_by": "DH",
+      "alignment": 500,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "30d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 4,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2331,
+      "name": "Belrak",
+      "player_name": "oldstyle belrak minotaur ranger master",
+      "long_description": "Belrak, the minotaur ranger, looks unhappy about having visitors.\n",
+      "description": "Belrak is clad in green and brown leather. He looks quite agile and thin, when\ncompared to the normal minotaur. He looks at you with a slight smirk.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DH",
+      "alignment": 500,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2332,
+      "name": "Dorgar",
+      "player_name": "oldstyle dorgar minotaur thief master",
+      "long_description": "Dorgar, the minotaur thief, is here hiding in the shadows.\n",
+      "description": "Dorgar is clad all in black. He is tall and slender, unlike most minotaurs. He\nappears to be quite a skilled thief.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "Q",
+      "alignment": -500,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 2333,
+      "name": "Mahn-Tor",
+      "player_name": "oldstyle mahn-tor minotaur grand master",
+      "long_description": "Mahn-Tor, the minotaur grand master, is here looking down at you.\n",
+      "description": "Mahn-Tor towers above you. He is simply huge. Mahn-Tor is clad in the best of\narmor and robes. He wields the largest axe you have ever seen. You can see why\nMahn-Tor is the leader of the minotaurs. He is awe-inspiring.\n",
+      "race": "human",
+      "act_flags": "ABCR",
+      "affected_by": "BDHTU",
+      "alignment": -500,
+      "group": 0,
+      "level": 33,
+      "thac0": 0,
+      "ac": "10d10+1000",
+      "hit_dice": "33d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -10,
+      "ac_bash": -10,
+      "ac_slash": -10,
+      "ac_exotic": 0,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 2300,
+      "name": "a pair of minotaur combat gloves",
+      "description": "A pair of metal plated gloves lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AH",
+      "weight": 25,
+      "cost": 60,
+      "condition": "2600",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "gloves combat",
+          "description": "These gloves are plated with metal plates that provide strength and\nprotection.\n"
+        }
+      ]
+    },
+    {
+      "id": 2301,
+      "name": "a suit of spiked garde armor",
+      "description": "A pile of spiked chainmail lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 22,
+      "cost": 80,
+      "condition": "4200",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2302,
+      "name": "a pair of black minotaur greaves",
+      "description": "Some black metal greaves lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 30,
+      "cost": 90,
+      "condition": "2600",
+      "values": [
+        9,
+        9,
+        9,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2303,
+      "name": "a pair of black minotaur vambraces",
+      "description": "Some black metal vambraces lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 30,
+      "cost": 90,
+      "condition": "2600",
+      "values": [
+        9,
+        9,
+        9,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2304,
+      "name": "the rod of weaponry",
+      "description": "A shiny metal rod lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGI",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 240,
+      "condition": "4700",
+      "values": [
+        0,
+        2,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2305,
+      "name": "a pitch black cloak",
+      "description": "A pile of black cloth lies here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "G",
+      "wear_flags": "AK",
+      "weight": 20,
+      "cost": 30,
+      "condition": "860",
+      "values": [
+        150,
+        0,
+        0,
+        30,
+        90
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "cloak pitch black",
+          "description": "It appears to have pockets inside it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2306,
+      "name": "a black plate neckguard",
+      "description": "A black plate collar rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "GJL",
+      "wear_flags": "AC",
+      "weight": 30,
+      "cost": 100,
+      "condition": "3400",
+      "values": [
+        9,
+        9,
+        9,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2307,
+      "name": "a pair of spiked gauntlets",
+      "description": "A pair of spiked gauntlets lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AH",
+      "weight": 20,
+      "cost": 100,
+      "condition": "1570",
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "spiked gauntlets",
+          "description": "They look pretty damaging.\n"
+        }
+      ]
+    },
+    {
+      "id": 2308,
+      "name": "the shadow shield",
+      "description": "A shadowy shield rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGJL",
+      "wear_flags": "AJ",
+      "weight": 27,
+      "cost": 150,
+      "condition": "4900",
+      "values": [
+        8,
+        8,
+        8,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        },
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "shield shadow",
+          "description": "You look into the depths of the shield and shiver at the evil it contains.\n"
+        }
+      ]
+    },
+    {
+      "id": 2309,
+      "name": "a shortsword named \"Nightbringer\"",
+      "description": "A very evil looking shortsword lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "CGJL",
+      "wear_flags": "AN",
+      "weight": 27,
+      "cost": 90,
+      "condition": "3500",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "nightbringer short sword shortsword",
+          "description": "The runes \"NiGHtBrINgeR\" are scrawled along the blade.\n"
+        }
+      ]
+    },
+    {
+      "id": 2310,
+      "name": "a golden helm and visor",
+      "description": "A helm and visor made of pure gold rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGKL",
+      "wear_flags": "AE",
+      "weight": 20,
+      "cost": 150,
+      "condition": "3000",
+      "values": [
+        7,
+        7,
+        7,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": 1
+        },
+        {
+          "location": 4,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2311,
+      "name": "a gilded gold breast plate",
+      "description": "A large golden breast plate lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AGKL",
+      "wear_flags": "AD",
+      "weight": 32,
+      "cost": 180,
+      "condition": "6700",
+      "values": [
+        9,
+        9,
+        9,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2312,
+      "name": "a billowing white cape ",
+      "description": "A pile of white silk lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AC",
+      "weight": 10,
+      "cost": 50,
+      "condition": "760",
+      "values": [
+        5,
+        5,
+        5,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2313,
+      "name": "a huge tower shield",
+      "description": "A huge shield lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AJ",
+      "weight": 30,
+      "cost": 140,
+      "condition": "4100",
+      "values": [
+        9,
+        9,
+        9,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "shield huge tower",
+          "description": "A pure white shield with a gold cross emblazoned across it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2314,
+      "name": "a huge mace named \"Dawnbringer\"",
+      "description": "A huge mace lies here. It radiates an aura of power.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AGKL",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 240,
+      "condition": "3200",
+      "values": [
+        0,
+        4,
+        6,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "dawnbringer mace huge",
+          "description": "The runes \"DAwNbRIngER\" are scrawled along the handle.\n"
+        }
+      ]
+    },
+    {
+      "id": 2315,
+      "name": "a pair of wire rimmed spectacles",
+      "description": "A small pair of wire rimmed spectacles rests here.",
+      "material": "oldstyle",
+      "item_type": "clothing",
+      "extra_flags": "G",
+      "wear_flags": "AE",
+      "weight": 15,
+      "cost": 20,
+      "condition": "2600",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "spectacles wire rimmed",
+          "description": "They'll make you look smart.\n"
+        }
+      ]
+    },
+    {
+      "id": 2316,
+      "name": "a banded ring",
+      "description": "A small ring made of gold and silver bands lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "AG",
+      "wear_flags": "AB",
+      "weight": 30,
+      "cost": 20,
+      "condition": "1520",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 30
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "ring banded",
+          "description": "The ring has entwined bands of gold and silver.\n"
+        }
+      ]
+    },
+    {
+      "id": 2317,
+      "name": "a minor globe of invulnerability",
+      "description": "A small globe rests here. It shimmers and radiates power.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AK",
+      "weight": 27,
+      "cost": 10,
+      "condition": "3200",
+      "values": [
+        8,
+        8,
+        8,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "globe minor",
+          "description": "Shimmering colors move inside the globe.\n"
+        }
+      ]
+    },
+    {
+      "id": 2318,
+      "name": "a gnarled magius staff",
+      "description": "A gnarled staff lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 27,
+      "cost": 100,
+      "condition": "2900",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        },
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "staff gnarled magius",
+          "description": "It appears to be simply a gnarled old limb. It feels powerful though.\n"
+        }
+      ]
+    },
+    {
+      "id": 2319,
+      "name": "a girdle of many pouches",
+      "description": "A girdle lies here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "Y",
+      "wear_flags": "AL",
+      "weight": 0,
+      "cost": 50,
+      "condition": "1000",
+      "values": [
+        500,
+        0,
+        0,
+        10,
+        25
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "girdle pouches many",
+          "description": "It appears to be full of tiny pockets.\n"
+        }
+      ]
+    },
+    {
+      "id": 2320,
+      "name": "a heavy woolen robe",
+      "description": "A heavy pile of wool lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AK",
+      "weight": 25,
+      "cost": 100,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2321,
+      "name": "a brooch of life",
+      "description": "A small ivory brooch lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "AGI",
+      "wear_flags": "AC",
+      "weight": 30,
+      "cost": 50,
+      "condition": "1520",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 30
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2322,
+      "name": "a manual of healing arts",
+      "description": "A small book lies here.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 50,
+      "condition": "800",
+      "values": [
+        30,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "manual arts healing book",
+          "description": "It appears to be a book of anatomy and medicine.\n"
+        }
+      ]
+    },
+    {
+      "id": 2323,
+      "name": "a huge mithril mace",
+      "description": "A huge mace made of mithril metal lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 26,
+      "cost": 130,
+      "condition": "1960",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2324,
+      "name": "a golden holy symbol",
+      "description": "A small holy symbol on a golden chain lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AC",
+      "weight": 5,
+      "cost": 30,
+      "condition": "110",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2325,
+      "name": "a thick marble ring",
+      "description": "A thick ring made of marble",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 8,
+      "cost": 50,
+      "condition": "470",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2326,
+      "name": "a thick marble bracelet",
+      "description": "A thick bracelet made of marble lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AM",
+      "weight": 5,
+      "cost": 80,
+      "condition": "550",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2327,
+      "name": "boots of striding",
+      "description": "A lithe pair of leather boots have been left here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AG",
+      "weight": 30,
+      "cost": 50,
+      "condition": "2500",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 30
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "boots striding",
+          "description": "They look comfortable to walk in.\n"
+        }
+      ]
+    },
+    {
+      "id": 2328,
+      "name": "an icy white cloak",
+      "description": "A cold pile of white cloth lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AG",
+      "wear_flags": "AK",
+      "weight": 25,
+      "cost": 50,
+      "condition": "2000",
+      "values": [
+        8,
+        8,
+        8,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "cloak icy white",
+          "description": "Smoke rises from it almost like it's made of dry ice.\n"
+        }
+      ]
+    },
+    {
+      "id": 2329,
+      "name": "an ice staff",
+      "description": "A staff made of ice rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 130,
+      "condition": "1470",
+      "values": [
+        0,
+        7,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 20
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "staff ice",
+          "description": "The runes \"FrIgID\" are inscribed in the icy staff.\n"
+        }
+      ]
+    },
+    {
+      "id": 2330,
+      "name": "a carved wooden ring",
+      "description": "A wooden ring is on the floor.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 7,
+      "cost": 30,
+      "condition": "460",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2331,
+      "name": "the horn of life",
+      "description": "A severed minotaur horn lies here.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "G",
+      "wear_flags": "AO",
+      "weight": 1,
+      "cost": 50,
+      "condition": "930",
+      "values": [
+        30,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "horn life",
+          "description": "The horn is capped at both ends with gold. Unreadable runes are scrawled on it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2332,
+      "name": "the belt of life",
+      "description": "A strange belt lies here.",
+      "material": "oldstyle",
+      "item_type": "clothing",
+      "extra_flags": "G",
+      "wear_flags": "AL",
+      "weight": 30,
+      "cost": 90,
+      "condition": "7600",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2333,
+      "name": "a blood red stone",
+      "description": "A blood red stone lies here collecting dust.",
+      "material": "oldstyle",
+      "item_type": "warp_stone",
+      "extra_flags": "BGT",
+      "wear_flags": "AO",
+      "weight": 20,
+      "cost": 20,
+      "condition": "580",
+      "values": [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 20
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "stone blood red",
+          "description": "The stone pulses with your own heart beat.\n"
+        }
+      ]
+    },
+    {
+      "id": 2334,
+      "name": "a huge crossbow",
+      "description": "A huge crossbow rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 27,
+      "cost": 150,
+      "condition": "4300",
+      "values": [
+        0,
+        3,
+        9,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2335,
+      "name": "a small leather pack",
+      "description": "A small leather pack rests here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "GY",
+      "wear_flags": "AK",
+      "weight": 0,
+      "cost": 90,
+      "condition": "500",
+      "values": [
+        200,
+        0,
+        0,
+        20,
+        80
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "pack leather small",
+          "description": "It looks pretty big on the inside.\n"
+        }
+      ]
+    },
+    {
+      "id": 2336,
+      "name": "a black leather hood",
+      "description": "A hood made of black leather rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AE",
+      "weight": 10,
+      "cost": 50,
+      "condition": "730",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2337,
+      "name": "a pair of black leather sleeves",
+      "description": "Some leather sleeves lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 20,
+      "cost": 50,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2338,
+      "name": "a pair of black leather pants",
+      "description": "Some leather pants lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AF",
+      "weight": 20,
+      "cost": 50,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "pants black leather",
+          "description": "They look sneaky.\n"
+        }
+      ]
+    },
+    {
+      "id": 2339,
+      "name": "a wicked shortsword",
+      "description": "A wicked looking shortsword lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 26,
+      "cost": 110,
+      "condition": "2300",
+      "values": [
+        0,
+        3,
+        8,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword wicked short shortsword",
+          "description": "It looks just perfect for backstabbing.\n"
+        }
+      ]
+    },
+    {
+      "id": 2340,
+      "name": "a major globe of invulnerability",
+      "description": "A large globe rests here, pulsing uneasily.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "ABG",
+      "wear_flags": "AK",
+      "weight": 31,
+      "cost": 10,
+      "condition": "4100",
+      "values": [
+        9,
+        9,
+        9,
+        6,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "globe major",
+          "description": "Shimmering colors move inside the globe.\n"
+        }
+      ]
+    },
+    {
+      "id": 2341,
+      "name": "a suit of black minotaur chainmail",
+      "description": "A huge pile of black chainmail rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AD",
+      "weight": 30,
+      "cost": 120,
+      "condition": "7000",
+      "values": [
+        9,
+        9,
+        9,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2342,
+      "name": "a spiked buckler",
+      "description": "A small spiked buckler rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AJ",
+      "weight": 35,
+      "cost": 50,
+      "condition": "6600",
+      "values": [
+        10,
+        10,
+        10,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2343,
+      "name": "a studded ring",
+      "description": "A small studded ring lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 13,
+      "cost": 10,
+      "condition": "1020",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -3
+        },
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2344,
+      "name": "a horned minotaur helm",
+      "description": "A small horned helm rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 35,
+      "cost": 80,
+      "condition": "3400",
+      "values": [
+        10,
+        10,
+        10,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2345,
+      "name": "mahn-Tor's Great Axe",
+      "description": "An extremely huge axe is resting here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "BG",
+      "wear_flags": "AN",
+      "weight": 31,
+      "cost": 260,
+      "condition": "3400",
+      "values": [
+        0,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "axe great",
+          "description": "The runes \"DeAtH\" are scrawled along the blade.\n"
+        }
+      ]
+    },
+    {
+      "id": 2346,
+      "name": "a suit of ethereal plate",
+      "description": "A suit of shimmering plate rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AJ",
+      "wear_flags": "AD",
+      "weight": 27,
+      "cost": 20,
+      "condition": "5500",
+      "values": [
+        8,
+        8,
+        8,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "plate ethereal suit",
+          "description": "You can almost see through it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2347,
+      "name": "an ethereal helm",
+      "description": "A shimmering helm rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "AJ",
+      "wear_flags": "AE",
+      "weight": 25,
+      "cost": 50,
+      "condition": "2200",
+      "values": [
+        8,
+        8,
+        8,
+        4,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "helm ethereal",
+          "description": "You can almost see through it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2348,
+      "name": "an ethereal blade",
+      "description": "A shimmering blade lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AJ",
+      "wear_flags": "AN",
+      "weight": 25,
+      "cost": 30,
+      "condition": "3200",
+      "values": [
+        0,
+        2,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "blade ethereal",
+          "description": "You can almost see through it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2349,
+      "name": "a willow branch",
+      "description": "A small willow branch lies here.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": "G",
+      "wear_flags": "AO",
+      "weight": 13,
+      "cost": 30,
+      "condition": "2600",
+      "values": [
+        20,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2350,
+      "name": "the keep key",
+      "description": "A small key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2351,
+      "name": "a red key",
+      "description": "A small red key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2352,
+      "name": "a black key",
+      "description": "A small black key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2353,
+      "name": "a white key",
+      "description": "A small white key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2354,
+      "name": "a brown key",
+      "description": "A small brown key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2355,
+      "name": "a yellow key",
+      "description": "A small yellow key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2356,
+      "name": "a maroon key",
+      "description": "A small maroon key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2357,
+      "name": "a green key",
+      "description": "A small green key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2358,
+      "name": "a grey key",
+      "description": "A small grey key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2359,
+      "name": "a runed key",
+      "description": "A small runed key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key runed",
+          "description": "The key looks like it was made for royalty.\n"
+        }
+      ]
+    },
+    {
+      "id": 2360,
+      "name": "a pair of fur lined boots",
+      "description": "A pair of boots are on the floor.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AG",
+      "weight": 7,
+      "cost": 50,
+      "condition": "470",
+      "values": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2361,
+      "name": "the white pelt of a yeti",
+      "description": "A white pelt lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "Q",
+      "wear_flags": "AK",
+      "weight": 15,
+      "cost": 90,
+      "condition": "1080",
+      "values": [
+        6,
+        6,
+        6,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2362,
+      "name": "a kopesh sword",
+      "description": "A sword with a curved blade lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 17,
+      "cost": 130,
+      "condition": "1310",
+      "values": [
+        0,
+        5,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sword kopesh",
+          "description": "The sword looks like it would be grasped so that the blade extended along the\nforearm of the wielder.\n"
+        }
+      ]
+    },
+    {
+      "id": 2363,
+      "name": "a pair of steel vambraces",
+      "description": "A gleaming pair of vambraces lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 15,
+      "cost": 0,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2364,
+      "name": "a pair of steel greaves",
+      "description": "A gleaming pair of greaves lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 15,
+      "cost": 70,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2365,
+      "name": "a battle axe",
+      "description": "A dangerous looking battle axe rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 17,
+      "cost": 180,
+      "condition": "1310",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2366,
+      "name": "a steel breast plate",
+      "description": "A breast plate of thick steel rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 15,
+      "cost": 100,
+      "condition": "2100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2367,
+      "name": "a steel helm",
+      "description": "A steel helm has been left here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 15,
+      "cost": 60,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2368,
+      "name": "a huge halberd",
+      "description": "A huge halberd has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 18,
+      "cost": 180,
+      "condition": "690",
+      "values": [
+        0,
+        2,
+        10,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2369,
+      "name": "a blue steel helm and visor",
+      "description": "A helm and visor of blue steel rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2370,
+      "name": "a pair of blue steel greaves",
+      "description": "Some greaves made of blue steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2371,
+      "name": "a pair of blue steel vambraces",
+      "description": "Some vambraces made of blue steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2372,
+      "name": "a two-handed sword",
+      "description": "A large sword lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 22,
+      "cost": 180,
+      "condition": "2500",
+      "values": [
+        0,
+        6,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2373,
+      "name": "a red steel helm and visor",
+      "description": "A helm and visor made of red steel rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 20,
+      "cost": 80,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2374,
+      "name": "a pair of red steel greaves",
+      "description": "Some greaves made of red steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 20,
+      "cost": 80,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2375,
+      "name": "a pair of red steel vambraces",
+      "description": "Some vambraces made of red steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 20,
+      "cost": 80,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2376,
+      "name": "a minotaur glaive",
+      "description": "A very large glaive rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 22,
+      "cost": 190,
+      "condition": "830",
+      "values": [
+        0,
+        5,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2377,
+      "name": "a crimson steel helm and visor",
+      "description": "A helm and visor made of crimson steel rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AE",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2378,
+      "name": "a pair of crimson steel greaves",
+      "description": "Some greaves made of crimson steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AF",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2379,
+      "name": "a pair of crimson steel vambraces",
+      "description": "Some vambraces made of crimson steel rest here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AI",
+      "weight": 25,
+      "cost": 80,
+      "condition": "1950",
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2380,
+      "name": "a huge morningstar",
+      "description": "A huge morningstar rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 29,
+      "cost": 200,
+      "condition": "2300",
+      "values": [
+        0,
+        7,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "star morning morningstar",
+          "description": "It looks damaging.\n"
+        }
+      ]
+    },
+    {
+      "id": 2381,
+      "name": "some huge spiked brass knuckles",
+      "description": "A set of spiked brass knuckles lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 17,
+      "cost": 90,
+      "condition": "1970",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "spiked brass knuckles",
+          "description": "A band held in the hand that has spikes on the front side.\n"
+        }
+      ]
+    },
+    {
+      "id": 2382,
+      "name": "a multi-colored key ring",
+      "description": "A ring of multi-colored keys rests here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "AC",
+      "weight": 0,
+      "cost": 30,
+      "condition": "0",
+      "values": [
+        10,
+        0,
+        0,
+        2,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "ring key multi colored multi-colored",
+          "description": "It has several keys of different colors on it.\n"
+        }
+      ]
+    },
+    {
+      "id": 2383,
+      "name": "a huge wooden maul",
+      "description": "A huge wooden maul rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 220,
+      "condition": "1700",
+      "values": [
+        0,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2384,
+      "name": "a misty potion",
+      "description": "A small misty potion rests here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "AGN",
+      "wear_flags": "A",
+      "weight": 11,
+      "cost": 30,
+      "condition": "800",
+      "values": [
+        20,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2385,
+      "name": "a belt pouch",
+      "description": "A belt pouch lies here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "AL",
+      "weight": 0,
+      "cost": 50,
+      "condition": "20",
+      "values": [
+        15,
+        0,
+        0,
+        2,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2386,
+      "name": "an ogre spear",
+      "description": "A crude spear rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 17,
+      "cost": 80,
+      "condition": "320",
+      "values": [
+        0,
+        2,
+        10,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2387,
+      "name": "an ogre war club",
+      "description": "A large, crude club rests here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 17,
+      "cost": 100,
+      "condition": "880",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2388,
+      "name": "a bearskin cloak",
+      "description": "A rough bearskin rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AK",
+      "weight": 20,
+      "cost": 120,
+      "condition": "1450",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2389,
+      "name": "a pair of feathered earrings",
+      "description": "Some feathered earrings rest here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "AG",
+      "wear_flags": "AE",
+      "weight": 0,
+      "cost": 20,
+      "condition": "500",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2390,
+      "name": "gauntlets of ogre power",
+      "description": "Some heavy gauntlets lie here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "BG",
+      "wear_flags": "AH",
+      "weight": 23,
+      "cost": 130,
+      "condition": "5800",
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 1,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "gauntlets ogre power",
+          "description": "They look very \"handy\".\n"
+        }
+      ]
+    },
+    {
+      "id": 2391,
+      "name": "a massive club",
+      "description": "A massive club lies here, discarded.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 23,
+      "cost": 190,
+      "condition": "1520",
+      "values": [
+        0,
+        3,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2392,
+      "name": "a thick fur cape",
+      "description": "A thick pile of fur lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AC",
+      "weight": 15,
+      "cost": 50,
+      "condition": "1050",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2393,
+      "name": "a fur lined tunic",
+      "description": "A fur lined tunic rests here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 15,
+      "cost": 60,
+      "condition": "2100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

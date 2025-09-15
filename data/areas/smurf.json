@@ -1,0 +1,846 @@
+{
+  "name": "Smurfville",
+  "vnum_range": {
+    "min": 100,
+    "max": 199
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 101,
+      "name": "Dimly Lit Path",
+      "description": "This path is made of crushed granite with curious blue streaks in it.\nThe path continues north to a village, or south to the eastern road.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 102,
+          "description": "The path continues toward the village.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 3525,
+          "description": "The path heads back toward the eastern road.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 102,
+      "name": "Dimly Lit Path",
+      "description": "This section of the road is badly worn and frequently traversed.  There is\nfaint singing to the north.  The path back to the road lies to the south.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 103,
+          "description": "The path continues toward the village.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 101,
+          "description": "The dimly lit path.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 103,
+      "name": "Dimly Lit Path",
+      "description": "This section of the road is badly worn and frequently traversed.  Singing is\ngetting stronger to the north.  The path back to the road lies to the south.\n",
+      "sector_type": "forest",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 104,
+          "description": "The entrance to smurf village.\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 102,
+          "description": "The dimly lit path.\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 104,
+      "name": "Entrance to Smurf Village",
+      "description": "You stand at the entrance to a tiny village.  You can see across the whole\nvillage easily.  Little blue creatures with white hats and boots and little\nfluffy tails scamper about.  They sing continuously.  The singing is getting\non your nerves and you have the urge to squash them.\n",
+      "sector_type": "field",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 105,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 103,
+          "description": "Dimly Lit Path\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 105,
+      "name": "Smurfy Road",
+      "description": "You are way too big to be using this road.  But who cares.  Who's gonna stop\nyou?  These little blue smurfs?  The singing is growing intense.  Your ears\nare starting to ring.  Smurfy Road continues to the north, west, and east.\nThere is still time to turn back and go south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 106,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 110,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 104,
+          "description": "Entrance to smurf village\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 111,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 106,
+      "name": "Smurfy Road",
+      "description": "You continue to travel down Smurfy Road.  Isn't it just smurfy?  Smurfy road\ncontinues its smurfy path to the smurfy north, smurfy west, and smurfy south.\nA smurfy home lies to the smurfy east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 107,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 120,
+          "description": "Smurfy Home\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 105,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 112,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 107,
+      "name": "Smurfy Road",
+      "description": "Oh boy, another smurfy road!  Smurfy Road goes north and south here.  There\nis a smurfy, mushroom home to the west.  A beautiful smurfberry patch is to\nthe east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 108,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 116,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 106,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 129,
+          "description": "A Smurfy Home\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 108,
+      "name": "Smurfy Road",
+      "description": "Smurfy Road continues to smurf here.  It smurfs to the south and smurfs to\nan end to the north.  A smurfberry patch is to the east.  A stone path lies\nto the west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 109,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 117,
+          "description": "Smurfberry patch\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 107,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 113,
+          "description": "A stone path\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 109,
+      "name": "Smurfy Road",
+      "description": "A smurfy well lies here in the middle of Smurfy Road.  A fence separates\nthe smurfs from harm to the north.  A berry patch is to the east.  Smurfy\nRoad continues to to the south and west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 118,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 108,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 114,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "smurfy well",
+          "description": "A small well is here.  Just the right size if you're a smurf.  But big\nenough for you to get some water from.  I'm sure the smurfs wont mind.\n"
+        }
+      ],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 110,
+      "name": "Smurfy Road",
+      "description": "A corner of smurfy road is where you stand.  A smurfy fence blocks passage\nto the east or south.  A smurfy home is to the north.  Smurfy Road goes back\nto the west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 119,
+          "description": "Smurfy Home\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 105,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 111,
+      "name": "Smurfy Road",
+      "description": "Western corner of Smurfy Road.  You can continue to smurf down the road\nto the east and north.  You can also smurf into a smurfy home to the south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 112,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 105,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 121,
+          "description": "Smurfy Home\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 112,
+      "name": "Smurfy Road",
+      "description": "There's no place like smurf.  There's no place like smurf.  Sorry wrong\nmovie.  A smurfy home is to the west.  Papa Smurf's backyard is to the\nnorth but you can't go there.  Smurfy Road continues to the south and\neast.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 106,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 111,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 122,
+          "description": "Smurfy Home\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 113,
+      "name": "Stone Path",
+      "description": "You are walking along a cute little stone path.  To the south lies Papa\nSmurf's house.  A Smurfy house is to the west.  Smurfy road is to the east.\nEverything is so peaceful here.  You could stay forever.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 108,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 125,
+          "description": "Papa Smurf's House\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "west": {
+          "to_room": 123,
+          "description": "Smurfy House\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 114,
+      "name": "Smurfy Road",
+      "description": "Yet another part of Smurfy Road.  Hey if you go west its the last\nsection of Smurfy Road.  You can go back to the smurfy well to the east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 109,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 115,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 115,
+      "name": "Smurfy Road",
+      "description": "The last piece of Smurfy Road.  You can go back to Smurfy Road to the east.\nA nice, beautiful, smurfy, mushroom home is to the south.  In the distance to\nthe north you can see Gargamel's Castle.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 126,
+          "description": "Path to Gargamel's Castle\n",
+          "flags": []
+        },
+        "east": {
+          "to_room": 114,
+          "description": "Smurfy Road\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 124,
+          "description": "Smurfy Home\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 116,
+      "name": "Smurfberry Patch",
+      "description": "Delicious smurfberries grow here.  You could probably eat a year's worth of\nsmurfberries in one sitting.  Smurfy Road is back to the west.  Another\nsmurfberry patch is to the north.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 117,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 107,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 117,
+      "name": "Smurfberry Patch",
+      "description": "Another patch of smurfberries is growing here.  The smell is driving your\nnostrils crazy.  It almost, ALMOST, makes you forget all the singing going\non.  Smurfy Road is to the west, while smurfberry patches are to the north\nand south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 118,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 116,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 108,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 118,
+      "name": "Smurfberry Patch",
+      "description": "The northernmost of the smurfberry patches grows here.  It looks just\nas scrumptious as all the rest.  Just take a few; they'll never know.  Smurfy\nRoad is to the west.  A smurfberry patch is to the south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 117,
+          "description": "Smurfberry Patch\n",
+          "flags": []
+        },
+        "west": {
+          "to_room": 109,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 119,
+      "name": "Brainy Smurf's Home",
+      "description": "You rip the roof of the home to get a good look inside.  You see\nmany smurfy books.  The print is so small you couldn't even read it\nwith a magnifying glass.  I wonder if Brainy Smurf minds if you\ndestroy his home?  Smurfy Road is back to the south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 110,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 120,
+      "name": "Handy Smurf's Home",
+      "description": "This home was well built.  Of course, until you rip it apart you big meany\nyou.  Tools are all over the place.  Too small for you to use.  Smurfy Road is\nback to the west.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "west": {
+          "to_room": 106,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 121,
+      "name": "Hefty Smurf's Home",
+      "description": "Hefty is anything but wimpy.  So is his house.  It actually took you a\ncouple of minutes to destroy his house.  Better watch out -- he might be\na little mad at you.  Smurfy Road is back to the north.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 111,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 122,
+      "name": "Sleepy Smurf's Home",
+      "description": "Be vewy vewy quiet.  Sleepy Smurf is probably sleeping.  You see so many\nbeds you can't even tell if he is here.  Maybe you should quietly go back to\nSmurfy Road to the east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 112,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 123,
+      "name": "Grumpy Smurf's Home",
+      "description": "This is Grumpy Smurf's home.  He is pissed at you.  Of course, he is pissed\nat everyone.  So don't take it bad.  Maybe you'd better leave before he really\ngets mad.  Smurfy Road to the east is your only salvation.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 113,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 124,
+      "name": "Jokey Smurf's Home",
+      "description": "You pull the top of his house and it explodes in your face.  That Jokey\nSmurf, what a kidder.  You can hear his laughter as you wipe the ashes off\nyour face.  You better get even.  Smurfy Road is to the north.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 115,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 125,
+      "name": "Papa Smurf's Home",
+      "description": "It's the home of the leader of the smurfs.  Papa Smurf has a nicely decorated\nhome.  He takes pride in his work.  You could get to know him or just squash\nhim.  If Papa Smurf is not here he is probably at Smurfette's putting the\nmoves on her.  A stone path lies to the north.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 113,
+          "description": "Stone Path\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 126,
+      "name": "Path to Gargamel's Castle",
+      "description": "You are walking along a path to Gargamel's Castle to the North.\nSmurfy Road lies to the south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 127,
+          "description": "Outside Gargamel's Castle\n",
+          "flags": []
+        },
+        "south": {
+          "to_room": 115,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 127,
+      "name": "Outside Gargamel's Castle",
+      "description": "You are standing outside Gargamel's Castle.  You can hear him screaming at\nAzreal from inside.  You can also him cursing out those wretched smurfs.\nHis Castle is to the north while Smurfy Road is to the south.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 128,
+          "description": "Gargamel's Castle\n",
+          "keyword": "door",
+          "flags": []
+        },
+        "south": {
+          "to_room": 126,
+          "description": "Path to Gargamel's Castle\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 128,
+      "name": "Gargamel's Castle",
+      "description": "This is Gargamel's Castle.  His big black kettle is in the middle of the room.\nWhere else would he put it?  The place has only one room.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 127,
+          "description": "Outside Gargamel's Castle\n",
+          "keyword": "door",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    },
+    {
+      "id": 129,
+      "name": "Smurfette's House",
+      "description": "This house is conveniently next to Papa Smurfs.  Makes it easier for Papa\nSmurf to sneak over at night.  I hope he uses protection.  I would hate to\nhave little smurfs running around.  The only exit is to the east.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 107,
+          "description": "Smurfy Road\n",
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 100
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 101,
+      "name": "a smurf",
+      "description": "A smurf is singing and walking along.\n"
+    },
+    {
+      "id": 102,
+      "name": "a smurf",
+      "description": "A smurf is here, picking berries.\n"
+    },
+    {
+      "id": 103,
+      "name": "Brainy Smurf",
+      "description": "Brainy Smurf is here, mumbling something to himself.\n"
+    },
+    {
+      "id": 104,
+      "name": "Handy Smurf",
+      "description": "Handy Smurf is building something here.\n"
+    },
+    {
+      "id": 105,
+      "name": "Sleepy Smurf",
+      "description": "Sleepy Smurf is sleep walking here.\n"
+    },
+    {
+      "id": 106,
+      "name": "Hefty Smurf",
+      "description": "Hefty Smurf is lifting weights here.\n"
+    },
+    {
+      "id": 107,
+      "name": "Grumpy Smurf",
+      "description": "Grumpy Smurf is here, swearing.\n"
+    },
+    {
+      "id": 108,
+      "name": "Jokey Smurf",
+      "description": "Jokey Smurf is here, holding a present.\n"
+    },
+    {
+      "id": 109,
+      "name": "Smurfette",
+      "description": "Smurfette is here, looking beautiful.\n"
+    },
+    {
+      "id": 110,
+      "name": "Papa Smurf",
+      "description": "Papa Smurf is practicing magic here.\n"
+    },
+    {
+      "id": 111,
+      "name": "Gargamel",
+      "description": "Gargamel is here, cursing out the smurfs.\n"
+    },
+    {
+      "id": 112,
+      "name": "Azreal",
+      "description": "Azreal is here, licking himself.\n"
+    }
+  ],
+  "objects": [
+    {
+      "id": 100,
+      "name": "a bunch of smurfberries",
+      "description": "A bunch of delicious looking smurfberries lie here."
+    },
+    {
+      "id": 101,
+      "name": "a pair of glasses",
+      "description": "An odd pair of glasses has been left here."
+    },
+    {
+      "id": 102,
+      "name": "a smurf hat",
+      "description": "A smurf hat has been left here."
+    },
+    {
+      "id": 103,
+      "name": "a small axe",
+      "description": "A small axe has been dropped here."
+    },
+    {
+      "id": 104,
+      "name": "a small necklace",
+      "description": "A small necklace is lying on the ground."
+    },
+    {
+      "id": 105,
+      "name": "a pink potion",
+      "description": "A pink potion is barely visible on the ground."
+    },
+    {
+      "id": 106,
+      "name": "a small wand",
+      "description": "A small wand lies on the ground."
+    },
+    {
+      "id": 107,
+      "name": "a tiny key",
+      "description": "A tiny key is lying on the ground."
+    },
+    {
+      "id": 108,
+      "name": "a smurf well",
+      "description": "A small smurfy well is here."
+    },
+    {
+      "id": 109,
+      "name": "a small key",
+      "description": "A key to Gargamel's door lies here."
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 101,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 102,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 103,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 104,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 105,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 106,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 107,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 108,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 109,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 110,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 111,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 112,
+      "spec": "spec_poison"
+    }
+  ]
+}

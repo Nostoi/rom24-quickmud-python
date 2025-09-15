@@ -72,10 +72,16 @@ class PlayerAccount(Base):
     __tablename__ = "player_accounts"
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True)
+    email = Column(String)
     password_hash = Column(String)
     is_admin = Column(Boolean, default=False)
 
     characters = relationship("Character", back_populates="player")
+    
+    def set_password(self, password: str):
+        """Set the password hash for this account."""
+        from mud.security.hash_utils import hash_password
+        self.password_hash = hash_password(password)
 
 
 class Character(Base):

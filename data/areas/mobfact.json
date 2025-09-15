@@ -1,0 +1,625 @@
+{
+  "name": "Mob Factory",
+  "vnum_range": {
+    "min": 9400,
+    "max": 9499
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 9400,
+      "name": "Entrance to the Mob Factory",
+      "description": "You find that you have entered a strange factory. This factory doesn't\nmake cars or computers or something - it makes mobs! The sound of\nmachinery can be heard in the background; the grinding gears drive you\ncrazy! To the north you see the storage area, to the south the\nforeman's office, to the east the entrance hallway, and to the west the\nfamiliar paving of wall road.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9401,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9407,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9403,
+          "flags": []
+        },
+        "west": {
+          "to_room": 3047,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9401,
+      "name": "Mob Factory Storage Area",
+      "description": "This is where the raw materials from which mobs are manufactured are\nstored. You see sacks of sawdust, cans of pink paint, a large box\ncontaining wigs and a bottle mysteriously labelled \"solution x\". Exits\nare more of storage to the east and north, and entrance to the mob\nfactory to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9402,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9406,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9400,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9402,
+      "name": "Mob Factory Storage Area",
+      "description": "This is where the raw materials from which mobs are manufactured are\nstored. You see sacks of sawdust, cans of pink paint, a large box\ncontaining wigs and a bottle mysteriously labelled \"solution X\". Exits\nare more of storage to the east and south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 9405,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9401,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9403,
+      "name": "Foreman's Office",
+      "description": "This is the office of the mob factory foreman. The room is sparsely\nfurnished with a metal desk, a couple of chairs, a shelf with helmets\nof various sizes and a Sports Illustrated Swimsuit calendar on the west\nwall. Exits lead north to the mob factory entrance and south to the\nforeman's bathroom.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9400,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9404,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9404,
+      "name": "Foreman's Bathroom",
+      "description": "This is the place where the foreman makes frequent visits. The smell\nhere is very strong and reminds you of bovine excrement! There is a\nshower to the back, and a urinal to the left. On the floor you can\nsee stains of a very suspicious nature. The only exit leads north to\nthe foreman's office.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9403,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9405,
+      "name": "Mob Factory Storage Area",
+      "description": "This is where the raw materials from which mobs are manufactured are\nstored. You see sacks of sawdust, cans of pink paint, a large box\ncontaining wigs and a bottle mysteriously labelled \"solution X\". Exits\nare more of storage to the west and south, and an inspection room to\nthe east.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 9410,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9406,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9402,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9406,
+      "name": "Mob Factory Storage Area",
+      "description": "This is where the raw materials from which mobs are manufactured are\nstored. You see sacks of sawdust, cans of pink paint, a large box\ncontaining wigs and a bottle mysteriously labelled \"solution X\". Exits\nare more of storage to the west and north, an inspection room to the\neast and the entrance hallway to the south.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9405,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9411,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9407,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9401,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9407,
+      "name": "Entrance Hallway to Mob Factory",
+      "description": "You are standing in the entrance hallway of the mob factory. The sound\nof machinery gets louder now, and you can hear people shouting in the\ndistance. Every once in a while you get creepy feeling that a pair of\neyes is observing you...... Exits are north to the storage area, east\nto the entrance hallway, south to the cafeteria and west to the mob\nfactory entrance.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9406,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9412,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9408,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9400,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9408,
+      "name": "Mob Factory Cafeteria",
+      "description": "You find that you have entered the cafeteria of the mob factory. There\nare many workers eating at the numerous tables placed around the room.\nThe food doesn't look too appetising, but the factory workers don't\nseem to care. There are many places where food and drink have been\nspilled on the ground. Exits are north to the entrance hallway and\nsouth to the mob factory cafeteria.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9407,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9409,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9409,
+      "name": "Mob Factory Cafeteria",
+      "description": "You find that you have entered the cafeteria of the mob factory. There\nare many workers eating at the numerous tables placed around the room.\nThe food doesn't look too appetising, but the factory workers don't\nseem to care. There are many places where food and drink have been\nspilled on the ground. The only exit is north to the mob factory\ncafeteria.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9408,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9410,
+      "name": "Mob Factory Inspection Room",
+      "description": "You have entered the mob factory inspections room. This is where the\nmobs manufactured on the assembly lines are inspected for defects. A\nwhole team of inspectors from the Midgaard Inspections Bureau is\nstanding around, trying to look busy. Exits are south to the mob\nfactory inspection room, east to the primary assembly line and west to\nthe storage area.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 9415,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9411,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9405,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9411,
+      "name": "Mob Factory Inspection Room",
+      "description": "You have entered the mob factory inspections room. This is where the\nmobs manufactured on the assembly lines are inspected for defects. A\nwhole team of inspectors from the Midgaard Inspections Bureau is\nstanding around, trying to look busy. Exits are south to the mob\nfactory inspection room, east to the primary assembly line and west to\nthe storage area.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9410,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9416,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9412,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9406,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9412,
+      "name": "Entrance Hallway to Mob Factory",
+      "description": "You are standing in the entrance hallway of the mob factory. The sound\nof machinery gets louder now, and you can hear people shouting in the\ndistance. Every once in a while you get creepy feeling that a pair of\neyes is observing you...... Exits are north to the inspection room,\neast to the primary assembly line, south to the reject room and west\nto the entrance hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9411,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9417,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9413,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9407,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9413,
+      "name": "Mob Factory Reject Room",
+      "description": "This is the factory reject room. All the mobs that are manufactured\nincorrectly or have some defect are placed here before subsequent\ndestruction. You shudder at the many deformed and grotesque shapes\npresent before you. Exits are south to the reject room and north to\nthe entrance hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9412,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9414,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9414,
+      "name": "Mob Factory Reject Room",
+      "description": "This is the factory reject room. All the mobs that are manufactured\nincorrectly or have some defect are placed here before subsequent\ndestruction. You shudder at the many deformed and grotesque shapes\npresent before you. The only exit is north to the reject room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9413,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9415,
+      "name": "Primary Assembly Line",
+      "description": "This is the primary assembly line of the mob factory. Here, all the\nmobs seen roaming around the city of Midgaard are manufactured from\nraw materials. There is a big conveyor belt present which makes a lot\nof noise! It seems that the workers are making drunks today. Exits are\neast to the secondary assembly line, south to the primary assembly\nline and west to the inspection room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "east": {
+          "to_room": 9420,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9416,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9410,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9416,
+      "name": "Primary Assembly Line",
+      "description": "This is the primary assembly line of the mob factory. Here, all the\nmobs seen roaming around the city of Midgaard are manufactured from\nraw materials. There is a big conveyor belt present which makes a lot\nof noise! It seems that the workers are making drunks today. Exits are\neast to the secondary assembly line, north and south to the primary\nassembly line and west to the inspection room.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9415,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9421,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9417,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9411,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9417,
+      "name": "Primary Assembly Line",
+      "description": "This is the primary assembly line of the mob factory. Here, all the\nmobs seen roaming around the city of Midgaard are manufactured from\nraw materials. There is a big conveyor belt present which makes a lot\nof noise! It seems that the workers are making drunks today. Exits are\neast to the secondary assembly line, north and south to the primary\nassembly line and west to the entrance hallway.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9416,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9422,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9418,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9412,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9418,
+      "name": "Primary Assembly Line",
+      "description": "This is the primary assembly line of the mob factory. Here, all the\nmobs seen roaming around the city of Midgaard are manufactured from\nraw materials. There is a big conveyor belt present which makes a lot\nof noise! It seems that the workers are making drunks today. Exits are\neast to the secondary assembly line, north and south to the primary\nassembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9417,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9423,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9419,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9419,
+      "name": "Primary Assembly Line",
+      "description": "This is the primary assembly line of the mob factory. Here, all the\nmobs seen roaming around the city of Midgaard are manufactured from\nraw materials. There is a big conveyor belt present which makes a lot\nof noise! It seems that the workers are making drunks today. Exits are\neast to the secondary assembly line and north to the primary\nassembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9418,
+          "flags": []
+        },
+        "east": {
+          "to_room": 9424,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9420,
+      "name": "Secondary Assembly Line",
+      "description": "This is the secondary asembly line of the mob factory. You are\nsurprised to see cityguard heads come floating on the conveyor belt!\nThe very sight is sickening, but the workers seem to be quite\ncheerful about their work. Exits are south to the secondary assembly\nline and west to the primary assembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "south": {
+          "to_room": 9421,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9415,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9421,
+      "name": "Secondary Assembly Line",
+      "description": "This is the secondary asembly line of the mob factory. You are\nsurprised to see cityguard heads come floating on the conveyor belt!\nThe very sight is sickening, but the workers seem to be quite\ncheerful about their work. Exits are north and south to the secondary\nassembly line and west to the primary assembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9420,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9422,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9416,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9422,
+      "name": "Secondary Assembly Line",
+      "description": "This is the secondary asembly line of the mob factory. You are\nsurprised to see cityguard heads come floating on the conveyor belt!\nThe very sight is sickening, but the workers seem to be quite\ncheerful about their work. Exits are north and south to the secondary\nassembly line and west to the primary assembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9421,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9423,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9417,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9423,
+      "name": "Secondary Assembly Line",
+      "description": "This is the secondary asembly line of the mob factory. You are\nsurprised to see cityguard heads come floating on the conveyor belt!\nThe very sight is sickening, but the workers seem to be quite\ncheerful about their work. Exits are north and south to the secondary\nassembly line and west to the primary assembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9422,
+          "flags": []
+        },
+        "south": {
+          "to_room": 9424,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9418,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    },
+    {
+      "id": 9424,
+      "name": "Secondary Assembly Line",
+      "description": "This is the secondary asembly line of the mob factory. You are\nsurprised to see cityguard heads come floating on the conveyor belt!\nThe very sight is sickening, but the workers seem to be quite\ncheerful about their work. Exits are north to the secondary\nassembly line and west to the primary assembly line.\n",
+      "sector_type": "inside",
+      "flags": [],
+      "exits": {
+        "north": {
+          "to_room": 9423,
+          "flags": []
+        },
+        "west": {
+          "to_room": 9419,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 9400
+    }
+  ],
+  "mobiles": [
+    {
+      "id": 9401,
+      "name": "The mutant beastly fido",
+      "description": "The mutant beastly fido is here, his eyes glowing green!\n"
+    },
+    {
+      "id": 9402,
+      "name": "Foreman Floyd",
+      "description": "Foreman Floyd is here, making plans for the factory's future.\n"
+    },
+    {
+      "id": 9403,
+      "name": "The Cityguard head",
+      "description": "The Cityguard head floats around aimlessly.\n"
+    },
+    {
+      "id": 9404,
+      "name": "The revolving drunk",
+      "description": "The Revolving drunk is here, spinning in place.\n"
+    },
+    {
+      "id": 9405,
+      "name": "The toxic slime",
+      "description": "A pool of toxic slime lies on  the floor.\n"
+    },
+    {
+      "id": 9406,
+      "name": "The factory worker",
+      "description": "A Mob Factory worker is standing here, looking bored.\n"
+    },
+    {
+      "id": 9407,
+      "name": "The factory worker",
+      "description": "A Mob Factory worker is here, asleep in a chair.\n"
+    }
+  ],
+  "objects": [],
+  "specials": []
+}

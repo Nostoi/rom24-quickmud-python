@@ -33,13 +33,14 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                     if info_line is None:
                         break
                     info_parts = info_line.split()
+                    exit_flags = info_parts[0] if len(info_parts) >= 1 else '0'
                     if len(info_parts) >= 3:
                         key = int(info_parts[1])
                         to_vnum = int(info_parts[2])
                     else:
                         key = 0
                         to_vnum = 0
-                    exit_obj = Exit(vnum=to_vnum, key=key, description=exit_desc, keyword=exit_keywords)
+                    exit_obj = Exit(vnum=to_vnum, key=key, description=exit_desc, keyword=exit_keywords, flags=exit_flags)
                     # direction char at Dn
                     idx = int(dir_line[1])
                     if idx < len(room.exits):

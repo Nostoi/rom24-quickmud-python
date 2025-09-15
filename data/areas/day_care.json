@@ -1,0 +1,1042 @@
+{
+  "area": {
+    "vnum": 6600,
+    "name": "Day Care",
+    "filename": "daycare.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 6601,
+      "name": "The Dwarven Drop Off",
+      "description": "This is where the dwarven mommies and daddies come to drop off their\nannoying little brats.  You have the urge to leave.  There is a sign here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6500,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6602,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "This is an area for newbies, so have fun.  -- Sandman\n"
+        }
+      ],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6602,
+      "name": "Day Care Center",
+      "description": "You are in the north-east corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a kitchen to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6601,
+          "description": "You see the drop off.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6626,
+          "description": "You see an extremely messy kitchen.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6604,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6603,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6603,
+      "name": "Day Care Center",
+      "description": "You are in the north-west corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a bathroom to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6602,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6605,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6606,
+          "description": "You see a messy bathroom.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6604,
+      "name": "Day Care Center",
+      "description": "You are in the south-east corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a playground to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6602,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6610,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6605,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6605,
+      "name": "Day Care Center",
+      "description": "You are in the south-west corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a staircase to the west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6603,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6604,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6607,
+          "description": "You see a staircase leading down.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6606,
+      "name": "The Messy Bathroom",
+      "description": "You hold your nose as you realize you have made the worst mistake of your\nlife.  The air is rancid and the walls are stained.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6603,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6607,
+      "name": "The Staircase",
+      "description": "You stand on top of a staircase leading down, and wonder what mystery could\nlie down under.  Beware!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6605,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 6612,
+          "description": "You see the entrance to something.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6608,
+      "name": "The Playground",
+      "description": "You are in the north-west corner of the playground.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6609,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6610,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6609,
+      "name": "The Playground",
+      "description": "You are in the north-east corner of the playground.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6611,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6608,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6610,
+      "name": "The Playground",
+      "description": "You are in the south-west corner of the playground.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6608,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6611,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6604,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6611,
+      "name": "The Playground",
+      "description": "You are in the south-east corner of the playground.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6609,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6610,
+          "description": "You see the playground.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6612,
+      "name": "Entrance to the Mini-Maze",
+      "description": "You stand in the entrance to a small, but confusing maze.  You really hope\nthat you don't get lost.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6613,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 6607,
+          "description": "You see some stairs.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6613,
+      "name": "Mini-Maze",
+      "description": "You are in a small passage that looks just like every other one.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 6614,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6615,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6612,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6614,
+      "name": "Mini-Maze",
+      "description": "You are in a small passage that looks just like every other one.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 6616,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6613,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6615,
+      "name": "Mini-Maze",
+      "description": "You are in a small passage that looks just like every other one.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6613,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 6616,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6616,
+      "name": "Mini-Maze",
+      "description": "You are in a small passage that looks just like every other one.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6614,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6624,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 6615,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6624,
+      "name": "End of the Mini-Maze",
+      "description": "You stand at the end of your journey.  There is a big sign here and you had\nbetter read it!\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6616,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6631,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "If you are not level 6 or above, then don't go south!!!!  It is a dangerous\narea, but congrats for getting this far - Sandman\n"
+        }
+      ],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6626,
+      "name": "Messy Kitchen",
+      "description": "You stand in the kitchen and eating area of the day care center.  Pots and\npans are everywhere, while the toddlers continue to create chaos.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 6602,
+          "description": "You see a large room full of noisy brats.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    },
+    {
+      "id": 6631,
+      "name": "The End?",
+      "description": "You have reached the final lair.  It is dominated by a huge five headed\ndragon (actually an overgrown brat with a Halloween mask).\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6624,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 6600
+    }
+  ],
+  "mobs": [
+    {
+      "id": 6600,
+      "name": "the dwarven youth",
+      "player_name": "youth dwarven dwarf",
+      "long_description": "A young dwarf plays with a toy axe.\n",
+      "description": "This is a young but not totally harmless creature.\n",
+      "race": "dwarf",
+      "act_flags": "ACGT",
+      "affected_by": "0",
+      "alignment": -5,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "1d4+30",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+2",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 6,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "DJR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "either",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "0"
+    },
+    {
+      "id": 6601,
+      "name": "a teddy bear",
+      "player_name": "teddy bear",
+      "long_description": "A cute and fuzzy teddy bear stands here.\n",
+      "description": "This is a tiny little bear with a heart on his chest.\n",
+      "race": "doll",
+      "act_flags": "ACG",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d10+10",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+0",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 5,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "NR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "cloth"
+    },
+    {
+      "id": 6602,
+      "name": "a raggedy anne doll",
+      "player_name": "doll raggedy anne",
+      "long_description": "A raggedy anne doll is sitting here.\n",
+      "description": "You see a small little cute rag doll.\n",
+      "race": "doll",
+      "act_flags": "ACG",
+      "affected_by": "0",
+      "alignment": 300,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d5+19",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d5+0",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 4,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "FHR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "cloth"
+    },
+    {
+      "id": 6603,
+      "name": "a toy soldier",
+      "player_name": "soldier toy",
+      "long_description": "A toy soldier is standing here.\n",
+      "description": "The toy is looking for target practice.\n",
+      "race": "doll",
+      "act_flags": "ACGT",
+      "affected_by": "0",
+      "alignment": -300,
+      "group": 0,
+      "level": 3,
+      "thac0": 1,
+      "ac": "3d5+36",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+3",
+      "damage_dice": "punch",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 7,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "IR",
+      "immune": "0",
+      "resist": "G",
+      "vuln": "E",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "tin"
+    },
+    {
+      "id": 6604,
+      "name": "the ugly bear",
+      "player_name": "bear ugly",
+      "long_description": "An ugly stuffed bear stands here.\n",
+      "description": "This is obviously a reject from the factory.\nHe snarls and growls at you.\n",
+      "race": "doll",
+      "act_flags": "ACF",
+      "affected_by": "0",
+      "alignment": -400,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "3d4+29",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d6+1",
+      "damage_dice": "chomp",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 3,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "DJNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "cloth"
+    },
+    {
+      "id": 6605,
+      "name": "an old doll",
+      "player_name": "doll old",
+      "long_description": "An abused and old doll is here.\n",
+      "description": "This doll has been hugged and played with until there is almost nothing left.\n",
+      "race": "doll",
+      "act_flags": "ACG",
+      "affected_by": "0",
+      "alignment": -2,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "1d10+1",
+      "hit_dice": "1d1+99",
+      "mana_dice": "1d4+0",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 5,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "R",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "cloth"
+    },
+    {
+      "id": 6606,
+      "name": "the nanny",
+      "player_name": "nanny",
+      "long_description": "An old wrinkled nanny stands here, looking over the little ones.\n",
+      "description": "You see an old dwarven lady who has been hunched over with age.  However, it\nappears that there is still some fight left in her.\n",
+      "race": "dwarf",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 10,
+      "group": 0,
+      "level": 5,
+      "thac0": 1,
+      "ac": "4d4+50",
+      "hit_dice": "5d4+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "slap",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 10,
+      "offensive": "CDR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6607,
+      "name": "the armed guard",
+      "player_name": "guard",
+      "long_description": "An armed guard stands here looking lost.\n",
+      "description": "This is a big mean bully who is tired of being lost in this maze.\nYou suddenly think that you had better flee.\n",
+      "race": "dwarf",
+      "act_flags": "ABCT",
+      "affected_by": "D",
+      "alignment": -800,
+      "group": 0,
+      "level": 8,
+      "thac0": 1,
+      "ac": "3d10+100",
+      "hit_dice": "8d4+100",
+      "mana_dice": "1d7+3",
+      "damage_dice": "punch",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 2,
+      "ac_slash": 3,
+      "ac_exotic": 8,
+      "offensive": "CDJR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 120,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 6608,
+      "name": "the spoiled brat",
+      "player_name": "brat spoiled",
+      "long_description": "A spoiled brat is crying here.\n",
+      "description": "You see a little tyke who has always gotten what he wanted.  You have the\nbiggest urge to put him out of his misery.\n",
+      "race": "dwarf",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": -400,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "2d4+15",
+      "hit_dice": "1d1+199",
+      "mana_dice": "2d2+1",
+      "damage_dice": "beating",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "IJN",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "small",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 6600,
+      "name": "a toy axe",
+      "description": "An axe made of wood lies here.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 0,
+      "cost": 30,
+      "condition": "250",
+      "values": [
+        0,
+        1,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "axe toy",
+          "description": "A small label says 'made in Taiwan'.\n"
+        }
+      ]
+    },
+    {
+      "id": 6601,
+      "name": "a pink ice ring",
+      "description": "A pink ice ring draws your eye.",
+      "material": "ice",
+      "item_type": "treasure",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 3,
+      "cost": 10,
+      "condition": "620",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 4
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "ring pink ice",
+          "description": "How strange...it's made of ice, but it doesn't melt. It feels pleasantly\ncool to the touch.\n"
+        }
+      ]
+    },
+    {
+      "id": 6621,
+      "name": "a linen robe",
+      "description": "A linen robe is crumpled into a ball here.",
+      "material": "cloth",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AK",
+      "weight": 7,
+      "cost": 50,
+      "condition": "780",
+      "values": [
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 5
+        },
+        {
+          "location": 4,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "robe linen",
+          "description": "It radiates an aura of peace and wisdom.  The perfect garb for a teacher.\n"
+        }
+      ]
+    },
+    {
+      "id": 6622,
+      "name": "a broom",
+      "description": "A stout straw broom lies on the floor.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 4,
+      "cost": 30,
+      "condition": "270",
+      "values": [
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -1
+        },
+        {
+          "location": 17,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "broom",
+          "description": "It's worn and tired, probably from swatting too many children.\n"
+        }
+      ]
+    },
+    {
+      "id": 6644,
+      "name": "a juicy steak",
+      "description": "A juicy steak sits on a plate here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        25,
+        25,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6645,
+      "name": "a rotten steak",
+      "description": "A dry steak lies on the floor.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        4,
+        4,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6646,
+      "name": "an amber potion",
+      "description": "An amber potion sits in a corner.",
+      "material": "glass",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "150",
+      "values": [
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion",
+          "description": "It's a tight-stoppered glass bottle with a thick amber liquid inside. It\ntastes kind of like whiskey.\n"
+        }
+      ]
+    },
+    {
+      "id": 6647,
+      "name": "a toy gun",
+      "description": "A toy gun with a sharp bayonet lies here.",
+      "material": "wood",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 4,
+      "cost": 20,
+      "condition": "300",
+      "values": [
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "gun toy",
+          "description": "It's just a toy...but the point looks kind of sharp.\nYou'll put your eye out, kid!\n"
+        }
+      ]
+    }
+  ]
+}

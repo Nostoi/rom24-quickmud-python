@@ -1,0 +1,3575 @@
+{
+  "area": {
+    "vnum": 1500,
+    "name": "Gnome Village",
+    "filename": "gnome.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 1501,
+      "name": "Entrance to Gnome Village",
+      "description": "You stand on a dusty path that leads north and east.  To the east you hear\nthe sounds of a small village.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3526,
+          "description": "A dusty path heads towards the eastern road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1502,
+          "description": "You see a dusty path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1502,
+      "name": "A Dusty Path",
+      "description": "This is a path leading into the village.  It continues east and west and\nthere is a small house to the north.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1509,
+          "description": "You see a small house.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1503,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1501,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1503,
+      "name": "A Road in the Village",
+      "description": "This road runs north and south through the center of the village.  There\nare a few people moving around, but not many.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1505,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1504,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1507,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1502,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1504,
+      "name": "A Dusty Path",
+      "description": "You are on a dusty path on the far side of the village.  Houses are to the\nnorth and south, while the path continues east.  There is a sign here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1512,
+          "description": "You see a house.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1559,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1513,
+          "description": "You see a house.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1503,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "sign",
+          "description": "Warning:  The area to the east was written mostly by Vougon\n(giggle)    - Sandman\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1505,
+      "name": "A Road in the Village",
+      "description": "This road runs north and south through the center of the village.  There\nare a few people moving around, but not many.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1506,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1511,
+          "description": "You see a house.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1503,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1510,
+          "description": "You see a house.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1506,
+      "name": "A Road in the Village",
+      "description": "This road runs north and south through the center of the village.  There\nare a few people moving around, but not many.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1526,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1505,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1507,
+      "name": "A Road in the Village",
+      "description": "This road runs north and south through the center of the village.  There\nare a few people moving around, but not many.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1503,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1508,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1514,
+          "description": "You see a shop.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1508,
+      "name": "A Road in the Village",
+      "description": "This road runs north and south through the center of the village.  There\nare a few people moving around, but not many.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1507,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1516,
+          "description": "You see a shop.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1517,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1515,
+          "description": "You see a shop.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1509,
+      "name": "A Small Gnome House",
+      "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1502,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1510,
+      "name": "A Small Gnome House",
+      "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1505,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1511,
+      "name": "A Small Gnome House",
+      "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1505,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1512,
+      "name": "A Small Gnome House",
+      "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1504,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1513,
+      "name": "A Small Gnome House",
+      "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1504,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1514,
+      "name": "A Gnome Shop",
+      "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1507,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1515,
+      "name": "A Gnome Shop",
+      "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1508,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1516,
+      "name": "A Gnome Shop",
+      "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1508,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1517,
+      "name": "Path by a Stream",
+      "description": "You are on a small path leading north and west, that is surrounded on the\nother two sides by a small stream.  The water looks mighty cold.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1508,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1520,
+          "description": "You see the stream.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1518,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "stream",
+          "description": "The stream is pretty small, but it looks too cold to swim.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1518,
+      "name": "Path by a Stream",
+      "description": "You are on a small east-west path.  The path shows new grass, as if it\nhas stopped being used sometime in the recent past.  A river is to the south,\nand a small hut is to the west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1517,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1521,
+          "description": "You see the stream.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1519,
+          "description": "You see a small hut that is starting to fall apart.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "hut",
+          "description": "The hut looks well built, but it seems to have taken some damage.\n"
+        },
+        {
+          "keyword": "stream",
+          "description": "The stream is pretty small, but it looks too cold to swim.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1519,
+      "name": "A Small Hut",
+      "description": "The hut is a mess!  Blood has stained the grass walls into a dark rich\ncrimson color.  Torn clothes and trash lie all around, and you think you\nsee a skeleton in the corner.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1518,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "skeleton",
+          "description": "The skeleton still has a little flesh clinging to it and it is definitely\nhumanoid.  The skull has been cracked open, but it is otherwise undamaged,\nexcept by time.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1520,
+      "name": "On the Stream",
+      "description": "The stream is cold and frigid, yet it supports plenty of life beneath its\nsurface.  The current trickles west and there is a field to the south.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1517,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1522,
+          "description": "You see a grassy field.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1521,
+          "description": "You see a small stream.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1521,
+      "name": "On the Stream",
+      "description": "The current here flows from the east, but a logjam blocks you from\ncontinuing onward.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1518,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1520,
+          "description": "You see a small stream.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1522,
+      "name": "The Field of Mice's Dreams",
+      "description": "This is a large green field of waist high grass.  You feel something\nscurry over your feet.  There is a cave to the east.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1520,
+          "description": "You see a small stream.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1523,
+          "description": "You see a dark mysterious cave.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1523,
+      "name": "The Dark Cave",
+      "description": "The cave gleams as your light reflects off of it.  As you squint your eyes\nand try to look ahead, you think you see something move.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1524,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1522,
+          "description": "You see a grassy field.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1524,
+      "name": "Darker Cave",
+      "description": "The cave gets even darker as your terror grows stronger.  You fear for your\nlife as something emerges out of the shadows.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1523,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1526,
+      "name": "A Dusty Path",
+      "description": "You are on a well traveled path that leads in many directions.  To the north\nis a large house, and to the west is a fortress.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1558,
+          "description": "You see a large white house.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1506,
+          "description": "You see a road.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1527,
+          "description": "You see the gateway to a large fortress.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "fortress",
+          "description": "The fortress is a large gnome stronghold to defend the city.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1527,
+      "name": "The Iron Gateway",
+      "description": "You stand at the entrance to the gnome fortress.  The place seems to be\nwell fortified.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1526,
+          "description": "You see a small path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1528,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1528,
+      "name": "A Long Hallway",
+      "description": "You are now inside of the fortress; you must be lucky that the guards\nhaven't killed you.  As you glance around, you notice that the walls and\nfloors are spotlessly cleaned.  The barracks are to the north and a\nstorage room is to the south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1530,
+          "description": "You see the barracks.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1527,
+          "description": "You see the gateway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1532,
+          "description": "You see a storage room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1529,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1529,
+      "name": "A Long Hallway",
+      "description": "You are now inside of the fortress; you must be lucky that the guards\nhaven't killed you.  As you glance around, you notice that the walls and\nfloors are spotlessly cleaned.  A mess hall is to the south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1528,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1534,
+          "description": "You see the mess hall.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1535,
+          "description": "You see a small room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1530,
+      "name": "The Barracks",
+      "description": "You now stand in the sleeping quarters of the gnome guards.  Every bed is\nmade perfectly, and not single article of clothing is on the floor.  There\nis a small storage room to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1531,
+          "description": "You see a small storage room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1528,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1531,
+      "name": "A Small Storage Room",
+      "description": "This is where the gnomes store all their spare clothing and armor.\nThere is not much here, but you might come up with something.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1530,
+          "description": "You see the barracks.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1532,
+      "name": "A Small Storage Room",
+      "description": "This is where the gnomes store all their spare weapons.  A door leads off\nto the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1528,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1533,
+          "description": "You see a small room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1533,
+      "name": "A Small Storage Room",
+      "description": "This is yet another room for storing gnome stuff.  Maps and battle plans\nare stored in neat stacks on the shelves.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1532,
+          "description": "You see a small room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1534,
+      "name": "The Mess Hall",
+      "description": "You are in the room where the guards come to get their grub.  The benches\nand tables are neatly cleaned and straightened, while shiny plates line\nthe walls.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1529,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1535,
+      "name": "A Small Room",
+      "description": "This is a small plain room.  Its only interesting feature is a ladder down.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1529,
+          "description": "You see a long hallway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 1536,
+          "description": "You see darkness.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1536,
+      "name": "A Small Unused Room",
+      "description": "You stand in a small room in an unused section of the fortress.  The whole\nroom is coated with dust and cobwebs.  The ladder leads back up, and\na rusty door is to the east.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1537,
+          "description": "You see a rusty door.\n",
+          "keyword": "rusty door",
+          "flags": "2",
+          "key": 1500
+        },
+        "up": {
+          "to_room": 1535,
+          "description": "You see a small room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1537,
+      "name": "Dark Hallway",
+      "description": "You find yourself in a very old section of the fortress.  You must be the\nfirst person to pass through here in years.  The hallway continues south\nand a door leads off to the east.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1538,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1539,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1536,
+          "description": "You see a rusty door.\n",
+          "keyword": "door",
+          "flags": "2",
+          "key": 1500
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1538,
+      "name": "Torture Chamber",
+      "description": "This is a room that was once used to extract lies out of helpless victims.\nThe machines look unused, but could still work.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1537,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "machine",
+          "description": "The machine consists of a large rack with winches on each end.  You can\nalmost feel them pulling your arms out of their sockets.\n"
+        }
+      ],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1539,
+      "name": "Dark Hallway",
+      "description": "The hall continues in a north-south direction.  The floor is coated with\nsome kind of molded slime.  Doors lead east and west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1537,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1542,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1540,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1541,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1540,
+      "name": "Dark Hallway",
+      "description": "The hall continues in a north-south direction.  The floor is coated with\nsome kind of molded slime.  Doors lead east and west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1539,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1544,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1543,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1545,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1541,
+      "name": "Prison Cell",
+      "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1539,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1542,
+      "name": "Prison Cell",
+      "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1539,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1543,
+      "name": "Prison Cell",
+      "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1540,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1544,
+      "name": "Prison Cell",
+      "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1540,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1545,
+      "name": "End of the Dark Hallway",
+      "description": "You have reached the end of the dark hallway and maybe the end of your puny\nlife.  Something lumbers its way out of the shadows.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1540,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1546,
+          "description": "You see a decaying door.\n",
+          "keyword": "door",
+          "flags": "2",
+          "key": 1501
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1546,
+      "name": "A Ladder",
+      "description": "You have come into a vertical tunnel with a ladder.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1545,
+          "description": "You see a decaying door.\n",
+          "keyword": "door",
+          "flags": "2",
+          "key": 1501
+        },
+        "down": {
+          "to_room": 1547,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1547,
+      "name": "Lair",
+      "description": "You have entered a new lair in the fortress.  Anything could be lurking\naround the corner.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1548,
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 1546,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1548,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1547,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1549,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1551,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1549,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1550,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1548,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1550,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1549,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1555,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1551,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1548,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1552,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1552,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1551,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1553,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1553,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1552,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1554,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1554,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1556,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1555,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1553,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1555,
+      "name": "A Damp Hallway",
+      "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1550,
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1554,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1556,
+      "name": "The End of the Hallway",
+      "description": "You make your way out of the hallway, just to find yourself in greater\ndanger.  Before you looms the source of the great heat.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1557,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1554,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1557,
+      "name": "The Altar",
+      "description": "You finally reach the end of the maze.  There is a great altar here in the\nshape of a bat.  A passageway leads off to the west.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1556,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1558,
+      "name": "The Chief's House",
+      "description": "You enter into a large and luxurious house.  The floor is coated with carpets\nand the walls are covered in paintings.  You feel privileged just for stepping\ninside.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1526,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1559,
+      "name": "The Unused Path",
+      "description": "You are now on a fairly unused path that leads east out of the village.\nYou wonder what could be out this way.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1560,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1504,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1560,
+      "name": "The Overgrown Path",
+      "description": "As the path continues on, the grass grows higher.  You can't imagine\nwhat could possibly be out this way.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1561,
+          "description": "You see a clearing.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1559,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1561,
+      "name": "The Clearing",
+      "description": "Your progress is suddenly stopped by mountains on all sides.  The path leads\nback to the west, and there appears to be an old mine shaft to the north.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1562,
+          "description": "You see a mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1560,
+          "description": "You see a path.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1562,
+      "name": "Entrance to the Mine Shaft",
+      "description": "As you enter the mine shaft, you get a sudden fear of the walls closing\nin on you.  You are surprised to notice that you don't need a light.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1563,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1561,
+          "description": "You see the clearing.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1563,
+      "name": "Mine Shaft",
+      "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1582,
+          "description": "You see a small mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1564,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1574,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1562,
+          "description": "You see the entrance.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1564,
+      "name": "Mine Shaft",
+      "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1583,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1565,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1573,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1563,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1565,
+      "name": "Mine Shaft",
+      "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions\nexcept north.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1566,
+          "description": "You see the walkway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1572,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1564,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1566,
+      "name": "Walkway",
+      "description": "You are on a well built path in the middle of a mountain.  You sense something\ngreat up ahead, considering the hard work that must have gone into creating\nthis passage.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1567,
+          "description": "You see the walkway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1565,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1567,
+      "name": "Walkway",
+      "description": "You are on a well built path in the middle of a mountain.  You sense something\ngreat up ahead, considering the hard work that must have gone into creating\nthis passage.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1566,
+          "description": "You see the walkway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1568,
+          "description": "You see a large hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1568,
+      "name": "The Grand Hall",
+      "description": "You have stepped into the Grand Hall of the hobgoblin kingdom; your luck\nmust be running low by now.  Golden pillars span the hallway, and you\nnotice a red carpet beneath your feet.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1567,
+          "description": "You see the walkway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1569,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1569,
+      "name": "The Throne Room",
+      "description": "This is large bright room filled with Hobgoblins.  To the south there is\na large golden throne against the wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1568,
+          "description": "You see a large hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1570,
+      "name": "The Treasury",
+      "description": "You are inside the hobgoblin's treasury.  Your eyes are almost blinded by the\ngold, silver and copper coins.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1571,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1571,
+      "name": "Guarded Room",
+      "description": "You are inside a well guarded room.  The place is slightly better built than\nthe mine shafts, and is lit by lanterns.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1572,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1570,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1572,
+      "name": "Guarded Room",
+      "description": "You are inside a well guarded room.  The place is slightly better built than\nthe mine shafts, and is lit by lanterns.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1565,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1571,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1573,
+      "name": "Hobgoblin Armory",
+      "description": "The guards store their spare weapons and armor here.  There are rusty swords\non rotting shelves, and armor hanging from hooks or laying on the floor.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1564,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1574,
+      "name": "Mine Shaft",
+      "description": "You enter a part of the mine shaft where the torches have grown dim\nand are almost ready to go out.  From what you can see, there are plenty\nof cobwebs on the walls and rats at your feet.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1563,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1575,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1575,
+      "name": "Entrance to a Dungeon",
+      "description": "The floor dips slightly as you walk into this dark and nasty place.  Your\nskin crawls as you look at the filth on the walls and see it move.  Most\nof the exits lead into jail cells.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1574,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1577,
+          "description": "You see a cell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1576,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1581,
+          "description": "You see a cell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1576,
+      "name": "A Dungeon",
+      "description": "You are in the deepest and darkest part of the mine shafts.  The light from\nthe torches barely reaches to where you are.  Most directions from here\nlead to jail cells.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1575,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1578,
+          "description": "You see a cell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1579,
+          "description": "You see a cell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1580,
+          "description": "You see a cell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1577,
+      "name": "A Jail Cell",
+      "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1575,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1578,
+      "name": "The Jail Cell",
+      "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1576,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1579,
+      "name": "The Jail Cell",
+      "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1576,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1580,
+      "name": "The Jail Cell",
+      "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1576,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1581,
+      "name": "The Jail Cell",
+      "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 1575,
+          "description": "You see a dark and nasty room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1582,
+      "name": "Small Mine Shaft",
+      "description": "You are in a small extension of the mine shaft.  The dust on the floor is\nundisturbed by footprints.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1588,
+          "description": "You see a small mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1563,
+          "description": "You see the shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1583,
+      "name": "Hobgoblin Barracks",
+      "description": "You are suddenly surrounded by a small army of hobgoblin guards.  The room\nitself is a mess with clothes and armor everywhere.  The beds are unmade and\nstained.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1584,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1585,
+          "description": "You see the mess hall.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1564,
+          "description": "You see the mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1584,
+      "name": "Hobgoblin Barracks",
+      "description": "Yech!  As you continue forward, the smell just keeps getting worse.\nWhat are you DOING here?\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1583,
+          "description": "You see a large room",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1585,
+      "name": "Mess Hall",
+      "description": "You stand in the hobgoblin eating area.  There are a few rotting tables\nand many broken dishes scattered around the room.  You almost slip on a\nrotten piece of meat, but catch yourself just in time.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1586,
+          "description": "You see a small room.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 1587,
+          "description": "You see a kitchen.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1583,
+          "description": "You see a large room.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1586,
+      "name": "A Store Room",
+      "description": "You stand in a small room filled with flour, grain, fruit, and bat droppings.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1585,
+          "description": "You see the mess hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1587,
+      "name": "The Kitchen",
+      "description": "This kitchen hasn't been cleaned since the creation of humans.  The trash and\nspoiled food laying on the floor reach up to your knees.  Off to the side a\npot is boiling over.  A human hand floats in it.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 1585,
+          "description": "You see the mess hall.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1588,
+      "name": "A Small Mine Shaft",
+      "description": "You come to a place in the mine shaft where a tunnel leads down.  The\nsmall passage continues north and south.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 1589,
+          "description": "You see an almost caved in area.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1582,
+          "description": "You see a small mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 1590,
+          "description": "You see a hole.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1589,
+      "name": "Hermit's Lair",
+      "description": "You are in a small section where the mine wall has collapsed to reveal a\ntiny one-room cave.  The area is barely lit, but you can make out something\nmoving towards you.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 1588,
+          "description": "You see a small mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    },
+    {
+      "id": 1590,
+      "name": "A Hole",
+      "description": "You are in a hole.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 1588,
+          "description": "You see a small mine shaft.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 1500
+    }
+  ],
+  "mobs": [
+    {
+      "id": 1500,
+      "name": "a gnome child",
+      "player_name": "oldstyle child gnome",
+      "long_description": "A gnome child is playing around here.\n",
+      "description": "The little tyke looks so innocent playing with his boomerang that you\njust want to pick him up and hug him.\n",
+      "race": "human",
+      "act_flags": "ACE",
+      "affected_by": "0",
+      "alignment": 600,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1501,
+      "name": "a gnome woman",
+      "player_name": "oldstyle woman gnome",
+      "long_description": "A gnome woman is standing here, trying to look beautiful.\n",
+      "description": "The woman is short and gnarled, but acts like a woman several times her beauty.\nShe's starting to look pretty attractive to you ...\n",
+      "race": "human",
+      "act_flags": "ACE",
+      "affected_by": "0",
+      "alignment": 600,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1502,
+      "name": "a gnome man",
+      "player_name": "oldstyle man gnome",
+      "long_description": "A gnome man is walking here, on his way to work.\n",
+      "description": "This is a prime example of a gnome.  He looks short and weak, but at the\nsame time an intelligent creature who could outsmart you.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 22,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1503,
+      "name": "a gnome scientist",
+      "player_name": "oldstyle scientist gnome",
+      "long_description": "A scientist wanders around deep in thought.\n",
+      "description": "You see a gnome who is lost deep into some invention that he is about\nto make.  His hair is white, but he looks fairly strong.\n",
+      "race": "human",
+      "act_flags": "ABCR",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 7,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1504,
+      "name": "a gnome guard",
+      "player_name": "oldstyle guard gnome",
+      "long_description": "A gnome guard stands here guarding something.\n",
+      "description": "This is a well trained gnome.  He might not have a lot of strength but\nhe makes up for it with his weapons skill.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": 400,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1505,
+      "name": "the chief gnome",
+      "player_name": "oldstyle chief gnome",
+      "long_description": "A powerful looking gnome stands here wearing ornate clothes.\n",
+      "description": "The Chief looks like he could whap you hard.  He looks not only powerful\nbut wise and resourceful.  You better not mess with him.\n",
+      "race": "human",
+      "act_flags": "ABQ",
+      "affected_by": "0",
+      "alignment": 550,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "15d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 400,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1507,
+      "name": "a small troll",
+      "player_name": "oldstyle troll small",
+      "long_description": "A small troll grunts as he takes a swing at you.\n",
+      "description": "The small troll is a short and stocky beast with a human-like face\nbut with the eyes and fangs of a wild beast.\n",
+      "race": "troll",
+      "act_flags": "ABCF",
+      "affected_by": "0",
+      "alignment": -900,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 40,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1508,
+      "name": "a field mouse",
+      "player_name": "oldstyle mouse field",
+      "long_description": "A small mouse runs across your foot.\n",
+      "description": "The Mouse is a cute little creature.\n",
+      "race": "human",
+      "act_flags": "ABCI",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "2d6+10",
+      "hit_dice": "0d9+100",
+      "mana_dice": "1d4+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1509,
+      "name": "a rat",
+      "player_name": "oldstyle rat",
+      "long_description": "A small rat shrieks and runs around.\n",
+      "description": "The rat is a little evil creature that deserves death.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 2,
+      "thac0": 0,
+      "ac": "2d7+21",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1510,
+      "name": "a large rat",
+      "player_name": "oldstyle rat large",
+      "long_description": "A large rat runs up to you and nibbles on your boots.\n",
+      "description": "You have the urge to kill this vile creature.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1511,
+      "name": "a giant rat",
+      "player_name": "oldstyle rat giant",
+      "long_description": "A giant rat growls at you and prepares to attack.\n",
+      "description": "This rat has grown up to be the size of an average dog.\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1512,
+      "name": "the troll",
+      "player_name": "oldstyle troll",
+      "long_description": "A giant troll lumbers around.\n",
+      "description": "You see before you a huge mass of living flesh.  You cringe in fear as\nhe lifts his powerful arm to bludgeon you.\n",
+      "race": "troll",
+      "act_flags": "ABF",
+      "affected_by": "0",
+      "alignment": -800,
+      "group": 0,
+      "level": 14,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 450,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1513,
+      "name": "a black bat",
+      "player_name": "oldstyle bat black",
+      "long_description": "A black bat hangs from the ceiling.\n",
+      "description": "The bat is a grotesque little creature with large wings and fangs.\n",
+      "race": "bat",
+      "act_flags": "A",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1514,
+      "name": "the zombie gnome",
+      "player_name": "oldstyle zombie gnome",
+      "long_description": "A zombie gnome shuffles his way towards you.\n",
+      "description": "This is a creature which has passed away long ago.  His body has been\npulled out of its resting place by some evil force.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "0",
+      "alignment": -700,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 34,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1515,
+      "name": "the fire bat",
+      "player_name": "oldstyle bat fire",
+      "long_description": "The fire bat flames brightly and prepares to attack.\n",
+      "description": "You see a huge flame which resembles the shape of a bat.  The creature\nhangs from the ceiling and bites at you.\n",
+      "race": "bat",
+      "act_flags": "ABCF",
+      "affected_by": "D",
+      "alignment": -900,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 300,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1516,
+      "name": "the hobgoblin guard",
+      "player_name": "oldstyle guard hobgoblin",
+      "long_description": "The hobgoblin guard attacks first, thinks later.\n",
+      "description": "This is an extra large, extra ugly goblin like creature.  He grins evilly\nas he attempts to brain you.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "0",
+      "alignment": -700,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 37,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1517,
+      "name": "the hobgoblin soldier",
+      "player_name": "oldstyle soldier hobgoblin",
+      "long_description": "A hobgoblin soldier stands here.\n",
+      "description": "This is just a low life hobgoblin, who couldn't make it to the ranks\nof the elite guards.  He looks pissed.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "0",
+      "alignment": -600,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1518,
+      "name": "the hobgoblin bodyguard",
+      "player_name": "oldstyle bodyguard hobgoblin",
+      "long_description": "A hobgoblin bodyguard guards the king with his life.\n",
+      "description": "This is one of the elite hobgoblin guards.  He stands tall for his short\nstature.  He grins a toothy grin as he prepares to attack.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 30,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1519,
+      "name": "the king of the hobgoblins",
+      "player_name": "oldstyle king hobgoblin",
+      "long_description": "There is a great king here, sitting in his throne.\n",
+      "description": "The king is a silly looking hobgoblin whose muscles bulge out of his robes,\ndestroying the sophisticated effect he was trying to create.\n",
+      "race": "human",
+      "act_flags": "ABR",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "12d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 6,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 300,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1520,
+      "name": "a hobgoblin miner",
+      "player_name": "oldstyle miner hobgoblin",
+      "long_description": "A hobgoblin miner stands here looking for gold.\n",
+      "description": "The miner is totally covered in dust.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": -400,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 35,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1521,
+      "name": "the treasurer",
+      "player_name": "oldstyle treasurer hobgoblin",
+      "long_description": "A treasurer is here counting out money.\n",
+      "description": "The hobgoblin treasurer is an old goblin with glasses.  It appears that he\ncan only see a couple feet in front of him.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1522,
+      "name": "a gnome prisoner",
+      "player_name": "oldstyle prisoner gnome",
+      "long_description": "A gnome prisoner is here resting in the straw.\n",
+      "description": "The prisoner is just barely alive.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1523,
+      "name": "a human prisoner",
+      "player_name": "oldstyle prisoner human",
+      "long_description": "A human prisoner is here resting in the straw.\n",
+      "description": "The prisoner is just barely alive.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "rest",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1524,
+      "name": "a hermit",
+      "player_name": "oldstyle hermit crab",
+      "long_description": "A hermit crab crawls towards you.\n",
+      "description": "The hermit crab is about 5 feet high and looks mad that you had the nerve\nto wake it up.\n",
+      "race": "human",
+      "act_flags": "ABCF",
+      "affected_by": "0",
+      "alignment": -10,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d6+60",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d6+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 10,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 1526,
+      "name": "the cook",
+      "player_name": "oldstyle cook hobgoblin",
+      "long_description": "A hobgoblin cook stands here cooking something.\n",
+      "description": "The cook is a dirty and fat hobgoblin.  He burps as he stirs up something\nin a pot.\n",
+      "race": "human",
+      "act_flags": "ABC",
+      "affected_by": "0",
+      "alignment": -300,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 130,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 1500,
+      "name": "a bloody key",
+      "description": "A bloody key is stuck to the floor.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1501,
+      "name": "a dirty key",
+      "description": "A dirty key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1502,
+      "name": "a toy boomerang",
+      "description": "A toy boomerang wants to be picked up.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 5,
+      "cost": 50,
+      "condition": "730",
+      "values": [
+        0,
+        2,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1503,
+      "name": "a gnarled staff",
+      "description": "A gnarled staff is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 5,
+      "cost": 150,
+      "condition": "730",
+      "values": [
+        0,
+        1,
+        9,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1504,
+      "name": "a gnome sword",
+      "description": "A gnome sword catches your eye.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 7,
+      "cost": 150,
+      "condition": "610",
+      "values": [
+        0,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1505,
+      "name": "a studded shield",
+      "description": "A studded wooden shield lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AJ",
+      "weight": 5,
+      "cost": 160,
+      "condition": "750",
+      "values": [
+        4,
+        4,
+        4,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1506,
+      "name": "a bloody potion",
+      "description": "A bloody potion lies here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 7,
+      "cost": 220,
+      "condition": "480",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1507,
+      "name": "a bloody cloak",
+      "description": "A bloody cloak lies in a corner.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AC",
+      "weight": 5,
+      "cost": 150,
+      "condition": "480",
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1508,
+      "name": "a bat ring",
+      "description": "A ring in the shape of a bat lies here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "G",
+      "wear_flags": "AB",
+      "weight": 10,
+      "cost": 20,
+      "condition": "270",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 15
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1509,
+      "name": "a bead necklace",
+      "description": "A string of beads is here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": "0",
+      "wear_flags": "AC",
+      "weight": 5,
+      "cost": 80,
+      "condition": "220",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1510,
+      "name": "an electrum sword",
+      "description": "An electrum sword lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "AG",
+      "wear_flags": "AN",
+      "weight": 12,
+      "cost": 200,
+      "condition": "930",
+      "values": [
+        0,
+        4,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1511,
+      "name": "a wicker basket",
+      "description": "A wicker basket sits here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        90,
+        0,
+        0,
+        20,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1512,
+      "name": "some peanuts",
+      "description": "Peanuts lie here.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 90,
+      "condition": "0",
+      "values": [
+        16,
+        16,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1513,
+      "name": "some grain",
+      "description": "There is some grain here.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 80,
+      "condition": "0",
+      "values": [
+        15,
+        15,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1514,
+      "name": "a skiff",
+      "description": "A small skiff is here.",
+      "material": "oldstyle",
+      "item_type": "boat",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 240,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1515,
+      "name": "a pair of gnome boots",
+      "description": "You notice a pair of Gnome Boots.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AG",
+      "weight": 7,
+      "cost": 120,
+      "condition": "610",
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1516,
+      "name": "a pile of coins",
+      "description": "A pile of coins.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1517,
+      "name": "a pile of coins",
+      "description": "A pile of coins.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        500,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1519,
+      "name": "a stone shield",
+      "description": "A stone slab lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AJ",
+      "weight": 16,
+      "cost": 350,
+      "condition": "3700",
+      "values": [
+        4,
+        4,
+        4,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1520,
+      "name": "heavy banded mail",
+      "description": "A large suit of heavy banded mail is here",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 15,
+      "cost": 300,
+      "condition": "2100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1521,
+      "name": "a large club",
+      "description": "A large club sits here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 6,
+      "cost": 220,
+      "condition": "460",
+      "values": [
+        0,
+        1,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1522,
+      "name": "a banana",
+      "description": "There is a banana here.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        6,
+        6,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1523,
+      "name": "a potion of life healing",
+      "description": "A potion of life healing has left here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "H",
+      "wear_flags": "A",
+      "weight": 6,
+      "cost": 10,
+      "condition": "630",
+      "values": [
+        32,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 1524,
+      "name": "a wooden club",
+      "description": "A wooden club sits here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 3,
+      "cost": 100,
+      "condition": "220",
+      "values": [
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
+    }
+  ]
+}
