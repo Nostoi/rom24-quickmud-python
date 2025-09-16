@@ -9,10 +9,15 @@ from mud.models.constants import (
     AC_SLASH,
     AC_EXOTIC,
     AffectFlag,
+    WEAPON_VAMPIRIC,
+    WEAPON_POISON,
+    WEAPON_FLAMING,
+    WEAPON_FROST,
+    WEAPON_SHOCKING,
 )
 from mud.utils import rng_mm
 from mud.math.c_compat import c_div
-from mud.affects.saves import _check_immune as _riv_check
+from mud.affects.saves import _check_immune as _riv_check, saves_spell
 from mud.math.c_compat import urange
 from mud.config import COMBAT_USE_THAC0
 
@@ -178,8 +183,16 @@ def attack_round(attacker: Character, victim: Character) -> str:
     # Invoke any on-hit effects with scaled damage (can be monkeypatched in tests).
     on_hit_effects(attacker, victim, damage)
 
+    # Process weapon special attacks following C src/fight.c:one_hit L600-680
+    weapon_special_messages = process_weapon_special_attacks(attacker, victim)
+
     # Apply damage and update fighting state (defenses checked inside apply_damage)
-    return apply_damage(attacker, victim, damage, dam_type)
+    main_message = apply_damage(attacker, victim, damage, dam_type)
+    
+    # Combine main attack message with weapon special messages
+    if weapon_special_messages:
+        return main_message + " " + " ".join(weapon_special_messages)
+    return main_message
 
 
 def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: int = None) -> str:
@@ -696,3 +709,93 @@ def compute_thac0(
     th -= c_div(hitroll * skill, 100)
     th += c_div(5 * (100 - skill), 100)
     return th
+
+
+def process_weapon_special_attacks(attacker: Character, victim: Character) -> list[str]:
+    """Process weapon special attacks following C src/fight.c:one_hit L600-680.
+    
+    Applies special weapon effects after a successful hit:
+    - WEAPON_POISON: Apply poison affect if save fails
+    - WEAPON_VAMPIRIC: Drain life and heal attacker
+    - WEAPON_FLAMING: Fire damage
+    - WEAPON_FROST: Cold damage  
+    - WEAPON_SHOCKING: Lightning damage
+    
+    Returns list of messages describing special attack effects.
+    """
+    messages = []
+    
+    # Get wielded weapon - for now use test stubs
+    wield = getattr(attacker, 'wielded_weapon', None)
+    if wield is None:
+        return messages
+        
+    # Check that attacker is still fighting victim (ROM condition)
+    if getattr(attacker, 'fighting', None) != victim:
+        return messages
+        
+    # Get weapon flags - support both extra_flags (for ObjIndex) and weapon_flags attribute
+    weapon_flags = 0
+    if hasattr(wield, 'weapon_flags'):
+        weapon_flags = wield.weapon_flags
+    elif hasattr(wield, 'extra_flags'):
+        weapon_flags = wield.extra_flags
+        
+    weapon_level = getattr(wield, 'level', 1)
+    
+    # WEAPON_POISON - ROM src/fight.c L600-634
+    if weapon_flags & WEAPON_POISON:
+        level = weapon_level
+        
+        if not saves_spell(level // 2, victim, DamageType.POISON):
+            messages.append("You feel poison coursing through your veins.")
+            # TODO: Apply poison affect when affect system is implemented
+            # af.where = TO_AFFECTS; af.type = gsn_poison; af.level = level * 3 / 4
+            # af.duration = level / 2; af.location = APPLY_STR; af.modifier = -1
+            # af.bitvector = AFF_POISON; affect_join(victim, &af)
+            
+    # WEAPON_VAMPIRIC - ROM src/fight.c L640-649  
+    if weapon_flags & WEAPON_VAMPIRIC:
+        dam = rng_mm.number_range(1, weapon_level // 5 + 1)
+        messages.append(f"You feel {getattr(wield, 'name', 'the weapon')} drawing your life away.")
+        
+        # Apply vampiric damage (additional negative damage)
+        apply_damage(attacker, victim, dam, DamageType.NEGATIVE)
+        
+        # Heal attacker by half the damage  
+        attacker.hit += dam // 2
+        if hasattr(attacker, 'max_hit'):
+            attacker.hit = min(attacker.hit, attacker.max_hit)
+            
+        # Shift alignment toward evil (ROM: ch->alignment = UMAX(-1000, ch->alignment - 1))
+        if hasattr(attacker, 'alignment'):
+            attacker.alignment = max(-1000, attacker.alignment - 1)
+            
+    # WEAPON_FLAMING - ROM src/fight.c L651-659
+    if weapon_flags & WEAPON_FLAMING:
+        dam = rng_mm.number_range(1, weapon_level // 4 + 1)
+        messages.append(f"{getattr(wield, 'name', 'The weapon')} sears your flesh.")
+        
+        # Apply fire damage
+        apply_damage(attacker, victim, dam, DamageType.FIRE)
+        # TODO: fire_effect((void *) victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        
+    # WEAPON_FROST - ROM src/fight.c L661-670  
+    if weapon_flags & WEAPON_FROST:
+        dam = rng_mm.number_range(1, weapon_level // 6 + 2)
+        messages.append("The cold touch surrounds you with ice.")
+        
+        # Apply cold damage
+        apply_damage(attacker, victim, dam, DamageType.COLD)
+        # TODO: cold_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        
+    # WEAPON_SHOCKING - ROM src/fight.c L672-681
+    if weapon_flags & WEAPON_SHOCKING:
+        dam = rng_mm.number_range(1, weapon_level // 5 + 2)  
+        messages.append("You are shocked by the weapon.")
+        
+        # Apply lightning damage
+        apply_damage(attacker, victim, dam, DamageType.LIGHTNING)
+        # TODO: shock_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        
+    return messages

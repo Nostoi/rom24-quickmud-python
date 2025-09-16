@@ -243,6 +243,34 @@ DAM_CHARM = DamageType.CHARM
 DAM_SOUND = DamageType.SOUND
 
 
+class WeaponFlag(IntFlag):
+    """Weapon special properties mirroring merc.h WEAPON_* values.
+    
+    These correspond to ROM weapon flags:
+    A = FLAMING, B = FROST, C = VAMPIRIC, D = SHARP, E = VORPAL, 
+    F = TWO_HANDS, G = SHOCKING, H = POISON
+    """
+    FLAMING = 1 << 0     # (A) - fire damage
+    FROST = 1 << 1       # (B) - cold damage  
+    VAMPIRIC = 1 << 2    # (C) - life drain
+    SHARP = 1 << 3       # (D) - critical hits
+    VORPAL = 1 << 4      # (E) - decapitation
+    TWO_HANDS = 1 << 5   # (F) - two-handed weapon
+    SHOCKING = 1 << 6    # (G) - lightning damage
+    POISON = 1 << 7      # (H) - poison effects
+
+
+# ROM-style WEAPON_* constants for parity
+WEAPON_FLAMING = WeaponFlag.FLAMING
+WEAPON_FROST = WeaponFlag.FROST  
+WEAPON_VAMPIRIC = WeaponFlag.VAMPIRIC
+WEAPON_SHARP = WeaponFlag.SHARP
+WEAPON_VORPAL = WeaponFlag.VORPAL
+WEAPON_TWO_HANDS = WeaponFlag.TWO_HANDS
+WEAPON_SHOCKING = WeaponFlag.SHOCKING
+WEAPON_POISON = WeaponFlag.POISON
+
+
 class DefenseBit(IntFlag):
     """IMM/RES/VULN bit positions (letters A..Z) mapped to explicit bits.
 
