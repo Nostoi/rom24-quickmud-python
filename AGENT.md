@@ -22,6 +22,8 @@ Audit the **Python port** against the **ROM 2.4 C sources** and **official docs/
 
 ## FILES OF RECORD
 
+## FILES OF RECORD
+
 - **C sources (canonical)**: `src/**/*.c`, **headers** (`merc.h`, `interp.h`, `tables.h`, `recycle.h`, `db.h`, etc.)
   - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
   - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`

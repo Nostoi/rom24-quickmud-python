@@ -1,28 +1,6 @@
 <!-- LAST-PROCESSED: COMPLETE -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
-world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
-help_system, m- ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
-  EVIDENCE: C src/fight.c: one_hit()/check_ ordering around damage application
-  EVIDENCE: C src/fight.c:L1900-L2100 (calls to check_shield_block/check_parry/check_dodge before damage)
-  EVIDENCE: PY mud/combat/engine.py:L23-L55 (defense order and messages); L58-L70 (check_ stubs)
-  EVIDENCE: TEST tests/test_combat.py::test_defense_order_and_early_out
-  RATIONALE: Preserve ROM probability ordering via early-outs.
-  FILES: mud/combat/engine.py; tests/test_combat.py
-- ✅ [P0] Port multi_hit logic from C — done 2025-09-15
-  EVIDENCE: C src/fight.c:multi_hit L1770-L1850 (second_attack, third_attack, haste skill checks)
-  EVIDENCE: PY mud/combat/engine.py:multi_hit L130-L180 (skill checks, affect modifiers, early termination)
-  EVIDENCE: PY mud/models/character.py:L107-L109 (second_attack_skill, third_attack_skill, fighting state)
-  EVIDENCE: TEST tests/test_combat.py::test_multi_hit_* (8 tests covering single/multi-attack, haste/slow, early death)
-  RATIONALE: Enable multiple attacks per round with skill checks and affect modifiers matching ROM mechanics.
-  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.py
-- ✅ [P0] Implement weapon damage calculation from C one_hit — done 2025-09-15
-  EVIDENCE: C src/fight.c:one_hit L1850-L2000 (weapon dice, unarmed damage, damroll, enhanced damage skill)
-  EVIDENCE: PY mud/combat/engine.py:calculate_weapon_damage L100-L165 (unarmed range, enhanced damage, position multipliers)
-  EVIDENCE: TEST tests/test_weapon_damage.py (5 tests covering all weapon damage mechanics)
-  RATIONALE: Replace simple damroll with proper ROM weapon damage including unarmed formulas, skill bonuses, position multipliers.
-  FILES: mud/combat/engine.py, tests/test_weapon_damage.pyrams, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
-security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
+<!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
 
