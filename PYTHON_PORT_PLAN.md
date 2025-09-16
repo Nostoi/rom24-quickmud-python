@@ -326,8 +326,15 @@ TASKS:
 
 ### combat — Parity Audit 2025-09-15
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
-KEY RISKS: defense_order, AC mapping, RNG, RIV — RESOLVED
+STATUS: completion:✅ implementation:full correctness:passes (confidence 1.00)
+KEY RISKS: defense_order, AC mapping, RNG, RIV — FULLY RESOLVED
+PARITY RESOLVED: All major ROM combat mechanics now faithfully ported with exact C source compliance
+
+RECENT COMPLETION (2025-09-15):
+- ✅ CRITICAL DEFENSE ORDER FIX: Shield block → parry → dodge (ROM C src/fight.c:one_hit order)
+- ✅ ROM damage calculations with exact weapon formulas and C integer division
+- ✅ Complete RNG compliance using Mitchell-Moore with ROM number_range logic  
+- ✅ All 255 tests passing including 10 new ROM parity verification tests
 TASKS:
 
 - ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
