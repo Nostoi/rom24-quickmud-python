@@ -101,6 +101,14 @@ Aggregated P0 dashboard (optional):
 <!-- NEXT-ACTIONS-END -->
 ```
 
+## CATALOG RECONCILIATION (safe)
+
+- Load canonical `catalog:` from `agent/constants.yaml`.
+- Read `<!-- SUBSYSTEM-CATALOG: ... -->` from `PYTHON_PORT_PLAN.md`.
+- If different (order or contents), replace the marker with the canonical list, preserving formatting:
+  `<!-- SUBSYSTEM-CATALOG: <comma-separated list in catalog order> -->`
+- Never add subsystems not in `agent/constants.yaml`. Never remove ones that are present there.
+
 ## CANONICAL SUBSYSTEM CATALOG
 
 Load from `agent/constants.yaml` (`catalog:` list).
