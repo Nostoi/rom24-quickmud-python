@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- LAST-PROCESSED: resets -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -48,7 +48,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-<!-- no open [P0] tasks this run -->
+* resets: [P0] Reinstate ROM 'P' reset object limit gating and prototype counts
+* resets: [P0] Mirror ROM 'O' reset gating for duplicates and player presence
+* resets: [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -570,33 +572,54 @@ TASKS:
 
 <!-- SUBSYSTEM: resets START -->
 
-### resets — Parity Audit 2025-09-08
+### resets — Parity Audit 2025-09-16
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.66)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.52)
 KEY RISKS: file_formats, indexing, side_effects
 TASKS:
 
-- ✅ [P0] Implement 'P' reset semantics using LastObj + limits — done 2025-09-08
-  EVIDENCE: C src/db.c:L1760-L1905 (reset_room 'O'/'P' handling); C src/db.c:L1906-L1896 (limit logic, count and lock fix around 'P')
-  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L50; L51-L120 (track last_obj, spawn map per vnum, P places into container, respects count)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
-  NOTES: Lock-state fix (value[1]) not applied because object instance model lacks per-instance value fields; to be addressed if required by tests.
+- ✅ [P0] Restore ROM reset argument mapping in loaders — done 2025-09-16
+  EVIDENCE: C src/db.c:1009-1043 (load_resets ignores if_flag, maps arg1..arg4 per command)
+  EVIDENCE: PY mud/loaders/reset_loader.py:L1-L52 (token iterator mirrors ROM parsing, preserves arg4 for 'M'/'P')
+  EVIDENCE: DOC doc/area.txt:395-478 (#RESETS syntax and ignored first number)
+  EVIDENCE: ARE area/midgaard.are:6085-6094 (wizard shop `M`/`G` sequence with arg4=1)
+  FILES: mud/loaders/reset_loader.py
+  TESTS: pytest -q tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
+- ✅ [P0] Enforce mob reset limits when applying resets — done 2025-09-16
+  EVIDENCE: C src/db.c:1703-1723 (reset_room enforces global count and per-room limit for 'M')
+  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L199 (tracks prototype counts and skips when arg2/arg4 caps reached)
+  EVIDENCE: DOC doc/area.txt:395-478 (documents mob limit semantics)
+  EVIDENCE: ARE area/midgaard.are:6085-6094 (Midgaard wizard reset using arg4 cap)
+  FILES: mud/spawning/reset_handler.py; tests/test_spawning.py::test_reset_mob_limits
+  TESTS: pytest -q tests/test_spawning.py::test_reset_mob_limits
 
-- ✅ [P1] Implement 'G'/'E' reset limits and level logic — done 2025-09-13
-  EVIDENCE: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
-  EVIDENCE: PY mud/spawning/reset_handler.py:L45-L118 ('G'/'E' handling with per-mob limit, ITEM_INVENTORY flag, level compute)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
+- [P0] Reinstate ROM 'P' reset object limit gating and prototype counts — acceptance: container resets stop adding items once the linked ObjIndex.count meets arg2.
+  RATIONALE: `reset_room` halts when `pObjIndex->count` reaches the limit derived from `arg2`, but the port never reads `arg2` or updates prototype counts so containers can overflow on every reset.
+  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py; mud/models/obj.py
+  TESTS: tests/test_spawning.py::test_reset_P_limit_enforced
+  REFERENCES: C src/db.c:1693-1733; PY mud/spawning/reset_handler.py:170-214; DOC doc/area.txt:406-437 (#RESETS `P` semantics); ARE area/midgaard.are:6360-6369 (desk/key resets)
+  ESTIMATE: M; RISK: medium
 
-- ✅ [P1] Support 'R' resets to randomize exits — done 2025-09-13
-  EVIDENCE: C src/db.c: reset_room() case 'R' L2059-L2080
-  EVIDENCE: PY mud/spawning/reset_handler.py:L119-L142 ('R' partial Fisher–Yates shuffle using rng_mm.number_range)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_R_randomizes_exit_order
+- [P0] Mirror ROM 'O' reset gating for duplicates and player presence — acceptance: skip `O` when the target room already holds the vnum or when `area.nplayer > 0`.
+  RATIONALE: ROM protects rooms such as the donation pit by checking room contents and players, but the port always spawns another copy so repeated resets duplicate unique props.
+  FILES: mud/spawning/reset_handler.py
+  TESTS: tests/test_spawning.py::test_resets_repop_after_tick (extend with duplicate/players assertions)
+  REFERENCES: C src/db.c:1673-1691; PY mud/spawning/reset_handler.py:88-107; DOC doc/area.txt:432-467 (`O` command semantics); ARE area/midgaard.are:6360-6369 (desk/safe placement)
+  ESTIMATE: M; RISK: medium
+
+- [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: repeated resets respect prototype limits and only overfill when the ROM random check allows.
+  RATIONALE: `reset_room` gates equips on `pObjIndex->count` plus a 1-in-5 chance, but the port only inspects the current mob inventory so multiple mobs can exceed ROM world caps.
+  FILES: mud/spawning/reset_handler.py
+  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag (extend with multi-mob/world-count coverage)
+  REFERENCES: C src/db.c:1840-1916; PY mud/spawning/reset_handler.py:108-161; DOC doc/area.txt:420-470 (`G`/`E` semantics); ARE area/midgaard.are:6085-6417 (shopkeeper give/equip sequences)
+  ESTIMATE: M; RISK: medium
 
 NOTES:
-
-- C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.
-- C: 'P' applies container lock fix: `LastObj->value[1] = LastObj->pIndexData->value[1]` post-population.
-- PY: reset_tick ages/emptiness gating implemented; detailed per-reset semantics incomplete.
+- C: src/db.c:1673-1916 documents `O`/`P`/`G`/`E` gating on prototype counts, room contents, and random rolls still missing in the port.
+- PY: mud/spawning/reset_handler.py currently skips object count updates and room duplication checks for `O`/`P`/`G`/`E` resets.
+- DOC: doc/area.txt:406-482 details reset command semantics, including container dependencies and uniqueness rules.
+- ARE: area/midgaard.are:6085-6417 shows Midgaard's desk/safe and shopkeeper resets that rely on ROM object gating.
+- Applied tiny fix: Added missing `typing.Iterator` import in the reset loader and restored the reset handler's `logging` import to avoid runtime NameErrors during audit.
 <!-- SUBSYSTEM: resets END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->
