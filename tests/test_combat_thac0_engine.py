@@ -26,7 +26,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.ch_class = 3  # warrior
     atk.level = 32
     atk.hitroll = 0
-    vic.hit = 10
+    vic.hit = 50  # Increase HP to survive ROM damage calculation
     out = process_command(atk, 'kill vic')
     assert out.startswith('You hit')
 
@@ -35,7 +35,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.ch_class = 0  # mage
     atk.level = 0
     atk.hitroll = 0
-    vic.hit = 10
+    vic.hit = 50  # Increase HP to be consistent
     out = process_command(atk, 'kill vic')
     assert out == 'You miss Vic.'
 

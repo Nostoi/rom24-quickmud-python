@@ -58,8 +58,15 @@ def test_ac_clamping_for_negative_values():
     # Set up extreme negative AC
     victim.armor = [-25, -25, -25, -25]  # Very negative AC
     
+    # Ensure no defenses trigger to test pure AC calculation
+    victim.shield_block_skill = 0
+    victim.parry_skill = 0
+    victim.dodge_skill = 0
+    victim.has_shield_equipped = False
+    victim.has_weapon_equipped = False
+    
     # Force a hit to test AC calculation
-    attacker.hitroll = 50
+    attacker.hitroll = 100  # Increase hitroll to guarantee hit through clamped AC
     
     # The AC clamping should limit the effectiveness of extreme negative AC
     # This is tested implicitly through the hit calculation

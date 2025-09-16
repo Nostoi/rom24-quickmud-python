@@ -207,13 +207,14 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
     
     # Check for parry, dodge, and shield block following C src/fight.c:damage() order
     # These are checked AFTER hit determination but BEFORE damage application
+    # Order is critical: shield_block → parry → dodge (per ROM C src/fight.c:one_hit)
     if dam_type is not None and attacker != victim:
+        if check_shield_block(attacker, victim):
+            return f"{victim.name} blocks your attack with a shield."
         if check_parry(attacker, victim):
             return f"{victim.name} parries your attack."
         if check_dodge(attacker, victim):
             return f"{victim.name} dodges your attack."
-        if check_shield_block(attacker, victim):
-            return f"{victim.name} blocks your attack with a shield."
 
     # Set up fighting state if not already fighting
     if victim != attacker:

@@ -82,7 +82,7 @@ def test_defense_order_and_early_out(monkeypatch):
         calls.append("dodge")
         return True  # early-out here
 
-    def shield(a, v):  # pragma: no cover - should not be called
+    def shield(a, v):
         calls.append("shield")
         return False
 
@@ -92,7 +92,8 @@ def test_defense_order_and_early_out(monkeypatch):
 
     out = process_command(attacker, 'kill victim')
     assert out == 'Victim dodges your attack.'
-    assert calls == ["parry", "dodge"]  # shield not reached
+    # ROM defense order: shield_block → parry → dodge (dodge early-exits, so shield not reached after)
+    assert calls == ["shield", "parry", "dodge"]
 
 
 def test_multi_hit_single_attack():
