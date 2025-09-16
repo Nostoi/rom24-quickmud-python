@@ -30,8 +30,10 @@ def test_attack_damages_but_not_kill() -> None:
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 10
     out = process_command(attacker, 'kill victim')
-    assert out == 'You hit Victim for 3 damage.'
-    assert victim.hit == 7
+    # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
+    # Message includes "That really did HURT!" for significant damage
+    assert out == 'You hit Victim for 8 damage. That really did HURT!'
+    assert victim.hit == 2  # 10 - 8 = 2
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
     assert victim in attacker.room.people
@@ -39,7 +41,7 @@ def test_attack_damages_but_not_kill() -> None:
 
 def test_attack_kills_target():
     attacker, victim = setup_combat()
-    attacker.damroll = 5
+    attacker.damroll = 0  # Use 0 damroll so we get exactly 5 base damage
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 5
     out = process_command(attacker, 'kill victim')
@@ -102,16 +104,16 @@ def test_multi_hit_single_attack():
     # No extra attack skills - should only get one attack
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 1
-    # With weapon damage calculation, damage will be higher than just damroll
+    # ROM damage: base 5 + damroll 1 = 6 total
     assert "You hit Victim for" in results[0] and "damage." in results[0]
-    assert victim.hit == 9
+    assert victim.hit == 4  # 10 - 6 = 4
 
 
 def test_multi_hit_with_haste():
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
-    victim.hit = 10
+    victim.hit = 20  # Increase HP to survive two attacks
 
     # Add haste affect
     attacker.add_affect(AffectFlag.HASTE)
@@ -120,7 +122,7 @@ def test_multi_hit_with_haste():
     assert len(results) == 2  # Normal + haste attack
     # With weapon damage calculation, damage will be higher than just damroll
     assert all("You hit Victim for" in r and "damage." in r for r in results)
-    assert victim.hit == 8
+    assert victim.hit == 8  # 20 - (6 + 6) = 8
 
 
 def test_multi_hit_second_attack():
@@ -128,7 +130,10 @@ def test_multi_hit_second_attack():
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # 50% chance (100/2)
-    victim.hit = 10
+    victim.hit = 20  # Increase HP to survive multiple attacks
+    
+    # Initialize fighting state
+    combat_engine.set_fighting(attacker, victim)
     
     # Mock to force successful second attack
     from mud.utils import rng_mm
@@ -144,6 +149,8 @@ def test_multi_hit_second_attack():
         assert len(results) == 2  # First + second attack
         assert attacker.fighting == victim
         assert victim.fighting == attacker
+        # ROM damage: 2 hits × 6 damage = 12 total, so 20 - 12 = 8
+        assert victim.hit == 8
     finally:
         # Restore original function
         rng_mm.number_percent = original_number_percent
@@ -234,7 +241,8 @@ def test_ac_influences_hit_chance(monkeypatch):
     victim.armor = [0, 0, 0, 0]
     victim.hit = 10
     out = process_command(attacker, 'kill victim')
-    assert out == 'You hit Victim for 3 damage.'
+    # ROM damage: base 5 + damroll 3 = 8 total
+    assert out == 'You hit Victim for 8 damage. That really did HURT!'
 
     # Strong negative AC on BASH index lowers to_hit: victim.armor[AC_BASH] = -22 → +(-22//2) = -11 → 49 → miss
     victim.hit = 50
@@ -300,20 +308,21 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     # More importantly, check that on_hit_effects received the scaled damage
     assert len(captured) == 1
     assert captured[0] > 0  # Should have some damage after RIV scaling
-    assert captured[-1] == 6
+    # ROM calculation: base 5, resistance: 5 - 5//3 = 5 - 1 = 4
+    assert captured[-1] == 4
 
-    # Vulnerable: dam += dam/2 → 9 + 4 = 13
+    # Vulnerable: dam += dam/2 → 5 + 2 = 7
     victim.hit = 50
     victim.res_flags = 0
     victim.vuln_flags = int(VulnFlag.BASH)
     out = process_command(attacker, 'kill victim')
-    assert out == 'You hit Victim for 13 damage.'
-    assert captured[-1] == 13
+    assert out == 'You hit Victim for 7 damage. That really did HURT!'
+    assert captured[-1] == 7
 
     # Immune: dam = 0
     victim.hit = 50
     victim.vuln_flags = 0
     victim.imm_flags = int(ImmFlag.BASH)
     out = process_command(attacker, 'kill victim')
-    assert out == 'You hit Victim for 0 damage.'
+    assert out == 'Your attack has no effect.'
     assert captured[-1] == 0
