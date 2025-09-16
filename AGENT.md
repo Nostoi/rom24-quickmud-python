@@ -22,8 +22,6 @@ Audit the **Python port** against the **ROM 2.4 C sources** and **official docs/
 
 ## FILES OF RECORD
 
-## FILES OF RECORD
-
 - **C sources (canonical)**: `src/**/*.c`, **headers** (`merc.h`, `interp.h`, `tables.h`, `recycle.h`, `db.h`, etc.)
   - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
   - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
@@ -46,6 +44,13 @@ Audit the **Python port** against the **ROM 2.4 C sources** and **official docs/
 - `MAX_TINY_FIXES_PER_RUN`
 - `MAX_AUDITOR_FILES_TOUCHED`
 - `MAX_AUDITOR_LINES_CHANGED`
+
+## SPEED PROFILE
+- Read `speed_profile` from `agent/constants.yaml` with values: **fast | balanced | full**.
+- Apply per-profile caps (discovery/subsystems/tasks/tiny fixes/changed lines) from the matching section.
+- **fast**: diff-aware & hash-cached; evidence sampling; do **not** run tools; narrative suppressed (emit only OUTPUT-JSON).
+- **balanced**: limited batch sizes; do **not** run tools; short narrative allowed.
+- **full**: rescan all subsystems; full evidence; may include brief narrative.
 
 ## MARKERS & STRUCTURE (create if missing; update idempotently)
 
@@ -112,6 +117,20 @@ Aggregated P0 dashboard (optional):
 ## CANONICAL SUBSYSTEM CATALOG
 
 Load from `agent/constants.yaml` (`catalog:` list).
+
+## DIFF AWARENESS
+- Before scanning, check git status and recent commits to identify changed files.
+- In **fast** mode, limit discovery to subsystems with recent file changes in their typical directories (`mud/`, `src/`, `areas/`, `tests/`).
+- Cache file hashes in `agent/.index.json` to skip unchanged subsystems in subsequent runs.
+
+## COVERAGE CACHE
+- Maintain `agent/.index.json` with file hashes and last-audit timestamps per subsystem.
+- Skip subsystems where all relevant files are unchanged since last audit (unless **full** mode).
+- Force refresh if plan markers indicate incomplete prior runs.
+
+## EVIDENCE SAMPLING
+- In **fast** mode, sample max 3 C files and 2 Python files per subsystem for evidence.
+- In **balanced/full** modes, scan comprehensively but cap evidence bullets at 5 per category.
 
 ## DISCOVERY (Phase 1)
 
