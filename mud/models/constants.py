@@ -42,6 +42,7 @@ class Position(IntEnum):
     FIGHTING = 7
     STANDING = 8
 
+
 # --- Armor Class indices (merc.h) ---
 # AC is better when more negative; indices map to damage types.
 AC_PIERCE = 0
@@ -95,6 +96,12 @@ class Size(IntEnum):
     GIANT = 5
 
 
+# --- Level Constants (merc.h) ---
+MAX_LEVEL = 60
+LEVEL_HERO = MAX_LEVEL - 9  # 51
+LEVEL_IMMORTAL = MAX_LEVEL - 8  # 52
+
+
 class ItemType(IntEnum):
     """Common object types"""
 
@@ -131,6 +138,7 @@ class ItemType(IntEnum):
 
 class RoomFlag(IntFlag):
     """Room flags from ROM merc.h ROOM_* defines"""
+
     ROOM_DARK = 1  # (A)
     ROOM_NO_MOB = 4  # (C)
     ROOM_INDOORS = 8  # (D)
@@ -184,6 +192,7 @@ class AffectFlag(IntFlag):
 
 
 # END affects_saves
+
 
 # START damage_types_and_defense_bits
 class DamageType(IntEnum):
@@ -266,7 +275,9 @@ class DefenseBit(IntFlag):
     SILVER = 1 << 24  # Y
     IRON = 1 << 25  # Z
 
+
 # END damage_types_and_defense_bits
+
 
 # START imm_res_vuln_flags
 class ImmFlag(IntFlag):
@@ -355,38 +366,41 @@ class VulnFlag(IntFlag):
     SILVER = int(DefenseBit.SILVER)
     IRON = int(DefenseBit.IRON)
 
+
 # END imm_res_vuln_flags
+
 
 # START extra_flags
 class ExtraFlag(IntFlag):
     """ITEM_* extra flags mapped to ROM bit letters (A..Z)."""
-    
-    GLOW = 1 << 0        # A
-    HUM = 1 << 1         # B
-    DARK = 1 << 2        # C
-    LOCK = 1 << 3        # D
-    EVIL = 1 << 4        # E
-    INVIS = 1 << 5       # F
-    MAGIC = 1 << 6       # G
-    NODROP = 1 << 7      # H
-    BLESS = 1 << 8       # I
-    ANTI_GOOD = 1 << 9   # J
+
+    GLOW = 1 << 0  # A
+    HUM = 1 << 1  # B
+    DARK = 1 << 2  # C
+    LOCK = 1 << 3  # D
+    EVIL = 1 << 4  # E
+    INVIS = 1 << 5  # F
+    MAGIC = 1 << 6  # G
+    NODROP = 1 << 7  # H
+    BLESS = 1 << 8  # I
+    ANTI_GOOD = 1 << 9  # J
     ANTI_EVIL = 1 << 10  # K
     ANTI_NEUTRAL = 1 << 11  # L
-    NOREMOVE = 1 << 12   # M
+    NOREMOVE = 1 << 12  # M
     INVENTORY = 1 << 13  # N
-    NOPURGE = 1 << 14    # O
+    NOPURGE = 1 << 14  # O
     ROT_DEATH = 1 << 15  # P
     VIS_DEATH = 1 << 16  # Q
     # R unused in ROM
-    NONMETAL = 1 << 18   # S
-    NOLOCATE = 1 << 19   # T
+    NONMETAL = 1 << 18  # S
+    NOLOCATE = 1 << 19  # T
     MELT_DROP = 1 << 20  # U
     HAD_TIMER = 1 << 21  # V
     SELL_EXTRACT = 1 << 22  # W
     # X unused in ROM
     BURN_PROOF = 1 << 24  # Y
-    NOUNCURSE = 1 << 25   # Z
+    NOUNCURSE = 1 << 25  # Z
+
 
 # Legacy constants for compatibility
 ITEM_GLOW = ExtraFlag.GLOW
@@ -423,19 +437,19 @@ EX_CLOSED = 1 << 1
 
 def convert_flags_from_letters(flag_letters: str, flag_enum_class) -> int:
     """Convert ROM letter-based flags (e.g., "ABCD") to integer bitmask.
-    
+
     Args:
-        flag_letters: String of flag letters from ROM .are file (e.g., "ABCD")  
+        flag_letters: String of flag letters from ROM .are file (e.g., "ABCD")
         flag_enum_class: The IntFlag enum class (e.g., ExtraFlag)
-        
+
     Returns:
         Integer bitmask combining all flags
     """
     bits = 0
     for ch in flag_letters.strip():
-        if 'A' <= ch <= 'Z':
-            bits |= 1 << (ord(ch) - ord('A'))
-        elif 'a' <= ch <= 'z':
+        if "A" <= ch <= "Z":
+            bits |= 1 << (ord(ch) - ord("A"))
+        elif "a" <= ch <= "z":
             # Handle lowercase letters as well (some ROM variants use them)
-            bits |= 1 << (ord(ch) - ord('a') + 26)
+            bits |= 1 << (ord(ch) - ord("a") + 26)
     return flag_enum_class(bits)

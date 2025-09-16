@@ -182,3 +182,80 @@ telnet localhost 5000
 The `mud/models` package defines dataclasses used by the game engine.
 They mirror the JSON schemas in `schemas/` and supply enums and registries
 for loading and manipulating area, room, object, and character data.
+
+## Enhancement Opportunities
+
+While the ROM 2.4 Python port provides a fully functional MUD with all major subsystems implemented, several areas offer opportunities for enhanced ROM parity and improved gameplay features. These partially implemented or simplified systems can be extended by future developers:
+
+### Combat System Enhancements
+
+- **Defense Stubs**: Basic defense calculations are implemented, but advanced ROM defense mechanics (dodge, parry, shield block) use simplified formulas that could be enhanced for full ROM parity
+- **Special Attacks**: Core combat works, but special weapon attacks and combat maneuvers could be expanded
+- **Damage Types**: Basic damage handling exists, but ROM's complex damage type interactions are simplified
+
+### Skills and Spells System
+
+- **Learning Percentages**: Skills can be learned and used, but the ROM skill improvement system with practice-based learning is partially implemented
+- **Spell Components**: Basic spell casting works, but material component requirements and consumption are simplified
+- **Skill Prerequisites**: Some skill dependencies and class restrictions could be more comprehensive
+
+### Movement and Encumbrance
+
+- **Weight Limits**: Basic encumbrance exists, but ROM's detailed weight penalties on movement and combat are simplified
+- **Movement Lag**: Character movement works, but lag/wait state handling for movement restrictions could be enhanced
+- **Terrain Effects**: Room sector types affect movement, but detailed terrain penalties are basic
+
+### World Reset System
+
+- **Reset Semantics**: Areas reset properly, but complex ROM reset conditions and dependencies are simplified
+- **Population Limits**: Basic mob/object limits work, but advanced population control algorithms could be improved
+- **Reset Timing**: Reset schedules function, but fine-grained timing controls are basic
+
+### Economy and Shops
+
+- **Shop Inventory**: Basic buying/selling works, but advanced shop inventory management and restocking is simplified
+- **Economic Balance**: Price calculations exist, but ROM's complex economic balancing factors are basic
+- **Barter System**: Simple transactions work, but advanced bartering mechanics could be enhanced
+
+### Security and Authentication
+
+- **Ban System**: Basic IP banning exists, but comprehensive ban management (subnet, time-based, etc.) is partial
+- **Account Security**: Basic login security works, but advanced password policies and account protection could be enhanced
+- **Admin Controls**: Core admin commands exist, but comprehensive administrative tools are basic
+
+### Persistence and Data Integrity
+
+- **Save Validation**: Character saving works, but comprehensive data validation and corruption detection is basic
+- **Backup Systems**: Basic persistence exists, but automated backup and recovery systems could be enhanced
+- **Data Migration**: Save/load works, but tools for data format migration and upgrades are minimal
+
+### Communication Systems
+
+- **Channel Management**: Basic channels work, but advanced channel administration and moderation tools are simplified
+- **Tell System**: Private messaging works, but features like message history and blocking are basic
+- **Emote System**: Basic emotes exist, but custom emote creation and management could be enhanced
+
+### Builder Tools (OLC)
+
+- **Online Creation**: Basic OLC exists, but comprehensive online building tools with validation are partial
+- **Area Management**: Area editing works, but advanced area management and version control is basic
+- **Builder Security**: Basic builder permissions exist, but comprehensive security and audit trails are simplified
+
+### Performance and Monitoring
+
+- **Metrics Collection**: Basic logging exists, but comprehensive performance monitoring and metrics are minimal
+- **Resource Management**: Basic resource handling works, but advanced memory and CPU optimization could be enhanced
+- **Diagnostics**: Error handling exists, but comprehensive diagnostic and debugging tools are basic
+
+### Development Guidelines for Contributors
+
+When enhancing these systems:
+
+1. **ROM Parity First**: Always reference the original ROM 2.4 C sources in `src/` for canonical behavior
+2. **Test Coverage**: Add comprehensive tests in `tests/` with golden files derived from ROM behavior
+3. **Backward Compatibility**: Ensure changes don't break existing save files or area data
+4. **Documentation**: Update relevant docs in `doc/` and inline code documentation
+5. **Performance**: Consider the impact on the main game loop and player experience
+6. **Configuration**: Make enhancements configurable where possible to support different playstyles
+
+Each enhancement should maintain the MUD's core functionality while adding the specific ROM behaviors that make the game authentic to the original experience.

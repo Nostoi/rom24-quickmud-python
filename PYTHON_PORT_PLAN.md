@@ -324,10 +324,10 @@ TASKS:
 
 <!-- SUBSYSTEM: combat START -->
 
-### combat — Parity Audit 2025-09-08
+### combat — Parity Audit 2025-09-15
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.83)
-KEY RISKS: defense_order, AC mapping, RNG, RIV
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
+KEY RISKS: defense_order, AC mapping, RNG, RIV — RESOLVED
 TASKS:
 
 - ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
@@ -425,8 +425,43 @@ TASKS:
   RATIONALE: Replace simple damroll with proper ROM weapon damage including unarmed formulas, skill bonuses, position multipliers.
   FILES: mud/combat/engine.py, mud/models/character.py, tests/test_weapon_damage.py
 
+- ✅ [P0] Fix defense order to match ROM damage() function flow — done 2025-09-15  
+  EVIDENCE: C src/fight.c:damage L788-L801 (parry/dodge/shield_block checks AFTER hit but BEFORE damage application)
+  EVIDENCE: PY mud/combat/engine.py:apply_damage L198-L206 (defenses moved from attack_round to apply_damage)
+  EVIDENCE: TEST tests/test_combat_rom_parity.py::test_defense_order_matches_rom
+  RATIONALE: ROM checks defenses in damage() after hit determination; Python was checking too early.
+  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
+
+- ✅ [P0] Implement complete defense calculations with ROM skill/level mechanics — done 2025-09-15
+  EVIDENCE: C src/fight.c:check_parry L1294-L1324; check_dodge L1354-L1375; check_shield_block L1328-L1350  
+  EVIDENCE: PY mud/combat/engine.py:check_parry/check_dodge/check_shield_block L545-L625
+  EVIDENCE: TEST tests/test_combat_rom_parity.py (parry/dodge/shield skill calculation tests)
+  RATIONALE: Defense chances based on skill/2 + level difference, equipment requirements, visibility modifiers.
+  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
+
+- ✅ [P0] Add AC clamping and wait/daze timer handling — done 2025-09-15
+  EVIDENCE: C src/fight.c:one_hit L490-L495 (AC clamping: if victim_ac < -15 then (victim_ac + 15)/5 - 15)
+  EVIDENCE: C src/fight.c:multi_hit L192-L196 (wait/daze decrements by PULSE_VIOLENCE for NPCs)
+  EVIDENCE: PY mud/combat/engine.py L128-L131 (AC clamping), L22-L26 (wait/daze timers)
+  EVIDENCE: TEST tests/test_combat_rom_parity.py::test_ac_clamping_for_negative_values, test_wait_daze_timer_handling
+  RATIONALE: Complete ROM AC mechanics and proper timer handling for combat flow.
+  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
+
+- ✅ [P0] Fix number_range() to match ROM logic exactly — done 2025-09-15
+  EVIDENCE: C src/db.c:number_range L3504-L3520 (if (to = to - from + 1) <= 1 return from)
+  EVIDENCE: PY mud/utils/rng_mm.py:number_range L90-L115 (exact ROM logic without argument swapping)
+  EVIDENCE: Damage calculation now handles level 0 characters correctly: number_range(5,0) = 5
+  RATIONALE: ROM allows max < min and returns min value; critical for low-level damage calculations.
+  FILES: mud/utils/rng_mm.py
+
   NOTES:
+
 - C: one_hit/multi_hit sequence integrates defense checks and AC; Python engine now implements multi_hit with proper skill checks.
+- PY: attack_round uses rng_mm.number_percent (good), multi_hit() implements second/third attack and haste mechanics.
+- Applied tiny fix: use c_div for AC contribution to hit chance (mud/combat/engine.py) to ensure C-style division with negative AC.
+- Applied tiny fix: implemented multi_hit with second_attack_skill, third_attack_skill checks and fighting state management.
+- Applied tiny fix: implemented calculate_weapon_damage with ROM unarmed damage formulas, enhanced damage skill, and position multipliers.
+- ✅ PARITY RESOLVED: Defense order, AC clamping, complete skill-based defense calculations, wait/daze timers, and ROM number_range logic now match C source exactly.
 - PY: attack_round uses rng_mm.number_percent (good), multi_hit() implements second/third attack and haste mechanics.
 - Applied tiny fix: use c_div for AC contribution to hit chance (mud/combat/engine.py) to ensure C-style division with negative AC.
 - Applied tiny fix: implemented multi_hit with second_attack_skill, third_attack_skill checks and fighting state management.

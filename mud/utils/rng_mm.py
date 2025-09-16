@@ -87,23 +87,30 @@ def number_percent() -> int:
     return 1 + percent
 
 
-def number_range(a: int, b: int) -> int:
-    """Return integer in [a, b] inclusive using power-of-two mask + gate."""
-    if a == 0 and b == 0:
+def number_range(from_val: int, to_val: int) -> int:
+    """Return integer in [from_val, to_val] inclusive using ROM logic.
+    
+    Matches ROM C exactly: if (to = to - from + 1) <= 1, return from.
+    This handles the case where to_val < from_val by returning from_val.
+    """
+    if from_val == 0 and to_val == 0:
         return 0
-    if a > b:
-        a, b = b, a
-    to = b - a + 1
+    
+    # ROM logic: to = to - from + 1
+    to = to_val - from_val + 1
     if to <= 1:
-        return a
+        return from_val
+    
     power = 2
     while power < to:
         power <<= 1
+    
     # while ((number = number_mm () & (power - 1)) >= to);
     number = number_mm() & (power - 1)
     while number >= to:
         number = number_mm() & (power - 1)
-    return a + number
+    
+    return from_val + number
 
 
 def number_bits(width: int) -> int:

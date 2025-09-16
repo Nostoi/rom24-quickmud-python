@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Complete fighting state management with ROM 2.4 parity
+- Character immortality protection following IS_IMMORTAL macro
+- Level constants (MAX_LEVEL, LEVEL_IMMORTAL) matching ROM source
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+- Character position initialization defaults to STANDING instead of DEAD
+- Fighting state damage application and position updates
+- Immortal character survival logic in combat system
+
+### Security
+
 ## [1.2.0] - 2025-09-15
 
 ### Added
@@ -18,26 +40,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OLC building system for room editing
 - pytest-timeout plugin for proper test timeouts
 
-### Fixed
-
-- Character position initialization (STANDING vs DEAD)
-- Hanging telnet tests resolved
-- Enhanced error handling and null room safety
-- Character creation now allows immediate command execution
-
 ### Changed
 
 - Achieved 100% test success rate (200/200 tests)
 - Full test suite completes in ~16 seconds
 - Modern async/await telnet server architecture
 - SQLAlchemy ORM with migrations
-
-### Technical Improvements
-
 - Comprehensive test coverage across all subsystems
 - Memory efficient JSON area loading
 - Optimized command processing pipeline
 - Robust error handling throughout
+
+### Fixed
+
+- Character position initialization (STANDING vs DEAD)
+- Hanging telnet tests resolved
+- Enhanced error handling and null room safety
+- Character creation now allows immediate command execution
 
 ## [0.1.1] - 2025-09-14
 
@@ -62,3 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic MUD framework
 - ROM compatibility layer
 - Core game loop implementation
+
+[Unreleased]: https://github.com/ORG/REPO/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ORG/REPO/compare/v0.1.1...v1.2.0
+[0.1.1]: https://github.com/ORG/REPO/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/ORG/REPO/releases/tag/v0.1.0

@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, TYPE_CHECKING
 
-from mud.models.constants import AffectFlag
+from mud.models.constants import AffectFlag, Position
 
 if TYPE_CHECKING:
     from mud.models.object import Object
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 @dataclass
 class PCData:
     """Subset of PC_DATA from merc.h"""
+
     pwd: Optional[str] = None
     bamfin: Optional[str] = None
     bamfout: Optional[str] = None
@@ -30,6 +31,7 @@ class PCData:
 @dataclass
 class Character:
     """Python representation of CHAR_DATA"""
+
     name: Optional[str] = None
     short_descr: Optional[str] = None
     long_descr: Optional[str] = None
@@ -52,8 +54,8 @@ class Character:
     exp: int = 0
     act: int = 0
     affected_by: int = 0
-    position: int = 0
-    room: Optional['Room'] = None
+    position: int = Position.STANDING
+    room: Optional["Room"] = None
     practice: int = 0
     train: int = 0
     skills: Dict[str, int] = field(default_factory=dict)
@@ -81,8 +83,8 @@ class Character:
     default_pos: int = 0
     mprog_delay: int = 0
     pcdata: Optional[PCData] = None
-    inventory: List['Object'] = field(default_factory=list)
-    equipment: Dict[str, 'Object'] = field(default_factory=dict)
+    inventory: List["Object"] = field(default_factory=list)
+    equipment: Dict[str, "Object"] = field(default_factory=dict)
     messages: List[str] = field(default_factory=list)
     connection: Optional[object] = None
     is_admin: bool = False
@@ -105,17 +107,29 @@ class Character:
     second_attack_skill: int = 0
     third_attack_skill: int = 0
     # Combat state - currently fighting target
-    fighting: Optional['Character'] = None
+    fighting: Optional["Character"] = None
+    # Enhanced damage skill level (0-100)
+    enhanced_damage_skill: int = 0
+    # Character type flag
+    is_npc: bool = True  # Default to NPC, set to False for PCs
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
 
-    def add_object(self, obj: 'Object') -> None:
+    def is_immortal(self) -> bool:
+        """Check if character is immortal (ROM IS_IMMORTAL macro)."""
+        from mud.models.constants import LEVEL_IMMORTAL
+
+        # For NPCs, use level; for PCs, use trust (which defaults to level if not set)
+        effective_level = self.trust if self.trust > 0 else self.level
+        return effective_level >= LEVEL_IMMORTAL
+
+    def add_object(self, obj: "Object") -> None:
         self.inventory.append(obj)
         self.carry_number += 1
         self.carry_weight += getattr(obj.prototype, "weight", 0)
 
-    def equip_object(self, obj: 'Object', slot: str) -> None:
+    def equip_object(self, obj: "Object", slot: str) -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
@@ -123,7 +137,7 @@ class Character:
             self.carry_weight += getattr(obj.prototype, "weight", 0)
         self.equipment[slot] = obj
 
-    def remove_object(self, obj: 'Object') -> None:
+    def remove_object(self, obj: "Object") -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
@@ -134,7 +148,7 @@ class Character:
         self.carry_number -= 1
         self.carry_weight -= getattr(obj.prototype, "weight", 0)
 
-# START affects_saves
+    # START affects_saves
     def add_affect(
         self,
         flag: AffectFlag,
@@ -165,13 +179,21 @@ class Character:
         self.hitroll -= hitroll
         self.damroll -= damroll
         self.saving_throw -= saving_throw
+
+    def strip_affect(self, affect_name: str) -> None:
+        """Strip affect by name (simplified for combat system)."""
+        if affect_name == "sleep":
+            self.remove_affect(AffectFlag.SLEEP)
+        # Add other affects as needed
+
+
 # END affects_saves
 
 
 character_registry: list[Character] = []
 
 
-def from_orm(db_char: 'DBCharacter') -> Character:
+def from_orm(db_char: "DBCharacter") -> Character:
     from mud.registry import room_registry
     from mud.models.constants import Position
 
@@ -188,7 +210,7 @@ def from_orm(db_char: 'DBCharacter') -> Character:
     return char
 
 
-def to_orm(character: Character, player_id: int) -> 'DBCharacter':
+def to_orm(character: Character, player_id: int) -> "DBCharacter":
     from mud.db.models import Character as DBCharacter
 
     return DBCharacter(
