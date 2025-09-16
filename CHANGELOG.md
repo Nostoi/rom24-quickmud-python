@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.3.0] - 2025-09-15
+
+### Added
+
 - Complete fighting state management with ROM 2.4 parity
 - Character immortality protection following IS_IMMORTAL macro
 - Level constants (MAX_LEVEL, LEVEL_IMMORTAL) matching ROM source
@@ -24,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Character position initialization defaults to STANDING instead of DEAD
 - Fighting state damage application and position updates
 - Immortal character survival logic in combat system
+- Combat defense order to match ROM 2.4 C source (shield_block → parry → dodge)
 
 ### Security
 
@@ -82,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ROM compatibility layer
 - Core game loop implementation
 
-[Unreleased]: https://github.com/ORG/REPO/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/ORG/REPO/compare/v0.1.1...v1.2.0
-[0.1.1]: https://github.com/ORG/REPO/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/ORG/REPO/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Nostoi/rom24-quickmud-python/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Nostoi/rom24-quickmud-python/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/Nostoi/rom24-quickmud-python/compare/v0.1.1...v1.2.0
+[0.1.1]: https://github.com/Nostoi/rom24-quickmud-python/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/Nostoi/rom24-quickmud-python/releases/tag/v0.1.0
