@@ -3,6 +3,7 @@ from mud.registry import room_registry, area_registry, mob_registry, obj_registr
 from mud.spawning.reset_handler import reset_tick, RESET_TICKS
 from mud.models.room_json import ResetJson
 from mud.spawning.mob_spawner import spawn_mob
+from mud.spawning.templates import MobInstance
 
 
 def test_resets_populate_world():
@@ -65,8 +66,8 @@ def test_p_reset_lock_state_fix_resets_container_value_field():
     area.resets = []
     office.contents.clear()
     # Spawn desk (3130), then put key (3123) to trigger P logic
-    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
-    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     desk = next((o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130), None)
@@ -115,10 +116,10 @@ def test_reset_P_uses_last_container_instance_when_multiple():
     area = office.area; assert area is not None
     area.resets = []
     office.contents.clear()
-    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
-    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
-    area.resets.append(ResetJson(command='O', arg2=3130, arg4=office.vnum))
-    area.resets.append(ResetJson(command='P', arg2=3123, arg3=1, arg4=3130))
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     desks = [o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130]
@@ -135,10 +136,10 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     # Narrow to controlled resets only
     area.resets = []
     # Spawn a shopkeeper (3000) in room 3001
-    area.resets.append(ResetJson(command='M', arg2=3000, arg4=room.vnum))
+    area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
     # Give two copies of lantern (3031) but limit to 1
-    area.resets.append(ResetJson(command='G', arg2=3031, arg3=1))
-    area.resets.append(ResetJson(command='G', arg2=3031, arg3=1))
+    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
@@ -148,3 +149,48 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     # The inventory copy should be flagged as ITEM_INVENTORY (1<<13) on prototype
     item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
     assert getattr(item.prototype, 'extra_flags', 0) & (1 << 13)
+
+
+def test_reset_mob_limits():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    initialize_world('area/area.lst')
+
+    wizard_room = room_registry[3033]
+    area = wizard_room.area
+    assert area is not None
+    area.resets = []
+    wizard_room.people = [p for p in wizard_room.people if not isinstance(p, MobInstance)]
+
+    # Pre-spawn a wizard so the global limit prevents another copy.
+    existing_wizard = spawn_mob(3000)
+    assert existing_wizard is not None
+    wizard_room.add_mob(existing_wizard)
+
+    area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=wizard_room.vnum, arg4=1))
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+
+    wizard_vnums = [
+        getattr(getattr(mob, 'prototype', None), 'vnum', None)
+        for mob in wizard_room.people
+        if isinstance(mob, MobInstance)
+    ]
+    assert wizard_vnums.count(3000) == 1
+
+    # Clear mobs in the room and validate per-room limits when multiple resets exist.
+    wizard_room.people = [p for p in wizard_room.people if not isinstance(p, MobInstance)]
+    area.resets = [
+        ResetJson(command='M', arg1=3003, arg2=5, arg3=wizard_room.vnum, arg4=1),
+        ResetJson(command='M', arg1=3003, arg2=5, arg3=wizard_room.vnum, arg4=1),
+    ]
+    apply_resets(area)
+
+    janitor_vnums = [
+        getattr(getattr(mob, 'prototype', None), 'vnum', None)
+        for mob in wizard_room.people
+        if isinstance(mob, MobInstance)
+    ]
+    assert janitor_vnums.count(3003) == 1

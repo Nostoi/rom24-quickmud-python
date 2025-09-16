@@ -1,16 +1,48 @@
 from __future__ import annotations
+
 import logging
 from typing import Dict, List, Optional
 
 from mud.models.area import Area
 from mud.models.constants import ITEM_INVENTORY
-from mud.registry import room_registry, area_registry
+from mud.registry import room_registry, area_registry, mob_registry
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
 from .templates import MobInstance
 from mud.utils import rng_mm
 
 RESET_TICKS = 3
+
+
+def _count_existing_mobs() -> Dict[int, int]:
+    """Rebuild MOB_INDEX_DATA->count style tallies from the current world."""
+
+    counts: Dict[int, int] = {}
+    for room in room_registry.values():
+        for mob in getattr(room, 'people', []):
+            if not isinstance(mob, MobInstance):
+                continue
+            proto = getattr(mob, 'prototype', None)
+            vnum = getattr(proto, 'vnum', None)
+            if vnum is None:
+                continue
+            counts[vnum] = counts.get(vnum, 0) + 1
+    for vnum, proto in mob_registry.items():
+        if hasattr(proto, 'count'):
+            proto.count = counts.get(vnum, 0)
+    return counts
+
+
+def _resolve_reset_limit(raw: Optional[int]) -> int:
+    """Mirror ROM's limit coercion for resets (old format, unlimited markers)."""
+
+    if raw is None:
+        return 1
+    if raw > 50:
+        return 6
+    if raw in (-1, 0):
+        return 999
+    return raw
 
 
 def _compute_object_level(obj: object, mob: object) -> int:
@@ -44,82 +76,129 @@ def _compute_object_level(obj: object, mob: object) -> int:
 
 
 def apply_resets(area: Area) -> None:
-    """Populate rooms based on simplified reset data."""
-    last_mob = None
+    """Populate rooms based on ROM reset data semantics."""
+
+    last_mob: Optional[MobInstance] = None
     last_obj: Optional[object] = None
-    # Track spawned objects per prototype vnum to support simple 'P' lookups
     spawned_objects: Dict[int, List[object]] = {}
+    mob_counts = _count_existing_mobs()
+
     for reset in area.resets:
-        cmd = reset.command.upper()
+        cmd = (reset.command or '').upper()
         if cmd == 'M':
-            mob_vnum = reset.arg2 or 0
-            room_vnum = reset.arg4 or 0
-            mob = spawn_mob(mob_vnum)
+            mob_vnum = reset.arg1 or 0
+            global_limit = reset.arg2 or 0
+            room_vnum = reset.arg3 or 0
+            room_limit = reset.arg4 or 0
+
             room = room_registry.get(room_vnum)
-            if mob and room:
-                room.add_mob(mob)
-                last_mob = mob
-                last_obj = None
-            else:
+            if mob_vnum <= 0 or room is None:
                 logging.warning('Invalid M reset %s -> %s', mob_vnum, room_vnum)
+                last_mob = None
+                last_obj = None
+                continue
+
+            if global_limit > 0 and mob_counts.get(mob_vnum, 0) >= global_limit:
+                last_mob = None
+                last_obj = None
+                continue
+
+            if room_limit <= 0:
+                last_mob = None
+                last_obj = None
+                continue
+
+            existing_in_room = sum(
+                1
+                for mob in room.people
+                if isinstance(mob, MobInstance)
+                and getattr(getattr(mob, 'prototype', None), 'vnum', None) == mob_vnum
+            )
+            if existing_in_room >= room_limit:
+                last_mob = None
+                last_obj = None
+                continue
+
+            mob = spawn_mob(mob_vnum)
+            if not mob:
+                logging.warning('Invalid M reset %s (missing prototype)', mob_vnum)
+                last_mob = None
+                last_obj = None
+                continue
+
+            room.add_mob(mob)
+            mob_counts[mob_vnum] = mob_counts.get(mob_vnum, 0) + 1
+            proto = getattr(mob, 'prototype', None)
+            if proto is not None and hasattr(proto, 'count'):
+                proto.count = mob_counts[mob_vnum]
+            last_mob = mob
+            last_obj = None
         elif cmd == 'O':
-            obj_vnum = reset.arg2 or 0
-            room_vnum = reset.arg4 or 0
+            obj_vnum = reset.arg1 or 0
+            room_vnum = reset.arg3 or 0
             obj = spawn_object(obj_vnum)
             room = room_registry.get(room_vnum)
             if obj and room:
                 room.add_object(obj)
-                # Update last object instance and index by vnum
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
         elif cmd == 'G':
-            obj_vnum = reset.arg2 or 0
-            limit = int(reset.arg3 or 1)
+            obj_vnum = reset.arg1 or 0
+            limit = _resolve_reset_limit(reset.arg2)
             if not last_mob:
                 logging.warning('Invalid G reset %s (no LastMob)', obj_vnum)
                 continue
-            # Respect simple per-mob limit for this vnum
-            existing = [o for o in getattr(last_mob, 'inventory', [])
-                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            existing = [
+                o
+                for o in getattr(last_mob, 'inventory', [])
+                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+            ]
             if len(existing) >= limit:
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
                 obj.level = _compute_object_level(obj, last_mob)
-                # Shopkeepers receive inventory copies
-                # Detect shopkeeper by registry since pShop not wired on prototype
                 try:
                     from mud.registry import shop_registry
-                    is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+
+                    is_shopkeeper = (
+                        getattr(getattr(last_mob, 'prototype', None), 'vnum', None)
+                        in shop_registry
+                    )
                 except Exception:
                     is_shopkeeper = False
-                
-                if is_shopkeeper:
-                    if hasattr(obj.prototype, 'extra_flags'):
-                        from mud.models.constants import ExtraFlag
-                        if isinstance(obj.prototype.extra_flags, str):
-                            # Legacy .are format uses flag letters - convert to proper flags
-                            from mud.models.constants import convert_flags_from_letters
-                            current_flags = convert_flags_from_letters(obj.prototype.extra_flags, ExtraFlag)
-                            obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
-                        else:
-                            obj.prototype.extra_flags |= ITEM_INVENTORY
+
+                if is_shopkeeper and hasattr(obj.prototype, 'extra_flags'):
+                    from mud.models.constants import ExtraFlag
+
+                    if isinstance(obj.prototype.extra_flags, str):
+                        from mud.models.constants import convert_flags_from_letters
+
+                        current_flags = convert_flags_from_letters(
+                            obj.prototype.extra_flags, ExtraFlag
+                        )
+                        obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
+                    else:
+                        obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid G reset %s', obj_vnum)
         elif cmd == 'E':
-            obj_vnum = reset.arg2 or 0
-            limit = int(reset.arg3 or 1)
-            slot = reset.arg4 or 0
+            obj_vnum = reset.arg1 or 0
+            limit = _resolve_reset_limit(reset.arg2)
+            slot = reset.arg3 or 0
             if not last_mob:
                 logging.warning('Invalid E reset %s (no LastMob)', obj_vnum)
                 continue
-            existing = [o for o in getattr(last_mob, 'inventory', [])
-                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            existing = [
+                o
+                for o in getattr(last_mob, 'inventory', [])
+                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+            ]
             if len(existing) >= limit:
                 continue
             obj = spawn_object(obj_vnum)
@@ -127,45 +206,51 @@ def apply_resets(area: Area) -> None:
                 obj.level = _compute_object_level(obj, last_mob)
                 try:
                     from mud.registry import shop_registry
-                    is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+
+                    is_shopkeeper = (
+                        getattr(getattr(last_mob, 'prototype', None), 'vnum', None)
+                        in shop_registry
+                    )
                 except Exception:
                     is_shopkeeper = False
-                if is_shopkeeper:
-                    if hasattr(obj.prototype, 'extra_flags'):
-                        from mud.models.constants import ExtraFlag
-                        if isinstance(obj.prototype.extra_flags, str):
-                            # Legacy .are format uses flag letters - convert to proper flags
-                            from mud.models.constants import convert_flags_from_letters
-                            current_flags = convert_flags_from_letters(obj.prototype.extra_flags, ExtraFlag)
-                            obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
-                        else:
-                            obj.prototype.extra_flags |= ITEM_INVENTORY
+                if is_shopkeeper and hasattr(obj.prototype, 'extra_flags'):
+                    from mud.models.constants import ExtraFlag
+
+                    if isinstance(obj.prototype.extra_flags, str):
+                        from mud.models.constants import convert_flags_from_letters
+
+                        current_flags = convert_flags_from_letters(
+                            obj.prototype.extra_flags, ExtraFlag
+                        )
+                        obj.prototype.extra_flags = current_flags | ITEM_INVENTORY
+                    else:
+                        obj.prototype.extra_flags |= ITEM_INVENTORY
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
                 logging.warning('Invalid E reset %s', obj_vnum)
         elif cmd == 'P':
-            obj_vnum = reset.arg2 or 0
-            container_vnum = reset.arg4 or 0
-            count = max(1, int(reset.arg3 or 1))  # how many to place
+            obj_vnum = reset.arg1 or 0
+            container_vnum = reset.arg3 or 0
+            count = max(1, int(reset.arg4 or 1))
             if container_vnum <= 0:
                 logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
                 continue
-            # Prefer the last created object instance if it matches the container vnum
             container_obj: Optional[object] = None
             if last_obj and getattr(getattr(last_obj, 'prototype', None), 'vnum', None) == container_vnum:
                 container_obj = last_obj
-            # Otherwise, fall back to the most recent spawned container by vnum
             if not container_obj:
                 lst = spawned_objects.get(container_vnum) or []
                 container_obj = lst[-1] if lst else None
             if not container_obj:
                 logging.warning('Invalid P reset %s -> %s (no container instance)', obj_vnum, container_vnum)
                 continue
-            # Determine existing count inside
-            existing = [o for o in getattr(container_obj, 'contained_items', [])
-                        if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum]
+            existing = [
+                o
+                for o in getattr(container_obj, 'contained_items', [])
+                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+            ]
             to_make = max(0, count - len(existing))
             for _ in range(to_make):
                 obj = spawn_object(obj_vnum)
@@ -173,8 +258,6 @@ def apply_resets(area: Area) -> None:
                     break
                 getattr(container_obj, 'contained_items').append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
-            # After population, set last_obj to the container (mirrors ROM behavior)
-            # Lock-state fix: reset container instance's value[1] to prototype's value[1]
             try:
                 container_obj.value[1] = container_obj.prototype.value[1]
             except Exception:

@@ -97,6 +97,9 @@
 - RULE: Apply ROM reset semantics for 'P' nesting and limits; track `LastObj`/`LastMob` during area resets and respect `arg2` limits and lock-state fix-ups.
   RATIONALE: Vnum-keyed placement loses instance order and breaks container contents; limit/lock semantics matter for canonical areas.
   EXAMPLE: after 'O' creates container C (LastObj=C), 'P' places items into C until `count_obj_list` reaches arg4; then `C->value[1] = C->pIndexData->value[1]`.
+- RULE: Reset loaders must mirror ROM `load_resets` parsing: ignore `if_flag`, set `arg1..arg4` like C, and keep mob/object limits for 'M'/'P'.
+  RATIONALE: Dropping reset arguments erases ROM spawn caps and duplicates mobs/objects.
+  EXAMPLE: convert_area('midgaard.are') → ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
 
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
