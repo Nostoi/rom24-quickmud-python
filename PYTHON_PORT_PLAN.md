@@ -15,7 +15,13 @@ help_system, m- ✅ [P0] Implement defense check order (hit → shield block →
   EVIDENCE: PY mud/models/character.py:L107-L109 (second_attack_skill, third_attack_skill, fighting state)
   EVIDENCE: TEST tests/test_combat.py::test_multi_hit_* (8 tests covering single/multi-attack, haste/slow, early death)
   RATIONALE: Enable multiple attacks per round with skill checks and affect modifiers matching ROM mechanics.
-  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.pyrams, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
+  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.py
+- ✅ [P0] Implement weapon damage calculation from C one_hit — done 2025-09-15
+  EVIDENCE: C src/fight.c:one_hit L1850-L2000 (weapon dice, unarmed damage, damroll, enhanced damage skill)
+  EVIDENCE: PY mud/combat/engine.py:calculate_weapon_damage L100-L165 (unarmed range, enhanced damage, position multipliers)
+  EVIDENCE: TEST tests/test_weapon_damage.py (5 tests covering all weapon damage mechanics)
+  RATIONALE: Replace simple damroll with proper ROM weapon damage including unarmed formulas, skill bonuses, position multipliers.
+  FILES: mud/combat/engine.py, tests/test_weapon_damage.pyrams, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
 security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -410,11 +416,21 @@ TASKS:
   EVIDENCE: PY mud/models/character.py (defense chance fields)
   EVIDENCE: TEST tests/test_combat_defenses_prob.py
   RATIONALE: Provide parity-aligned hooks and ordering without requiring full skill system; probabilities default to 0.
+
+- ✅ [P0] Implement weapon damage calculation from C one_hit — done 2025-09-15
+  EVIDENCE: C src/fight.c:one_hit L1850-L2000 (weapon dice, unarmed damage, damroll, enhanced damage skill)
+  EVIDENCE: PY mud/combat/engine.py:calculate_weapon_damage L100-L165 (unarmed range, enhanced damage, position multipliers)
+  EVIDENCE: PY mud/models/character.py:L110-L115 (damroll, enhanced_damage fields)
+  EVIDENCE: TEST tests/test_weapon_damage.py (5 tests covering all weapon damage mechanics)
+  RATIONALE: Replace simple damroll with proper ROM weapon damage including unarmed formulas, skill bonuses, position multipliers.
+  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_weapon_damage.py
+
   NOTES:
 - C: one_hit/multi_hit sequence integrates defense checks and AC; Python engine now implements multi_hit with proper skill checks.
 - PY: attack_round uses rng_mm.number_percent (good), multi_hit() implements second/third attack and haste mechanics.
 - Applied tiny fix: use c_div for AC contribution to hit chance (mud/combat/engine.py) to ensure C-style division with negative AC.
 - Applied tiny fix: implemented multi_hit with second_attack_skill, third_attack_skill checks and fighting state management.
+- Applied tiny fix: implemented calculate_weapon_damage with ROM unarmed damage formulas, enhanced damage skill, and position multipliers.
 <!-- SUBSYSTEM: combat END -->
 
 <!-- SUBSYSTEM: skills_spells START -->

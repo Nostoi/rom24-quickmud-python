@@ -142,9 +142,10 @@ def attack_round(attacker: Character, victim: Character) -> str:
     if check_shield_block(attacker, victim):
         return f"{victim.name} blocks your attack with a shield."
 
-    damage = max(1, attacker.damroll)
+    # Calculate weapon damage following C src/fight.c:one_hit logic
+    damage = calculate_weapon_damage(attacker, victim, dam_type)
+    
     # Apply RIV (IMMUNE/RESIST/VULN) scaling before any side-effects.
-    dam_type = attacker.dam_type or int(DamageType.BASH)
     riv = _riv_check(victim, dam_type)
     if riv == 1:  # IS_IMMUNE
         damage = 0
@@ -168,6 +169,76 @@ def attack_round(attacker: Character, victim: Character) -> str:
             victim.room.remove_character(victim)
         return f"You kill {victim.name}."
     return f"You hit {victim.name} for {damage} damage."
+
+
+def calculate_weapon_damage(attacker: Character, victim: Character, dam_type: int) -> int:
+    """Calculate weapon damage following C src/fight.c:one_hit logic.
+    
+    This includes:
+    - Weapon dice rolling with skill modifiers
+    - Shield bonus (11/10 multiplier when no shield equipped)
+    - Sharpness weapon effect
+    - Enhanced damage skill
+    - Position-based multipliers (sleeping/resting victims)
+    - Damroll bonus application
+    """
+    # Get wielded weapon - for now assume no weapon (unarmed)
+    wield = None  # TODO: get_eq_char(attacker, WEAR_WIELD) when equipment system exists
+    
+    # Get weapon skill - default to 20 base + skill level (100 = mastery)
+    skill = 20 + 100  # TODO: get_weapon_skill(attacker, sn) when skill system exists
+    
+    # Base damage calculation
+    if wield is not None:
+        # Weapon damage from dice
+        if hasattr(wield, 'new_format') and wield.new_format:
+            # dice(wield.value[1], wield.value[2]) * skill / 100
+            dam = rng_mm.dice(wield.value[1], wield.value[2]) * skill // 100
+        else:
+            # number_range(wield.value[1] * skill / 100, wield.value[2] * skill / 100)
+            min_dam = wield.value[1] * skill // 100
+            max_dam = wield.value[2] * skill // 100
+            dam = rng_mm.number_range(min_dam, max_dam)
+        
+        # Shield bonus - no shield equipped gives 11/10 multiplier
+        has_shield = False  # TODO: get_eq_char(attacker, WEAR_SHIELD) when equipment exists
+        if not has_shield:
+            dam = dam * 11 // 10
+            
+        # Sharpness weapon effect
+        if hasattr(wield, 'weapon_stats') and 'sharp' in wield.weapon_stats:
+            percent = rng_mm.number_percent()
+            if percent <= (skill // 8):
+                dam = 2 * dam + (dam * 2 * percent // 100)
+    else:
+        # Unarmed damage: number_range(1 + 4*skill/100, 2*level/3*skill/100)
+        min_dam = 1 + (4 * skill // 100)
+        max_dam = (2 * attacker.level // 3) * skill // 100
+        dam = rng_mm.number_range(min_dam, max_dam)
+    
+    # Enhanced damage skill
+    enhanced_damage_skill = getattr(attacker, 'enhanced_damage_skill', 0)
+    if enhanced_damage_skill > 0:
+        diceroll = rng_mm.number_percent()
+        if diceroll <= enhanced_damage_skill:
+            # check_improve(attacker, gsn_enhanced_damage, True, 6) would go here
+            dam += 2 * (dam * diceroll // 300)
+    
+    # Position-based damage multipliers
+    # IS_AWAKE in ROM means position > POS_SLEEPING
+    if victim.position <= Position.SLEEPING:
+        dam *= 2
+    elif victim.position < Position.FIGHTING:
+        dam = dam * 3 // 2
+    
+    # Add damroll bonus
+    dam += attacker.damroll * min(100, skill) // 100
+    
+    # Ensure minimum damage
+    if dam <= 0:
+        dam = 1
+        
+    return dam
 
 
 def on_hit_effects(attacker: Character, victim: Character, damage: int) -> None:  # pragma: no cover - default no-op
