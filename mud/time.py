@@ -35,6 +35,9 @@ class TimeInfo:
                     self.year += 1
         if self.hour == 5:
             self.sunlight = Sunlight.LIGHT
+            messages.append("The day has begun.")
+        elif self.hour == 6:
+            self.sunlight = Sunlight.RISE
             messages.append("The sun rises in the east.")
         elif self.hour == 19:
             self.sunlight = Sunlight.SET

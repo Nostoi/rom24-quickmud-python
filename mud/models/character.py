@@ -101,6 +101,11 @@ class Character:
     shield_block_chance: int = 0
     parry_chance: int = 0
     dodge_chance: int = 0
+    # Combat skill levels (0-100) for multi-attack mechanics
+    second_attack_skill: int = 0
+    third_attack_skill: int = 0
+    # Combat state - currently fighting target
+    fighting: Optional['Character'] = None
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"

@@ -8,13 +8,76 @@ from mud.models.constants import (
     AC_BASH,
     AC_SLASH,
     AC_EXOTIC,
+    AffectFlag,
 )
 from mud.utils import rng_mm
 from mud.math.c_compat import c_div
 from mud.affects.saves import _check_immune as _riv_check
 from mud.math.c_compat import urange
-from mud.models.constants import AffectFlag
 from mud.config import COMBAT_USE_THAC0
+
+
+def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[str]:
+    """Perform multiple attacks following ROM multi_hit mechanics.
+    
+    Returns a list of attack result messages.
+    """
+    results: list[AttackResult] = []
+    
+    # Position check - no attacks if position too low
+    if attacker.position < Position.RESTING:
+        return results
+    
+    # First attack always happens
+    result = attack_round(attacker, victim)
+    results.append(result)
+    
+    # Check if victim died or combat ended
+    if not hasattr(attacker, 'fighting') or attacker.fighting != victim:
+        return results
+    
+    # Haste gives extra attack
+    if getattr(attacker, 'has_affect', None) and attacker.has_affect(AffectFlag.HASTE):
+        result = attack_round(attacker, victim)
+        results.append(result)
+        if not hasattr(attacker, 'fighting') or attacker.fighting != victim:
+            return results
+    
+    # Skip extra attacks for backstab
+    if dt and getattr(dt, 'name', '') == 'backstab':
+        return results
+    
+    # Second attack skill check
+    second_attack_skill = getattr(attacker, 'second_attack_skill', 0)
+    if second_attack_skill > 0:
+        chance = second_attack_skill // 2
+        
+        # Slow reduces chances
+        if getattr(attacker, 'has_affect', None) and attacker.has_affect(AffectFlag.SLOW):
+            chance //= 2
+        
+        if rng_mm.number_percent() < chance:
+            result = attack_round(attacker, victim)
+            results.append(result)
+            # In ROM, would call check_improve here
+            if not hasattr(attacker, 'fighting') or attacker.fighting != victim:
+                return results
+    
+    # Third attack skill check  
+    third_attack_skill = getattr(attacker, 'third_attack_skill', 0)
+    if third_attack_skill > 0:
+        chance = third_attack_skill // 4
+        
+        # Slow prevents third attack entirely
+        if getattr(attacker, 'has_affect', None) and attacker.has_affect(AffectFlag.SLOW):
+            chance = 0
+        
+        if rng_mm.number_percent() < chance:
+            result = attack_round(attacker, victim)
+            results.append(result)
+            # In ROM, would call check_improve here
+    
+    return results
 
 
 def attack_round(attacker: Character, victim: Character) -> str:
@@ -31,6 +94,10 @@ def attack_round(attacker: Character, victim: Character) -> str:
     # Capture victim's pre-attack position for ROM-like modifiers
     _victim_pos_before = victim.position
     victim.position = Position.FIGHTING
+    
+    # Set fighting state
+    attacker.fighting = victim
+    victim.fighting = attacker
 
     dam_type = attacker.dam_type or int(DamageType.BASH)
     ac_idx = ac_index_for_dam_type(dam_type)
@@ -66,13 +133,14 @@ def attack_round(attacker: Character, victim: Character) -> str:
         if rng_mm.number_percent() > to_hit:
             return f"You miss {victim.name}."
 
-    # Defense checks in ROM order: shield block → parry → dodge.
-    if check_shield_block(attacker, victim):
-        return f"{victim.name} blocks your attack with a shield."
+    # Hit determined - now check defenses in ROM order: parry → dodge → shield_block
+    # This matches C damage() function flow where defenses are checked after hit
     if check_parry(attacker, victim):
         return f"{victim.name} parries your attack."
     if check_dodge(attacker, victim):
         return f"{victim.name} dodges your attack."
+    if check_shield_block(attacker, victim):
+        return f"{victim.name} blocks your attack with a shield."
 
     damage = max(1, attacker.damroll)
     # Apply RIV (IMMUNE/RESIST/VULN) scaling before any side-effects.
@@ -92,6 +160,9 @@ def attack_round(attacker: Character, victim: Character) -> str:
         victim.hit = 0
         victim.position = Position.DEAD
         attacker.position = Position.STANDING
+        # Clear fighting state
+        attacker.fighting = None
+        victim.fighting = None
         if getattr(victim, "room", None):
             victim.room.broadcast(f"{victim.name} is DEAD!!!", exclude=victim)
             victim.room.remove_character(victim)

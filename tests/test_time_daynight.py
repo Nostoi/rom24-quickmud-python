@@ -28,7 +28,7 @@ def test_time_tick_advances_hour_and_triggers_sunrise():
         game_loop.game_tick()
     assert time_info.hour == 5
     assert time_info.sunlight == Sunlight.LIGHT
-    assert "The sun rises in the east." in ch.messages
+    assert "The day has begun." in ch.messages
 
 
 def test_sunrise_broadcasts_to_all_characters():
@@ -38,8 +38,39 @@ def test_sunrise_broadcasts_to_all_characters():
     time_info.hour = 4
     for _ in range(get_pulse_tick()):
         game_loop.game_tick()
-    assert "The sun rises in the east." in ch1.messages
-    assert "The sun rises in the east." in ch2.messages
+    assert "The day has begun." in ch1.messages
+    assert "The day has begun." in ch2.messages
+
+
+def test_rom_sunlight_transitions():
+    """Test all 4 ROM sunlight state transitions match C code exactly."""
+    from mud.time import TimeInfo, Sunlight
+    
+    # Hour 5: SUN_LIGHT, "The day has begun."
+    t = TimeInfo(hour=4)
+    msgs = t.advance_hour()
+    assert t.hour == 5
+    assert t.sunlight == Sunlight.LIGHT
+    assert msgs == ["The day has begun."]
+    
+    # Hour 6: SUN_RISE, "The sun rises in the east."
+    msgs = t.advance_hour()
+    assert t.hour == 6
+    assert t.sunlight == Sunlight.RISE
+    assert msgs == ["The sun rises in the east."]
+    
+    # Hour 19: SUN_SET, "The sun slowly disappears in the west."
+    t = TimeInfo(hour=18)
+    msgs = t.advance_hour()
+    assert t.hour == 19
+    assert t.sunlight == Sunlight.SET
+    assert msgs == ["The sun slowly disappears in the west."]
+    
+    # Hour 20: SUN_DARK, "The night has begun."
+    msgs = t.advance_hour()
+    assert t.hour == 20
+    assert t.sunlight == Sunlight.DARK
+    assert msgs == ["The night has begun."]
 
 
 def test_sunset_and_night_messages_and_wraparound():
@@ -71,4 +102,4 @@ def test_time_scale_accelerates_tick(monkeypatch):
     game_loop.game_tick()  # one pulse with scaling
     assert time_info.hour == 5
     assert time_info.sunlight == Sunlight.LIGHT
-    assert "The sun rises in the east." in ch.messages
+    assert "The day has begun." in ch.messages

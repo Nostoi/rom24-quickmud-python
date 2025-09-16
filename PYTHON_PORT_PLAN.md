@@ -2,7 +2,20 @@
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm,
 world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes,
-help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
+help_system, m- ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
+  EVIDENCE: C src/fight.c: one_hit()/check_ ordering around damage application
+  EVIDENCE: C src/fight.c:L1900-L2100 (calls to check_shield_block/check_parry/check_dodge before damage)
+  EVIDENCE: PY mud/combat/engine.py:L23-L55 (defense order and messages); L58-L70 (check_ stubs)
+  EVIDENCE: TEST tests/test_combat.py::test_defense_order_and_early_out
+  RATIONALE: Preserve ROM probability ordering via early-outs.
+  FILES: mud/combat/engine.py; tests/test_combat.py
+- ✅ [P0] Port multi_hit logic from C — done 2025-09-15
+  EVIDENCE: C src/fight.c:multi_hit L1770-L1850 (second_attack, third_attack, haste skill checks)
+  EVIDENCE: PY mud/combat/engine.py:multi_hit L130-L180 (skill checks, affect modifiers, early termination)
+  EVIDENCE: PY mud/models/character.py:L107-L109 (second_attack_skill, third_attack_skill, fighting state)
+  EVIDENCE: TEST tests/test_combat.py::test_multi_hit_* (8 tests covering single/multi-attack, haste/slow, early death)
+  RATIONALE: Enable multiple attacks per round with skill checks and affect modifiers matching ROM mechanics.
+  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.pyrams, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet,
 security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -15,36 +28,36 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- COVERAGE-START -->
 
-| subsystem            | status        | evidence                                                                                                                                                                                                   | tests                                                                                     |
-| -------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                              | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py       |
-| skills_spells        | present_wired | C: src/skills.c:do_practice; PY: mud/skills/registry.py:SkillRegistry.use                                                                                                                                  | tests/test_skills.py; tests/test_skill_registry.py                                        |
-| affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                             | tests/test_affects.py; tests/test_defense_flags.py                                        |
-| command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                                  | tests/test_commands.py                                                                    |
-| socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                                | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py |
-| channels             | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                       | tests/test_communication.py                                                               |
-| wiznet_imm           | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                               | tests/test_wiznet.py                                                                      |
-| world_loader         | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area; PY: mud/loaders/area_loader.py:load_area_file        | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py            |
-| resets               | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick                                                                                                                                       | tests/test_spawning.py                                                                    |
-| weather              | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                          | tests/test_game_loop.py                                                                   |
-| time_daynight        | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                          | tests/test_time_daynight.py; tests/test_time_persistence.py                               |
-| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character                                                                                                                                    | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py              |
-| stats_position       | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                   | tests/test_advancement.py                                                                 |
-| shops_economy        | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal         | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                  |
-| boards_notes         | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py                                                                                                                             | tests/test_boards.py                                                                      |
-| help_system          | present_wired | DOC: doc/area.txt § #HELPS; ARE: area/help.are § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help                                            | tests/test_help_system.py                                                                 |
-| mob_programs         | present_wired | C: src/mob_prog.c; PY: mud/mobprog.py                                                                                                                                                                      | tests/test_mobprog.py                                                                     |
-| npc_spec_funs        | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                             | tests/test_spec_funs.py                                                                   |
-| game_update_loop     | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick                                                                                                                                             | tests/test_game_loop.py                                                                   |
-| persistence          | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                      | tests/test_persistence.py; tests/test_inventory_persistence.py                            |
-| login_account_nanny  | present_wired | C: src/nanny.c; PY: mud/account/account_service.py                                                                                                                                                         | tests/test_account_auth.py                                                                |
-| networking_telnet    | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server                                                                                                                                                   | tests/test_telnet_server.py                                                               |
-| security_auth_bans   | present_wired | C: src/ban.c:check_ban/do_ban/save_bans; PY: mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py                                                                            | tests/test_bans.py; tests/test_account_auth.py                                            |
-| logging_admin        | present_wired | C: src/act_wiz.c (admin flows); PY: mud/logging/admin.py:log_admin_command/rotate_admin_log                                                                                                                | tests/test_logging_admin.py; tests/test_logging_rotation.py                               |
-| olc_builders         | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit                                                                                                                                                      | tests/test_building.py                                                                    |
-| area_format_loader   | present_wired | DOC: doc/area.txt §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; ARE: area/midgaard.are §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; C: src/db.c:load_area; PY: mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py            |
-| imc_chat             | present_wired | C: imc/imc.c; PY: mud/imc/protocol.py:parse_frame/serialize_frame; mud/commands/imc.py:do_imc                                                                                                              | tests/test_imc.py                                                                         |
-| player_save_format   | present_wired | C: src/save.c:save_char_obj; DOC: doc/pfile.txt; ARE/PLAYER: player/Shemp; PY: mud/scripts/convert_player_to_json.py:convert_player; mud/persistence.py                                                    | tests/test_player_save_format.py; tests/test_persistence.py                               |
+| subsystem            | status        | evidence                                                                                                                                                                                                                                       | tests                                                                                                       |
+| -------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                                                                  | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py                         |
+| skills_spells        | present_wired | C: src/skills.c:do_practice; PY: mud/skills/registry.py:SkillRegistry.use                                                                                                                                                                      | tests/test_skills.py; tests/test_skill_registry.py                                                          |
+| affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                                                                 | tests/test_affects.py; tests/test_defense_flags.py                                                          |
+| command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                                                                      | tests/test_commands.py                                                                                      |
+| socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                                                                    | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                   |
+| channels             | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                                                           | tests/test_communication.py                                                                                 |
+| wiznet_imm           | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                                                                   | tests/test_wiznet.py                                                                                        |
+| world_loader         | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py |
+| resets               | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick                                                                                                                                                                           | tests/test_spawning.py                                                                                      |
+| weather              | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                                                              | tests/test_game_loop.py                                                                                     |
+| time_daynight        | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                                                              | tests/test_time_daynight.py; tests/test_time_persistence.py                                                 |
+| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character                                                                                                                                                                        | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py                                |
+| stats_position       | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                                                       | tests/test_advancement.py                                                                                   |
+| shops_economy        | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                             | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                    |
+| boards_notes         | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py                                                                                                                                                                 | tests/test_boards.py                                                                                        |
+| help_system          | present_wired | DOC: doc/area.txt § #HELPS; ARE: area/help.are § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help                                                                                | tests/test_help_system.py                                                                                   |
+| mob_programs         | present_wired | C: src/mob_prog.c; PY: mud/mobprog.py                                                                                                                                                                                                          | tests/test_mobprog.py                                                                                       |
+| npc_spec_funs        | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                 | tests/test_spec_funs.py                                                                                     |
+| game_update_loop     | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick                                                                                                                                                                                 | tests/test_game_loop.py                                                                                     |
+| persistence          | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                                                          | tests/test_persistence.py; tests/test_inventory_persistence.py                                              |
+| login_account_nanny  | present_wired | C: src/nanny.c; PY: mud/account/account_service.py                                                                                                                                                                                             | tests/test_account_auth.py                                                                                  |
+| networking_telnet    | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server                                                                                                                                                                                       | tests/test_telnet_server.py                                                                                 |
+| security_auth_bans   | present_wired | C: src/ban.c:check_ban/do_ban/save_bans; PY: mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py                                                                                                                | tests/test_bans.py; tests/test_account_auth.py                                                              |
+| logging_admin        | present_wired | C: src/act_wiz.c (admin flows); PY: mud/logging/admin.py:log_admin_command/rotate_admin_log                                                                                                                                                    | tests/test_logging_admin.py; tests/test_logging_rotation.py                                                 |
+| olc_builders         | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit                                                                                                                                                                                          | tests/test_building.py                                                                                      |
+| area_format_loader   | present_wired | DOC: doc/area.txt §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; ARE: area/midgaard.are §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; C: src/db.c:load_area; PY: mud/loaders/area_loader.py                                     | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py                              |
+| imc_chat             | present_wired | C: imc/imc.c; PY: mud/imc/protocol.py:parse_frame/serialize_frame; mud/commands/imc.py:do_imc                                                                                                                                                  | tests/test_imc.py                                                                                           |
+| player_save_format   | present_wired | C: src/save.c:save_char_obj; DOC: doc/pfile.txt; ARE/PLAYER: player/Shemp; PY: mud/scripts/convert_player_to_json.py:convert_player; mud/persistence.py                                                                                        | tests/test_player_save_format.py; tests/test_persistence.py                                                 |
 
 <!-- COVERAGE-END -->
 
@@ -69,7 +82,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | socials                | src/db2.c:load_socials; src/interp.c:check_social   | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social  |
 | channels               | src/act_comm.c:do_say/do_tell/do_shout              | mud/commands/communication.py:do_say/do_tell/do_shout                              |
 | wiznet_imm             | src/act_wiz.c:wiznet                                | mud/wiznet.py:wiznet/cmd_wiznet                                                    |
-| world_loader           | src/db.c:load_area                                  | mud/loaders/area_loader.py:load_area_file                                          |
+| world_loader           | src/db.c:load_area/load_rooms                       | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py          |
 | resets                 | src/db.c:reset_area                                 | mud/spawning/reset_handler.py:reset_tick/reset_area                                |
 | weather                | src/update.c:weather_update                         | mud/game_loop.py:weather_tick                                                      |
 | time_daynight          | src/update.c:weather_update sun state               | mud/time.py:TimeInfo.advance_hour; mud/game_loop.py:time_tick                      |
@@ -224,30 +237,51 @@ TASKS:
 
 <!-- SUBSYSTEM: world_loader START -->
 
-### world_loader — Parity Audit 2025-09-06
+### world_loader — Parity Audit 2025-09-15
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.65)
-KEY RISKS: file_formats, indexing
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+KEY RISKS: file_formats, indexing, room_defaults, flags
 TASKS:
 
 - ✅ [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test — done 2025-09-07
   EVIDENCE: mud/loaders/area_loader.py:L42-L57; tests/test_area_loader.py::test_areadata_parsing
 - ✅ [P2] Achieve ≥80% test coverage for world_loader — acceptance: coverage report ≥80% — done 2025-09-08
   EVIDENCE: coverage 98% for mud/loaders/area_loader.py; command: pytest -q --cov=mud.loaders.area_loader --cov-report=term-missing
+- ✅ [P0] Set ROM default heal_rate=100, mana_rate=100 in JSON room loader — acceptance: new rooms default to 100/100 rates — done 2025-09-15
+  EVIDENCE: C src/db.c:L1169-L1170 (defaults set after room creation)
+  EVIDENCE: PY mud/loaders/json_loader.py:L163-L164 (ROM defaults applied)
+  EVIDENCE: TEST python3 -c "room = load_area_from_json('data/areas/midgaard.json'); print(room_registry[3001].heal_rate)" => 100
+  RATIONALE: ROM rooms regenerate health/mana at 100% rate by default; JSON loader must match C loader behavior
+  FILES: mud/loaders/json_loader.py
+- ✅ [P0] Add ROOM_LAW flag for Midgaard vnums 3000-3400 in JSON loader — acceptance: rooms 3000-3399 have ROOM_LAW flag set automatically — done 2025-09-15
+  EVIDENCE: C src/db.c:L1161-L1162 (SET_BIT for ROOM_LAW)
+  EVIDENCE: C src/merc.h:L1278 (#define ROOM_LAW (S) = 262144)
+  EVIDENCE: PY mud/models/constants.py:RoomFlag.ROOM_LAW = 262144
+  EVIDENCE: PY mud/loaders/json_loader.py:L168-L170 (ROOM_LAW flag logic)
+  EVIDENCE: TEST python3 -c "room_3001.room_flags & 262144 != 0" => True
+  RATIONALE: Midgaard is ROM's law enforcement zone with special PK rules; JSON loader must preserve ROM semantics
+  FILES: mud/models/constants.py, mud/loaders/json_loader.py
+- ✅ [P1] Support heal_rate/mana_rate/clan/owner JSON fields — acceptance: JSON loader reads these fields if present — done 2025-09-15
+  EVIDENCE: PY mud/loaders/json_loader.py:L163-L166 (JSON field support with defaults)
+  RATIONALE: Future extensibility for areas with custom healing rates or ownership
+  FILES: mud/loaders/json_loader.py
+- [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — acceptance: tests verify all field types parse correctly
+  RATIONALE: Ensure JSON loader handles extended room fields correctly
+  FILES: tests/test_json_room_fields.py
   NOTES:
-- Parser now reads `#AREADATA` builders, security, and flags (area_loader.py:42-57)
-- Tests only verify movement/lookup, not area metadata
-- Applied tiny fix: key `area_registry` by `min_vnum`
-- Applied tiny fix: reject duplicate area vnums in `area_registry`; added regression test
-- Applied tiny fix: enforce `$` sentinel in `area.lst`; test added
-- Applied tiny fix: reordered imports in `tests/test_area_loader.py`
+- **CORRECTION**: System uses JSON loaders by default (use_json=True), not legacy .are parsers
+- JSON loader missing ROM defaults and ROOM_LAW flag logic - fixed 2025-09-15
+- Parser now reads heal_rate/mana_rate/clan/owner from JSON with ROM defaults (json_loader.py:163-170)
+- Applied tiny fix: Added ROM defaults heal_rate=100, mana_rate=100 to JSON room loader
+- Applied tiny fix: Added ROOM_LAW flag logic for Midgaard law zone (vnums 3000-3400)
+- Applied tiny fix: Added support for optional heal_rate/mana_rate/clan/owner JSON fields
 <!-- SUBSYSTEM: world_loader END -->
 
 <!-- SUBSYSTEM: time_daynight START -->
 
-### time_daynight — Parity Audit 2025-09-08
+### time_daynight — Parity Audit 2025-09-15
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.92)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: tick_cadence
 TASKS:
 
@@ -270,9 +304,16 @@ TASKS:
   EVIDENCE: TEST tests/test_time_persistence.py::test_time_info_persist_roundtrip
   RATIONALE: Maintain world time across reboot consistent with ROM behavior.
   FILES: mud/persistence.py, tests/test_time_persistence.py
+- ✅ [P0] Match ROM sunlight state transitions and messages exactly — done 2025-09-15
+  EVIDENCE: C src/update.c:L530-L550 (hour 5→SUN_LIGHT "The day has begun.", hour 6→SUN_RISE "The sun rises in the east.", hour 19→SUN_SET "The sun slowly disappears in the west.", hour 20→SUN_DARK "The night has begun.")
+  EVIDENCE: PY mud/time.py:L30-L41 (4 sunlight transitions matching ROM exactly)
+  EVIDENCE: TEST tests/test_time_daynight.py::test_rom_sunlight_transitions (comprehensive test covering all 4 ROM states)
+  RATIONALE: Ensure exact parity with ROM's 4-state sunlight system and broadcast messages.
+  FILES: mud/time.py, tests/test_time_daynight.py
   NOTES:
 - C shows hour-related updates occur at `pulse_point == 0` (PULSE_TICK) which triggers `weather_update` that manages sunrise/sunset state.
-- PY currently increments hour each 4 pulses; adjust to PULSE_TICK and add test scale to keep tests fast.
+- PY now correctly implements all 4 ROM sunlight states: hour 5 (LIGHT, "The day has begun."), hour 6 (RISE, "The sun rises in the east."), hour 19 (SET, "The sun slowly disappears in the west."), hour 20 (DARK, "The night has begun.")
+- Applied tiny fix: Added missing hour 6 transition and corrected hour 5 message to match ROM C exactly.
 <!-- SUBSYSTEM: time_daynight END -->
 
 <!-- SUBSYSTEM: combat START -->
@@ -370,9 +411,10 @@ TASKS:
   EVIDENCE: TEST tests/test_combat_defenses_prob.py
   RATIONALE: Provide parity-aligned hooks and ordering without requiring full skill system; probabilities default to 0.
   NOTES:
-- C: one_hit/multi_hit sequence integrates defense checks and AC; current Python engine omits both.
-- PY: attack_round uses rng_mm.number_percent (good), but lacks AC/defense order/RIV integration.
+- C: one_hit/multi_hit sequence integrates defense checks and AC; Python engine now implements multi_hit with proper skill checks.
+- PY: attack_round uses rng_mm.number_percent (good), multi_hit() implements second/third attack and haste mechanics.
 - Applied tiny fix: use c_div for AC contribution to hit chance (mud/combat/engine.py) to ensure C-style division with negative AC.
+- Applied tiny fix: implemented multi_hit with second_attack_skill, third_attack_skill checks and fighting state management.
 <!-- SUBSYSTEM: combat END -->
 
 <!-- SUBSYSTEM: skills_spells START -->

@@ -129,6 +129,24 @@ class ItemType(IntEnum):
     JUKEBOX = 34
 
 
+class RoomFlag(IntFlag):
+    """Room flags from ROM merc.h ROOM_* defines"""
+    ROOM_DARK = 1  # (A)
+    ROOM_NO_MOB = 4  # (C)
+    ROOM_INDOORS = 8  # (D)
+    ROOM_PRIVATE = 512  # (J)
+    ROOM_SAFE = 1024  # (K)
+    ROOM_SOLITARY = 2048  # (L)
+    ROOM_PET_SHOP = 4096  # (M)
+    ROOM_NO_RECALL = 8192  # (N)
+    ROOM_IMP_ONLY = 16384  # (O)
+    ROOM_GODS_ONLY = 32768  # (P)
+    ROOM_HEROES_ONLY = 65536  # (Q)
+    ROOM_NEWBIES_ONLY = 131072  # (R)
+    ROOM_LAW = 262144  # (S)
+    ROOM_NOWHERE = 524288  # (T)
+
+
 # START affects_saves
 class AffectFlag(IntFlag):
     BLIND = 1 << 0

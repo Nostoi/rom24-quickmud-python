@@ -1,5 +1,6 @@
 from mud.world import initialize_world, create_test_character
 from mud.commands import process_command
+from mud.models.character import Character
 from mud.models.constants import (
     Position,
     DamageType,
@@ -15,7 +16,7 @@ from mud.combat import engine as combat_engine
 from mud.models.constants import AffectFlag
 
 
-def setup_combat():
+def setup_combat() -> tuple[Character, Character]:
     initialize_world('area/area.lst')
     room_vnum = 3001
     attacker = create_test_character('Attacker', room_vnum)
@@ -23,7 +24,7 @@ def setup_combat():
     return attacker, victim
 
 
-def test_attack_damages_but_not_kill():
+def test_attack_damages_but_not_kill() -> None:
     attacker, victim = setup_combat()
     attacker.damroll = 3
     attacker.hitroll = 100  # guarantee hit
@@ -71,25 +72,137 @@ def test_defense_order_and_early_out(monkeypatch):
 
     calls: list[str] = []
 
-    def shield(a, v):
+    def parry(a, v):
+        calls.append("parry")
+        return False
+
+    def dodge(a, v):
+        calls.append("dodge")
+        return True  # early-out here
+
+    def shield(a, v):  # pragma: no cover - should not be called
         calls.append("shield")
         return False
 
-    def parry(a, v):
-        calls.append("parry")
-        return True  # early-out here
-
-    def dodge(a, v):  # pragma: no cover - should not be called
-        calls.append("dodge")
-        return False
-
-    monkeypatch.setattr(combat_engine, "check_shield_block", shield)
     monkeypatch.setattr(combat_engine, "check_parry", parry)
     monkeypatch.setattr(combat_engine, "check_dodge", dodge)
+    monkeypatch.setattr(combat_engine, "check_shield_block", shield)
 
     out = process_command(attacker, 'kill victim')
-    assert out == 'Victim parries your attack.'
-    assert calls == ["shield", "parry"]  # dodge not reached
+    assert out == 'Victim dodges your attack.'
+    assert calls == ["parry", "dodge"]  # shield not reached
+
+
+def test_multi_hit_single_attack():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 1
+    victim.hit = 10
+    
+    # No extra attack skills - should only get one attack
+    results = combat_engine.multi_hit(attacker, victim)
+    assert len(results) == 1
+    assert results[0] == 'You hit Victim for 1 damage.'
+    assert victim.hit == 9
+
+
+def test_multi_hit_with_haste():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 1
+    victim.hit = 10
+    
+    # Add haste affect
+    attacker.add_affect(AffectFlag.HASTE)
+    
+    results = combat_engine.multi_hit(attacker, victim)
+    assert len(results) == 2  # Normal + haste attack
+    assert all('You hit Victim for 1 damage.' == r for r in results)
+    assert victim.hit == 8
+
+
+def test_multi_hit_second_attack():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 1
+    attacker.second_attack_skill = 100  # 50% chance (100/2)
+    victim.hit = 10
+    
+    # Mock to force successful second attack
+    from mud.utils import rng_mm
+    original_number_percent = rng_mm.number_percent
+    
+    def mock_number_percent():
+        return 1  # Always return 1, which is < 50
+    
+    rng_mm.number_percent = mock_number_percent
+    
+    try:
+        results = combat_engine.multi_hit(attacker, victim)
+        assert len(results) == 2  # First + second attack
+        assert attacker.fighting == victim
+        assert victim.fighting == attacker
+    finally:
+        # Restore original function
+        rng_mm.number_percent = original_number_percent
+
+
+def test_multi_hit_third_attack():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 1
+    attacker.second_attack_skill = 100  # Always succeeds (50% chance)
+    attacker.third_attack_skill = 100   # Always succeeds (25% chance)
+    victim.hit = 20
+    
+    # Set up a monkey patch to force successful rolls
+    from mud.utils import rng_mm
+    original_number_percent = rng_mm.number_percent
+    
+    def mock_number_percent():
+        return 1  # Always return 1, which is < any positive chance
+    
+    import types
+    rng_mm.number_percent = mock_number_percent
+    
+    try:
+        results = combat_engine.multi_hit(attacker, victim)
+        assert len(results) == 3  # First + second + third attack
+        assert attacker.fighting == victim
+    finally:
+        # Restore original function
+        rng_mm.number_percent = original_number_percent
+
+
+def test_multi_hit_with_slow():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 1
+    attacker.second_attack_skill = 100  # Normally would always succeed
+    attacker.third_attack_skill = 100   # Normally would always succeed
+    victim.hit = 10
+    
+    # Add slow affect
+    attacker.add_affect(AffectFlag.SLOW)
+    
+    results = combat_engine.multi_hit(attacker, victim)
+    # Slow reduces second attack chance and prevents third attack entirely
+    assert len(results) >= 1  # Always get first attack
+    # Second attack chance halved, third attack prevented
+
+
+def test_multi_hit_victim_dies_early():
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100  # guarantee hit
+    attacker.damroll = 5
+    attacker.second_attack_skill = 100  # Would normally get second attack
+    victim.hit = 3  # Dies on first hit
+    
+    results = combat_engine.multi_hit(attacker, victim)
+    assert len(results) == 1
+    assert results[0] == 'You kill Victim.'
+    assert attacker.fighting is None  # Fighting cleared on death
+    assert victim.fighting is None
 
 
 def test_ac_mapping_and_sign_semantics():

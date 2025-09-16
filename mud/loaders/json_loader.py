@@ -159,6 +159,17 @@ def _load_rooms_from_json(rooms_data: List[Dict[str, Any]], area: Area) -> None:
             area=area,
         )
         
+        # Set ROM defaults
+        room.heal_rate = room_data.get('heal_rate', 100)
+        room.mana_rate = room_data.get('mana_rate', 100) 
+        room.clan = room_data.get('clan', 0)
+        room.owner = room_data.get('owner', '')
+        
+        # Set ROOM_LAW flag for Midgaard law zone (vnums 3000-3400)
+        from mud.models.constants import RoomFlag
+        if 3000 <= room.vnum < 3400:
+            room.room_flags |= RoomFlag.ROOM_LAW
+        
         # Load exits
         exits_data = room_data.get('exits', {})
         for direction_name, exit_data in exits_data.items():

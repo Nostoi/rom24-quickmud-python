@@ -2854,7 +2854,7 @@ gem W AO
 0 1 2000 P
 #0
 
-#ROOMS
+#
 #3001
 The Temple Of Mota~
 You are in the southern end of the temple hall in the Temple of Mota.
@@ -2865,7 +2865,7 @@ picturing gods, giants and peasants.
 mound upon which the temple is built and ends on the temple square below.
    Equally large steps lead UP through a small door into the ENTRANCE to MUD 
 SCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.
-~
+~ROOMS
 0 CDS 0
 D0
 At the northern end of the temple hall is a statue and a huge altar.
