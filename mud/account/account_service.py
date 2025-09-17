@@ -6,6 +6,7 @@ from mud.db.session import SessionLocal
 from mud.db.models import PlayerAccount, Character
 from mud.security.hash_utils import hash_password, verify_password
 from mud.security import bans
+from mud.security.bans import BanFlag
 
 
 def create_account(username: str, raw_password: str) -> bool:
@@ -49,7 +50,18 @@ def login_with_host(
     This wrapper checks both account and host bans and only then delegates to
     the standard login function.
     """
-    if bans.is_host_banned(host):
+    permit_host = bool(host and bans.is_host_banned(host, BanFlag.PERMIT))
+    if host and not permit_host and bans.is_host_banned(host, BanFlag.ALL):
+        return None
+    session = SessionLocal()
+    try:
+        exists = (
+            session.query(PlayerAccount).filter_by(username=username).first()
+            is not None
+        )
+    finally:
+        session.close()
+    if host and not permit_host and not exists and bans.is_host_banned(host, BanFlag.NEWBIES):
         return None
     return login(username, raw_password)
 

@@ -7,7 +7,9 @@ from random import Random
 from typing import Callable, Dict, Optional
 
 from mud.advancement import gain_exp
+from mud.math.c_compat import c_div
 from mud.models import Skill, SkillJson
+from mud.models.constants import AffectFlag
 from mud.utils import rng_mm
 from mud.models.json_io import dataclass_from_dict
 
@@ -39,6 +41,11 @@ class SkillRegistry:
         """Execute a skill and handle ROM-style success, lag, and advancement."""
 
         skill = self.get(name)
+        if int(getattr(caster, "wait", 0)) > 0:
+            messages = getattr(caster, "messages", None)
+            if isinstance(messages, list):
+                messages.append("You are still recovering.")
+            raise ValueError("still recovering")
         if caster.mana < skill.mana_cost:
             raise ValueError("not enough mana")
 
@@ -46,6 +53,8 @@ class SkillRegistry:
         if cooldowns.get(name, 0) > 0:
             raise ValueError("skill on cooldown")
 
+        lag = self._compute_skill_lag(caster, skill)
+        self._apply_wait_state(caster, lag)
         caster.mana -= skill.mana_cost
 
         learned: Optional[int]
@@ -72,6 +81,29 @@ class SkillRegistry:
 
         self._check_improve(caster, skill, name, success)
         return result
+
+    def _compute_skill_lag(self, caster, skill: Skill) -> int:
+        """Return the ROM wait-state (pulses) for a skill, adjusted by affects."""
+
+        base_lag = int(getattr(skill, "lag", 0) or 0)
+        if base_lag <= 0:
+            return 0
+
+        flags = int(getattr(caster, "affected_by", 0) or 0)
+        lag = base_lag
+        if flags & AffectFlag.HASTE:
+            lag = max(1, c_div(lag, 2))
+        if flags & AffectFlag.SLOW:
+            lag = lag * 2
+        return lag
+
+    def _apply_wait_state(self, caster, lag: int) -> None:
+        """Apply WAIT_STATE semantics mirroring ROM's UMAX logic."""
+
+        if lag <= 0 or not hasattr(caster, "wait"):
+            return
+        current = int(getattr(caster, "wait", 0) or 0)
+        caster.wait = max(current, lag)
 
     def _check_improve(self, caster, skill: Skill, name: str, success: bool) -> None:
         from mud.models.character import Character  # Local import to avoid cycle

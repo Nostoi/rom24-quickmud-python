@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: security_auth_bans -->
+<!-- LAST-PROCESSED: skills_spells -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -48,9 +48,6 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- resets: [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: give/equip resets honour `OBJ_INDEX_DATA->count`, reroll placement with `number_range(0,4)` when caps hit, reuse `LastMob`, and mark shopkeeper inventory with `ITEM_INVENTORY` exactly like ROM.
-- security_auth_bans: [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — acceptance: `is_host_banned` honours BAN_ALL/BAN_NEWBIES/BAN_PERMIT with prefix/suffix wildcards, persists per-flag data alongside BAN_PERMANENT, and `login_with_host()` rejects matching connections while allowing BAN_PERMIT hosts.
-- security_auth_bans: [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -251,9 +248,9 @@ TASKS:
   EVIDENCE: PY mud/loaders/json_loader.py:L163-L166 (JSON field support with defaults)
   RATIONALE: Future extensibility for areas with custom healing rates or ownership
   FILES: mud/loaders/json_loader.py
-- [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — acceptance: tests verify all field types parse correctly
-  RATIONALE: Ensure JSON loader handles extended room fields correctly
-  FILES: tests/test_json_room_fields.py
+- ✅ [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — done 2025-09-18
+  EVIDENCE: TEST tests/test_json_room_fields.py::test_json_loader_parses_extended_room_fields
+  EVIDENCE: PY tests/test_json_room_fields.py:L1-L69
   NOTES:
 - **CORRECTION**: System uses JSON loaders by default (use_json=True), not legacy .are parsers
 - JSON loader missing ROM defaults and ROOM_LAW flag logic - fixed 2025-09-15
@@ -478,8 +475,8 @@ RECENT COMPLETION (2025-09-16):
 
 ### skills_spells — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.60)
-KEY RISKS: RNG, flags, lag_wait
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
+KEY RISKS: RNG, flags
 TASKS:
 
 - ✅ [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks — done 2025-09-17
@@ -511,16 +508,20 @@ TASKS:
   REFERENCES: C src/skills.c:923-960; C src/magic.c:520-568; PY mud/skills/registry.py:32-79; PY mud/advancement.py:1-48; PY mud/models/character.py:58-140
   ESTIMATE: M; RISK: medium
 
-- [P1] Apply skill lag (WAIT_STATE) from skill beats — acceptance: invoking a skill sets `Character.wait` from `Skill.beats`, modified by haste/slow affects, blocks reuse until the wait expires, and surfaces the standard "You are still recovering." messaging.
-  RATIONALE: ROM applies `WAIT_STATE(ch, skill_table[sn].beats)` in skill handlers so abilities impose recovery time; the port ignores `Skill.lag` so actions are spammable.
-  FILES: mud/skills/registry.py; mud/models/character.py; mud/models/constants.py
-  TESTS: tests/test_skills.py::test_skill_use_sets_wait_state
-  REFERENCES: C src/magic.c:520-568; C src/merc.h:1944-1960; PY mud/skills/registry.py:32-79; PY mud/models/character.py:104-136; PY mud/models/constants.py:1-120
+- ✅ [P1] Apply skill lag (WAIT_STATE) from skill beats — done 2025-09-17
+  EVIDENCE: C src/magic.c:520-567 (WAIT_STATE(ch, skill_table[sn].beats) before spell resolution)
+  EVIDENCE: C src/merc.h:2116-2117 (WAIT_STATE macro applies UMAX to ch->wait pulses)
+  EVIDENCE: PY mud/skills/registry.py:L40-L106 (`use` gates on wait>0, `_compute_skill_lag` adjusts haste/slow, `_apply_wait_state` mirrors ROM UMAX semantics)
+  EVIDENCE: TEST tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready; tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
+  RATIONALE: ROM enforces recovery between skill uses via WAIT_STATE and modifies tempo with AFF_HASTE/AFF_SLOW; without lag the port allows spammable casts regardless of affects.
+  FILES: mud/skills/registry.py; tests/test_skills.py
+  TESTS: pytest -q tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready; pytest -q tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
+  REFERENCES: C src/magic.c:520-567; C src/merc.h:2116-2117; PY mud/skills/registry.py:40-106; PY tests/test_skills.py:114-158
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/act_info.c:2680-2759 enforces ACT_PRACTICE trainers, class adept caps, and INT-based gains; src/skills.c:923-960 with src/magic.c:520-568 drives `check_improve`, XP rewards, and WAIT_STATE beats.
-- PY: mud/commands/advancement.py:5-19 lets practice anywhere with flat +25 gains and ignores adept caps; mud/skills/registry.py:32-79 never mutates learned%, wait timers, or XP on use.
+- C: src/act_info.c:2680-2759 enforces trainer gating and adept caps; src/skills.c:923-960 plus src/magic.c:520-567 drive check_improve, XP rewards, and WAIT_STATE pulse costs.
+- PY: mud/commands/advancement.py:5-99 mirrors trainer/adept rules; mud/skills/registry.py:40-106 now applies wait-state pulses, haste/slow adjustments, and retains check_improve + XP gains with message parity covered by tests/test_skills.py:114-158.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: skills_spells END -->
 
@@ -634,16 +635,13 @@ TASKS:
   FILES: mud/spawning/reset_handler.py
   TESTS: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
 
-- [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: give/equip resets honour `OBJ_INDEX_DATA->count`, reroll placement with `number_range(0,4)` when caps hit, reuse `LastMob`, and mark shopkeeper inventory with `ITEM_INVENTORY` exactly like ROM.
-  RATIONALE: `reset_room` only equips objects when prototype counts are below the coerced limit or a reroll fires; the port inspects only the mob's inventory, never increments prototype counts, and omits the reroll so world caps never engage.
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py
-  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  REFERENCES: C src/db.c:1862-1950; DOC doc/area.txt:480-488; ARE area/midgaard.are:6089-6116; PY mud/spawning/reset_handler.py:149-220; PY mud/spawning/obj_spawner.py:8-16
-  ESTIMATE: M; RISK: medium
+- ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-17
+  EVIDENCE: PY mud/spawning/reset_handler.py:L217-L343
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
 
 NOTES:
 - C: src/db.c:1760-1950 still the reference for LastObj reuse and 1-in-5 rerolls across O/P/G/E cases.
-- PY: mud/spawning/reset_handler.py:68-236 now guards area.nplayer and prototype counts for O/P; G/E logic still lacks reroll limits tied to ObjIndex.count.
+- PY: mud/spawning/reset_handler.py:68-343 now rebuilds global object counts and applies G/E reroll gating tied to `OBJ_INDEX_DATA->count` while marking shopkeeper stock with ITEM_INVENTORY.
 - DOC/ARE: doc/area.txt:470-488 documents player gating, container reuse, and reroll semantics; area/midgaard.are:6085-6368 exercises donation pits, shopkeeper inventories, and nested container chains relying on these guards.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
@@ -656,23 +654,20 @@ STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55
 KEY RISKS: flags, file_formats, side_effects
 TASKS:
 
-- [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — acceptance: `is_host_banned` honours BAN_ALL/BAN_NEWBIES/BAN_PERMIT with prefix/suffix wildcards, persists per-flag data alongside BAN_PERMANENT, and `login_with_host()` rejects matching connections while allowing BAN_PERMIT hosts.
-  RATIONALE: ROM `check_ban` evaluates BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT before allowing a login; the Python port only compares literal host strings so restricted hosts and newbie-only bans bypass enforcement and BAN_PERMIT is ignored.
-  FILES: mud/security/bans.py; mud/account/account_service.py; mud/net/connection.py
-  TESTS: tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement; tests/test_account_auth.py::test_permit_hosts_allowed
-  REFERENCES: C src/ban.c:72-180; DOC doc/security.txt:13-27; ARE area/help.are:900-912; PY mud/security/bans.py:1-70; PY mud/account/account_service.py:23-52; PY mud/net/connection.py:1-76
-  ESTIMATE: M; RISK: medium
+- ✅ [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — done 2025-09-17
+  EVIDENCE: PY mud/security/bans.py:L11-L224
+  EVIDENCE: PY mud/account/account_service.py:L1-L66; PY mud/net/connection.py:L1-L68
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement
 
-- [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
-  RATIONALE: ROM writes ban.lst entries with printable flag letters and immortal levels; the port always emits `DF` with level 0 so prefix/suffix/newbie bans disappear on reboot.
-  FILES: mud/security/bans.py; data/bans.txt
-  TESTS: tests/test_account_auth.py::test_ban_persistence_includes_flags; tests/test_account_auth.py::test_ban_file_round_trip_levels
-  REFERENCES: C src/ban.c:40-110; DOC doc/new.txt:95-96; ARE area/help.are:900-912; PY mud/security/bans.py:37-82
-  ESTIMATE: M; RISK: medium
+- ✅ [P0] Persist ban flags and immortal level in ROM format — done 2025-09-18
+  EVIDENCE: PY mud/security/bans.py:L86-L199
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_persistence_includes_flags
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_file_round_trip_levels
+  EVIDENCE: DATA tests/data/ban_sample.golden.txt
 
 NOTES:
 - C: src/ban.c:40-200 persists ban entries with flag letters, immortal level, and BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT gating inside `check_ban` and `ban_site`.
-- PY: mud/security/bans.py:1-82 stores lowercase host strings with constant `DF` flags and no flag-specific enforcement or persistence; mud/account/account_service.py:23-52 and mud/net/connection.py:1-76 never honour BAN_PERMIT/BAN_NEWBIES cases.
+- PY: mud/security/bans.py:L1-L224 now models BAN flags with IntFlag, preserves prefix/suffix patterns, and persists flag letters; mud/account/account_service.py:L1-L66 and mud/net/connection.py:L1-L68 enforce BAN_NEWBIES/BAN_PERMIT semantics during login.
 - DOC/ARE: doc/security.txt:13-27 and doc/new.txt:95-96 describe ban command wildcard/permit semantics; area/help.are:900-912 documents player-facing ban usage expectations.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: security_auth_bans END -->

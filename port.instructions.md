@@ -25,6 +25,10 @@
   RATIONALE: Attack frequency and regen timing must align to parity.
   EXAMPLE: scheduler.every(PULSE_VIOLENCE)(violence_update)
 
+- RULE: Skills and spells must honor ROM WAIT_STATE pulses: set `Character.wait = max(wait, skill.lag)` using skill beats, halve lag when AFF_HASTE is set, double lag when AFF_SLOW is set, and reject attempts while wait > 0 with the recovery message.
+  RATIONALE: ROM `WAIT_STATE` enforces recovery windows and affect-driven tempo; skipping it allows spammable abilities.
+  EXAMPLE: SkillRegistry.use applies `_compute_skill_lag` and `_apply_wait_state`; tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready
+
 - RULE: File formats (areas/help/player saves) must parse/serialize byte-for-byte compatible fields and ordering.
   RATIONALE: Tiny text/layout changes break content and saves.
   EXAMPLE: save_player() writes fields in ROM order; golden read/write round-trip test passes
