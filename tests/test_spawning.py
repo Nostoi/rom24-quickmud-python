@@ -3,7 +3,9 @@ from mud.registry import room_registry, area_registry, mob_registry, obj_registr
 from mud.spawning.reset_handler import reset_tick, RESET_TICKS
 from mud.models.room_json import ResetJson
 from mud.spawning.mob_spawner import spawn_mob
+from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.templates import MobInstance
+from mud.models.constants import ITEM_INVENTORY
 
 
 def test_resets_populate_world():
@@ -178,27 +180,54 @@ def test_reset_P_skips_when_players_present():
     assert getattr(key_proto, 'count', 0) == 0
 
 
-def test_reset_GE_limits_and_shopkeeper_inventory_flag():
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
-    initialize_world('area/area.lst')
-    room = room_registry[3001]
-    area = room.area; assert area is not None
-    # Narrow to controlled resets only
-    area.resets = []
-    # Spawn a shopkeeper (3000) in room 3001
-    area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
-    # Give two copies of lantern (3031) but limit to 1
-    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
-    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     from mud.spawning.reset_handler import apply_resets
+    from mud.utils import rng_mm
+
+    def setup_shop_area():
+        room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+        initialize_world('area/area.lst')
+        room = room_registry[3001]
+        area = room.area; assert area is not None
+        area.resets = []
+        room.people = [p for p in room.people if not isinstance(p, MobInstance)]
+        room.contents.clear()
+        area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
+        area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+        area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+        return area, room
+
+    # When the global prototype count hits the limit, reroll failure skips the spawn.
+    area, room = setup_shop_area()
+    lantern_proto = obj_registry.get(3031)
+    assert lantern_proto is not None
+    existing = spawn_object(3031)
+    assert existing is not None
+    room.contents.append(existing)
+    monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: 1)
+    apply_resets(area)
+    keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
+    assert keeper is not None
+    inv = [getattr(o.prototype, 'vnum', None) for o in getattr(keeper, 'inventory', [])]
+    assert inv.count(3031) == 0
+    assert getattr(lantern_proto, 'count', 0) == 1
+
+    # A successful 1-in-5 reroll should allow the spawn despite the limit.
+    area, room = setup_shop_area()
+    lantern_proto = obj_registry.get(3031)
+    assert lantern_proto is not None
+    existing = spawn_object(3031)
+    assert existing is not None
+    room.contents.append(existing)
+    monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: 0)
     apply_resets(area)
     keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
     assert keeper is not None
     inv = [getattr(o.prototype, 'vnum', None) for o in getattr(keeper, 'inventory', [])]
     assert inv.count(3031) == 1
-    # The inventory copy should be flagged as ITEM_INVENTORY (1<<13) on prototype
     item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
-    assert getattr(item.prototype, 'extra_flags', 0) & (1 << 13)
+    assert getattr(item.prototype, 'extra_flags', 0) & int(ITEM_INVENTORY)
+    assert getattr(item, 'extra_flags', 0) & int(ITEM_INVENTORY)
 
 
 def test_reset_mob_limits():

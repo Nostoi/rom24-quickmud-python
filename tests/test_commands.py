@@ -55,6 +55,27 @@ def test_abbreviations_and_quotes(movable_char_factory):
     assert out3 == "You say, 'hello world'"
 
 
+def test_apostrophe_alias_routes_to_say():
+    initialize_world('area/area.lst')
+    speaker = create_test_character('Speaker', 3001)
+    listener = create_test_character('Listener', 3001)
+
+    out = process_command(speaker, "'hello there")
+    assert out == "You say, 'hello there'"
+    assert f"{speaker.name} says, 'hello there'" in listener.messages
+
+
+def test_punctuation_inputs_do_not_raise_value_error():
+    initialize_world('area/area.lst')
+    speaker = create_test_character('SpeakerTwo', 3001)
+
+    out = process_command(speaker, "'   spaced words")
+    assert out == "You say, 'spaced words'"
+
+    prompt = process_command(speaker, "'")
+    assert prompt == 'Say what?'
+
+
 def test_scan_lists_adjacent_characters_rom_style():
     initialize_world('area/area.lst')
     # Place player in temple, another to the north
