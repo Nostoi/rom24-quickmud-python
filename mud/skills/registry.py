@@ -6,6 +6,7 @@ from pathlib import Path
 from random import Random
 from typing import Callable, Dict, Optional
 
+from mud.advancement import gain_exp
 from mud.models import Skill, SkillJson
 from mud.utils import rng_mm
 from mud.models.json_io import dataclass_from_dict
@@ -35,13 +36,8 @@ class SkillRegistry:
         return self.skills[name]
 
     def use(self, caster, name: str, target=None):
-        """Execute a skill and handle resource costs and failure.
+        """Execute a skill and handle ROM-style success, lag, and advancement."""
 
-        Parity: If the caster has a learned percentage for this skill in
-        `caster.skills[name]` (0..100), success is determined by a ROM-style
-        percent roll (number_percent) against that learned value. If no
-        learned value is present, fall back to `failure_rate` as before.
-        """
         skill = self.get(name)
         if caster.mana < skill.mana_cost:
             raise ValueError("not enough mana")
@@ -51,34 +47,71 @@ class SkillRegistry:
             raise ValueError("skill on cooldown")
 
         caster.mana -= skill.mana_cost
-        # ROM parity: prefer per-character learned% when available
-        learned = None
+
+        learned: Optional[int]
         try:
-            learned = caster.skills.get(name)  # 0..100
+            learned_val = caster.skills.get(name)
+            learned = int(learned_val) if learned_val is not None else None
         except Exception:
-            # Characters without a `skills` mapping should not error
             learned = None
 
+        roll = rng_mm.number_percent()
+        success: bool
         if learned is not None:
-            # Success when roll <= learned (ROM practice mechanics)
-            if rng_mm.number_percent() > int(learned):
-                cooldowns[name] = skill.cooldown
-                caster.cooldowns = cooldowns
-                return False
+            success = roll <= learned
         else:
-            # Fallback: use failure_rate gate (legacy behavior)
-            # Convert float failure_rate (0.0..1.0) to percentage threshold 0..100
             failure_threshold = int(round(skill.failure_rate * 100))
-            if rng_mm.number_percent() <= failure_threshold:
-                cooldowns[name] = skill.cooldown
-                caster.cooldowns = cooldowns
-                return False
-            # Success path (roll > threshold): execute handler
+            success = roll > failure_threshold
 
-        result = self.handlers[name](caster, target)
+        result = False
+        if success:
+            result = self.handlers[name](caster, target)
+
         cooldowns[name] = skill.cooldown
         caster.cooldowns = cooldowns
+
+        self._check_improve(caster, skill, name, success)
         return result
+
+    def _check_improve(self, caster, skill: Skill, name: str, success: bool) -> None:
+        from mud.models.character import Character  # Local import to avoid cycle
+
+        if not isinstance(caster, Character):
+            return
+        if caster.is_npc:
+            return
+        learned = caster.skills.get(name)
+        if learned is None or learned <= 0:
+            return
+        adept = caster.skill_adept_cap()
+        if learned >= adept:
+            return
+        rating = skill.rating.get(caster.ch_class, 1)
+        if rating <= 0:
+            return
+
+        chance = 10 * caster.get_int_learn_rate()
+        multiplier = 1
+        chance //= max(1, multiplier * rating * 4)
+        chance += caster.level
+        if rng_mm.number_range(1, 1000) > chance:
+            return
+
+        if success:
+            improve_chance = max(5, min(95, 100 - learned))
+            if rng_mm.number_percent() < improve_chance:
+                caster.skills[name] = min(adept, learned + 1)
+                caster.messages.append(f"You have become better at {skill.name}!")
+                gain_exp(caster, 2 * rating)
+        else:
+            improve_chance = max(5, min(30, learned // 2))
+            if rng_mm.number_percent() < improve_chance:
+                increment = rng_mm.number_range(1, 3)
+                caster.skills[name] = min(adept, learned + increment)
+                caster.messages.append(
+                    f"You learn from your mistakes, and your {skill.name} skill improves."
+                )
+                gain_exp(caster, 2 * rating)
 
     def tick(self, character) -> None:
         """Reduce active cooldowns on a character by one tick."""

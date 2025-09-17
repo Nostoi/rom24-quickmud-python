@@ -2,7 +2,17 @@ from __future__ import annotations
 from typing import Dict, Iterable
 
 from mud.models.character import Character
-from mud.models.constants import Direction, Sector, AffectFlag, ItemType
+from mud.models.constants import (
+    Direction,
+    Sector,
+    AffectFlag,
+    ItemType,
+    RoomFlag,
+    EX_CLOSED,
+    EX_NOPASS,
+    CLASS_GUILD_ROOMS,
+)
+from mud.models.room import Exit, Room
 from mud.net.protocol import broadcast_room
 
 
@@ -59,6 +69,65 @@ def can_carry_n(ch: Character) -> int:
     return MAX_WEAR + 2 * d + ch.level
 
 
+def _exit_block_message(char: Character, exit: Exit) -> str | None:
+    """Return ROM-style denial message if a closed exit blocks movement."""
+
+    exit_info = int(getattr(exit, "exit_info", 0) or 0)
+    if not exit_info:
+        return None
+
+    is_closed = bool(exit_info & EX_CLOSED)
+    if not is_closed:
+        return None
+
+    has_pass_door = bool(char.affected_by & AffectFlag.PASS_DOOR)
+    exit_nopass = bool(exit_info & EX_NOPASS)
+    is_trusted = char.is_admin or char.is_immortal()
+
+    if (has_pass_door and not exit_nopass) or is_trusted:
+        return None
+
+    keyword = (exit.keyword or "door").strip() or "door"
+    return f"The {keyword} is closed."
+
+
+def _is_room_owner(char: Character, room: Room) -> bool:
+    owner = (getattr(room, "owner", None) or "").strip()
+    if not owner or not char.name:
+        return False
+    owner_names = {token.lower() for token in owner.split() if token}
+    return char.name.lower() in owner_names
+
+
+def _room_is_private(room: Room) -> bool:
+    if getattr(room, "owner", None):
+        return True
+
+    occupants = len(getattr(room, "people", []) or [])
+    flags = int(getattr(room, "room_flags", 0) or 0)
+
+    if flags & int(RoomFlag.ROOM_PRIVATE) and occupants >= 2:
+        return True
+    if flags & int(RoomFlag.ROOM_SOLITARY) and occupants >= 1:
+        return True
+    if flags & int(RoomFlag.ROOM_IMP_ONLY):
+        return True
+    return False
+
+
+def _is_foreign_guild_room(room: Room, ch_class: int) -> bool:
+    vnum = getattr(room, "vnum", 0)
+    if not vnum:
+        return False
+
+    for class_id, guild_vnums in CLASS_GUILD_ROOMS.items():
+        if class_id == ch_class:
+            continue
+        if any(vnum == guild for guild in guild_vnums if guild):
+            return True
+    return False
+
+
 def move_character(char: Character, direction: str) -> str:
     dir_key = direction.lower()
     if dir_key not in dir_map:
@@ -74,6 +143,21 @@ def move_character(char: Character, direction: str) -> str:
 
     current_room = char.room
     target_room = exit.to_room
+
+    blocked_msg = _exit_block_message(char, exit)
+    if blocked_msg:
+        return blocked_msg
+
+    trusted = char.is_admin or char.is_immortal()
+    if not trusted and not _is_room_owner(char, target_room) and _room_is_private(target_room):
+        return "That room is private right now."
+
+    if (
+        not char.is_npc
+        and not trusted
+        and _is_foreign_guild_room(target_room, char.ch_class)
+    ):
+        return "You aren't allowed in there."
 
     # --- Sector-based gating and movement costs (ROM act_move.c) ---
     from_sector = Sector(current_room.sector_type)

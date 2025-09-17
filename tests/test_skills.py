@@ -5,6 +5,7 @@ import pytest
 
 from mud.models.character import Character
 from mud.skills import SkillRegistry
+from mud.utils import rng_mm
 
 
 def load_registry() -> SkillRegistry:
@@ -49,3 +50,61 @@ def test_cast_fireball_failure() -> None:
     assert result is False
     assert caster.mana == 5  # 20 - 15 mana cost = 5 (mana consumed even on failure)
     assert called == []
+
+
+def test_skill_use_advances_learned_percent(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("fireball")
+    skill.rating[0] = 4
+
+    caster = Character(
+        mana=20,
+        ch_class=0,
+        level=10,
+        is_npc=False,
+        perm_stat=[13, 18, 13, 13, 13],
+        mod_stat=[0, 0, 0, 0, 0],
+        skills={"fireball": 50},
+    )
+    target = Character()
+
+    percent_rolls = iter([30, 1])
+    range_rolls = iter([10])
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: next(percent_rolls))
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))
+
+    result = reg.use(caster, "fireball", target)
+    assert result == 42
+    assert caster.skills["fireball"] == 51
+    assert caster.exp == 8
+    assert any("become better" in msg for msg in caster.messages)
+
+
+def test_skill_failure_grants_learning_xp(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("fireball")
+    skill.rating[0] = 4
+
+    caster = Character(
+        mana=20,
+        ch_class=0,
+        level=10,
+        is_npc=False,
+        perm_stat=[13, 18, 13, 13, 13],
+        mod_stat=[0, 0, 0, 0, 0],
+        skills={"fireball": 50},
+    )
+    target = Character()
+
+    percent_rolls = iter([100, 10])
+    range_rolls = iter([10, 2])
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: next(percent_rolls))
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))
+
+    result = reg.use(caster, "fireball", target)
+    assert result is False
+    assert caster.skills["fireball"] == 52
+    assert caster.exp == 8
+    assert any("learn from your mistakes" in msg for msg in caster.messages)
