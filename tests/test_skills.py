@@ -4,6 +4,7 @@ from random import Random
 import pytest
 
 from mud.models.character import Character
+from mud.models.constants import AffectFlag
 from mud.skills import SkillRegistry
 from mud.utils import rng_mm
 
@@ -108,3 +109,50 @@ def test_skill_failure_grants_learning_xp(monkeypatch: pytest.MonkeyPatch) -> No
     assert caster.skills["fireball"] == 52
     assert caster.exp == 8
     assert any("learn from your mistakes" in msg for msg in caster.messages)
+
+
+def test_skill_use_sets_wait_state_and_blocks_until_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    reg = load_registry()
+    skill = reg.get("acid blast")
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+    caster = Character(mana=40, is_npc=False, skills={"acid blast": 100})
+    target = Character()
+
+    result = reg.use(caster, "acid blast", target)
+    assert result == 42
+    assert caster.wait == skill.lag
+    assert caster.mana == 20
+    assert caster.cooldowns.get("acid blast", 0) == skill.cooldown
+
+    with pytest.raises(ValueError) as excinfo:
+        reg.use(caster, "acid blast", target)
+    assert "recover" in str(excinfo.value)
+    assert caster.messages[-1] == "You are still recovering."
+    assert caster.mana == 20
+
+
+def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("acid blast")
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+    haste_caster = Character(
+        mana=20,
+        is_npc=False,
+        affected_by=int(AffectFlag.HASTE),
+        skills={"acid blast": 100},
+    )
+    reg.use(haste_caster, "acid blast")
+    assert haste_caster.wait == max(1, skill.lag // 2)
+
+    slow_caster = Character(
+        mana=20,
+        is_npc=False,
+        affected_by=int(AffectFlag.SLOW),
+        skills={"acid blast": 100},
+    )
+    reg.use(slow_caster, "acid blast")
+    assert slow_caster.wait == skill.lag * 2
