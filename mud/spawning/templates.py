@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
 
+from mud.models.constants import ActFlag, Position
 
 @dataclass
 class ObjectInstance:
@@ -43,6 +44,7 @@ class MobInstance:
     # Minimal encumbrance fields to interoperate with move_character
     carry_weight: int = 0
     carry_number: int = 0
+    position: int = Position.STANDING
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> 'MobInstance':
@@ -62,3 +64,12 @@ class MobInstance:
 
     def equip(self, obj: Object, slot: int) -> None:  # stub
         self.add_to_inventory(obj)
+
+    def has_act_flag(self, flag: ActFlag) -> bool:
+        proto = getattr(self, 'prototype', None)
+        if proto is None:
+            return False
+        checker = getattr(proto, 'has_act_flag', None)
+        if callable(checker):
+            return bool(checker(flag))
+        return False

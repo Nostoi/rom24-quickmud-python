@@ -17,10 +17,12 @@ from .constants import (
     Direction,
     Sector,
     Position,
+    Stat,
     WearLocation,
     Sex,
     Size,
     ItemType,
+    ActFlag,
 )
 
 from .area_json import AreaJson, VnumRangeJson
@@ -99,8 +101,10 @@ __all__ = [
     "Direction",
     "Sector",
     "Position",
+    "Stat",
     "WearLocation",
     "Sex",
     "Size",
     "ItemType",
+    "ActFlag",
 ]
