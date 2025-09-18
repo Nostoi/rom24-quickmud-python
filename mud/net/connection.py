@@ -9,6 +9,7 @@ from mud.account import (
     list_characters,
     create_character,
 )
+from mud.security import bans
 from mud.commands import process_command
 from mud.net.session import Session, SESSIONS
 from mud.net.protocol import send_to_char
@@ -21,6 +22,10 @@ async def handle_connection(
     host_for_ban = None
     if isinstance(addr, tuple) and addr:
         host_for_ban = addr[0]
+    if host_for_ban and bans.is_host_banned(host_for_ban, bans.BanFlag.ALL):
+        writer.write(b"Your site has been banned from this mud.\r\n")
+        await writer.drain()
+        return
     session = None
     char = None
     account = None
@@ -47,6 +52,10 @@ async def handle_connection(
             # Enforce site/account bans at login time
             account = login_with_host(username, password, host_for_ban)
             if not account:
+                if host_for_ban and bans.is_host_banned(host_for_ban, bans.BanFlag.NEWBIES):
+                    writer.write(b"New players are not allowed from your site.\r\n")
+                    await writer.drain()
+                    return
                 if create_account(username, password):
                     account = login_with_host(username, password, host_for_ban)
                 else:

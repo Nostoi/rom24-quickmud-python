@@ -8,12 +8,14 @@ from mud.account.account_service import (
 )
 from mud.security.hash_utils import verify_password
 from mud.security import bans
+from mud.security.bans import BanFlag
 from mud.account.account_service import login_with_host
 
 
 def setup_module(module):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    bans.clear_all_bans()
 
 
 def test_account_create_and_login():
@@ -50,6 +52,7 @@ def test_banned_account_cannot_login():
 def test_banned_host_cannot_login():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    bans.clear_all_bans()
 
     assert create_account("carol", "pw")
     bans.add_banned_host("203.0.113.9")
@@ -57,6 +60,58 @@ def test_banned_host_cannot_login():
     assert login_with_host("carol", "pw", "203.0.113.9") is None
     # Non-banned host should allow login
     assert login_with_host("carol", "pw", "198.51.100.20") is not None
+
+
+def test_ban_prefix_suffix_types():
+    bans.clear_all_bans()
+    bans.add_banned_host("*example.com")
+    bans.add_banned_host("corp.*")
+    bans.add_banned_host("*evil*")
+
+    assert bans.is_host_banned("malicious.example.com", BanFlag.ALL)
+    assert bans.is_host_banned("corp.server", BanFlag.ALL)
+    assert bans.is_host_banned("very-evil-site.net", BanFlag.ALL)
+    assert not bans.is_host_banned("neutral.org", BanFlag.ALL)
+    assert not bans.is_host_banned("angelic.net", BanFlag.ALL)
+
+
+def test_newbie_permit_enforcement():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+
+    bans.add_banned_host("rookie.example", flags=BanFlag.NEWBIES)
+    assert bans.is_host_banned("rookie.example", BanFlag.NEWBIES)
+
+    # New account should be rejected by login_with_host
+    assert login_with_host("rookie", "pw", "rookie.example") is None
+
+    # Existing account may log in despite BAN_NEWBIES
+    assert create_account("rookie", "pw")
+    assert login_with_host("rookie", "pw", "rookie.example") is not None
+
+
+def test_permit_hosts_allowed():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+
+    bans.add_banned_host("permit.example", flags=BanFlag.PERMIT)
+    assert bans.is_host_banned("permit.example", BanFlag.PERMIT)
+
+    assert create_account("traveler", "pw")
+    # Without permit flag the host is rejected
+    assert login_with_host("traveler", "pw", "permit.example") is None
+
+    assert create_account("warden", "pw")
+    session = SessionLocal()
+    account = session.query(PlayerAccount).filter_by(username="warden").first()
+    assert account is not None
+    account.is_admin = True
+    session.commit()
+    session.close()
+
+    assert login_with_host("warden", "pw", "permit.example") is not None
 
 
 def test_ban_persistence_roundtrip(tmp_path):

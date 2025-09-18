@@ -5,6 +5,8 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from .area import Area
 
+from mud.models.constants import ActFlag, convert_flags_from_letters
+
 @dataclass
 class MobProgram:
     """Representation of MPROG_LIST"""
@@ -80,6 +82,32 @@ class MobIndex:
 
     def __repr__(self) -> str:
         return f"<MobIndex vnum={self.vnum} name={self.short_descr!r}>"
+
+    def get_act_flags(self) -> ActFlag:
+        """Return act flags as an IntFlag, converting from ROM letters on demand."""
+
+        raw = getattr(self, "_act_cache", None)
+        if isinstance(raw, ActFlag):
+            return raw
+        if isinstance(self.act_flags, ActFlag):
+            self._act_cache = self.act_flags
+            return self.act_flags
+        if isinstance(self.act_flags, int):
+            flags = ActFlag(self.act_flags)
+            self._act_cache = flags
+            return flags
+        if isinstance(self.act_flags, str):
+            flags = convert_flags_from_letters(self.act_flags, ActFlag)
+            # Cache both numeric and enum forms for future lookups
+            self.act = int(flags)
+            self._act_cache = flags
+            self.act_flags = flags
+            return flags
+        self._act_cache = ActFlag(0)
+        return ActFlag(0)
+
+    def has_act_flag(self, flag: ActFlag) -> bool:
+        return bool(self.get_act_flags() & flag)
 
 
 mob_registry: dict[int, MobIndex] = {}

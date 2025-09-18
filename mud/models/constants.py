@@ -43,6 +43,16 @@ class Position(IntEnum):
     STANDING = 8
 
 
+class Stat(IntEnum):
+    """Primary character statistics (STAT_* indexes in merc.h)."""
+
+    STR = 0
+    INT = 1
+    WIS = 2
+    DEX = 3
+    CON = 4
+
+
 # --- Armor Class indices (merc.h) ---
 # AC is better when more negative; indices map to damage types.
 AC_PIERCE = 0
@@ -101,6 +111,14 @@ MAX_LEVEL = 60
 LEVEL_HERO = MAX_LEVEL - 9  # 51
 LEVEL_IMMORTAL = MAX_LEVEL - 8  # 52
 
+# Class guild entry rooms (ROM const.c: class_table)
+CLASS_GUILD_ROOMS: dict[int, tuple[int, int]] = {
+    0: (3018, 9618),  # mage
+    1: (3003, 9619),  # cleric
+    2: (3028, 9639),  # thief
+    3: (3022, 9633),  # warrior
+}
+
 
 class ItemType(IntEnum):
     """Common object types"""
@@ -134,6 +152,33 @@ class ItemType(IntEnum):
     GEM = 32
     JEWELRY = 33
     JUKEBOX = 34
+
+
+class ActFlag(IntFlag):
+    """NPC act flags from ROM merc.h (letters A..Z, aa..dd)."""
+
+    IS_NPC = 1 << 0  # (A)
+    SENTINEL = 1 << 1  # (B)
+    SCAVENGER = 1 << 2  # (C)
+    AGGRESSIVE = 1 << 5  # (F)
+    STAY_AREA = 1 << 6  # (G)
+    WIMPY = 1 << 7  # (H)
+    PET = 1 << 8  # (I)
+    TRAIN = 1 << 9  # (J)
+    PRACTICE = 1 << 10  # (K)
+    UNDEAD = 1 << 14  # (O)
+    CLERIC = 1 << 16  # (Q)
+    MAGE = 1 << 17  # (R)
+    THIEF = 1 << 18  # (S)
+    WARRIOR = 1 << 19  # (T)
+    NOALIGN = 1 << 20  # (U)
+    NOPURGE = 1 << 21  # (V)
+    OUTDOORS = 1 << 22  # (W)
+    INDOORS = 1 << 24  # (Y)
+    IS_HEALER = 1 << 26  # (aa)
+    GAIN = 1 << 27  # (bb)
+    UPDATE_ALWAYS = 1 << 28  # (cc)
+    IS_CHANGER = 1 << 29  # (dd)
 
 
 class RoomFlag(IntFlag):
@@ -461,6 +506,14 @@ ITEM_NOUNCURSE = ExtraFlag.NOUNCURSE
 # Bits map to letters A..Z; EX_ISDOOR=A (1<<0), EX_CLOSED=B (1<<1)
 EX_ISDOOR = 1 << 0
 EX_CLOSED = 1 << 1
+EX_LOCKED = 1 << 2
+EX_PICKPROOF = 1 << 5
+EX_NOPASS = 1 << 6
+EX_EASY = 1 << 7
+EX_HARD = 1 << 8
+EX_INFURIATING = 1 << 9
+EX_NOCLOSE = 1 << 10
+EX_NOLOCK = 1 << 11
 
 
 def convert_flags_from_letters(flag_letters: str, flag_enum_class) -> int:

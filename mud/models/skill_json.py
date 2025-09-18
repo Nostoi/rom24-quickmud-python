@@ -18,3 +18,4 @@ class SkillJson(JsonDataclass):
     cooldown: int = 0
     failure_rate: float = 0.0
     messages: dict[str, str] = field(default_factory=dict)
+    rating: dict[str, int] = field(default_factory=dict)

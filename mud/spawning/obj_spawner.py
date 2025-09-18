@@ -15,4 +15,6 @@ def spawn_object(vnum: int) -> Optional[Object]:
         inst.value = list(getattr(proto, 'value', [0, 0, 0, 0, 0]))
     except Exception:
         inst.value = [0, 0, 0, 0, 0]
+    if hasattr(proto, 'count'):
+        proto.count = getattr(proto, 'count', 0) + 1
     return inst

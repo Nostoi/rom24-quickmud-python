@@ -49,9 +49,19 @@ def login_with_host(
     This wrapper checks both account and host bans and only then delegates to
     the standard login function.
     """
-    if bans.is_host_banned(host):
+    if bans.is_host_banned(host, bans.BanFlag.ALL):
         return None
-    return login(username, raw_password)
+    session = SessionLocal()
+    existing = session.query(PlayerAccount).filter_by(username=username).first()
+    session.close()
+    if existing is None and bans.is_host_banned(host, bans.BanFlag.NEWBIES):
+        return None
+    account = login(username, raw_password)
+    if not account:
+        return None
+    if bans.is_host_banned(host, bans.BanFlag.PERMIT) and not getattr(account, "is_admin", False):
+        return None
+    return account
 
 
 def list_characters(account: PlayerAccount) -> List[str]:

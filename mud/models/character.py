@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, TYPE_CHECKING
 
-from mud.models.constants import AffectFlag, Position
+from mud.models.constants import AffectFlag, Position, Stat
 
 if TYPE_CHECKING:
     from mud.models.object import Object
@@ -124,6 +124,55 @@ class Character:
         effective_level = self.trust if self.trust > 0 else self.level
         return effective_level >= LEVEL_IMMORTAL
 
+    def is_awake(self) -> bool:
+        """Return True if the character is awake (not sleeping or worse)."""
+
+        return self.position > Position.SLEEPING
+
+    @staticmethod
+    def _stat_from_list(values: List[int], stat: int) -> Optional[int]:
+        if not values:
+            return None
+        idx = int(stat)
+        if idx < 0 or idx >= len(values):
+            return None
+        val = values[idx]
+        if val is None:
+            return None
+        return int(val)
+
+    def get_curr_stat(self, stat: int | Stat) -> Optional[int]:
+        """Compute current stat (perm + mod) clamped to ROM 0..25."""
+
+        idx = int(stat)
+        base_val = self._stat_from_list(self.perm_stat, idx)
+        mod_val = self._stat_from_list(self.mod_stat, idx)
+        if base_val is None and mod_val is None:
+            return None
+        total = (base_val or 0) + (mod_val or 0)
+        return max(0, min(25, total))
+
+    def get_int_learn_rate(self) -> int:
+        """Return int_app.learn value for the character's current INT."""
+
+        stat_val = self.get_curr_stat(Stat.INT)
+        if stat_val is None:
+            return _DEFAULT_INT_LEARN
+        idx = max(0, min(stat_val, len(_INT_LEARN_RATES) - 1))
+        return _INT_LEARN_RATES[idx]
+
+    def skill_adept_cap(self) -> int:
+        """Return the maximum practiced percentage allowed for this character."""
+
+        if self.is_npc:
+            return 100
+        return _CLASS_SKILL_ADEPT.get(self.ch_class, _CLASS_SKILL_ADEPT_DEFAULT)
+
+    def send_to_char(self, message: str) -> None:
+        """Append a message to the character's buffer (used in tests)."""
+
+        self.messages.append(message)
+
     def add_object(self, obj: "Object") -> None:
         self.inventory.append(obj)
         self.carry_number += 1
@@ -220,3 +269,43 @@ def to_orm(character: Character, player_id: int) -> "DBCharacter":
         room_vnum=character.room.vnum if character.room else None,
         player_id=player_id,
     )
+_INT_LEARN_RATES: list[int] = [
+    3,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15,
+    17,
+    19,
+    22,
+    25,
+    28,
+    31,
+    34,
+    37,
+    40,
+    44,
+    49,
+    55,
+    60,
+    70,
+    80,
+    85,
+]
+
+_DEFAULT_INT_LEARN = _INT_LEARN_RATES[13]  # INT 13 is baseline in ROM.
+
+_CLASS_SKILL_ADEPT: dict[int, int] = {
+    0: 75,  # mage
+    1: 75,  # cleric
+    2: 75,  # thief
+    3: 75,  # warrior
+}
+
+_CLASS_SKILL_ADEPT_DEFAULT = 75
+

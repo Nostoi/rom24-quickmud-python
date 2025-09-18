@@ -128,7 +128,57 @@ def test_reset_P_uses_last_container_instance_when_multiple():
     assert counts == [1, 1]
 
 
-def test_reset_GE_limits_and_shopkeeper_inventory_flag():
+def test_reset_P_limit_enforced():
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    office = room_registry[3142]
+    area = office.area; assert area is not None
+    area.resets = []
+    office.contents.clear()
+
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
+
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+
+    desk = next((o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130), None)
+    assert desk is not None
+    contents = [getattr(getattr(it, 'prototype', None), 'vnum', None) for it in getattr(desk, 'contained_items', [])]
+    assert contents.count(3123) == 1
+    assert getattr(obj_registry.get(3123), 'count', 0) == 1
+
+
+def test_reset_P_skips_when_players_present():
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    office = room_registry[3142]
+    area = office.area; assert area is not None
+    area.resets = []
+    office.contents.clear()
+
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=2, arg3=3130, arg4=1))
+
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+
+    desk = next((o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130), None)
+    assert desk is not None
+    desk.contained_items.clear()
+    key_proto = obj_registry.get(3123)
+    if key_proto is not None and hasattr(key_proto, 'count'):
+        key_proto.count = 0
+
+    area.nplayer = 1
+    apply_resets(area)
+
+    assert not any(getattr(getattr(it, 'prototype', None), 'vnum', None) == 3123 for it in getattr(desk, 'contained_items', []))
+    assert getattr(key_proto, 'count', 0) == 0
+
+
+def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
     initialize_world('area/area.lst')
     room = room_registry[3001]
@@ -140,6 +190,16 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     # Give two copies of lantern (3031) but limit to 1
     area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
     area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+    from mud.utils import rng_mm
+
+    original_number_range = rng_mm.number_range
+
+    def guard_number_range(start: int, end: int) -> int:
+        if (start, end) == (0, 4):
+            return 1
+        return original_number_range(start, end)
+
+    monkeypatch.setattr(rng_mm, 'number_range', guard_number_range)
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
@@ -149,6 +209,37 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag():
     # The inventory copy should be flagged as ITEM_INVENTORY (1<<13) on prototype
     item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
     assert getattr(item.prototype, 'extra_flags', 0) & (1 << 13)
+
+
+def test_reset_G_reroll_allows_extra_copy(monkeypatch):
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    room = room_registry[3001]
+    area = room.area; assert area is not None
+    area.resets = []
+    area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
+    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
+    from mud.utils import rng_mm
+
+    original_number_range = rng_mm.number_range
+    reroll_calls: list[tuple[int, int]] = []
+
+    def reroll_number_range(start: int, end: int) -> int:
+        if (start, end) == (0, 4):
+            reroll_calls.append((start, end))
+            return 0
+        return original_number_range(start, end)
+
+    monkeypatch.setattr(rng_mm, 'number_range', reroll_number_range)
+    from mud.spawning.reset_handler import apply_resets
+
+    apply_resets(area)
+    assert reroll_calls == [(0, 4)]
+    keeper = next((p for p in room.people if getattr(getattr(p, 'prototype', None), 'vnum', None) == 3000), None)
+    assert keeper is not None
+    inv = [getattr(o.prototype, 'vnum', None) for o in getattr(keeper, 'inventory', [])]
+    assert inv.count(3031) == 2
 
 
 def test_reset_mob_limits():
@@ -194,3 +285,39 @@ def test_reset_mob_limits():
         if isinstance(mob, MobInstance)
     ]
     assert janitor_vnums.count(3003) == 1
+
+
+def test_resets_room_duplication_and_player_presence():
+    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    initialize_world('area/area.lst')
+    office = room_registry[3142]
+    area = office.area; assert area is not None
+    area.resets = []
+    office.contents.clear()
+
+    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
+
+    from mud.spawning.reset_handler import apply_resets
+    apply_resets(area)
+
+    def desk_count() -> int:
+        return sum(1 for o in office.contents if getattr(getattr(o, 'prototype', None), 'vnum', None) == 3130)
+
+    assert desk_count() == 1
+
+    apply_resets(area)
+    assert desk_count() == 1
+
+    desk = next((o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130), None)
+    assert desk is not None
+    office.contents.remove(desk)
+    if hasattr(desk.prototype, 'count'):
+        desk.prototype.count = max(0, desk.prototype.count - 1)
+
+    area.nplayer = 1
+    apply_resets(area)
+    assert desk_count() == 0
+
+    area.nplayer = 0
+    apply_resets(area)
+    assert desk_count() == 1

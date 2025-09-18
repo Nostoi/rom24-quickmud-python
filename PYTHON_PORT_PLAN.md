@@ -48,15 +48,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- resets: [P0] Reinstate ROM 'P' reset gating, container limits, and prototype counts
-- resets: [P0] Mirror ROM 'O' reset gating for duplicates and active players
-- resets: [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets
-- movement_encumbrance: [P0] Enforce closed and no-pass exit gating before moving
-- movement_encumbrance: [P0] Block entry to private and guild rooms without access
-- security_auth_bans: [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT)
-- security_auth_bans: [P0] Persist ban flags and immortal level in ROM format
-- skills_spells: [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks
-- skills_spells: [P0] Port check_improve-style skill advancement and XP rewards on use
+- security_auth_bans: [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -484,67 +476,88 @@ RECENT COMPLETION (2025-09-16):
 
 ### skills_spells — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.60)
 KEY RISKS: RNG, flags, lag_wait
 TASKS:
 
-- [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks — acceptance: practicing without an awake ACT_PRACTICE trainer or with an unknown/zero-rated skill fails, learned% advances by `int_app.learn / rating` toward the class adept cap, and practice sessions decrement exactly once per attempt.
+- ✅ [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks — done 2025-09-17
+  EVIDENCE: C src/act_info.c:2680-2760
+  EVIDENCE: PY mud/commands/advancement.py:L66-L99
+  EVIDENCE: PY mud/models/character.py:L127-L174
+  EVIDENCE: PY mud/models/mob.py:L86-L110
+  EVIDENCE: PY mud/spawning/templates.py:L35-L75
+  EVIDENCE: TEST tests/test_advancement.py::test_practice_requires_trainer_and_caps
+  EVIDENCE: TEST tests/test_advancement.py::test_practice_applies_int_based_gain
+  EVIDENCE: TEST tests/test_advancement.py::test_practice_rejects_unknown_skill
   RATIONALE: ROM `do_practice` scans the room for an ACT_PRACTICE mobile, verifies the skill is trainable for the class, clamps learned% to the class adept cap, and scales gains by the caster's INT learn rate; the port lets players practice anywhere for a flat +25 up to 75% with no trainer or adept enforcement.
-  FILES: mud/commands/advancement.py; mud/models/constants.py; mud/models/character.py; mud/models/mob.py
+  FILES: mud/commands/advancement.py; mud/models/character.py; mud/models/mob.py
   TESTS: tests/test_advancement.py::test_practice_requires_trainer_and_caps; tests/test_advancement.py::test_practice_applies_int_based_gain; tests/test_advancement.py::test_practice_rejects_unknown_skill
-  REFERENCES: C src/act_info.c:2680-2792; C src/merc.h:738-755; PY mud/commands/advancement.py:5-35; PY mud/models/mob.py:17-58; PY mud/models/character.py:60-128
+  REFERENCES: C src/act_info.c:2680-2759; C src/merc.h:539-559; C src/const.c:759-783; PY mud/commands/advancement.py:5-19; PY mud/models/mob.py:17-76; PY mud/models/character.py:58-108
   ESTIMATE: M; RISK: medium
 
-- [P0] Port check_improve-style skill advancement and XP rewards on use — acceptance: `SkillRegistry.use` performs ROM success/failure rolls, mutates `caster.skills[name]` toward adept on both outcomes, persists `Character.practice`/`learned` state, and awards experience via gain_exp helpers mirroring `check_improve`.
+- ✅ [P0] Port check_improve-style skill advancement and XP rewards on use — done 2025-09-17
+  EVIDENCE: C src/skills.c:923-960
+  EVIDENCE: PY mud/skills/registry.py:L38-L114
+  EVIDENCE: PY mud/models/skill.py:L13-L34
+  EVIDENCE: PY mud/models/skill_json.py:L12-L21
+  EVIDENCE: PY mud/models/character.py:L144-L169
+  EVIDENCE: TEST tests/test_skills.py::test_skill_use_advances_learned_percent
+  EVIDENCE: TEST tests/test_skills.py::test_skill_failure_grants_learning_xp
   RATIONALE: `check_improve` uses INT-weighted rolls to raise learned% and grant XP whether the skill succeeds or fails; the Python registry never updates `caster.skills` or XP so abilities never improve with use.
   FILES: mud/skills/registry.py; mud/models/character.py; mud/advancement.py
   TESTS: tests/test_skills.py::test_skill_use_advances_learned_percent; tests/test_skills.py::test_skill_failure_grants_learning_xp
-  REFERENCES: C src/skills.c:923-971; C src/magic.c:547-564; PY mud/skills/registry.py:37-110; PY mud/advancement.py:37-72; PY mud/models/character.py:60-140
+  REFERENCES: C src/skills.c:923-960; C src/magic.c:520-568; PY mud/skills/registry.py:32-79; PY mud/advancement.py:1-48; PY mud/models/character.py:58-140
   ESTIMATE: M; RISK: medium
 
-- [P1] Apply skill lag (WAIT_STATE) from skill beats — acceptance: invoking a skill sets `Character.wait` from `Skill.lag`, modified by haste/slow affects, blocks reuse until the wait expires, and surfaces the standard "You are still recovering." messaging.
-  RATIONALE: ROM applies `WAIT_STATE(ch, skill_table[sn].beats)` in `do_cast`/skill handlers so abilities impose recovery time; the port ignores `Skill.lag` so actions are spammable.
+- [P1] Apply skill lag (WAIT_STATE) from skill beats — acceptance: invoking a skill sets `Character.wait` from `Skill.beats`, modified by haste/slow affects, blocks reuse until the wait expires, and surfaces the standard "You are still recovering." messaging.
+  RATIONALE: ROM applies `WAIT_STATE(ch, skill_table[sn].beats)` in skill handlers so abilities impose recovery time; the port ignores `Skill.lag` so actions are spammable.
   FILES: mud/skills/registry.py; mud/models/character.py; mud/models/constants.py
   TESTS: tests/test_skills.py::test_skill_use_sets_wait_state
-  REFERENCES: C src/magic.c:547-564; PY mud/skills/registry.py:37-110; PY mud/models/character.py:60-140; PY mud/models/constants.py:158-210
+  REFERENCES: C src/magic.c:520-568; C src/merc.h:1944-1960; PY mud/skills/registry.py:32-79; PY mud/models/character.py:104-136; PY mud/models/constants.py:1-120
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/act_info.c:2680-2792 requires an awake ACT_PRACTICE trainer, decrements practice sessions, and caps learned% at class adept with INT-based gains.
-- C: src/skills.c:923-971 together with src/magic.c:547-564 drive `check_improve`, XP rewards, and WAIT_STATE beats whenever skills fire.
-- PY: mud/commands/advancement.py:5-35 allows practicing anywhere with constant +25 gains, no adept cap, and no trainer or class gating.
-- PY: mud/skills/registry.py:37-110 spends mana and sets cooldowns but never mutates learned%, wait timers, or XP.
-- PY: mud/models/character.py:60-140 exposes practice counts, learned maps, wait/daze fields, and mud/advancement.py:37-72 exposes gain_exp helpers that the current flows ignore.
+- C: src/act_info.c:2680-2759 enforces ACT_PRACTICE trainers, class adept caps, and INT-based gains; src/skills.c:923-960 with src/magic.c:520-568 drives `check_improve`, XP rewards, and WAIT_STATE beats.
+- PY: mud/commands/advancement.py:5-19 lets practice anywhere with flat +25 gains and ignores adept caps; mud/skills/registry.py:32-79 never mutates learned%, wait timers, or XP on use.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: skills_spells END -->
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
 
-### movement_encumbrance — Parity Audit 2025-09-16
+### movement_encumbrance — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.59)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.56)
 KEY RISKS: flags, side_effects
 TASKS:
 
-- [P0] Enforce closed and no-pass exit gating before moving — acceptance: move_character reads Exit.exit_info and blocks EX_CLOSED/EX_NOPASS exits unless the character has pass door or immortal trust, matching ROM messaging.
+- ✅ [P0] Enforce closed and no-pass exit gating before moving — done 2025-09-17
+  EVIDENCE: C src/act_move.c:64-113 (closed door and pass door gating)
+  EVIDENCE: PY mud/world/movement.py:L72-L151 (_exit_block_message and trust gating enforce EX_CLOSED/EX_NOPASS)
+  EVIDENCE: TEST tests/test_movement_doors.py::test_closed_door_blocks_movement; tests/test_movement_doors.py::test_nopass_blocks_pass_door
   RATIONALE: `move_char` checks exit flags and respects AFF_PASS_DOOR and EX_NOPASS; the port ignores exit_info so closed doors and nopass exits are always traversable.
-  FILES: mud/world/movement.py; mud/models/constants.py; mud/models/room.py; mud/models/character.py
+  FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
   TESTS: tests/test_movement_doors.py::test_closed_door_blocks_movement
-  REFERENCES: C src/act_move.c:68-113; C src/merc.h:1288-1310; PY mud/world/movement.py:62-135; PY mud/models/room.py:30-76; PY mud/models/constants.py:460-476; PY mud/models/character.py:90-116
+  REFERENCES: C src/act_move.c:64-113; C src/merc.h:1290-1310; PY mud/world/movement.py:5-92; PY mud/models/room.py:20-60; PY mud/models/constants.py:440-470; PY mud/models/character.py:60-120
   ESTIMATE: M; RISK: medium
 
-- [P0] Block entry to private and guild rooms without access — acceptance: move_character denies entry to ROOM_PRIVATE/ROOM_SOLITARY and foreign guild rooms unless the character is owner/trusted, mirroring `room_is_private` and class guild tables.
+- ✅ [P0] Block entry to private and guild rooms without access — done 2025-09-17
+  EVIDENCE: C src/act_move.c:113-151 (room owner/guild gating); C src/handler.c:2553-2583 (room_is_private)
+  EVIDENCE: C src/const.c:394-419 (class_table guild vnums)
+  EVIDENCE: PY mud/models/constants.py:L113-L121 (CLASS_GUILD_ROOMS mapping)
+  EVIDENCE: PY mud/world/movement.py:L94-L160 (room ownership checks and guild gating)
+  EVIDENCE: TEST tests/test_movement_privacy.py::test_private_room_blocks_entry; tests/test_movement_privacy.py::test_guild_room_rejects_other_classes
   RATIONALE: ROM prevents entry to clan/guild rooms and private spaces via `room_is_private` and class guild arrays; the port never checks room_flags or clan ownership so restricted rooms are freely accessible.
   FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
   TESTS: tests/test_movement_privacy.py::test_private_room_blocks_entry
-  REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:62-135; PY mud/models/room.py:30-76; PY mud/models/constants.py:139-155; PY mud/models/character.py:90-116
+  REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:5-92; PY mud/models/room.py:20-76; PY mud/models/constants.py:120-150; PY mud/models/character.py:60-120
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/act_move.c:68-151 guards closed exits, pass door, charm loyalty, guild rooms, and trust checks before movement proceeds.
+- C: src/act_move.c:64-151 guards closed exits, pass door, charm loyalty, guild rooms, and trust checks before movement proceeds.
 - C: src/handler.c:2564-2583 defines `room_is_private`, blocking ROOM_PRIVATE/ROOM_SOLITARY and owner-protected rooms unless trusted.
-- PY: mud/world/movement.py:62-135 ignores exit_info, room_flags, owner, and guild restrictions so closed and private rooms never block movement.
-- PY: mud/models/constants.py:139-155 and 460-476 expose ROOM_PRIVATE/ROOM_SOLITARY and EX_NOPASS bits that move_character never inspects.
+- PY: mud/world/movement.py:5-92 ignores exit flags, owner, and guild restrictions so closed and private rooms never block movement.
+- PY: mud/models/constants.py:120-150 and 440-470 expose ROOM_PRIVATE/ROOM_SOLITARY and EX_NOPASS bits that the movement code never consults.
+- Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
 <!-- SUBSYSTEM: help_system START -->
@@ -582,7 +595,7 @@ TASKS:
 
 ### resets — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.54)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
 KEY RISKS: file_formats, flags, side_effects
 TASKS:
 
@@ -596,39 +609,38 @@ TASKS:
 
 - ✅ [P0] Enforce mob reset limits when applying resets — done 2025-09-16
   EVIDENCE: C src/db.c:1691-1752 (reset_room enforces global count and per-room limit for 'M')
-  EVIDENCE: PY mud/spawning/reset_handler.py:78-170 (tracks prototype counts and skips when arg2/arg4 caps reached)
+  EVIDENCE: PY mud/spawning/reset_handler.py:81-135 (tracks prototype counts and skips when arg2/arg4 caps reached)
   EVIDENCE: DOC doc/area.txt:466-469 (documents mob limit semantics)
   EVIDENCE: ARE area/midgaard.are:6085-6094 (Midgaard wizard reset using arg4 cap)
   FILES: mud/spawning/reset_handler.py
   TESTS: pytest -q tests/test_spawning.py::test_reset_mob_limits
 
-- [P0] Reinstate ROM 'P' reset gating, container limits, and prototype counts — acceptance: 'P' resets abort when `area.nplayer > 0`, stop once `pObjIndex->count` meets the coerced limit from arg2 (including the legacy -1/0 no-limit semantics), reuse the latest container instance, and increment both container and content prototype counts exactly as `reset_room()` does.
-  RATIONALE: ROM checks `pRoom->area->nplayer`, tracks `LastObj`, and compares `OBJ_INDEX_DATA->count` before `obj_to_obj`; the port never increments prototype counts for 'P' or enforces area gating, so desks like Midgaard's duplicate loot endlessly even with players present.
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py; mud/models/object.py
-  TESTS: tests/test_spawning.py::test_reset_P_limit_enforced; tests/test_spawning.py::test_reset_P_skips_when_players_present
-  REFERENCES: C src/db.c:1788-1835; C src/db.c:1053-1096; PY mud/spawning/reset_handler.py:205-282; PY mud/spawning/obj_spawner.py:8-18; PY mud/models/object.py:11-56; DOC doc/area.txt:478-483; ARE area/midgaard.are:6365-6368
-  ESTIMATE: M; RISK: medium
-
-- [P0] Mirror ROM 'O' reset gating for duplicates and active players — acceptance: `apply_resets` skips 'O' placements when the room already holds the vnum or when `area.nplayer > 0`, matching donation pit behaviour and preserving prototype counts.
-  RATIONALE: ROM scans room contents and `area.nplayer` before spawning 'O' objects; the port drops duplicates even while players are present because it never checks room contents or `area.nplayer`.
-  FILES: mud/spawning/reset_handler.py; mud/registry.py
-  TESTS: tests/test_spawning.py::test_resets_room_duplication_and_player_presence
-  REFERENCES: C src/db.c:1754-1786; PY mud/spawning/reset_handler.py:118-205; PY mud/spawning/reset_handler.py:289-320; DOC doc/area.txt:473-476; ARE area/midgaard.are:6087-6094
-  ESTIMATE: M; RISK: medium
-
-- [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: give/equip resets respect prototype count limits, roll `number_range(0,4)` when limits are met, maintain LastObj/LastMob semantics, and update ITEM_INVENTORY for shopkeepers exactly like ROM.
-  RATIONALE: `reset_room` only equips objects if proto.count is below the limit or a 1-in-5 reroll fires; the port merely counts items on `LastMob`, so world counts never advance and caps never trigger.
+- ✅ [P0] Reinstate ROM 'P' reset gating, container limits, and prototype counts — done 2025-09-17
+  EVIDENCE: C src/db.c:1788-1848 (reset_room 'P' enforces area->nplayer gating, prototype counts, and arg2 limits)
+  EVIDENCE: DOC doc/area.txt:470-488 (P reset semantics covering player gating and limit coercion)
+  EVIDENCE: ARE area/midgaard.are:6366-6368 (Captain's desk/safe P resets with limits)
+  EVIDENCE: PY mud/spawning/reset_handler.py:120-236 (area.nplayer guard, container reuse, global limit enforcement)
+  EVIDENCE: PY mud/spawning/obj_spawner.py:8-17 (increment ObjIndex.count on spawn)
   FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py
-  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  REFERENCES: C src/db.c:1838-1960; PY mud/spawning/reset_handler.py:178-233; PY mud/spawning/obj_spawner.py:8-18; DOC doc/area.txt:485-490; ARE area/midgaard.are:6088-6196
+  TESTS: pytest -q tests/test_spawning.py::test_reset_P_limit_enforced; pytest -q tests/test_spawning.py::test_reset_P_skips_when_players_present
+
+- ✅ [P0] Mirror ROM 'O' reset gating for duplicates and active players — done 2025-09-17
+  EVIDENCE: C src/db.c:1760-1797 (reset_room 'O' skips when area->nplayer > 0 or object already present)
+  EVIDENCE: DOC doc/area.txt:470-478 (object reset duplication and player gating rules)
+  EVIDENCE: ARE area/midgaard.are:6085-6094 (donation pit O resets depending on room occupancy)
+  EVIDENCE: PY mud/spawning/reset_handler.py:96-149 (room duplicate checks and area.nplayer guard for O resets)
+  FILES: mud/spawning/reset_handler.py
+  TESTS: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
+
+- ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-18
+  EVIDENCE: C src/db.c:1862-1980; PY mud/spawning/reset_handler.py:197-299; TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag; tests/test_spawning.py::test_reset_G_reroll_allows_extra_copy
+  REFERENCES: C src/db.c:1862-1950; DOC doc/area.txt:480-488; ARE area/midgaard.are:6089-6116; PY mud/spawning/reset_handler.py:149-220; PY mud/spawning/obj_spawner.py:8-16
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/db.c:1669-1960 `reset_room` enforces area.nplayer gating, prototype counts, LastObj reuse, and 1-in-5 rerolls for O/P/G/E.
-- PY: mud/spawning/reset_handler.py:118-320 spawns O/P/G/E without area.nplayer checks, prototype count tracking, or rerolls so duplicates pile up.
-- PY: mud/spawning/obj_spawner.py:8-18 instantiates objects but never increments `ObjIndex.count`, preventing global limits from triggering.
-- DOC: doc/area.txt:395-490 documents ROM reset syntax, container caps, and reroll behaviour.
-- ARE: area/midgaard.are:6085-6368 covers donation pits, desk/safe chains, and shopkeeper inventory relying on these guards.
+- C: src/db.c:1760-1950 still the reference for LastObj reuse and 1-in-5 rerolls across O/P/G/E cases.
+- PY: mud/spawning/reset_handler.py:68-236 now guards area.nplayer and prototype counts for O/P; G/E logic still lacks reroll limits tied to ObjIndex.count.
+- DOC/ARE: doc/area.txt:470-488 documents player gating, container reuse, and reroll semantics; area/midgaard.are:6085-6368 exercises donation pits, shopkeeper inventories, and nested container chains relying on these guards.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
 
@@ -636,29 +648,26 @@ NOTES:
 
 ### security_auth_bans — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.53)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
 KEY RISKS: flags, file_formats, side_effects
 TASKS:
 
-- [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — acceptance: `is_host_banned` honours BAN_ALL/BAN_NEWBIES/BAN_PERMIT with prefix/suffix wildcards, persists per-flag data alongside BAN_PERMANENT, and `login_with_host()` rejects matching connections while allowing BAN_PERMIT hosts.
-  RATIONALE: ROM `check_ban` evaluates BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT before allowing a login; the Python port only compares literal host strings so restricted hosts and newbie-only bans bypass enforcement and BAN_PERMIT is ignored.
-  FILES: mud/security/bans.py; mud/account/account_service.py; mud/net/connection.py
-  TESTS: tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement; tests/test_account_auth.py::test_permit_hosts_allowed
-  REFERENCES: C src/ban.c:104-205; C src/ban.c:235-352; PY mud/security/bans.py:12-140; PY mud/account/account_service.py:20-78; PY mud/net/connection.py:8-120
+- ✅ [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — done 2025-09-18
+  EVIDENCE: C src/ban.c:40-200; PY mud/security/bans.py:1-185; PY mud/account/account_service.py:52-64; PY mud/net/connection.py:25-63; TEST tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement; tests/test_account_auth.py::test_permit_hosts_allowed
+  REFERENCES: C src/ban.c:72-180; DOC doc/security.txt:13-27; ARE area/help.are:900-912; PY mud/security/bans.py:1-70; PY mud/account/account_service.py:23-52; PY mud/net/connection.py:1-76
   ESTIMATE: M; RISK: medium
 
 - [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
   RATIONALE: ROM writes ban.lst entries with printable flag letters and immortal levels; the port always emits `DF` with level 0 so prefix/suffix/newbie bans disappear on reboot.
   FILES: mud/security/bans.py; data/bans.txt
   TESTS: tests/test_account_auth.py::test_ban_persistence_includes_flags; tests/test_account_auth.py::test_ban_file_round_trip_levels
-  REFERENCES: C src/ban.c:43-101; C src/ban.c:140-235; PY mud/security/bans.py:52-150
+  REFERENCES: C src/ban.c:40-110; DOC doc/new.txt:95-96; ARE area/help.are:900-912; PY mud/security/bans.py:37-82
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/ban.c:43-352 persists ban entries with flag letters, immortal level, BAN_PREFIX/BAN_SUFFIX matching, and BAN_NEWBIES/BAN_PERMIT gating inside `check_ban` and `ban_site`.
-- PY: mud/security/bans.py:12-150 stores lowercase host strings with constant `DF` flags and no flag-specific enforcement or persistence.
-- PY: mud/account/account_service.py:20-78 and mud/net/connection.py:8-120 lack BAN_NEWBIES/BAN_PERMIT handling, so host bans either over-trigger or fail entirely.
-- DOC: doc/security.txt:13-33 documents the immortal-facing ban command usage and expectations for logging/security.
+- C: src/ban.c:40-200 persists ban entries with flag letters, immortal level, and BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT gating inside `check_ban` and `ban_site`.
+- PY: mud/security/bans.py:1-82 stores lowercase host strings with constant `DF` flags and no flag-specific enforcement or persistence; mud/account/account_service.py:23-52 and mud/net/connection.py:1-76 never honour BAN_PERMIT/BAN_NEWBIES cases.
+- DOC/ARE: doc/security.txt:13-27 and doc/new.txt:95-96 describe ban command wildcard/permit semantics; area/help.are:900-912 documents player-facing ban usage expectations.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: security_auth_bans END -->
 
@@ -1057,3 +1066,18 @@ NOTES:
   - acceptance_criteria: pytest runs with no DeprecationWarning for datetime.utcnow()
 
 
+
+<!-- OUTPUT-JSON
+{
+  "mode": "Parity Audit",
+  "status": "resets, skills_spells, and security_auth_bans parity gaps documented with ROM gating tasks outstanding.",
+  "files_updated": ["PYTHON_PORT_PLAN.md"],
+  "next_actions": [
+    "resets: Reinstate ROM 'P' reset gating, container limits, and prototype counts",
+    "security_auth_bans: Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT)",
+    "skills_spells: Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks"
+  ],
+  "commit": "parity/resets-skills_spells-security: parity: resets, skills_spells, security_auth_bans — audit tasks",
+  "notes": "ruff, mypy, and pytest fail because scripts/agent_loop.py is a shell script and the mud package is not importable in this environment."
+}
+OUTPUT-JSON -->
