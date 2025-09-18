@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import shlex
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from mud.models.character import Character
 from .movement import do_north, do_south, do_east, do_west, do_up, do_down, do_enter
@@ -14,6 +14,7 @@ from .admin_commands import (
     cmd_teleport,
     cmd_spawn,
     cmd_ban,
+    cmd_permban,
     cmd_unban,
     cmd_banlist,
 )
@@ -62,7 +63,7 @@ COMMANDS: List[Command] = [
     Command("equipment", do_equipment, aliases=("eq",), min_position=Position.DEAD),
 
     # Communication
-    Command("say", do_say, min_position=Position.RESTING),
+    Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
 
@@ -97,6 +98,7 @@ COMMANDS: List[Command] = [
     Command("@teleport", cmd_teleport, admin_only=True),
     Command("@spawn", cmd_spawn, admin_only=True),
     Command("ban", cmd_ban, admin_only=True),
+    Command("permban", cmd_permban, admin_only=True),
     Command("unban", cmd_unban, admin_only=True),
     Command("banlist", cmd_banlist, admin_only=True),
     Command("@redit", cmd_redit, admin_only=True),
@@ -121,21 +123,45 @@ def resolve_command(name: str) -> Optional[Command]:
     return matches[0] if matches else None
 
 
+def _split_command_and_args(input_str: str) -> Tuple[str, str]:
+    """Extract the leading command token and its remaining arguments."""
+
+    stripped = input_str.lstrip()
+    if not stripped:
+        return "", ""
+
+    first = stripped[0]
+    if not first.isalnum():
+        return first, stripped[1:].lstrip()
+
+    try:
+        parts = shlex.split(stripped)
+        if not parts:
+            return "", ""
+        head = parts[0]
+        tail = " ".join(parts[1:]) if len(parts) > 1 else ""
+        return head, tail
+    except ValueError:
+        fallback = stripped.split(None, 1)
+        if not fallback:
+            return "", ""
+        head = fallback[0]
+        tail = fallback[1] if len(fallback) > 1 else ""
+        return head, tail
+
+
 def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> str:
     """Expand the first token using per-character aliases, up to max_depth."""
+
     s = input_str
     for _ in range(max_depth):
-        try:
-            parts = shlex.split(s)
-        except ValueError:
+        head, tail = _split_command_and_args(s)
+        if not head:
             return s
-        if not parts:
-            return s
-        head, tail = parts[0], parts[1:]
         expansion = char.aliases.get(head)
         if not expansion:
             return s
-        s = (expansion + (" " + " ".join(tail) if tail else "")).strip()
+        s = (expansion + (" " + tail if tail else "")).strip()
     return s
 
 
@@ -143,18 +169,14 @@ def process_command(char: Character, input_str: str) -> str:
     if not input_str.strip():
         return "What?"
     expanded = _expand_aliases(char, input_str)
-    try:
-        parts = shlex.split(expanded)
-    except ValueError:
-        return "Huh?"
-    if not parts:
+    cmd_name, arg_str = _split_command_and_args(expanded)
+    if not cmd_name:
         return "What?"
-    cmd_name, *args = parts
     command = resolve_command(cmd_name)
     if not command:
         social = social_registry.get(cmd_name.lower())
         if social:
-            return perform_social(char, cmd_name, " ".join(args))
+            return perform_social(char, cmd_name, arg_str)
         return "Huh?"
     if command.admin_only and not getattr(char, "is_admin", False):
         return "You do not have permission to use this command."
@@ -177,7 +199,6 @@ def process_command(char: Character, input_str: str) -> str:
             return "No way!  You are still fighting!"
         # Fallback (should not happen)
         return "You can't do that right now."
-    arg_str = " ".join(args)
     # Log admin commands (accepted) to admin log for auditability.
     if command.admin_only and getattr(char, "is_admin", False):
         try:

@@ -40,11 +40,23 @@ def cmd_ban(char: Character, args: str) -> str:
     host = args.strip()
     if not host:
         return "Usage: ban <host>"
-    bans.add_banned_host(host)
+    bans.add_banned_host(host, permanent=False)
     try:
         bans.save_bans_file()
     except Exception:
         # Persistence errors shouldn't block the action in tests
+        pass
+    return f"Banned {host}."
+
+
+def cmd_permban(char: Character, args: str) -> str:
+    host = args.strip()
+    if not host:
+        return "Usage: permban <host>"
+    bans.add_banned_host(host, permanent=True)
+    try:
+        bans.save_bans_file()
+    except Exception:
         pass
     return f"Banned {host}."
 
@@ -64,7 +76,7 @@ def cmd_unban(char: Character, args: str) -> str:
 
 
 def cmd_banlist(char: Character, args: str) -> str:
-    banned = sorted(list({h for h in list_hosts() for h in [h]}))
+    banned = list_hosts()
     if not banned:
         return "No sites banned."
     lines = ["Banned sites:"] + [f" - {h}" for h in banned]
@@ -72,6 +84,4 @@ def cmd_banlist(char: Character, args: str) -> str:
 
 
 def list_hosts() -> list[str]:
-    # internal helper to read via saving/loading outward if needed later
-    # currently directly exposes in-memory set
-    return sorted({*bans._banned_hosts})  # type: ignore[attr-defined]
+    return sorted(entry.to_pattern() for entry in bans.get_ban_entries())

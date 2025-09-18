@@ -1,0 +1,3 @@
+example.com          60 BCF
+allow.me             50 EF
+wildcard              0 ABDF

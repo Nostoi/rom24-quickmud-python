@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from mud.security import bans
+from mud.security.bans import BanFlag
+from mud.commands import admin_commands
 
 
 def test_account_and_host_add_remove_checks():
@@ -47,4 +49,17 @@ def test_load_ignores_non_permanent(tmp_path):
     assert loaded == 1
     assert not bans.is_host_banned("temp.example")
     assert bans.is_host_banned("perm.example")
+
+
+def test_ban_command_temporary_flag(tmp_path, monkeypatch):
+    bans.clear_all_bans()
+    monkeypatch.setattr(bans, "BANS_FILE", tmp_path / "ban.lst")
+
+    message = admin_commands.cmd_ban(None, "temp.example")
+
+    assert message == "Banned temp.example."
+    entries = bans.get_ban_entries()
+    assert len(entries) == 1
+    assert not entries[0].flags & BanFlag.PERMANENT
+    assert not (tmp_path / "ban.lst").exists()
 

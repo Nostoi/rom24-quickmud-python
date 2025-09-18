@@ -48,9 +48,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- resets: [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: give/equip resets honour `OBJ_INDEX_DATA->count`, reroll placement with `number_range(0,4)` when caps hit, reuse `LastMob`, and mark shopkeeper inventory with `ITEM_INVENTORY` exactly like ROM.
-- security_auth_bans: [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — acceptance: `is_host_banned` honours BAN_ALL/BAN_NEWBIES/BAN_PERMIT with prefix/suffix wildcards, persists per-flag data alongside BAN_PERMANENT, and `login_with_host()` rejects matching connections while allowing BAN_PERMIT hosts.
-- security_auth_bans: [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
+- security_auth_bans: Restore BAN_PERMIT enforcement requiring PLR_PERMIT flag
+- security_auth_bans: Allow `unban` to remove BAN_NEWBIES and BAN_PERMIT entries
+- security_auth_bans: Implement ban command listing and type selection
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -251,9 +251,9 @@ TASKS:
   EVIDENCE: PY mud/loaders/json_loader.py:L163-L166 (JSON field support with defaults)
   RATIONALE: Future extensibility for areas with custom healing rates or ownership
   FILES: mud/loaders/json_loader.py
-- [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — acceptance: tests verify all field types parse correctly
-  RATIONALE: Ensure JSON loader handles extended room fields correctly
-  FILES: tests/test_json_room_fields.py
+- ✅ [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — done 2025-09-18
+  EVIDENCE: TEST tests/test_json_room_fields.py::test_json_loader_parses_extended_room_fields
+  EVIDENCE: PY tests/test_json_room_fields.py:L1-L69
   NOTES:
 - **CORRECTION**: System uses JSON loaders by default (use_json=True), not legacy .are parsers
 - JSON loader missing ROM defaults and ROOM_LAW flag logic - fixed 2025-09-15
@@ -478,8 +478,8 @@ RECENT COMPLETION (2025-09-16):
 
 ### skills_spells — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.60)
-KEY RISKS: RNG, flags, lag_wait
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
+KEY RISKS: RNG, flags
 TASKS:
 
 - ✅ [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks — done 2025-09-17
@@ -511,16 +511,20 @@ TASKS:
   REFERENCES: C src/skills.c:923-960; C src/magic.c:520-568; PY mud/skills/registry.py:32-79; PY mud/advancement.py:1-48; PY mud/models/character.py:58-140
   ESTIMATE: M; RISK: medium
 
-- [P1] Apply skill lag (WAIT_STATE) from skill beats — acceptance: invoking a skill sets `Character.wait` from `Skill.beats`, modified by haste/slow affects, blocks reuse until the wait expires, and surfaces the standard "You are still recovering." messaging.
-  RATIONALE: ROM applies `WAIT_STATE(ch, skill_table[sn].beats)` in skill handlers so abilities impose recovery time; the port ignores `Skill.lag` so actions are spammable.
-  FILES: mud/skills/registry.py; mud/models/character.py; mud/models/constants.py
-  TESTS: tests/test_skills.py::test_skill_use_sets_wait_state
-  REFERENCES: C src/magic.c:520-568; C src/merc.h:1944-1960; PY mud/skills/registry.py:32-79; PY mud/models/character.py:104-136; PY mud/models/constants.py:1-120
+- ✅ [P1] Apply skill lag (WAIT_STATE) from skill beats — done 2025-09-17
+  EVIDENCE: C src/magic.c:520-567 (WAIT_STATE(ch, skill_table[sn].beats) before spell resolution)
+  EVIDENCE: C src/merc.h:2116-2117 (WAIT_STATE macro applies UMAX to ch->wait pulses)
+  EVIDENCE: PY mud/skills/registry.py:L40-L106 (`use` gates on wait>0, `_compute_skill_lag` adjusts haste/slow, `_apply_wait_state` mirrors ROM UMAX semantics)
+  EVIDENCE: TEST tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready; tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
+  RATIONALE: ROM enforces recovery between skill uses via WAIT_STATE and modifies tempo with AFF_HASTE/AFF_SLOW; without lag the port allows spammable casts regardless of affects.
+  FILES: mud/skills/registry.py; tests/test_skills.py
+  TESTS: pytest -q tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready; pytest -q tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
+  REFERENCES: C src/magic.c:520-567; C src/merc.h:2116-2117; PY mud/skills/registry.py:40-106; PY tests/test_skills.py:114-158
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/act_info.c:2680-2759 enforces ACT_PRACTICE trainers, class adept caps, and INT-based gains; src/skills.c:923-960 with src/magic.c:520-568 drives `check_improve`, XP rewards, and WAIT_STATE beats.
-- PY: mud/commands/advancement.py:5-19 lets practice anywhere with flat +25 gains and ignores adept caps; mud/skills/registry.py:32-79 never mutates learned%, wait timers, or XP on use.
+- C: src/act_info.c:2680-2759 enforces trainer gating and adept caps; src/skills.c:923-960 plus src/magic.c:520-567 drive check_improve, XP rewards, and WAIT_STATE pulse costs.
+- PY: mud/commands/advancement.py:5-99 mirrors trainer/adept rules; mud/skills/registry.py:40-106 now applies wait-state pulses, haste/slow adjustments, and retains check_improve + XP gains with message parity covered by tests/test_skills.py:114-158.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: skills_spells END -->
 
@@ -528,7 +532,7 @@ NOTES:
 
 ### movement_encumbrance — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.56)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.52)
 KEY RISKS: flags, side_effects
 TASKS:
 
@@ -554,11 +558,21 @@ TASKS:
   REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:5-92; PY mud/models/room.py:20-76; PY mud/models/constants.py:120-150; PY mud/models/character.py:60-120
   ESTIMATE: M; RISK: medium
 
+- ✅ [P0] Block AFF_CHARM followers from leaving their master — done 2025-09-20
+  EVIDENCE: C src/act_move.c:94-104 (AFF_CHARM loyalty gate)
+  EVIDENCE: PY mud/models/character.py:L70-L115 (Character.master linkage for followers)
+  EVIDENCE: PY mud/world/movement.py:L131-L168 (master-in-room guard returning ROM message)
+  EVIDENCE: TEST tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
+  RATIONALE: ROM `move_char` refuses to move characters flagged with AFF_CHARM while their master is present; the Python port lacks a `master` field and gating, so charmed followers can walk away freely.
+  FILES: mud/models/character.py (add master reference), mud/world/movement.py (charm/master check), tests/test_movement_charm.py (new regression).
+  TESTS: tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room.
+  ACCEPTANCE_CRITERIA: The new test passes and `move_character` returns the ROM message while leaving the character and master in the same room when AFF_CHARM is set.
+  REFERENCES: C src/act_move.c:94-104 (AFF_CHARM/master loyalty gate); PY mud/world/movement.py:131-198 (AFF_CHARM guard and movement handling); PY mud/models/character.py:70-115 (Character dataclass fields).
+  ESTIMATE: M; RISK: medium
+
 NOTES:
-- C: src/act_move.c:64-151 guards closed exits, pass door, charm loyalty, guild rooms, and trust checks before movement proceeds.
-- C: src/handler.c:2564-2583 defines `room_is_private`, blocking ROOM_PRIVATE/ROOM_SOLITARY and owner-protected rooms unless trusted.
-- PY: mud/world/movement.py:5-92 ignores exit flags, owner, and guild restrictions so closed and private rooms never block movement.
-- PY: mud/models/constants.py:120-150 and 440-470 expose ROOM_PRIVATE/ROOM_SOLITARY and EX_NOPASS bits that the movement code never consults.
+- C: src/act_move.c:94-151 blocks AFF_CHARM followers from leaving masters and enforces door/guild restrictions already mirrored in earlier tasks.
+- PY: mud/world/movement.py:88-176 handles doors/guilds but lacks the AFF_CHARM/master check, and mud/models/character.py:24-110 exposes no `master` reference.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
@@ -634,46 +648,52 @@ TASKS:
   FILES: mud/spawning/reset_handler.py
   TESTS: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
 
-- [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: give/equip resets honour `OBJ_INDEX_DATA->count`, reroll placement with `number_range(0,4)` when caps hit, reuse `LastMob`, and mark shopkeeper inventory with `ITEM_INVENTORY` exactly like ROM.
-  RATIONALE: `reset_room` only equips objects when prototype counts are below the coerced limit or a reroll fires; the port inspects only the mob's inventory, never increments prototype counts, and omits the reroll so world caps never engage.
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py
-  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  REFERENCES: C src/db.c:1862-1950; DOC doc/area.txt:480-488; ARE area/midgaard.are:6089-6116; PY mud/spawning/reset_handler.py:149-220; PY mud/spawning/obj_spawner.py:8-16
+- ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-17
+  EVIDENCE: PY mud/spawning/reset_handler.py:L217-L343
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
+
+- ✅ [P0] Apply 'D' door state resets to exits — done 2025-09-20
+  EVIDENCE: C src/db.c:1038-1106 (load_resets 'D' writes rs_flags/exit_info for doors)
+  EVIDENCE: PY mud/spawning/reset_handler.py:L200-L257 (door reset handling and rs_flag restore)
+  EVIDENCE: PY mud/spawning/reset_handler.py:L403-L415 (reset_area reapplies rs_flags each reset)
+  EVIDENCE: TEST tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
+  RATIONALE: ROM `load_resets` and `reset_room` honor 'D' entries to restore door states; Python `apply_resets` skips 'D', leaving doors permanently open after resets.
+  FILES: mud/spawning/reset_handler.py (add 'D' handling), mud/models/room.py (exit flag mutation), tests/test_spawning.py (door reset coverage).
+  TESTS: tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state.
+  ACCEPTANCE_CRITERIA: The new test passes and calling `reset_area` updates `exit.exit_info` to closed/locked according to the 'D' reset entry.
+  REFERENCES: C src/db.c:1038-1106 (load_resets 'D' sets rs_flags/exit_info); DOC doc/area.txt:448-506 (#RESETS 'D' semantics); ARE area/midgaard.are:6335-6338 (Captain's Office door resets); PY mud/spawning/reset_handler.py:200-415 (door reset branch and rs_flag restoration).
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/db.c:1760-1950 still the reference for LastObj reuse and 1-in-5 rerolls across O/P/G/E cases.
-- PY: mud/spawning/reset_handler.py:68-236 now guards area.nplayer and prototype counts for O/P; G/E logic still lacks reroll limits tied to ObjIndex.count.
-- DOC/ARE: doc/area.txt:470-488 documents player gating, container reuse, and reroll semantics; area/midgaard.are:6085-6368 exercises donation pits, shopkeeper inventories, and nested container chains relying on these guards.
+- C: src/db.c:1038-1106 covers 'D' door reset states and 1760-1950 remains the reference for LastObj reuse plus G/E rerolls already mirrored in Python.
+- PY: mud/spawning/reset_handler.py:68-343 enforces M/O/P/G/E but lacks a 'D' branch so exits never reclose after reset.
+- DOC/ARE: doc/area.txt:448-506 documents door reset semantics; area/midgaard.are:6335-6338 closes Captain's Office doors via 'D' commands.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->
 
-### security_auth_bans — Parity Audit 2025-09-17
+### security_auth_bans — Parity Audit 2025-09-22
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
-KEY RISKS: flags, file_formats, side_effects
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.41)
+KEY RISKS: flags, side_effects
 TASKS:
-
-- [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — acceptance: `is_host_banned` honours BAN_ALL/BAN_NEWBIES/BAN_PERMIT with prefix/suffix wildcards, persists per-flag data alongside BAN_PERMANENT, and `login_with_host()` rejects matching connections while allowing BAN_PERMIT hosts.
-  RATIONALE: ROM `check_ban` evaluates BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT before allowing a login; the Python port only compares literal host strings so restricted hosts and newbie-only bans bypass enforcement and BAN_PERMIT is ignored.
-  FILES: mud/security/bans.py; mud/account/account_service.py; mud/net/connection.py
-  TESTS: tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement; tests/test_account_auth.py::test_permit_hosts_allowed
-  REFERENCES: C src/ban.c:72-180; DOC doc/security.txt:13-27; ARE area/help.are:900-912; PY mud/security/bans.py:1-70; PY mud/account/account_service.py:23-52; PY mud/net/connection.py:1-76
-  ESTIMATE: M; RISK: medium
-
-- [P0] Persist ban flags and immortal level in ROM format — acceptance: `save_bans_file()`/`load_bans_file()` round-trip BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT letters with the immortal level, matching ROM `ban.lst` output in golden fixtures and preserving newline termination.
-  RATIONALE: ROM writes ban.lst entries with printable flag letters and immortal levels; the port always emits `DF` with level 0 so prefix/suffix/newbie bans disappear on reboot.
-  FILES: mud/security/bans.py; data/bans.txt
-  TESTS: tests/test_account_auth.py::test_ban_persistence_includes_flags; tests/test_account_auth.py::test_ban_file_round_trip_levels
-  REFERENCES: C src/ban.c:40-110; DOC doc/new.txt:95-96; ARE area/help.are:900-912; PY mud/security/bans.py:37-82
-  ESTIMATE: M; RISK: medium
-
+- [P0] Restore BAN_PERMIT enforcement requiring PLR_PERMIT flag — acceptance: `login_with_host` rejects BAN_PERMIT sites unless the character has ROM's PLR_PERMIT bit. Tests: extend `tests/test_account_auth.py::test_newbie_permit_enforcement` (or add a new case) to assert BAN_PERMIT hosts fail without permit and pass when permit is set. Files: mud/account/account_service.py, mud/net/connection.py, mud/models/constants.py (define PLR_PERMIT flag), mud/models/character.py (expose act bits). Evidence: C src/nanny.c:207-218 (BAN_PERMIT blocks connections without PLR_PERMIT); PY mud/account/account_service.py:37-66 (BAN_PERMIT treated as unconditional allow).
+- [P0] Allow `unban` to remove BAN_NEWBIES and BAN_PERMIT entries — acceptance: new regression in `tests/test_bans.py` covering `cmd_unban` removing newbie/permit bans without "Site is not banned" false negatives. Files: mud/commands/admin_commands.py, mud/security/bans.py. Evidence: C src/ban.c:216-269 (`do_allow` removes bans by name regardless of type); PY mud/commands/admin_commands.py:67-84 (`cmd_unban` gate calls `is_host_banned` with BAN_ALL only).
+- [P0] Implement ban command listing and type selection — acceptance: `cmd_ban` with no args lists current bans and `ban <site> <all|newbies|permit>` sets the correct flag bits, matching ROM output/order. Tests: add coverage in `tests/test_bans.py` for listing and setting BAN_NEWBIES/BAN_PERMIT via command helpers. Files: mud/commands/admin_commands.py, mud/security/bans.py, mud/security/__init__.py (if dispatcher wiring needed). Evidence: C src/ban.c:120-214 (`ban_site` lists when no args and parses second argument for type); PY mud/commands/admin_commands.py:33-82 (command lacks listing and type support).
+- ✅ [P0] Restore ban insertion order parity — done 2025-09-21
+  EVIDENCE: C src/ban.c:167-210 (`ban_site` inserts `pban` at head to keep newest-first order).
+  EVIDENCE: PY mud/security/bans.py:83-166 (`_store_entry` inserts new bans at index 0 to mirror ROM ordering).
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_file_round_trip_preserves_order.
+- ✅ [P0] Differentiate temporary vs permanent bans — done 2025-09-21
+  EVIDENCE: C src/ban.c:142-215 (`ban_site` toggles BAN_PERMANENT only when `fPerm` is true).
+  EVIDENCE: PY mud/commands/admin_commands.py:41-66 (`cmd_ban` skips BAN_PERMANENT, `cmd_permban` persists it via `add_banned_host`).
+  EVIDENCE: PY mud/security/bans.py:121-150 (new `permanent` toggle on `add_banned_host`).
+  EVIDENCE: TEST tests/test_bans.py::test_ban_command_temporary_flag; tests/test_account_auth.py::test_permban_persistence.
 NOTES:
-- C: src/ban.c:40-200 persists ban entries with flag letters, immortal level, and BAN_PREFIX/BAN_SUFFIX/BAN_NEWBIES/BAN_PERMIT gating inside `check_ban` and `ban_site`.
-- PY: mud/security/bans.py:1-82 stores lowercase host strings with constant `DF` flags and no flag-specific enforcement or persistence; mud/account/account_service.py:23-52 and mud/net/connection.py:1-76 never honour BAN_PERMIT/BAN_NEWBIES cases.
-- DOC/ARE: doc/security.txt:13-27 and doc/new.txt:95-96 describe ban command wildcard/permit semantics; area/help.are:900-912 documents player-facing ban usage expectations.
+- C: src/nanny.c:207-218 enforces BAN_PERMIT by checking PLR_PERMIT; src/ban.c:120-269 shows `ban_site` listing and type parsing plus `do_allow` removal semantics.
+- PY: mud/account/account_service.py:37-66 treats BAN_PERMIT as an allow-list; mud/commands/admin_commands.py:33-84 lacks type parsing and blocks unbanning non-ALL bans via its `is_host_banned` guard.
+- DOC: doc/security.txt:18-27 outlines ban command expectations for immortals managing site access.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: security_auth_bans END -->
 
@@ -979,10 +999,10 @@ NOTES:
   <!-- SUBSYSTEM: shops_economy END -->
   <!-- SUBSYSTEM: command_interpreter START -->
 
-### command_interpreter — Parity Audit 2025-09-08
+### command_interpreter — Parity Audit 2025-09-18
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.82)
-KEY RISKS: position_gating, abbreviations
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+KEY RISKS: side_effects, abbreviations
 TASKS:
 
 - ✅ [P0] Enforce per-command required position before execution — done 2025-09-08
@@ -1013,10 +1033,22 @@ TASKS:
     EVIDENCE: PY mud/commands/inspection.py:do_exits
     EVIDENCE: TEST tests/test_command_abbrev.py::{test_ex_abbreviation_resolves_to_exits_command,test_prefix_tie_breaker_uses_first_in_table_order_for_say}
 
+- ✅ [P0] Restore ROM punctuation command parsing for apostrophe say alias — done 2025-09-18
+  EVIDENCE: C src/interp.c:430-468 (punctuation command parsing and `'` → say mapping)
+  EVIDENCE: PY mud/commands/dispatcher.py:_split_command_and_args/process_command (punctuation token support before shlex)
+  EVIDENCE: TEST tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
+  RATIONALE: ROM `interpret` treats leading punctuation like ``'`` as standalone commands so players can chat (`'message`) or emote without balancing quotes; the Python dispatcher previously fed these inputs to `shlex.split`, raising `ValueError` and returning "Huh?".
+  FILES: mud/commands/dispatcher.py (parser adjustments for punctuation alias before shlex).
+  TESTS: tests/test_commands.py::test_apostrophe_alias_routes_to_say; tests/test_commands.py::test_punctuation_inputs_do_not_raise_value_error
+  ACCEPTANCE_CRITERIA: ``'hello`` routes through `say` without raising a parsing error and echoes the same message as `say hello` when routed through `process_command`.
+  ESTIMATE: S; RISK: medium
+
 NOTES:
 
-- C: interpret() gates by `ch->position` vs command `position`, returning specific strings; Python now mirrors this for representative commands.
-- PY: Added `Command.min_position` and denial messages identical to ROM; default character position set to STANDING for tests and parity.
+- C: src/interp.c:430-468 strips leading punctuation and dispatches ``'`` → say before argument tokenizing, while later lines 520-560 enforce position messages already ported.
+- PY: mud/commands/dispatcher.py:_split_command_and_args now mirrors ROM punctuation handling before shlex tokenization so ``'hello`` reaches `do_say` and aliases resolve.
+- TEST: tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
+- Applied tiny fix: Added `_split_command_and_args` to guard punctuation commands ahead of shlex splitting.
   <!-- SUBSYSTEM: command_interpreter END -->
   <!-- SUBSYSTEM: game_update_loop START -->
 

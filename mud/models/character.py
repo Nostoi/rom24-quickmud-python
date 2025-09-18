@@ -106,6 +106,8 @@ class Character:
     # Combat skill levels (0-100) for multi-attack mechanics
     second_attack_skill: int = 0
     third_attack_skill: int = 0
+    # Charm/follow hierarchy pointer (ROM ch->master)
+    master: Optional["Character"] = None
     # Combat state - currently fighting target
     fighting: Optional["Character"] = None
     # Enhanced damage skill level (0-100)
