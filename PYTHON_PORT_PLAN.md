@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- LAST-PROCESSED: game_update_loop -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -48,7 +48,11 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-<!-- no open [P0] tasks this run -->
+* resets: [P0] Reinstate ROM 'P' reset object limit gating and prototype counts
+* resets: [P0] Mirror ROM 'O' reset gating for duplicates and player presence
+* resets: [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets
+* game_update_loop: [P0] Mirror ROM area_update reset cadence when players remain in-area
+* world_loader: [P0] Seed Area.age to 15 when loading legacy areas
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -221,12 +225,18 @@ TASKS:
 
 <!-- SUBSYSTEM: world_loader START -->
 
-### world_loader — Parity Audit 2025-09-15
+### world_loader — Parity Audit 2025-09-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
-KEY RISKS: file_formats, indexing, room_defaults, flags
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
+KEY RISKS: file_formats, tick_cadence, side_effects
 TASKS:
 
+- [P0] Seed Area.age to 15 when loading legacy areas — acceptance: loader instantiates areas with age=15 so reset_tick mirrors ROM boot cadence.
+  RATIONALE: `load_area` and `new_load_area` set `pArea->age = 15`; the port leaves the default at 0 so `reset_tick` hits the three-tick shortcut instead of the 15/31-minute gating encoded in C.
+  FILES: mud/models/area.py; mud/loaders/area_loader.py
+  TESTS: tests/test_area_loader.py::test_area_age_defaults
+  REFERENCES: C src/db.c:460-518 (load_area/new_load_area assign age=15); PY mud/models/area.py:12-21 (Area defaults age=0); PY mud/loaders/area_loader.py:20-53 (instantiates Area without overriding age)
+  ESTIMATE: S; RISK: low
 - ✅ [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test — done 2025-09-07
   EVIDENCE: mud/loaders/area_loader.py:L42-L57; tests/test_area_loader.py::test_areadata_parsing
 - ✅ [P2] Achieve ≥80% test coverage for world_loader — acceptance: coverage report ≥80% — done 2025-09-08
@@ -253,6 +263,9 @@ TASKS:
   RATIONALE: Ensure JSON loader handles extended room fields correctly
   FILES: tests/test_json_room_fields.py
   NOTES:
+- C: src/db.c:460-518 seeds `pArea->age = 15` before resets run, so area_update can randomize age after the first reset.
+- PY: mud/models/area.py:12-21 keeps Area.age at 0; mud/spawning/reset_handler.py:290-305 increments that value and fires resets after three empty ticks.
+- DOC: doc/area.txt:433-438 notes areas reset once three area-minutes old and rely on ROM's gating, which assumes the 15-minute seed.
 - **CORRECTION**: System uses JSON loaders by default (use_json=True), not legacy .are parsers
 - JSON loader missing ROM defaults and ROOM_LAW flag logic - fixed 2025-09-15
 - Parser now reads heal_rate/mana_rate/clan/owner from JSON with ROM defaults (json_loader.py:163-170)
@@ -570,33 +583,54 @@ TASKS:
 
 <!-- SUBSYSTEM: resets START -->
 
-### resets — Parity Audit 2025-09-08
+### resets — Parity Audit 2025-09-16
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.66)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.52)
 KEY RISKS: file_formats, indexing, side_effects
 TASKS:
 
-- ✅ [P0] Implement 'P' reset semantics using LastObj + limits — done 2025-09-08
-  EVIDENCE: C src/db.c:L1760-L1905 (reset_room 'O'/'P' handling); C src/db.c:L1906-L1896 (limit logic, count and lock fix around 'P')
-  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L50; L51-L120 (track last_obj, spawn map per vnum, P places into container, respects count)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
-  NOTES: Lock-state fix (value[1]) not applied because object instance model lacks per-instance value fields; to be addressed if required by tests.
+- ✅ [P0] Restore ROM reset argument mapping in loaders — done 2025-09-16
+  EVIDENCE: C src/db.c:1009-1043 (load_resets ignores if_flag, maps arg1..arg4 per command)
+  EVIDENCE: PY mud/loaders/reset_loader.py:L1-L52 (token iterator mirrors ROM parsing, preserves arg4 for 'M'/'P')
+  EVIDENCE: DOC doc/area.txt:395-478 (#RESETS syntax and ignored first number)
+  EVIDENCE: ARE area/midgaard.are:6085-6094 (wizard shop `M`/`G` sequence with arg4=1)
+  FILES: mud/loaders/reset_loader.py
+  TESTS: pytest -q tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
+- ✅ [P0] Enforce mob reset limits when applying resets — done 2025-09-16
+  EVIDENCE: C src/db.c:1703-1723 (reset_room enforces global count and per-room limit for 'M')
+  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L199 (tracks prototype counts and skips when arg2/arg4 caps reached)
+  EVIDENCE: DOC doc/area.txt:395-478 (documents mob limit semantics)
+  EVIDENCE: ARE area/midgaard.are:6085-6094 (Midgaard wizard reset using arg4 cap)
+  FILES: mud/spawning/reset_handler.py; tests/test_spawning.py::test_reset_mob_limits
+  TESTS: pytest -q tests/test_spawning.py::test_reset_mob_limits
 
-- ✅ [P1] Implement 'G'/'E' reset limits and level logic — done 2025-09-13
-  EVIDENCE: C src/db.c: reset_room() case 'G'/'E' L1838-L2060
-  EVIDENCE: PY mud/spawning/reset_handler.py:L45-L118 ('G'/'E' handling with per-mob limit, ITEM_INVENTORY flag, level compute)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
+- [P0] Reinstate ROM 'P' reset object limit gating and prototype counts — acceptance: container resets stop adding items once the linked ObjIndex.count meets arg2.
+  RATIONALE: `reset_room` halts when `pObjIndex->count` reaches the limit derived from `arg2`, but the port never reads `arg2` or updates prototype counts so containers can overflow on every reset.
+  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py; mud/models/obj.py
+  TESTS: tests/test_spawning.py::test_reset_P_limit_enforced
+  REFERENCES: C src/db.c:1693-1733; PY mud/spawning/reset_handler.py:170-214; DOC doc/area.txt:406-437 (#RESETS `P` semantics); ARE area/midgaard.are:6360-6369 (desk/key resets)
+  ESTIMATE: M; RISK: medium
 
-- ✅ [P1] Support 'R' resets to randomize exits — done 2025-09-13
-  EVIDENCE: C src/db.c: reset_room() case 'R' L2059-L2080
-  EVIDENCE: PY mud/spawning/reset_handler.py:L119-L142 ('R' partial Fisher–Yates shuffle using rng_mm.number_range)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_R_randomizes_exit_order
+- [P0] Mirror ROM 'O' reset gating for duplicates and player presence — acceptance: skip `O` when the target room already holds the vnum or when `area.nplayer > 0`.
+  RATIONALE: ROM protects rooms such as the donation pit by checking room contents and players, but the port always spawns another copy so repeated resets duplicate unique props.
+  FILES: mud/spawning/reset_handler.py
+  TESTS: tests/test_spawning.py::test_resets_repop_after_tick (extend with duplicate/players assertions)
+  REFERENCES: C src/db.c:1673-1691; PY mud/spawning/reset_handler.py:88-107; DOC doc/area.txt:432-467 (`O` command semantics); ARE area/midgaard.are:6360-6369 (desk/safe placement)
+  ESTIMATE: M; RISK: medium
+
+- [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — acceptance: repeated resets respect prototype limits and only overfill when the ROM random check allows.
+  RATIONALE: `reset_room` gates equips on `pObjIndex->count` plus a 1-in-5 chance, but the port only inspects the current mob inventory so multiple mobs can exceed ROM world caps.
+  FILES: mud/spawning/reset_handler.py
+  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag (extend with multi-mob/world-count coverage)
+  REFERENCES: C src/db.c:1840-1916; PY mud/spawning/reset_handler.py:108-161; DOC doc/area.txt:420-470 (`G`/`E` semantics); ARE area/midgaard.are:6085-6417 (shopkeeper give/equip sequences)
+  ESTIMATE: M; RISK: medium
 
 NOTES:
-
-- C: reset_room maintains `LastObj`/`LastMob` across cases; Python uses a vnum→object map losing instance order — fix to track last created object instance.
-- C: 'P' applies container lock fix: `LastObj->value[1] = LastObj->pIndexData->value[1]` post-population.
-- PY: reset_tick ages/emptiness gating implemented; detailed per-reset semantics incomplete.
+- C: src/db.c:1673-1916 documents `O`/`P`/`G`/`E` gating on prototype counts, room contents, and random rolls still missing in the port.
+- PY: mud/spawning/reset_handler.py currently skips object count updates and room duplication checks for `O`/`P`/`G`/`E` resets.
+- DOC: doc/area.txt:406-482 details reset command semantics, including container dependencies and uniqueness rules.
+- ARE: area/midgaard.are:6085-6417 shows Midgaard's desk/safe and shopkeeper resets that rely on ROM object gating.
+- Applied tiny fix: Added missing `typing.Iterator` import in the reset loader and restored the reset handler's `logging` import to avoid runtime NameErrors during audit.
 <!-- SUBSYSTEM: resets END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->
@@ -983,12 +1017,18 @@ NOTES:
   <!-- SUBSYSTEM: command_interpreter END -->
   <!-- SUBSYSTEM: game_update_loop START -->
 
-### game_update_loop — Parity Audit 2025-09-08
+### game_update_loop — Parity Audit 2025-09-17
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.70)
-KEY RISKS: tick_cadence, wait_daze_consumption
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.56)
+KEY RISKS: tick_cadence, side_effects
 TASKS:
 
+- [P0] Mirror ROM area_update reset cadence when players remain in-area — acceptance: `reset_tick` enforces the 3/15/31 gating, randomizes age to 0–3 after resets, and still repopulates areas with players once `age >= 15`.
+  RATIONALE: ROM's `area_update` resets when `!area->empty && (nplayer == 0 || age >= 15)` or `age >= 31`; the port resets only after three empty ticks and never while players remain, so shopkeepers and donation rooms never restock during play.
+  FILES: mud/spawning/reset_handler.py; mud/game_loop.py; mud/models/area.py
+  TESTS: tests/test_spawning.py::test_area_update_cadence
+  REFERENCES: C src/db.c:1610-1631 (area_update gating); PY mud/spawning/reset_handler.py:292-305 (reset_tick short-circuits at three ticks); PY mud/game_loop.py:69-86 (game_tick wiring); DOC doc/area.txt:433-438 (area reset timing)
+  ESTIMATE: M; RISK: medium
 - ✅ [P1] Decrement wait/daze on PULSE_VIOLENCE cadence — done 2025-09-12
 
   - rationale: ROM reduces ch->wait and ch->daze on violence pulses
@@ -1007,8 +1047,9 @@ TASKS:
 
 NOTES:
 
-- C: update_handler uses separate counters for pulse_violence and pulse_point; our loop has a single counter.
-- PY: add violence cadence and wait/daze handling; keep existing tests passing via configurable scaling.
+- C: src/db.c:1610-1631 resets areas once age ≥ 15 even with players, and force-resets at 31 ticks; the port skips both paths.
+- PY: mud/spawning/reset_handler.py:292-305 resets only with `RESET_TICKS = 3` and zero players, so age never reaches 15/31; mud/game_loop.py:69-86 keeps invoking this shortcut each tick.
+- DOC: doc/area.txt:433-438 documents the three-minute minimum and 15/31-minute reset cadence relied upon by ROM builders.
 <!-- SUBSYSTEM: game_update_loop END -->
 - ✅ [P1] Ensure list prices match buy deduction — done 2025-09-12
   - rationale: Prevent price drift between displayed and charged values

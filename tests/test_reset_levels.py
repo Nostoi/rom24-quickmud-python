@@ -15,15 +15,15 @@ def test_give_equip_object_levels_are_in_expected_ranges(monkeypatch):
     area.resets = []
     # Spawn a non-shopkeeper mob (604 in Midgaard is blacksmith, but use 6000 from haon? We'll use a generic mob present in registries)
     # Use 6004 (a deer) from haon isn't loaded by default; instead use 3003 (Janitor) present in Midgaard
-    area.resets.append(ResetJson(command='M', arg2=3003, arg4=room.vnum))
+    area.resets.append(ResetJson(command='M', arg1=3003, arg2=1, arg3=room.vnum, arg4=1))
     # Equip a weapon (object 3022: a short sword) with limit 1
     # Some legacy prototypes may lack type; set explicit types for the test
     from mud.registry import obj_registry
     obj_registry[3022].item_type = 5  # ItemType.WEAPON
-    area.resets.append(ResetJson(command='E', arg2=3022, arg3=1, arg4=16))
+    area.resets.append(ResetJson(command='E', arg1=3022, arg2=1, arg3=16))
     # Give an armor (object 3021: a small buckler)
     obj_registry[3021].item_type = 9  # ItemType.ARMOR
-    area.resets.append(ResetJson(command='G', arg2=3021, arg3=1))
+    area.resets.append(ResetJson(command='G', arg1=3021, arg2=1))
 
     # Make RNG deterministic for levels
     monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: (a + b) // 2)
