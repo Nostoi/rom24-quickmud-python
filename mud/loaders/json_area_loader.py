@@ -4,8 +4,6 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 
-from mud.models.area_json import AreaJson
-from mud.models.json_io import load_dataclass
 from mud.models.area import Area
 from mud.models.room import Room, Exit, ExtraDescr
 from mud.models.mob import MobIndex
@@ -83,9 +81,11 @@ def _json_to_room(room_data: Dict[str, Any], area: Area) -> Room:
         for direction, exit_data in exits_data.items():
             if direction in direction_map:
                 dir_num = direction_map[direction]
+                exit_flags = _flags_to_int(exit_data.get('flags', []))
                 exit = Exit(
                     vnum=exit_data.get('to_room', 0),
-                    exit_info=_flags_to_int(exit_data.get('flags', [])),
+                    exit_info=exit_flags,
+                    rs_flags=exit_flags,
                     keyword=exit_data.get('keyword'),
                     description=exit_data.get('description')
                 )

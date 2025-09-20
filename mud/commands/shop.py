@@ -3,16 +3,57 @@
 from mud.registry import shop_registry
 from mud.models.character import Character
 from mud.models.object import Object
-from mud.models.constants import ItemType
+from mud.models.constants import ItemType, AffectFlag
 from mud.math.c_compat import c_div
+from mud.time import time_info
+
+_CLOSED_EARLY = "Sorry, I am closed. Come back later."
+_CLOSED_LATE = "Sorry, I am closed. Come back tomorrow."
+_CANT_SEE = "I don't trade with folks I can't see."
+_NO_WEALTH = "I'm afraid I don't have enough wealth to buy that."
+
+
+def _has_affect(entity, flag: AffectFlag) -> bool:
+    checker = getattr(entity, "has_affect", None)
+    if callable(checker):
+        return checker(flag)
+    affected_by = getattr(entity, "affected_by", 0)
+    return bool(affected_by & int(flag))
+
+
+def _keeper_can_see_customer(keeper: Character, customer: Character) -> bool:
+    if _has_affect(keeper, AffectFlag.BLIND):
+        return False
+    if _has_affect(customer, AffectFlag.INVISIBLE) and not _has_affect(
+        keeper, AffectFlag.DETECT_INVIS
+    ):
+        return False
+    if _has_affect(customer, AffectFlag.HIDE) and not _has_affect(
+        keeper, AffectFlag.DETECT_HIDDEN
+    ):
+        return False
+    return True
 
 
 def _find_shopkeeper(char: Character):
     for mob in getattr(char.room, "people", []):
         proto = getattr(mob, "prototype", None)
-        if proto and proto.vnum in shop_registry:
-            return mob
-    return None
+        if not proto:
+            continue
+        if proto.vnum not in shop_registry:
+            continue
+        shop = shop_registry.get(proto.vnum)
+        if not shop:
+            continue
+        current_hour = time_info.hour
+        if current_hour < shop.open_hour:
+            return None, _CLOSED_EARLY
+        if current_hour > shop.close_hour:
+            return None, _CLOSED_LATE
+        if not _keeper_can_see_customer(mob, char):
+            return None, _CANT_SEE
+        return mob, None
+    return None, None
 
 
 def _get_shop(keeper):
@@ -20,6 +61,18 @@ def _get_shop(keeper):
     if proto:
         return shop_registry.get(proto.vnum)
     return None
+
+
+def _keeper_total_wealth(keeper) -> int:
+    gold = getattr(keeper, "gold", 0)
+    silver = getattr(keeper, "silver", 0)
+    return gold * 100 + silver
+
+
+def _set_keeper_total_wealth(keeper, total: int) -> None:
+    total = max(total, 0)
+    setattr(keeper, "gold", total // 100)
+    setattr(keeper, "silver", total % 100)
 
 
 def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
@@ -76,9 +129,9 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
 
 
 def do_list(char: Character, args: str = "") -> str:
-    keeper = _find_shopkeeper(char)
+    keeper, denial = _find_shopkeeper(char)
     if not keeper:
-        return "You can't do that here."
+        return denial or "You can't do that here."
     shop = _get_shop(keeper)
     if not shop:
         return "You can't do that here."
@@ -95,9 +148,9 @@ def do_list(char: Character, args: str = "") -> str:
 def do_buy(char: Character, args: str) -> str:
     if not args:
         return "Buy what?"
-    keeper = _find_shopkeeper(char)
+    keeper, denial = _find_shopkeeper(char)
     if not keeper:
-        return "You can't do that here."
+        return denial or "You can't do that here."
     shop = _get_shop(keeper)
     if not shop:
         return "You can't do that here."
@@ -109,6 +162,7 @@ def do_buy(char: Character, args: str) -> str:
             if char.gold < price:
                 return "You can't afford that."
             char.gold -= price
+            _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + price)
             keeper.inventory.remove(obj)
             char.add_object(obj)
             return f"You buy {obj.short_descr or obj.name} for {price} gold."
@@ -118,9 +172,9 @@ def do_buy(char: Character, args: str) -> str:
 def do_sell(char: Character, args: str) -> str:
     if not args:
         return "Sell what?"
-    keeper = _find_shopkeeper(char)
+    keeper, denial = _find_shopkeeper(char)
     if not keeper:
-        return "You can't do that here."
+        return denial or "You can't do that here."
     shop = _get_shop(keeper)
     if not shop:
         return "You can't do that here."
@@ -131,8 +185,12 @@ def do_sell(char: Character, args: str) -> str:
             price = _get_cost(keeper, obj, buy=False)
             if price <= 0:
                 return "The shopkeeper doesn't buy that."
+            total_wealth = _keeper_total_wealth(keeper)
+            if price > total_wealth:
+                return _NO_WEALTH
             char.gold += price
             char.inventory.remove(obj)
             keeper.inventory.append(obj)
+            _set_keeper_total_wealth(keeper, total_wealth - price)
             return f"You sell {obj.short_descr or obj.name} for {price} gold."
     return "You don't have that."

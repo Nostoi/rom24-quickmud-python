@@ -13,4 +13,9 @@ class BoardJson(JsonDataclass):
 
     name: str
     description: str
+    read_level: int = 0
+    write_level: int = 0
+    default_recipients: str = ""
+    force_type: int = 0
+    purge_days: int = 0
     notes: List[NoteJson] = field(default_factory=list)

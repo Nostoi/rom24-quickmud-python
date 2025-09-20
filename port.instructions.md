@@ -107,6 +107,9 @@
 - RULE: Reset loaders must mirror ROM `load_resets` parsing: ignore `if_flag`, set `arg1..arg4` like C, and keep mob/object limits for 'M'/'P'.
   RATIONALE: Dropping reset arguments erases ROM spawn caps and duplicates mobs/objects.
   EXAMPLE: convert_area('midgaard.are') → ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
+- RULE: Reset handlers must honor 'D' commands by restoring exit `rs_flags`/`exit_info` on every reset.
+  RATIONALE: Door states must re-close and relock after resets to match ROM gating.
+  EXAMPLE: pytest -q tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
 
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
@@ -118,6 +121,9 @@
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
   RATIONALE: ROM prevents over-encumbered characters from moving.
   EXAMPLE: if ch.carry_weight > can_carry_w(ch): return "You are too heavy to move."
+- RULE: Charmed followers (AFF_CHARM) must refuse to leave while their master shares the room, returning the ROM loyalty message.
+  RATIONALE: `move_char` blocks AFF_CHARM characters from wandering away from their controllers.
+  EXAMPLE: pytest -q tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
 - RULE: Serve help topics via registry loaded from ROM help JSON; dispatch `help` command through keyword lookup.
   RATIONALE: Preserves ROM help text layout and keyword search behavior.
   EXAMPLE: text = help_registry["murder"].text
@@ -172,6 +178,9 @@
  - RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
   RATIONALE: Security parity with ROM (`check_ban`/`do_ban`); prevents banned hosts/accounts from entering.
   EXAMPLE: add_ban(host="bad.example", type="all"); assert login(host) == "BANNED"
+- RULE: Shop commands must respect `Shop.open_hour`/`close_hour` from #SHOPS data and refuse service outside the window.
+  RATIONALE: Maintains ROM trading schedules (e.g., Midgaard captain opens 6-22).
+  EXAMPLE: pytest -q tests/test_shops.py::test_shop_respects_open_hours
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)

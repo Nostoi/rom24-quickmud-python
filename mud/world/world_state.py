@@ -5,7 +5,7 @@ from mud.loaders.json_loader import load_all_areas_from_json as load_enhanced_js
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry
 from mud.db.session import SessionLocal
 from mud.db import models
-from mud.models.character import Character, character_registry
+from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import Position
 from mud.spawning.reset_handler import apply_resets
 from .linking import link_exits
@@ -171,6 +171,8 @@ def fix_all_exits() -> None:
 def create_test_character(name: str, room_vnum: int) -> Character:
     room = room_registry.get(room_vnum)
     char = Character(name=name)
+    char.is_npc = False
+    char.pcdata = PCData()
     # ROM default: new players start standing.
     char.position = int(Position.STANDING)
     if room:

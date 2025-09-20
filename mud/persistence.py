@@ -5,11 +5,12 @@ from pathlib import Path
 from typing import Dict, List, Optional
 import os
 
-from mud.models.character import Character, character_registry
+from mud.models.character import Character, PCData, character_registry
 from mud.models.json_io import dump_dataclass, load_dataclass
 from mud.spawning.obj_spawner import spawn_object
 from mud.registry import room_registry
 from mud.time import time_info, Sunlight
+from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
 
 
 @dataclass
@@ -35,6 +36,8 @@ class PlayerSave:
     inventory: List[int] = field(default_factory=list)
     equipment: Dict[str, int] = field(default_factory=dict)
     aliases: Dict[str, str] = field(default_factory=dict)
+    board: str = DEFAULT_BOARD_NAME
+    last_notes: Dict[str, float] = field(default_factory=dict)
 
 
 PLAYERS_DIR = Path("data/players")
@@ -63,6 +66,10 @@ def save_character(char: Character) -> None:
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
         aliases=dict(getattr(char, "aliases", {})),
+        board=(char.pcdata.board_name if char.pcdata else DEFAULT_BOARD_NAME),
+        last_notes=dict(getattr(char.pcdata, "last_notes", {}) or {})
+        if char.pcdata
+        else {},
     )
     path = PLAYERS_DIR / f"{char.name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -94,6 +101,7 @@ def load_character(name: str) -> Optional[Character]:
         exp=data.exp,
         position=data.position,
     )
+    char.is_npc = False
     # restore bitfields
     char.affected_by = getattr(data, "affected_by", 0)
     char.wiznet = getattr(data, "wiznet", 0)
@@ -114,6 +122,16 @@ def load_character(name: str) -> Optional[Character]:
         char.aliases.update(getattr(data, "aliases", {}) or {})
     except Exception:
         pass
+    board_name = getattr(data, "board", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME
+    board = find_board(board_name)
+    if board is None:
+        board = find_board(DEFAULT_BOARD_NAME)
+        if board is None:
+            board = get_board(DEFAULT_BOARD_NAME)
+    pcdata = PCData()
+    pcdata.board_name = board.storage_key()
+    pcdata.last_notes.update(getattr(data, "last_notes", {}) or {})
+    char.pcdata = pcdata
     character_registry.append(char)
     return char
 
