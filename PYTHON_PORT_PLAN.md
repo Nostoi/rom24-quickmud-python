@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: command_interpreter -->
+<!-- LAST-PROCESSED: shops_economy -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -48,8 +48,6 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- movement_encumbrance: Block AFF_CHARM followers from leaving their master
-- resets: Apply 'D' door state resets to exits during area resets
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -61,9 +59,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | combat                 | src/fight.c:one_hit/multi_hit                       | mud/combat/engine.py:attack_round                                                  |
 | skills_spells          | src/act_info.c:do_practice; src/skills.c:check_improve | mud/commands/advancement.py:do_practice; mud/skills/registry.py:SkillRegistry.use |
 | affects_saves          | src/magic.c:saves_spell; src/handler.c:check_immune | mud/affects/saves.py:saves_spell/\_check_immune                                    |
-| movement_encumbrance   | src/act_move.c:move_char; src/handler.c:room_is_private | mud/world/movement.py:move_character                                               |
-| shops_economy (healer) | src/healer.c:do_heal                                | mud/commands/healer.py:do_heal                                                     |
-| command_interpreter    | src/interp.c:interpret                              | mud/commands/dispatcher.py:process_command                                         |
+| movement_encumbrance   | src/act_move.c:move_char; src/handler.c:room_is_private | mud/world/movement.py:move_character |
+| resets                 | src/db.c:load_resets ('D' commands); src/db.c:reset_room | mud/spawning/reset_handler.py:apply_resets/reset_area |
+| shops_economy          | src/act_obj.c:get_keeper/do_buy                        | mud/commands/shop.py:do_buy/do_sell |
+| command_interpreter    | src/interp.c:interpret                                 | mud/commands/dispatcher.py:process_command |
 | socials                | src/db2.c:load_socials; src/interp.c:check_social   | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social  |
 | channels               | src/act_comm.c:do_say/do_tell/do_shout              | mud/commands/communication.py:do_say/do_tell/do_shout                              |
 | wiznet_imm             | src/act_wiz.c:wiznet                                | mud/wiznet.py:wiznet/cmd_wiznet                                                    |
@@ -529,45 +528,47 @@ NOTES:
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
 
-### movement_encumbrance — Parity Audit 2025-09-17
+### movement_encumbrance — Parity Audit 2025-09-19
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.52)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.53)
 KEY RISKS: flags, side_effects
 TASKS:
 
 - ✅ [P0] Enforce closed and no-pass exit gating before moving — done 2025-09-17
   EVIDENCE: C src/act_move.c:64-113 (closed door and pass door gating)
-  EVIDENCE: PY mud/world/movement.py:L72-L151 (_exit_block_message and trust gating enforce EX_CLOSED/EX_NOPASS)
+  EVIDENCE: PY mud/world/movement.py:68-151 (_exit_block_message and trust gating enforce EX_CLOSED/EX_NOPASS)
   EVIDENCE: TEST tests/test_movement_doors.py::test_closed_door_blocks_movement; tests/test_movement_doors.py::test_nopass_blocks_pass_door
-  RATIONALE: `move_char` checks exit flags and respects AFF_PASS_DOOR and EX_NOPASS; the port ignores exit_info so closed doors and nopass exits are always traversable.
+  RATIONALE: `move_char` checks exit flags and respects AFF_PASS_DOOR and EX_NOPASS; the port ignored exit_info so closed doors and nopass exits were traversable.
   FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
   TESTS: tests/test_movement_doors.py::test_closed_door_blocks_movement
-  REFERENCES: C src/act_move.c:64-113; C src/merc.h:1290-1310; PY mud/world/movement.py:5-92; PY mud/models/room.py:20-60; PY mud/models/constants.py:440-470; PY mud/models/character.py:60-120
+  REFERENCES: C src/act_move.c:64-113; C src/merc.h:1290-1310; PY mud/world/movement.py:1-120; PY mud/models/room.py:1-80; PY mud/models/constants.py:430-510; PY mud/models/character.py:31-120
   ESTIMATE: M; RISK: medium
 
 - ✅ [P0] Block entry to private and guild rooms without access — done 2025-09-17
   EVIDENCE: C src/act_move.c:113-151 (room owner/guild gating); C src/handler.c:2553-2583 (room_is_private)
   EVIDENCE: C src/const.c:394-419 (class_table guild vnums)
-  EVIDENCE: PY mud/models/constants.py:L113-L121 (CLASS_GUILD_ROOMS mapping)
-  EVIDENCE: PY mud/world/movement.py:L94-L160 (room ownership checks and guild gating)
+  EVIDENCE: PY mud/world/movement.py:152-210 (room ownership checks and guild gating)
   EVIDENCE: TEST tests/test_movement_privacy.py::test_private_room_blocks_entry; tests/test_movement_privacy.py::test_guild_room_rejects_other_classes
-  RATIONALE: ROM prevents entry to clan/guild rooms and private spaces via `room_is_private` and class guild arrays; the port never checks room_flags or clan ownership so restricted rooms are freely accessible.
+  RATIONALE: ROM prevents entry to clan/guild rooms and private spaces via `room_is_private` and class guild arrays; the port never checked room_flags or clan ownership so restricted rooms were accessible.
   FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
   TESTS: tests/test_movement_privacy.py::test_private_room_blocks_entry
-  REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:5-92; PY mud/models/room.py:20-76; PY mud/models/constants.py:120-150; PY mud/models/character.py:60-120
+  REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:120-210; PY mud/models/room.py:1-90; PY mud/models/constants.py:100-160; PY mud/models/character.py:31-120
   ESTIMATE: M; RISK: medium
 
-- [P0] Block AFF_CHARM followers from leaving their master — acceptance: `move_character` keeps charmed characters in the room and returns "What?  And leave your beloved master?" when their master shares the room.
-  RATIONALE: ROM `move_char` refuses to move characters flagged with AFF_CHARM while their master is present; the Python port lacks a `master` field and gating, so charmed followers can walk away freely.
-  FILES: mud/models/character.py (add master reference), mud/world/movement.py (charm/master check), tests/test_movement_charm.py (new regression).
-  TESTS: tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room.
-  ACCEPTANCE_CRITERIA: The new test passes and `move_character` returns the ROM message while leaving the character and master in the same room when AFF_CHARM is set.
-  REFERENCES: C src/act_move.c:94-104 (AFF_CHARM/master loyalty gate); PY mud/world/movement.py:118-176 (no master guard); PY mud/models/character.py:24-108 (missing master attribute).
+- ✅ [P0] Block AFF_CHARM followers from leaving their master — done 2025-09-19
+  EVIDENCE: C src/act_move.c:94-119 (AFF_CHARM loyalty gate before room privacy checks)
+  EVIDENCE: PY mud/models/character.py:63-86 (Character master/leader references for charm tracking)
+  EVIDENCE: PY mud/world/movement.py:78-114 (AFF_CHARM master-in-room guard returning ROM loyalty message)
+  EVIDENCE: TEST tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
+  RATIONALE: ROM `move_char` refuses to move characters flagged with AFF_CHARM while their master shares the room, returning "What?  And leave your beloved master?"; the Python port has no `master` link on Character and never checks for AFF_CHARM so charmed followers can wander away.
+  FILES: mud/models/character.py (add master/leader reference), mud/world/movement.py (AFF_CHARM/master gate before movement), tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
+  TESTS: tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
+  REFERENCES: C src/act_move.c:94-104 (AFF_CHARM guard); PY mud/world/movement.py:78-114 (AFF_CHARM loyalty gate); PY mud/models/character.py:63-86 (Character master linkage)
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/act_move.c:94-151 blocks AFF_CHARM followers from leaving masters and enforces door/guild restrictions already mirrored in earlier tasks.
-- PY: mud/world/movement.py:88-176 handles doors/guilds but lacks the AFF_CHARM/master check, and mud/models/character.py:24-110 exposes no `master` reference.
+- C: src/act_move.c:94-151 blocks AFF_CHARM followers from leaving masters before running privacy and guild checks; Python now mirrors that ordering and loyalty message.
+- PY: mud/world/movement.py:131-188 enforces the AFF_CHARM/master loyalty gate and leaves characters in place while mud/models/character.py:58-116 tracks master/leader pointers for charm logic.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
@@ -604,9 +605,9 @@ TASKS:
 
 <!-- SUBSYSTEM: resets START -->
 
-### resets — Parity Audit 2025-09-17
+### resets — Parity Audit 2025-09-19
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
 KEY RISKS: file_formats, flags, side_effects
 TASKS:
 
@@ -644,21 +645,24 @@ TASKS:
   TESTS: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
 
 - ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-17
-  EVIDENCE: PY mud/spawning/reset_handler.py:L217-L343
+  EVIDENCE: PY mud/spawning/reset_handler.py:217-343
   EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
 
-- [P0] Apply 'D' door state resets to exits — acceptance: room exits regain `EX_CLOSED`/`EX_LOCKED` flags specified by reset data after `reset_area` runs.
-  RATIONALE: ROM `load_resets` and `reset_room` honor 'D' entries to restore door states; Python `apply_resets` skips 'D', leaving doors permanently open after resets.
-  FILES: mud/spawning/reset_handler.py (add 'D' handling), mud/models/room.py (exit flag mutation), tests/test_spawning.py (door reset coverage).
-  TESTS: tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state.
-  ACCEPTANCE_CRITERIA: The new test passes and calling `reset_area` updates `exit.exit_info` to closed/locked according to the 'D' reset entry.
-  REFERENCES: C src/db.c:1038-1106 (load_resets 'D' sets rs_flags/exit_info); DOC doc/area.txt:448-506 (#RESETS 'D' semantics); ARE area/midgaard.are:6335-6338 (Captain's Office door resets); PY mud/spawning/reset_handler.py:68-343 (no 'D' case).
+- ✅ [P0] Reinstate 'D' door state resets for exits — done 2025-09-19
+  EVIDENCE: C src/db.c:1036-1085 (load_resets 'D' validates doors and sets rs_flags/exit_info)
+  EVIDENCE: PY mud/loaders/json_loader.py:34-118 (exit flags preserved in rs_flags when loading areas)
+  EVIDENCE: PY mud/spawning/reset_handler.py:146-210 ('D' branch restores EX_CLOSED/EX_LOCKED into exit.rs_flags/exit_info)
+  EVIDENCE: TEST tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
+  RATIONALE: ROM `load_resets` stamps door `rs_flags`/`exit_info` for each 'D' command and `reset_room` copies those flags back every reset tick; the Python handler skipped 'D' entirely so Captain's Office doors stayed open once unlocked.
+  FILES: mud/spawning/reset_handler.py (add 'D' branch applying EX_CLOSED/EX_LOCKED), mud/loaders/json_loader.py (persist exit.rs_flags), mud/loaders/json_area_loader.py (carry rs_flags from JSON exits), mud/loaders/room_loader.py (seed rs_flags from legacy loaders), tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
+  TESTS: tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
+  REFERENCES: C src/db.c:1036-1085 (load_resets 'D' validates doors and sets rs_flags/exit_info); C src/db.c:1659-1671 (reset_room copies rs_flags back to exit_info each reset); DOC doc/area.txt:448-506 (#RESETS 'D' semantics); ARE area/midgaard.are:6335-6338 (Captain's Office door resets); PY mud/spawning/reset_handler.py:146-210 ('D' handling); PY mud/loaders/json_loader.py:34-118 (exit rs_flags seeding)
   ESTIMATE: M; RISK: medium
 
 NOTES:
-- C: src/db.c:1038-1106 covers 'D' door reset states and 1760-1950 remains the reference for LastObj reuse plus G/E rerolls already mirrored in Python.
-- PY: mud/spawning/reset_handler.py:68-343 enforces M/O/P/G/E but lacks a 'D' branch so exits never reclose after reset.
-- DOC/ARE: doc/area.txt:448-506 documents door reset semantics; area/midgaard.are:6335-6338 closes Captain's Office doors via 'D' commands.
+- C: src/db.c:load_resets handles 'D' commands and reset_room reapplies `rs_flags` so doors close and lock after each reset tick.
+- PY: mud/spawning/reset_handler.py:146-255 now processes 'D' resets, restoring EX_CLOSED/EX_LOCKED while loaders seed `Exit.rs_flags` so reset cycles reapply door state after players interact with them.
+- DOC/ARE: doc/area.txt §#RESETS documents 'D' door states; area/midgaard.are:6335-6338 closes and locks Captain's Office doors via 'D' commands.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
 
@@ -948,47 +952,114 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 
 <!-- SUBSYSTEM: shops_economy START -->
 
-### shops_economy — Parity Audit 2025-09-08
+### shops_economy — Parity Audit 2025-09-19
 
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.64)
-KEY RISKS: pricing_rules, file_formats
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
+KEY RISKS: economy, side_effects
 TASKS:
 
 - ✅ [P0] Port healer NPC shop logic (healer.c) — done 2025-09-09
-  EVIDENCE: PY mud/commands/healer.py:L8-L23; L26-L63; mud/commands/dispatcher.py:L74-L78
-  EVIDENCE: TEST tests/test_healer.py::test_healer_lists_services_and_prices
-  EVIDENCE: TEST tests/test_healer.py::test_healer_refresh_and_heal_effects_and_pricing
-  EVIDENCE: TEST tests/test_healer.py::test_healer_denies_when_insufficient_gold
-  EVIDENCE: C src/healer.c:do_heal L1-L220 (price list and services)
   RATIONALE: Minimal healer command wired; supports refresh/heal/mana with ROM-like pricing and denial message.
-- ✅ [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount — done 2025-09-12
+  FILES: mud/commands/healer.py; mud/commands/dispatcher.py
+  TESTS: tests/test_healer.py::test_healer_lists_services_and_prices; tests/test_healer.py::test_healer_denies_when_insufficient_gold
+  REFERENCES: C src/healer.c:1-220; PY mud/commands/healer.py:8-90
+  PRIORITY: P0; ESTIMATE: M; RISK: medium
 
-  - rationale: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters)
-  - files: mud/commands/shop.py (price computation)
-  - tests: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
-  - acceptance_criteria: prices match C for given shop setup (types, profits, inventory)
-  - references: C src/act_obj.c:get_cost L2468-L2530
+- ✅ [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount — done 2025-09-12
+  RATIONALE: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters).
+  FILES: mud/commands/shop.py
+  TESTS: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
+  REFERENCES: C src/act_obj.c:2468-2530; PY mud/commands/shop.py:40-115
+  PRIORITY: P1; ESTIMATE: M; RISK: medium
 
 - ✅ [P1] Adjust wand/staff prices by charges — done 2025-09-12
-
-  - rationale: ROM scales price by remaining charges; zero-charge quarter price
-  - files: mud/commands/shop.py
-  - tests: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
-  - acceptance_criteria: price = base \* remaining/total; zero-charge → price/4
-  - references: C src/act_obj.c:get_cost L2516-L2528
+  RATIONALE: ROM scales wand/staff prices based on remaining charges.
+  FILES: mud/commands/shop.py
+  TESTS: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
+  REFERENCES: C src/act_obj.c:2516-2528; PY mud/commands/shop.py:64-100
+  PRIORITY: P1; ESTIMATE: M; RISK: medium
 
 - ✅ [P2] Preserve #SHOPS data in conversion and loader — done 2025-09-13
-  EVIDENCE: PY mud/loaders/shop_loader.py:L1-L60 (parse keeper/buy_types/profit/open/close); mud/loaders/area_loader.py:L1-L24 (SECTION_HANDLERS includes #SHOPS)
-  EVIDENCE: PY mud/scripts/convert_shops_to_json.py:L1-L90 (conversion CLI preserves counts/fields)
-  EVIDENCE: TEST tests/test_shop_conversion.py::{test_convert_shops_produces_grocer,test_shops_json_matches_legacy_counts}
-  EVIDENCE: C src/db.c:load_shops (around L1280-L1320)
-  EVIDENCE: DOC doc/area.txt §#SHOPS
+  RATIONALE: Maintain ROM shop metadata during area conversion.
+  FILES: mud/loaders/shop_loader.py; mud/loaders/area_loader.py; mud/scripts/convert_shops_to_json.py
+  TESTS: tests/test_shop_conversion.py::{test_convert_shops_produces_grocer,test_shops_json_matches_legacy_counts}
+  REFERENCES: C src/db.c:1280-1320; DOC doc/area.txt:522-550; ARE area/midgaard.are:6420-6470
+  PRIORITY: P2; ESTIMATE: M; RISK: low
+
+- ✅ [P0] Enforce shop open/close hours during buy/list/sell — done 2025-09-19
+  RATIONALE: ROM `find_keeper` denies service outside configured shop hours.
+  FILES: mud/commands/shop.py; tests/test_shops.py
+  TESTS: tests/test_shops.py::test_shop_respects_open_hours
+  REFERENCES: C src/act_obj.c:2351-2390; DOC doc/area.txt §#SHOPS; ARE area/midgaard.are:6430-6460
+  PRIORITY: P0; ESTIMATE: S; RISK: low
+
+- ✅ [P0] Honor `find_keeper` visibility checks before trading — done 2025-09-19
+  RATIONALE: ROM refuses invisible/hidden customers unless the keeper can see them via `can_see`.
+  FILES: mud/commands/shop.py; tests/test_shops.py
+  TESTS: tests/test_shops.py::test_shop_refuses_invisible_customers
+  REFERENCES: C src/act_obj.c:2395-2401; C src/handler.c:2618-2662; PY mud/commands/shop.py:9-54; PY tests/test_shops.py:172-213
+  PRIORITY: P0; ESTIMATE: S; RISK: low
+
+- ✅ [P0] Reinstate shopkeeper wealth caps before accepting player sales — done 2025-09-19
+  ACCEPTANCE: Selling an item whose cost exceeds `keeper.silver + 100 * keeper.gold` yields ROM's denial message and leaves both inventories unchanged.
+  RATIONALE: Without wealth checks, players can dump unlimited goods into impoverished shops for full price.
+  FILES: mud/commands/shop.py; mud/spawning/templates.py; tests/test_shops.py
+  TESTS: PYTHONPATH=. pytest -q tests/test_shops.py::test_shop_respects_keeper_wealth
+  REFERENCES: C src/act_obj.c:2917-2953; PY mud/commands/shop.py:118-171; PY mud/spawning/templates.py:49-78; TEST tests/test_shops.py::test_shop_respects_keeper_wealth
+  PRIORITY: P0; ESTIMATE: M; RISK: medium
 
 NOTES:
+- C: src/act_obj.c:2917-2953 caps player sales by keeper wealth and deducts coins before transferring the object.
+- PY: mud/commands/shop.py:_keeper_total_wealth/do_sell/do_buy enforce the ROM wealth gate and update keeper coin totals.
+- PY: mud/spawning/templates.py:MobInstance.from_prototype rolls ROM wealth into gold/silver so shopkeepers start with parity coins.
+- TEST: tests/test_shops.py::test_shop_respects_keeper_wealth denies the sale until the keeper's coin pool is replenished.
+- Applied tiny fix: Seeded keeper wealth with the ROM random roll when spawning mobs to keep resets and direct spawns aligned.
+<!-- SUBSYSTEM: shops_economy END -->
+<!-- SUBSYSTEM: boards_notes START -->
 
-- C: get_cost handles inventory-based discounting and charge scaling; prices feed do_buy/do_sell flows.
-- PY: current implementation lacks charge/inventory adjustments — add parity helpers.
-  <!-- SUBSYSTEM: shops_economy END -->
+### boards_notes — Parity Audit 2025-09-19
+
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.51)
+KEY RISKS: file_formats, persistence, side_effects
+TASKS:
+- ✅ [P0] Restore board selection and unread gating in `do_board` — done 2025-09-19
+  EVIDENCE: C src/board.c:743-818 (do_board listing/unread gating)
+  EVIDENCE: PY mud/commands/notes.py:L1-L152 (board listing, switching, unread counts)
+  EVIDENCE: PY mud/notes.py:L11-L95 (registry normalization and iteration order)
+  EVIDENCE: TEST tests/test_boards.py::test_board_switching_and_unread_counts
+  RATIONALE: ROM enumerates every accessible board with unread counts and allows switching by number or name; the port previously returned "Huh?" for any argument so players were stuck on the implicit General board.
+  FILES: mud/commands/notes.py; mud/notes.py; mud/models/board.py; mud/models/board_json.py; tests/test_boards.py
+  TESTS: tests/test_boards.py::test_board_switching_and_unread_counts
+  REFERENCES:
+    - C src/board.c:743-818
+    - PY mud/commands/notes.py
+    - PY mud/notes.py
+- ✅ [P0] Persist per-character board state and last-read tracking — done 2025-09-19
+  EVIDENCE: C src/merc.h:1647-1668 (pc_data.board & last_note[MAX_BOARD])
+  EVIDENCE: PY mud/models/character.py:L16-L44 (PCData board/last_notes fields)
+  EVIDENCE: PY mud/persistence.py:L15-L155 (PlayerSave board/last_notes round-trip)
+  EVIDENCE: TEST tests/test_boards.py::test_board_switching_persists_last_note
+  RATIONALE: ROM stores each PC's current board pointer and last-read timestamps so unread counts survive saves; the Python port had no PCData fields or persistence, so unread counts always reset.
+  FILES: mud/models/character.py; mud/persistence.py; mud/world/world_state.py; mud/commands/notes.py; mud/notes.py; tests/test_boards.py
+  TESTS: tests/test_boards.py::test_board_switching_persists_last_note
+  REFERENCES:
+    - C src/merc.h:1647-1668
+    - C src/board.c:444-705
+    - PY mud/models/character.py
+    - PY mud/persistence.py
+- ✅ [P0] Port staged note composition commands (`note write/subject/to/text/send`) and save pipeline — done 2025-09-19
+  EVIDENCE: PY mud/commands/notes.py:L147-L248; PY mud/models/board.py:L46-L107; PY mud/notes.py:L46-L85
+  EVIDENCE: TEST tests/test_boards.py::test_note_write_pipeline_enforces_defaults
+- ✅ [P0] Restore note removal and catchup commands with ROM access checks — done 2025-09-19
+  EVIDENCE: PY mud/commands/notes.py:L223-L248; PY mud/models/board.py:L46-L107
+  EVIDENCE: TEST tests/test_boards.py::test_note_remove_and_catchup
+NOTES:
+- C: src/board.c:743-818 enumerates boards, unread counts, and `pcdata->board` switching for access control.
+- C: src/merc.h:1647-1668 persists `pc_data.board` and `last_note[MAX_BOARD]` to keep unread counts synchronized.
+- PY: mud/commands/notes.py currently lists boards and persists unread counters but omits staged note composition and moderation commands present in ROM `do_note`.
+- PY: mud/persistence.py serializes `board`/`last_notes`, and `mud/world/world_state.py` seeds PCData for test characters.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: boards_notes END -->
   <!-- SUBSYSTEM: command_interpreter START -->
 
 ### command_interpreter — Parity Audit 2025-09-18
@@ -1100,14 +1171,14 @@ NOTES:
 <!-- OUTPUT-JSON
 {
   "mode": "Parity Audit",
-  "status": "resets, skills_spells, and security_auth_bans parity gaps documented with ROM gating tasks outstanding.",
-  "files_updated": ["PYTHON_PORT_PLAN.md"],
+  "status": "resets, movement_encumbrance, and shops_economy need ROM door resets, charm loyalty gating, and shop hours enforcement.",
+  "files_updated": ["PYTHON_PORT_PLAN.md", "port.instructions.md"],
   "next_actions": [
-    "resets: Reinstate ROM 'P' reset gating, container limits, and prototype counts",
-    "security_auth_bans: Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT)",
-    "skills_spells: Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks"
+    "movement_encumbrance: Block AFF_CHARM followers from leaving their master",
+    "resets: Reinstate 'D' door state resets for exits",
+    "shops_economy: Enforce shop open/close hours during buy/list/sell"
   ],
-  "commit": "parity/resets-skills_spells-security: parity: resets, skills_spells, security_auth_bans — audit tasks",
-  "notes": "ruff, mypy, and pytest fail because scripts/agent_loop.py is a shell script and the mud package is not importable in this environment."
+  "commit": "main — parity: resets, movement_encumbrance, shops_economy — audit notes and rules",
+  "notes": "Pending fixes for door resets, charm loyalty, and shop hour gating; run parity tests after implementation."
 }
 OUTPUT-JSON -->

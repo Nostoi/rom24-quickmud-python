@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.models.room import Room
     from mud.db.models import Character as DBCharacter
+    from mud.models.board import NoteDraft
 
 
 @dataclass
@@ -26,6 +27,9 @@ class PCData:
     condition: List[int] = field(default_factory=lambda: [0] * 4)
     points: int = 0
     security: int = 0
+    board_name: str = "general"
+    last_notes: Dict[str, float] = field(default_factory=dict)
+    in_progress: Optional["NoteDraft"] = None
 
 
 @dataclass
@@ -56,6 +60,8 @@ class Character:
     affected_by: int = 0
     position: int = Position.STANDING
     room: Optional["Room"] = None
+    master: Optional["Character"] = None
+    leader: Optional["Character"] = None
     practice: int = 0
     train: int = 0
     skills: Dict[str, int] = field(default_factory=dict)

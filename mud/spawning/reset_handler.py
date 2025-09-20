@@ -4,7 +4,14 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from mud.models.area import Area
-from mud.models.constants import ITEM_INVENTORY, ExtraFlag, convert_flags_from_letters
+from mud.models.constants import (
+    ITEM_INVENTORY,
+    ExtraFlag,
+    EX_CLOSED,
+    EX_ISDOOR,
+    EX_LOCKED,
+    convert_flags_from_letters,
+)
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
@@ -188,6 +195,7 @@ def apply_resets(area: Area) -> None:
             last_obj = None
         elif cmd == 'O':
             obj_vnum = reset.arg1 or 0
+            limit = _resolve_reset_limit(reset.arg2)
             room_vnum = reset.arg3 or 0
             room = room_registry.get(room_vnum)
             if obj_vnum <= 0 or room is None:
@@ -202,7 +210,7 @@ def apply_resets(area: Area) -> None:
                 for obj in getattr(room, 'contents', [])
                 if getattr(getattr(obj, 'prototype', None), 'vnum', None) == obj_vnum
             ]
-            if existing_in_room:
+            if len(existing_in_room) >= limit:
                 last_obj = None
                 continue
             obj = spawn_object(obj_vnum)
@@ -214,6 +222,38 @@ def apply_resets(area: Area) -> None:
             else:
                 logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
                 last_obj = None
+        elif cmd == 'D':
+            room_vnum = reset.arg1 or 0
+            door = reset.arg2 or 0
+            state = reset.arg3 or 0
+
+            room = room_registry.get(room_vnum)
+            if room is None:
+                logging.warning("Invalid D reset room %s", room_vnum)
+                continue
+            if door < 0 or door >= len(room.exits):
+                logging.warning("Invalid D reset direction %s in room %s", door, room_vnum)
+                continue
+
+            exit_obj = room.exits[door]
+            if exit_obj is None:
+                logging.warning("Invalid D reset missing exit %s in room %s", door, room_vnum)
+                continue
+
+            base_flags = int(getattr(exit_obj, "rs_flags", 0) or 0)
+            if not base_flags:
+                base_flags = int(getattr(exit_obj, "exit_info", 0) or 0)
+
+            base_flags |= EX_ISDOOR
+            base_flags &= ~(EX_CLOSED | EX_LOCKED)
+
+            if state >= 1:
+                base_flags |= EX_CLOSED
+            if state >= 2:
+                base_flags |= EX_LOCKED
+
+            exit_obj.rs_flags = base_flags
+            exit_obj.exit_info = base_flags
         elif cmd == 'G':
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)

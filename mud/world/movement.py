@@ -148,6 +148,11 @@ def move_character(char: Character, direction: str) -> str:
     if blocked_msg:
         return blocked_msg
 
+    if char.has_affect(AffectFlag.CHARM):
+        master = getattr(char, "master", None)
+        if master is not None and getattr(master, "room", None) is current_room:
+            return "What?  And leave your beloved master?"
+
     trusted = char.is_admin or char.is_immortal()
     if not trusted and not _is_room_owner(char, target_room) and _room_is_private(target_room):
         return "That room is private right now."

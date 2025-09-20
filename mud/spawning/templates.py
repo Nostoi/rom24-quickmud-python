@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from mud.models.object import Object
 
 from mud.models.constants import ActFlag, Position
+from mud.utils import rng_mm
 
 @dataclass
 class ObjectInstance:
@@ -45,13 +46,34 @@ class MobInstance:
     carry_weight: int = 0
     carry_number: int = 0
     position: int = Position.STANDING
+    gold: int = 0
+    silver: int = 0
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> 'MobInstance':
-        return cls(name=proto.short_descr or proto.player_name,
-                   level=proto.level,
-                   current_hp=proto.hit[1],
-                   prototype=proto)
+        wealth = getattr(proto, 'wealth', 0) or 0
+        gold_coins = 0
+        silver_coins = 0
+        if wealth > 0:
+            low = wealth // 2
+            high = (3 * wealth) // 2
+            if high < low:
+                high = low
+            total = rng_mm.number_range(low, high)
+            gold_min = total // 200
+            gold_max = max(total // 100, gold_min)
+            if gold_max < gold_min:
+                gold_max = gold_min
+            gold_coins = rng_mm.number_range(gold_min, gold_max)
+            silver_coins = max(total - gold_coins * 100, 0)
+        return cls(
+            name=proto.short_descr or proto.player_name,
+            level=proto.level,
+            current_hp=proto.hit[1],
+            prototype=proto,
+            gold=gold_coins,
+            silver=silver_coins,
+        )
 
     def move_to_room(self, room: 'Room') -> None:
         if self.room and self in self.room.people:

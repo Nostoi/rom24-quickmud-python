@@ -8,14 +8,14 @@ with complete field mapping from the original ROM .are format.
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from ..models.area import Area
 from ..models.room import Room, Exit, ExtraDescr
 from ..models.mob import MobIndex  
 from ..models.obj import ObjIndex, Affect
 from ..models.room_json import ResetJson
-from mud.models.constants import Direction, Sector, Sex, ITEM_INVENTORY
+from mud.models.constants import Direction, Sector, Sex
 from mud.registry import area_registry, room_registry, mob_registry, obj_registry
 
 
@@ -55,6 +55,54 @@ def _rom_flags_to_int(flags_str: str) -> int:
             i += 1
     
     return result
+
+
+def _parse_exit_flags(raw: Any) -> int:
+    """Convert exit flag representations (numbers or ROM letters) to bitmasks."""
+
+    if isinstance(raw, int):
+        return raw
+    if isinstance(raw, str):
+        stripped = raw.strip()
+        if not stripped or stripped == '0':
+            return 0
+        try:
+            return int(stripped)
+        except ValueError:
+            bits = 0
+            for ch in stripped:
+                if 'A' <= ch <= 'Z':
+                    bits |= 1 << (ord(ch) - ord('A'))
+                elif 'a' <= ch <= 'z':
+                    bits |= 1 << (ord(ch) - ord('a') + 26)
+            return bits
+    if isinstance(raw, list):
+        bits = 0
+        for entry in raw:
+            bits |= _parse_exit_flags(entry)
+        return bits
+    return 0
+
+
+def _coerce_reset_arg(value: Any) -> int:
+    """Best-effort conversion of reset arguments to integers."""
+
+    if value is None:
+        return 0
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return 0
+        try:
+            return int(stripped)
+        except ValueError:
+            return 0
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 logger = logging.getLogger(__name__)
 
@@ -116,15 +164,39 @@ def load_area_from_json(json_file_path: str) -> Area:
     # Load objects
     _load_objects_from_json(data.get(objects_key, []), area)
     
-    # Load area-level resets
+    # Load area-level resets. Older conversions stored the `if_flag` in arg1 and
+    # shifted the actual ROM arguments (arg1..arg4) to arg2..arg5. Normalise the
+    # layout so reset handlers receive ROM-compatible fields regardless of the
+    # input JSON version.
     for reset_data in data.get('resets', []):
-        reset = ResetJson(
-            command=reset_data['command'],
-            arg1=reset_data['arg1'],
-            arg2=reset_data['arg2'],
-            arg3=reset_data['arg3'],
-            arg4=reset_data['arg4'],
-        )
+        command = str(reset_data.get('command', '') or '').upper()
+        raw_args = [
+            _coerce_reset_arg(reset_data.get(f'arg{i}', 0)) for i in range(1, 6)
+        ]
+
+        # Detect legacy layout with if_flag in arg1 (0/1) and actual args shifted.
+        shifted = False
+        if command in {'M', 'O', 'G', 'E', 'P', 'D', 'R'}:
+            if raw_args[0] in (0, 1) and raw_args[1]:
+                shifted = True
+
+        if shifted:
+            args = raw_args[1:5]
+        else:
+            args = raw_args[:4]
+
+        arg1, arg2, arg3, arg4 = args
+
+        if command == 'M':
+            # Missing room limit defaults to global limit (or 1) in ROM.
+            if arg4 == 0:
+                arg4 = arg2 if arg2 > 0 else 1
+        elif command == 'P':
+            # Default contained item count mirrors ROM's max(1, arg4).
+            if arg4 == 0:
+                arg4 = 1
+
+        reset = ResetJson(command=command, arg1=arg1, arg2=arg2, arg3=arg3, arg4=arg4)
         area.resets.append(reset)
     
     logger.info(f"Loaded area {area.name} from JSON with {len(data.get(rooms_key, []))} rooms, "
@@ -175,12 +247,16 @@ def _load_rooms_from_json(rooms_data: List[Dict[str, Any]], area: Area) -> None:
         for direction_name, exit_data in exits_data.items():
             try:
                 direction = Direction[direction_name.upper()]
+                raw_flags = exit_data.get('flags', '0')
+                exit_flags = _parse_exit_flags(raw_flags)
                 exit_obj = Exit(
                     vnum=exit_data.get('to_room', 0),
                     description=exit_data.get('description', ''),
                     keyword=exit_data.get('keyword', ''),
-                    flags=exit_data.get('flags', '0'),
+                    flags=raw_flags,
                     key=exit_data.get('key', 0),
+                    exit_info=exit_flags,
+                    rs_flags=exit_flags,
                 )
                 room.exits[direction.value] = exit_obj
             except KeyError:

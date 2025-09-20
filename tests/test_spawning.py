@@ -5,7 +5,7 @@ from mud.models.room_json import ResetJson
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.templates import MobInstance
-from mud.models.constants import ITEM_INVENTORY
+from mud.models.constants import Direction, EX_CLOSED, EX_LOCKED, ITEM_INVENTORY
 
 
 def test_resets_populate_world():
@@ -37,6 +37,34 @@ def test_resets_repop_after_tick():
     assert any(getattr(o, 'short_descr', None) == 'the donation pit' for o in donation.contents)
 
 
+def test_door_reset_applies_closed_and_locked_state():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    initialize_world('area/area.lst')
+
+    office = room_registry[3142]
+    area = office.area
+    assert area is not None
+
+    east_exit = office.exits[Direction.EAST.value]
+    assert east_exit is not None
+
+    assert east_exit.exit_info & EX_CLOSED
+    assert east_exit.exit_info & EX_LOCKED
+
+    east_exit.exit_info = 0
+
+    from mud.spawning.reset_handler import apply_resets
+
+    apply_resets(area)
+
+    assert east_exit.exit_info & EX_CLOSED
+    assert east_exit.exit_info & EX_LOCKED
+    assert east_exit.rs_flags & EX_LOCKED
+
+
 def test_reset_P_places_items_inside_container_in_midgaard():
     # Ensure a clean world and load Midgaard where P resets exist (desk/safe)
     room_registry.clear()
@@ -61,10 +89,14 @@ def test_reset_P_places_items_inside_container_in_midgaard():
 
 def test_p_reset_lock_state_fix_resets_container_value_field():
     # Ensure container instance's value[1] mirrors prototype after P population
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
-    area = office.area; assert area is not None
+    area = office.area
+    assert area is not None
     area.resets = []
     office.contents.clear()
     # Spawn desk (3130), then put key (3123) to trigger P logic
@@ -112,16 +144,20 @@ def test_reset_R_randomizes_exit_order(monkeypatch):
 def test_reset_P_uses_last_container_instance_when_multiple():
     # Build a controlled sequence: two desks (3130) into Captain's Office (3142),
     # then put a key (3123) into each using P after each O.
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
-    area = office.area; assert area is not None
+    area = office.area
+    assert area is not None
     area.resets = []
     office.contents.clear()
-    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
-    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
-    area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
-    area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
+    area.resets.append(ResetJson(command='O', arg1=3130, arg2=2, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=2, arg3=3130, arg4=1))
+    area.resets.append(ResetJson(command='O', arg1=3130, arg2=2, arg3=office.vnum))
+    area.resets.append(ResetJson(command='P', arg1=3123, arg2=2, arg3=3130, arg4=1))
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     desks = [o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130]
@@ -131,10 +167,14 @@ def test_reset_P_uses_last_container_instance_when_multiple():
 
 
 def test_reset_P_limit_enforced():
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
-    area = office.area; assert area is not None
+    area = office.area
+    assert area is not None
     area.resets = []
     office.contents.clear()
 
@@ -153,10 +193,14 @@ def test_reset_P_limit_enforced():
 
 
 def test_reset_P_skips_when_players_present():
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
-    area = office.area; assert area is not None
+    area = office.area
+    assert area is not None
     area.resets = []
     office.contents.clear()
 
@@ -185,12 +229,18 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     from mud.utils import rng_mm
 
     def setup_shop_area():
-        room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+        room_registry.clear()
+        area_registry.clear()
+        mob_registry.clear()
+        obj_registry.clear()
         initialize_world('area/area.lst')
         room = room_registry[3001]
-        area = room.area; assert area is not None
+        area = room.area
+        assert area is not None
         area.resets = []
-        room.people = [p for p in room.people if not isinstance(p, MobInstance)]
+        for candidate in room_registry.values():
+            if candidate.area is area:
+                candidate.people = [p for p in candidate.people if not isinstance(p, MobInstance)]
         room.contents.clear()
         area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
         area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
@@ -276,10 +326,14 @@ def test_reset_mob_limits():
 
 
 def test_resets_room_duplication_and_player_presence():
-    room_registry.clear(); area_registry.clear(); mob_registry.clear(); obj_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
-    area = office.area; assert area is not None
+    area = office.area
+    assert area is not None
     area.resets = []
     office.contents.clear()
 
