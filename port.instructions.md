@@ -110,6 +110,18 @@
 - RULE: Reset handlers must honor 'D' commands by restoring exit `rs_flags`/`exit_info` on every reset.
   RATIONALE: Door states must re-close and relock after resets to match ROM gating.
   EXAMPLE: pytest -q tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
+- RULE: Reset cycles must refresh each exit's `exit_info` from `rs_flags` (and mirror reverse exits) before processing commands.
+  RATIONALE: ROM `reset_room` copies baseline door flags every tick so unlabeled doors return to their default state even without an explicit 'D'.
+  EXAMPLE: pytest -q tests/test_spawning.py::test_reset_restores_base_exit_state
+- RULE: Reset scheduling must mirror ROM `area_update`: age every area, reset after three empty area-minutes, and force a reset once age ≥15 with players or ≥31 regardless of population.
+  RATIONALE: Populated areas still repopulate in ROM; skipping the 15/31-minute gates leaves cities permanently looted.
+  EXAMPLE: pytest -q tests/test_spawning.py::test_area_reset_schedule_matches_rom
+- RULE: Reset passes must not clear rooms before running commands; reuse LastMob/LastObj counters so player-dropped items persist unless a reset removes them.
+  RATIONALE: Clearing contents deletes loot and bypasses ROM spawn limits enforced by `count_obj_list`/`pObjIndex->count`.
+  EXAMPLE: pytest -q tests/test_spawning.py::test_reset_does_not_wipe_room_contents
+- RULE: Mob programs must expose ROM trigger APIs (mp_percent/mp_exit/mp_greet) and execute scripts via `program_flow` calling the command interpreter; forbid stub executors that only echo strings.
+  RATIONALE: Trigger gating and command dispatch keep NPC scripts in sync with ROM behaviors and side effects.
+  EXAMPLE: pytest -q tests/test_mobprog_triggers.py::test_program_flow_runs_commands_via_dispatcher
 
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
@@ -124,6 +136,9 @@
 - RULE: Charmed followers (AFF_CHARM) must refuse to leave while their master shares the room, returning the ROM loyalty message.
   RATIONALE: `move_char` blocks AFF_CHARM characters from wandering away from their controllers.
   EXAMPLE: pytest -q tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
+- RULE: Movement must move eligible followers with the leader and fire mobprog exit/greet triggers after relocation.
+  RATIONALE: ROM `move_char` recursively moves followers and calls `mp_exit_trigger`/`mp_greet_trigger`, keeping escorts and scripts synchronized.
+  EXAMPLE: pytest -q tests/test_movement_followers.py::test_followers_move_and_trigger_mobprogs
 - RULE: Serve help topics via registry loaded from ROM help JSON; dispatch `help` command through keyword lookup.
   RATIONALE: Preserves ROM help text layout and keyword search behavior.
   EXAMPLE: text = help_registry["murder"].text

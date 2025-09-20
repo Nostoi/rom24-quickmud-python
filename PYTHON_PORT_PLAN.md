@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: shops_economy -->
+<!-- LAST-PROCESSED: movement_encumbrance -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -48,6 +48,13 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- resets: [P0] Align area reset schedule with ROM age gating (3/15/31 area-min rules)
+- resets: [P0] Restore exit.rs_flags → exit_info sync before applying resets
+- resets: [P0] Stop clearing rooms before resets; reuse LastObj/LastMob counts instead
+- mob_programs: [P0] Expose ROM mobprog trigger entry points (percent/greet/exit/bribe)
+- mob_programs: [P0] Implement ROM `program_flow` parser and dispatch to interpreter
+- movement_encumbrance: [P0] Mirror ROM follower travel and mobprog exit/greet triggers
+- movement_encumbrance: [P0] Exempt NPCs from PC-only movement costs and boating checks
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -528,47 +535,26 @@ NOTES:
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
 
-### movement_encumbrance — Parity Audit 2025-09-19
+### movement_encumbrance — Parity Audit 2025-09-22
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.53)
-KEY RISKS: flags, side_effects
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.50)
+KEY RISKS: lag_wait, side_effects
 TASKS:
-
-- ✅ [P0] Enforce closed and no-pass exit gating before moving — done 2025-09-17
-  EVIDENCE: C src/act_move.c:64-113 (closed door and pass door gating)
-  EVIDENCE: PY mud/world/movement.py:68-151 (_exit_block_message and trust gating enforce EX_CLOSED/EX_NOPASS)
-  EVIDENCE: TEST tests/test_movement_doors.py::test_closed_door_blocks_movement; tests/test_movement_doors.py::test_nopass_blocks_pass_door
-  RATIONALE: `move_char` checks exit flags and respects AFF_PASS_DOOR and EX_NOPASS; the port ignored exit_info so closed doors and nopass exits were traversable.
-  FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
-  TESTS: tests/test_movement_doors.py::test_closed_door_blocks_movement
-  REFERENCES: C src/act_move.c:64-113; C src/merc.h:1290-1310; PY mud/world/movement.py:1-120; PY mud/models/room.py:1-80; PY mud/models/constants.py:430-510; PY mud/models/character.py:31-120
+- [P0] Mirror ROM follower travel and mobprog exit/greet triggers — acceptance: moving a PC drags eligible followers and fires mp_exit/mp_greet hooks.
+  RATIONALE: ROM `move_char` loops followers after the leader moves and fires `mp_exit_trigger`/`mp_greet_trigger`, keeping escorts synchronized; Python stops at the leader so companions stay behind and triggers never fire.
+  FILES: mud/world/movement.py; mud/mobprog.py; mud/game_loop.py
+  TESTS: pytest -q tests/test_movement_followers.py::test_followers_move_and_trigger_mobprogs
+  REFERENCES: C src/act_move.c:64-220; C src/mob_prog.c:1188-1336; PY mud/world/movement.py:1-200; PY mud/mobprog.py:1-80
   ESTIMATE: M; RISK: medium
-
-- ✅ [P0] Block entry to private and guild rooms without access — done 2025-09-17
-  EVIDENCE: C src/act_move.c:113-151 (room owner/guild gating); C src/handler.c:2553-2583 (room_is_private)
-  EVIDENCE: C src/const.c:394-419 (class_table guild vnums)
-  EVIDENCE: PY mud/world/movement.py:152-210 (room ownership checks and guild gating)
-  EVIDENCE: TEST tests/test_movement_privacy.py::test_private_room_blocks_entry; tests/test_movement_privacy.py::test_guild_room_rejects_other_classes
-  RATIONALE: ROM prevents entry to clan/guild rooms and private spaces via `room_is_private` and class guild arrays; the port never checked room_flags or clan ownership so restricted rooms were accessible.
-  FILES: mud/world/movement.py; mud/models/room.py; mud/models/constants.py; mud/models/character.py
-  TESTS: tests/test_movement_privacy.py::test_private_room_blocks_entry
-  REFERENCES: C src/act_move.c:113-151; C src/handler.c:2564-2583; PY mud/world/movement.py:120-210; PY mud/models/room.py:1-90; PY mud/models/constants.py:100-160; PY mud/models/character.py:31-120
-  ESTIMATE: M; RISK: medium
-
-- ✅ [P0] Block AFF_CHARM followers from leaving their master — done 2025-09-19
-  EVIDENCE: C src/act_move.c:94-119 (AFF_CHARM loyalty gate before room privacy checks)
-  EVIDENCE: PY mud/models/character.py:63-86 (Character master/leader references for charm tracking)
-  EVIDENCE: PY mud/world/movement.py:78-114 (AFF_CHARM master-in-room guard returning ROM loyalty message)
-  EVIDENCE: TEST tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
-  RATIONALE: ROM `move_char` refuses to move characters flagged with AFF_CHARM while their master shares the room, returning "What?  And leave your beloved master?"; the Python port has no `master` link on Character and never checks for AFF_CHARM so charmed followers can wander away.
-  FILES: mud/models/character.py (add master/leader reference), mud/world/movement.py (AFF_CHARM/master gate before movement), tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
-  TESTS: tests/test_movement_charm.py::test_charmed_character_cannot_leave_master_room
-  REFERENCES: C src/act_move.c:94-104 (AFF_CHARM guard); PY mud/world/movement.py:78-114 (AFF_CHARM loyalty gate); PY mud/models/character.py:63-86 (Character master linkage)
-  ESTIMATE: M; RISK: medium
-
+- [P0] Exempt NPCs from PC-only movement costs and boating checks — acceptance: NPC pathing ignores exhaustion/boat gating while players keep ROM restrictions.
+  RATIONALE: ROM wraps stamina, guild, air, and boat gating in `if (!IS_NPC)`; applying them to NPCs in Python strands mobile patrols and scripted escorts.
+  FILES: mud/world/movement.py
+  TESTS: pytest -q tests/test_movement_npc.py::test_npc_moves_without_boat_or_move_cost
+  REFERENCES: C src/act_move.c:95-170; PY mud/world/movement.py:60-170
+  ESTIMATE: S; RISK: medium
 NOTES:
-- C: src/act_move.c:94-151 blocks AFF_CHARM followers from leaving masters before running privacy and guild checks; Python now mirrors that ordering and loyalty message.
-- PY: mud/world/movement.py:131-188 enforces the AFF_CHARM/master loyalty gate and leaves characters in place while mud/models/character.py:58-116 tracks master/leader pointers for charm logic.
+- C: src/act_move.c:64-220 advances leaders, moves followers (respecting ROOM_LAW), and fires mp_exit/mp_greet triggers via src/mob_prog.c:1188-1336 after relocation.
+- PY: mud/world/movement.py lacks follower propagation, mobprog hooks, and applies air/boat/move-cost checks to NPCs, diverging from ROM escort and trigger behavior.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 
@@ -603,66 +589,60 @@ TASKS:
 - Tests cover loading and command output; add P1/P2 tasks for format preservation and coverage.
 <!-- SUBSYSTEM: help_system END -->
 
+<!-- SUBSYSTEM: mob_programs START -->
+
+### mob_programs — Parity Audit 2025-09-21
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.47)
+KEY RISKS: side_effects
+TASKS:
+- [P0] Expose ROM mobprog trigger entry points (percent/greet/exit/bribe) — acceptance: `mp_percent_trigger`, `mp_exit_trigger`, and `mp_greet_trigger` run scripts when their ROM conditions pass and return True when a program fires.
+  RATIONALE: ROM `mp_percent_trigger`/`mp_exit_trigger`/`mp_greet_trigger` guard mob programs behind chance rolls, direction checks, and visibility before invoking `program_flow`; Python exposes only `run_prog` so movement/reset code cannot call triggers or honor their gating.
+  FILES: mud/mobprog.py; mud/game_loop.py; mud/world/movement.py; mud/spawning/reset_handler.py
+  TESTS: pytest -q tests/test_mobprog_triggers.py::test_percent_and_exit_triggers_fire_scripts
+  REFERENCES: C src/mob_prog.c:1188-1257 (mp_percent_trigger/mp_exit_trigger/mp_greet_trigger logic); PY mud/mobprog.py:1-80 (missing trigger functions)
+  ESTIMATE: M; RISK: medium
+- [P0] Implement ROM `program_flow` parser and dispatch to interpreter — acceptance: executing a script with `$n` substitution and nested `if/else` from a trigger calls `commands/dispatcher.process_command` for normal commands and `mob_cmds` for `mob`-prefixed directives.
+  RATIONALE: ROM `program_flow` expands `$` variables, evaluates `if/and/or` chains, and routes commands to `interpret` or `mob_interpret`; Python simply tokenizes lines starting with `say`/`emote`, so scripts cannot run actual commands or conditional logic.
+  FILES: mud/mobprog.py; mud/commands/dispatcher.py; mud/mob_cmds.py; tests/test_mobprog.py
+  TESTS: pytest -q tests/test_mobprog_triggers.py::test_program_flow_runs_commands_via_dispatcher
+  REFERENCES: C src/mob_prog.c:880-1170 (program_flow parser and command routing); C src/mob_prog.c:700-875 (expand_arg `$` substitution); PY mud/mobprog.py:1-80 (stub interpreter returning ExecutionResult list)
+  ESTIMATE: L; RISK: high
+NOTES:
+- C: src/mob_prog.c:880-1257 wires trigger guards to `program_flow`, expands `$n/$N` placeholders, and calls `interpret` or `mob_interpret` so mob programs can execute real commands.
+- PY: mud/mobprog.py currently offers only `run_prog` emitting `ExecutionResult` stubs, with no trigger APIs or integration with the command dispatcher, so scripts never affect the game world.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: mob_programs END -->
+
 <!-- SUBSYSTEM: resets START -->
 
-### resets — Parity Audit 2025-09-19
+### resets — Parity Audit 2025-09-20
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.58)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.48)
 KEY RISKS: file_formats, flags, side_effects
 TASKS:
-
-- ✅ [P0] Restore ROM reset argument mapping in loaders — done 2025-09-16
-  EVIDENCE: C src/db.c:1009-1043 (load_resets ignores if_flag, maps arg1..arg4 per command)
-  EVIDENCE: PY mud/loaders/reset_loader.py:1-52 (token iterator mirrors ROM parsing, preserves arg4 for 'M'/'P')
-  EVIDENCE: DOC doc/area.txt:395-470 (#RESETS syntax and ignored first number)
-  EVIDENCE: ARE area/midgaard.are:6085-6094 (wizard shop `M`/`G` sequence with arg4=1)
-  FILES: mud/loaders/reset_loader.py
-  TESTS: pytest -q tests/test_spawning.py::test_reset_P_places_items_inside_container_in_midgaard
-
-- ✅ [P0] Enforce mob reset limits when applying resets — done 2025-09-16
-  EVIDENCE: C src/db.c:1691-1752 (reset_room enforces global count and per-room limit for 'M')
-  EVIDENCE: PY mud/spawning/reset_handler.py:81-135 (tracks prototype counts and skips when arg2/arg4 caps reached)
-  EVIDENCE: DOC doc/area.txt:466-469 (documents mob limit semantics)
-  EVIDENCE: ARE area/midgaard.are:6085-6094 (Midgaard wizard reset using arg4 cap)
+- [P0] Align area reset schedule with ROM age gating (3/15/31 area-min rules) — acceptance: area resets fire after three empty area-minutes and still trigger after fifteen area-minutes even when players remain inside.
+  RATIONALE: ROM `area_update` ages every area, triggers `reset_area` after three ticks when empty, and guarantees a reset after age 15/31; Python's `reset_tick` only fires when `nplayer == 0`, so populated areas never repopulate.
+  FILES: mud/spawning/reset_handler.py; mud/game_loop.py
+  TESTS: pytest -q tests/test_spawning.py::test_area_reset_schedule_matches_rom
+  REFERENCES: C src/db.c:1602-1632; PY mud/spawning/reset_handler.py:411-427; DOC doc/Rom2.4.doc:1704-1710
+  ESTIMATE: M; RISK: high
+- [P0] Restore exit.rs_flags → exit_info sync for both sides before applying resets — acceptance: unlocking a door without a 'D' command reverts to its baseline state after the next reset tick.
+  RATIONALE: ROM `reset_room` refreshes each exit's `exit_info` from `rs_flags` (and mirrors the reverse exit) before iterating commands; Python leaves doors touched mid-cycle open forever when no matching 'D' entry exists.
   FILES: mud/spawning/reset_handler.py
-  TESTS: pytest -q tests/test_spawning.py::test_reset_mob_limits
-
-- ✅ [P0] Reinstate ROM 'P' reset gating, container limits, and prototype counts — done 2025-09-17
-  EVIDENCE: C src/db.c:1788-1848 (reset_room 'P' enforces area->nplayer gating, prototype counts, and arg2 limits)
-  EVIDENCE: DOC doc/area.txt:470-488 (P reset semantics covering player gating and limit coercion)
-  EVIDENCE: ARE area/midgaard.are:6366-6368 (Captain's desk/safe P resets with limits)
-  EVIDENCE: PY mud/spawning/reset_handler.py:120-236 (area.nplayer guard, container reuse, global limit enforcement)
-  EVIDENCE: PY mud/spawning/obj_spawner.py:8-17 (increment ObjIndex.count on spawn)
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py
-  TESTS: pytest -q tests/test_spawning.py::test_reset_P_limit_enforced; pytest -q tests/test_spawning.py::test_reset_P_skips_when_players_present
-
-- ✅ [P0] Mirror ROM 'O' reset gating for duplicates and active players — done 2025-09-17
-  EVIDENCE: C src/db.c:1760-1797 (reset_room 'O' skips when area->nplayer > 0 or object already present)
-  EVIDENCE: DOC doc/area.txt:470-478 (object reset duplication and player gating rules)
-  EVIDENCE: ARE area/midgaard.are:6085-6094 (donation pit O resets depending on room occupancy)
-  EVIDENCE: PY mud/spawning/reset_handler.py:96-149 (room duplicate checks and area.nplayer guard for O resets)
-  FILES: mud/spawning/reset_handler.py
-  TESTS: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
-
-- ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-17
-  EVIDENCE: PY mud/spawning/reset_handler.py:217-343
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-
-- ✅ [P0] Reinstate 'D' door state resets for exits — done 2025-09-19
-  EVIDENCE: C src/db.c:1036-1085 (load_resets 'D' validates doors and sets rs_flags/exit_info)
-  EVIDENCE: PY mud/loaders/json_loader.py:34-118 (exit flags preserved in rs_flags when loading areas)
-  EVIDENCE: PY mud/spawning/reset_handler.py:146-210 ('D' branch restores EX_CLOSED/EX_LOCKED into exit.rs_flags/exit_info)
-  EVIDENCE: TEST tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
-  RATIONALE: ROM `load_resets` stamps door `rs_flags`/`exit_info` for each 'D' command and `reset_room` copies those flags back every reset tick; the Python handler skipped 'D' entirely so Captain's Office doors stayed open once unlocked.
-  FILES: mud/spawning/reset_handler.py (add 'D' branch applying EX_CLOSED/EX_LOCKED), mud/loaders/json_loader.py (persist exit.rs_flags), mud/loaders/json_area_loader.py (carry rs_flags from JSON exits), mud/loaders/room_loader.py (seed rs_flags from legacy loaders), tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
-  TESTS: tests/test_spawning.py::test_door_reset_applies_closed_and_locked_state
-  REFERENCES: C src/db.c:1036-1085 (load_resets 'D' validates doors and sets rs_flags/exit_info); C src/db.c:1659-1671 (reset_room copies rs_flags back to exit_info each reset); DOC doc/area.txt:448-506 (#RESETS 'D' semantics); ARE area/midgaard.are:6335-6338 (Captain's Office door resets); PY mud/spawning/reset_handler.py:146-210 ('D' handling); PY mud/loaders/json_loader.py:34-118 (exit rs_flags seeding)
+  TESTS: pytest -q tests/test_spawning.py::test_reset_restores_base_exit_state
+  REFERENCES: C src/db.c:1641-1693; PY mud/spawning/reset_handler.py:225-256; DOC doc/area.txt:448-506; ARE area/midgaard.are:6335-6338
   ESTIMATE: M; RISK: medium
-
+- [P0] Stop clearing rooms before resets; reuse LastObj/LastMob counts instead — acceptance: dropping an object on the ground survives a reset when ROM would keep it, while prototype limits still prevent duplicate spawns.
+  RATIONALE: ROM `reset_area` calls `reset_room` without wiping live objects or mobs; Python's `reset_area` clears room contents and NPCs before reapplying resets, deleting player-placed items and ignoring limit gating.
+  FILES: mud/spawning/reset_handler.py
+  TESTS: pytest -q tests/test_spawning.py::test_reset_does_not_wipe_room_contents
+  REFERENCES: C src/db.c:2003-2014; PY mud/spawning/reset_handler.py:402-408
+  ESTIMATE: M; RISK: high
 NOTES:
-- C: src/db.c:load_resets handles 'D' commands and reset_room reapplies `rs_flags` so doors close and lock after each reset tick.
-- PY: mud/spawning/reset_handler.py:146-255 now processes 'D' resets, restoring EX_CLOSED/EX_LOCKED while loaders seed `Exit.rs_flags` so reset cycles reapply door state after players interact with them.
-- DOC/ARE: doc/area.txt §#RESETS documents 'D' door states; area/midgaard.are:6335-6338 closes and locks Captain's Office doors via 'D' commands.
+- C: src/db.c:1602-2014 ages areas, re-seeds doors from `rs_flags`, and repopulates rooms without purging contents, relying on LastMob/LastObj counters.
+- PY: mud/spawning/reset_handler.py:225-427 skips the rs_flags refresh, requires empty areas to reset, and clears room inventories before spawning replacements.
+- DOC/ARE: doc/Rom2.4.doc:1704-1710 details area reset timing; doc/area.txt:448-506 explains reset commands; area/midgaard.are:6320-6338 shows door and spawn expectations that rely on baseline state.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
 
