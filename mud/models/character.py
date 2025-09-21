@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from mud.models.room import Room
     from mud.db.models import Character as DBCharacter
     from mud.models.board import NoteDraft
+    from mud.models.mob import MobProgram
 
 
 @dataclass
@@ -47,6 +48,7 @@ class Character:
     race: int = 0
     level: int = 0
     trust: int = 0
+    invis_level: int = 0
     hit: int = 0
     max_hit: int = 0
     mana: int = 0
@@ -118,6 +120,9 @@ class Character:
     enhanced_damage_skill: int = 0
     # Character type flag
     is_npc: bool = True  # Default to NPC, set to False for PCs
+    # Mob program runtime state mirroring ROM's CHAR_DATA fields
+    mob_programs: List["MobProgram"] = field(default_factory=list)
+    mprog_target: Optional["Character"] = None
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"

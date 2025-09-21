@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from mud import mobprog
 from mud.models.character import Character
 from mud.models.constants import (
     Position,
@@ -104,6 +105,10 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
             result = attack_round(attacker, victim)
             results.append(result)
             # In ROM, would call check_improve here
+
+    if getattr(attacker, "is_npc", False):
+        mobprog.mp_fight_trigger(attacker, victim)
+        mobprog.mp_hprct_trigger(attacker, victim)
 
     return results
 
@@ -235,6 +240,8 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
         if victim.position > Position.STUNNED:
             if victim.fighting is None:
                 set_fighting(victim, attacker)
+                if getattr(victim, "is_npc", False):
+                    mobprog.mp_kill_trigger(victim, attacker)
             # Update victim to fighting position if timer allows
             if getattr(victim, "timer", 0) <= 4:
                 victim.position = Position.FIGHTING
@@ -266,6 +273,13 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
 
     # Handle death
     if victim.position == Position.DEAD:
+        if getattr(victim, "is_npc", False):
+            old_pos = victim.position
+            victim.position = Position.STANDING
+            try:
+                mobprog.mp_death_trigger(victim, attacker)
+            finally:
+                victim.position = old_pos
         message = _handle_death(attacker, victim)
         return message
 
