@@ -86,9 +86,21 @@
    RATIONALE: Prevent silent data loss.
    EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`
 
- - RULE: Player save JSON must preserve ROM bit widths and field order; never reorder keys that map to packed flags.
-   RATIONALE: Save/load parity.
-   EXAMPLE: `save_load_roundtrip("Shemp")`
+- RULE: Player save JSON must preserve ROM bit widths and field order; never reorder keys that map to packed flags.
+  RATIONALE: Save/load parity.
+  EXAMPLE: `save_load_roundtrip("Shemp")`
+- RULE: Persist ROM condition slots (`Cnd` drunk/full/hunger/thirst) when converting and saving players.
+  RATIONALE: Survival timers and thirst/hunger effects rely on these counters; dropping them on save/reset deviates from ROM behavior.
+  EXAMPLE: `tests/test_player_save_format.py::test_condition_roundtrip`
+- RULE: Player saves must retain ROM identity and progression fields (race/class/sex/trust/security, creation points, HMVP perm stats).
+  RATIONALE: Reboots that drop these fields reset classes, stats, and hit/mana pools, breaking parity with ROM `fwrite_char` records.
+  EXAMPLE: `tests/test_player_save_format.py::test_identity_fields_roundtrip`
+- RULE: Player converters must accept ROM `print_flags` zero sentinels (`'0'`) for flag fields.
+  RATIONALE: ROM writes `Comm`/`Wizn` lines with `'0'` when no bits are set; rejecting them prevents clean loads.
+  EXAMPLE: `convert_player("player_zero_comm")`
+- RULE: Player converters must decode ROM lowercase `print_flags` letters (bits 26–31) into the correct mask positions.
+  RATIONALE: ROM emits lowercase `a`..`f` for high bits; treating them as invalid drops wiznet/act flags during conversion.
+  EXAMPLE: `convert_player("player_wiznet_ticks")`
 
 - RULE: IMC parsing behind feature flag; parsers validated with sample frames; no sockets when disabled.
   RATIONALE: Wire compatibility without runtime coupling.

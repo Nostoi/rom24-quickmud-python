@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 import os
 
 from mud.models.character import Character, PCData, character_registry
@@ -13,22 +13,58 @@ from mud.time import time_info, Sunlight
 from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
 
 
+def _normalize_int_list(values: Optional[Iterable[int]], length: int) -> List[int]:
+    """Return a list of ``length`` integers padded/truncated from ``values``."""
+
+    normalized = [0] * length
+    if not values:
+        return normalized
+    for idx, value in enumerate(list(values)[:length]):
+        try:
+            normalized[idx] = int(value)
+        except (TypeError, ValueError):
+            normalized[idx] = 0
+    return normalized
+
+
 @dataclass
 class PlayerSave:
     """Serializable snapshot of a player's state."""
 
     name: str
     level: int
-    hit: int
-    max_hit: int
-    mana: int
-    max_mana: int
-    move: int
-    max_move: int
-    gold: int
-    silver: int
-    exp: int
-    position: int
+    race: int = 0
+    ch_class: int = 0
+    sex: int = 0
+    trust: int = 0
+    security: int = 0
+    hit: int = 0
+    max_hit: int = 0
+    mana: int = 0
+    max_mana: int = 0
+    move: int = 0
+    max_move: int = 0
+    perm_hit: int = 0
+    perm_mana: int = 0
+    perm_move: int = 0
+    gold: int = 0
+    silver: int = 0
+    exp: int = 0
+    practice: int = 0
+    train: int = 0
+    saving_throw: int = 0
+    alignment: int = 0
+    hitroll: int = 0
+    damroll: int = 0
+    wimpy: int = 0
+    points: int = 0
+    true_sex: int = 0
+    last_level: int = 0
+    position: int = 0
+    armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    perm_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    mod_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    conditions: List[int] = field(default_factory=lambda: [0, 48, 48, 48])
     # ROM bitfields to preserve flags parity
     affected_by: int = 0
     wiznet: int = 0
@@ -47,29 +83,59 @@ TIME_FILE = Path("data/time.json")
 def save_character(char: Character) -> None:
     """Persist ``char`` to ``PLAYERS_DIR`` as JSON."""
     PLAYERS_DIR.mkdir(parents=True, exist_ok=True)
+    default_conditions = [0, 48, 48, 48]
+    raw_conditions: List[int] = []
+    pcdata = char.pcdata or PCData()
+    raw_conditions = list(getattr(pcdata, "condition", []))
+    conditions = default_conditions.copy()
+    for idx, value in enumerate(raw_conditions[:4]):
+        conditions[idx] = int(value)
+    armor = _normalize_int_list(getattr(char, "armor", []), 4)
+    perm_stat = _normalize_int_list(getattr(char, "perm_stat", []), 5)
+    mod_stat = _normalize_int_list(getattr(char, "mod_stat", []), 5)
     data = PlayerSave(
         name=char.name or "",
         level=char.level,
+        race=int(getattr(char, "race", 0)),
+        ch_class=int(getattr(char, "ch_class", 0)),
+        sex=int(getattr(char, "sex", 0)),
+        trust=int(getattr(char, "trust", 0)),
+        security=int(getattr(pcdata, "security", 0)),
         hit=char.hit,
         max_hit=char.max_hit,
         mana=char.mana,
         max_mana=char.max_mana,
         move=char.move,
         max_move=char.max_move,
+        perm_hit=int(getattr(pcdata, "perm_hit", 0)),
+        perm_mana=int(getattr(pcdata, "perm_mana", 0)),
+        perm_move=int(getattr(pcdata, "perm_move", 0)),
         gold=char.gold,
         silver=char.silver,
         exp=char.exp,
+        practice=int(getattr(char, "practice", 0)),
+        train=int(getattr(char, "train", 0)),
+        saving_throw=int(getattr(char, "saving_throw", 0)),
+        alignment=int(getattr(char, "alignment", 0)),
+        hitroll=int(getattr(char, "hitroll", 0)),
+        damroll=int(getattr(char, "damroll", 0)),
+        wimpy=int(getattr(char, "wimpy", 0)),
+        points=int(getattr(pcdata, "points", 0)),
+        true_sex=int(getattr(pcdata, "true_sex", 0)),
+        last_level=int(getattr(pcdata, "last_level", 0)),
         position=char.position,
+        armor=armor,
+        perm_stat=perm_stat,
+        mod_stat=mod_stat,
+        conditions=conditions,
         affected_by=getattr(char, "affected_by", 0),
         wiznet=getattr(char, "wiznet", 0),
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
         aliases=dict(getattr(char, "aliases", {})),
-        board=(char.pcdata.board_name if char.pcdata else DEFAULT_BOARD_NAME),
-        last_notes=dict(getattr(char.pcdata, "last_notes", {}) or {})
-        if char.pcdata
-        else {},
+        board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
+        last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
     )
     path = PLAYERS_DIR / f"{char.name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -87,9 +153,16 @@ def load_character(name: str) -> Optional[Character]:
         return None
     with path.open() as f:
         data = load_dataclass(PlayerSave, f)
+    armor = _normalize_int_list(getattr(data, "armor", []), 4)
+    perm_stat = _normalize_int_list(getattr(data, "perm_stat", []), 5)
+    mod_stat = _normalize_int_list(getattr(data, "mod_stat", []), 5)
     char = Character(
         name=data.name,
         level=data.level,
+        race=int(getattr(data, "race", 0)),
+        ch_class=int(getattr(data, "ch_class", 0)),
+        sex=int(getattr(data, "sex", 0)),
+        trust=int(getattr(data, "trust", 0)),
         hit=data.hit,
         max_hit=data.max_hit,
         mana=data.mana,
@@ -99,7 +172,17 @@ def load_character(name: str) -> Optional[Character]:
         gold=data.gold,
         silver=data.silver,
         exp=data.exp,
+        practice=int(getattr(data, "practice", 0)),
+        train=int(getattr(data, "train", 0)),
+        saving_throw=int(getattr(data, "saving_throw", 0)),
+        alignment=int(getattr(data, "alignment", 0)),
+        hitroll=int(getattr(data, "hitroll", 0)),
+        damroll=int(getattr(data, "damroll", 0)),
+        wimpy=int(getattr(data, "wimpy", 0)),
         position=data.position,
+        armor=armor,
+        perm_stat=perm_stat,
+        mod_stat=mod_stat,
     )
     char.is_npc = False
     # restore bitfields
@@ -129,6 +212,18 @@ def load_character(name: str) -> Optional[Character]:
         if board is None:
             board = get_board(DEFAULT_BOARD_NAME)
     pcdata = PCData()
+    saved_conditions = list(getattr(data, "conditions", []))
+    conditions = [0, 48, 48, 48]
+    for idx, value in enumerate(saved_conditions[:4]):
+        conditions[idx] = int(value)
+    pcdata.condition = conditions
+    pcdata.security = int(getattr(data, "security", 0))
+    pcdata.points = int(getattr(data, "points", 0))
+    pcdata.true_sex = int(getattr(data, "true_sex", 0))
+    pcdata.last_level = int(getattr(data, "last_level", 0))
+    pcdata.perm_hit = int(getattr(data, "perm_hit", 0))
+    pcdata.perm_mana = int(getattr(data, "perm_mana", 0))
+    pcdata.perm_move = int(getattr(data, "perm_move", 0))
     pcdata.board_name = board.storage_key()
     pcdata.last_notes.update(getattr(data, "last_notes", {}) or {})
     char.pcdata = pcdata
