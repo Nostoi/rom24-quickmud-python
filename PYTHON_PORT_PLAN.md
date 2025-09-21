@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: mob_programs -->
+<!-- LAST-PROCESSED: player_save_format -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -766,38 +766,34 @@ TASKS:
 
 <!-- SUBSYSTEM: player_save_format START -->
 
-### player_save_format — Parity Audit 2025-09-07
+### player_save_format — Parity Audit 2025-09-21
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.72)
-KEY RISKS: flags, file_formats, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
+KEY RISKS: file_formats, flags
 TASKS:
-
-- ✅ [P0] Map `/player/*` fields to JSON preserving bit widths & field order — done 2025-09-07
-  EVIDENCE: C src/merc.h:PLR*\* and COMM*\* bit defines (letters → bits)
-  EVIDENCE: DOC Rom2.4.doc (player file layout overview)
-  EVIDENCE: ARE/PLAYER player/Shemp (Act QT; Comm NOP)
-  EVIDENCE: PY schemas/player.schema.json (add plr_flags, comm_flags)
-  EVIDENCE: PY mud/models/player_json.py (fields plr_flags, comm_flags)
-  EVIDENCE: PY mud/scripts/convert_player_to_json.py (Act/Comm → bitmasks; HMV parsing)
-  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip
-- ✅ [P1] Reject malformed legacy saves with precise errors — done 2025-09-07
-  EVIDENCE: PY mud/scripts/convert_player_to_json.py (header/footer + HMV/flags validation)
-  EVIDENCE: TEST tests/test_player_save_format.py::test_missing_header_footer_and_bad_hmv
-- ✅ [P2] Coverage ≥80% for player_save_format — done 2025-09-07
-  EVIDENCE: CI .github/workflows/ci.yml (pytest --cov=mud --cov-fail-under=80)
-  EVIDENCE: TEST tests/test_player_save_format.py (5 tests covering happy path + errors)
-  - rationale: confidence in mechanics
-  - files: tests/test_player_save_format.py
-  - tests: coverage report
-  - acceptance_criteria: coverage ≥80%
-  - estimate: M
-  - risk: low
-  - progress: added tests for invalid level/room, multi-letter flags, and field order; run coverage in CI to confirm ≥80%
-    NOTES:
-- C: `src/save.c:save_char_obj()/load_char_obj()` define record layout & bit packing
-- DOC: `Rom2.4.doc` save layout notes (stats/flags)
-- PLAYER: `/player/Shemp` used as golden fixture
-- PY: `mud/persistence.py` save/load; `mud/models/player_json.py` flag fields
+- ✅ [P0] Accept ROM zero-flag sentinels in player converters — done 2025-09-21
+  EVIDENCE: C src/save.c:37-56 (print_flags emits lowercase bits and zero sentinels)
+  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
+  EVIDENCE: PLAYER player/Shemp:L1-L36 (canonical Act/Comm flag layout in ROM player file)
+  EVIDENCE: PY mud/scripts/convert_player_to_json.py:18-118 (letters-to-bits accepts '0' and Act/Comm parsing tolerates sentinels)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_player_accepts_zero_flag_sentinel
+- ✅ [P0] Decode ROM lowercase flag specifiers in player converters — done 2025-09-21
+  EVIDENCE: C src/save.c:37-56 (print_flags maps bits 26–31 to lowercase letters)
+  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
+  EVIDENCE: PLAYER player/Shemp:L1-L36 (reference ordering of flag lines in ROM save files)
+  EVIDENCE: PY mud/scripts/convert_player_to_json.py:18-149 (lowercase decoding in `_letters_to_bits` and flag parsing)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_player_decodes_lowercase_flags
+- ✅ [P0] Preserve ROM AfBy/Wizn flags during conversion — done 2025-09-21
+  EVIDENCE: C src/save.c:211-229 (fwrite_char serializes Act/AfBy/Comm/Wizn via print_flags)
+  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
+  EVIDENCE: PLAYER player/Shemp:L1-L36 (canonical flag section placement in ROM player saves)
+  EVIDENCE: PY mud/models/player_json.py:12-38; mud/scripts/convert_player_to_json.py:18-149 (PlayerJson schema slots and converter populate affected_by/wiznet)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip; tests/test_player_save_format.py::test_convert_player_accepts_zero_flag_sentinel
+NOTES:
+- C: src/save.c:37-56,211-229 document print_flags lowercase/zero behavior and Act/AfBy/Comm/Wizn serialization order.
+- PY: mud/scripts/convert_player_to_json.py:18-149 decodes lowercase and zero sentinels while populating affected_by/wiznet; mud/models/player_json.py:12-38 stores the new fields.
+- DOC/ARE: doc/pfile.txt:10-33 (liberal loader semantics); player/Shemp:L1-L36 (canonical ROM flag layout used for conversion order).
+- Applied tiny fix: none
 <!-- SUBSYSTEM: player_save_format END -->
 
 <!-- SUBSYSTEM: imc_chat START -->
