@@ -55,13 +55,31 @@ class Room:
         return f"<Room vnum={self.vnum} name={self.name!r}>"
 
     def add_character(self, char: 'Character') -> None:
-        if char not in self.people:
+        already_present = char in self.people
+        if not already_present:
             self.people.append(char)
         char.room = self
+
+        area = getattr(self, 'area', None)
+        if (
+            not already_present
+            and area is not None
+            and not getattr(char, 'is_npc', True)
+        ):
+            if getattr(area, 'empty', False):
+                area.empty = False
+                area.age = 0
+            area.nplayer = int(getattr(area, 'nplayer', 0)) + 1
 
     def remove_character(self, char: 'Character') -> None:
         if char in self.people:
             self.people.remove(char)
+            area = getattr(self, 'area', None)
+            if area is not None and not getattr(char, 'is_npc', True):
+                current = int(getattr(area, 'nplayer', 0))
+                area.nplayer = max(0, current - 1)
+        if getattr(char, 'room', None) is self:
+            char.room = None
 
     def add_object(self, obj: 'Object') -> None:
         if obj not in self.contents:

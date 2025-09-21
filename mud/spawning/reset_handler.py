@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Set
 
 from mud.models.area import Area
+from mud.models.character import character_registry
 from mud.models.constants import (
     ITEM_INVENTORY,
     ExtraFlag,
     EX_CLOSED,
     EX_ISDOOR,
     EX_LOCKED,
+    Direction,
+    Position,
+    ROOM_VNUM_SCHOOL,
     convert_flags_from_letters,
 )
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
@@ -19,6 +23,16 @@ from .templates import MobInstance
 from mud.utils import rng_mm
 
 RESET_TICKS = 3
+
+
+_REVERSE_DIR = {
+    Direction.NORTH.value: Direction.SOUTH.value,
+    Direction.EAST.value: Direction.WEST.value,
+    Direction.SOUTH.value: Direction.NORTH.value,
+    Direction.WEST.value: Direction.EAST.value,
+    Direction.UP.value: Direction.DOWN.value,
+    Direction.DOWN.value: Direction.UP.value,
+}
 
 
 def _count_existing_mobs() -> Dict[int, int]:
@@ -45,6 +59,7 @@ def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
 
     counts: Dict[int, int] = {}
     instances: Dict[int, List[object]] = {}
+    seen_chars: Set[int] = set()
 
     def tally(obj: object) -> None:
         proto = getattr(obj, "prototype", None)
@@ -56,19 +71,63 @@ def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
         for contained in getattr(obj, "contained_items", []) or []:
             tally(contained)
 
+    def tally_character_items(char: object) -> None:
+        if char is None:
+            return
+        ident = id(char)
+        if ident in seen_chars:
+            return
+        seen_chars.add(ident)
+        for carried in getattr(char, "inventory", []) or []:
+            if carried is not None:
+                tally(carried)
+        equipment = getattr(char, "equipment", None)
+        if isinstance(equipment, dict):
+            for equipped in equipment.values():
+                if equipped is not None:
+                    tally(equipped)
+
     for room in room_registry.values():
         for obj in getattr(room, "contents", []):
             tally(obj)
-        for mob in getattr(room, "people", []):
-            if isinstance(mob, MobInstance):
-                for carried in getattr(mob, "inventory", []):
-                    tally(carried)
+        for occupant in getattr(room, "people", []) or []:
+            tally_character_items(occupant)
+
+    for char in character_registry:
+        tally_character_items(char)
 
     for vnum, proto in obj_registry.items():
         if hasattr(proto, "count"):
             proto.count = counts.get(vnum, 0)
 
     return counts, instances
+
+
+def _restore_exit_states(area: Area) -> None:
+    """Copy rs_flags onto exit_info for exits and their reverse links."""
+
+    for room in room_registry.values():
+        if room.area is not area:
+            continue
+        exits = getattr(room, "exits", []) or []
+        for idx, exit_obj in enumerate(exits):
+            if exit_obj is None:
+                continue
+            base_flags = int(getattr(exit_obj, "rs_flags", 0) or 0)
+            exit_obj.exit_info = base_flags
+            to_room = getattr(exit_obj, "to_room", None)
+            if to_room is None:
+                continue
+            rev_idx = _REVERSE_DIR.get(idx)
+            if rev_idx is None:
+                continue
+            rev_exits = getattr(to_room, "exits", None)
+            if not rev_exits or rev_idx >= len(rev_exits):
+                continue
+            rev_exit = rev_exits[rev_idx]
+            if rev_exit is None:
+                continue
+            rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
 
 
 def _resolve_reset_limit(raw: Optional[int]) -> int:
@@ -143,6 +202,8 @@ def apply_resets(area: Area) -> None:
     }
     mob_counts = _count_existing_mobs()
 
+    _restore_exit_states(area)
+
     for reset in area.resets:
         cmd = (reset.command or '').upper()
         if cmd == 'M':
@@ -185,6 +246,16 @@ def apply_resets(area: Area) -> None:
                 last_mob = None
                 last_obj = None
                 continue
+
+            setattr(mob, "is_npc", True)
+            proto_default = getattr(getattr(mob, "prototype", None), "default_pos", None)
+            default_pos = proto_default or getattr(mob, "position", Position.STANDING)
+            setattr(mob, "default_pos", default_pos)
+            setattr(mob, "mprog_target", None)
+            setattr(mob, "mprog_delay", int(getattr(mob, "mprog_delay", 0)))
+            if not hasattr(mob, "mob_programs"):
+                programs = list(getattr(getattr(mob, "prototype", None), "mprogs", []) or [])
+                setattr(mob, "mob_programs", programs)
 
             room.add_mob(mob)
             mob_counts[mob_vnum] = mob_counts.get(mob_vnum, 0) + 1
@@ -254,6 +325,15 @@ def apply_resets(area: Area) -> None:
 
             exit_obj.rs_flags = base_flags
             exit_obj.exit_info = base_flags
+            to_room = getattr(exit_obj, "to_room", None)
+            rev_idx = _REVERSE_DIR.get(door)
+            if to_room is not None and rev_idx is not None:
+                rev_exits = getattr(to_room, "exits", None)
+                if rev_exits and rev_idx < len(rev_exits):
+                    rev_exit = rev_exits[rev_idx]
+                    if rev_exit is not None:
+                        rev_exit.rs_flags = base_flags
+                        rev_exit.exit_info = base_flags
         elif cmd == 'G':
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)
@@ -335,12 +415,14 @@ def apply_resets(area: Area) -> None:
                 continue
             container_obj: Optional[object] = None
             if last_obj and getattr(getattr(last_obj, 'prototype', None), 'vnum', None) == container_vnum:
-                container_obj = last_obj
+                location = getattr(last_obj, 'location', None)
+                if location is not None and getattr(location, 'area', None) is area:
+                    container_obj = last_obj
             if not container_obj:
                 candidates = spawned_objects.get(container_vnum) or []
                 for candidate in reversed(candidates):
                     room = getattr(candidate, 'location', None)
-                    if room is None or room.area is area:
+                    if room is not None and getattr(room, 'area', None) is area:
                         container_obj = candidate
                         break
             if not container_obj:
@@ -400,28 +482,37 @@ def apply_resets(area: Area) -> None:
 
 
 def reset_area(area: Area) -> None:
-    """Clear existing spawns and reapply resets for an area."""
-    for room in room_registry.values():
-        if room.area is area:
-            room.contents.clear()
-            room.people = [p for p in room.people if not isinstance(p, MobInstance)]
+    """Reapply resets for an area without purging existing mobs or objects."""
     apply_resets(area)
 
 
 def reset_tick() -> None:
-    """Advance area ages and trigger resets when empty."""
+    """Advance area ages and run ROM-style area_update scheduling."""
+
     for area in area_registry.values():
-        area.nplayer = sum(
-            1
-            for room in room_registry.values()
-            if room.area is area
-            for p in room.people
-            if not isinstance(p, MobInstance)
-        )
-        if area.nplayer > 0:
-            area.age = 0
+        nplayer = int(getattr(area, "nplayer", 0) or 0)
+        if nplayer > 0:
+            area.empty = False
+
+        area.age = int(getattr(area, "age", 0)) + 1
+        if area.age < 3:
             continue
-        area.age += 1
-        if area.age >= RESET_TICKS:
-            reset_area(area)
-            area.age = 0
+
+        should_reset = False
+        if (
+            not getattr(area, "empty", False)
+            and (nplayer == 0 or area.age >= 15)
+        ) or area.age >= 31:
+            should_reset = True
+
+        if not should_reset:
+            continue
+
+        reset_area(area)
+        area.age = rng_mm.number_range(0, 3)
+
+        school_room = room_registry.get(ROOM_VNUM_SCHOOL)
+        if school_room is not None and school_room.area is area:
+            area.age = 13  # Mud School resets quickly after repop
+        elif nplayer == 0:
+            area.empty = True

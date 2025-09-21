@@ -3,11 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, List
 
+from mud import mobprog
 from mud.models.character import Character, character_registry
+from mud.models.constants import Position
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.time import time_info
-from mud.config import get_pulse_tick, get_pulse_violence, GAME_LOOP_STRICT_POINT
+from mud.config import (
+    get_pulse_tick,
+    get_pulse_violence,
+    get_pulse_area,
+    GAME_LOOP_STRICT_POINT,
+)
 from mud.net.protocol import broadcast_global
 from mud.logging.admin import rotate_admin_log
 from mud.spec_funs import run_npc_specs
@@ -81,6 +88,7 @@ def time_tick() -> None:
 
 _pulse_counter = 0
 _violence_counter = 0
+_area_counter = get_pulse_area()
 
 
 def violence_tick() -> None:
@@ -92,9 +100,23 @@ def violence_tick() -> None:
             ch.daze = max(0, int(getattr(ch, "daze", 0)) - 1)
 
 
+def _mobprog_idle_tick() -> None:
+    """Run mob program random/delay triggers for idle NPCs."""
+
+    for ch in list(character_registry):
+        if not getattr(ch, "is_npc", False):
+            continue
+        default_pos = getattr(ch, "default_pos", getattr(ch, "position", Position.STANDING))
+        if getattr(ch, "position", default_pos) != default_pos:
+            continue
+        if mobprog.mp_delay_trigger(ch):
+            continue
+        mobprog.mp_random_trigger(ch)
+
+
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter, _violence_counter
+    global _pulse_counter, _violence_counter, _area_counter
     _pulse_counter += 1
     # Violence cadence: decrement wait/daze on PULSE_VIOLENCE boundaries
     # This mirrors ROM's update_handler calling violence_update.
@@ -106,12 +128,16 @@ def game_tick() -> None:
     if point_pulse:
         time_tick()
         weather_tick()
-        reset_tick()
     else:
         if not GAME_LOOP_STRICT_POINT:
             weather_tick()
-            reset_tick()
+
+    _area_counter -= 1
+    if _area_counter <= 0:
+        reset_tick()
+        _area_counter = get_pulse_area()
     regen_tick()
     event_tick()
+    _mobprog_idle_tick()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()
