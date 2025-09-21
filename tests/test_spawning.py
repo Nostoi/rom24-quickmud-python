@@ -1,11 +1,20 @@
 from mud.world import initialize_world
-from mud.registry import room_registry, area_registry, mob_registry, obj_registry
+from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
+import mud.spawning.reset_handler as reset_handler
 from mud.spawning.reset_handler import reset_tick, RESET_TICKS
 from mud.models.room_json import ResetJson
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.templates import MobInstance
-from mud.models.constants import Direction, EX_CLOSED, EX_LOCKED, ITEM_INVENTORY
+from mud.models.mob import MobIndex
+from mud.models.constants import Direction, EX_CLOSED, EX_LOCKED, ITEM_INVENTORY, LEVEL_HERO
+from mud.models.area import Area
+from mud.models.character import Character, character_registry
+from mud.models.obj import ObjIndex
+from mud.models.room import Room, Exit
+from mud.world.movement import move_character
+from mud.utils import rng_mm
+from mud.loaders.shop_loader import Shop
 
 
 def test_resets_populate_world():
@@ -37,6 +46,48 @@ def test_resets_repop_after_tick():
     assert any(getattr(o, 'short_descr', None) == 'the donation pit' for o in donation.contents)
 
 
+def test_reset_area_preserves_existing_room_state():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    initialize_world('area/area.lst')
+
+    bakery = room_registry[3001]
+    donation = room_registry[3054]
+    area = bakery.area
+    assert area is not None and donation.area is area
+
+    baker = next(
+        (mob for mob in bakery.people if isinstance(mob, MobInstance)),
+        None,
+    )
+    assert baker is not None
+    pit = next(
+        (
+            obj
+            for obj in donation.contents
+            if getattr(obj, 'short_descr', None) == 'the donation pit'
+        ),
+        None,
+    )
+    assert pit is not None
+
+    extra_proto = next(
+        proto
+        for proto in obj_registry.values()
+        if getattr(proto, 'short_descr', None) not in (None, 'the donation pit')
+    )
+    extra = spawn_object(getattr(extra_proto, 'vnum'))
+    assert extra is not None
+    pit.contained_items.append(extra)
+
+    reset_handler.reset_area(area)
+
+    assert any(mob is baker for mob in bakery.people if isinstance(mob, MobInstance))
+    assert extra in getattr(pit, 'contained_items', [])
+
+
 def test_door_reset_applies_closed_and_locked_state():
     room_registry.clear()
     area_registry.clear()
@@ -63,6 +114,37 @@ def test_door_reset_applies_closed_and_locked_state():
     assert east_exit.exit_info & EX_CLOSED
     assert east_exit.exit_info & EX_LOCKED
     assert east_exit.rs_flags & EX_LOCKED
+
+
+def test_reset_restores_base_exit_state():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    initialize_world('area/area.lst')
+
+    office = room_registry[3142]
+    area = office.area
+    assert area is not None
+
+    east_exit = office.exits[Direction.EAST.value]
+    assert east_exit is not None
+
+    reverse_room = getattr(east_exit, 'to_room', None)
+    assert reverse_room is not None
+
+    reverse_exit = reverse_room.exits[Direction.WEST.value]
+    assert reverse_exit is not None
+
+    east_exit.exit_info = 0
+    reverse_exit.exit_info = 0
+
+    reset_handler.apply_resets(area)
+
+    assert east_exit.exit_info & EX_CLOSED
+    assert east_exit.exit_info & EX_LOCKED
+    assert reverse_exit.exit_info & EX_CLOSED
+    assert reverse_exit.exit_info & EX_LOCKED
 
 
 def test_reset_P_places_items_inside_container_in_midgaard():
@@ -197,6 +279,7 @@ def test_reset_P_skips_when_players_present():
     area_registry.clear()
     mob_registry.clear()
     obj_registry.clear()
+    character_registry.clear()
     initialize_world('area/area.lst')
     office = room_registry[3142]
     area = office.area
@@ -222,6 +305,122 @@ def test_reset_P_skips_when_players_present():
 
     assert not any(getattr(getattr(it, 'prototype', None), 'vnum', None) == 3123 for it in getattr(desk, 'contained_items', []))
     assert getattr(key_proto, 'count', 0) == 0
+
+
+def test_reset_respects_player_held_limit(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    limited_proto = ObjIndex(vnum=9100, short_descr='a limited relic')
+    obj_registry[limited_proto.vnum] = limited_proto
+
+    mob_proto = MobIndex(vnum=9200, short_descr='reset mob', level=10)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    area = Area(vnum=9100, name='Test Area', min_vnum=9100, max_vnum=9100)
+    room = Room(vnum=9100, name='Treasure Room', area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+    area.resets = [
+        ResetJson(command='M', arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command='G', arg1=limited_proto.vnum, arg2=1),
+    ]
+
+    monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: 1)
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+    treasure = next(
+        (
+            obj
+            for obj in getattr(mob, 'inventory', [])
+            if getattr(getattr(obj, 'prototype', None), 'vnum', None) == limited_proto.vnum
+        ),
+        None,
+    )
+    assert treasure is not None
+    assert getattr(limited_proto, 'count', 0) == 1
+
+    mob.inventory.remove(treasure)
+    player = Character(name='Holder', is_npc=False)
+    character_registry.append(player)
+    player.add_object(treasure)
+
+    room.people = [p for p in room.people if not isinstance(p, MobInstance)]
+    proto = mob_registry.get(mob_proto.vnum)
+    if proto is not None and hasattr(proto, 'count'):
+        proto.count = 0
+
+    reset_handler.apply_resets(area)
+
+    new_mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert new_mob is not None
+    assert not any(
+        getattr(getattr(obj, 'prototype', None), 'vnum', None) == limited_proto.vnum
+        for obj in getattr(new_mob, 'inventory', [])
+    )
+    assert getattr(limited_proto, 'count', 0) == 1
+
+
+def test_reset_does_not_refill_player_container():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    container_proto = ObjIndex(vnum=9101, short_descr='a traveling chest')
+    loot_proto = ObjIndex(vnum=9102, short_descr='a rare gem')
+    obj_registry[container_proto.vnum] = container_proto
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area = Area(vnum=9101, name='Container Area', min_vnum=9101, max_vnum=9101)
+    room = Room(vnum=9101, name='Vault', area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+    area.resets = [
+        ResetJson(command='O', arg1=container_proto.vnum, arg2=1, arg3=room.vnum),
+        ResetJson(command='P', arg1=loot_proto.vnum, arg2=1, arg3=container_proto.vnum, arg4=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    chest = next(
+        (
+            obj
+            for obj in room.contents
+            if getattr(getattr(obj, 'prototype', None), 'vnum', None) == container_proto.vnum
+        ),
+        None,
+    )
+    assert chest is not None
+    assert any(
+        getattr(getattr(item, 'prototype', None), 'vnum', None) == loot_proto.vnum
+        for item in getattr(chest, 'contained_items', [])
+    )
+
+    player = Character(name='Collector', is_npc=False)
+    character_registry.append(player)
+    room.add_character(player)
+
+    loot = chest.contained_items.pop()
+    player.add_object(loot)
+    room.contents.remove(chest)
+    chest.location = None
+    player.add_object(chest)
+
+    room.remove_character(player)
+    assert area.nplayer == 0
+
+    reset_handler.apply_resets(area)
+
+    assert getattr(chest, 'contained_items', []) == []
+    assert getattr(loot_proto, 'count', 0) == 1
 
 
 def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
@@ -278,6 +477,150 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     item = next(o for o in keeper.inventory if getattr(o.prototype, 'vnum', None) == 3031)
     assert getattr(item.prototype, 'extra_flags', 0) & int(ITEM_INVENTORY)
     assert getattr(item, 'extra_flags', 0) & int(ITEM_INVENTORY)
+
+
+def test_shopkeeper_inventory_levels_match_rom():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    area = Area(vnum=9100, name='Arcane Market', min_vnum=9100, max_vnum=9100)
+    room = Room(vnum=9100, name='Spell Vendor', area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    keeper_proto = MobIndex(vnum=9101, short_descr='shop keeper', level=40)
+    mob_registry[keeper_proto.vnum] = keeper_proto
+    shop_registry[keeper_proto.vnum] = Shop(keeper=keeper_proto.vnum)
+
+    skill_id = reset_handler._lookup_skill_index('cancellation')
+    assert skill_id is not None
+    min_level = reset_handler._lookup_skill_min_level(skill_id)
+    assert min_level is not None
+    expected_level = max(0, (min_level * 3 // 4) - 2)
+
+    scroll_proto = ObjIndex(
+        vnum=9102,
+        short_descr='a scroll of cancellation',
+        item_type='scroll',
+        value=[0, skill_id, 0, 0, 0],
+    )
+    obj_registry[scroll_proto.vnum] = scroll_proto
+
+    area.resets = [
+        ResetJson(command='M', arg1=keeper_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command='G', arg1=scroll_proto.vnum, arg2=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    keeper = next((mob for mob in room.people if isinstance(mob, MobInstance)), None)
+    assert keeper is not None
+    item = next((obj for obj in keeper.inventory if getattr(obj.prototype, 'vnum', None) == scroll_proto.vnum), None)
+    assert item is not None
+    assert item.level == expected_level
+
+
+def test_equipped_item_level_tracks_mob_level_with_fuzz(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    area = Area(vnum=9200, name='Armory', min_vnum=9200, max_vnum=9200)
+    room = Room(vnum=9200, name='Training Yard', area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=9201, short_descr='captain', level=30)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    weapon_proto = ObjIndex(vnum=9202, short_descr='a steel blade', item_type='weapon')
+    obj_registry[weapon_proto.vnum] = weapon_proto
+
+    fuzz_inputs: list[int] = []
+
+    def fake_number_fuzzy(value: int) -> int:
+        fuzz_inputs.append(value)
+        return value + 3
+
+    monkeypatch.setattr(rng_mm, 'number_fuzzy', fake_number_fuzzy)
+    monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: 0)
+
+    area.resets = [
+        ResetJson(command='M', arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command='E', arg1=weapon_proto.vnum, arg2=1, arg3=3),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    expected_base = mob_proto.level - 2
+    expected_base = max(0, min(expected_base, LEVEL_HERO - 1))
+    assert fuzz_inputs and fuzz_inputs[0] == expected_base
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+    equipped = next((obj for obj in mob.inventory if getattr(obj.prototype, 'vnum', None) == weapon_proto.vnum), None)
+    assert equipped is not None
+    assert equipped.level == min(expected_base + 3, LEVEL_HERO - 1)
+
+
+def test_container_resets_preserve_item_levels(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    area = Area(vnum=9300, name='Vault', min_vnum=9300, max_vnum=9300)
+    room = Room(vnum=9300, name='Treasure Vault', area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=9301, short_descr='guardian', level=32)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    chest_proto = ObjIndex(vnum=9302, short_descr='a sturdy chest', item_type='container')
+    gem_proto = ObjIndex(vnum=9303, short_descr='a sparkling gem', item_type='treasure')
+    obj_registry[chest_proto.vnum] = chest_proto
+    obj_registry[gem_proto.vnum] = gem_proto
+
+    fuzzy_calls: list[int] = []
+
+    def staged_number_fuzzy(value: int) -> int:
+        fuzzy_calls.append(value)
+        if len(fuzzy_calls) == 1:
+            return 30
+        return value + 5
+
+    monkeypatch.setattr(rng_mm, 'number_fuzzy', staged_number_fuzzy)
+    monkeypatch.setattr(rng_mm, 'number_range', lambda a, b: 0)
+
+    area.resets = [
+        ResetJson(command='M', arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command='O', arg1=chest_proto.vnum, arg3=room.vnum),
+        ResetJson(command='P', arg1=gem_proto.vnum, arg2=3, arg3=chest_proto.vnum, arg4=2),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    assert fuzzy_calls, 'number_fuzzy should be invoked'
+    base_level_input = fuzzy_calls[0]
+    expected_base = mob_proto.level - 2
+    expected_base = max(0, min(expected_base, LEVEL_HERO - 1))
+    assert base_level_input == expected_base
+
+    chest = next((obj for obj in room.contents if getattr(obj.prototype, 'vnum', None) == chest_proto.vnum), None)
+    assert chest is not None
+    assert chest.level == 30
+
+    assert len(fuzzy_calls) > 1
+    assert all(call == chest.level for call in fuzzy_calls[1:])
+    contents_levels = [getattr(item, 'level', None) for item in chest.contained_items]
+    assert contents_levels and all(level == chest.level + 5 for level in contents_levels)
 
 
 def test_reset_mob_limits():
@@ -363,3 +706,89 @@ def test_resets_room_duplication_and_player_presence():
     area.nplayer = 0
     apply_resets(area)
     assert desk_count() == 1
+
+
+def test_area_player_counts_follow_char_moves():
+    room_registry.clear()
+    area_registry.clear()
+
+    area = Area(vnum=9000, name='Test Area', min_vnum=9000, max_vnum=9001)
+    area.empty = True
+    area.age = 5
+    area_registry[area.vnum] = area
+
+    start = Room(vnum=9000, name='Start Room', area=area)
+    target = Room(vnum=9001, name='Target Room', area=area)
+    start.exits[Direction.NORTH.value] = Exit(to_room=target)
+    target.exits[Direction.SOUTH.value] = Exit(to_room=start)
+    room_registry[start.vnum] = start
+    room_registry[target.vnum] = target
+
+    player = Character(name='Traveler', is_npc=False, move=100)
+    start.add_character(player)
+
+    assert area.nplayer == 1
+    assert area.empty is False
+    assert area.age == 0
+
+    response = move_character(player, 'north')
+    assert response == 'You walk north to Target Room.'
+    assert player.room is target
+    assert area.nplayer == 1
+    assert area.empty is False
+
+    target.remove_character(player)
+    assert area.nplayer == 0
+    assert area.empty is False
+
+
+def test_area_reset_schedule_matches_rom(monkeypatch):
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    test_area = Area(vnum=9999, name='Test Area')
+    area_registry[test_area.vnum] = test_area
+
+    reset_calls: list[Area] = []
+
+    def fake_reset(target: Area) -> None:
+        reset_calls.append(target)
+
+    monkeypatch.setattr(reset_handler, 'reset_area', fake_reset)
+    monkeypatch.setattr(reset_handler.rng_mm, 'number_range', lambda a, b: 2)
+
+    test_area.age = 0
+    test_area.nplayer = 0
+    test_area.empty = False
+
+    reset_calls.clear()
+    reset_tick()
+    assert reset_calls == []
+    reset_tick()
+    assert reset_calls == []
+    reset_tick()
+    assert reset_calls == [test_area]
+    assert test_area.age == 2
+    assert test_area.empty is True
+
+    reset_calls.clear()
+    test_area.age = 30
+    test_area.nplayer = 0
+    test_area.empty = True
+    reset_tick()
+    assert reset_calls == [test_area]
+    assert test_area.age == 2
+    assert test_area.empty is True
+
+    reset_calls.clear()
+    test_area.age = 14
+    test_area.nplayer = 1
+    test_area.empty = False
+    reset_tick()
+    assert reset_calls == [test_area]
+    assert test_area.age == 2
+    assert test_area.empty is False
+
+    area_registry.pop(test_area.vnum, None)

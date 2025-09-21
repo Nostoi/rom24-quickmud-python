@@ -1,5 +1,7 @@
+from mud import mobprog
 from mud.models.character import Character
-from mud.combat import attack_round
+from mud.combat import attack_round, multi_hit
+from mud.combat.engine import stop_fighting
 
 
 def do_kill(char: Character, args: str) -> str:
@@ -14,3 +16,19 @@ def do_kill(char: Character, args: str) -> str:
         if victim.name and target_name in victim.name.lower():
             return attack_round(char, victim)
     return "They aren't here."
+
+
+def do_surrender(char: Character, args: str) -> str:
+    opponent = getattr(char, "fighting", None)
+    if opponent is None:
+        return "But you're not fighting!"
+
+    stop_fighting(char, True)
+    if getattr(opponent, "fighting", None) is char:
+        opponent.fighting = None
+
+    if not getattr(char, "is_npc", False) and getattr(opponent, "is_npc", False):
+        if not mobprog.mp_surr_trigger(opponent, char):
+            multi_hit(opponent, char)
+
+    return "You surrender."

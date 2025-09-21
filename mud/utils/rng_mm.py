@@ -113,6 +113,17 @@ def number_range(from_val: int, to_val: int) -> int:
     return from_val + number
 
 
+def number_fuzzy(number: int) -> int:
+    """Stick a little fuzz on a number like ROM's number_fuzzy."""
+
+    roll = number_bits(2)
+    if roll == 0:
+        number -= 1
+    elif roll == 3:
+        number += 1
+    return max(1, number)
+
+
 def number_bits(width: int) -> int:
     if width <= 0:
         return 0

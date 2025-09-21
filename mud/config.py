@@ -48,6 +48,22 @@ def get_pulse_violence() -> int:
     base = 3 * PULSE_PER_SECOND
     return max(1, base // scale)
 
+
+def get_pulse_area() -> int:
+    """Return pulses per area update (ROM PULSE_AREA).
+
+    ROM defines PULSE_AREA = 120 * PULSE_PER_SECOND. Apply TIME_SCALE like
+    other cadence helpers so tests can speed up resets deterministically.
+    """
+    scale = max(1, int(os.getenv("TIME_SCALE", os.getenv("MUD_TIME_SCALE", "1")) or 1))
+    try:
+        from mud import config as _cfg
+        scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
+    except Exception:
+        pass
+    base = 120 * PULSE_PER_SECOND
+    return max(1, base // scale)
+
 # Feature flags
 COMBAT_USE_THAC0: bool = False
 

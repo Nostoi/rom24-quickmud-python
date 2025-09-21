@@ -5,7 +5,7 @@ from mud.registry import obj_registry
 from mud.models.object import Object
 
 
-def spawn_object(vnum: int) -> Optional[Object]:
+def spawn_object(vnum: int, level: Optional[int] = None) -> Optional[Object]:
     proto = obj_registry.get(vnum)
     if not proto:
         return None
@@ -15,6 +15,12 @@ def spawn_object(vnum: int) -> Optional[Object]:
         inst.value = list(getattr(proto, 'value', [0, 0, 0, 0, 0]))
     except Exception:
         inst.value = [0, 0, 0, 0, 0]
+    if level is None:
+        try:
+            level = int(getattr(proto, 'level', 0) or 0)
+        except Exception:
+            level = 0
+    inst.level = int(level or 0)
     if hasattr(proto, 'count'):
         proto.count = getattr(proto, 'count', 0) + 1
     return inst

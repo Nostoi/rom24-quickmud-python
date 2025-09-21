@@ -12,6 +12,10 @@ class Direction(IntEnum):
     DOWN = 5
 
 
+# Canonical room vnums (merc.h)
+ROOM_VNUM_SCHOOL = 3700
+
+
 class Sector(IntEnum):
     """Sector types from merc.h"""
 

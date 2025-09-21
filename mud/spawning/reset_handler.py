@@ -1,15 +1,23 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional, Tuple
+import re
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Set
 
 from mud.models.area import Area
+from mud.models.character import character_registry
 from mud.models.constants import (
     ITEM_INVENTORY,
     ExtraFlag,
     EX_CLOSED,
     EX_ISDOOR,
     EX_LOCKED,
+    Direction,
+    ItemType,
+    LEVEL_HERO,
+    Position,
+    ROOM_VNUM_SCHOOL,
     convert_flags_from_letters,
 )
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
@@ -19,6 +27,97 @@ from .templates import MobInstance
 from mud.utils import rng_mm
 
 RESET_TICKS = 3
+
+
+_REVERSE_DIR = {
+    Direction.NORTH.value: Direction.SOUTH.value,
+    Direction.EAST.value: Direction.WEST.value,
+    Direction.SOUTH.value: Direction.NORTH.value,
+    Direction.WEST.value: Direction.EAST.value,
+    Direction.UP.value: Direction.DOWN.value,
+    Direction.DOWN.value: Direction.UP.value,
+}
+
+
+_SKILL_MIN_LEVELS: Dict[int, int] | None = None
+_SKILL_NAME_TO_ID: Dict[str, int] | None = None
+
+
+def _load_skill_table() -> None:
+    """Parse src/const.c for skill_table level data on demand."""
+
+    global _SKILL_MIN_LEVELS, _SKILL_NAME_TO_ID
+    if _SKILL_MIN_LEVELS is not None and _SKILL_NAME_TO_ID is not None:
+        return
+
+    const_path = Path(__file__).resolve().parents[2] / "src" / "const.c"
+    try:
+        content = const_path.read_text(encoding="latin-1")
+    except OSError:
+        _SKILL_MIN_LEVELS = {}
+        _SKILL_NAME_TO_ID = {}
+        return
+
+    marker = "const struct skill_type skill_table[MAX_SKILL] = {"
+    start = content.find(marker)
+    if start == -1:
+        _SKILL_MIN_LEVELS = {}
+        _SKILL_NAME_TO_ID = {}
+        return
+
+    brace_start = content.find("{", start)
+    depth = 1
+    pos = brace_start + 1
+    while pos < len(content) and depth > 0:
+        char = content[pos]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+        pos += 1
+
+    table_body = content[brace_start + 1 : pos - 1]
+    entry_pattern = re.compile(r'\{\s*"([^"]+)",\s*\{([^}]*)\},', re.MULTILINE)
+
+    levels: Dict[int, int] = {}
+    names: Dict[str, int] = {}
+    index = 0
+    for match in entry_pattern.finditer(table_body):
+        name = match.group(1)
+        raw_levels = match.group(2)
+        min_level = 53
+        for token in raw_levels.split(','):
+            value = token.strip()
+            if not value:
+                continue
+            try:
+                level = int(value)
+            except ValueError:
+                continue
+            if level < min_level:
+                min_level = level
+        levels[index] = min_level
+        names[name.lower()] = index
+        index += 1
+
+    _SKILL_MIN_LEVELS = levels
+    _SKILL_NAME_TO_ID = names
+
+
+def _lookup_skill_min_level(skill_id: int) -> Optional[int]:
+    if skill_id <= 0:
+        return None
+    _load_skill_table()
+    assert _SKILL_MIN_LEVELS is not None
+    return _SKILL_MIN_LEVELS.get(skill_id)
+
+
+def _lookup_skill_index(name: str) -> Optional[int]:
+    if not name:
+        return None
+    _load_skill_table()
+    assert _SKILL_NAME_TO_ID is not None
+    return _SKILL_NAME_TO_ID.get(name.lower())
 
 
 def _count_existing_mobs() -> Dict[int, int]:
@@ -45,6 +144,7 @@ def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
 
     counts: Dict[int, int] = {}
     instances: Dict[int, List[object]] = {}
+    seen_chars: Set[int] = set()
 
     def tally(obj: object) -> None:
         proto = getattr(obj, "prototype", None)
@@ -56,19 +156,63 @@ def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
         for contained in getattr(obj, "contained_items", []) or []:
             tally(contained)
 
+    def tally_character_items(char: object) -> None:
+        if char is None:
+            return
+        ident = id(char)
+        if ident in seen_chars:
+            return
+        seen_chars.add(ident)
+        for carried in getattr(char, "inventory", []) or []:
+            if carried is not None:
+                tally(carried)
+        equipment = getattr(char, "equipment", None)
+        if isinstance(equipment, dict):
+            for equipped in equipment.values():
+                if equipped is not None:
+                    tally(equipped)
+
     for room in room_registry.values():
         for obj in getattr(room, "contents", []):
             tally(obj)
-        for mob in getattr(room, "people", []):
-            if isinstance(mob, MobInstance):
-                for carried in getattr(mob, "inventory", []):
-                    tally(carried)
+        for occupant in getattr(room, "people", []) or []:
+            tally_character_items(occupant)
+
+    for char in character_registry:
+        tally_character_items(char)
 
     for vnum, proto in obj_registry.items():
         if hasattr(proto, "count"):
             proto.count = counts.get(vnum, 0)
 
     return counts, instances
+
+
+def _restore_exit_states(area: Area) -> None:
+    """Copy rs_flags onto exit_info for exits and their reverse links."""
+
+    for room in room_registry.values():
+        if room.area is not area:
+            continue
+        exits = getattr(room, "exits", []) or []
+        for idx, exit_obj in enumerate(exits):
+            if exit_obj is None:
+                continue
+            base_flags = int(getattr(exit_obj, "rs_flags", 0) or 0)
+            exit_obj.exit_info = base_flags
+            to_room = getattr(exit_obj, "to_room", None)
+            if to_room is None:
+                continue
+            rev_idx = _REVERSE_DIR.get(idx)
+            if rev_idx is None:
+                continue
+            rev_exits = getattr(to_room, "exits", None)
+            if not rev_exits or rev_idx >= len(rev_exits):
+                continue
+            rev_exit = rev_exits[rev_idx]
+            if rev_exit is None:
+                continue
+            rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
 
 
 def _resolve_reset_limit(raw: Optional[int]) -> int:
@@ -83,23 +227,78 @@ def _resolve_reset_limit(raw: Optional[int]) -> int:
     return raw
 
 
-def _compute_object_level(obj: object, mob: object) -> int:
-    """Approximate ROM object level computation for G/E resets.
-
-    Mirrors src/db.c case 'G'/'E' for shopkeepers and equips (simplified):
-    - WAND: 10..20
-    - STAFF: 15..25
-    - ARMOR: 5..15
-    - WEAPON: 5..15
-    - TREASURE: 10..20
-    - Default: 0
-    For new-format objects, or unrecognized types, return 0.
-    """
+def _resolve_item_type(proto: object) -> Optional[int]:
+    raw_type = getattr(proto, "item_type", None)
+    if isinstance(raw_type, ItemType):
+        return int(raw_type)
+    if isinstance(raw_type, int):
+        return raw_type
     try:
-        item_type = int(getattr(getattr(obj, 'prototype', None), 'item_type', 0))
-    except Exception:
-        item_type = 0
-    from mud.models.constants import ItemType
+        return int(raw_type)
+    except (TypeError, ValueError):
+        pass
+    if isinstance(raw_type, str):
+        try:
+            return ItemType[raw_type.upper()].value
+        except (KeyError, AttributeError):
+            return None
+    return None
+
+
+def _compute_mob_reset_level(mob: Optional[object]) -> int:
+    if mob is None:
+        return 0
+    hero_cap = LEVEL_HERO - 1
+    level = getattr(mob, "level", None)
+    if level is None:
+        proto = getattr(mob, "prototype", None)
+        level = getattr(proto, "level", 0) if proto is not None else 0
+    try:
+        level_int = int(level)
+    except (TypeError, ValueError):
+        level_int = 0
+    base = level_int - 2
+    if base < 0:
+        base = 0
+    if base > hero_cap:
+        base = hero_cap
+    return base
+
+
+def _determine_shopkeeper_level(obj_proto: object) -> int:
+    if obj_proto is None:
+        return 0
+    if getattr(obj_proto, "new_format", False):
+        try:
+            return int(getattr(obj_proto, "level", 0) or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    item_type = _resolve_item_type(obj_proto)
+    if item_type is None:
+        return 0
+
+    if item_type in (
+        int(ItemType.PILL),
+        int(ItemType.POTION),
+        int(ItemType.SCROLL),
+    ):
+        olevel = 53
+        values = list(getattr(obj_proto, "value", []) or [])
+        for skill_id in values[1:5]:
+            try:
+                skill_index = int(skill_id)
+            except (TypeError, ValueError):
+                continue
+            if skill_index <= 0:
+                continue
+            skill_level = _lookup_skill_min_level(skill_index)
+            if skill_level is None:
+                continue
+            if skill_level < olevel:
+                olevel = skill_level
+        return max(0, (olevel * 3 // 4) - 2)
+
     if item_type == int(ItemType.WAND):
         return rng_mm.number_range(10, 20)
     if item_type == int(ItemType.STAFF):
@@ -111,6 +310,22 @@ def _compute_object_level(obj: object, mob: object) -> int:
     if item_type == int(ItemType.TREASURE):
         return rng_mm.number_range(10, 20)
     return 0
+
+
+def _determine_object_level(
+    obj_proto: object,
+    *,
+    mob_reset_level: int,
+    is_shopkeeper: bool,
+) -> int:
+    if obj_proto is None:
+        return 0
+    if is_shopkeeper:
+        return _determine_shopkeeper_level(obj_proto)
+
+    hero_cap = LEVEL_HERO - 1
+    base = rng_mm.number_fuzzy(mob_reset_level)
+    return min(base, hero_cap)
 
 
 def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:
@@ -137,11 +352,14 @@ def apply_resets(area: Area) -> None:
 
     last_mob: Optional[MobInstance] = None
     last_obj: Optional[object] = None
+    last_mob_level: int = 0
     object_counts, existing_objects = _gather_object_state()
     spawned_objects: Dict[int, List[object]] = {
         vnum: list(instances) for vnum, instances in existing_objects.items()
     }
     mob_counts = _count_existing_mobs()
+
+    _restore_exit_states(area)
 
     for reset in area.resets:
         cmd = (reset.command or '').upper()
@@ -156,16 +374,19 @@ def apply_resets(area: Area) -> None:
                 logging.warning('Invalid M reset %s -> %s', mob_vnum, room_vnum)
                 last_mob = None
                 last_obj = None
+                last_mob_level = 0
                 continue
 
             if global_limit > 0 and mob_counts.get(mob_vnum, 0) >= global_limit:
                 last_mob = None
                 last_obj = None
+                last_mob_level = 0
                 continue
 
             if room_limit <= 0:
                 last_mob = None
                 last_obj = None
+                last_mob_level = 0
                 continue
 
             existing_in_room = sum(
@@ -177,6 +398,7 @@ def apply_resets(area: Area) -> None:
             if existing_in_room >= room_limit:
                 last_mob = None
                 last_obj = None
+                last_mob_level = 0
                 continue
 
             mob = spawn_mob(mob_vnum)
@@ -184,7 +406,18 @@ def apply_resets(area: Area) -> None:
                 logging.warning('Invalid M reset %s (missing prototype)', mob_vnum)
                 last_mob = None
                 last_obj = None
+                last_mob_level = 0
                 continue
+
+            setattr(mob, "is_npc", True)
+            proto_default = getattr(getattr(mob, "prototype", None), "default_pos", None)
+            default_pos = proto_default or getattr(mob, "position", Position.STANDING)
+            setattr(mob, "default_pos", default_pos)
+            setattr(mob, "mprog_target", None)
+            setattr(mob, "mprog_delay", int(getattr(mob, "mprog_delay", 0)))
+            if not hasattr(mob, "mob_programs"):
+                programs = list(getattr(getattr(mob, "prototype", None), "mprogs", []) or [])
+                setattr(mob, "mob_programs", programs)
 
             room.add_mob(mob)
             mob_counts[mob_vnum] = mob_counts.get(mob_vnum, 0) + 1
@@ -192,6 +425,7 @@ def apply_resets(area: Area) -> None:
             if proto is not None and hasattr(proto, 'count'):
                 proto.count = mob_counts[mob_vnum]
             last_mob = mob
+            last_mob_level = _compute_mob_reset_level(mob)
             last_obj = None
         elif cmd == 'O':
             obj_vnum = reset.arg1 or 0
@@ -213,7 +447,8 @@ def apply_resets(area: Area) -> None:
             if len(existing_in_room) >= limit:
                 last_obj = None
                 continue
-            obj = spawn_object(obj_vnum)
+            spawn_level = min(rng_mm.number_fuzzy(last_mob_level), LEVEL_HERO - 1)
+            obj = spawn_object(obj_vnum, level=spawn_level)
             if obj:
                 room.add_object(obj)
                 object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
@@ -254,6 +489,15 @@ def apply_resets(area: Area) -> None:
 
             exit_obj.rs_flags = base_flags
             exit_obj.exit_info = base_flags
+            to_room = getattr(exit_obj, "to_room", None)
+            rev_idx = _REVERSE_DIR.get(door)
+            if to_room is not None and rev_idx is not None:
+                rev_exits = getattr(to_room, "exits", None)
+                if rev_exits and rev_idx < len(rev_exits):
+                    rev_exit = rev_exits[rev_idx]
+                    if rev_exit is not None:
+                        rev_exit.rs_flags = base_flags
+                        rev_exit.exit_info = base_flags
         elif cmd == 'G':
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)
@@ -271,9 +515,14 @@ def apply_resets(area: Area) -> None:
             is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                 continue
-            obj = spawn_object(obj_vnum)
+            obj_proto = obj_registry.get(obj_vnum)
+            item_level = _determine_object_level(
+                obj_proto,
+                mob_reset_level=last_mob_level,
+                is_shopkeeper=is_shopkeeper,
+            )
+            obj = spawn_object(obj_vnum, level=item_level)
             if obj:
-                obj.level = _compute_object_level(obj, last_mob)
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
                 object_counts[obj_vnum] = proto_count + 1
@@ -300,9 +549,14 @@ def apply_resets(area: Area) -> None:
             is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                 continue
-            obj = spawn_object(obj_vnum)
+            obj_proto = obj_registry.get(obj_vnum)
+            item_level = _determine_object_level(
+                obj_proto,
+                mob_reset_level=last_mob_level,
+                is_shopkeeper=is_shopkeeper,
+            )
+            obj = spawn_object(obj_vnum, level=item_level)
             if obj:
-                obj.level = _compute_object_level(obj, last_mob)
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
                 object_counts[obj_vnum] = proto_count + 1
@@ -335,12 +589,14 @@ def apply_resets(area: Area) -> None:
                 continue
             container_obj: Optional[object] = None
             if last_obj and getattr(getattr(last_obj, 'prototype', None), 'vnum', None) == container_vnum:
-                container_obj = last_obj
+                location = getattr(last_obj, 'location', None)
+                if location is not None and getattr(location, 'area', None) is area:
+                    container_obj = last_obj
             if not container_obj:
                 candidates = spawned_objects.get(container_vnum) or []
                 for candidate in reversed(candidates):
                     room = getattr(candidate, 'location', None)
-                    if room is None or room.area is area:
+                    if room is not None and getattr(room, 'area', None) is area:
                         container_obj = candidate
                         break
             if not container_obj:
@@ -368,8 +624,17 @@ def apply_resets(area: Area) -> None:
                 continue
             to_make = min(target_count - len(existing), remaining_global)
             made = 0
+            base_level = getattr(container_obj, 'level', None)
+            if base_level is None:
+                proto = getattr(container_obj, 'prototype', None)
+                base_level = getattr(proto, 'level', 0) if proto is not None else 0
+            try:
+                container_level = int(base_level)
+            except (TypeError, ValueError):
+                container_level = 0
             for _ in range(to_make):
-                obj = spawn_object(obj_vnum)
+                item_level = rng_mm.number_fuzzy(container_level)
+                obj = spawn_object(obj_vnum, level=item_level)
                 if not obj:
                     logging.warning('Invalid P reset %s', obj_vnum)
                     break
@@ -400,28 +665,37 @@ def apply_resets(area: Area) -> None:
 
 
 def reset_area(area: Area) -> None:
-    """Clear existing spawns and reapply resets for an area."""
-    for room in room_registry.values():
-        if room.area is area:
-            room.contents.clear()
-            room.people = [p for p in room.people if not isinstance(p, MobInstance)]
+    """Reapply resets for an area without purging existing mobs or objects."""
     apply_resets(area)
 
 
 def reset_tick() -> None:
-    """Advance area ages and trigger resets when empty."""
+    """Advance area ages and run ROM-style area_update scheduling."""
+
     for area in area_registry.values():
-        area.nplayer = sum(
-            1
-            for room in room_registry.values()
-            if room.area is area
-            for p in room.people
-            if not isinstance(p, MobInstance)
-        )
-        if area.nplayer > 0:
-            area.age = 0
+        nplayer = int(getattr(area, "nplayer", 0) or 0)
+        if nplayer > 0:
+            area.empty = False
+
+        area.age = int(getattr(area, "age", 0)) + 1
+        if area.age < 3:
             continue
-        area.age += 1
-        if area.age >= RESET_TICKS:
-            reset_area(area)
-            area.age = 0
+
+        should_reset = False
+        if (
+            not getattr(area, "empty", False)
+            and (nplayer == 0 or area.age >= 15)
+        ) or area.age >= 31:
+            should_reset = True
+
+        if not should_reset:
+            continue
+
+        reset_area(area)
+        area.age = rng_mm.number_range(0, 3)
+
+        school_room = room_registry.get(ROOM_VNUM_SCHOOL)
+        if school_room is not None and school_room.area is area:
+            area.age = 13  # Mud School resets quickly after repop
+        elif nplayer == 0:
+            area.empty = True
