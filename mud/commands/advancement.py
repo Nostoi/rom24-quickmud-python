@@ -1,24 +1,27 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-<<<<<<< HEAD
 from mud.models.constants import ActFlag, Position, convert_flags_from_letters
 from mud.skills.registry import skill_registry
 
 
 def _has_practice_flag(entity) -> bool:
+    """Return True if the entity advertises ACT_PRACTICE parity semantics."""
+
     checker = getattr(entity, "has_act_flag", None)
     if callable(checker):
         try:
             return bool(checker(ActFlag.PRACTICE))
         except TypeError:
             pass
+
     act_value = getattr(entity, "act", None)
     if act_value is not None:
         try:
             return bool(ActFlag(act_value) & ActFlag.PRACTICE)
         except ValueError:
             pass
+
     flags = getattr(entity, "act_flags", None)
     if isinstance(flags, ActFlag):
         return bool(flags & ActFlag.PRACTICE)
@@ -30,6 +33,8 @@ def _has_practice_flag(entity) -> bool:
 
 
 def _is_awake(entity) -> bool:
+    """Mirror ROM Position gating for practice trainers."""
+
     position = getattr(entity, "position", Position.STANDING)
     try:
         pos_value = Position(position)
@@ -39,9 +44,12 @@ def _is_awake(entity) -> bool:
 
 
 def _find_practice_trainer(char: Character):
+    """Locate an awake practice trainer in the character's room."""
+
     room = getattr(char, "room", None)
     if room is None:
         return None
+
     for occupant in getattr(room, "people", []):
         if occupant is char:
             continue
@@ -54,6 +62,8 @@ def _find_practice_trainer(char: Character):
 
 
 def _rating_for_class(skill, ch_class: int) -> int:
+    """Return the ROM rating entry for the character's class, defaulting to 1."""
+
     rating = getattr(skill, "rating", {})
     if isinstance(rating, dict):
         if ch_class in rating:
@@ -62,20 +72,11 @@ def _rating_for_class(skill, ch_class: int) -> int:
         if key in rating:
             return int(rating[key])
     return 1
-=======
-from mud.models.constants import CLASS_SKILL_ADEPT, INT_APP_LEARN, STAT_INT
-from mud.skills.registry import skill_registry
-
-
-def _get_curr_stat(char: Character, stat_index: int) -> int:
-    """Return current stat (perm + mod) bounded to table size."""
-    perm = char.perm_stat[stat_index] if len(char.perm_stat) > stat_index else 0
-    mod = char.mod_stat[stat_index] if len(char.mod_stat) > stat_index else 0
-    return perm + mod
->>>>>>> d64de0a (Many significant changes)
 
 
 def do_practice(char: Character, args: str) -> str:
+    """ROM-aligned practice command with trainer, rating, and INT scaling."""
+
     args = (args or "").strip()
     if not args:
         return f"You have {char.practice} practice sessions left."
@@ -83,80 +84,60 @@ def do_practice(char: Character, args: str) -> str:
         return ""
     if not char.is_awake():
         return "In your dreams, or what?"
+
     trainer = _find_practice_trainer(char)
     if trainer is None:
         return "You can't do that here."
     if char.practice <= 0:
         return "You have no practice sessions left."
+
     skill_name = args.lower()
     skill = skill_registry.skills.get(skill_name)
     if skill is None:
         return "You can't practice that."
-<<<<<<< HEAD
+
     rating = _rating_for_class(skill, char.ch_class)
     if rating <= 0:
         return "You can't practice that."
+
     current = char.skills.get(skill_name)
-    if current is None:
+    if current is None or current <= 0:
         return "You can't practice that."
+
     adept = char.skill_adept_cap()
     if current >= adept:
         return f"You are already learned at {skill_name}."
+
     gain_rate = char.get_int_learn_rate()
     increment = max(1, gain_rate // max(1, rating))
+
     char.practice -= 1
     new_value = min(adept, current + increment)
     char.skills[skill_name] = new_value
+
     if new_value >= adept:
-=======
-    skill = skill_registry.get(skill_name)
-    class_idx = char.ch_class
-    if class_idx not in CLASS_SKILL_ADEPT:
-        return "You can't practice that."
-
-    required_level = skill.levels[class_idx] if len(skill.levels) > class_idx else 99
-    if char.level < required_level:
-        return "You can't practice that."
-
-    current = char.skills.get(skill_name, 0)
-
-    rating = skill.ratings[class_idx] if len(skill.ratings) > class_idx else 0
-    if rating <= 0:
-        return "You can't practice that."
-
-    adept_cap = 100 if char.is_npc else CLASS_SKILL_ADEPT.get(class_idx, 75)
-    if current >= adept_cap:
-        return f"You are already learned at {skill_name}."
-
-    # Ensure skill entry exists for future checks
-    char.skills[skill_name] = current
-
-    char.practice -= 1
-    int_value = _get_curr_stat(char, STAT_INT)
-    int_index = max(0, min(int_value, len(INT_APP_LEARN) - 1))
-    learn_rate = INT_APP_LEARN[int_index]
-    gain = max(1, learn_rate // rating)
-    new_value = min(current + gain, adept_cap)
-    char.skills[skill_name] = new_value
-    if new_value >= adept_cap:
->>>>>>> d64de0a (Many significant changes)
         return f"You are now learned at {skill_name}."
     return f"You practice {skill_name}."
 
 
 def do_train(char: Character, args: str) -> str:
+    """Simplified ROM train command for stats and resource pools."""
+
     if not args:
         return f"You have {char.train} training sessions left."
     if char.train <= 0:
         return "You have no training sessions left."
+
     stat = args.lower()
     if stat not in {"hp", "mana", "move"}:
         return "Train what?"
+
     if stat == "hp":
         char.max_hit += 10
     elif stat == "mana":
         char.max_mana += 10
     else:
         char.max_move += 10
+
     char.train -= 1
     return f"You train your {stat}."

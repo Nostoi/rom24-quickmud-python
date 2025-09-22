@@ -4,7 +4,6 @@ import logging
 from typing import Dict, List, Optional, Tuple, Set
 
 from mud.models.area import Area
-<<<<<<< HEAD
 from mud.models.character import character_registry
 from mud.models.constants import (
     ITEM_INVENTORY,
@@ -18,10 +17,6 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
-=======
-from mud.models.constants import ITEM_INVENTORY
-from mud.registry import room_registry, area_registry, mob_registry, obj_registry
->>>>>>> d64de0a (Many significant changes)
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
 from .templates import MobInstance
@@ -59,7 +54,6 @@ def _count_existing_mobs() -> Dict[int, int]:
     return counts
 
 
-<<<<<<< HEAD
 def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
     """Rebuild OBJ_INDEX_DATA->count and capture instances by prototype vnum."""
 
@@ -134,43 +128,44 @@ def _restore_exit_states(area: Area) -> None:
             if rev_exit is None:
                 continue
             rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
-=======
+
+
 def _record_object_counts(obj: object, counts: Dict[int, int]) -> None:
     """Recursively tally object instances by prototype vnum."""
 
-    proto = getattr(obj, 'prototype', None)
-    vnum = getattr(proto, 'vnum', None)
+    proto = getattr(obj, "prototype", None)
+    vnum = getattr(proto, "vnum", None)
     if vnum is not None:
         counts[vnum] = counts.get(vnum, 0) + 1
-    for contained in getattr(obj, 'contained_items', []) or []:
+    for contained in getattr(obj, "contained_items", []) or []:
         _record_object_counts(contained, counts)
 
 
 def _count_existing_objects() -> Dict[int, int]:
-    """Rebuild OBJ_INDEX_DATA->count values based on world state."""
+    """Rebuild OBJ_INDEX_DATA->count values based on current world state."""
 
     counts: Dict[int, int] = {}
 
     for room in room_registry.values():
-        for obj in getattr(room, 'contents', []) or []:
+        for obj in getattr(room, "contents", []) or []:
             _record_object_counts(obj, counts)
-        for occupant in getattr(room, 'people', []) or []:
-            for item in getattr(occupant, 'inventory', []) or []:
+        for occupant in getattr(room, "people", []) or []:
+            for item in getattr(occupant, "inventory", []) or []:
                 _record_object_counts(item, counts)
-            equipment = getattr(occupant, 'equipment', None)
+            equipment = getattr(occupant, "equipment", None)
             if isinstance(equipment, dict):
                 for item in equipment.values():
                     _record_object_counts(item, counts)
 
     for vnum, proto in obj_registry.items():
-        if hasattr(proto, 'count'):
+        if hasattr(proto, "count"):
             proto.count = counts.get(vnum, 0)
 
     return counts
 
 
-def _resolve_vnum(primary: int, secondary: int, registry: Dict[int, object]) -> tuple[int, bool]:
-    """Return a vnum from either primary or secondary, noting if fallback was used."""
+def _resolve_vnum(primary: int, secondary: int, registry: Dict[int, object]) -> Tuple[int, bool]:
+    """Return the best available vnum, signalling if the fallback was used."""
 
     if primary and primary in registry and (primary > 1 or secondary not in registry):
         return primary, False
@@ -179,7 +174,6 @@ def _resolve_vnum(primary: int, secondary: int, registry: Dict[int, object]) -> 
     if primary and primary in registry:
         return primary, False
     return primary, False
->>>>>>> d64de0a (Many significant changes)
 
 
 def _resolve_reset_limit(raw: Optional[int]) -> int:
@@ -325,7 +319,6 @@ def apply_resets(area: Area) -> None:
             last_mob = mob
             last_obj = None
         elif cmd == 'O':
-<<<<<<< HEAD
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)
             room_vnum = reset.arg3 or 0
@@ -395,43 +388,6 @@ def apply_resets(area: Area) -> None:
                     if rev_exit is not None:
                         rev_exit.rs_flags = base_flags
                         rev_exit.exit_info = base_flags
-=======
-            obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
-            room_vnum = reset.arg3 or 0
-
-            if used_fallback:
-                # JSON layout: arg4 holds room vnum
-                room_vnum = reset.arg4 or 0
-
-            room = room_registry.get(room_vnum)
-            if obj_vnum <= 0 or room is None:
-                logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
-                last_obj = None
-                continue
-
-            if getattr(area, 'nplayer', 0) > 0:
-                last_obj = None
-                continue
-
-            already_present = any(
-                getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
-                for o in room.contents
-            )
-            if already_present:
-                last_obj = None
-                continue
-
-            obj = spawn_object(obj_vnum)
-            if not obj:
-                logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
-                last_obj = None
-                continue
-
-            room.add_object(obj)
-            object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
-            last_obj = obj
-            spawned_objects.setdefault(obj_vnum, []).append(obj)
->>>>>>> d64de0a (Many significant changes)
         elif cmd == 'G':
             obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             limit_raw = reset.arg2
@@ -449,13 +405,9 @@ def apply_resets(area: Area) -> None:
             ]
             if len(existing) >= limit:
                 continue
-<<<<<<< HEAD
             proto_count = object_counts.get(obj_vnum, 0)
             is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
-=======
-            if limit != 999 and proto_count >= limit and rng_mm.number_range(0, 4) != 0:
->>>>>>> d64de0a (Many significant changes)
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
@@ -488,13 +440,9 @@ def apply_resets(area: Area) -> None:
             ]
             if len(existing) >= limit:
                 continue
-<<<<<<< HEAD
             proto_count = object_counts.get(obj_vnum, 0)
             is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
-=======
-            if limit != 999 and proto_count >= limit and rng_mm.number_range(0, 4) != 0:
->>>>>>> d64de0a (Many significant changes)
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
@@ -509,21 +457,12 @@ def apply_resets(area: Area) -> None:
             else:
                 logging.warning('Invalid E reset %s', obj_vnum)
         elif cmd == 'P':
-            obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
+            obj_vnum, _ = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             container_vnum = reset.arg3 or 0
-<<<<<<< HEAD
             target_count = max(1, int(reset.arg4 or 1))
-            limit = _resolve_reset_limit(reset.arg2)
+            limit_raw = reset.arg2 if reset.arg2 is not None else 0
+            limit = _resolve_reset_limit(limit_raw)
             if obj_vnum <= 0 or container_vnum <= 0:
-=======
-            count = max(1, int(reset.arg4 or 1))
-            limit_raw = reset.arg2
-            if used_fallback:
-                container_vnum = reset.arg4 or 0
-                count = max(1, int(reset.arg3 or 1))
-                limit_raw = None
-            if container_vnum <= 0:
->>>>>>> d64de0a (Many significant changes)
                 logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
                 last_obj = None
                 continue
@@ -572,9 +511,9 @@ def apply_resets(area: Area) -> None:
                 last_obj = container_obj
                 continue
 
-            limit = _resolve_reset_limit(limit_raw) if limit_raw is not None else 999
+            effective_limit = limit if limit > 0 else 999
             current_total = object_counts.get(obj_vnum, 0)
-            if limit != 999 and current_total >= limit:
+            if effective_limit != 999 and current_total >= effective_limit:
                 last_obj = container_obj
                 continue
 
@@ -583,20 +522,13 @@ def apply_resets(area: Area) -> None:
                 for o in getattr(container_obj, 'contained_items', [])
                 if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
             ]
-<<<<<<< HEAD
             if len(existing) >= target_count:
                 last_obj = container_obj
                 continue
             to_make = min(target_count - len(existing), remaining_global)
             made = 0
-=======
-            if len(existing) >= count:
-                last_obj = container_obj
-                continue
-            to_make = max(0, count - len(existing))
->>>>>>> d64de0a (Many significant changes)
             for _ in range(to_make):
-                if limit != 999 and object_counts.get(obj_vnum, 0) >= limit:
+                if effective_limit != 999 and object_counts.get(obj_vnum, 0) >= effective_limit:
                     break
                 obj = spawn_object(obj_vnum)
                 if not obj:
@@ -604,15 +536,11 @@ def apply_resets(area: Area) -> None:
                     break
                 getattr(container_obj, 'contained_items').append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
-<<<<<<< HEAD
                 made += 1
                 remaining_global -= 1
                 object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
                 if remaining_global <= 0:
                     break
-=======
-                object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
->>>>>>> d64de0a (Many significant changes)
             try:
                 container_obj.value[1] = container_obj.prototype.value[1]
             except Exception:

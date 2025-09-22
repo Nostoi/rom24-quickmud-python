@@ -70,37 +70,23 @@ class SkillRegistry:
         """Execute a skill and handle ROM-style success, lag, and advancement."""
 
         skill = self.get(name)
-<<<<<<< HEAD
         if int(getattr(caster, "wait", 0)) > 0:
             messages = getattr(caster, "messages", None)
             if isinstance(messages, list):
                 messages.append("You are still recovering.")
             raise ValueError("still recovering")
         if caster.mana < skill.mana_cost:
-=======
-        mana_cost = skill.min_mana or skill.mana_cost
-        if caster.mana < mana_cost:
->>>>>>> d64de0a (Many significant changes)
             raise ValueError("not enough mana")
 
         cooldowns = getattr(caster, "cooldowns", {})
         if cooldowns.get(name, 0) > 0:
             raise ValueError("skill on cooldown")
 
-<<<<<<< HEAD
         lag = self._compute_skill_lag(caster, skill)
         self._apply_wait_state(caster, lag)
         caster.mana -= skill.mana_cost
 
         learned: Optional[int]
-=======
-        caster.mana -= mana_cost
-        wait_beats = skill.beats or skill.lag
-        if wait_beats:
-            caster.wait = max(getattr(caster, "wait", 0), wait_beats)
-        # ROM parity: prefer per-character learned% when available
-        learned = None
->>>>>>> d64de0a (Many significant changes)
         try:
             learned_val = caster.skills.get(name)
             learned = int(learned_val) if learned_val is not None else None

@@ -1,8 +1,11 @@
 from pathlib import Path
 from random import Random
 
+import pytest
+
 from mud.models.character import Character
 from mud.models.constants import AffectFlag
+import mud.skills.handlers as skill_handlers
 from mud.skills import SkillRegistry
 from mud.utils import rng_mm
 
@@ -121,12 +124,15 @@ def test_skill_use_sets_wait_state_and_blocks_until_ready(
     reg = load_registry()
     skill = reg.get("acid blast")
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(rng_mm, "dice", lambda level, size: 60)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, dtype: False)
 
     caster = Character(mana=40, is_npc=False, skills={"acid blast": 100})
+    caster.level = 30
     target = Character()
 
     result = reg.use(caster, "acid blast", target)
-    assert result == 42
+    assert result == 60
     assert caster.wait == skill.lag
     assert caster.mana == 20
     assert caster.cooldowns.get("acid blast", 0) == skill.cooldown
@@ -149,7 +155,8 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
         affected_by=int(AffectFlag.HASTE),
         skills={"acid blast": 100},
     )
-    reg.use(haste_caster, "acid blast")
+    haste_target = Character()
+    reg.use(haste_caster, "acid blast", haste_target)
     assert haste_caster.wait == max(1, skill.lag // 2)
 
     slow_caster = Character(
@@ -158,5 +165,6 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
         affected_by=int(AffectFlag.SLOW),
         skills={"acid blast": 100},
     )
-    reg.use(slow_caster, "acid blast")
+    slow_target = Character()
+    reg.use(slow_caster, "acid blast", slow_target)
     assert slow_caster.wait == skill.lag * 2
