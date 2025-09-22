@@ -133,14 +133,11 @@ class Character:
     enhanced_damage_skill: int = 0
     # Character type flag
     is_npc: bool = True  # Default to NPC, set to False for PCs
-<<<<<<< HEAD
     # Mob program runtime state mirroring ROM's CHAR_DATA fields
     mob_programs: List["MobProgram"] = field(default_factory=list)
     mprog_target: Optional["Character"] = None
-=======
     # Active spell effects keyed by skill name for parity restores
     spell_effects: Dict[str, SpellEffect] = field(default_factory=dict)
->>>>>>> d64de0a (Many significant changes)
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -377,4 +374,3 @@ _CLASS_SKILL_ADEPT: dict[int, int] = {
 }
 
 _CLASS_SKILL_ADEPT_DEFAULT = 75
-

@@ -16,9 +16,8 @@ def spawn_object(vnum: int) -> Optional[Object]:
     except Exception:
         inst.value = [0, 0, 0, 0, 0]
     if hasattr(proto, 'count'):
-<<<<<<< HEAD
-        proto.count = getattr(proto, 'count', 0) + 1
-=======
-        proto.count += 1
->>>>>>> d64de0a (Many significant changes)
+        try:
+            proto.count = int(getattr(proto, 'count', 0)) + 1
+        except Exception:
+            proto.count = 1
     return inst

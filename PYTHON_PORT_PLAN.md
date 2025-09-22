@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 <!-- LAST-PROCESSED: player_save_format -->
-=======
-<!-- LAST-PROCESSED: world_loader -->
->>>>>>> d64de0a (Many significant changes)
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -64,11 +60,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem              | C source (file:symbol)                              | Python target (file:symbol)                                                        |
 | ---------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | combat                 | src/fight.c:one_hit/multi_hit                       | mud/combat/engine.py:attack_round                                                  |
-<<<<<<< HEAD
 | skills_spells          | src/act_info.c:do_practice; src/skills.c:check_improve | mud/commands/advancement.py:do_practice; mud/skills/registry.py:SkillRegistry.use |
-=======
-| skills_spells          | src/const.c:skill_table; src/act_info.c:do_practice                      | mud/skills/registry.py:load; mud/commands/advancement.py:do_practice                 |
->>>>>>> d64de0a (Many significant changes)
 | affects_saves          | src/magic.c:saves_spell; src/handler.c:check_immune | mud/affects/saves.py:saves_spell/\_check_immune                                    |
 | movement_encumbrance   | src/act_move.c:move_char; src/handler.c:room_is_private | mud/world/movement.py:move_character |
 | resets                 | src/db.c:load_resets ('D' commands); src/db.c:reset_room | mud/spawning/reset_handler.py:apply_resets/reset_area |
@@ -276,7 +268,6 @@ TASKS:
   EVIDENCE: PY mud/loaders/json_loader.py:L163-L166 (JSON field support with defaults)
   RATIONALE: Future extensibility for areas with custom healing rates or ownership
   FILES: mud/loaders/json_loader.py
-<<<<<<< HEAD
 - ✅ [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — done 2025-09-18
   EVIDENCE: TEST tests/test_json_room_fields.py::test_json_loader_parses_extended_room_fields
   EVIDENCE: PY tests/test_json_room_fields.py:L1-L69
@@ -287,15 +278,6 @@ TASKS:
 - Applied tiny fix: Added ROM defaults heal_rate=100, mana_rate=100 to JSON room loader
 - Applied tiny fix: Added ROOM_LAW flag logic for Midgaard law zone (vnums 3000-3400)
 - Applied tiny fix: Added support for optional heal_rate/mana_rate/clan/owner JSON fields
-=======
-
-NOTES:
-- C: src/db.c:1161-1193 toggles ROOM_LAW and parses heal/mana/clan/owner via clan_lookup with defaults at 100/100.
-- DOC: doc/Rom2.4.doc:1505-1518 documents #ROOMS optional sections X–XI for heal/mana adjustments and clan ownership.
-- ARE: area/midgaard.are:4158 retains `H 110 M 110`; tests cover converter retention and loader defaults/ROOM_LAW overlay.
-- PY: mud/scripts/convert_are_to_json.py:33-68 preserves optional fields; mud/loaders/json_loader.py:150-171 applies ROM defaults when fields are absent.
-- Applied tiny fix: export now preserves heal_rate/mana_rate/clan/owner when non-default (mud/scripts/convert_are_to_json.py:49-65).
->>>>>>> d64de0a (Many significant changes)
 <!-- SUBSYSTEM: world_loader END -->
 
 <!-- SUBSYSTEM: time_daynight START -->
@@ -511,7 +493,6 @@ RECENT COMPLETION (2025-09-16):
 
 <!-- SUBSYSTEM: skills_spells START -->
 
-<<<<<<< HEAD
 ### skills_spells — Parity Audit 2025-09-17
 
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
@@ -562,48 +543,6 @@ NOTES:
 - C: src/act_info.c:2680-2759 enforces trainer gating and adept caps; src/skills.c:923-960 plus src/magic.c:520-567 drive check_improve, XP rewards, and WAIT_STATE pulse costs.
 - PY: mud/commands/advancement.py:5-99 mirrors trainer/adept rules; mud/skills/registry.py:40-106 now applies wait-state pulses, haste/slow adjustments, and retains check_improve + XP gains with message parity covered by tests/test_skills.py:114-158.
 - Applied tiny fix: none
-=======
-### skills_spells — Parity Audit 2025-09-21
-
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.55)
-KEY RISKS: lag_wait, side_effects
-TASKS:
-
-- ✅ [P0] Replace stubbed buff spell handlers with ROM effects — acceptance: `pytest -q tests/test_spells_basic.py::test_rom_buff_spells` verifies `armor`, `bless`, and `cure light` update AC/hitroll/damroll and heal damage per ROM. — done 2025-09-21
-  EVIDENCE: C src/magic.c:spell_armor/spell_bless/spell_cure_light
-  EVIDENCE: PY mud/skills/handlers.py:L34-L84; mud/skills/handlers.py:L289-L305
-  EVIDENCE: PY mud/models/character.py:L31-L136 (SpellEffect tracking)
-  EVIDENCE: TEST tests/test_spells_basic.py::test_rom_buff_spells
-  RATIONALE: ROM `spell_armor`, `spell_bless`, and `spell_cure_light` apply timed affects and healing; the port returns constant `42`, so buffs never modify stats and practise-spent spells have no effect.
-  FILES: mud/skills/handlers.py; mud/models/character.py; tests/test_spells_basic.py
-  TESTS: tests/test_spells_basic.py::test_rom_buff_spells
-  REFERENCES: C src/magic.c:spell_armor/spell_bless/spell_cure_light; DOC doc/skill.txt §Skills and Spells; ARE area/midgaard.are:1524 (sanctuary/stone skin/armor charges)
-
-- ✅ [P0] Implement ROM damage spell dice and saving throw logic — acceptance: `pytest -q tests/test_spells_damage.py::test_damage_spells_match_rom` confirms dice rolls and save-for-half behaviour for `acid blast`, `burning hands`, and `call lightning` using Mitchell-Moore golden RNG traces. — done 2025-09-21
-  EVIDENCE: C src/magic.c:spell_acid_blast/spell_burning_hands/spell_call_lightning
-  EVIDENCE: PY mud/skills/handlers.py:L14-L179 (acid_blast/burning_hands/call_lightning)
-  EVIDENCE: TEST tests/test_spells_damage.py::test_damage_spells_match_rom
-  RATIONALE: ROM damage spells compute level-scaled dice and saving throws; the Python stubs always return 42 so combat damage diverges and saving throws never trigger.
-  FILES: mud/skills/handlers.py; tests/test_spells_damage.py
-  TESTS: tests/test_spells_damage.py::test_damage_spells_match_rom
-  REFERENCES: DOC doc/skill.txt §Skills and Spells; ARE area/valley.are:317 (`'armor' 'invisibility'` charges showcase spell slots)
-
-- ✅ [P0] Extend skill metadata to ROM skill_table schema — done 2025-09-21
-  EVIDENCE: C src/const.c:skill_table (levels/ratings/slots/min_mana/beats)
-  EVIDENCE: PY mud/skills/registry.py:33-58; mud/models/skill.py:29-42; mud/models/skill_json.py:12-25
-  EVIDENCE: PY schemas/skill.schema.json:11-37; mud/commands/advancement.py:28-54
-  EVIDENCE: TEST tests/test_practice.py::test_practice_uses_class_levels; tests/test_skills.py::test_casting_uses_min_mana_and_beats; tests/test_advancement.py::test_practice_and_train_commands
-  EVIDENCE: DOC doc/skill.txt §Skills and Spells; ARE area/midgaard.are:1524 (`sanctuary`/`stone skin`/`armor` charges)
-  RATIONALE: ROM `skill_table` metadata now feeds practice gating, class ratings, min_mana/beats, and spell slots in the Python port to match trainer behaviour and casting lag.
-  FILES: schemas/skill.schema.json; mud/models/skill.py; mud/models/skill_json.py; mud/skills/registry.py; mud/commands/advancement.py; tests/test_practice.py; tests/test_skills.py; tests/test_advancement.py
-
-NOTES:
-- C: src/const.c:skill_table encodes per-class levels, rating costs, spell slots, min_mana, and beats for entries like "acid blast" and "armor".
-- C: src/act_info.c:do_practice requires `skill_table[sn].skill_level[class]`/`rating[class]` to gate trainers and INT-based gains; without metadata characters ignore class locks.
-- PY: SkillRegistry hydrates ROM levels/ratings/slots/min_mana/beats into Skills, and schema/dataclasses expose these fields for validation.
-- DOC/ARE: doc/skill.txt §§ Skills and Spells + area/midgaard.are:1524 (charged wands) now backed by slot/min_mana/beats-aware handlers and tests.
-- Applied tiny fix: Added `Character.spell_effects` to prevent duplicate stacking and restore AC/hitroll/saving throw parity.
->>>>>>> d64de0a (Many significant changes)
 <!-- SUBSYSTEM: skills_spells END -->
 
 <!-- SUBSYSTEM: movement_encumbrance START -->
@@ -727,7 +666,6 @@ NOTES:
 
 <!-- SUBSYSTEM: resets START -->
 
-<<<<<<< HEAD
 ### resets — Parity Audit 2025-10-02
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.38)
@@ -779,51 +717,6 @@ NOTES:
 - PY: mud/spawning/reset_handler.py:L56-L416 rebuilds counts across rooms, NPCs, and player-held items and requires `P` containers to remain in-area, mirroring ROM's LastObj/last behavior.
 - DOC/ARE: doc/Rom2.4.doc:1699-1759 documents reset cadence and command semantics; area/midgaard.are:6084-6233 lists donation pits, shopkeepers, and door resets expecting LastMob/LastObj behavior.
 - Applied tiny fix: none
-=======
-### resets — Parity Audit 2025-09-21
-
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.66)
-KEY RISKS: file_formats, indexing, side_effects
-TASKS:
-
-- ✅ [P0] Reinstate ROM 'P' reset object limit gating and prototype counts — done 2025-09-21
-  EVIDENCE: C src/db.c:1783-1832
-  EVIDENCE: PY mud/spawning/reset_handler.py:243
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_P_limit_enforced
-  RATIONALE: `reset_room` halts when container prototypes hit arg2 and increments counts; Python never reads arg2 or updates counts so containers gain items every reset.
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py; mud/models/obj.py
-  TESTS: tests/test_spawning.py::test_reset_P_limit_enforced
-  REFERENCES: C src/db.c:1783-1832; PY mud/spawning/reset_handler.py:140-205; PY mud/spawning/obj_spawner.py:1-24; DOC doc/area.txt:406-470; ARE area/midgaard.are:6360-6369
-  ESTIMATE: M; RISK: medium
-
-- ✅ [P0] Mirror ROM 'O' reset gating for duplicates and player presence — done 2025-09-21
-  EVIDENCE: C src/db.c:1695-1779
-  EVIDENCE: PY mud/spawning/reset_handler.py:214
-  EVIDENCE: TEST tests/test_spawning.py::test_resets_repop_after_tick
-  RATIONALE: ROM prevents donation pits and safes from duplicating while players or duplicates remain; Python always spawns another copy.
-  FILES: mud/spawning/reset_handler.py
-  TESTS: tests/test_spawning.py::test_resets_repop_after_tick (extend with duplicate/players assertions)
-  REFERENCES: C src/db.c:1755-1782; PY mud/spawning/reset_handler.py:104-139; DOC doc/area.txt:470-518; ARE area/midgaard.are:6360-6369
-  ESTIMATE: M; RISK: medium
-
-- ✅ [P0] Apply ROM object limits and 1-in-5 reroll for 'G'/'E' resets — done 2025-09-21
-  EVIDENCE: C src/db.c:1833-1916
-  EVIDENCE: PY mud/spawning/reset_handler.py:268
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  EVIDENCE: TEST tests/test_reset_levels.py::test_give_equip_object_levels_are_in_expected_ranges
-  RATIONALE: `reset_room` compares `pObjIndex->count` plus a reroll before spawning or equipping; Python only inspects mob inventory and never bumps prototype counts.
-  FILES: mud/spawning/reset_handler.py; mud/spawning/obj_spawner.py; mud/models/obj.py
-  TESTS: tests/test_spawning.py::test_reset_GE_limits_and_shopkeeper_inventory_flag
-  REFERENCES: C src/db.c:1833-1916; PY mud/spawning/reset_handler.py:108-170; PY mud/spawning/obj_spawner.py:1-24; DOC doc/area.txt:418-518; ARE area/midgaard.are:6085-6417
-  ESTIMATE: M; RISK: medium
-
-NOTES:
-- C: src/db.c:1755-1916 guards 'O'/'P'/'G'/'E' resets with area player checks, prototype counts, and the 1-in-5 reroll.
-- PY: mud/spawning/reset_handler.py:88-213 spawns objects without area.nplayer gating, count updates, or reroll logic.
-- PY: mud/spawning/obj_spawner.py:1-24 never increments ObjIndex.count, leaving world limits at zero even after spawns.
-- DOC/ARE: doc/area.txt:406-522; area/midgaard.are:6360-6369 describe container/duplicate semantics relied on by Midgaard desk/safe resets.
-- Applied tiny fix: none this run.
->>>>>>> d64de0a (Many significant changes)
 <!-- SUBSYSTEM: resets END -->
 
 <!-- SUBSYSTEM: security_auth_bans START -->

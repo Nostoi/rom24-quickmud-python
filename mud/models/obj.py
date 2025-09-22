@@ -1,11 +1,11 @@
 from __future__ import annotations
 from .room import ExtraDescr, Room
-from .character import Character
 from dataclasses import dataclass, field
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .area import Area
+    from .character import Character
 
 @dataclass
 class Affect:

@@ -122,7 +122,6 @@
   EXAMPLE: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
 - RULE: Reset loaders must mirror ROM `load_resets` parsing: ignore `if_flag`, set `arg1..arg4` like C, and keep mob/object limits for 'M'/'P'.
   RATIONALE: Dropping reset arguments erases ROM spawn caps and duplicates mobs/objects.
-<<<<<<< HEAD
   EXAMPLE: convert_area('midgaard.are') → ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
 - RULE: Reset handlers must honor 'D' commands by restoring exit `rs_flags`/`exit_info` on every reset.
   RATIONALE: Door states must re-close and relock after resets to match ROM gating.
@@ -139,9 +138,6 @@
 - RULE: Mob programs must expose ROM trigger APIs (mp_percent/mp_exit/mp_greet) and execute scripts via `program_flow` calling the command interpreter; forbid stub executors that only echo strings.
   RATIONALE: Trigger gating and command dispatch keep NPC scripts in sync with ROM behaviors and side effects.
   EXAMPLE: pytest -q tests/test_mobprog_triggers.py::test_program_flow_runs_commands_via_dispatcher
-=======
-  EXAMPLE: convert_area('midgaard.are') -> ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
->>>>>>> d64de0a (Many significant changes)
 
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
@@ -213,16 +209,9 @@
  - RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
   RATIONALE: Security parity with ROM (`check_ban`/`do_ban`); prevents banned hosts/accounts from entering.
   EXAMPLE: add_ban(host="bad.example", type="all"); assert login(host) == "BANNED"
-<<<<<<< HEAD
 - RULE: Shop commands must respect `Shop.open_hour`/`close_hour` from #SHOPS data and refuse service outside the window.
   RATIONALE: Maintains ROM trading schedules (e.g., Midgaard captain opens 6-22).
   EXAMPLE: pytest -q tests/test_shops.py::test_shop_respects_open_hours
-=======
-- RULE: Preserve ROM room heal/mana adjustments, clan indices, and owner strings through area->JSON conversion and JSON loaders.
-  RATIONALE: Optional #ROOMS sections drive regen cadence and access control; dropping them breaks ROM semantics.
-  EXAMPLE: convert_are_to_json('area/midgaard.are')['rooms'][4158]['heal_rate'] == 110 and loader round-trips the value.
-
->>>>>>> d64de0a (Many significant changes)
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
