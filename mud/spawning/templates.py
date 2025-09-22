@@ -95,3 +95,13 @@ class MobInstance:
         if callable(checker):
             return bool(checker(flag))
         return False
+
+    def has_affect(self, flag) -> bool:
+        try:
+            bit = int(flag)
+        except Exception:
+            return False
+        return bool(getattr(self, "affected_by", 0) & bit)
+
+    def is_immortal(self) -> bool:
+        return False
