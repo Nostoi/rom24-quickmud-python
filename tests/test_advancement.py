@@ -49,7 +49,6 @@ def _load_fireball() -> None:
     skill_registry.skills.clear()
     skill_registry.handlers.clear()
     load_skills(Path("data/skills.json"))
-<<<<<<< HEAD
 
 
 def _make_trainer() -> MobInstance:
@@ -76,22 +75,6 @@ def test_practice_requires_trainer_and_caps():
         skills={"fireball": 74},
     )
     room.people.append(char)
-=======
-    char = Character(
-        practice=2,
-        train=1,
-        level=30,
-        ch_class=0,
-        is_npc=False,
-        perm_stat=[0, 18, 0, 0, 0],
-        skills={"fireball": 0},
-    )
-
-    msg = do_practice(char, "fireball")
-    assert char.practice == 1
-    assert char.skills["fireball"] == 40
-    assert msg == "You practice fireball."
->>>>>>> d64de0a (Many significant changes)
 
     msg = do_practice(char, "fireball")
     assert msg == "You can't do that here."
@@ -135,7 +118,6 @@ def test_practice_applies_int_based_gain():
     expected = min(char.skill_adept_cap(), 1 + max(1, learn_rate // 4))
     assert char.skills["fireball"] == expected
     assert char.practice == 0
-<<<<<<< HEAD
 
 
 def test_practice_rejects_unknown_skill():
@@ -164,11 +146,6 @@ def test_practice_rejects_unknown_skill():
 
 def test_train_command_increases_stats():
     char = Character(practice=0, train=1)
-=======
-    assert char.skills["fireball"] == 75
-    assert msg == "You are now learned at fireball."
-
->>>>>>> d64de0a (Many significant changes)
     msg = do_train(char, "hp")
     assert char.train == 0
     assert char.max_hit > 0

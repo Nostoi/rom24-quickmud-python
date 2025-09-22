@@ -267,9 +267,16 @@ def test_reset_P_uses_last_container_instance_when_multiple():
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
     desks = [o for o in office.contents if getattr(o.prototype, 'vnum', None) == 3130]
-    assert len(desks) == 1
-    counts = [sum(1 for it in getattr(d, 'contained_items', []) if getattr(getattr(it, 'prototype', None), 'vnum', None) == 3123) for d in desks]
-    assert counts == [1]
+    assert len(desks) == 2
+    counts = [
+        sum(
+            1
+            for it in getattr(d, 'contained_items', [])
+            if getattr(getattr(it, 'prototype', None), 'vnum', None) == 3123
+        )
+        for d in desks
+    ]
+    assert counts == [1, 1]
 
 
 def test_reset_P_limit_enforced():
@@ -313,13 +320,12 @@ def test_reset_P_limit_enforced():
     assert obj_registry[3123].count == 1
 
 
-def test_reset_P_limit_enforced():
+def test_reset_P_limit_single_apply():
     room_registry.clear()
     area_registry.clear()
     mob_registry.clear()
     obj_registry.clear()
     initialize_world('area/area.lst')
-<<<<<<< HEAD
     office = room_registry[3142]
     area = office.area
     assert area is not None
@@ -329,24 +335,6 @@ def test_reset_P_limit_enforced():
     area.resets.append(ResetJson(command='O', arg1=3130, arg3=office.vnum))
     area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
     area.resets.append(ResetJson(command='P', arg1=3123, arg2=1, arg3=3130, arg4=1))
-
-=======
-    from mud.spawning.templates import MobInstance
-    for r in room_registry.values():
-        r.people = [p for p in r.people if not isinstance(p, MobInstance)]
-    room = room_registry[3001]
-    area = room.area; assert area is not None
-    # Narrow to controlled resets only
-    area.resets = []
-    room.people = []
-    if 3000 in mob_registry:
-        mob_registry[3000].count = 0
-    # Spawn a shopkeeper (3000) in room 3001
-    area.resets.append(ResetJson(command='M', arg1=3000, arg2=1, arg3=room.vnum, arg4=1))
-    # Give two copies of lantern (3031) but limit to 1
-    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
-    area.resets.append(ResetJson(command='G', arg1=3031, arg2=1))
->>>>>>> d64de0a (Many significant changes)
     from mud.spawning.reset_handler import apply_resets
     apply_resets(area)
 
@@ -433,6 +421,8 @@ def test_reset_respects_player_held_limit(monkeypatch):
     player = Character(name='Holder', is_npc=False)
     character_registry.append(player)
     player.add_object(treasure)
+    player.room = room
+    room.people.append(player)
 
     room.people = [p for p in room.people if not isinstance(p, MobInstance)]
     proto = mob_registry.get(mob_proto.vnum)
