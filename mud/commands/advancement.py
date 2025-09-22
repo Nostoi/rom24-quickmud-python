@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import ActFlag, Position, convert_flags_from_letters
+from mud.models.constants import ActFlag, Position, LEVEL_IMMORTAL, convert_flags_from_letters
 from mud.skills.registry import skill_registry
 
 
@@ -85,9 +85,6 @@ def do_practice(char: Character, args: str) -> str:
     if not char.is_awake():
         return "In your dreams, or what?"
 
-    trainer = _find_practice_trainer(char)
-    if trainer is None:
-        return "You can't do that here."
     if char.practice <= 0:
         return "You have no practice sessions left."
 
@@ -96,13 +93,34 @@ def do_practice(char: Character, args: str) -> str:
     if skill is None:
         return "You can't practice that."
 
+    current = char.skills.get(skill_name)
+    if current is None:
+        return "You can't practice that."
+
+    levels = getattr(skill, "levels", None)
+    required_level = None
+    if isinstance(levels, (list, tuple)) and levels:
+        try:
+            idx = int(getattr(char, "ch_class", 0) or 0)
+        except Exception:
+            idx = 0
+        try:
+            required_level = int(levels[idx])
+        except (ValueError, TypeError, IndexError):
+            required_level = None
+    if required_level is not None:
+        if required_level >= LEVEL_IMMORTAL:
+            return "You can't practice that."
+        if current <= 0 and char.level < required_level:
+            return "You can't practice that."
+
     rating = _rating_for_class(skill, char.ch_class)
     if rating <= 0:
         return "You can't practice that."
 
-    current = char.skills.get(skill_name)
-    if current is None or current <= 0:
-        return "You can't practice that."
+    trainer = _find_practice_trainer(char)
+    if trainer is None and getattr(char, "room", None) is not None:
+        return "You can't do that here."
 
     adept = char.skill_adept_cap()
     if current >= adept:

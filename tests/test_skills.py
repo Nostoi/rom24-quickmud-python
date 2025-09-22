@@ -1,4 +1,5 @@
 from pathlib import Path
+from math import ceil
 from random import Random
 
 import pytest
@@ -8,6 +9,7 @@ from mud.models.constants import AffectFlag
 import mud.skills.handlers as skill_handlers
 from mud.skills import SkillRegistry
 from mud.utils import rng_mm
+from mud.config import get_pulse_violence
 
 
 def load_registry() -> SkillRegistry:
@@ -29,7 +31,8 @@ def test_casting_uses_min_mana_and_beats() -> None:
     result = reg.use(caster, "fireball", target)
     assert result == 42
     assert caster.mana == 20  # 35 - min_mana 15
-    assert caster.wait == 12
+    expected_wait = max(1, ceil(skill.lag / get_pulse_violence()))
+    assert caster.wait == expected_wait
     assert caster.cooldowns["fireball"] == 0  # Fireball has no cooldown in skills.json
 
     # Simulate wait recovery before a second cast
@@ -133,7 +136,9 @@ def test_skill_use_sets_wait_state_and_blocks_until_ready(
 
     result = reg.use(caster, "acid blast", target)
     assert result == 60
-    assert caster.wait == skill.lag
+    pulses_per_tick = get_pulse_violence()
+    expected_wait = max(1, ceil(skill.lag / pulses_per_tick))
+    assert caster.wait == expected_wait
     assert caster.mana == 20
     assert caster.cooldowns.get("acid blast", 0) == skill.cooldown
 
@@ -157,7 +162,9 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
     )
     haste_target = Character()
     reg.use(haste_caster, "acid blast", haste_target)
-    assert haste_caster.wait == max(1, skill.lag // 2)
+    haste_pulses = max(1, skill.lag // 2)
+    expected_haste = max(1, ceil(haste_pulses / get_pulse_violence()))
+    assert haste_caster.wait == expected_haste
 
     slow_caster = Character(
         mana=20,
@@ -167,4 +174,6 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
     )
     slow_target = Character()
     reg.use(slow_caster, "acid blast", slow_target)
-    assert slow_caster.wait == skill.lag * 2
+    slow_pulses = skill.lag * 2
+    expected_slow = max(1, ceil(slow_pulses / get_pulse_violence()))
+    assert slow_caster.wait == expected_slow

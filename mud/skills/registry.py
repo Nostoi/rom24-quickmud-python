@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from math import ceil
 from importlib import import_module
 from pathlib import Path
 from random import Random
 from typing import Callable, Dict, Optional
 
 from mud.advancement import gain_exp
+from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models import Skill, SkillJson
 from mud.models.constants import AffectFlag
@@ -119,12 +121,15 @@ class SkillRegistry:
             return 0
 
         flags = int(getattr(caster, "affected_by", 0) or 0)
-        lag = base_lag
+        lag_pulses = base_lag
         if flags & AffectFlag.HASTE:
-            lag = max(1, c_div(lag, 2))
+            lag_pulses = max(1, c_div(lag_pulses, 2))
         if flags & AffectFlag.SLOW:
-            lag = lag * 2
-        return lag
+            lag_pulses = lag_pulses * 2
+
+        pulses_per_tick = max(1, get_pulse_violence())
+        lag_ticks = ceil(lag_pulses / pulses_per_tick)
+        return max(1, int(lag_ticks))
 
     def _apply_wait_state(self, caster, lag: int) -> None:
         """Apply WAIT_STATE semantics mirroring ROM's UMAX logic."""
