@@ -45,6 +45,7 @@ def test_list_price_matches_buy_price():
     assert 3002 in shop_registry
     char = create_test_character('Buyer', 3010)
     char.gold = 100
+<<<<<<< HEAD
     keeper = next(
         (p for p in char.room.people if getattr(p, 'prototype', None) and p.prototype.vnum in shop_registry),
         None,
@@ -73,6 +74,23 @@ def test_list_price_matches_buy_price():
         assert char.gold == before - price
     finally:
         time_info.hour = previous_hour
+=======
+    out = process_command(char, 'list')
+    import re
+
+    catalog = []
+    for segment in out.replace('Items for sale:', '').split(','):
+        segment = segment.strip()
+        match = re.match(r"(.+?) (\d+) gold", segment)
+        if match:
+            catalog.append((match.group(1).strip(), int(match.group(2))))
+    assert catalog
+    lantern_price = next(price for desc, price in catalog if 'lantern' in desc.lower())
+    before = char.gold
+    name = 'lantern' if 'lantern' in out.lower() else out.split(':')[-1].split()[0]
+    out2 = process_command(char, f'buy {name}')
+    assert char.gold == before - lantern_price
+>>>>>>> d64de0a (Many significant changes)
 
 
 def test_sell_to_grocer():
@@ -96,6 +114,7 @@ def test_sell_to_grocer():
     assert lantern is not None
     lantern.prototype.item_type = 1
     char.add_object(lantern)
+<<<<<<< HEAD
     previous_hour = time_info.hour
     try:
         time_info.hour = 10
@@ -110,6 +129,21 @@ def test_sell_to_grocer():
         )
     finally:
         time_info.hour = previous_hour
+=======
+    sell_output = process_command(char, 'sell lantern')
+    assert 'sell a hooded brass lantern' in sell_output.lower()
+    import re
+    sell_match = re.search(r"(\d+) gold", sell_output)
+    assert sell_match is not None
+    sell_price = int(sell_match.group(1))
+    assert char.gold == sell_price
+    keeper = next(
+        p for p in char.room.people if getattr(p, 'prototype', None) and p.prototype.vnum in shop_registry
+    )
+    assert any(
+        (obj.short_descr or '').lower().startswith('a hooded brass lantern') for obj in keeper.inventory
+    )
+>>>>>>> d64de0a (Many significant changes)
 
 
 def test_wand_staff_price_scales_with_charges_and_inventory_discount():

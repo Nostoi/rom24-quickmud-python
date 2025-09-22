@@ -1,8 +1,6 @@
 from pathlib import Path
 from random import Random
 
-import pytest
-
 from mud.models.character import Character
 from mud.models.constants import AffectFlag
 from mud.skills import SkillRegistry
@@ -15,18 +13,24 @@ def load_registry() -> SkillRegistry:
     return reg
 
 
-def test_cast_fireball_success() -> None:
+def test_casting_uses_min_mana_and_beats() -> None:
     reg = load_registry()
-    caster = Character(mana=20)
+    caster = Character(mana=35)
     target = Character()
+    skill = reg.get("fireball")
+
+    assert skill.min_mana == 15
+    assert skill.beats == 12
+    assert skill.slot == 26
 
     result = reg.use(caster, "fireball", target)
     assert result == 42
-    assert caster.mana == 5  # 20 - 15 mana cost = 5
+    assert caster.mana == 20  # 35 - min_mana 15
+    assert caster.wait == 12
     assert caster.cooldowns["fireball"] == 0  # Fireball has no cooldown in skills.json
 
-    # Since there's no cooldown, we can cast again immediately if we have mana
-    # Give enough mana for another cast (15 mana needed)
+    # Simulate wait recovery before a second cast
+    caster.wait = 0
     caster.mana = 15
     reg.use(caster, "fireball", target)
     assert caster.mana == 0

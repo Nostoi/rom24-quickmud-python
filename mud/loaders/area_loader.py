@@ -40,6 +40,9 @@ def load_area_file(filepath: str) -> Area:
         elif line in SECTION_HANDLERS:
             handler = SECTION_HANDLERS[line]
             handler(tokenizer, area)
+        elif line == '#':
+            # QuickMUD area files omit the #ROOMS header and use a bare '#'
+            load_rooms(tokenizer, area)
         elif line == "#AREADATA":
             while True:
                 peek = tokenizer.peek_line()

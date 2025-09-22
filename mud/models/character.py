@@ -34,6 +34,19 @@ class PCData:
 
 
 @dataclass
+class SpellEffect:
+    """Lightweight spell affect tracker mirroring ROM's AFFECT_DATA."""
+
+    name: str
+    duration: int
+    ac_mod: int = 0
+    hitroll_mod: int = 0
+    damroll_mod: int = 0
+    saving_throw_mod: int = 0
+    affect_flag: AffectFlag | None = None
+
+
+@dataclass
 class Character:
     """Python representation of CHAR_DATA"""
 
@@ -120,9 +133,14 @@ class Character:
     enhanced_damage_skill: int = 0
     # Character type flag
     is_npc: bool = True  # Default to NPC, set to False for PCs
+<<<<<<< HEAD
     # Mob program runtime state mirroring ROM's CHAR_DATA fields
     mob_programs: List["MobProgram"] = field(default_factory=list)
     mprog_target: Optional["Character"] = None
+=======
+    # Active spell effects keyed by skill name for parity restores
+    spell_effects: Dict[str, SpellEffect] = field(default_factory=dict)
+>>>>>>> d64de0a (Many significant changes)
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -245,6 +263,46 @@ class Character:
         if affect_name == "sleep":
             self.remove_affect(AffectFlag.SLEEP)
         # Add other affects as needed
+
+    def has_spell_effect(self, name: str) -> bool:
+        """Check if a named spell affect is active (ROM is_affected equivalent)."""
+        return name in self.spell_effects
+
+    def apply_spell_effect(self, effect: SpellEffect) -> bool:
+        """Apply a spell effect while preventing duplicate stacking."""
+        if self.has_spell_effect(effect.name):
+            return False
+
+        if effect.ac_mod:
+            self.armor = [ac + effect.ac_mod for ac in self.armor]
+        if effect.hitroll_mod:
+            self.hitroll += effect.hitroll_mod
+        if effect.damroll_mod:
+            self.damroll += effect.damroll_mod
+        if effect.saving_throw_mod:
+            self.saving_throw += effect.saving_throw_mod
+        if effect.affect_flag is not None:
+            self.add_affect(effect.affect_flag)
+
+        self.spell_effects[effect.name] = effect
+        return True
+
+    def remove_spell_effect(self, name: str) -> None:
+        """Remove a spell effect and restore stat changes."""
+        effect = self.spell_effects.pop(name, None)
+        if effect is None:
+            return
+
+        if effect.ac_mod:
+            self.armor = [ac - effect.ac_mod for ac in self.armor]
+        if effect.hitroll_mod:
+            self.hitroll -= effect.hitroll_mod
+        if effect.damroll_mod:
+            self.damroll -= effect.damroll_mod
+        if effect.saving_throw_mod:
+            self.saving_throw -= effect.saving_throw_mod
+        if effect.affect_flag is not None:
+            self.remove_affect(effect.affect_flag)
 
 
 # END affects_saves

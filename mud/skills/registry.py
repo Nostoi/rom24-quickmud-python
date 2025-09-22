@@ -12,6 +12,7 @@ from mud.models import Skill, SkillJson
 from mud.models.constants import AffectFlag
 from mud.utils import rng_mm
 from mud.models.json_io import dataclass_from_dict
+from mud.skills.metadata import ROM_SKILL_METADATA
 
 
 class SkillRegistry:
@@ -30,6 +31,34 @@ class SkillRegistry:
         for entry in data:
             skill_json = dataclass_from_dict(SkillJson, entry)
             skill = Skill.from_json(skill_json)
+            metadata = ROM_SKILL_METADATA.get(skill.name, {})
+
+            levels_source = entry.get("levels") or metadata.get("levels") or []
+            if len(levels_source) == 4:
+                skill.levels = tuple(int(v) for v in levels_source)
+
+            ratings_source = entry.get("ratings") or metadata.get("ratings") or []
+            if len(ratings_source) == 4:
+                skill.ratings = tuple(int(v) for v in ratings_source)
+
+            if "slot" in entry:
+                skill.slot = int(entry["slot"])
+            else:
+                skill.slot = int(metadata.get("slot", skill.slot))
+
+            if "min_mana" in entry:
+                skill.min_mana = int(entry["min_mana"])
+            else:
+                skill.min_mana = int(metadata.get("min_mana", skill.mana_cost))
+
+            if "beats" in entry:
+                skill.beats = int(entry["beats"])
+            else:
+                skill.beats = int(metadata.get("beats", skill.lag))
+
+            # Legacy callers still consult mana_cost/lag fields; mirror ROM values
+            skill.mana_cost = skill.min_mana
+            skill.lag = skill.beats
             handler = getattr(module, skill.function)
             self.skills[skill.name] = skill
             self.handlers[skill.name] = handler
@@ -41,23 +70,37 @@ class SkillRegistry:
         """Execute a skill and handle ROM-style success, lag, and advancement."""
 
         skill = self.get(name)
+<<<<<<< HEAD
         if int(getattr(caster, "wait", 0)) > 0:
             messages = getattr(caster, "messages", None)
             if isinstance(messages, list):
                 messages.append("You are still recovering.")
             raise ValueError("still recovering")
         if caster.mana < skill.mana_cost:
+=======
+        mana_cost = skill.min_mana or skill.mana_cost
+        if caster.mana < mana_cost:
+>>>>>>> d64de0a (Many significant changes)
             raise ValueError("not enough mana")
 
         cooldowns = getattr(caster, "cooldowns", {})
         if cooldowns.get(name, 0) > 0:
             raise ValueError("skill on cooldown")
 
+<<<<<<< HEAD
         lag = self._compute_skill_lag(caster, skill)
         self._apply_wait_state(caster, lag)
         caster.mana -= skill.mana_cost
 
         learned: Optional[int]
+=======
+        caster.mana -= mana_cost
+        wait_beats = skill.beats or skill.lag
+        if wait_beats:
+            caster.wait = max(getattr(caster, "wait", 0), wait_beats)
+        # ROM parity: prefer per-character learned% when available
+        learned = None
+>>>>>>> d64de0a (Many significant changes)
         try:
             learned_val = caster.skills.get(name)
             learned = int(learned_val) if learned_val is not None else None

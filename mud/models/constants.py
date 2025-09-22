@@ -110,6 +110,54 @@ class Size(IntEnum):
     GIANT = 5
 
 
+# --- Primary stats (merc.h STAT_*) ---
+STAT_STR = 0
+STAT_INT = 1
+STAT_WIS = 2
+STAT_DEX = 3
+STAT_CON = 4
+
+
+# Intelligence learn-rate table (const.c:int_app)
+INT_APP_LEARN = [
+    3,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15,
+    17,
+    19,
+    22,
+    25,
+    28,
+    31,
+    34,
+    37,
+    40,
+    44,
+    49,
+    55,
+    60,
+    70,
+    80,
+    85,
+]
+
+
+# Class practice caps pulled from const.c:class_table.skill_adept
+CLASS_SKILL_ADEPT = {
+    0: 75,  # mage
+    1: 75,  # cleric
+    2: 75,  # thief
+    3: 75,  # warrior
+}
+
+
 # --- Level Constants (merc.h) ---
 MAX_LEVEL = 60
 LEVEL_HERO = MAX_LEVEL - 9  # 51

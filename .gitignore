@@ -13,3 +13,11 @@ build/
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 venv/
+.agent_logs/
+.DS_Store
+mud.db
+# Ignore macOS system file
+.DS_Store
+
+# Ignore SQLite database
+mud.db

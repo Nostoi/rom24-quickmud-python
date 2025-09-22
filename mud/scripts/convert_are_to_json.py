@@ -40,7 +40,7 @@ def room_to_dict(room) -> dict:
         sector = Sector(room.sector_type).name.lower()
     except ValueError:
         sector = str(room.sector_type)
-    return {
+    data = {
         "id": room.vnum,
         "name": room.name or "",
         "description": room.description or "",
@@ -50,6 +50,17 @@ def room_to_dict(room) -> dict:
         "extra_descriptions": extra,
         "area": room.area.vnum if room.area else 0,
     }
+
+    if getattr(room, "heal_rate", 100) != 100:
+        data["heal_rate"] = room.heal_rate
+    if getattr(room, "mana_rate", 100) != 100:
+        data["mana_rate"] = room.mana_rate
+    if getattr(room, "clan", 0):
+        data["clan"] = room.clan
+    if getattr(room, "owner", ""):
+        data["owner"] = room.owner
+
+    return data
 
 
 def mob_to_dict(mob) -> dict:

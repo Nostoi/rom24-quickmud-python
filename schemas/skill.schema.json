@@ -11,11 +11,30 @@
     "target": {"type": "string", "default": "victim"},
     "mana_cost": {"type": "integer", "minimum": 0, "default": 0},
     "lag": {"type": "integer", "minimum": 0, "default": 0},
+    "cooldown": {"type": "integer", "minimum": 0, "default": 0},
+    "failure_rate": {"type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.0},
     "messages": {
       "type": "object",
       "additionalProperties": {"type": "string"},
       "default": {}
-    }
+    },
+    "levels": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 0, "maximum": 60},
+      "minItems": 4,
+      "maxItems": 4,
+      "default": [99, 99, 99, 99]
+    },
+    "ratings": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 0, "maximum": 10},
+      "minItems": 4,
+      "maxItems": 4,
+      "default": [0, 0, 0, 0]
+    },
+    "slot": {"type": "integer", "minimum": 0, "default": 0},
+    "min_mana": {"type": "integer", "minimum": 0, "default": 0},
+    "beats": {"type": "integer", "minimum": 0, "default": 0}
   },
   "additionalProperties": false
 }

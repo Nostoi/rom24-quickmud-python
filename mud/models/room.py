@@ -41,8 +41,8 @@ class Room:
     room_flags: int = 0
     light: int = 0
     sector_type: int = 0
-    heal_rate: int = 0
-    mana_rate: int = 0
+    heal_rate: int = 100
+    mana_rate: int = 100
     clan: int = 0
     exits: List[Optional[Exit]] = field(default_factory=lambda: [None] * len(Direction))
     extra_descr: List[ExtraDescr] = field(default_factory=list)
@@ -101,4 +101,3 @@ class Room:
 
 
 room_registry: dict[int, Room] = {}
-

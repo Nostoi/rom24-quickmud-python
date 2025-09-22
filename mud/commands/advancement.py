@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
+<<<<<<< HEAD
 from mud.models.constants import ActFlag, Position, convert_flags_from_letters
 from mud.skills.registry import skill_registry
 
@@ -61,6 +62,17 @@ def _rating_for_class(skill, ch_class: int) -> int:
         if key in rating:
             return int(rating[key])
     return 1
+=======
+from mud.models.constants import CLASS_SKILL_ADEPT, INT_APP_LEARN, STAT_INT
+from mud.skills.registry import skill_registry
+
+
+def _get_curr_stat(char: Character, stat_index: int) -> int:
+    """Return current stat (perm + mod) bounded to table size."""
+    perm = char.perm_stat[stat_index] if len(char.perm_stat) > stat_index else 0
+    mod = char.mod_stat[stat_index] if len(char.mod_stat) > stat_index else 0
+    return perm + mod
+>>>>>>> d64de0a (Many significant changes)
 
 
 def do_practice(char: Character, args: str) -> str:
@@ -80,6 +92,7 @@ def do_practice(char: Character, args: str) -> str:
     skill = skill_registry.skills.get(skill_name)
     if skill is None:
         return "You can't practice that."
+<<<<<<< HEAD
     rating = _rating_for_class(skill, char.ch_class)
     if rating <= 0:
         return "You can't practice that."
@@ -95,6 +108,38 @@ def do_practice(char: Character, args: str) -> str:
     new_value = min(adept, current + increment)
     char.skills[skill_name] = new_value
     if new_value >= adept:
+=======
+    skill = skill_registry.get(skill_name)
+    class_idx = char.ch_class
+    if class_idx not in CLASS_SKILL_ADEPT:
+        return "You can't practice that."
+
+    required_level = skill.levels[class_idx] if len(skill.levels) > class_idx else 99
+    if char.level < required_level:
+        return "You can't practice that."
+
+    current = char.skills.get(skill_name, 0)
+
+    rating = skill.ratings[class_idx] if len(skill.ratings) > class_idx else 0
+    if rating <= 0:
+        return "You can't practice that."
+
+    adept_cap = 100 if char.is_npc else CLASS_SKILL_ADEPT.get(class_idx, 75)
+    if current >= adept_cap:
+        return f"You are already learned at {skill_name}."
+
+    # Ensure skill entry exists for future checks
+    char.skills[skill_name] = current
+
+    char.practice -= 1
+    int_value = _get_curr_stat(char, STAT_INT)
+    int_index = max(0, min(int_value, len(INT_APP_LEARN) - 1))
+    learn_rate = INT_APP_LEARN[int_index]
+    gain = max(1, learn_rate // rating)
+    new_value = min(current + gain, adept_cap)
+    char.skills[skill_name] = new_value
+    if new_value >= adept_cap:
+>>>>>>> d64de0a (Many significant changes)
         return f"You are now learned at {skill_name}."
     return f"You practice {skill_name}."
 

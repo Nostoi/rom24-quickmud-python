@@ -15,7 +15,9 @@ def load_rooms(tokenizer: BaseTokenizer, area):
             name = tokenizer.next_line().rstrip('~')
             desc = tokenizer.read_string_tilde()
             flags_line = tokenizer.next_line()
-            tokens = flags_line.split()
+            while flags_line is not None and flags_line == '~':
+                flags_line = tokenizer.next_line()
+            tokens = flags_line.split() if flags_line else []
             room_flags = int(tokens[0]) if tokens else 0
             sector_type = int(tokens[-1]) if tokens else 0
             room = Room(vnum=vnum, name=name, description=desc, room_flags=room_flags, sector_type=sector_type, area=area)
@@ -25,6 +27,46 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                 peek = tokenizer.peek_line()
                 if peek is None:
                     break
+                if peek.startswith('H') or peek.startswith('M'):
+                    line = tokenizer.next_line()
+                    tokens = line.split()
+                    idx = 0
+                    while idx < len(tokens):
+                        code = tokens[idx]
+                        if code == 'H' and idx + 1 < len(tokens):
+                            try:
+                                room.heal_rate = int(tokens[idx + 1])
+                            except ValueError:
+                                pass
+                            idx += 2
+                            continue
+                        if code == 'M' and idx + 1 < len(tokens):
+                            try:
+                                room.mana_rate = int(tokens[idx + 1])
+                            except ValueError:
+                                pass
+                            idx += 2
+                            continue
+                        idx += 1
+                    continue
+                if peek.startswith('C'):
+                    line = tokenizer.next_line()
+                    clan_value = line[1:].strip()
+                    if clan_value.endswith('~'):
+                        clan_value = clan_value[:-1]
+                    if clan_value:
+                        try:
+                            room.clan = int(clan_value)
+                        except ValueError:
+                            room.clan = clan_value
+                    continue
+                if peek.startswith('O'):
+                    line = tokenizer.next_line()
+                    owner_value = line[1:].strip()
+                    if owner_value.endswith('~'):
+                        owner_value = owner_value[:-1]
+                    room.owner = owner_value
+                    continue
                 if peek.startswith('D'):
                     dir_line = tokenizer.next_line()
                     exit_desc = tokenizer.read_string_tilde()

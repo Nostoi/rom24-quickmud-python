@@ -10,9 +10,14 @@ def setup_function(_):
 def test_give_equip_object_levels_are_in_expected_ranges(monkeypatch):
     from mud.utils import rng_mm
     initialize_world('area/area.lst')
+    from mud.spawning.templates import MobInstance
+    for r in room_registry.values():
+        r.people = [p for p in r.people if not isinstance(p, MobInstance)]
     room = room_registry[3001]
     area = room.area; assert area is not None
     area.resets = []
+    room.people = []
+    mob_registry[3003].count = 0
     # Spawn a non-shopkeeper mob (604 in Midgaard is blacksmith, but use 6000 from haon? We'll use a generic mob present in registries)
     # Use 6004 (a deer) from haon isn't loaded by default; instead use 3003 (Janitor) present in Midgaard
     area.resets.append(ResetJson(command='M', arg1=3003, arg2=1, arg3=room.vnum, arg4=1))

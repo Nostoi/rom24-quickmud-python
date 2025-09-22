@@ -1,4 +1,4 @@
-## Port Instructions (ROM 2.4 → Python) — Living Rules
+## Port Instructions (ROM 2.4 -> Python) — Living Rules
 
 <!-- RULES-START -->
 - RULE: All combat randomness must use the ROM Mitchell–Moore `number_mm` family (`seed_mm`, `number_range`, `number_percent`, `dice`, `number_bits`); forbid `random.*` in combat paths.
@@ -9,11 +9,11 @@
   RATIONALE: C truncates toward zero; Python floors; negatives diverge.
   EXAMPLE: c_div(-3, 2) == -1  # matches C
 
-- RULE: Armor Class is better when more negative; map damage type → AC index exactly as in ROM.
+- RULE: Armor Class is better when more negative; map damage type -> AC index exactly as in ROM.
   RATIONALE: Prevents inverted hit curves and weapon-type bias.
-  EXAMPLE: dam_type "slash" → AC_SLASH; unarmed → AC_BASH
+  EXAMPLE: dam_type "slash" -> AC_SLASH; unarmed -> AC_BASH
 
-- RULE: Preserve defense check order exactly (hit roll → shield block → parry → dodge), each early-outs on success.
+- RULE: Preserve defense check order exactly (hit roll -> shield block -> parry -> dodge), each early-outs on success.
   RATIONALE: Reordering changes effective probabilities.
   EXAMPLE: assert call_order == ["hit", "shield", "parry", "dodge"]
 
@@ -78,6 +78,10 @@
   RATIONALE: ROM evaluates against a percent roll; using floats changes distribution and parity.
   EXAMPLE: if rng_mm.number_percent() <= learned: succeed()
 
+- RULE: Skill metadata JSON must retain ROM `skill_table` fields (per-class levels, rating costs, slot numbers, min_mana, beats) and expose them to practice/train flows.
+  RATIONALE: Trainers gate access and advancement on these fields; mana drain and casting lag derive from `skill_table` metadata.
+  EXAMPLE: data/skills.json["acid blast"] includes level/rating arrays, slot 70, min_mana 20, beats 12 consumed by `do_practice` tests.
+
 - RULE: THAC0-based hit resolution uses `number_bits(5)` diceroll and `compute_thac0` (class-based) when `COMBAT_USE_THAC0` is enabled; tests must patch the engine module flag.
   RATIONALE: Mirrors ROM hit calculation while keeping default behavior stable.
   EXAMPLE: monkeypatch.setattr('mud.combat.engine.COMBAT_USE_THAC0', True)
@@ -118,6 +122,7 @@
   EXAMPLE: pytest -q tests/test_spawning.py::test_resets_room_duplication_and_player_presence
 - RULE: Reset loaders must mirror ROM `load_resets` parsing: ignore `if_flag`, set `arg1..arg4` like C, and keep mob/object limits for 'M'/'P'.
   RATIONALE: Dropping reset arguments erases ROM spawn caps and duplicates mobs/objects.
+<<<<<<< HEAD
   EXAMPLE: convert_area('midgaard.are') → ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
 - RULE: Reset handlers must honor 'D' commands by restoring exit `rs_flags`/`exit_info` on every reset.
   RATIONALE: Door states must re-close and relock after resets to match ROM gating.
@@ -134,6 +139,9 @@
 - RULE: Mob programs must expose ROM trigger APIs (mp_percent/mp_exit/mp_greet) and execute scripts via `program_flow` calling the command interpreter; forbid stub executors that only echo strings.
   RATIONALE: Trigger gating and command dispatch keep NPC scripts in sync with ROM behaviors and side effects.
   EXAMPLE: pytest -q tests/test_mobprog_triggers.py::test_program_flow_runs_commands_via_dispatcher
+=======
+  EXAMPLE: convert_area('midgaard.are') -> ResetJson(command='M', arg1=3000, arg2=1, arg3=3033, arg4=1)
+>>>>>>> d64de0a (Many significant changes)
 
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
@@ -181,11 +189,11 @@
 - RULE: Parse `#AREADATA` builders/security/flags into `Area`; forbid skipping this section.
   RATIONALE: ROM stores builder permissions and security in `#AREADATA`; omitting them loses access control.
   EXAMPLE: area = load_area_file('midgaard.are'); assert area.builders and area.security == 9
-- RULE: Map `$mself` pronouns by `Sex` (NONE→"itself", MALE→"himself", FEMALE→"herself", others→"themselves").
+- RULE: Map `$mself` pronouns by `Sex` (NONE->"itself", MALE->"himself", FEMALE->"herself", others->"themselves").
   RATIONALE: Reflexive pronouns depend on actor sex to match ROM socials.
   EXAMPLE: expand_placeholders("$n laughs at $mself.", ch)
 - RULE: Treat areas/*.are as canonical; conversions must preserve counts, ids, exits, flags, resets, specials.
-  RATIONALE: Prevent silent data loss during ROM→JSON migration.
+  RATIONALE: Prevent silent data loss during ROM->JSON migration.
   EXAMPLE: pytest -q tests/test_area_counts.py::test_midgaard_counts
 - RULE: Validate conversion with goldens: for each .are, store a {area}.golden.json and assert stable round-trip.
   RATIONALE: Detect accidental schema drift, field reordering, or flag width changes.
@@ -198,16 +206,23 @@
   EXAMPLE: test_thac0_table_matches_rom()
 - RULE: IMC code is feature-flagged; if disabled at runtime, keep loader and protocol parsers in place with no-op dispatch.
   RATIONALE: Preserve wire compatibility without enabling cross-MUD chat.
-  EXAMPLE: IMC_ENABLED=False → sockets never opened; parsers tested.
+  EXAMPLE: IMC_ENABLED=False -> sockets never opened; parsers tested.
 - RULE: Register `spec_fun` names in lowercase for case-insensitive lookup.
   RATIONALE: ROM's `spec_lookup` compares names without regard to case.
   EXAMPLE: register_spec_fun("Spec_Cast_Adept", func)
  - RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
   RATIONALE: Security parity with ROM (`check_ban`/`do_ban`); prevents banned hosts/accounts from entering.
   EXAMPLE: add_ban(host="bad.example", type="all"); assert login(host) == "BANNED"
+<<<<<<< HEAD
 - RULE: Shop commands must respect `Shop.open_hour`/`close_hour` from #SHOPS data and refuse service outside the window.
   RATIONALE: Maintains ROM trading schedules (e.g., Midgaard captain opens 6-22).
   EXAMPLE: pytest -q tests/test_shops.py::test_shop_respects_open_hours
+=======
+- RULE: Preserve ROM room heal/mana adjustments, clan indices, and owner strings through area->JSON conversion and JSON loaders.
+  RATIONALE: Optional #ROOMS sections drive regen cadence and access control; dropping them breaks ROM semantics.
+  EXAMPLE: convert_are_to_json('area/midgaard.are')['rooms'][4158]['heal_rate'] == 110 and loader round-trips the value.
+
+>>>>>>> d64de0a (Many significant changes)
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
@@ -258,7 +273,7 @@
 - `run_prog` should return executed actions for tests; ignore unsupported commands.
 - Put OLC commands in `commands/build.py`; guard them as admin-only; return usage on bad args.
 - Verify `@redit` updates `Room` fields in-place via dispatcher tests.
-- Tick order: regen → weather → timers → resets (match ROM cadence).
+- Tick order: regen -> weather -> timers -> resets (match ROM cadence).
 - Filter character loads by account username; never allow cross-account access.
 - Prompt account then password; auto-create missing accounts in tests only.
 - Reset DB tables before telnet login tests.

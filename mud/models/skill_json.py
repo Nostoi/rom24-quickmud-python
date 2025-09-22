@@ -18,4 +18,12 @@ class SkillJson(JsonDataclass):
     cooldown: int = 0
     failure_rate: float = 0.0
     messages: dict[str, str] = field(default_factory=dict)
+<<<<<<< HEAD
     rating: dict[str, int] = field(default_factory=dict)
+=======
+    levels: list[int] = field(default_factory=list)
+    ratings: list[int] = field(default_factory=list)
+    slot: int = 0
+    min_mana: int = 0
+    beats: int = 0
+>>>>>>> d64de0a (Many significant changes)

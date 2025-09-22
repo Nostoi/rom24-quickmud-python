@@ -1,11 +1,29 @@
+from __future__ import annotations
+
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 
-def acid_blast(caster, target=None):
-    """Stub implementation for acid_blast.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+from mud.affects.saves import saves_spell
+from mud.combat.engine import update_pos
+from mud.math.c_compat import c_div
+from mud.models.character import Character, SpellEffect
+from mud.models.constants import DamageType, Position
+from mud.utils import rng_mm
+
+
+def acid_blast(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_acid_blast: dice(level, 12) with save-for-half."""
+    if target is None:
+        raise ValueError("acid_blast requires a target")
+
+    level = max(getattr(caster, "level", 0), 0)
+    damage = rng_mm.dice(level, 12)
+    if saves_spell(level, target, DamageType.ACID):
+        damage = c_div(damage, 2)
+
+    target.hit -= damage
+    update_pos(target)
+    return damage
 
 def acid_breath(caster, target=None):
     """Stub implementation for acid_breath.
@@ -13,11 +31,14 @@ def acid_breath(caster, target=None):
     """
     return 42  # Placeholder damage/effect
 
-def armor(caster, target=None):
-    """Stub implementation for armor.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def armor(caster: Character, target: Character | None = None) -> bool:
+    """ROM spell_armor: apply -20 AC affect with 24 tick duration."""
+    target = target or caster
+    if target is None:
+        raise ValueError("armor requires a target")
+
+    effect = SpellEffect(name="armor", duration=24, ac_mod=-20)
+    return target.apply_spell_effect(effect)
 
 def axe(caster, target=None):
     """Stub implementation for axe.
@@ -43,11 +64,24 @@ def berserk(caster, target=None):
     """
     return 42  # Placeholder damage/effect
 
-def bless(caster, target=None):
-    """Stub implementation for bless.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def bless(caster: Character, target: Character | None = None) -> bool:
+    """ROM spell_bless for characters: +hitroll, -saving_throw."""
+    target = target or caster
+    if target is None:
+        raise ValueError("bless requires a target")
+
+    if target.position == Position.FIGHTING:
+        return False
+
+    level = max(getattr(caster, "level", 0), 0)
+    modifier = c_div(level, 8)
+    effect = SpellEffect(
+        name="bless",
+        duration=6 + level,
+        hitroll_mod=modifier,
+        saving_throw_mod=-modifier,
+    )
+    return target.apply_spell_effect(effect)
 
 def blindness(caster, target=None):
     """Stub implementation for blindness.
@@ -55,17 +89,94 @@ def blindness(caster, target=None):
     """
     return 42  # Placeholder damage/effect
 
-def burning_hands(caster, target=None):
-    """Stub implementation for burning_hands.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def burning_hands(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_burning_hands damage table with save-for-half."""
+    if target is None:
+        raise ValueError("burning_hands requires a target")
 
-def call_lightning(caster, target=None):
-    """Stub implementation for call_lightning.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    dam_each = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        14,
+        17,
+        20,
+        23,
+        26,
+        29,
+        29,
+        29,
+        30,
+        30,
+        31,
+        31,
+        32,
+        32,
+        33,
+        33,
+        34,
+        34,
+        35,
+        35,
+        36,
+        36,
+        37,
+        37,
+        38,
+        38,
+        39,
+        39,
+        40,
+        40,
+        41,
+        41,
+        42,
+        42,
+        43,
+        43,
+        44,
+        44,
+        45,
+        45,
+        46,
+        46,
+        47,
+        47,
+        48,
+        48,
+    ]
+
+    level = max(getattr(caster, "level", 0), 0)
+    capped_level = max(0, min(level, len(dam_each) - 1))
+    base = dam_each[capped_level]
+    low = c_div(base, 2)
+    high = base * 2
+    damage = rng_mm.number_range(low, high)
+
+    if saves_spell(level, target, DamageType.FIRE):
+        damage = c_div(damage, 2)
+
+    target.hit -= damage
+    update_pos(target)
+    return damage
+
+def call_lightning(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_call_lightning: dice(level/2, 8) with save-for-half."""
+    if target is None:
+        raise ValueError("call_lightning requires a target")
+
+    level = max(getattr(caster, "level", 0), 0)
+    dice_level = max(0, c_div(level, 2))
+    damage = rng_mm.dice(dice_level, 8)
+
+    if saves_spell(level, target, DamageType.LIGHTNING):
+        damage = c_div(damage, 2)
+
+    target.hit -= damage
+    update_pos(target)
+    return damage
 
 def calm(caster, target=None):
     """Stub implementation for calm.
@@ -175,11 +286,23 @@ def cure_disease(caster, target=None):
     """
     return 42  # Placeholder damage/effect
 
-def cure_light(caster, target=None):
-    """Stub implementation for cure_light.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_light(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_cure_light: heal dice(1,8) + level/3."""
+    target = target or caster
+    if target is None:
+        raise ValueError("cure_light requires a target")
+
+    level = max(getattr(caster, "level", 0), 0)
+    heal = rng_mm.dice(1, 8) + c_div(level, 3)
+
+    max_hit = getattr(target, "max_hit", 0)
+    if max_hit > 0:
+        target.hit = min(target.hit + heal, max_hit)
+    else:
+        target.hit += heal
+
+    update_pos(target)
+    return heal
 
 def cure_poison(caster, target=None):
     """Stub implementation for cure_poison.
@@ -792,4 +915,3 @@ def word_of_recall(caster, target=None):
     TODO: Implement actual ROM logic from C source.
     """
     return 42  # Placeholder damage/effect
-
