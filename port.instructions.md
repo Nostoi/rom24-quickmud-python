@@ -139,6 +139,10 @@
   RATIONALE: Trigger gating and command dispatch keep NPC scripts in sync with ROM behaviors and side effects.
   EXAMPLE: pytest -q tests/test_mobprog_triggers.py::test_program_flow_runs_commands_via_dispatcher
 
+- RULE: Mob command interpreter must register the full ROM `mob` verb table (asound/zecho/mload/oload/transfer/force/kill/etc.) and implement their side effects.
+  RATIONALE: Area scripts depend on these verbs to spawn actors, broadcast alarms, force actions, and manage combat; missing handlers silently break quests.
+  EXAMPLE: pytest -q tests/test_mobprog_commands.py::test_spawn_and_transfer_commands
+
 - RULE: Enforce command required positions before dispatch; mirror ROM denial messages for position < required.
   RATIONALE: Prevents actions while sleeping/fighting/etc. and matches gameplay semantics.
   EXAMPLE: if ch.position < POS_RESTING: "Nah... You feel too relaxed..."

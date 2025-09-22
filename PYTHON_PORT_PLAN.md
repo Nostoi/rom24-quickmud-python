@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: player_save_format -->
+<!-- LAST-PROCESSED: mob_programs -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
@@ -30,10 +30,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | shops_economy        | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                             | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                                  |
 | boards_notes         | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py                                                                                                                                                                 | tests/test_boards.py                                                                                                      |
 | help_system          | present_wired | DOC: doc/area.txt § #HELPS; ARE: area/help.are § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help                                                                                | tests/test_help_system.py                                                                                                 |
-| mob_programs         | stub_or_partial | C: src/mob_prog.c:356-953 (cmd_eval/expand_arg/program_flow); PY: mud/mobprog.py:120-640 (partial interpreter and triggers)
-
-                        | tests/test_mobprog_triggers.py (happy-path only)
-                    |
+| mob_programs         | stub_or_partial | C: src/mob_prog.c:356-1235 (cmd_eval/expand_arg/trigger dispatch); C: src/mob_cmds.c:50-312 (mob command table); PY: mud/mobprog.py:120-640 (partial interpreter/triggers); PY: mud/mob_cmds.py:14-68 (truncated command set) | tests/test_mobprog_triggers.py (happy-path only) |
 | npc_spec_funs        | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                 | tests/test_spec_funs.py                                                                                                   |
 | game_update_loop     | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick                                                                                                                                                                                 | tests/test_game_loop.py                                                                                                   |
 | persistence          | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                                                          | tests/test_persistence.py; tests/test_inventory_persistence.py                                                            |
@@ -78,7 +75,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | shops_economy          | src/act_obj.c:do_buy/do_sell                        | mud/commands/shop.py:do_buy/do_sell                                                |
 | boards_notes           | src/board.c                                         | mud/notes.py:load_boards/save_board; mud/commands/notes.py                         |
 | help_system            | src/act_info.c:do_help                              | mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help            |
-| mob_programs           | src/mob_prog.c:program_flow/cmd_eval                | mud/mobprog.py:_program_flow/_cmd_eval (partial)                                    |
+| mob_programs           | src/mob_prog.c:program_flow/cmd_eval; src/mob_cmds.c:mob_cmd_table | mud/mobprog.py:_program_flow/_cmd_eval; mud/mob_cmds.py:MobCommand (partial) |
 | npc_spec_funs          | src/special.c:spec_table                            | mud/spec_funs.py:run_npc_specs                                                     |
 | game_update_loop       | src/update.c:update_handler                         | mud/game_loop.py:game_tick                                                         |
 | persistence            | src/save.c:save_char_obj/load_char_obj              | mud/persistence.py:save_character/load_character                                   |
@@ -638,29 +635,39 @@ TASKS:
 
 <!-- SUBSYSTEM: mob_programs START -->
 
-### mob_programs — Parity Audit 2025-10-05
+### mob_programs — Parity Audit 2025-09-22
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.32)
-KEY RISKS: side_effects, RNG, flags
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28)
+KEY RISKS: side_effects, flags
 TASKS:
-- ✅ [P0] Port ROM `cmd_eval` checks for mob program interpreter — done 2025-10-03
-  EVIDENCE: PY mud/mobprog.py:L591-L979; PY mud/mobprog.py:L1052-L1093
-  EVIDENCE: TEST tests/test_mobprog_triggers.py::test_cmd_eval_conditionals
-- ✅ [P0] Expand mobprog `$` substitution to cover ROM pronouns and target placeholders — done 2025-10-03
-  EVIDENCE: PY mud/mobprog.py:L380-L571
-  EVIDENCE: TEST tests/test_mobprog_triggers.py::test_expand_arg_supports_rom_tokens
-- ✅ [P0] Restore ROM trigger gating semantics for NPC-only programs and case-sensitive phrases — done 2025-10-05
-  EVIDENCE: PY mud/mobprog.py:L1108-L1145
-  EVIDENCE: TEST tests/test_mobprog_triggers.py::test_trigger_phrases_match_case
-  RATIONALE: ROM `mp_act_trigger` early-outs for players and uses `strstr`; the Python `_trigger_programs` now enforces NPC-only gating and preserves case-sensitive phrase checks.
-  FILES: mud/mobprog.py (`_trigger_programs`, `mp_act_trigger`)
-  TESTS: PYTHONPATH=. pytest -q tests/test_mobprog_triggers.py::test_trigger_phrases_match_case
-  REFERENCES: C src/mob_prog.c:1010-1235; PY mud/mobprog.py:268-360
-  ESTIMATE: S; RISK: medium
+- [P0] Port ROM mob command table for spawn/move/force operations — rationale: without `mload/oload/goto/transfer/force` the Midgaard scripts that summon quest targets or shuttle players silently fail, breaking quest progression.
+  EVIDENCE: C src/mob_cmds.c:50-112 lists `mload`, `oload`, `goto`, `transfer`, and `vforce` entries feeding the interpreter; C src/mob_cmds.c:508-612 creates mobiles/objects and relocates characters with ROM gating.
+  EVIDENCE: PY mud/mob_cmds.py:92-115 registers only `echo`, `gecho`, `call`, `delay`, `cancel`, leaving spawn/movement commands absent.
+  FILES: mud/mob_cmds.py; mud/mobprog.py; mud/world/room.py
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_spawn_and_transfer_commands
+  ACCEPTANCE: `mob mload 3005` instantiates the correct prototype with ROM defaults; `mob transfer $n 3001` moves players using `char_from_room/char_to_room` parity; `mob vforce all drop all` issues commands across target sets without escaping the mob context.
+  ESTIMATE: L; RISK: high
+  REFERENCES: C src/mob_cmds.c:508-612; C src/db.c:913-1098 (`char_to_room`/`char_from_room` ordering)
+- [P0] Implement ROM broadcast commands (`asound/zecho/echoaround/echoat`) — rationale: city alarm scripts rely on perimeter/zone echoes; current port can only room-echo, so guards never alert nearby rooms or the area channel.
+  EVIDENCE: C src/mob_cmds.c:315-408 iterates exits for `mpasound`, filters zone descriptors for `mpzecho`, and scopes `mpechoaround/mpechoat` recipients.
+  EVIDENCE: PY mud/mob_cmds.py:41-58 only supports `mpecho`/`mpgecho`, missing perimeter and victim-targeted variants.
+  FILES: mud/mob_cmds.py; mud/game_loop.py (area iteration helpers)
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_broadcast_scopes_match_rom
+  ACCEPTANCE: `mob asound` echoes to adjacent rooms excluding origin; `mob zecho` reaches characters in the same area only; `mob echoaround $n` omits the victim while `mob echoat $n` targets only them.
+  ESTIMATE: M; RISK: high
+  REFERENCES: C src/mob_cmds.c:315-408; C src/act_wiz.c:105-180 (`act` behaviour for TO_ROOM/TO_NOTVICT/TO_VICT)
+- [P0] Restore combat/cleanup mob commands (`kill/assist/junk/damage/remove/flee`) — rationale: ROM scripts use these to finish combat rounds, destroy quest items, and bail from unwinnable fights; without them scripted bosses get stuck or duplicate loot.
+  EVIDENCE: C src/mob_cmds.c:348-507 handles `mpkill`, `mpassist`, `mpjunk`, and the surrounding helpers; C src/mob_cmds.c:612-735 applies `mpdamage`, `mpremove`, and `mpflee` using ROM checks (charm gating, wait state, hitroll reductions).
+  EVIDENCE: PY mud/mob_cmds.py lacks any combat or inventory handlers, so scripts never act on inventory or fight state.
+  FILES: mud/mob_cmds.py; mud/combat/engine.py; mud/models/character.py
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_combat_and_cleanup_commands
+  ACCEPTANCE: `mob kill $n` invokes `multi_hit` only when ROM allowlist passes; `mob junk all` removes carried/worn items with wear slot parity; `mob damage $n 30` applies ROM dice guardrails and stops at 0 hp; `mob remove $n sword` unequips before extraction; `mob flee` sets wait state as in C.
+  ESTIMATE: L; RISK: high
+  REFERENCES: C src/mob_cmds.c:348-735; C src/fight.c:700-990 (`multi_hit`/`damage`) for parity expectations
 NOTES:
-- C: src/mob_prog.c:356-953 covers `cmd_eval`, `expand_arg`, and trigger guards; Python `_cmd_eval` and `_expand_arg` now mirror these ROM checks with targeted coverage for goodness, visibility, and inventory conditions.
-- C: src/mob_prog.c:1010-1235 ensures NPC-only triggers and case-sensitive phrase matching; Python `_trigger_programs` now enforces the same gating so player characters skip scripts unless the substring matches exactly.
-- PY: mud/mobprog.py:_cmd_eval/_expand_arg/_trigger_programs align with ROM semantics and are exercised by tests/test_mobprog_triggers.py for conditionals, `$` tokens, and trigger gating.
+- C: src/mob_cmds.c:50-112 enumerates 25 mob prog commands spanning broadcasts, spawns, movement, combat, and state management.
+- C: src/mob_cmds.c:315-735 supplies the ROM behaviours we must mirror for perimeter echoes, spawning, forced commands, combat clean-up, and flee logic.
+- PY: mud/mob_cmds.py:41-115 exposes only five commands (echo/gecho/call/delay/cancel), leaving the majority of ROM script verbs unimplemented so live area programs abort silently.
 - Applied tiny fix: none.
 <!-- SUBSYSTEM: mob_programs END -->
 
