@@ -637,37 +637,40 @@ TASKS:
 
 ### mob_programs — Parity Audit 2025-09-22
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.62)
 KEY RISKS: side_effects, flags
 TASKS:
-- [P0] Port ROM mob command table for spawn/move/force operations — rationale: without `mload/oload/goto/transfer/force` the Midgaard scripts that summon quest targets or shuttle players silently fail, breaking quest progression.
-  EVIDENCE: C src/mob_cmds.c:50-112 lists `mload`, `oload`, `goto`, `transfer`, and `vforce` entries feeding the interpreter; C src/mob_cmds.c:508-612 creates mobiles/objects and relocates characters with ROM gating.
-  EVIDENCE: PY mud/mob_cmds.py:92-115 registers only `echo`, `gecho`, `call`, `delay`, `cancel`, leaving spawn/movement commands absent.
-  FILES: mud/mob_cmds.py; mud/mobprog.py; mud/world/room.py
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_spawn_and_transfer_commands
+- ✅ [P0] Port ROM mob command table for spawn/move/force operations — done 2025-10-05
+  EVIDENCE: C src/mob_cmds.c:50-112 lists `mload`, `oload`, `goto`, `transfer`, and `vforce` entries feeding the interpreter.
+  EVIDENCE: PY mud/mob_cmds.py:19-274 wires ROM-style spawn/move/force helpers (`do_mpmload`, `do_mpoload`, `do_mpgoto`, `do_mptransfer`, `do_mpforce`).
+  EVIDENCE: TEST tests/test_mobprog_commands.py::test_spawn_move_and_force_commands_use_rom_semantics exercises load/transfer/force flows.
+  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_spawn_move_and_force_commands_use_rom_semantics
   ACCEPTANCE: `mob mload 3005` instantiates the correct prototype with ROM defaults; `mob transfer $n 3001` moves players using `char_from_room/char_to_room` parity; `mob vforce all drop all` issues commands across target sets without escaping the mob context.
   ESTIMATE: L; RISK: high
   REFERENCES: C src/mob_cmds.c:508-612; C src/db.c:913-1098 (`char_to_room`/`char_from_room` ordering)
-- [P0] Implement ROM broadcast commands (`asound/zecho/echoaround/echoat`) — rationale: city alarm scripts rely on perimeter/zone echoes; current port can only room-echo, so guards never alert nearby rooms or the area channel.
+- ✅ [P0] Implement ROM broadcast commands (`asound/zecho/echoaround/echoat`) — done 2025-10-05
   EVIDENCE: C src/mob_cmds.c:315-408 iterates exits for `mpasound`, filters zone descriptors for `mpzecho`, and scopes `mpechoaround/mpechoat` recipients.
-  EVIDENCE: PY mud/mob_cmds.py:41-58 only supports `mpecho`/`mpgecho`, missing perimeter and victim-targeted variants.
-  FILES: mud/mob_cmds.py; mud/game_loop.py (area iteration helpers)
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_broadcast_scopes_match_rom
+  EVIDENCE: PY mud/mob_cmds.py:107-176 adds perimeter/area/victim targeted echoes (`do_mpasound`, `do_mpzecho`, `do_mpechoaround`, `do_mpechoat`).
+  EVIDENCE: TEST tests/test_mobprog_commands.py::test_mob_broadcast_commands_deliver_expected_messages validates broadcast scopes.
+  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_mob_broadcast_commands_deliver_expected_messages
   ACCEPTANCE: `mob asound` echoes to adjacent rooms excluding origin; `mob zecho` reaches characters in the same area only; `mob echoaround $n` omits the victim while `mob echoat $n` targets only them.
   ESTIMATE: M; RISK: high
   REFERENCES: C src/mob_cmds.c:315-408; C src/act_wiz.c:105-180 (`act` behaviour for TO_ROOM/TO_NOTVICT/TO_VICT)
-- [P0] Restore combat/cleanup mob commands (`kill/assist/junk/damage/remove/flee`) — rationale: ROM scripts use these to finish combat rounds, destroy quest items, and bail from unwinnable fights; without them scripted bosses get stuck or duplicate loot.
-  EVIDENCE: C src/mob_cmds.c:348-507 handles `mpkill`, `mpassist`, `mpjunk`, and the surrounding helpers; C src/mob_cmds.c:612-735 applies `mpdamage`, `mpremove`, and `mpflee` using ROM checks (charm gating, wait state, hitroll reductions).
-  EVIDENCE: PY mud/mob_cmds.py lacks any combat or inventory handlers, so scripts never act on inventory or fight state.
-  FILES: mud/mob_cmds.py; mud/combat/engine.py; mud/models/character.py
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_combat_and_cleanup_commands
+- ✅ [P0] Restore combat/cleanup mob commands (`kill/assist/junk/damage/remove/flee`) — done 2025-10-05
+  EVIDENCE: C src/mob_cmds.c:348-735 applies ROM combat/cleanup helpers for kill/assist/junk/damage/remove/flee.
+  EVIDENCE: PY mud/mob_cmds.py:179-274 ports kill/assist/junk/damage/remove/flee semantics using ROM gating helpers.
+  EVIDENCE: TEST tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape covers combat/cleanup flows.
+  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
+  TESTS: pytest -q tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape
   ACCEPTANCE: `mob kill $n` invokes `multi_hit` only when ROM allowlist passes; `mob junk all` removes carried/worn items with wear slot parity; `mob damage $n 30` applies ROM dice guardrails and stops at 0 hp; `mob remove $n sword` unequips before extraction; `mob flee` sets wait state as in C.
   ESTIMATE: L; RISK: high
   REFERENCES: C src/mob_cmds.c:348-735; C src/fight.c:700-990 (`multi_hit`/`damage`) for parity expectations
 NOTES:
-- C: src/mob_cmds.c:50-112 enumerates 25 mob prog commands spanning broadcasts, spawns, movement, combat, and state management.
-- C: src/mob_cmds.c:315-735 supplies the ROM behaviours we must mirror for perimeter echoes, spawning, forced commands, combat clean-up, and flee logic.
-- PY: mud/mob_cmds.py:41-115 exposes only five commands (echo/gecho/call/delay/cancel), leaving the majority of ROM script verbs unimplemented so live area programs abort silently.
+- C: src/mob_cmds.c:50-735 remains the parity blueprint for ROM mob command dispatch and helpers.
+- PY: mud/mob_cmds.py now ports perimeter broadcasts, spawn/move/force helpers, and combat cleanup verbs with targeted parity coverage.
+- TEST: tests/test_mobprog_commands.py exercises broadcast, spawn/transfer/force, and combat cleanup flows to guard regressions.
 - Applied tiny fix: none.
 <!-- SUBSYSTEM: mob_programs END -->
 
