@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
+
 from fastapi import WebSocket
+
 from mud.models.character import Character
 
 
@@ -14,8 +17,8 @@ class WebSocketPlayerSession:
     name: str
     session_type: str = "websocket"
 
-    async def send(self, payload: Dict[str, Any]) -> None:
+    async def send(self, payload: dict[str, Any]) -> None:
         await self.websocket.send_json(payload)
 
-    async def recv(self) -> Dict[str, Any]:
+    async def recv(self) -> dict[str, Any]:
         return await self.websocket.receive_json()

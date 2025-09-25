@@ -45,9 +45,7 @@ def test_followers_move_and_trigger_mobprogs(monkeypatch) -> None:
     assert follower.room is target
     assert "You follow Leader." in follower.messages
     follow_idx = follower.messages.index("You follow Leader.")
-    auto_idx = next(
-        i for i, message in enumerate(follower.messages) if message.startswith("Target")
-    )
+    auto_idx = next(i for i, message in enumerate(follower.messages) if message.startswith("Target"))
     assert follow_idx < auto_idx
     assert exit_calls == [(leader, Direction.NORTH)]
     assert greet_calls == [leader]
@@ -107,4 +105,3 @@ def test_charmed_follower_stands_before_following() -> None:
     stand_idx = follower.messages.index("You wake and stand up.")
     follow_idx = follower.messages.index("You follow Leader.")
     assert stand_idx < follow_idx
-

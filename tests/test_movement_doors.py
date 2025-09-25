@@ -1,10 +1,10 @@
 from mud.models.character import Character
 from mud.models.constants import (
-    AffectFlag,
-    Direction,
     EX_CLOSED,
     EX_NOPASS,
     LEVEL_IMMORTAL,
+    AffectFlag,
+    Direction,
 )
 from mud.models.room import Exit, Room
 from mud.world import move_character

@@ -1,7 +1,7 @@
-from mud.world.movement import move_character
 from mud.models.character import Character
-from mud.models.constants import ItemType, EX_CLOSED
+from mud.models.constants import EX_CLOSED, ItemType
 from mud.registry import room_registry
+from mud.world.movement import move_character
 
 
 def do_north(char: Character, args: str = "") -> str:

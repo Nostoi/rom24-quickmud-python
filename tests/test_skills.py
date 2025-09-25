@@ -1,15 +1,15 @@
-from pathlib import Path
 from math import ceil
+from pathlib import Path
 from random import Random
 
 import pytest
 
+import mud.skills.handlers as skill_handlers
+from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import AffectFlag
-import mud.skills.handlers as skill_handlers
 from mud.skills import SkillRegistry
 from mud.utils import rng_mm
-from mud.config import get_pulse_violence
 
 
 def load_registry() -> SkillRegistry:

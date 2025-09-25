@@ -2,6 +2,7 @@
 
 Provides flag definitions and broadcast filtering for immortal channels.
 """
+
 from __future__ import annotations
 
 from enum import IntFlag
@@ -31,7 +32,7 @@ class WiznetFlag(IntFlag):
     WIZ_NEWBIE = 0x00020000
     WIZ_PREFIX = 0x00040000
     WIZ_SPAM = 0x00080000
-    WIZ_DEBUG = 0x00100000  # This was originally WIZ_SPAM value, moving it down 
+    WIZ_DEBUG = 0x00100000  # This was originally WIZ_SPAM value, moving it down
     WIZ_MEMORY = 0x00200000
     WIZ_SKILLS = 0x00400000
     WIZ_TESTING = 0x00800000
@@ -44,7 +45,7 @@ if TYPE_CHECKING:  # pragma: no cover - for type hints only
 # Wiznet table mapping names to flags and minimum levels (mirroring C const.c)
 WIZNET_TABLE = [
     {"name": "on", "flag": WiznetFlag.WIZ_ON, "level": 1},  # IM = 1 (immortal)
-    {"name": "prefix", "flag": WiznetFlag.WIZ_PREFIX, "level": 1}, 
+    {"name": "prefix", "flag": WiznetFlag.WIZ_PREFIX, "level": 1},
     {"name": "ticks", "flag": WiznetFlag.WIZ_TICKS, "level": 1},
     {"name": "logins", "flag": WiznetFlag.WIZ_LOGINS, "level": 1},
     {"name": "sites", "flag": WiznetFlag.WIZ_SITES, "level": 54},  # L4
@@ -74,19 +75,25 @@ def wiznet_lookup(name: str) -> int:
     return -1
 
 
-def wiznet(message: str, sender_ch_or_flag: Any = None, obj: Any = None, flag: WiznetFlag | None = None, 
-           flag_skip: WiznetFlag | None = None, min_level: int = 0) -> None:
+def wiznet(
+    message: str,
+    sender_ch_or_flag: Any = None,
+    obj: Any = None,
+    flag: WiznetFlag | None = None,
+    flag_skip: WiznetFlag | None = None,
+    min_level: int = 0,
+) -> None:
     """Broadcast *message* to immortals subscribed to *flag*.
 
-    Supports both old signature: wiznet(message, flag) 
+    Supports both old signature: wiznet(message, flag)
     and new C-compatible signature: wiznet(message, sender_ch, obj, flag, flag_skip, min_level)
-    
+
     - sender_ch_or_flag: for backward compatibility - if WiznetFlag, treated as flag; if Character, treated as sender
     - obj: object context (currently unused but maintains C signature)
     - flag: required flag subscription (if None, only WIZ_ON is checked)
     - flag_skip: if set, skip characters who have this flag
     - min_level: minimum trust level required
-    
+
     Immortals must have WIZ_ON and the given *flag* set to receive the message.
     """
     from mud.models.character import character_registry
@@ -105,28 +112,28 @@ def wiznet(message: str, sender_ch_or_flag: Any = None, obj: Any = None, flag: W
         # Skip sender
         if ch == sender_ch:
             continue
-            
+
         # Must be immortal/admin
         if not getattr(ch, "is_admin", False):
             continue
-            
+
         # Must have WIZ_ON
         if not getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_ON:
             continue
-            
+
         # Check required flag
         if flag and not getattr(ch, "wiznet", 0) & flag:
             continue
-            
+
         # Check skip flag
         if flag_skip and getattr(ch, "wiznet", 0) & flag_skip:
             continue
-            
+
         # Check min level (get_trust equivalent)
         ch_level = getattr(ch, "level", 0)
         if ch_level < min_level:
             continue
-            
+
         # Format message - only use colors if WIZ_PREFIX is set
         if hasattr(ch, "messages"):
             if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
@@ -143,7 +150,7 @@ def cmd_wiznet(char: Any, args: str) -> str:
     Supports:
     - wiznet (no args): toggle WIZ_ON
     - wiznet on/off: explicitly set WIZ_ON
-    - wiznet status: show current subscriptions  
+    - wiznet status: show current subscriptions
     - wiznet show: show available options
     - wiznet <flag>: toggle individual flag subscription
     """
@@ -153,7 +160,7 @@ def cmd_wiznet(char: Any, args: str) -> str:
         return "Huh?"
 
     args = args.strip()
-    
+
     # No arguments: toggle WIZ_ON
     if not args:
         if getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON:
@@ -162,53 +169,53 @@ def cmd_wiznet(char: Any, args: str) -> str:
         else:
             char.wiznet |= int(WiznetFlag.WIZ_ON)
             return "Welcome to Wiznet!"
-    
+
     # Explicit on/off
     if args.lower().startswith("on"):
-        char.wiznet |= int(WiznetFlag.WIZ_ON) 
+        char.wiznet |= int(WiznetFlag.WIZ_ON)
         return "Welcome to Wiznet!"
-        
+
     if args.lower().startswith("off"):
         char.wiznet &= ~int(WiznetFlag.WIZ_ON)
         return "Signing off of Wiznet."
-    
+
     # Show status
     if args.lower().startswith("status"):
         result = "Wiznet status:\n"
-        
+
         if not (getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON):
             result += "off "
-            
+
         char_level = getattr(char, "level", 0)
         for entry in WIZNET_TABLE:
             if (getattr(char, "wiznet", 0) & int(entry["flag"])) and entry["name"] != "on":
                 result += f"{entry['name']} "
-                
+
         return result.strip()
-    
+
     # Show available options
     if args.lower().startswith("show"):
         result = "Wiznet options available to you are:\n"
-        
+
         char_level = getattr(char, "level", 0)
         options = []
         for entry in WIZNET_TABLE:
             if char_level >= entry["level"]:
                 options.append(entry["name"])
-                
+
         return result + " ".join(options)
-    
+
     # Individual flag toggle
     flag_index = wiznet_lookup(args)
     if flag_index == -1:
         return "No such option."
-        
+
     entry = WIZNET_TABLE[flag_index]
     char_level = getattr(char, "level", 0)
-    
+
     if char_level < entry["level"]:
         return "No such option."
-    
+
     # Toggle the flag
     if getattr(char, "wiznet", 0) & int(entry["flag"]):
         char.wiznet &= ~int(entry["flag"])

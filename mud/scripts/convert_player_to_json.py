@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Tuple
 
 from mud.models.player_json import PlayerJson
-
 
 ROM_RACE_TO_ID = {
     "human": 0,
@@ -33,7 +31,7 @@ def _letters_to_bits(spec: str) -> int:
     return bits
 
 
-def _parse_hmv(tokens: list[str]) -> Tuple[int, int, int, int, int, int]:
+def _parse_hmv(tokens: list[str]) -> tuple[int, int, int, int, int, int]:
     # HMV <hit> <max_hit> <mana> <max_mana> <move> <max_move>
     vals = [int(t) for t in tokens]
     while len(vals) < 6:
@@ -120,33 +118,25 @@ def convert_player(path: str | Path) -> PlayerJson:
             try:
                 plr_flags = _letters_to_bits(spec)
             except ValueError as exc:
-                raise ValueError(
-                    "invalid Act flags: expected ROM print_flags letters or 0"
-                ) from exc
+                raise ValueError("invalid Act flags: expected ROM print_flags letters or 0") from exc
         elif line.startswith("AfBy "):
             spec = line.split()[1]
             try:
                 affected_by = _letters_to_bits(spec)
             except ValueError as exc:
-                raise ValueError(
-                    "invalid AfBy flags: expected ROM print_flags letters or 0"
-                ) from exc
+                raise ValueError("invalid AfBy flags: expected ROM print_flags letters or 0") from exc
         elif line.startswith("Comm "):
             spec = line.split()[1]
             try:
                 comm_flags = _letters_to_bits(spec)
             except ValueError as exc:
-                raise ValueError(
-                    "invalid Comm flags: expected ROM print_flags letters or 0"
-                ) from exc
+                raise ValueError("invalid Comm flags: expected ROM print_flags letters or 0") from exc
         elif line.startswith("Wizn "):
             spec = line.split()[1]
             try:
                 wiznet_flags = _letters_to_bits(spec)
             except ValueError as exc:
-                raise ValueError(
-                    "invalid Wizn flags: expected ROM print_flags letters or 0"
-                ) from exc
+                raise ValueError("invalid Wizn flags: expected ROM print_flags letters or 0") from exc
         elif line.startswith("Cnd "):
             vals = line.split()[1:]
             if len(vals) != 4:

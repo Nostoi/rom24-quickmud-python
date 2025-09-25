@@ -1,11 +1,13 @@
-from mud.scripts.convert_are_to_json import convert_area
-from mud.loaders.specials_loader import apply_specials_from_json
 from mud.loaders.area_loader import load_area_file
-from mud.registry import mob_registry, area_registry, room_registry
+from mud.loaders.specials_loader import apply_specials_from_json
+from mud.registry import area_registry, mob_registry, room_registry
+from mud.scripts.convert_are_to_json import convert_area
 
 
 def setup_function(_):
-    mob_registry.clear(); area_registry.clear(); room_registry.clear()
+    mob_registry.clear()
+    area_registry.clear()
+    room_registry.clear()
 
 
 def test_convert_are_includes_specials_section():
@@ -25,4 +27,3 @@ def test_apply_specials_from_json_overlays_spec_fun_on_prototypes():
     entries = [{"mob_vnum": 6112, "spec": "spec_breath_gas"}]
     apply_specials_from_json(entries)
     assert (proto.spec_fun or "").lower() == "spec_breath_gas"
-

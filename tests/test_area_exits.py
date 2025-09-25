@@ -1,9 +1,9 @@
-from mud.world import initialize_world
 from mud.registry import room_registry
+from mud.world import initialize_world
 
 
 def test_midgaard_room_3001_exits_and_keys():
-    initialize_world('area/area.lst')
+    initialize_world("area/area.lst")
     room = room_registry[3001]
     # D0 → 3054, key -1 (Temple north to altar)
     ex0 = room.exits[0]
@@ -20,4 +20,3 @@ def test_midgaard_room_3001_exits_and_keys():
     assert ex4 is not None
     assert ex4.vnum == 3700
     assert ex4.key == 0
-

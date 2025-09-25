@@ -1,15 +1,15 @@
 from __future__ import annotations
-from mud.loaders import load_all_areas
-from mud.loaders.json_area_loader import load_all_areas_from_json
-from mud.loaders.json_loader import load_all_areas_from_json as load_enhanced_json
-from mud.registry import room_registry, area_registry, mob_registry, obj_registry
-from mud.db.session import SessionLocal
+
 from mud.db import models
+from mud.db.session import SessionLocal
+from mud.loaders import load_all_areas
 from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import Position
-from mud.spawning.reset_handler import apply_resets
-from .linking import link_exits
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
+from mud.spawning.reset_handler import apply_resets
+
+from .linking import link_exits
 
 # Global skill registry for world initialization
 skill_registry = None
@@ -40,9 +40,7 @@ def load_world_from_db() -> bool:
     for db_obj in session.query(models.ObjPrototype).all():
         obj_registry[db_obj.vnum] = models_to_obj(db_obj)
 
-    print(
-        f"\u2705 Loaded {len(room_registry)} rooms, {len(mob_registry)} mobs, {len(obj_registry)} objects."
-    )
+    print(f"\u2705 Loaded {len(room_registry)} rooms, {len(mob_registry)} mobs, {len(obj_registry)} objects.")
     return True
 
 
@@ -88,7 +86,7 @@ def models_to_obj(db_obj: models.ObjPrototype):
 
 def initialize_world(area_list_path: str | None = "area/area.lst", use_json: bool = True) -> None:
     """Initialize world from files or database.
-    
+
     Args:
         area_list_path: Path to area.lst file (for legacy .are loading)
         use_json: If True, load from JSON files in data/areas/. If False, use legacy .are files.
@@ -98,10 +96,12 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     # Clearing here avoids leakage across test modules without affecting
     # persistence tests which explicitly save/load.
     bans.clear_all_bans()
-    
+
     # Load skills registry from JSON
-    from mud.skills.registry import SkillRegistry
     from pathlib import Path
+
+    from mud.skills.registry import SkillRegistry
+
     skills_path = Path("data/skills.json")
     if skills_path.exists():
         try:
@@ -112,47 +112,51 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
         except Exception as e:
             print(f"Warning: Failed to load skills from {skills_path}: {e}")
             skill_registry = None
-    
+
     # Load shops from JSON (needed for shopkeeper detection in resets)
-    from mud.registry import shop_registry
-    from mud.loaders.shop_loader import Shop
     import json
+
+    from mud.loaders.shop_loader import Shop
+    from mud.registry import shop_registry
+
     shops_path = Path("data/shops.json")
     if shops_path.exists():
         try:
-            with open(shops_path, 'r') as f:
+            with open(shops_path) as f:
                 shops_data = json.load(f)
             shop_registry.clear()
             for shop_data in shops_data:
                 # Convert string buy_types back to int list for compatibility
                 buy_types = []
-                for bt in shop_data.get('buy_types', []):
+                for bt in shop_data.get("buy_types", []):
                     if isinstance(bt, str):
                         from mud.models.constants import ItemType
+
                         try:
                             buy_types.append(ItemType[bt.upper()].value)
                         except (KeyError, AttributeError):
                             buy_types.append(0)  # unknown type
                     else:
                         buy_types.append(bt)
-                
-                shop_registry[shop_data['keeper']] = Shop(
-                    keeper=shop_data['keeper'],
+
+                shop_registry[shop_data["keeper"]] = Shop(
+                    keeper=shop_data["keeper"],
                     buy_types=buy_types,
-                    profit_buy=shop_data.get('profit_buy', 100),
-                    profit_sell=shop_data.get('profit_sell', 100),
-                    open_hour=shop_data.get('open_hour', 0),
-                    close_hour=shop_data.get('close_hour', 23),
+                    profit_buy=shop_data.get("profit_buy", 100),
+                    profit_sell=shop_data.get("profit_sell", 100),
+                    open_hour=shop_data.get("open_hour", 0),
+                    close_hour=shop_data.get("close_hour", 23),
                 )
             print(f"✅ Loaded {len(shop_registry)} shops from {shops_path}")
         except Exception as e:
             print(f"Warning: Failed to load shops from {shops_path}: {e}")
-    
+
     if area_list_path:
         if use_json:
             # Load from JSON files using enhanced field mapping
             from mud.loaders.json_loader import load_all_areas_from_json
-            json_areas = load_all_areas_from_json("data/areas")
+
+            load_all_areas_from_json("data/areas")
             # Areas are already registered in area_registry by the JSON loader
         else:
             # Load from legacy .are files

@@ -1,28 +1,29 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, List
 
 from mud import mobprog
-from mud.models.character import Character, character_registry
-from mud.models.constants import Position
-from mud.skills.registry import skill_registry
-from mud.spawning.reset_handler import reset_tick
-from mud.time import time_info
 from mud.config import (
+    GAME_LOOP_STRICT_POINT,
+    get_pulse_area,
     get_pulse_tick,
     get_pulse_violence,
-    get_pulse_area,
-    GAME_LOOP_STRICT_POINT,
 )
-from mud.net.protocol import broadcast_global
 from mud.logging.admin import rotate_admin_log
+from mud.models.character import Character, character_registry
+from mud.models.constants import Position
+from mud.net.protocol import broadcast_global
+from mud.skills.registry import skill_registry
+from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
+from mud.time import time_info
 
 
 @dataclass
 class WeatherState:
     """Very small placeholder for global weather."""
+
     sky: str = "sunny"
 
 
@@ -35,7 +36,7 @@ class TimedEvent:
     callback: Callable[[], None]
 
 
-events: List[TimedEvent] = []
+events: list[TimedEvent] = []
 
 
 def schedule_event(ticks: int, callback: Callable[[], None]) -> None:
@@ -124,7 +125,7 @@ def game_tick() -> None:
     if _violence_counter % get_pulse_violence() == 0:
         violence_tick()
     # Advance time/weather/resets on point pulses, preserving legacy behavior when not strict
-    point_pulse = (_pulse_counter % get_pulse_tick() == 0)
+    point_pulse = _pulse_counter % get_pulse_tick() == 0
     if point_pulse:
         time_tick()
         weather_tick()

@@ -11,20 +11,19 @@ Implements ROM's RNG surface with C-style gating:
 References:
 - C src/db.c:number_mm/number_percent/number_range/number_bits/dice
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass
-import time
 import os
-from typing import List
-
+import time
+from dataclasses import dataclass
 
 MASK_30 = (1 << 30) - 1
 
 
 @dataclass
 class _MMState:
-    state: List[int]
+    state: list[int]
     i1: int
     i2: int
 
@@ -89,27 +88,27 @@ def number_percent() -> int:
 
 def number_range(from_val: int, to_val: int) -> int:
     """Return integer in [from_val, to_val] inclusive using ROM logic.
-    
+
     Matches ROM C exactly: if (to = to - from + 1) <= 1, return from.
     This handles the case where to_val < from_val by returning from_val.
     """
     if from_val == 0 and to_val == 0:
         return 0
-    
+
     # ROM logic: to = to - from + 1
     to = to_val - from_val + 1
     if to <= 1:
         return from_val
-    
+
     power = 2
     while power < to:
         power <<= 1
-    
+
     # while ((number = number_mm () & (power - 1)) >= to);
     number = number_mm() & (power - 1)
     while number >= to:
         number = number_mm() & (power - 1)
-    
+
     return from_val + number
 
 

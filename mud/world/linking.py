@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import logging
-from mud.registry import room_registry
+
 from mud.models.constants import Direction
+from mud.registry import room_registry
 
 
 def link_exits() -> None:

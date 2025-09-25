@@ -102,9 +102,7 @@ def test_spawn_move_and_force_commands_use_rom_semantics(monkeypatch):
 
     mob_cmds.mob_interpret(controller, "mload 2000")
     spawned = [
-        occupant
-        for occupant in origin.people
-        if occupant is not controller and getattr(occupant, "prototype", None)
+        occupant for occupant in origin.people if occupant is not controller and getattr(occupant, "prototype", None)
     ]
     assert spawned and getattr(spawned[0].prototype, "vnum", None) == 2000
 

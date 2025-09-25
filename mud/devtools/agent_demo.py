@@ -1,6 +1,6 @@
-from mud.registry import room_registry, mob_registry
-from mud.spawning.mob_spawner import spawn_mob
 from mud.agent.character_agent import CharacterAgentAdapter
+from mud.registry import mob_registry, room_registry
+from mud.spawning.mob_spawner import spawn_mob
 
 
 def run_agent_demo() -> None:

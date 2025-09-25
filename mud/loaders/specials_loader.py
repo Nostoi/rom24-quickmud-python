@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from mud.registry import mob_registry
+
 from .base_loader import BaseTokenizer
 
 
@@ -19,17 +20,17 @@ def load_specials(tokenizer: BaseTokenizer, area) -> None:
         s = line.strip()
         if not s:
             continue
-        if s == 'S':
+        if s == "S":
             break
-        if not s or s.startswith('*'):
+        if not s or s.startswith("*"):
             continue
-        if s[0] in '{':
+        if s[0] in "{":
             # Lines may be grouped in braces; consume but ignore braces
-            s = s.lstrip('{').rstrip('}')
+            s = s.lstrip("{").rstrip("}")
             s = s.strip()
             if not s:
                 continue
-        if s.startswith('M '):
+        if s.startswith("M "):
             parts = s.split()
             # parts: ['M', '<vnum>', '<spec>'] + optional comments
             if len(parts) >= 3:

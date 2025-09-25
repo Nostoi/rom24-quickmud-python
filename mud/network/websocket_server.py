@@ -1,12 +1,14 @@
 from __future__ import annotations
+
+import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
-from mud.config import HOST, PORT, CORS_ORIGINS
-from mud.world.world_state import initialize_world, create_test_character
 from mud.account import load_character, save_character
 from mud.commands import process_command
+from mud.config import CORS_ORIGINS, HOST, PORT
+from mud.world.world_state import create_test_character, initialize_world
+
 from .websocket_session import WebSocketPlayerSession
 
 app = FastAPI()
@@ -55,20 +57,24 @@ async def websocket_endpoint(websocket: WebSocket):
             if not command:
                 continue
             response = process_command(char, command)
-            await session.send({
-                "type": "output",
-                "text": response,
-                "room": char.room.vnum if getattr(char, "room", None) else None,
-                "hp": char.hit,
-            })
-            while char.messages:
-                msg = char.messages.pop(0)
-                await session.send({
+            await session.send(
+                {
                     "type": "output",
-                    "text": msg,
+                    "text": response,
                     "room": char.room.vnum if getattr(char, "room", None) else None,
                     "hp": char.hit,
-                })
+                }
+            )
+            while char.messages:
+                msg = char.messages.pop(0)
+                await session.send(
+                    {
+                        "type": "output",
+                        "text": msg,
+                        "room": char.room.vnum if getattr(char, "room", None) else None,
+                        "hp": char.hit,
+                    }
+                )
     finally:
         save_character(char)
         if char.room:

@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 from mud import mobprog
+from mud.combat import attack_round, multi_hit
+from mud.commands.combat import do_surrender
+from mud.commands.communication import do_say, do_tell
+from mud.game_loop import game_tick
 from mud.models.character import Character, character_registry
+from mud.models.constants import Direction, ItemType, Position
 from mud.models.mob import MobProgram
-from mud.models.room import Room, Exit
-from mud.models.constants import Direction, Position, ItemType
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
+from mud.models.room import Exit, Room
 from mud.world.movement import move_character
-from mud.commands.communication import do_say, do_tell
-from mud.commands.combat import do_surrender
-from mud.combat import attack_round, multi_hit
-from mud.game_loop import game_tick
 
 
 def _setup_room() -> tuple[Room, Character, Character]:
@@ -75,10 +75,7 @@ say Depth reached
     )
 
     assert executed == ["say Greetings Hero", "say Called for Hero"]
-    assert [
-        (res.command, res.argument, res.mob_command)
-        for res in results
-    ] == [
+    assert [(res.command, res.argument, res.mob_command) for res in results] == [
         ("say", "Greetings Hero", False),
         ("mob echo", "Hero is welcomed.", True),
         ("mob call", "2001 Hero", True),
@@ -204,6 +201,7 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
     monkeypatch.setattr(mobprog, "mp_hprct_trigger", lambda mob, ch: (record("hpcnt"), False)[1])
     monkeypatch.setattr(mobprog, "mp_kill_trigger", lambda mob, ch: (record("kill"), False)[1])
     monkeypatch.setattr(mobprog, "mp_death_trigger", lambda mob, ch: (record("death"), False)[1])
+
     def fake_delay(mob: Character) -> bool:
         if int(getattr(mob, "mprog_delay", 0)) > 0:
             record("delay")
@@ -361,11 +359,7 @@ endif
         phrase="parity check",
     )
 
-    echo_arguments = [
-        res.argument
-        for res in results
-        if res.command == "mob echo"
-    ]
+    echo_arguments = [res.argument for res in results if res.command == "mob echo"]
 
     assert echo_arguments == [
         "Hero passes goodness.",
@@ -406,11 +400,7 @@ def test_expand_arg_supports_rom_tokens(monkeypatch) -> None:
         phrase="tokens now",
     )
 
-    echo_arguments = [
-        res.argument
-        for res in results
-        if res.command == "mob echo"
-    ]
+    echo_arguments = [res.argument for res in results if res.command == "mob echo"]
 
     assert echo_arguments == ["Hero/he/him/his/she/her/her"]
 

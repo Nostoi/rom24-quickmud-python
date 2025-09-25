@@ -25,4 +25,3 @@ def test_dice_matches_sum_of_number_range_calls() -> None:
     rng_mm.seed_mm(54321)
     b = rng_mm.dice(2, 6)
     assert a == b
-

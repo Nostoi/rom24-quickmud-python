@@ -29,4 +29,3 @@ def test_convert_help_are_preserves_wizlock_entry(tmp_path: Path) -> None:
     # Verify key text lines (including newline between syntax lines)
     assert "Syntax: wizlock\n\tnewlock" in text
     assert "Wizlock and newlock both block login attempts" in text
-

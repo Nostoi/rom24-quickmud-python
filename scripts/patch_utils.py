@@ -1,10 +1,15 @@
 # scripts/patch_utils.py
-import re, subprocess, tempfile, pathlib
+import pathlib
+import re
+import subprocess
+import tempfile
 
 DIFF_BLOCK = re.compile(r"```diff(.*?)```", re.DOTALL | re.IGNORECASE)
 
+
 def extract_diffs(text: str) -> list[str]:
     return [m.group(1).strip() for m in DIFF_BLOCK.finditer(text)]
+
 
 def apply_diff(diff_text: str, repo_root: str = ".") -> bool:
     # Use git apply with 3-way for resilience

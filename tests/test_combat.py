@@ -1,26 +1,26 @@
-from mud.world import initialize_world, create_test_character
+from mud.combat import engine as combat_engine
 from mud.commands import process_command
 from mud.models.character import Character
 from mud.models.constants import (
-    Position,
-    DamageType,
-    AC_PIERCE,
     AC_BASH,
-    AC_SLASH,
     AC_EXOTIC,
-    ResFlag,
+    AC_PIERCE,
+    AC_SLASH,
+    AffectFlag,
+    DamageType,
     ImmFlag,
+    Position,
+    ResFlag,
     VulnFlag,
 )
-from mud.combat import engine as combat_engine
-from mud.models.constants import AffectFlag
+from mud.world import create_test_character, initialize_world
 
 
 def setup_combat() -> tuple[Character, Character]:
-    initialize_world('area/area.lst')
+    initialize_world("area/area.lst")
     room_vnum = 3001
-    attacker = create_test_character('Attacker', room_vnum)
-    victim = create_test_character('Victim', room_vnum)
+    attacker = create_test_character("Attacker", room_vnum)
+    victim = create_test_character("Victim", room_vnum)
     return attacker, victim
 
 
@@ -29,10 +29,10 @@ def test_attack_damages_but_not_kill() -> None:
     attacker.damroll = 3
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 10
-    out = process_command(attacker, 'kill victim')
+    out = process_command(attacker, "kill victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Message includes "That really did HURT!" for significant damage
-    assert out == 'You hit Victim for 8 damage. That really did HURT!'
+    assert out == "You hit Victim for 8 damage. That really did HURT!"
     assert victim.hit == 2  # 10 - 8 = 2
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
@@ -44,13 +44,13 @@ def test_attack_kills_target():
     attacker.damroll = 0  # Use 0 damroll so we get exactly 5 base damage
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 5
-    out = process_command(attacker, 'kill victim')
-    assert out == 'You kill Victim.'
+    out = process_command(attacker, "kill victim")
+    assert out == "You kill Victim."
     assert victim.hit == 0
     assert attacker.position == Position.STANDING
     assert victim.position == Position.DEAD
     assert victim not in attacker.room.people
-    assert 'Victim is DEAD!!!' in attacker.messages
+    assert "Victim is DEAD!!!" in attacker.messages
 
 
 def test_attack_misses_target(monkeypatch):
@@ -58,9 +58,9 @@ def test_attack_misses_target(monkeypatch):
     attacker.hitroll = -100  # extremely low hit chance
     victim.hit = 10
     # Guarantee miss deterministically
-    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 100)
-    out = process_command(attacker, 'kill victim')
-    assert out == 'You miss Victim.'
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
+    out = process_command(attacker, "kill victim")
+    assert out == "You miss Victim."
     assert victim.hit == 10
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
@@ -90,8 +90,8 @@ def test_defense_order_and_early_out(monkeypatch):
     monkeypatch.setattr(combat_engine, "check_dodge", dodge)
     monkeypatch.setattr(combat_engine, "check_shield_block", shield)
 
-    out = process_command(attacker, 'kill victim')
-    assert out == 'Victim dodges your attack.'
+    out = process_command(attacker, "kill victim")
+    assert out == "Victim dodges your attack."
     # ROM defense order: shield_block → parry → dodge (dodge early-exits, so shield not reached after)
     assert calls == ["shield", "parry", "dodge"]
 
@@ -132,19 +132,20 @@ def test_multi_hit_second_attack():
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # 50% chance (100/2)
     victim.hit = 20  # Increase HP to survive multiple attacks
-    
+
     # Initialize fighting state
     combat_engine.set_fighting(attacker, victim)
-    
+
     # Mock to force successful second attack
     from mud.utils import rng_mm
+
     original_number_percent = rng_mm.number_percent
-    
+
     def mock_number_percent():
         return 1  # Always return 1, which is < 50
-    
+
     rng_mm.number_percent = mock_number_percent
-    
+
     try:
         results = combat_engine.multi_hit(attacker, victim)
         assert len(results) == 2  # First + second attack
@@ -162,19 +163,19 @@ def test_multi_hit_third_attack():
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # Always succeeds (50% chance)
-    attacker.third_attack_skill = 100   # Always succeeds (25% chance)
+    attacker.third_attack_skill = 100  # Always succeeds (25% chance)
     victim.hit = 20
-    
+
     # Set up a monkey patch to force successful rolls
     from mud.utils import rng_mm
+
     original_number_percent = rng_mm.number_percent
-    
+
     def mock_number_percent():
         return 1  # Always return 1, which is < any positive chance
-    
-    import types
+
     rng_mm.number_percent = mock_number_percent
-    
+
     try:
         results = combat_engine.multi_hit(attacker, victim)
         assert len(results) == 3  # First + second + third attack
@@ -189,12 +190,12 @@ def test_multi_hit_with_slow():
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # Normally would always succeed
-    attacker.third_attack_skill = 100   # Normally would always succeed
+    attacker.third_attack_skill = 100  # Normally would always succeed
     victim.hit = 10
-    
+
     # Add slow affect
     attacker.add_affect(AffectFlag.SLOW)
-    
+
     results = combat_engine.multi_hit(attacker, victim)
     # Slow reduces second attack chance and prevents third attack entirely
     assert len(results) >= 1  # Always get first attack
@@ -207,10 +208,10 @@ def test_multi_hit_victim_dies_early():
     attacker.damroll = 5
     attacker.second_attack_skill = 100  # Would normally get second attack
     victim.hit = 3  # Dies on first hit
-    
+
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 1
-    assert results[0] == 'You kill Victim.'
+    assert results[0] == "You kill Victim."
     assert attacker.fighting is None  # Fighting cleared on death
     assert victim.fighting is None
 
@@ -236,26 +237,26 @@ def test_ac_influences_hit_chance(monkeypatch):
     attacker.dam_type = int(DamageType.BASH)
 
     # Fix roll to 60 for deterministic checks
-    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 60)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
 
     # No armor: base to_hit = 50 + 10 = 60 → hit on 60
     victim.armor = [0, 0, 0, 0]
     victim.hit = 10
-    out = process_command(attacker, 'kill victim')
+    out = process_command(attacker, "kill victim")
     # ROM damage: base 5 + damroll 3 = 8 total
-    assert out == 'You hit Victim for 8 damage. That really did HURT!'
+    assert out == "You hit Victim for 8 damage. That really did HURT!"
 
     # Strong negative AC on BASH index lowers to_hit: victim.armor[AC_BASH] = -22 → +(-22//2) = -11 → 49 → miss
     victim.hit = 50
     victim.armor[AC_BASH] = -22
-    out = process_command(attacker, 'kill victim')
-    assert out == 'You miss Victim.'
+    out = process_command(attacker, "kill victim")
+    assert out == "You miss Victim."
 
     # Positive AC raises to_hit: +20 → +(20//2)=+10 → 70 → hit
     victim.hit = 50
     victim.armor[AC_BASH] = 20
-    out = process_command(attacker, 'kill victim')
-    assert out.startswith('You hit')
+    out = process_command(attacker, "kill victim")
+    assert out.startswith("You hit")
 
 
 def test_visibility_and_position_modifiers(monkeypatch):
@@ -267,27 +268,27 @@ def test_visibility_and_position_modifiers(monkeypatch):
     victim.hit = 50
 
     # At roll 60, baseline to_hit=60 → hit; invisible should make it miss
-    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 60)
-    out = process_command(attacker, 'kill victim')
-    assert out.startswith('You hit')
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
+    out = process_command(attacker, "kill victim")
+    assert out.startswith("You hit")
     victim.hit = 50
     victim.add_affect(AffectFlag.INVISIBLE)
-    out = process_command(attacker, 'kill victim')
-    assert out == 'You miss Victim.'
+    out = process_command(attacker, "kill victim")
+    assert out == "You miss Victim."
 
     # Positional: roll 62; sleeping target grants +10 effective AC mods (+4 +6)
     victim.hit = 50
     victim.remove_affect(AffectFlag.INVISIBLE)
-    monkeypatch.setattr('mud.utils.rng_mm.number_percent', lambda: 62)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 62)
     victim.position = Position.SLEEPING
-    out = process_command(attacker, 'kill victim')
-    assert out.startswith('You hit')
+    out = process_command(attacker, "kill victim")
+    assert out.startswith("You hit")
 
 
 def test_riv_scaling_applies_before_side_effects(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100
-    attacker.damroll = 0  # Set to 0 to make calculation more predictable 
+    attacker.damroll = 0  # Set to 0 to make calculation more predictable
     attacker.dam_type = int(DamageType.BASH)
     victim.hit = 50
 
@@ -301,11 +302,11 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     # With damroll=0, we get base unarmed damage + 0 damroll bonus
     # Then RIV resistance should reduce it by 1/3
     victim.res_flags = int(ResFlag.BASH)
-    out = process_command(attacker, 'kill victim')
-    
+    out = process_command(attacker, "kill victim")
+
     # The exact damage will depend on RNG, but it should be RIV-scaled
     assert "You hit Victim for" in out and "damage." in out
-    
+
     # More importantly, check that on_hit_effects received the scaled damage
     assert len(captured) == 1
     assert captured[0] > 0  # Should have some damage after RIV scaling
@@ -316,14 +317,14 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     victim.hit = 50
     victim.res_flags = 0
     victim.vuln_flags = int(VulnFlag.BASH)
-    out = process_command(attacker, 'kill victim')
-    assert out == 'You hit Victim for 7 damage. That really did HURT!'
+    out = process_command(attacker, "kill victim")
+    assert out == "You hit Victim for 7 damage. That really did HURT!"
     assert captured[-1] == 7
 
     # Immune: dam = 0
     victim.hit = 50
     victim.vuln_flags = 0
     victim.imm_flags = int(ImmFlag.BASH)
-    out = process_command(attacker, 'kill victim')
-    assert out == 'Your attack has no effect.'
+    out = process_command(attacker, "kill victim")
+    assert out == "Your attack has no effect."
     assert captured[-1] == 0

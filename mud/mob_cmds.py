@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Callable, Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from mud.utils import rng_mm
 
@@ -30,20 +31,20 @@ def _split_command(argument: str) -> tuple[str, str]:
     return command, rest
 
 
-def _iter_room_people(room: "Room" | None) -> Iterable["Character"]:
+def _iter_room_people(room: Room | None) -> Iterable[Character]:
     if room is None:
         return []
     return list(getattr(room, "people", []) or [])
 
 
-def _match_char_name(char: "Character", token: str) -> bool:
+def _match_char_name(char: Character, token: str) -> bool:
     name = getattr(char, "name", None)
     if not name or not token:
         return False
     return name.lower().startswith(token.lower())
 
 
-def _find_char_in_room(ch: "Character", name: str) -> "Character" | None:
+def _find_char_in_room(ch: Character, name: str) -> Character | None:
     room = getattr(ch, "room", None)
     for occupant in _iter_room_people(room):
         if _match_char_name(occupant, name):
@@ -51,7 +52,7 @@ def _find_char_in_room(ch: "Character", name: str) -> "Character" | None:
     return None
 
 
-def _find_char_world(name: str) -> "Character" | None:
+def _find_char_world(name: str) -> Character | None:
     if not name:
         return None
     from mud.models.character import character_registry
@@ -62,13 +63,13 @@ def _find_char_world(name: str) -> "Character" | None:
     return None
 
 
-def _get_room_by_vnum(vnum: int) -> "Room" | None:
+def _get_room_by_vnum(vnum: int) -> Room | None:
     from mud.registry import room_registry
 
     return room_registry.get(vnum)
 
 
-def _find_location(ch: "Character", token: str) -> "Room" | None:
+def _find_location(ch: Character, token: str) -> Room | None:
     if not token:
         return None
     if token.lower() == "here":
@@ -81,7 +82,7 @@ def _find_location(ch: "Character", token: str) -> "Room" | None:
     return _get_room_by_vnum(vnum)
 
 
-def _move_to_room(ch: "Character", destination: "Room") -> None:
+def _move_to_room(ch: Character, destination: Room) -> None:
     current = getattr(ch, "room", None)
     if current is destination:
         return
@@ -97,14 +98,14 @@ def _move_to_room(ch: "Character", destination: "Room") -> None:
         ch.room = destination
 
 
-def _append_message(target: "Character", message: str) -> None:
+def _append_message(target: Character, message: str) -> None:
     if not hasattr(target, "messages"):
         return
     target.messages.append(message)
 
 
 def _broadcast(
-    room: "Room" | None,
+    room: Room | None,
     message: str,
     *,
     exclude: Iterable[object] | None = None,
@@ -118,7 +119,7 @@ def _broadcast(
         _append_message(char, message)
 
 
-def do_mpecho(ch: "Character", argument: str) -> None:
+def do_mpecho(ch: Character, argument: str) -> None:
     if not argument:
         return
     room = getattr(ch, "room", None)
@@ -127,7 +128,7 @@ def do_mpecho(ch: "Character", argument: str) -> None:
     room.broadcast(argument, exclude=ch)
 
 
-def do_mpasound(ch: "Character", argument: str) -> None:
+def do_mpasound(ch: Character, argument: str) -> None:
     if not argument:
         return
     room = getattr(ch, "room", None)
@@ -143,7 +144,7 @@ def do_mpasound(ch: "Character", argument: str) -> None:
         _broadcast(target_room, argument)
 
 
-def do_mpgecho(ch: "Character", argument: str) -> None:
+def do_mpgecho(ch: Character, argument: str) -> None:
     if not argument:
         return
     from mud.models.character import character_registry
@@ -153,7 +154,7 @@ def do_mpgecho(ch: "Character", argument: str) -> None:
             target.messages.append(argument)
 
 
-def do_mpzecho(ch: "Character", argument: str) -> None:
+def do_mpzecho(ch: Character, argument: str) -> None:
     if not argument:
         return
     room = getattr(ch, "room", None)
@@ -173,7 +174,7 @@ def do_mpzecho(ch: "Character", argument: str) -> None:
         _append_message(target, argument)
 
 
-def do_mpechoaround(ch: "Character", argument: str) -> None:
+def do_mpechoaround(ch: Character, argument: str) -> None:
     target_name, _, message = argument.partition(" ")
     if not target_name or not message.strip():
         return
@@ -187,7 +188,7 @@ def do_mpechoaround(ch: "Character", argument: str) -> None:
         _append_message(occupant, message.strip())
 
 
-def do_mpechoat(ch: "Character", argument: str) -> None:
+def do_mpechoat(ch: Character, argument: str) -> None:
     target_name, _, message = argument.partition(" ")
     if not target_name or not message.strip():
         return
@@ -197,7 +198,7 @@ def do_mpechoat(ch: "Character", argument: str) -> None:
     _append_message(victim, message.strip())
 
 
-def do_mpcall(ch: "Character", argument: str) -> None:
+def do_mpcall(ch: Character, argument: str) -> None:
     args = argument.split()
     if not args:
         return
@@ -214,7 +215,7 @@ def do_mpcall(ch: "Character", argument: str) -> None:
     mobprog.call_prog(vnum, ch, target, context=context)
 
 
-def do_mpdelay(ch: "Character", argument: str) -> None:
+def do_mpdelay(ch: Character, argument: str) -> None:
     parts = argument.split()
     delay = 0
     if parts:
@@ -222,14 +223,14 @@ def do_mpdelay(ch: "Character", argument: str) -> None:
             delay = int(parts[0])
         except ValueError:
             delay = 0
-    setattr(ch, "mprog_delay", max(0, delay))
+    ch.mprog_delay = max(0, delay)
 
 
-def do_mpcancel(ch: "Character", argument: str) -> None:
-    setattr(ch, "mprog_delay", 0)
+def do_mpcancel(ch: Character, argument: str) -> None:
+    ch.mprog_delay = 0
 
 
-def do_mpmload(ch: "Character", argument: str) -> None:
+def do_mpmload(ch: Character, argument: str) -> None:
     parts = argument.split()
     if not parts:
         return
@@ -245,20 +246,20 @@ def do_mpmload(ch: "Character", argument: str) -> None:
     mob = spawn_mob(vnum)
     if mob is None:
         return
-    setattr(mob, "is_npc", True)
+    mob.is_npc = True
     proto = getattr(mob, "prototype", None)
     default_pos = getattr(proto, "default_pos", getattr(mob, "position", None))
     if default_pos is not None:
-        setattr(mob, "default_pos", default_pos)
+        mob.default_pos = default_pos
     if not hasattr(mob, "messages"):
-        setattr(mob, "messages", [])
+        mob.messages = []
     programs = getattr(getattr(mob, "prototype", None), "mprogs", None)
     if programs is not None and not getattr(mob, "mob_programs", None):
-        setattr(mob, "mob_programs", list(programs))
+        mob.mob_programs = list(programs)
     room.add_mob(mob)
 
 
-def do_mpoload(ch: "Character", argument: str) -> None:
+def do_mpoload(ch: Character, argument: str) -> None:
     parts = argument.split()
     if not parts:
         return
@@ -288,21 +289,21 @@ def do_mpoload(ch: "Character", argument: str) -> None:
     inventory = getattr(ch, "inventory", None)
     if inventory is None:
         inventory = []
-        setattr(ch, "inventory", inventory)
+        ch.inventory = inventory
     inventory.append(obj)
 
 
-def _resolve_transfer_location(ch: "Character", token: str) -> "Room" | None:
+def _resolve_transfer_location(ch: Character, token: str) -> Room | None:
     if not token:
         return getattr(ch, "room", None)
     return _find_location(ch, token)
 
 
-def _transfer_character(ch: "Character", victim: "Character", dest: "Room") -> None:
+def _transfer_character(ch: Character, victim: Character, dest: Room) -> None:
     if getattr(victim, "room", None) is dest:
         return
     if getattr(victim, "fighting", None) is not None:
-        setattr(victim, "fighting", None)
+        victim.fighting = None
     current = getattr(victim, "room", None)
     if current is not None:
         remover = getattr(current, "remove_character", None)
@@ -316,16 +317,16 @@ def _transfer_character(ch: "Character", victim: "Character", dest: "Room") -> N
         victim.room = dest
 
 
-def do_mpgoto(ch: "Character", argument: str) -> None:
+def do_mpgoto(ch: Character, argument: str) -> None:
     destination = _find_location(ch, argument.strip())
     if destination is None:
         return
     if getattr(ch, "fighting", None) is not None:
-        setattr(ch, "fighting", None)
+        ch.fighting = None
     _move_to_room(ch, destination)
 
 
-def do_mptransfer(ch: "Character", argument: str) -> None:
+def do_mptransfer(ch: Character, argument: str) -> None:
     first, _, rest = argument.partition(" ")
     target_name = first.strip()
     location_token = rest.strip()
@@ -346,7 +347,7 @@ def do_mptransfer(ch: "Character", argument: str) -> None:
     _transfer_character(ch, victim, destination)
 
 
-def do_mpforce(ch: "Character", argument: str) -> None:
+def do_mpforce(ch: Character, argument: str) -> None:
     target_name, _, command = argument.partition(" ")
     if not target_name or not command.strip():
         return
@@ -364,7 +365,7 @@ def do_mpforce(ch: "Character", argument: str) -> None:
     process_command(victim, command)
 
 
-def do_mpkill(ch: "Character", argument: str) -> None:
+def do_mpkill(ch: Character, argument: str) -> None:
     target = _find_char_in_room(ch, argument.strip())
     if target is None:
         return
@@ -377,7 +378,7 @@ def do_mpkill(ch: "Character", argument: str) -> None:
     multi_hit(ch, target)
 
 
-def do_mpassist(ch: "Character", argument: str) -> None:
+def do_mpassist(ch: Character, argument: str) -> None:
     ally = _find_char_in_room(ch, argument.strip())
     if ally is None:
         return
@@ -389,7 +390,7 @@ def do_mpassist(ch: "Character", argument: str) -> None:
     multi_hit(ch, target)
 
 
-def _match_object(obj: "Object", token: str) -> bool:
+def _match_object(obj: Object, token: str) -> bool:
     proto = getattr(obj, "prototype", None)
     names: list[str] = []
     if proto is not None:
@@ -403,14 +404,14 @@ def _match_object(obj: "Object", token: str) -> bool:
     return any(name.startswith(token) or token in name for name in names)
 
 
-def do_mpjunk(ch: "Character", argument: str) -> None:
+def do_mpjunk(ch: Character, argument: str) -> None:
     token = argument.strip()
     if not token:
         return
     inventory = list(getattr(ch, "inventory", []) or [])
     equipment = dict(getattr(ch, "equipment", {}) or {})
 
-    def _remove(obj: "Object") -> None:
+    def _remove(obj: Object) -> None:
         if obj in inventory:
             inventory.remove(obj)
         for slot, equipped in list(equipment.items()):
@@ -420,26 +421,26 @@ def do_mpjunk(ch: "Character", argument: str) -> None:
     if token.lower() == "all":
         for obj in list(inventory):
             _remove(obj)
-        setattr(ch, "inventory", [])
-        setattr(ch, "equipment", equipment)
+        ch.inventory = []
+        ch.equipment = equipment
         return
     if token.lower().startswith("all."):
         suffix = token[4:]
         for obj in list(inventory):
             if _match_object(obj, suffix):
                 _remove(obj)
-        setattr(ch, "inventory", inventory)
-        setattr(ch, "equipment", equipment)
+        ch.inventory = inventory
+        ch.equipment = equipment
         return
     for obj in list(inventory):
         if _match_object(obj, token):
             _remove(obj)
             break
-    setattr(ch, "inventory", inventory)
-    setattr(ch, "equipment", equipment)
+    ch.inventory = inventory
+    ch.equipment = equipment
 
 
-def do_mpdamage(ch: "Character", argument: str) -> None:
+def do_mpdamage(ch: Character, argument: str) -> None:
     parts = argument.split()
     if len(parts) < 3:
         return
@@ -453,7 +454,7 @@ def do_mpdamage(ch: "Character", argument: str) -> None:
         low, high = high, low
     kill = bool(rest)
 
-    def _apply_damage(victim: "Character") -> None:
+    def _apply_damage(victim: Character) -> None:
         amount = rng_mm.number_range(low, high)
         if not kill:
             amount = min(amount, max(0, getattr(victim, "hit", 0)))
@@ -471,7 +472,7 @@ def do_mpdamage(ch: "Character", argument: str) -> None:
     _apply_damage(victim)
 
 
-def do_mpremove(ch: "Character", argument: str) -> None:
+def do_mpremove(ch: Character, argument: str) -> None:
     target_name, _, obj_token = argument.partition(" ")
     if not target_name or not obj_token.strip():
         return
@@ -486,17 +487,17 @@ def do_mpremove(ch: "Character", argument: str) -> None:
             vnum = int(obj_token.strip())
         except ValueError:
             return
-    new_inventory: list["Object"] = []
+    new_inventory: list[Object] = []
     for obj in inventory:
         proto = getattr(obj, "prototype", None)
         proto_vnum = getattr(proto, "vnum", None)
         if all_flag or (proto_vnum is not None and proto_vnum == vnum):
             continue
         new_inventory.append(obj)
-    setattr(victim, "inventory", new_inventory)
+    victim.inventory = new_inventory
 
 
-def do_mpflee(ch: "Character", argument: str) -> None:
+def do_mpflee(ch: Character, argument: str) -> None:
     if getattr(ch, "fighting", None) is not None:
         return
     room = getattr(ch, "room", None)
@@ -543,7 +544,7 @@ _COMMANDS: list[MobCommand] = [
 _COMMAND_LOOKUP = {cmd.name: cmd for cmd in _COMMANDS}
 
 
-def mob_interpret(ch: "Character", argument: str) -> None:
+def mob_interpret(ch: Character, argument: str) -> None:
     command_name, rest = _split_command(argument)
     if not command_name:
         return

@@ -1,9 +1,10 @@
 """One-time migration script to populate the database from .are files."""
-from mud.loaders import load_all_areas
-from mud.world.linking import link_exits
-from mud.registry import area_registry, room_registry, mob_registry, obj_registry
-from mud.db.session import SessionLocal, engine
+
 from mud.db import models
+from mud.db.session import SessionLocal, engine
+from mud.loaders import load_all_areas
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.world.linking import link_exits
 
 
 def migrate(area_list_path: str = "area/area.lst") -> None:

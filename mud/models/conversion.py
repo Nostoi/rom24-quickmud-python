@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import List, Dict, Tuple
-
+from mud.db.models import Character as DBCharacter
+from mud.db.models import ObjectInstance as DBObjectInstance
 from mud.models.object import Object
-from mud.db.models import Character as DBCharacter, ObjectInstance as DBObjectInstance
 from mud.registry import obj_registry
 
 
-def load_objects_for_character(db_char: DBCharacter) -> Tuple[List[Object], Dict[str, Object]]:
-    inventory: List[Object] = []
-    equipment: Dict[str, Object] = {}
+def load_objects_for_character(db_char: DBCharacter) -> tuple[list[Object], dict[str, Object]]:
+    inventory: list[Object] = []
+    equipment: dict[str, Object] = {}
 
     for inst in db_char.objects:
         proto = obj_registry.get(inst.prototype_vnum)

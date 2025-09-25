@@ -1,19 +1,19 @@
 from __future__ import annotations
 
+import os
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
-import os
 
 from mud.models.character import Character, PCData, character_registry
 from mud.models.json_io import dump_dataclass, load_dataclass
-from mud.spawning.obj_spawner import spawn_object
-from mud.registry import room_registry
-from mud.time import time_info, Sunlight
 from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
+from mud.registry import room_registry
+from mud.spawning.obj_spawner import spawn_object
+from mud.time import Sunlight, time_info
 
 
-def _normalize_int_list(values: Optional[Iterable[int]], length: int) -> List[int]:
+def _normalize_int_list(values: Iterable[int] | None, length: int) -> list[int]:
     """Return a list of ``length`` integers padded/truncated from ``values``."""
 
     normalized = [0] * length
@@ -61,19 +61,19 @@ class PlayerSave:
     true_sex: int = 0
     last_level: int = 0
     position: int = 0
-    armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
-    perm_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    mod_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    conditions: List[int] = field(default_factory=lambda: [0, 48, 48, 48])
+    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    perm_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    conditions: list[int] = field(default_factory=lambda: [0, 48, 48, 48])
     # ROM bitfields to preserve flags parity
     affected_by: int = 0
     wiznet: int = 0
-    room_vnum: Optional[int] = None
-    inventory: List[int] = field(default_factory=list)
-    equipment: Dict[str, int] = field(default_factory=dict)
-    aliases: Dict[str, str] = field(default_factory=dict)
+    room_vnum: int | None = None
+    inventory: list[int] = field(default_factory=list)
+    equipment: dict[str, int] = field(default_factory=dict)
+    aliases: dict[str, str] = field(default_factory=dict)
     board: str = DEFAULT_BOARD_NAME
-    last_notes: Dict[str, float] = field(default_factory=dict)
+    last_notes: dict[str, float] = field(default_factory=dict)
 
 
 PLAYERS_DIR = Path("data/players")
@@ -84,7 +84,7 @@ def save_character(char: Character) -> None:
     """Persist ``char`` to ``PLAYERS_DIR`` as JSON."""
     PLAYERS_DIR.mkdir(parents=True, exist_ok=True)
     default_conditions = [0, 48, 48, 48]
-    raw_conditions: List[int] = []
+    raw_conditions: list[int] = []
     pcdata = char.pcdata or PCData()
     raw_conditions = list(getattr(pcdata, "condition", []))
     conditions = default_conditions.copy()
@@ -146,7 +146,7 @@ def save_character(char: Character) -> None:
     os.replace(tmp_path, path)
 
 
-def load_character(name: str) -> Optional[Character]:
+def load_character(name: str) -> Character | None:
     """Load a character by ``name`` from ``PLAYERS_DIR``."""
     path = PLAYERS_DIR / f"{name.lower()}.json"
     if not path.exists():
@@ -239,9 +239,9 @@ def save_world() -> None:
             save_character(char)
 
 
-def load_world() -> List[Character]:
+def load_world() -> list[Character]:
     """Load all character files from ``PLAYERS_DIR``."""
-    chars: List[Character] = []
+    chars: list[Character] = []
     load_time_info()
     if not PLAYERS_DIR.exists():
         return chars
@@ -253,6 +253,7 @@ def load_world() -> List[Character]:
 
 
 # --- Time persistence ---
+
 
 @dataclass
 class TimeSave:

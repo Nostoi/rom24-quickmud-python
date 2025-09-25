@@ -1,5 +1,5 @@
 from mud.models.character import Character
-from mud.models.constants import Direction, RoomFlag, LEVEL_IMMORTAL
+from mud.models.constants import LEVEL_IMMORTAL, Direction, RoomFlag
 from mud.models.room import Exit, Room
 from mud.world import move_character
 

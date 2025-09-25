@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
+
 
 class Area(Base):
     __tablename__ = "areas"
@@ -11,6 +12,7 @@ class Area(Base):
     min_vnum = Column(Integer)
     max_vnum = Column(Integer)
     rooms = relationship("Room", back_populates="area")
+
 
 class Room(Base):
     __tablename__ = "rooms"
@@ -24,6 +26,7 @@ class Room(Base):
     area = relationship("Area", back_populates="rooms")
     exits = relationship("Exit", back_populates="room")
 
+
 class Exit(Base):
     __tablename__ = "exits"
     id = Column(Integer, primary_key=True)
@@ -31,6 +34,7 @@ class Exit(Base):
     direction = Column(String)
     to_room_vnum = Column(Integer)
     room = relationship("Room", back_populates="exits")
+
 
 class MobPrototype(Base):
     __tablename__ = "mob_prototypes"
@@ -41,6 +45,7 @@ class MobPrototype(Base):
     long_desc = Column(String)
     level = Column(Integer)
     alignment = Column(Integer)
+
 
 class ObjPrototype(Base):
     __tablename__ = "obj_prototypes"
@@ -77,10 +82,11 @@ class PlayerAccount(Base):
     is_admin = Column(Boolean, default=False)
 
     characters = relationship("Character", back_populates="player")
-    
+
     def set_password(self, password: str):
         """Set the password hash for this account."""
         from mud.security.hash_utils import hash_password
+
         self.password_hash = hash_password(password)
 
 
@@ -95,4 +101,3 @@ class Character(Base):
     player_id = Column(Integer, ForeignKey("player_accounts.id"))
     player = relationship("PlayerAccount", back_populates="characters")
     objects = relationship("ObjectInstance", back_populates="character")
-

@@ -1,7 +1,7 @@
 from mud import mobprog
-from mud.models.character import Character
 from mud.combat import attack_round, multi_hit
 from mud.combat.engine import stop_fighting
+from mud.models.character import Character
 
 
 def do_kill(char: Character, args: str) -> str:

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import IntFlag
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, Position
 from mud.utils import rng_mm
@@ -10,7 +11,6 @@ from mud.utils import rng_mm
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.models.mob import MobProgram
-    from mud.models.object import Object
 
 
 class Trigger(IntFlag):
@@ -63,9 +63,7 @@ class ProgramContext:
             self.call_level -= 1
 
     def record(self, command: str, argument: str, *, mob_command: bool = False) -> None:
-        self.results.append(
-            ExecutionResult(command=command, argument=argument, mob_command=mob_command)
-        )
+        self.results.append(ExecutionResult(command=command, argument=argument, mob_command=mob_command))
 
 
 MAX_NESTED_LEVEL = 12
@@ -74,22 +72,22 @@ IN_BLOCK = -1
 END_BLOCK = -2
 MAX_CALL_LEVEL = 5
 
-_PROGRAM_REGISTRY: dict[int, "MobProgram"] = {}
+_PROGRAM_REGISTRY: dict[int, MobProgram] = {}
 
 
-def _register_program(prog: "MobProgram") -> None:
+def _register_program(prog: MobProgram) -> None:
     vnum = int(getattr(prog, "vnum", 0) or 0)
     code = getattr(prog, "code", None)
     if vnum > 0 and code:
         _PROGRAM_REGISTRY[vnum] = prog
 
 
-def _get_registered_program(vnum: int) -> "MobProgram" | None:
+def _get_registered_program(vnum: int) -> MobProgram | None:
     return _PROGRAM_REGISTRY.get(int(vnum))
 
 
-def _get_programs(mob: object) -> list["MobProgram"]:
-    programs: list["MobProgram"] = []
+def _get_programs(mob: object) -> list[MobProgram]:
+    programs: list[MobProgram] = []
     direct = getattr(mob, "mob_programs", None)
     if direct:
         programs.extend(direct)
@@ -97,7 +95,7 @@ def _get_programs(mob: object) -> list["MobProgram"]:
     if proto:
         programs.extend(getattr(proto, "mprogs", []) or [])
     seen: set[int] = set()
-    unique: list["MobProgram"] = []
+    unique: list[MobProgram] = []
     for prog in programs:
         if prog is None or getattr(prog, "code", None) is None:
             continue
@@ -410,11 +408,7 @@ def _expand_arg(
             name = getattr(mob, "name", None) or getattr(mob, "short_descr", None) or "someone"
             substitution = str(name).split()[0]
         elif code == "I":
-            substitution = (
-                getattr(mob, "short_descr", None)
-                or getattr(mob, "name", None)
-                or "someone"
-            )
+            substitution = getattr(mob, "short_descr", None) or getattr(mob, "name", None) or "someone"
         elif code == "n":
             target = ch if hasattr(ch, "is_npc") else None
             if target and _can_see(mob, target):
@@ -424,11 +418,7 @@ def _expand_arg(
         elif code == "N":
             target = ch if hasattr(ch, "is_npc") else None
             if target and _can_see(mob, target):
-                substitution = (
-                    getattr(target, "short_descr", None)
-                    or getattr(target, "name", None)
-                    or someone
-                )
+                substitution = getattr(target, "short_descr", None) or getattr(target, "name", None) or someone
             else:
                 substitution = someone
         elif code == "r":
@@ -440,11 +430,7 @@ def _expand_arg(
         elif code == "R":
             pick = rch if rch else _get_random_char(mob)
             if pick and _can_see(mob, pick):
-                substitution = (
-                    getattr(pick, "short_descr", None)
-                    or getattr(pick, "name", None)
-                    or someone
-                )
+                substitution = getattr(pick, "short_descr", None) or getattr(pick, "name", None) or someone
             else:
                 substitution = someone
         elif code == "q":
@@ -456,11 +442,7 @@ def _expand_arg(
         elif code == "Q":
             target = getattr(mob, "mprog_target", None)
             if target and _can_see(mob, target):
-                substitution = (
-                    getattr(target, "short_descr", None)
-                    or getattr(target, "name", None)
-                    or someone
-                )
+                substitution = getattr(target, "short_descr", None) or getattr(target, "name", None) or someone
             else:
                 substitution = someone
         elif code == "j":
@@ -475,11 +457,7 @@ def _expand_arg(
         elif code == "T":
             target = arg2 if hasattr(arg2, "is_npc") else None
             if target and _can_see(mob, target):
-                substitution = (
-                    getattr(target, "short_descr", None)
-                    or getattr(target, "name", None)
-                    or someone
-                )
+                substitution = getattr(target, "short_descr", None) or getattr(target, "name", None) or someone
             else:
                 substitution = someone
         elif code == "e":
@@ -710,21 +688,14 @@ def _cmd_eval(
     if check == "isimmort":
         return bool(target_char and getattr(target_char, "is_immortal", lambda: False)())
     if check == "ischarm":
-        return bool(
-            target_char
-            and hasattr(target_char, "has_affect")
-            and target_char.has_affect(AffectFlag.CHARM)
-        )
+        return bool(target_char and hasattr(target_char, "has_affect") and target_char.has_affect(AffectFlag.CHARM))
     if check == "isfollow":
         if target_char is None:
             return False
         master = getattr(target_char, "master", None)
         return bool(master and getattr(master, "room", None) is getattr(target_char, "room", None))
     if check == "isactive":
-        return bool(
-            target_char
-            and int(getattr(target_char, "position", Position.STANDING)) > int(Position.SLEEPING)
-        )
+        return bool(target_char and int(getattr(target_char, "position", Position.STANDING)) > int(Position.SLEEPING))
     if check == "isdelay":
         return bool(target_char and int(getattr(target_char, "mprog_delay", 0) or 0) > 0)
     if check == "isvisible":
@@ -1009,12 +980,12 @@ def _execute_command(
         context.record(f"mob {sub_control}", sub_args, mob_command=True)
         had_context = hasattr(mob, "_mp_context")
         previous_context = getattr(mob, "_mp_context", None) if had_context else None
-        setattr(mob, "_mp_context", context)
+        mob._mp_context = context
         try:
             mob_cmds.mob_interpret(mob, expanded)
         finally:
             if had_context:
-                setattr(mob, "_mp_context", previous_context)
+                mob._mp_context = previous_context
             elif hasattr(mob, "_mp_context"):
                 delattr(mob, "_mp_context")
     else:
@@ -1098,7 +1069,7 @@ def _program_flow(
                 if level == 0 or cond[level]:
                     state[level] = IN_BLOCK
                     if getattr(mob, "mprog_target", None) is None and hasattr(ch, "is_npc"):
-                        setattr(mob, "mprog_target", ch)
+                        mob.mprog_target = ch
                     _execute_command(control, data, context, mob, ch, arg1, arg2, rch)
     finally:
         context.pop()
@@ -1136,8 +1107,9 @@ def _trigger_programs(
             break
     return context, fired
 
+
 def run_prog(
-    mob: "Character",
+    mob: Character,
     trigger: Trigger,
     *,
     actor: object | None = None,
@@ -1159,7 +1131,7 @@ def run_prog(
 
 def call_prog(
     vnum: int,
-    mob: "Character",
+    mob: Character,
     actor: object | None = None,
     arg1: object | None = None,
     arg2: object | None = None,
@@ -1191,7 +1163,7 @@ def call_prog(
 
 def mp_act_trigger(
     argument: str,
-    mob: "Character",
+    mob: Character,
     ch: object | None,
     arg1: object | None = None,
     arg2: object | None = None,
@@ -1210,7 +1182,7 @@ def mp_act_trigger(
 
 
 def mp_percent_trigger(
-    mob: "Character",
+    mob: Character,
     actor: object | None = None,
     arg1: object | None = None,
     arg2: object | None = None,
@@ -1246,7 +1218,7 @@ def mp_percent_trigger(
     return False
 
 
-def mp_bribe_trigger(mob: "Character", ch: object | None, amount: int) -> bool:
+def mp_bribe_trigger(mob: Character, ch: object | None, amount: int) -> bool:
     programs = _get_programs(mob)
     if not programs:
         return False
@@ -1276,7 +1248,7 @@ def mp_bribe_trigger(mob: "Character", ch: object | None, amount: int) -> bool:
     return False
 
 
-def mp_give_trigger(mob: "Character", ch: object | None, obj: object | None) -> bool:
+def mp_give_trigger(mob: Character, ch: object | None, obj: object | None) -> bool:
     programs = _get_programs(mob)
     if not programs or obj is None:
         return False
@@ -1313,7 +1285,7 @@ def mp_give_trigger(mob: "Character", ch: object | None, obj: object | None) -> 
     return False
 
 
-def mp_exit_trigger(ch: "Character", direction: Direction) -> bool:
+def mp_exit_trigger(ch: Character, direction: Direction) -> bool:
     room = getattr(ch, "room", None)
     if room is None:
         return False
@@ -1357,7 +1329,7 @@ def mp_exit_trigger(ch: "Character", direction: Direction) -> bool:
     return False
 
 
-def mp_greet_trigger(ch: "Character") -> None:
+def mp_greet_trigger(ch: Character) -> None:
     room = getattr(ch, "room", None)
     if room is None:
         return
@@ -1376,7 +1348,7 @@ def mp_greet_trigger(ch: "Character") -> None:
             mp_percent_trigger(mob, ch, trigger=Trigger.GRALL)
 
 
-def mp_hprct_trigger(mob: "Character", ch: object | None) -> bool:
+def mp_hprct_trigger(mob: Character, ch: object | None) -> bool:
     programs = _get_programs(mob)
     if not programs:
         return False
@@ -1409,37 +1381,37 @@ def mp_hprct_trigger(mob: "Character", ch: object | None) -> bool:
     return False
 
 
-def mp_random_trigger(mob: "Character") -> bool:
+def mp_random_trigger(mob: Character) -> bool:
     return mp_percent_trigger(mob, trigger=Trigger.RANDOM)
 
 
-def mp_delay_trigger(mob: "Character") -> bool:
+def mp_delay_trigger(mob: Character) -> bool:
     delay = int(getattr(mob, "mprog_delay", 0) or 0)
     if delay <= 0:
         return False
     delay -= 1
-    setattr(mob, "mprog_delay", delay)
+    mob.mprog_delay = delay
     if delay > 0:
         return False
-    setattr(mob, "mprog_delay", 0)
+    mob.mprog_delay = 0
     return mp_percent_trigger(mob, trigger=Trigger.DELAY)
 
 
-def mp_speech_trigger(argument: str, mob: "Character", ch: object | None) -> bool:
+def mp_speech_trigger(argument: str, mob: Character, ch: object | None) -> bool:
     return mp_act_trigger(argument, mob, ch, trigger=Trigger.SPEECH)
 
 
-def mp_fight_trigger(mob: "Character", ch: object | None) -> bool:
+def mp_fight_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.FIGHT)
 
 
-def mp_death_trigger(mob: "Character", ch: object | None) -> bool:
+def mp_death_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.DEATH)
 
 
-def mp_kill_trigger(mob: "Character", ch: object | None) -> bool:
+def mp_kill_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.KILL)
 
 
-def mp_surr_trigger(mob: "Character", ch: object | None) -> bool:
+def mp_surr_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.SURR)

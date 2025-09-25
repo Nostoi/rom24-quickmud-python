@@ -1,24 +1,23 @@
 from __future__ import annotations
+
 import asyncio
 
 from mud.account import (
-    load_character,
-    save_character,
     create_account,
-    login_with_host,
-    list_characters,
     create_character,
+    list_characters,
+    load_character,
+    login_with_host,
+    save_character,
 )
 from mud.commands import process_command
-from mud.net.session import Session, SESSIONS
 from mud.net.protocol import send_to_char
+from mud.net.session import SESSIONS, Session
 from mud.security import bans
 from mud.security.bans import BanFlag
 
 
-async def handle_connection(
-    reader: asyncio.StreamReader, writer: asyncio.StreamWriter
-) -> None:
+async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     addr = writer.get_extra_info("peername")
     host_for_ban = None
     if isinstance(addr, tuple) and addr:
@@ -49,9 +48,7 @@ async def handle_connection(
             # Enforce site/account bans at login time
             account = login_with_host(username, password, host_for_ban)
             if not account:
-                permit_host = bool(
-                    host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT)
-                )
+                permit_host = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
                 if host_for_ban and not permit_host:
                     if bans.is_host_banned(host_for_ban, BanFlag.ALL):
                         writer.write(b"Your site has been banned from this mud.\r\n")
@@ -70,9 +67,7 @@ async def handle_connection(
         # Character selection / creation
         chars = list_characters(account)
         if chars:
-            writer.write(
-                ("Characters: " + ", ".join(chars) + "\r\n").encode()
-            )
+            writer.write(("Characters: " + ", ".join(chars) + "\r\n").encode())
         writer.write(b"Character: ")
         await writer.drain()
         char_data = await reader.readline()
@@ -130,14 +125,10 @@ async def handle_connection(
                     response = process_command(char, command)
                     await send_to_char(char, response)
                 except Exception as e:
-                    print(
-                        "[ERROR] Command processing failed for "
-                        f"'{command}': {e}"
-                    )
+                    print(f"[ERROR] Command processing failed for '{command}': {e}")
                     await send_to_char(
                         char,
-                        "Sorry, there was an error processing that "
-                        "command.",
+                        "Sorry, there was an error processing that command.",
                     )
 
                 # flush broadcast messages queued on character
@@ -152,10 +143,7 @@ async def handle_connection(
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(
-                    "[ERROR] Connection loop error for "
-                    f"{session.name if session else 'unknown'}: {e}"
-                )
+                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {e}")
                 break
 
     except Exception as e:
@@ -183,6 +171,4 @@ async def handle_connection(
         except Exception as e:
             print(f"[ERROR] Failed to close connection: {e}")
 
-        print(
-            f"[DISCONNECT] {addr} as {session.name if session else 'unknown'}"
-        )
+        print(f"[DISCONNECT] {addr} as {session.name if session else 'unknown'}")

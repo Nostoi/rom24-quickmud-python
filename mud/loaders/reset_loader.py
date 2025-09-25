@@ -1,14 +1,15 @@
-from typing import Iterator, List
+from collections.abc import Iterator
 
-from .base_loader import BaseTokenizer
 from mud.models.room_json import ResetJson
 
+from .base_loader import BaseTokenizer
 
-def _iter_reset_numbers(tokens: List[str]) -> Iterator[int]:
+
+def _iter_reset_numbers(tokens: list[str]) -> Iterator[int]:
     """Yield integer tokens until a comment marker is reached."""
 
     for token in tokens:
-        if token.startswith('*'):
+        if token.startswith("*"):
             break
         try:
             yield int(token)
@@ -23,9 +24,9 @@ def load_resets(tokenizer: BaseTokenizer, area):
         line = tokenizer.next_line()
         if line is None:
             break
-        if line == 'S':
+        if line == "S":
             break
-        if line == '$' or line.startswith('#'):
+        if line == "$" or line.startswith("#"):
             # allow outer loader to handle following sections
             tokenizer.index -= 1
             break
@@ -33,7 +34,7 @@ def load_resets(tokenizer: BaseTokenizer, area):
         if not parts:
             continue
         command = parts[0][0].upper()
-        if command == 'S':
+        if command == "S":
             break
 
         numbers = list(_iter_reset_numbers(parts[1:]))
@@ -45,11 +46,11 @@ def load_resets(tokenizer: BaseTokenizer, area):
         next(number_iter, None)  # Skip if_flag
         arg1 = next(number_iter, 0)
         arg2 = next(number_iter, 0)
-        if command in {'G', 'R'}:
+        if command in {"G", "R"}:
             arg3 = 0
         else:
             arg3 = next(number_iter, 0)
-        arg4 = next(number_iter, 0) if command in {'P', 'M'} else 0
+        arg4 = next(number_iter, 0) if command in {"P", "M"} else 0
 
         reset = ResetJson(command=command, arg1=arg1, arg2=arg2, arg3=arg3, arg4=arg4)
         area.resets.append(reset)

@@ -1,28 +1,28 @@
 from __future__ import annotations
 
 import json
-from math import ceil
+from collections.abc import Callable
 from importlib import import_module
+from math import ceil
 from pathlib import Path
 from random import Random
-from typing import Callable, Dict, Optional
 
 from mud.advancement import gain_exp
 from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models import Skill, SkillJson
 from mud.models.constants import AffectFlag
-from mud.utils import rng_mm
 from mud.models.json_io import dataclass_from_dict
 from mud.skills.metadata import ROM_SKILL_METADATA
+from mud.utils import rng_mm
 
 
 class SkillRegistry:
     """Load skill metadata from JSON and dispatch handlers."""
 
-    def __init__(self, rng: Optional[Random] = None) -> None:
-        self.skills: Dict[str, Skill] = {}
-        self.handlers: Dict[str, Callable] = {}
+    def __init__(self, rng: Random | None = None) -> None:
+        self.skills: dict[str, Skill] = {}
+        self.handlers: dict[str, Callable] = {}
         self.rng = rng or Random()
 
     def load(self, path: Path) -> None:
@@ -88,7 +88,7 @@ class SkillRegistry:
         self._apply_wait_state(caster, lag)
         caster.mana -= skill.mana_cost
 
-        learned: Optional[int]
+        learned: int | None
         try:
             learned_val = caster.skills.get(name)
             learned = int(learned_val) if learned_val is not None else None
@@ -174,9 +174,7 @@ class SkillRegistry:
             if rng_mm.number_percent() < improve_chance:
                 increment = rng_mm.number_range(1, 3)
                 caster.skills[name] = min(adept, learned + increment)
-                caster.messages.append(
-                    f"You learn from your mistakes, and your {skill.name} skill improves."
-                )
+                caster.messages.append(f"You learn from your mistakes, and your {skill.name} skill improves.")
                 gain_exp(caster, 2 * rating)
 
     def tick(self, character) -> None:

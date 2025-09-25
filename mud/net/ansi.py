@@ -1,4 +1,5 @@
 """ANSI color code translation for ROM-style tokens."""
+
 from __future__ import annotations
 
 ANSI_CODES: dict[str, str] = {

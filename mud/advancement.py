@@ -30,6 +30,7 @@ LEVEL_BONUS = {
 PRACTICES_PER_LEVEL = 2
 TRAINS_PER_LEVEL = 1
 
+
 def exp_per_level(char: Character) -> int:
     """Base experience required for a single level."""
     class_mod = CLASS_XP_MOD.get(char.ch_class, 1.0)
@@ -46,6 +47,7 @@ def advance_level(char: Character) -> None:
     char.practice += PRACTICES_PER_LEVEL
     char.train += TRAINS_PER_LEVEL
 
+
 def gain_exp(char: Character, amount: int) -> None:
     """Grant experience and handle level ups.
 
@@ -59,4 +61,3 @@ def gain_exp(char: Character, amount: int) -> None:
     while char.exp >= exp_per_level(char) * (char.level + 1):
         char.level += 1
         advance_level(char)
-

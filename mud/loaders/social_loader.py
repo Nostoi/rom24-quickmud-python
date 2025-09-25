@@ -9,7 +9,7 @@ from mud.models.social_json import SocialJson
 
 def load_socials(path: str) -> None:
     """Load socials from a JSON file into the registry."""
-    with open(Path(path), "r", encoding="utf-8") as f:
+    with open(Path(path), encoding="utf-8") as f:
         data = json.load(f)
     for entry in data:
         sj = SocialJson(**entry)

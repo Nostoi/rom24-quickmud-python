@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 import asyncio
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from mud.models.character import Character, character_registry
 from mud.net.ansi import translate_ansi
@@ -12,7 +13,7 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
     if writer is None:
         return
 
-    if isinstance(message, (list, tuple)):
+    if isinstance(message, list | tuple):
         text = "\r\n".join(str(m) for m in message)
     else:
         text = str(message)
@@ -27,7 +28,7 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
 def broadcast_room(
     room,
     message: str,
-    exclude: Optional[Character] = None,
+    exclude: Character | None = None,
 ) -> None:
     for char in list(getattr(room, "people", [])):
         if char is exclude:
@@ -43,7 +44,7 @@ def broadcast_room(
 def broadcast_global(
     message: str,
     channel: str,
-    exclude: Optional[Character] = None,
+    exclude: Character | None = None,
 ) -> None:
     for char in list(character_registry):
         if char is exclude:

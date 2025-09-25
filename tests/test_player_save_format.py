@@ -1,22 +1,22 @@
 import mud.persistence as persistence
 from mud.models.character import character_registry
-from mud.scripts.convert_player_to_json import convert_player
 from mud.models.player_json import PlayerJson
+from mud.scripts.convert_player_to_json import convert_player
 from mud.world import create_test_character, initialize_world
 
 
 def _bit(ch: str) -> int:
-    return 1 << (ord(ch) - ord('A'))
+    return 1 << (ord(ch) - ord("A"))
 
 
 def _lower_bit(ch: str) -> int:
-    return 1 << (26 + ord(ch) - ord('a'))
+    return 1 << (26 + ord(ch) - ord("a"))
 
 
 def test_convert_legacy_player_flags_roundtrip():
-    pj = convert_player('player/Shemp')
+    pj = convert_player("player/Shemp")
     # Basic parsed fields
-    assert pj.name == 'Shemp'
+    assert pj.name == "Shemp"
     assert pj.level == 2
     assert pj.race == 0
     assert pj.ch_class == 3
@@ -48,10 +48,10 @@ def test_convert_legacy_player_flags_roundtrip():
     assert pj.affected_by == 0
     assert pj.wiznet == 0
     # Flags: Act QT => Q and T set
-    assert pj.plr_flags & _bit('Q')
-    assert pj.plr_flags & _bit('T')
+    assert pj.plr_flags & _bit("Q")
+    assert pj.plr_flags & _bit("T")
     # Comm NOP => N,O,P set
-    for ch in 'NOP':
+    for ch in "NOP":
         assert pj.comm_flags & _bit(ch)
     # Round-trip through dict preserves exact integers
     data = pj.to_dict()
@@ -64,26 +64,26 @@ def test_convert_legacy_player_flags_roundtrip():
 
 
 def test_convert_player_accepts_zero_flag_sentinel(tmp_path):
-    fixture = tmp_path / 'zero'
+    fixture = tmp_path / "zero"
     fixture.write_text(
-        '\n'.join(
+        "\n".join(
             [
-                '#PLAYER',
-                'Name Zero~',
-                'Race human~',
-                'Sex  1',
-                'Cla  3',
-                'Levl 2',
-                'Room 3001',
-                'HMV  1 2 3 4 5 6',
-                'Act  0',
-                'AfBy 0',
-                'Comm 0',
-                'Wizn 0',
-                '#END',
+                "#PLAYER",
+                "Name Zero~",
+                "Race human~",
+                "Sex  1",
+                "Cla  3",
+                "Levl 2",
+                "Room 3001",
+                "HMV  1 2 3 4 5 6",
+                "Act  0",
+                "AfBy 0",
+                "Comm 0",
+                "Wizn 0",
+                "#END",
             ]
         ),
-        encoding='latin-1',
+        encoding="latin-1",
     )
 
     pj = convert_player(fixture)
@@ -94,115 +94,119 @@ def test_convert_player_accepts_zero_flag_sentinel(tmp_path):
 
 
 def test_convert_player_decodes_lowercase_flags(tmp_path):
-    fixture = tmp_path / 'mixed'
+    fixture = tmp_path / "mixed"
     fixture.write_text(
-        '\n'.join(
+        "\n".join(
             [
-                '#PLAYER',
-                'Name Lower~',
-                'Race human~',
-                'Sex  1',
-                'Cla  3',
-                'Levl 2',
-                'Room 3001',
-                'HMV  1 2 3 4 5 6',
-                'Act  Qa',
-                'AfBy d',
-                'Comm bc',
-                'Wizn ef',
-                '#END',
+                "#PLAYER",
+                "Name Lower~",
+                "Race human~",
+                "Sex  1",
+                "Cla  3",
+                "Levl 2",
+                "Room 3001",
+                "HMV  1 2 3 4 5 6",
+                "Act  Qa",
+                "AfBy d",
+                "Comm bc",
+                "Wizn ef",
+                "#END",
             ]
         ),
-        encoding='latin-1',
+        encoding="latin-1",
     )
 
     pj = convert_player(fixture)
-    expected_act = _bit('Q') | _lower_bit('a')
-    expected_comm = _lower_bit('b') | _lower_bit('c')
+    expected_act = _bit("Q") | _lower_bit("a")
+    expected_comm = _lower_bit("b") | _lower_bit("c")
     assert pj.plr_flags == expected_act
-    assert pj.affected_by == _lower_bit('d')
+    assert pj.affected_by == _lower_bit("d")
     assert pj.comm_flags == expected_comm
-    assert pj.wiznet == (_lower_bit('e') | _lower_bit('f'))
+    assert pj.wiznet == (_lower_bit("e") | _lower_bit("f"))
 
 
 def test_missing_header_footer_and_bad_hmv(tmp_path):
     # Missing #PLAYER header
-    bad1 = tmp_path / 'bad1'
-    bad1.write_text('Name Bob~\n#END\n', encoding='latin-1')
+    bad1 = tmp_path / "bad1"
+    bad1.write_text("Name Bob~\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad1))
-        assert False, 'expected ValueError for missing header'
+        assert False, "expected ValueError for missing header"
     except ValueError as e:
-        assert 'missing #PLAYER' in str(e)
+        assert "missing #PLAYER" in str(e)
 
     # Missing #END footer
-    bad2 = tmp_path / 'bad2'
-    bad2.write_text('#PLAYER\nName Bob~\n', encoding='latin-1')
+    bad2 = tmp_path / "bad2"
+    bad2.write_text("#PLAYER\nName Bob~\n", encoding="latin-1")
     try:
         convert_player(str(bad2))
-        assert False, 'expected ValueError for missing footer'
+        assert False, "expected ValueError for missing footer"
     except ValueError as e:
-        assert 'missing #END' in str(e)
+        assert "missing #END" in str(e)
 
     # Bad HMV width (not 6 ints)
-    bad3 = tmp_path / 'bad3'
-    bad3.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3\n#END\n', encoding='latin-1')
+    bad3 = tmp_path / "bad3"
+    bad3.write_text("#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad3))
-        assert False, 'expected ValueError for HMV width'
+        assert False, "expected ValueError for HMV width"
     except ValueError as e:
-        assert 'HMV' in str(e)
+        assert "HMV" in str(e)
 
     # Bad Act letters
-    bad4 = tmp_path / 'bad4'
-    bad4.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nAct Q1\n#END\n', encoding='latin-1')
+    bad4 = tmp_path / "bad4"
+    bad4.write_text("#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nAct Q1\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad4))
-        assert False, 'expected ValueError for Act flags'
+        assert False, "expected ValueError for Act flags"
     except ValueError as e:
-        assert 'Act flags' in str(e)
+        assert "Act flags" in str(e)
 
     # Bad Cnd width (not 4 ints)
-    bad5 = tmp_path / 'bad5'
-    bad5.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nCnd 1 2 3\n#END\n', encoding='latin-1')
+    bad5 = tmp_path / "bad5"
+    bad5.write_text("#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nCnd 1 2 3\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad5))
-        assert False, 'expected ValueError for Cnd width'
+        assert False, "expected ValueError for Cnd width"
     except ValueError as e:
-        assert 'Cnd' in str(e)
+        assert "Cnd" in str(e)
 
 
 def test_invalid_level_and_room(tmp_path):
-    bad = tmp_path / 'bad'
-    bad.write_text('#PLAYER\nName Bob~\nLevl X\nRoom 3001\nHMV 1 2 3 4 5 6\n#END\n', encoding='latin-1')
+    bad = tmp_path / "bad"
+    bad.write_text("#PLAYER\nName Bob~\nLevl X\nRoom 3001\nHMV 1 2 3 4 5 6\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad))
         assert False
     except ValueError as e:
-        assert 'invalid Levl' in str(e)
+        assert "invalid Levl" in str(e)
 
-    bad2 = tmp_path / 'bad2'
-    bad2.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom ROOM\nHMV 1 2 3 4 5 6\n#END\n', encoding='latin-1')
+    bad2 = tmp_path / "bad2"
+    bad2.write_text("#PLAYER\nName Bob~\nLevl 1\nRoom ROOM\nHMV 1 2 3 4 5 6\n#END\n", encoding="latin-1")
     try:
         convert_player(str(bad2))
         assert False
     except ValueError as e:
-        assert 'invalid Room' in str(e)
+        assert "invalid Room" in str(e)
 
 
 def test_multi_letter_flags(tmp_path):
-    good = tmp_path / 'good'
-    good.write_text('#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nAct ABC\nComm NOP\n#END\n', encoding='latin-1')
+    good = tmp_path / "good"
+    good.write_text(
+        "#PLAYER\nName Bob~\nLevl 1\nRoom 3001\nHMV 1 2 3 4 5 6\nAct ABC\nComm NOP\n#END\n", encoding="latin-1"
+    )
     pj = convert_player(str(good))
+
     def bit(ch):
-        return 1 << (ord(ch) - ord('A'))
-    assert pj.plr_flags == bit('A') | bit('B') | bit('C')
-    assert pj.comm_flags == bit('N') | bit('O') | bit('P')
+        return 1 << (ord(ch) - ord("A"))
+
+    assert pj.plr_flags == bit("A") | bit("B") | bit("C")
+    assert pj.comm_flags == bit("N") | bit("O") | bit("P")
 
 
 def test_player_json_field_order():
     pj = PlayerJson(
-        name='X',
+        name="X",
         level=1,
         race=2,
         ch_class=3,
@@ -241,10 +245,47 @@ def test_player_json_field_order():
     data = pj.to_dict()
     keys = list(data.keys())
     expected = [
-        'name','level','race','ch_class','sex','trust','security','hit','max_hit','mana','max_mana','move','max_move',
-        'perm_hit','perm_mana','perm_move','gold','silver','exp','practice','train','saving_throw','alignment','hitroll',
-        'damroll','wimpy','points','true_sex','last_level','position','room_vnum','conditions','armor','perm_stat','mod_stat',
-        'inventory','equipment','plr_flags','affected_by','comm_flags','wiznet'
+        "name",
+        "level",
+        "race",
+        "ch_class",
+        "sex",
+        "trust",
+        "security",
+        "hit",
+        "max_hit",
+        "mana",
+        "max_mana",
+        "move",
+        "max_move",
+        "perm_hit",
+        "perm_mana",
+        "perm_move",
+        "gold",
+        "silver",
+        "exp",
+        "practice",
+        "train",
+        "saving_throw",
+        "alignment",
+        "hitroll",
+        "damroll",
+        "wimpy",
+        "points",
+        "true_sex",
+        "last_level",
+        "position",
+        "room_vnum",
+        "conditions",
+        "armor",
+        "perm_stat",
+        "mod_stat",
+        "inventory",
+        "equipment",
+        "plr_flags",
+        "affected_by",
+        "comm_flags",
+        "wiznet",
     ]
     assert keys == expected
 
@@ -254,12 +295,12 @@ def test_condition_roundtrip(tmp_path):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     try:
-        initialize_world('area/area.lst')
-        char = create_test_character('Conditioned', 3001)
+        initialize_world("area/area.lst")
+        char = create_test_character("Conditioned", 3001)
         char.pcdata.condition = [3, 40, 22, 17]
         persistence.save_character(char)
         character_registry.clear()
-        loaded = persistence.load_character('Conditioned')
+        loaded = persistence.load_character("Conditioned")
         assert loaded is not None
         assert loaded.pcdata.condition == [3, 40, 22, 17]
     finally:
@@ -272,9 +313,9 @@ def test_identity_fields_roundtrip(tmp_path):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     try:
-        initialize_world('area/area.lst')
+        initialize_world("area/area.lst")
         character_registry.clear()
-        char = create_test_character('Identity', 3001)
+        char = create_test_character("Identity", 3001)
         char.race = 2
         char.ch_class = 3
         char.sex = 1
@@ -282,7 +323,7 @@ def test_identity_fields_roundtrip(tmp_path):
         char.pcdata.security = 9
         persistence.save_character(char)
         character_registry.clear()
-        loaded = persistence.load_character('Identity')
+        loaded = persistence.load_character("Identity")
         assert loaded is not None
         assert loaded.race == 2
         assert loaded.ch_class == 3
@@ -299,9 +340,9 @@ def test_hmvp_creation_stats_roundtrip(tmp_path):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     try:
-        initialize_world('area/area.lst')
+        initialize_world("area/area.lst")
         character_registry.clear()
-        char = create_test_character('HMVP', 3001)
+        char = create_test_character("HMVP", 3001)
         char.pcdata.perm_hit = 120
         char.pcdata.perm_mana = 90
         char.pcdata.perm_move = 80
@@ -310,7 +351,7 @@ def test_hmvp_creation_stats_roundtrip(tmp_path):
         char.pcdata.last_level = 12
         persistence.save_character(char)
         character_registry.clear()
-        loaded = persistence.load_character('HMVP')
+        loaded = persistence.load_character("HMVP")
         assert loaded is not None
         assert loaded.pcdata.perm_hit == 120
         assert loaded.pcdata.perm_mana == 90
@@ -328,9 +369,9 @@ def test_combat_stats_roundtrip(tmp_path):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     try:
-        initialize_world('area/area.lst')
+        initialize_world("area/area.lst")
         character_registry.clear()
-        char = create_test_character('Combatant', 3001)
+        char = create_test_character("Combatant", 3001)
         char.practice = 4
         char.train = 2
         char.saving_throw = -5
@@ -343,7 +384,7 @@ def test_combat_stats_roundtrip(tmp_path):
         char.armor = [42, 33, 21, 15]
         persistence.save_character(char)
         character_registry.clear()
-        loaded = persistence.load_character('Combatant')
+        loaded = persistence.load_character("Combatant")
         assert loaded is not None
         assert loaded.practice == 4
         assert loaded.train == 2

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.social import social_registry, expand_placeholders
+from mud.models.social import expand_placeholders, social_registry
 
 
 def perform_social(char: Character, name: str, arg: str) -> str:

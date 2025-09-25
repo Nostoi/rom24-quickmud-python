@@ -4,7 +4,7 @@ from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
 from mud.models.constants import ItemType
-from mud.registry import shop_registry, area_registry, room_registry, mob_registry, obj_registry
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
 
 
 def clear_registries() -> None:
@@ -39,7 +39,7 @@ def convert_shops(area_list: str) -> list[dict]:
     """Load areas listed in ``area_list`` and return shop dicts."""
     clear_registries()
     area_dir = Path(area_list).parent
-    with open(area_list, "r", encoding="latin-1") as f:
+    with open(area_list, encoding="latin-1") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("$"):
@@ -51,9 +51,7 @@ def convert_shops(area_list: str) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Convert #SHOPS to JSON")
     parser.add_argument("area_list", help="Path to area.lst")
-    parser.add_argument(
-        "--out", default=Path("data/shops.json"), type=Path, help="Output JSON file"
-    )
+    parser.add_argument("--out", default=Path("data/shops.json"), type=Path, help="Output JSON file")
     args = parser.parse_args()
     data = convert_shops(args.area_list)
     args.out.parent.mkdir(parents=True, exist_ok=True)

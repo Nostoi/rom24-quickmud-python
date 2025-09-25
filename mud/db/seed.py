@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from mud.db.models import Character, PlayerAccount
 from mud.db.session import SessionLocal
-from mud.db.models import PlayerAccount, Character
 from mud.security.hash_utils import hash_password
 
 

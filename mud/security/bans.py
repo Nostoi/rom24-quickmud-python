@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import IntFlag
 from pathlib import Path
-from typing import Iterable, List, Optional, Set
 
 
 class BanFlag(IntFlag):
@@ -59,8 +59,8 @@ class BanEntry:
         return text
 
 
-_ban_entries: List[BanEntry] = []
-_banned_accounts: Set[str] = set()
+_ban_entries: list[BanEntry] = []
+_banned_accounts: set[str] = set()
 
 # Default storage location, mirroring ROM's BAN_FILE semantics.
 BANS_FILE = Path("data/bans.txt")
@@ -83,9 +83,7 @@ def _parse_host_pattern(host: str) -> tuple[str, BanFlag]:
     return value.strip(), flags
 
 
-def _store_entry(
-    pattern: str, flags: BanFlag, level: int, *, replace_existing: bool
-) -> None:
+def _store_entry(pattern: str, flags: BanFlag, level: int, *, replace_existing: bool) -> None:
     """Append a ban entry while optionally replacing existing patterns."""
 
     if not pattern:
@@ -95,7 +93,7 @@ def _store_entry(
 
     if replace_existing:
         existing_level = level
-        retained: List[BanEntry] = []
+        retained: list[BanEntry] = []
         for entry in _ban_entries:
             if entry.pattern != pattern:
                 retained.append(entry)
@@ -106,10 +104,7 @@ def _store_entry(
         _ban_entries[:] = retained
     else:
         for entry in _ban_entries:
-            if (
-                entry.pattern == pattern
-                and (entry.flags & (BanFlag.PREFIX | BanFlag.SUFFIX)) == prefix_suffix
-            ):
+            if entry.pattern == pattern and (entry.flags & (BanFlag.PREFIX | BanFlag.SUFFIX)) == prefix_suffix:
                 entry.flags = flags
                 if level:
                     entry.level = level
@@ -121,7 +116,7 @@ def _store_entry(
 def add_banned_host(
     host: str,
     *,
-    flags: Optional[Iterable[BanFlag] | BanFlag] = None,
+    flags: Iterable[BanFlag] | BanFlag | None = None,
     level: int = 0,
 ) -> None:
     pattern, wildcard_flags = _parse_host_pattern(host)
@@ -157,7 +152,7 @@ def is_host_banned(host: str | None, ban_type: BanFlag = BanFlag.ALL) -> bool:
     return False
 
 
-def get_ban_entries() -> List[BanEntry]:
+def get_ban_entries() -> list[BanEntry]:
     return list(_ban_entries)
 
 

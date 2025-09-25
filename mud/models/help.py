@@ -14,7 +14,7 @@ class HelpEntry:
     level: int = 0
 
     @classmethod
-    def from_json(cls, data: HelpJson) -> "HelpEntry":
+    def from_json(cls, data: HelpJson) -> HelpEntry:
         return cls(**data.to_dict())
 
 

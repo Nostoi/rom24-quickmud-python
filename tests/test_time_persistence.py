@@ -1,10 +1,10 @@
-from mud.time import time_info, Sunlight
 import mud.persistence as persistence
+from mud.time import Sunlight, time_info
 
 
 def test_time_info_persist_roundtrip(tmp_path):
     # Point time file to temp location
-    persistence.TIME_FILE = tmp_path / 'time.json'
+    persistence.TIME_FILE = tmp_path / "time.json"
 
     # Set a distinctive time state
     time_info.hour = 23

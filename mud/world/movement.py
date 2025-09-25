@@ -1,28 +1,28 @@
 from __future__ import annotations
-from typing import Dict, Iterable
 
+from collections.abc import Iterable
+
+from mud import mobprog
 from mud.models.character import Character
 from mud.models.constants import (
-    Direction,
-    Sector,
-    AffectFlag,
-    ItemType,
-    RoomFlag,
-    ActFlag,
-    Position,
-    LEVEL_HERO,
+    CLASS_GUILD_ROOMS,
     EX_CLOSED,
     EX_NOPASS,
-    CLASS_GUILD_ROOMS,
+    LEVEL_HERO,
+    ActFlag,
+    AffectFlag,
+    Direction,
+    ItemType,
+    Position,
+    RoomFlag,
+    Sector,
 )
 from mud.models.room import Exit, Room
 from mud.net.protocol import broadcast_room
 from mud.world.look import look
 from mud.world.vision import can_see_room
-from mud import mobprog
 
-
-dir_map: Dict[str, Direction] = {
+dir_map: dict[str, Direction] = {
     "north": Direction.NORTH,
     "east": Direction.EAST,
     "south": Direction.SOUTH,
@@ -35,9 +35,32 @@ dir_map: Dict[str, Direction] = {
 # ROM str_app carry table (carry column only) for STR 0..25.
 # Source: src/const.c:str_app (third field), multiplied by 10 in handler.c.
 _STR_CARRY = [
-    0,   # 0
-    3, 3, 10, 25, 55,  # 1..5
-    80, 90, 100, 100, 115, 115, 130, 130, 140, 150, 165, 180, 200, 225, 250, 300, 350, 400, 450, 500,
+    0,  # 0
+    3,
+    3,
+    10,
+    25,
+    55,  # 1..5
+    80,
+    90,
+    100,
+    100,
+    115,
+    115,
+    130,
+    130,
+    140,
+    150,
+    165,
+    180,
+    200,
+    225,
+    250,
+    300,
+    350,
+    400,
+    450,
+    500,
 ]
 
 
@@ -208,12 +231,12 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
 
     if not char.is_npc:
         # Air requires flying unless immortal/admin
-        if (from_sector == Sector.AIR or to_sector == Sector.AIR):
+        if from_sector == Sector.AIR or to_sector == Sector.AIR:
             if not char.is_admin and not bool(char.affected_by & AffectFlag.FLYING):
                 return "You can't fly."
 
         # Water (no swim) requires a boat unless flying or immortal
-        if (from_sector == Sector.WATER_NOSWIM or to_sector == Sector.WATER_NOSWIM):
+        if from_sector == Sector.WATER_NOSWIM or to_sector == Sector.WATER_NOSWIM:
             if not char.is_admin and not bool(char.affected_by & AffectFlag.FLYING):
 
                 def has_boat(objs: Iterable):
@@ -223,9 +246,7 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
                             return True
                     return False
 
-                has_boat_item = has_boat(char.inventory) or has_boat(
-                    getattr(char, "equipment", {}).values()
-                )
+                has_boat_item = has_boat(char.inventory) or has_boat(getattr(char, "equipment", {}).values())
                 if not has_boat_item:
                     return "You need a boat to go there."
 
@@ -258,10 +279,7 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         char.move -= move_cost
 
     char_name = char.name or "someone"
-    show_movement = not (
-        char.has_affect(AffectFlag.SNEAK)
-        or getattr(char, "invis_level", 0) >= LEVEL_HERO
-    )
+    show_movement = not (char.has_affect(AffectFlag.SNEAK) or getattr(char, "invis_level", 0) >= LEVEL_HERO)
 
     if show_movement:
         broadcast_room(current_room, f"{char_name} leaves {dir_key}.", exclude=char)

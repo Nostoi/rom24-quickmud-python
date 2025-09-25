@@ -15,4 +15,3 @@ def test_imm_res_vuln_flags_are_bitwise_compatible():
     imm = int(ImmFlag.FIRE | ImmFlag.COLD)
     ref = int(DefenseBit.FIRE) | int(DefenseBit.COLD)
     assert imm == ref
-

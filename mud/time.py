@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List
 
 
 class Sunlight(IntEnum):
@@ -20,9 +19,9 @@ class TimeInfo:
     year: int = 0
     sunlight: Sunlight = Sunlight.DARK
 
-    def advance_hour(self) -> List[str]:
+    def advance_hour(self) -> list[str]:
         """Advance time by one hour and return broadcast messages."""
-        messages: List[str] = []
+        messages: list[str] = []
         self.hour += 1
         if self.hour >= 24:
             self.hour = 0

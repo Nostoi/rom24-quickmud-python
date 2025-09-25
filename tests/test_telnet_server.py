@@ -1,10 +1,11 @@
 import asyncio
-import pytest
 from contextlib import suppress
 
-from mud.net.telnet_server import create_server
+import pytest
+
 from mud.db.models import Base
 from mud.db.session import engine
+from mud.net.telnet_server import create_server
 
 
 def setup_module(module):
@@ -37,12 +38,7 @@ def test_telnet_server_handles_look_command():
             await writer.drain()
             output = await reader.readuntil(b"> ")
             text = output.decode()
-            assert (
-                "The Temple Of Mota" in text
-                or "Limbo" in text
-                or "Void" in text
-                or "void" in text
-            )
+            assert "The Temple Of Mota" in text or "Limbo" in text or "Void" in text or "void" in text
             writer.close()
             await writer.wait_closed()
         finally:

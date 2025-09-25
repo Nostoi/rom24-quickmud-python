@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import Optional, List
-
+from mud.db.models import Character, PlayerAccount
 from mud.db.session import SessionLocal
-from mud.db.models import PlayerAccount, Character
-from mud.security.hash_utils import hash_password, verify_password
 from mud.security import bans
 from mud.security.bans import BanFlag
+from mud.security.hash_utils import hash_password, verify_password
 
 
 def create_account(username: str, raw_password: str) -> bool:
@@ -25,7 +23,7 @@ def create_account(username: str, raw_password: str) -> bool:
     return True
 
 
-def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
+def login(username: str, raw_password: str) -> PlayerAccount | None:
     """Return PlayerAccount if credentials match."""
     # Enforce account-name bans irrespective of host.
     if bans.is_account_banned(username):
@@ -34,7 +32,7 @@ def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
     account = session.query(PlayerAccount).filter_by(username=username).first()
     if account and verify_password(raw_password, account.password_hash):
         # pre-load characters before detaching
-        account.characters  # type: ignore[unused-any]
+        _ = account.characters  # type: ignore[unused-any]
         session.expunge(account)
         session.close()
         return account
@@ -42,9 +40,7 @@ def login(username: str, raw_password: str) -> Optional[PlayerAccount]:
     return None
 
 
-def login_with_host(
-    username: str, raw_password: str, host: str | None
-) -> Optional[PlayerAccount]:
+def login_with_host(username: str, raw_password: str, host: str | None) -> PlayerAccount | None:
     """Login that also enforces site bans.
 
     This wrapper checks both account and host bans and only then delegates to
@@ -55,10 +51,7 @@ def login_with_host(
         return None
     session = SessionLocal()
     try:
-        exists = (
-            session.query(PlayerAccount).filter_by(username=username).first()
-            is not None
-        )
+        exists = session.query(PlayerAccount).filter_by(username=username).first() is not None
     finally:
         session.close()
     if host and not permit_host and not exists and bans.is_host_banned(host, BanFlag.NEWBIES):
@@ -66,14 +59,12 @@ def login_with_host(
     return login(username, raw_password)
 
 
-def list_characters(account: PlayerAccount) -> List[str]:
+def list_characters(account: PlayerAccount) -> list[str]:
     """Return list of character names for this account."""
     return [char.name for char in getattr(account, "characters", [])]
 
 
-def create_character(
-    account: PlayerAccount, name: str, starting_room_vnum: int = 3001
-) -> bool:
+def create_character(account: PlayerAccount, name: str, starting_room_vnum: int = 3001) -> bool:
     """Create a new character for the account."""
     session = SessionLocal()
     if session.query(Character).filter_by(name=name).first():

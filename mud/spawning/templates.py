@@ -1,32 +1,33 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import TYPE_CHECKING
 
 from mud.models.object import Object
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from mud.models.mob import MobIndex
-    from mud.models.room import Room
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
+    from mud.models.room import Room
 
 from mud.models.constants import ActFlag, Position
 from mud.utils import rng_mm
 
+
 @dataclass
 class ObjectInstance:
     """Runtime instance of an object."""
-    name: Optional[str]
+
+    name: str | None
     item_type: int
     prototype: ObjIndex
-    short_descr: Optional[str] = None
-    location: Optional['Room'] = None
-    contained_items: List['ObjectInstance'] = field(default_factory=list)
+    short_descr: str | None = None
+    location: Room | None = None
+    contained_items: list[ObjectInstance] = field(default_factory=list)
 
-    def move_to_room(self, room: 'Room') -> None:
-        if self.location and hasattr(self.location, 'contents'):
+    def move_to_room(self, room: Room) -> None:
+        if self.location and hasattr(self.location, "contents"):
             if self in self.location.contents:
                 self.location.contents.remove(self)
         room.contents.append(self)
@@ -36,12 +37,13 @@ class ObjectInstance:
 @dataclass
 class MobInstance:
     """Runtime instance of a mob (NPC)."""
-    name: Optional[str]
+
+    name: str | None
     level: int
     current_hp: int
     prototype: MobIndex
-    inventory: List[Object] = field(default_factory=list)
-    room: Optional['Room'] = None
+    inventory: list[Object] = field(default_factory=list)
+    room: Room | None = None
     # Minimal encumbrance fields to interoperate with move_character
     carry_weight: int = 0
     carry_number: int = 0
@@ -50,8 +52,8 @@ class MobInstance:
     silver: int = 0
 
     @classmethod
-    def from_prototype(cls, proto: MobIndex) -> 'MobInstance':
-        wealth = getattr(proto, 'wealth', 0) or 0
+    def from_prototype(cls, proto: MobIndex) -> MobInstance:
+        wealth = getattr(proto, "wealth", 0) or 0
         gold_coins = 0
         silver_coins = 0
         if wealth > 0:
@@ -75,7 +77,7 @@ class MobInstance:
             silver=silver_coins,
         )
 
-    def move_to_room(self, room: 'Room') -> None:
+    def move_to_room(self, room: Room) -> None:
         if self.room and self in self.room.people:
             self.room.people.remove(self)
         room.people.append(self)
@@ -88,10 +90,10 @@ class MobInstance:
         self.add_to_inventory(obj)
 
     def has_act_flag(self, flag: ActFlag) -> bool:
-        proto = getattr(self, 'prototype', None)
+        proto = getattr(self, "prototype", None)
         if proto is None:
             return False
-        checker = getattr(proto, 'has_act_flag', None)
+        checker = getattr(proto, "has_act_flag", None)
         if callable(checker):
             return bool(checker(flag))
         return False

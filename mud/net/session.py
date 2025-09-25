@@ -1,7 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Dict
+
 import asyncio
+from dataclasses import dataclass
 
 from mud.models.character import Character
 
@@ -14,7 +14,7 @@ class Session:
     writer: asyncio.StreamWriter
 
 
-SESSIONS: Dict[str, Session] = {}
+SESSIONS: dict[str, Session] = {}
 
 
 def get_online_players() -> list[Character]:

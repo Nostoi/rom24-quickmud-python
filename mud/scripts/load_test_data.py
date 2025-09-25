@@ -1,6 +1,5 @@
+from mud.db.models import Character, PlayerAccount
 from mud.db.session import SessionLocal
-from mud.db.models import PlayerAccount, Character
-from mud.world.world_state import initialize_world
 
 
 def load_test_user():

@@ -29,4 +29,3 @@ def parse_frame(line: str) -> Frame:
 
 def serialize_frame(frame: Frame) -> str:
     return f"{frame.type} {frame.source} {frame.target} :{frame.message}"
-

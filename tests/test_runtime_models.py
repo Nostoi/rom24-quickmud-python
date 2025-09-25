@@ -1,16 +1,16 @@
 from mud.models import (
-    ShopJson,
-    Shop,
-    SkillJson,
-    Skill,
-    HelpJson,
-    HelpEntry,
-    SocialJson,
-    Social,
-    BoardJson,
     Board,
+    BoardJson,
+    HelpEntry,
+    HelpJson,
     NoteJson,
     Sex,
+    Shop,
+    ShopJson,
+    Skill,
+    SkillJson,
+    Social,
+    SocialJson,
 )
 from mud.models.social import expand_placeholders
 
@@ -48,7 +48,7 @@ def test_social_from_json():
 def test_register_social():
     data = SocialJson(name="wave", char_no_arg="You wave.")
     social = Social.from_json(data)
-    from mud.models.social import social_registry, register_social
+    from mud.models.social import register_social, social_registry
 
     register_social(social)
     assert social_registry["wave"] is social

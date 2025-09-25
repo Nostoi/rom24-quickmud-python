@@ -1,10 +1,10 @@
 """Shop command handlers."""
 
-from mud.registry import shop_registry
-from mud.models.character import Character
-from mud.models.object import Object
-from mud.models.constants import ItemType, AffectFlag
 from mud.math.c_compat import c_div
+from mud.models.character import Character
+from mud.models.constants import AffectFlag, ItemType
+from mud.models.object import Object
+from mud.registry import shop_registry
 from mud.time import time_info
 
 _CLOSED_EARLY = "Sorry, I am closed. Come back later."
@@ -24,13 +24,9 @@ def _has_affect(entity, flag: AffectFlag) -> bool:
 def _keeper_can_see_customer(keeper: Character, customer: Character) -> bool:
     if _has_affect(keeper, AffectFlag.BLIND):
         return False
-    if _has_affect(customer, AffectFlag.INVISIBLE) and not _has_affect(
-        keeper, AffectFlag.DETECT_INVIS
-    ):
+    if _has_affect(customer, AffectFlag.INVISIBLE) and not _has_affect(keeper, AffectFlag.DETECT_INVIS):
         return False
-    if _has_affect(customer, AffectFlag.HIDE) and not _has_affect(
-        keeper, AffectFlag.DETECT_HIDDEN
-    ):
+    if _has_affect(customer, AffectFlag.HIDE) and not _has_affect(keeper, AffectFlag.DETECT_HIDDEN):
         return False
     return True
 
@@ -71,8 +67,8 @@ def _keeper_total_wealth(keeper) -> int:
 
 def _set_keeper_total_wealth(keeper, total: int) -> None:
     total = max(total, 0)
-    setattr(keeper, "gold", total // 100)
-    setattr(keeper, "silver", total % 100)
+    keeper.gold = total // 100
+    keeper.silver = total % 100
 
 
 def _get_cost(keeper, obj: Object, *, buy: bool) -> int:

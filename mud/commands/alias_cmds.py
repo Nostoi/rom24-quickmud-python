@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Dict
-
 from mud.models.character import Character
 
 
-def _format_aliases(aliases: Dict[str, str]) -> str:
+def _format_aliases(aliases: dict[str, str]) -> str:
     if not aliases:
         return "No aliases defined."
     parts = [f"{k} -> {v}" for k, v in sorted(aliases.items())]
@@ -41,4 +39,3 @@ def do_unalias(char: Character, args: str = "") -> str:
         del char.aliases[name]
         return f"Removed alias: {name}"
     return "No such alias."
-

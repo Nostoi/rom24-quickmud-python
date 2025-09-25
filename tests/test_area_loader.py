@@ -7,7 +7,7 @@ from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
 from mud.models.constants import RoomFlag
 from mud.registry import area_registry, room_registry
-from mud.scripts.convert_are_to_json import convert_area, clear_registries
+from mud.scripts.convert_are_to_json import clear_registries, convert_area
 
 
 def test_duplicate_area_vnum_raises_value_error(tmp_path):
@@ -25,18 +25,7 @@ def test_duplicate_area_vnum_raises_value_error(tmp_path):
 
 def test_areadata_parsing(tmp_path):
     area_registry.clear()
-    content = (
-        "#AREA\n"
-        "test.are~\n"
-        "Test Area~\n"
-        "Credits~\n"
-        "0 0\n"
-        "#AREADATA\n"
-        "Builders Alice~\n"
-        "Security 9\n"
-        "Flags 3\n"
-        "#$\n"
-    )
+    content = "#AREA\ntest.are~\nTest Area~\nCredits~\n0 0\n#AREADATA\nBuilders Alice~\nSecurity 9\nFlags 3\n#$\n"
     path = tmp_path / "test.are"
     path.write_text(content, encoding="latin-1")
     area = load_area_file(str(path))

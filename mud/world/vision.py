@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.models.constants import (
-    AffectFlag,
     MAX_LEVEL,
+    AffectFlag,
     RoomFlag,
     Sector,
 )
 from mud.models.room import Room
 from mud.time import Sunlight, time_info
-
 
 _VISIBILITY_AFFECTS = AffectFlag.INFRARED | AffectFlag.DARK_VISION
 
@@ -53,10 +52,7 @@ def can_see_room(char: Character, room: Room) -> bool:
         return False
 
     if room_is_dark(room):
-        if not (
-            char.is_immortal()
-            or bool(char.affected_by & _VISIBILITY_AFFECTS)
-        ):
+        if not (char.is_immortal() or bool(char.affected_by & _VISIBILITY_AFFECTS)):
             return False
 
     flags = int(getattr(room, "room_flags", 0) or 0)
@@ -71,11 +67,7 @@ def can_see_room(char: Character, room: Room) -> bool:
     if flags & int(RoomFlag.ROOM_HEROES_ONLY) and not char.is_immortal():
         return False
 
-    if (
-        flags & int(RoomFlag.ROOM_NEWBIES_ONLY)
-        and trust > 5
-        and not char.is_immortal()
-    ):
+    if flags & int(RoomFlag.ROOM_NEWBIES_ONLY) and trust > 5 and not char.is_immortal():
         return False
 
     room_clan = int(getattr(room, "clan", 0) or 0)

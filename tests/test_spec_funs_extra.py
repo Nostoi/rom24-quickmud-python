@@ -1,5 +1,5 @@
-from mud.spec_funs import get_spec_fun, register_spec_fun, run_npc_specs
 from mud.registry import room_registry
+from mud.spec_funs import get_spec_fun, register_spec_fun, run_npc_specs
 
 
 def test_get_spec_fun_case_insensitive_and_unknown_returns_none():
@@ -11,8 +11,8 @@ def test_get_spec_fun_case_insensitive_and_unknown_returns_none():
 def test_run_npc_specs_ignores_errors(monkeypatch):
     # Arrange a room with a mob whose spec fun raises
     from mud.models.mob import MobIndex
-    from mud.spawning.templates import MobInstance
     from mud.models.room import Room
+    from mud.spawning.templates import MobInstance
 
     def boom(_):
         raise RuntimeError("kaboom")
@@ -26,4 +26,3 @@ def test_run_npc_specs_ignores_errors(monkeypatch):
 
     # Should not raise despite spec throwing
     run_npc_specs()
-

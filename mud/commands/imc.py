@@ -16,4 +16,3 @@ def do_imc(char, args: str) -> str:
         return "IMC is enabled (stub). Usage: imc send <channel> <message>"
 
     return "IMC stub: command not implemented."
-

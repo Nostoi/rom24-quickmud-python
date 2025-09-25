@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.world.look import look, dir_names
 from mud.models.constants import Direction
+from mud.world.look import dir_names, look
 
 
 def do_scan(char: Character, args: str = "") -> str:
@@ -107,7 +107,7 @@ def do_exits(char: Character, args: str = "") -> str:
     room = char.room
     if not room or not getattr(room, "exits", None):
         return "Obvious exits: none."
-    dirs = [dir_names[type(list(dir_names.keys())[0]) (i)] for i, ex in enumerate(room.exits) if ex]
+    dirs = [dir_names[type(list(dir_names.keys())[0])(i)] for i, ex in enumerate(room.exits) if ex]
     if not dirs:
         return "Obvious exits: none."
     return f"Obvious exits: {' '.join(dirs)}."

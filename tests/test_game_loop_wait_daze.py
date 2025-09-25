@@ -1,6 +1,6 @@
+from mud import config as mud_config
 from mud.game_loop import game_tick
 from mud.models.character import Character, character_registry
-from mud import config as mud_config
 
 
 def setup_function(_):

@@ -1,5 +1,5 @@
-from .session import Session, SESSIONS
-from .protocol import send_to_char, broadcast_room
+from .protocol import broadcast_room, send_to_char
+from .session import SESSIONS, Session
 
 __all__ = [
     "Session",

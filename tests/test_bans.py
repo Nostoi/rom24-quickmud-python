@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from mud.security import bans
 
 
@@ -47,4 +45,3 @@ def test_load_ignores_non_permanent(tmp_path):
     assert loaded == 1
     assert not bans.is_host_banned("temp.example")
     assert bans.is_host_banned("perm.example")
-

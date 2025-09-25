@@ -1,4 +1,5 @@
 """ROM skill_table metadata extracted from const.c."""
+
 ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "acid blast": {"levels": [28, 53, 35, 32], "ratings": [1, 1, 2, 2], "slot": 70, "min_mana": 20, "beats": 12},
     "acid breath": {"levels": [31, 32, 33, 34], "ratings": [1, 1, 2, 2], "slot": 200, "min_mana": 100, "beats": 24},
@@ -84,7 +85,13 @@ ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "kick": {"levels": [53, 12, 14, 8], "ratings": [0, 4, 6, 3], "slot": 0, "min_mana": 0, "beats": 12},
     "know alignment": {"levels": [12, 9, 20, 53], "ratings": [1, 1, 2, 2], "slot": 58, "min_mana": 9, "beats": 12},
     "lightning bolt": {"levels": [13, 23, 18, 16], "ratings": [1, 1, 2, 2], "slot": 30, "min_mana": 15, "beats": 12},
-    "lightning breath": {"levels": [37, 40, 43, 46], "ratings": [1, 1, 2, 2], "slot": 204, "min_mana": 150, "beats": 24},
+    "lightning breath": {
+        "levels": [37, 40, 43, 46],
+        "ratings": [1, 1, 2, 2],
+        "slot": 204,
+        "min_mana": 150,
+        "beats": 24,
+    },
     "locate object": {"levels": [9, 15, 11, 53], "ratings": [1, 1, 2, 2], "slot": 31, "min_mana": 20, "beats": 18},
     "lore": {"levels": [10, 10, 6, 20], "ratings": [6, 6, 4, 8], "slot": 0, "min_mana": 0, "beats": 36},
     "mace": {"levels": [1, 1, 1, 1], "ratings": [5, 2, 3, 3], "slot": 0, "min_mana": 0, "beats": 0},

@@ -25,5 +25,5 @@ class Note:
         )
 
     @classmethod
-    def from_json(cls, data: NoteJson) -> "Note":
+    def from_json(cls, data: NoteJson) -> Note:
         return cls(**data.to_dict())

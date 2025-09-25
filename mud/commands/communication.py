@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 import asyncio
 
 from mud import mobprog
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
-from mud.net.protocol import broadcast_room, broadcast_global, send_to_char
+from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
 
 
 def do_say(char: Character, args: str) -> str:
@@ -17,9 +18,7 @@ def do_say(char: Character, args: str) -> str:
         for mob in list(char.room.people):
             if mob is char or not getattr(mob, "is_npc", False):
                 continue
-            default_pos = getattr(
-                mob, "default_pos", getattr(mob, "position", Position.STANDING)
-            )
+            default_pos = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
             if getattr(mob, "position", default_pos) != default_pos:
                 continue
             mobprog.mp_speech_trigger(args, mob, char)
@@ -36,11 +35,7 @@ def do_tell(char: Character, args: str) -> str:
     except ValueError:
         return "Tell whom what?"
     target = next(
-        (
-            c
-            for c in character_registry
-            if c.name and c.name.lower() == target_name.lower()
-        ),
+        (c for c in character_registry if c.name and c.name.lower() == target_name.lower()),
         None,
     )
     if not target:
@@ -54,9 +49,7 @@ def do_tell(char: Character, args: str) -> str:
     if hasattr(target, "messages"):
         target.messages.append(text)
     if getattr(target, "is_npc", False):
-        default_pos = getattr(
-            target, "default_pos", getattr(target, "position", Position.STANDING)
-        )
+        default_pos = getattr(target, "default_pos", getattr(target, "position", Position.STANDING))
         if getattr(target, "position", default_pos) == default_pos:
             mobprog.mp_speech_trigger(message, target, char)
     return f"You tell {target.name}, '{message}'"

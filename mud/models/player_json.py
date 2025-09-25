@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 from .json_io import JsonDataclass
 
@@ -40,13 +39,13 @@ class PlayerJson(JsonDataclass):
     true_sex: int
     last_level: int
     position: int
-    room_vnum: Optional[int] = None
-    conditions: List[int] = field(default_factory=lambda: [0, 48, 48, 48])
-    armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
-    perm_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    mod_stat: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    inventory: List[int] = field(default_factory=list)
-    equipment: Dict[str, int] = field(default_factory=dict)
+    room_vnum: int | None = None
+    conditions: list[int] = field(default_factory=lambda: [0, 48, 48, 48])
+    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    perm_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    inventory: list[int] = field(default_factory=list)
+    equipment: dict[str, int] = field(default_factory=dict)
     plr_flags: int = 0
     affected_by: int = 0
     comm_flags: int = 0

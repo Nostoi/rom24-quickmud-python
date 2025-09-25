@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .social_json import SocialJson
 from mud.models.constants import Sex
+
+from .social_json import SocialJson
 
 
 @dataclass
@@ -21,7 +22,7 @@ class Social:
     others_auto: str = ""
 
     @classmethod
-    def from_json(cls, data: SocialJson) -> "Social":
+    def from_json(cls, data: SocialJson) -> Social:
         return cls(**data.to_dict())
 
 
@@ -37,6 +38,7 @@ def register_social(social: Social) -> None:
 # START socials
 def expand_placeholders(message: str, actor: object, victim: object | None = None) -> str:
     """Replace basic ROM placeholders in social messages."""
+
     def subj(sex: Sex | object) -> str:
         if isinstance(sex, Sex):
             return {Sex.MALE: "he", Sex.FEMALE: "she", Sex.NONE: "it"}.get(sex, "they")
@@ -75,4 +77,6 @@ def expand_placeholders(message: str, actor: object, victim: object | None = Non
         result = result.replace("$S", poss(vsex))
 
     return result
+
+
 # END socials

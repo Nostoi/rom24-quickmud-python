@@ -8,14 +8,14 @@ from mud.utils import rng_mm
 
 
 def make_character(**overrides) -> Character:
-    base = dict(
-        name="mob",
-        level=overrides.get("level", 10),
-        hit=overrides.get("hit", 50),
-        max_hit=overrides.get("max_hit", 100),
-        position=overrides.get("position", Position.STANDING),
-        is_npc=overrides.get("is_npc", True),
-    )
+    base = {
+        "name": "mob",
+        "level": overrides.get("level", 10),
+        "hit": overrides.get("hit", 50),
+        "max_hit": overrides.get("max_hit", 100),
+        "position": overrides.get("position", Position.STANDING),
+        "is_npc": overrides.get("is_npc", True),
+    }
     char = Character(**base)
     # Allow callers to override post-init attributes like armor lists
     for key, value in overrides.items():

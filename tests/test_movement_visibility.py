@@ -1,5 +1,5 @@
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, Direction, LEVEL_HERO, Position, RoomFlag
+from mud.models.constants import LEVEL_HERO, AffectFlag, Direction, Position, RoomFlag
 from mud.models.room import Exit, Room
 from mud.world.movement import move_character
 

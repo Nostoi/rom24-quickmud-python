@@ -1,8 +1,8 @@
 from mud.game_loop import (
-    game_tick,
-    weather,
-    schedule_event,
     events,
+    game_tick,
+    schedule_event,
+    weather,
 )
 from mud.models.character import Character, character_registry
 

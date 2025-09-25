@@ -7,7 +7,7 @@ from mud.registry import mob_registry
 def test_load_specials_handles_braces_and_invalid_lines():
     mob_registry.clear()
     vnum = 12345
-    mob_registry[vnum] = MobIndex(vnum=vnum, short_descr='Tester', level=1)
+    mob_registry[vnum] = MobIndex(vnum=vnum, short_descr="Tester", level=1)
 
     lines = [
         "#SPECIALS",
@@ -21,5 +21,4 @@ def test_load_specials_handles_braces_and_invalid_lines():
     assert tok.next_line() == "#SPECIALS"
     load_specials(tok, area=None)
 
-    assert mob_registry[vnum].spec_fun == 'spec_dummy'
-
+    assert mob_registry[vnum].spec_fun == "spec_dummy"

@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
-from .base_loader import BaseTokenizer
+
 from mud.registry import shop_registry
+
+from .base_loader import BaseTokenizer
 
 
 @dataclass
@@ -22,7 +24,7 @@ def load_shops(tokenizer: BaseTokenizer, area) -> None:
         if line is None:
             break
         line = line.strip()
-        if not line or line.startswith('0'):
+        if not line or line.startswith("0"):
             break
         parts = line.split()
         keeper = int(parts[0])

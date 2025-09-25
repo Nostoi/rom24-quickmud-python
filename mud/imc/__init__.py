@@ -14,4 +14,3 @@ def maybe_open_socket() -> None:
         return None
     # Intentionally unimplemented: networking is out of scope for P0 stub.
     raise NotImplementedError("IMC networking not implemented in stub")
-

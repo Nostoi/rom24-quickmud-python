@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 from mud.affects.saves import saves_spell
 from mud.math.c_compat import c_div
@@ -11,14 +11,14 @@ from mud.utils import rng_mm
 
 
 def make_character(**overrides) -> Character:
-    base = dict(
-        name="mob",
-        level=overrides.get("level", 30),
-        hit=overrides.get("hit", 120),
-        max_hit=overrides.get("max_hit", 120),
-        position=overrides.get("position", Position.STANDING),
-        is_npc=overrides.get("is_npc", True),
-    )
+    base = {
+        "name": "mob",
+        "level": overrides.get("level", 30),
+        "hit": overrides.get("hit", 120),
+        "max_hit": overrides.get("max_hit", 120),
+        "position": overrides.get("position", Position.STANDING),
+        "is_npc": overrides.get("is_npc", True),
+    }
     char = Character(**base)
     for key, value in overrides.items():
         setattr(char, key, value)

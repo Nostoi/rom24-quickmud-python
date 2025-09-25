@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import Optional
 
 from mud.registry import mob_registry
+
 from .templates import MobInstance
 
 
-def spawn_mob(vnum: int) -> Optional[MobInstance]:
+def spawn_mob(vnum: int) -> MobInstance | None:
     proto = mob_registry.get(vnum)
     if not proto:
         return None

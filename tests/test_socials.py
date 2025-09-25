@@ -1,8 +1,8 @@
+from mud.commands.dispatcher import process_command
+from mud.loaders.social_loader import load_socials
 from mud.models.character import Character
 from mud.models.constants import Sex
 from mud.models.room import Room
-from mud.commands.dispatcher import process_command
-from mud.loaders.social_loader import load_socials
 
 
 def setup_room():

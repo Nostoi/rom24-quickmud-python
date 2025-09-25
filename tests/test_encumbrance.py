@@ -1,5 +1,5 @@
 from mud.models.character import Character
-from mud.world.movement import can_carry_w, can_carry_n
+from mud.world.movement import can_carry_n, can_carry_w
 
 
 def test_carry_weight_updates_on_pickup_equip_drop(object_factory):

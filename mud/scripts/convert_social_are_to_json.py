@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 """Convert ROM social.are to JSON matching schemas/social.schema.json.
 
 Rules:
@@ -9,10 +12,6 @@ Rules:
 - A line consisting of a single "#" terminates the current social early;
   remaining fields default to empty strings.
 """
-
-from pathlib import Path
-import json
-from typing import List, Dict
 
 FIELDS = [
     "char_no_arg",
@@ -26,9 +25,9 @@ FIELDS = [
 ]
 
 
-def parse_socials(text: str) -> List[Dict[str, str]]:
+def parse_socials(text: str) -> list[dict[str, str]]:
     lines = [ln.rstrip("\n") for ln in text.splitlines()]
-    out: List[Dict[str, str]] = []
+    out: list[dict[str, str]] = []
     i = 0
     # skip header
     while i < len(lines) and not lines[i].startswith("#SOCIALS"):
@@ -50,7 +49,7 @@ def parse_socials(text: str) -> List[Dict[str, str]]:
         # name may be followed by integers; take first token as name
         name = line.split()[0]
         i += 1
-        entry: Dict[str, str] = {"name": name}
+        entry: dict[str, str] = {"name": name}
         # read up to 8 fields
         remaining = len(FIELDS)
         for field in FIELDS:

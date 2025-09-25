@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import asyncio
 
-from mud.world.world_state import initialize_world
 from mud.db.migrations import run_migrations
+from mud.world.world_state import initialize_world
+
 from .connection import handle_connection
 
 
@@ -17,9 +19,7 @@ async def create_server(
     return await asyncio.start_server(handle_connection, host, port)
 
 
-async def start_server(
-    host: str = "0.0.0.0", port: int = 4000, area_list: str = "area/area.lst"
-) -> None:
+async def start_server(host: str = "0.0.0.0", port: int = 4000, area_list: str = "area/area.lst") -> None:
     server = await create_server(host, port, area_list)
     addr = server.sockets[0].getsockname()
     print(f"Serving on {addr}")

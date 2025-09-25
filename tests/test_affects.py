@@ -1,9 +1,9 @@
 # START affects_saves
-from mud.models.character import Character
-from mud.affects.saves import saves_spell
-from mud.utils import rng_mm
-from mud.models.constants import AffectFlag, DefenseBit, DamageType
 import mud.persistence as persistence
+from mud.affects.saves import saves_spell
+from mud.models.character import Character
+from mud.models.constants import AffectFlag, DamageType, DefenseBit
+from mud.utils import rng_mm
 
 
 def test_affect_flag_toggle():
@@ -40,6 +40,7 @@ def test_apply_and_remove_affects_updates_stats():
     assert ch.damroll == 0
     assert ch.saving_throw == 0
 
+
 # END affects_saves
 
 
@@ -74,16 +75,18 @@ def test_saves_spell_berserk_bonus(monkeypatch):
     vict.add_affect(AffectFlag.BERSERK)
     # Berserk adds level//2 = 6 to save; succeeds against <= 56 in this setup
     assert saves_spell(12, vict, 0) is True
+
+
 # END affects_saves_saves_spell
 
 
 def test_imm_res_vuln_flag_values():
     # Spot-check mapping of ROM letter bits to explicit bit positions
     assert DefenseBit.SUMMON == 1 << 0  # A
-    assert DefenseBit.MAGIC == 1 << 2   # C
-    assert DefenseBit.FIRE == 1 << 7    # H
-    assert DefenseBit.SILVER == 1 << 24 # Y
-    assert DefenseBit.IRON == 1 << 25   # Z
+    assert DefenseBit.MAGIC == 1 << 2  # C
+    assert DefenseBit.FIRE == 1 << 7  # H
+    assert DefenseBit.SILVER == 1 << 24  # Y
+    assert DefenseBit.IRON == 1 << 25  # Z
 
 
 def test_check_immune_riv_adjustments(monkeypatch):
@@ -223,17 +226,17 @@ def test_check_immune_specific_bits_holy_energy_mental_drowning(monkeypatch):
 def test_affect_persistence(tmp_path):
     # Arrange a character with multiple affect flags, save and reload.
     persistence.PLAYERS_DIR = tmp_path
-    from mud.world import initialize_world, create_test_character
     from mud.models.character import character_registry
+    from mud.world import create_test_character, initialize_world
 
     character_registry.clear()
-    initialize_world('area/area.lst')
-    ch = create_test_character('Flags', 3001)
+    initialize_world("area/area.lst")
+    ch = create_test_character("Flags", 3001)
     ch.add_affect(AffectFlag.BLIND)
     ch.add_affect(AffectFlag.INVISIBLE)
 
     persistence.save_character(ch)
-    loaded = persistence.load_character('Flags')
+    loaded = persistence.load_character("Flags")
     assert loaded is not None
     assert loaded.has_affect(AffectFlag.BLIND)
     assert loaded.has_affect(AffectFlag.INVISIBLE)

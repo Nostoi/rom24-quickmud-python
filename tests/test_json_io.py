@@ -2,7 +2,7 @@ import json
 from io import StringIO
 
 from mud.models import AreaJson, RoomJson
-from mud.models.json_io import load_dataclass, dump_dataclass
+from mud.models.json_io import dump_dataclass, load_dataclass
 
 
 def test_room_roundtrip_defaults():

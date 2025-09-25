@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,6 +17,7 @@ CORS_ORIGINS = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").spli
 # Keep these values here so engine code can reference parity timings.
 PULSE_PER_SECOND: int = 4
 
+
 def get_pulse_tick() -> int:
     """Return pulses per game tick hour (ROM PULSE_TICK).
 
@@ -25,6 +27,7 @@ def get_pulse_tick() -> int:
     # Allow in-test overrides via module variable as well
     try:
         from mud import config as _cfg  # local import to avoid cycles
+
         scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
     except Exception:
         pass
@@ -42,6 +45,7 @@ def get_pulse_violence() -> int:
     scale = max(1, int(os.getenv("TIME_SCALE", os.getenv("MUD_TIME_SCALE", "1")) or 1))
     try:
         from mud import config as _cfg
+
         scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
     except Exception:
         pass
@@ -58,11 +62,13 @@ def get_pulse_area() -> int:
     scale = max(1, int(os.getenv("TIME_SCALE", os.getenv("MUD_TIME_SCALE", "1")) or 1))
     try:
         from mud import config as _cfg
+
         scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
     except Exception:
         pass
     base = 120 * PULSE_PER_SECOND
     return max(1, base // scale)
+
 
 # Feature flags
 COMBAT_USE_THAC0: bool = False

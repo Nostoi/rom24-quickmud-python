@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, Tuple
 
 from .skill_json import SkillJson
 
@@ -18,22 +17,22 @@ class Skill:
     lag: int = 0
     cooldown: int = 0
     failure_rate: float = 0.0
-    messages: Dict[str, str] = field(default_factory=dict)
+    messages: dict[str, str] = field(default_factory=dict)
     # Legacy ROM `rating` lookup keyed by class index (act_info.c)
-    rating: Dict[int, int] = field(default_factory=dict)
+    rating: dict[int, int] = field(default_factory=dict)
     # ROM metadata extracted from const.c for modern callers
-    levels: Tuple[int, int, int, int] = (99, 99, 99, 99)
-    ratings: Tuple[int, int, int, int] = (0, 0, 0, 0)
+    levels: tuple[int, int, int, int] = (99, 99, 99, 99)
+    ratings: tuple[int, int, int, int] = (0, 0, 0, 0)
     slot: int = 0
     min_mana: int = 0
     beats: int = 0
 
     @classmethod
-    def from_json(cls, data: SkillJson) -> "Skill":
+    def from_json(cls, data: SkillJson) -> Skill:
         payload = data.to_dict()
 
         raw_rating = payload.pop("rating", {}) or {}
-        converted_rating: Dict[int, int] = {}
+        converted_rating: dict[int, int] = {}
         for key, value in raw_rating.items():
             try:
                 converted_rating[int(key)] = int(value)

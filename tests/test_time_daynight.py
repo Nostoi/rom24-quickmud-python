@@ -1,8 +1,8 @@
-from mud.models.character import Character, character_registry
-from mud.time import time_info, Sunlight
-from mud import game_loop
 from mud import config as mud_config
+from mud import game_loop
 from mud.config import get_pulse_tick
+from mud.models.character import Character, character_registry
+from mud.time import Sunlight, time_info
 
 
 def setup_function(func):
@@ -44,28 +44,28 @@ def test_sunrise_broadcasts_to_all_characters():
 
 def test_rom_sunlight_transitions():
     """Test all 4 ROM sunlight state transitions match C code exactly."""
-    from mud.time import TimeInfo, Sunlight
-    
+    from mud.time import Sunlight, TimeInfo
+
     # Hour 5: SUN_LIGHT, "The day has begun."
     t = TimeInfo(hour=4)
     msgs = t.advance_hour()
     assert t.hour == 5
     assert t.sunlight == Sunlight.LIGHT
     assert msgs == ["The day has begun."]
-    
+
     # Hour 6: SUN_RISE, "The sun rises in the east."
     msgs = t.advance_hour()
     assert t.hour == 6
     assert t.sunlight == Sunlight.RISE
     assert msgs == ["The sun rises in the east."]
-    
+
     # Hour 19: SUN_SET, "The sun slowly disappears in the west."
     t = TimeInfo(hour=18)
     msgs = t.advance_hour()
     assert t.hour == 19
     assert t.sunlight == Sunlight.SET
     assert msgs == ["The sun slowly disappears in the west."]
-    
+
     # Hour 20: SUN_DARK, "The night has begun."
     msgs = t.advance_hour()
     assert t.hour == 20
@@ -75,6 +75,7 @@ def test_rom_sunlight_transitions():
 
 def test_sunset_and_night_messages_and_wraparound():
     from mud.time import TimeInfo
+
     # Directly exercise TimeInfo transitions
     t = TimeInfo(hour=18, day=0, month=0, year=0)
     msgs = t.advance_hour()
@@ -93,7 +94,7 @@ def test_time_scale_accelerates_tick(monkeypatch):
     time_info.hour = 4
     game_loop._pulse_counter = 0
     # Speed up tick so that a single pulse triggers an hour advance
-    monkeypatch.setattr('mud.config.TIME_SCALE', 60 * 4)
+    monkeypatch.setattr("mud.config.TIME_SCALE", 60 * 4)
     # Sanity: scaled tick should be 1
     assert mud_config.get_pulse_tick() == 1
 

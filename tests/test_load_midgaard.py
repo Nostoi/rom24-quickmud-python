@@ -1,5 +1,5 @@
-from mud.world.world_state import initialize_world
 from mud.registry import room_registry
+from mud.world.world_state import initialize_world
 
 
 def test_load_midgaard():
@@ -14,4 +14,5 @@ def test_load_midgaard():
     assert room.mana_rate == 100
     # Verify ROOM_LAW flag is set for Midgaard
     from mud.models.constants import RoomFlag
+
     assert room.room_flags & RoomFlag.ROOM_LAW != 0

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from mud.models.constants import Sex
 from mud.models.character import Character
+from mud.models.constants import Sex
 from mud.models.social import expand_placeholders
 
 
@@ -18,4 +18,3 @@ def test_expand_placeholders_neuter_and_reflexive():
     msg = "$n looks at $mself and nods $s head; $e is ready."
     out = expand_placeholders(msg, actor)
     assert out == "Blob looks at itself and nods its head; it is ready."
-

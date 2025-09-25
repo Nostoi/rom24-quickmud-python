@@ -1,26 +1,26 @@
 from __future__ import annotations
 
 from mud import mobprog
+from mud.affects.saves import _check_immune as _riv_check
+from mud.affects.saves import saves_spell
+from mud.config import COMBAT_USE_THAC0
+from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
 from mud.models.constants import (
-    Position,
-    DamageType,
-    AC_PIERCE,
     AC_BASH,
-    AC_SLASH,
     AC_EXOTIC,
-    AffectFlag,
-    WEAPON_VAMPIRIC,
-    WEAPON_POISON,
+    AC_PIERCE,
+    AC_SLASH,
     WEAPON_FLAMING,
     WEAPON_FROST,
+    WEAPON_POISON,
     WEAPON_SHOCKING,
+    WEAPON_VAMPIRIC,
+    AffectFlag,
+    DamageType,
+    Position,
 )
 from mud.utils import rng_mm
-from mud.math.c_compat import c_div
-from mud.affects.saves import _check_immune as _riv_check, saves_spell
-from mud.math.c_compat import urange
-from mud.config import COMBAT_USE_THAC0
 
 
 def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[str]:
@@ -46,22 +46,14 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
     results.append(result)
 
     # Check if victim died or combat ended
-    if (
-        victim.position == Position.DEAD
-        or not hasattr(attacker, "fighting")
-        or attacker.fighting != victim
-    ):
+    if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
         return results
 
     # Haste gives extra attack
     if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.HASTE):
         result = attack_round(attacker, victim)
         results.append(result)
-        if (
-            victim.position == Position.DEAD
-            or not hasattr(attacker, "fighting")
-            or attacker.fighting != victim
-        ):
+        if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
             return results
 
     # Skip extra attacks for backstab
@@ -74,20 +66,14 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
         chance = second_attack_skill // 2
 
         # Slow reduces chances
-        if getattr(attacker, "has_affect", None) and attacker.has_affect(
-            AffectFlag.SLOW
-        ):
+        if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
             chance //= 2
 
         if rng_mm.number_percent() < chance:
             result = attack_round(attacker, victim)
             results.append(result)
             # In ROM, would call check_improve here
-            if (
-                victim.position == Position.DEAD
-                or not hasattr(attacker, "fighting")
-                or attacker.fighting != victim
-            ):
+            if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
                 return results
 
     # Third attack skill check
@@ -96,9 +82,7 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
         chance = third_attack_skill // 4
 
         # Slow prevents third attack entirely
-        if getattr(attacker, "has_affect", None) and attacker.has_affect(
-            AffectFlag.SLOW
-        ):
+        if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
             chance = 0
 
         if rng_mm.number_percent() < chance:
@@ -150,9 +134,7 @@ def attack_round(attacker: Character, victim: Character) -> str:
             if diceroll < 20:
                 break
         # Compute class-based thac0 with hitroll/skill contributions
-        th = compute_thac0(
-            attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=100
-        )
+        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=100)
         vac = c_div(victim_ac, 10)
         # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
         if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
@@ -193,7 +175,7 @@ def attack_round(attacker: Character, victim: Character) -> str:
 
     # Apply damage and update fighting state (defenses checked inside apply_damage)
     main_message = apply_damage(attacker, victim, damage, dam_type)
-    
+
     # Combine main attack message with weapon special messages
     if weapon_special_messages:
         return main_message + " " + " ".join(weapon_special_messages)
@@ -222,7 +204,7 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
     """
     if victim.position == Position.DEAD:
         return "Already dead."
-    
+
     # Check for parry, dodge, and shield block following C src/fight.c:damage() order
     # These are checked AFTER hit determination but BEFORE damage application
     # Order is critical: shield_block → parry → dodge (per ROM C src/fight.c:one_hit)
@@ -321,11 +303,7 @@ def stop_fighting(ch: Character, both: bool = True) -> None:
     """
     # Stop ch from fighting
     ch.fighting = None
-    ch.position = (
-        getattr(ch, "default_pos", Position.STANDING)
-        if getattr(ch, "is_npc", False)
-        else Position.STANDING
-    )
+    ch.position = getattr(ch, "default_pos", Position.STANDING) if getattr(ch, "is_npc", False) else Position.STANDING
     update_pos(ch)
 
     # Stop others from fighting ch if both=True
@@ -381,9 +359,7 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
         return "You are incapacitated and will slowly die, if not aided."
     elif victim.position == Position.STUNNED:
         if hasattr(victim, "room") and victim.room is not None:
-            victim.room.broadcast(
-                f"{victim.name} is stunned, but will probably recover.", exclude=victim
-            )
+            victim.room.broadcast(f"{victim.name} is stunned, but will probably recover.", exclude=victim)
         return "You are stunned, but will probably recover."
     elif victim.position == Position.DEAD:
         if hasattr(victim, "room") and victim.room is not None:
@@ -424,9 +400,7 @@ def _handle_death(attacker: Character, victim: Character) -> str:
     return f"You kill {victim.name}."
 
 
-def calculate_weapon_damage(
-    attacker: Character, victim: Character, dam_type: int
-) -> int:
+def calculate_weapon_damage(attacker: Character, victim: Character, dam_type: int) -> int:
     """Calculate weapon damage following C src/fight.c:one_hit logic.
 
     This includes:
@@ -456,9 +430,7 @@ def calculate_weapon_damage(
             dam = rng_mm.number_range(min_dam, max_dam)
 
         # Shield bonus - no shield equipped gives 11/10 multiplier
-        has_shield = (
-            False  # TODO: get_eq_char(attacker, WEAR_SHIELD) when equipment exists
-        )
+        has_shield = False  # TODO: get_eq_char(attacker, WEAR_SHIELD) when equipment exists
         if not has_shield:
             dam = dam * 11 // 10
 
@@ -535,9 +507,7 @@ def apply_damage_reduction(attacker: Character, victim: Character, damage: int) 
         victim_protect_good = victim.has_affect(AffectFlag.PROTECT_GOOD)
 
         # Check attacker alignment and apply reductions
-        if (victim_protect_evil and is_evil(attacker)) or (
-            victim_protect_good and is_good(attacker)
-        ):
+        if (victim_protect_evil and is_evil(attacker)) or (victim_protect_good and is_good(attacker)):
             damage -= c_div(damage, 4)
 
     return damage
@@ -558,9 +528,7 @@ def is_neutral(character: Character) -> bool:
     return not is_good(character) and not is_evil(character)
 
 
-def on_hit_effects(
-    attacker: Character, victim: Character, damage: int
-) -> None:  # pragma: no cover - default no-op
+def on_hit_effects(attacker: Character, victim: Character, damage: int) -> None:  # pragma: no cover - default no-op
     """Hook for on-hit side-effects; receives RIV-scaled damage."""
     return None
 
@@ -568,7 +536,7 @@ def on_hit_effects(
 # --- Defense checks following C src/fight.c logic ---
 def check_shield_block(attacker: Character, victim: Character) -> bool:
     """Shield block check following C src/fight.c:check_shield_block logic.
-    
+
     Requirements:
     - Victim must be awake (position > POS_SLEEPING)
     - Victim must have a shield equipped
@@ -577,29 +545,29 @@ def check_shield_block(attacker: Character, victim: Character) -> bool:
     """
     if not is_awake(victim):
         return False
-    
+
     # Must have shield equipped (TODO: implement equipment system)
     has_shield = getattr(victim, "has_shield_equipped", False)
     if not has_shield:
         return False
-    
+
     # Get shield block skill (defaults to 0 if not learned)
     shield_skill = getattr(victim, "shield_block_skill", 0)
     chance = c_div(shield_skill, 5) + 3
-    
+
     # Level difference modifier
     chance += victim.level - attacker.level
-    
+
     if rng_mm.number_percent() >= chance:
         return False
-    
+
     # TODO: check_improve(victim, gsn_shield_block, TRUE, 6) when skill system exists
     return True
 
 
 def check_parry(attacker: Character, victim: Character) -> bool:
     """Parry check following C src/fight.c:check_parry logic.
-    
+
     Requirements:
     - Victim must be awake (position > POS_SLEEPING)
     - Victim should have weapon equipped (NPCs can parry unarmed at half chance)
@@ -609,11 +577,11 @@ def check_parry(attacker: Character, victim: Character) -> bool:
     """
     if not is_awake(victim):
         return False
-    
+
     # Get parry skill (defaults to 0 if not learned)
     parry_skill = getattr(victim, "parry_skill", 0)
     chance = c_div(parry_skill, 2)
-    
+
     # Check weapon requirement
     has_weapon = getattr(victim, "has_weapon_equipped", False)
     if not has_weapon:
@@ -621,24 +589,24 @@ def check_parry(attacker: Character, victim: Character) -> bool:
             chance = c_div(chance, 2)  # NPCs can parry unarmed at half chance
         else:
             return False  # PCs need weapons to parry
-    
+
     # Visibility modifier
     if not getattr(victim, "can_see", lambda x: True)(attacker):
         chance = c_div(chance, 2)
-    
+
     # Level difference modifier
     chance += victim.level - attacker.level
-    
+
     if rng_mm.number_percent() >= chance:
         return False
-    
+
     # TODO: check_improve(victim, gsn_parry, TRUE, 6) when skill system exists
     return True
 
 
 def check_dodge(attacker: Character, victim: Character) -> bool:
     """Dodge check following C src/fight.c:check_dodge logic.
-    
+
     Requirements:
     - Victim must be awake (position > POS_SLEEPING)
     - Base chance = get_skill(victim, gsn_dodge) / 2
@@ -647,21 +615,21 @@ def check_dodge(attacker: Character, victim: Character) -> bool:
     """
     if not is_awake(victim):
         return False
-    
+
     # Get dodge skill (defaults to 0 if not learned)
     dodge_skill = getattr(victim, "dodge_skill", 0)
     chance = c_div(dodge_skill, 2)
-    
+
     # Visibility modifier
     if not getattr(victim, "can_see", lambda x: True)(attacker):
         chance = c_div(chance, 2)
-    
+
     # Level difference modifier
     chance += victim.level - attacker.level
-    
+
     if rng_mm.number_percent() >= chance:
         return False
-    
+
     # TODO: check_improve(victim, gsn_dodge, TRUE, 6) when skill system exists
     return True
 
@@ -703,9 +671,7 @@ def interpolate(level: int, v00: int, v32: int) -> int:
     return v00 + c_div((v32 - v00) * level, 32)
 
 
-def compute_thac0(
-    level: int, ch_class: int, *, hitroll: int = 0, skill: int = 100
-) -> int:
+def compute_thac0(level: int, ch_class: int, *, hitroll: int = 0, skill: int = 100) -> int:
     """Compute THAC0 following ROM fight.c adjustments.
 
     - interpolate(level, thac0_00, thac0_32)
@@ -727,89 +693,89 @@ def compute_thac0(
 
 def process_weapon_special_attacks(attacker: Character, victim: Character) -> list[str]:
     """Process weapon special attacks following C src/fight.c:one_hit L600-680.
-    
+
     Applies special weapon effects after a successful hit:
     - WEAPON_POISON: Apply poison affect if save fails
     - WEAPON_VAMPIRIC: Drain life and heal attacker
     - WEAPON_FLAMING: Fire damage
-    - WEAPON_FROST: Cold damage  
+    - WEAPON_FROST: Cold damage
     - WEAPON_SHOCKING: Lightning damage
-    
+
     Returns list of messages describing special attack effects.
     """
     messages = []
-    
+
     # Get wielded weapon - for now use test stubs
-    wield = getattr(attacker, 'wielded_weapon', None)
+    wield = getattr(attacker, "wielded_weapon", None)
     if wield is None:
         return messages
-        
+
     # Check that attacker is still fighting victim (ROM condition)
-    if getattr(attacker, 'fighting', None) != victim:
+    if getattr(attacker, "fighting", None) != victim:
         return messages
-        
+
     # Get weapon flags - support both extra_flags (for ObjIndex) and weapon_flags attribute
     weapon_flags = 0
-    if hasattr(wield, 'weapon_flags'):
+    if hasattr(wield, "weapon_flags"):
         weapon_flags = wield.weapon_flags
-    elif hasattr(wield, 'extra_flags'):
+    elif hasattr(wield, "extra_flags"):
         weapon_flags = wield.extra_flags
-        
-    weapon_level = getattr(wield, 'level', 1)
-    
+
+    weapon_level = getattr(wield, "level", 1)
+
     # WEAPON_POISON - ROM src/fight.c L600-634
     if weapon_flags & WEAPON_POISON:
         level = weapon_level
-        
+
         if not saves_spell(level // 2, victim, DamageType.POISON):
             messages.append("You feel poison coursing through your veins.")
             # TODO: Apply poison affect when affect system is implemented
             # af.where = TO_AFFECTS; af.type = gsn_poison; af.level = level * 3 / 4
             # af.duration = level / 2; af.location = APPLY_STR; af.modifier = -1
             # af.bitvector = AFF_POISON; affect_join(victim, &af)
-            
-    # WEAPON_VAMPIRIC - ROM src/fight.c L640-649  
+
+    # WEAPON_VAMPIRIC - ROM src/fight.c L640-649
     if weapon_flags & WEAPON_VAMPIRIC:
         dam = rng_mm.number_range(1, weapon_level // 5 + 1)
         messages.append(f"You feel {getattr(wield, 'name', 'the weapon')} drawing your life away.")
-        
+
         # Apply vampiric damage (additional negative damage)
         apply_damage(attacker, victim, dam, DamageType.NEGATIVE)
-        
-        # Heal attacker by half the damage  
+
+        # Heal attacker by half the damage
         attacker.hit += dam // 2
-        if hasattr(attacker, 'max_hit'):
+        if hasattr(attacker, "max_hit"):
             attacker.hit = min(attacker.hit, attacker.max_hit)
-            
+
         # Shift alignment toward evil (ROM: ch->alignment = UMAX(-1000, ch->alignment - 1))
-        if hasattr(attacker, 'alignment'):
+        if hasattr(attacker, "alignment"):
             attacker.alignment = max(-1000, attacker.alignment - 1)
-            
+
     # WEAPON_FLAMING - ROM src/fight.c L651-659
     if weapon_flags & WEAPON_FLAMING:
         dam = rng_mm.number_range(1, weapon_level // 4 + 1)
         messages.append(f"{getattr(wield, 'name', 'The weapon')} sears your flesh.")
-        
+
         # Apply fire damage
         apply_damage(attacker, victim, dam, DamageType.FIRE)
         # TODO: fire_effect((void *) victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
-        
-    # WEAPON_FROST - ROM src/fight.c L661-670  
+
+    # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
         dam = rng_mm.number_range(1, weapon_level // 6 + 2)
         messages.append("The cold touch surrounds you with ice.")
-        
+
         # Apply cold damage
         apply_damage(attacker, victim, dam, DamageType.COLD)
         # TODO: cold_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
-        
+
     # WEAPON_SHOCKING - ROM src/fight.c L672-681
     if weapon_flags & WEAPON_SHOCKING:
-        dam = rng_mm.number_range(1, weapon_level // 5 + 2)  
+        dam = rng_mm.number_range(1, weapon_level // 5 + 2)
         messages.append("You are shocked by the weapon.")
-        
+
         # Apply lightning damage
         apply_damage(attacker, victim, dam, DamageType.LIGHTNING)
         # TODO: shock_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
-        
+
     return messages

@@ -22,11 +22,13 @@ def parse_help_are(path: Path) -> list[dict]:
         if level is None or keywords is None:
             return
         text = "\n".join(buf)
-        entries.append({
-            "level": level,
-            "keywords": keywords,
-            "text": text,
-        })
+        entries.append(
+            {
+                "level": level,
+                "keywords": keywords,
+                "text": text,
+            }
+        )
         level, keywords, buf = None, None, []
 
     with path.open("r", encoding="utf-8", errors="ignore") as fp:
@@ -89,4 +91,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover
     main()
-

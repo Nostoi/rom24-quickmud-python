@@ -1,9 +1,7 @@
-from pathlib import Path
-
-from mud.world import initialize_world, create_test_character
-from mud.world import move_character as move
+from mud.models.constants import ItemType, Sector
 from mud.registry import room_registry
-from mud.models.constants import Sector, AffectFlag, ItemType
+from mud.world import create_test_character, initialize_world
+from mud.world import move_character as move
 
 
 def setup_world_at(vnum_from: int, vnum_to: int) -> tuple:
@@ -51,7 +49,9 @@ def test_boat_allows_water_noswim(object_factory):
     ch, room_from, room_to = setup_world_at(3001, 3054)
     room_to.sector_type = int(Sector.WATER_NOSWIM)
     # Add a BOAT object to inventory via object factory
-    boat = object_factory({"vnum": 9999, "name": "boat", "short_descr": "a small boat", "item_type": int(ItemType.BOAT)})
+    boat = object_factory(
+        {"vnum": 9999, "name": "boat", "short_descr": "a small boat", "item_type": int(ItemType.BOAT)}
+    )
     ch.add_object(boat)
     ch.move = 20
     out = move(ch, "north")

@@ -5,7 +5,6 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, DamageType, DefenseBit
 from mud.utils import rng_mm
 
-
 # Minimal fMana mapping from ROM const.c order: mage, cleric → True; thief, warrior → False
 FMANA_BY_CLASS = {
     0: True,  # mage

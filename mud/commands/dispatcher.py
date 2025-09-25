@@ -1,35 +1,37 @@
 from __future__ import annotations
-from dataclasses import dataclass
-import shlex
-from typing import Callable, Dict, List, Optional, Tuple
 
+import shlex
+from collections.abc import Callable
+from dataclasses import dataclass
+
+from mud.logging.admin import log_admin_command
 from mud.models.character import Character
-from .movement import do_north, do_south, do_east, do_west, do_up, do_down, do_enter
-from .inspection import do_look, do_scan, do_exits
-from .inventory import do_get, do_drop, do_inventory, do_equipment
-from .communication import do_say, do_tell, do_shout
-from .combat import do_kill
+from mud.models.constants import Position
+from mud.models.social import social_registry
+from mud.wiznet import cmd_wiznet
+
 from .admin_commands import (
-    cmd_who,
-    cmd_teleport,
-    cmd_spawn,
     cmd_ban,
-    cmd_unban,
     cmd_banlist,
+    cmd_spawn,
+    cmd_teleport,
+    cmd_unban,
+    cmd_who,
 )
-from .shop import do_list, do_buy, do_sell
-from .healer import do_heal
-from .alias_cmds import do_alias, do_unalias
 from .advancement import do_practice, do_train
-from .notes import do_board, do_note
+from .alias_cmds import do_alias, do_unalias
 from .build import cmd_redit
-from .socials import perform_social
+from .combat import do_kill
+from .communication import do_say, do_shout, do_tell
+from .healer import do_heal
 from .help import do_help
 from .imc import do_imc
-from mud.wiznet import cmd_wiznet
-from mud.logging.admin import log_admin_command
-from mud.models.social import social_registry
-from mud.models.constants import Position
+from .inspection import do_exits, do_look, do_scan
+from .inventory import do_drop, do_equipment, do_get, do_inventory
+from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
+from .notes import do_board, do_note
+from .shop import do_buy, do_list, do_sell
+from .socials import perform_social
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -43,7 +45,7 @@ class Command:
     min_position: Position = Position.DEAD
 
 
-COMMANDS: List[Command] = [
+COMMANDS: list[Command] = [
     # Movement (require standing per ROM)
     Command("north", do_north, aliases=("n",), min_position=Position.STANDING),
     Command("east", do_east, aliases=("e",), min_position=Position.STANDING),
@@ -52,7 +54,6 @@ COMMANDS: List[Command] = [
     Command("up", do_up, aliases=("u",), min_position=Position.STANDING),
     Command("down", do_down, aliases=("d",), min_position=Position.STANDING),
     Command("enter", do_enter, min_position=Position.STANDING),
-
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
     Command("exits", do_exits, aliases=("ex",), min_position=Position.RESTING),
@@ -60,38 +61,30 @@ COMMANDS: List[Command] = [
     Command("drop", do_drop, min_position=Position.RESTING),
     Command("inventory", do_inventory, aliases=("inv",), min_position=Position.DEAD),
     Command("equipment", do_equipment, aliases=("eq",), min_position=Position.DEAD),
-
     # Communication
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
-
     # Combat
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
-
     # Info
     Command("scan", do_scan, min_position=Position.SLEEPING),
-
     # Shops
     Command("list", do_list, min_position=Position.RESTING),
     Command("buy", do_buy, min_position=Position.RESTING),
     Command("sell", do_sell, min_position=Position.RESTING),
     Command("heal", do_heal, min_position=Position.RESTING),
-
     # Advancement
     Command("practice", do_practice, min_position=Position.SLEEPING),
     Command("train", do_train, min_position=Position.RESTING),
-
     # Boards/Notes/Help
     Command("board", do_board, min_position=Position.SLEEPING),
     Command("note", do_note, min_position=Position.DEAD),
     Command("help", do_help, min_position=Position.DEAD),
-
     # IMC and aliasing
     Command("imc", do_imc, min_position=Position.DEAD),
     Command("alias", do_alias, min_position=Position.DEAD),
     Command("unalias", do_unalias, min_position=Position.DEAD),
-
     # Admin (leave position as DEAD; admin-only gating applies separately)
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True),
@@ -104,14 +97,14 @@ COMMANDS: List[Command] = [
 ]
 
 
-COMMAND_INDEX: Dict[str, Command] = {}
+COMMAND_INDEX: dict[str, Command] = {}
 for cmd in COMMANDS:
     COMMAND_INDEX[cmd.name] = cmd
     for alias in cmd.aliases:
         COMMAND_INDEX[alias] = cmd
 
 
-def resolve_command(name: str) -> Optional[Command]:
+def resolve_command(name: str) -> Command | None:
     name = name.lower()
     if name in COMMAND_INDEX:
         return COMMAND_INDEX[name]
@@ -121,7 +114,7 @@ def resolve_command(name: str) -> Optional[Command]:
     return matches[0] if matches else None
 
 
-def _split_command_and_args(input_str: str) -> Tuple[str, str]:
+def _split_command_and_args(input_str: str) -> tuple[str, str]:
     """Extract the leading command token and its remaining arguments."""
 
     stripped = input_str.lstrip()
@@ -208,11 +201,11 @@ def process_command(char: Character, input_str: str) -> str:
 
 
 def run_test_session() -> list[str]:
-    from mud.world import initialize_world, create_test_character
     from mud.spawning.obj_spawner import spawn_object
+    from mud.world import create_test_character, initialize_world
 
-    initialize_world('area/area.lst')
-    char = create_test_character('Tester', 3001)
+    initialize_world("area/area.lst")
+    char = create_test_character("Tester", 3001)
     # Ensure sufficient movement points for the scripted walk
     char.move = char.max_move = 100
     sword = spawn_object(3022)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 import json
+from pathlib import Path
 
 from mud.scripts.convert_social_are_to_json import convert, parse_socials
 
@@ -50,4 +50,3 @@ def test_convert_social_are_to_json_matches_layout(tmp_path):
     assert sulk["char_no_arg"].startswith("You sulk.")
     assert sulk["others_no_arg"].startswith("$n sulks")
     assert sulk["char_found"] == ""
-

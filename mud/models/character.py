@@ -1,36 +1,37 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from mud.models.constants import AffectFlag, Position, Stat
 
 if TYPE_CHECKING:
-    from mud.models.object import Object
-    from mud.models.room import Room
     from mud.db.models import Character as DBCharacter
     from mud.models.board import NoteDraft
     from mud.models.mob import MobProgram
+    from mud.models.object import Object
+    from mud.models.room import Room
 
 
 @dataclass
 class PCData:
     """Subset of PC_DATA from merc.h"""
 
-    pwd: Optional[str] = None
-    bamfin: Optional[str] = None
-    bamfout: Optional[str] = None
-    title: Optional[str] = None
+    pwd: str | None = None
+    bamfin: str | None = None
+    bamfout: str | None = None
+    title: str | None = None
     perm_hit: int = 0
     perm_mana: int = 0
     perm_move: int = 0
     true_sex: int = 0
     last_level: int = 0
-    condition: List[int] = field(default_factory=lambda: [0] * 4)
+    condition: list[int] = field(default_factory=lambda: [0] * 4)
     points: int = 0
     security: int = 0
     board_name: str = "general"
-    last_notes: Dict[str, float] = field(default_factory=dict)
-    in_progress: Optional["NoteDraft"] = None
+    last_notes: dict[str, float] = field(default_factory=dict)
+    in_progress: NoteDraft | None = None
 
 
 @dataclass
@@ -50,12 +51,12 @@ class SpellEffect:
 class Character:
     """Python representation of CHAR_DATA"""
 
-    name: Optional[str] = None
-    short_descr: Optional[str] = None
-    long_descr: Optional[str] = None
-    description: Optional[str] = None
-    prompt: Optional[str] = None
-    prefix: Optional[str] = None
+    name: str | None = None
+    short_descr: str | None = None
+    long_descr: str | None = None
+    description: str | None = None
+    prompt: str | None = None
+    prefix: str | None = None
     sex: int = 0
     ch_class: int = 0
     race: int = 0
@@ -74,12 +75,12 @@ class Character:
     act: int = 0
     affected_by: int = 0
     position: int = Position.STANDING
-    room: Optional["Room"] = None
-    master: Optional["Character"] = None
-    leader: Optional["Character"] = None
+    room: Room | None = None
+    master: Character | None = None
+    leader: Character | None = None
     practice: int = 0
     train: int = 0
-    skills: Dict[str, int] = field(default_factory=dict)
+    skills: dict[str, int] = field(default_factory=dict)
     carry_weight: int = 0
     carry_number: int = 0
     saving_throw: int = 0
@@ -87,27 +88,27 @@ class Character:
     hitroll: int = 0
     damroll: int = 0
     wimpy: int = 0
-    perm_stat: List[int] = field(default_factory=list)
-    mod_stat: List[int] = field(default_factory=list)
+    perm_stat: list[int] = field(default_factory=list)
+    mod_stat: list[int] = field(default_factory=list)
     form: int = 0
     parts: int = 0
     size: int = 0
-    material: Optional[str] = None
+    material: str | None = None
     off_flags: int = 0
     # ROM parity: immunity/resistance/vulnerability bitvectors (merc.h)
     imm_flags: int = 0
     res_flags: int = 0
     vuln_flags: int = 0
-    damage: List[int] = field(default_factory=lambda: [0, 0, 0])
+    damage: list[int] = field(default_factory=lambda: [0, 0, 0])
     dam_type: int = 0
     start_pos: int = 0
     default_pos: int = 0
     mprog_delay: int = 0
-    pcdata: Optional[PCData] = None
-    inventory: List["Object"] = field(default_factory=list)
-    equipment: Dict[str, "Object"] = field(default_factory=dict)
-    messages: List[str] = field(default_factory=list)
-    connection: Optional[object] = None
+    pcdata: PCData | None = None
+    inventory: list[Object] = field(default_factory=list)
+    equipment: dict[str, Object] = field(default_factory=dict)
+    messages: list[str] = field(default_factory=list)
+    connection: object | None = None
     is_admin: bool = False
     muted_channels: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
@@ -117,9 +118,9 @@ class Character:
     # Daze (pulses) — separate action delay used by ROM combat
     daze: int = 0
     # Armor class per index [AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC]
-    armor: List[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
     # Per-character command aliases: name -> expansion (pre-dispatch)
-    aliases: Dict[str, str] = field(default_factory=dict)
+    aliases: dict[str, str] = field(default_factory=dict)
     # Optional defense chances (percent) for parity-friendly tests
     shield_block_chance: int = 0
     parry_chance: int = 0
@@ -128,16 +129,16 @@ class Character:
     second_attack_skill: int = 0
     third_attack_skill: int = 0
     # Combat state - currently fighting target
-    fighting: Optional["Character"] = None
+    fighting: Character | None = None
     # Enhanced damage skill level (0-100)
     enhanced_damage_skill: int = 0
     # Character type flag
     is_npc: bool = True  # Default to NPC, set to False for PCs
     # Mob program runtime state mirroring ROM's CHAR_DATA fields
-    mob_programs: List["MobProgram"] = field(default_factory=list)
-    mprog_target: Optional["Character"] = None
+    mob_programs: list[MobProgram] = field(default_factory=list)
+    mprog_target: Character | None = None
     # Active spell effects keyed by skill name for parity restores
-    spell_effects: Dict[str, SpellEffect] = field(default_factory=dict)
+    spell_effects: dict[str, SpellEffect] = field(default_factory=dict)
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -156,7 +157,7 @@ class Character:
         return self.position > Position.SLEEPING
 
     @staticmethod
-    def _stat_from_list(values: List[int], stat: int) -> Optional[int]:
+    def _stat_from_list(values: list[int], stat: int) -> int | None:
         if not values:
             return None
         idx = int(stat)
@@ -167,7 +168,7 @@ class Character:
             return None
         return int(val)
 
-    def get_curr_stat(self, stat: int | Stat) -> Optional[int]:
+    def get_curr_stat(self, stat: int | Stat) -> int | None:
         """Compute current stat (perm + mod) clamped to ROM 0..25."""
 
         idx = int(stat)
@@ -199,12 +200,12 @@ class Character:
 
         self.messages.append(message)
 
-    def add_object(self, obj: "Object") -> None:
+    def add_object(self, obj: Object) -> None:
         self.inventory.append(obj)
         self.carry_number += 1
         self.carry_weight += getattr(obj.prototype, "weight", 0)
 
-    def equip_object(self, obj: "Object", slot: str) -> None:
+    def equip_object(self, obj: Object, slot: str) -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
@@ -212,7 +213,7 @@ class Character:
             self.carry_weight += getattr(obj.prototype, "weight", 0)
         self.equipment[slot] = obj
 
-    def remove_object(self, obj: "Object") -> None:
+    def remove_object(self, obj: Object) -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
@@ -308,9 +309,9 @@ class Character:
 character_registry: list[Character] = []
 
 
-def from_orm(db_char: "DBCharacter") -> Character:
-    from mud.registry import room_registry
+def from_orm(db_char: DBCharacter) -> Character:
     from mud.models.constants import Position
+    from mud.registry import room_registry
 
     room = room_registry.get(db_char.room_vnum)
     char = Character(
@@ -325,7 +326,7 @@ def from_orm(db_char: "DBCharacter") -> Character:
     return char
 
 
-def to_orm(character: Character, player_id: int) -> "DBCharacter":
+def to_orm(character: Character, player_id: int) -> DBCharacter:
     from mud.db.models import Character as DBCharacter
 
     return DBCharacter(
@@ -335,6 +336,8 @@ def to_orm(character: Character, player_id: int) -> "DBCharacter":
         room_vnum=character.room.vnum if character.room else None,
         player_id=player_id,
     )
+
+
 _INT_LEARN_RATES: list[int] = [
     3,
     5,

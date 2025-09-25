@@ -66,10 +66,7 @@ def _ensure_draft(char: Character, board) -> NoteDraft:
 
 def _recipient_message(board, final: str, added: bool, used_default: bool) -> str:
     if added and board.default_recipients:
-        return (
-            f"Recipient list updated to {final or board.default_recipients} "
-            f"(forced {board.default_recipients})."
-        )
+        return f"Recipient list updated to {final or board.default_recipients} (forced {board.default_recipients})."
     if used_default and final:
         return f"Recipient list defaulted to {final}."
     if final:
@@ -84,11 +81,7 @@ def do_board(char: Character, args: str) -> str:
     pcdata = _ensure_pcdata(char)
     current_board = _resolve_current_board(char)
     trust = _get_trust(char)
-    available = [
-        (idx, board)
-        for idx, board in enumerate(iter_boards(), start=1)
-        if board.can_read(trust)
-    ]
+    available = [(idx, board) for idx, board in enumerate(iter_boards(), start=1) if board.can_read(trust)]
 
     args = args.strip()
     if not args:
@@ -99,9 +92,7 @@ def do_board(char: Character, args: str) -> str:
         for idx, board in available:
             last_read = _board_last_read(pcdata, board)
             unread = board.unread_count(last_read)
-            lines.append(
-                f"({idx:2d}) {board.name:<12} [{unread:>3}] {board.description}"
-            )
+            lines.append(f"({idx:2d}) {board.name:<12} [{unread:>3}] {board.description}")
         lines.append("")
         lines.append(f"Current board: {current_board.name}.")
         if not current_board.can_read(trust):
@@ -186,21 +177,13 @@ def do_note(char: Character, args: str) -> str:
             return "You cannot write on this board."
         draft = _ensure_draft(char, board)
         message = [
-            (
-                "You continue your note on the"
-                if (draft.subject or draft.text)
-                else "You begin writing a note on the"
-            )
+            ("You continue your note on the" if (draft.subject or draft.text) else "You begin writing a note on the")
         ]
         message.append(f" {board.name} board.")
         if board.force_type is BoardForceType.INCLUDE and board.default_recipients:
-            message.append(
-                f" The recipient list must include {board.default_recipients}."
-            )
+            message.append(f" The recipient list must include {board.default_recipients}.")
         elif board.force_type is BoardForceType.EXCLUDE and board.default_recipients:
-            message.append(
-                f" The recipient list must not include {board.default_recipients}."
-            )
+            message.append(f" The recipient list must not include {board.default_recipients}.")
         elif board.default_recipients:
             message.append(f" Default recipient is {board.default_recipients}.")
         return "".join(message)

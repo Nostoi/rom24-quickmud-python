@@ -1,17 +1,17 @@
 from pathlib import Path
 
-from mud.db.models import Base, PlayerAccount
-from mud.db.session import engine, SessionLocal
 from mud.account.account_service import (
     create_account,
-    login,
     create_character,
     list_characters,
+    login,
+    login_with_host,
 )
-from mud.security.hash_utils import verify_password
+from mud.db.models import Base, PlayerAccount
+from mud.db.session import SessionLocal, engine
 from mud.security import bans
 from mud.security.bans import BanFlag
-from mud.account.account_service import login_with_host
+from mud.security.hash_utils import verify_password
 
 
 def setup_module(module):
@@ -178,10 +178,7 @@ def test_newbie_permit_enforcement():
     assert login_with_host("fresh", "pw", "blocked.example") is None
     session = SessionLocal()
     try:
-        assert (
-            session.query(PlayerAccount).filter_by(username="fresh").first()
-            is None
-        )
+        assert session.query(PlayerAccount).filter_by(username="fresh").first() is None
     finally:
         session.close()
 

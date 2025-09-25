@@ -1,6 +1,6 @@
-from mud.db.models import Base, PlayerAccount, Character
-from mud.db.session import engine, SessionLocal
+from mud.db.models import Base, Character, PlayerAccount
 from mud.db.seed import create_test_account
+from mud.db.session import SessionLocal, engine
 from mud.security.hash_utils import verify_password
 
 
@@ -22,10 +22,5 @@ def test_seed_creates_admin_with_hashed_password():
 
     create_test_account()
     session = SessionLocal()
-    assert (
-        session.query(PlayerAccount)
-        .filter_by(username="admin")
-        .count()
-        == 1
-    )
+    assert session.query(PlayerAccount).filter_by(username="admin").count() == 1
     session.close()

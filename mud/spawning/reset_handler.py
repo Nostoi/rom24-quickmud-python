@@ -1,26 +1,26 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional, Tuple, Set
 
 from mud.models.area import Area
 from mud.models.character import character_registry
 from mud.models.constants import (
-    ITEM_INVENTORY,
-    ExtraFlag,
     EX_CLOSED,
     EX_ISDOOR,
     EX_LOCKED,
-    Direction,
-    Position,
+    ITEM_INVENTORY,
     ROOM_VNUM_SCHOOL,
+    Direction,
+    ExtraFlag,
+    Position,
     convert_flags_from_letters,
 )
-from mud.registry import room_registry, area_registry, mob_registry, obj_registry, shop_registry
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
+from mud.utils import rng_mm
+
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
 from .templates import MobInstance
-from mud.utils import rng_mm
 
 RESET_TICKS = 3
 
@@ -35,31 +35,31 @@ _REVERSE_DIR = {
 }
 
 
-def _count_existing_mobs() -> Dict[int, int]:
+def _count_existing_mobs() -> dict[int, int]:
     """Rebuild MOB_INDEX_DATA->count style tallies from the current world."""
 
-    counts: Dict[int, int] = {}
+    counts: dict[int, int] = {}
     for room in room_registry.values():
-        for mob in getattr(room, 'people', []):
+        for mob in getattr(room, "people", []):
             if not isinstance(mob, MobInstance):
                 continue
-            proto = getattr(mob, 'prototype', None)
-            vnum = getattr(proto, 'vnum', None)
+            proto = getattr(mob, "prototype", None)
+            vnum = getattr(proto, "vnum", None)
             if vnum is None:
                 continue
             counts[vnum] = counts.get(vnum, 0) + 1
     for vnum, proto in mob_registry.items():
-        if hasattr(proto, 'count'):
+        if hasattr(proto, "count"):
             proto.count = counts.get(vnum, 0)
     return counts
 
 
-def _gather_object_state() -> Tuple[Dict[int, int], Dict[int, List[object]]]:
+def _gather_object_state() -> tuple[dict[int, int], dict[int, list[object]]]:
     """Rebuild OBJ_INDEX_DATA->count and capture instances by prototype vnum."""
 
-    counts: Dict[int, int] = {}
-    instances: Dict[int, List[object]] = {}
-    seen_chars: Set[int] = set()
+    counts: dict[int, int] = {}
+    instances: dict[int, list[object]] = {}
+    seen_chars: set[int] = set()
 
     def tally(obj: object) -> None:
         proto = getattr(obj, "prototype", None)
@@ -130,7 +130,7 @@ def _restore_exit_states(area: Area) -> None:
             rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
 
 
-def _record_object_counts(obj: object, counts: Dict[int, int]) -> None:
+def _record_object_counts(obj: object, counts: dict[int, int]) -> None:
     """Recursively tally object instances by prototype vnum."""
 
     proto = getattr(obj, "prototype", None)
@@ -141,10 +141,10 @@ def _record_object_counts(obj: object, counts: Dict[int, int]) -> None:
         _record_object_counts(contained, counts)
 
 
-def _count_existing_objects() -> Dict[int, int]:
+def _count_existing_objects() -> dict[int, int]:
     """Rebuild OBJ_INDEX_DATA->count values based on current world state."""
 
-    counts: Dict[int, int] = {}
+    counts: dict[int, int] = {}
 
     for room in room_registry.values():
         for obj in getattr(room, "contents", []) or []:
@@ -164,7 +164,7 @@ def _count_existing_objects() -> Dict[int, int]:
     return counts
 
 
-def _resolve_vnum(primary: int, secondary: int, registry: Dict[int, object]) -> Tuple[int, bool]:
+def _resolve_vnum(primary: int, secondary: int, registry: dict[int, object]) -> tuple[int, bool]:
     """Return the best available vnum, signalling if the fallback was used."""
 
     if primary and primary in registry and (primary > 1 or secondary not in registry):
@@ -176,7 +176,7 @@ def _resolve_vnum(primary: int, secondary: int, registry: Dict[int, object]) -> 
     return primary, False
 
 
-def _resolve_reset_limit(raw: Optional[int]) -> int:
+def _resolve_reset_limit(raw: int | None) -> int:
     """Mirror ROM's limit coercion for resets (old format, unlimited markers)."""
 
     if raw is None:
@@ -201,10 +201,11 @@ def _compute_object_level(obj: object, mob: object) -> int:
     For new-format objects, or unrecognized types, return 0.
     """
     try:
-        item_type = int(getattr(getattr(obj, 'prototype', None), 'item_type', 0))
+        item_type = int(getattr(getattr(obj, "prototype", None), "item_type", 0))
     except Exception:
         item_type = 0
     from mud.models.constants import ItemType
+
     if item_type == int(ItemType.WAND):
         return rng_mm.number_range(10, 20)
     if item_type == int(ItemType.STAFF):
@@ -234,26 +235,24 @@ def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:
         extra_flags = convert_flags_from_letters(extra_flags, ExtraFlag)
 
     item_proto.extra_flags = int(extra_flags) | int(ITEM_INVENTORY)
-    setattr(obj, "extra_flags", int(item_proto.extra_flags))
+    obj.extra_flags = int(item_proto.extra_flags)
 
 
 def apply_resets(area: Area) -> None:
     """Populate rooms based on ROM reset data semantics."""
 
-    last_mob: Optional[MobInstance] = None
-    last_obj: Optional[object] = None
+    last_mob: MobInstance | None = None
+    last_obj: object | None = None
     object_counts, existing_objects = _gather_object_state()
-    spawned_objects: Dict[int, List[object]] = {
-        vnum: list(instances) for vnum, instances in existing_objects.items()
-    }
+    spawned_objects: dict[int, list[object]] = {vnum: list(instances) for vnum, instances in existing_objects.items()}
     mob_counts = _count_existing_mobs()
     object_counts = _count_existing_objects()
 
     _restore_exit_states(area)
 
     for reset in area.resets:
-        cmd = (reset.command or '').upper()
-        if cmd == 'M':
+        cmd = (reset.command or "").upper()
+        if cmd == "M":
             mob_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, mob_registry)
             if used_fallback:
                 global_limit = reset.arg3 or 0
@@ -268,7 +267,7 @@ def apply_resets(area: Area) -> None:
 
             room = room_registry.get(room_vnum)
             if mob_vnum <= 0 or room is None:
-                logging.warning('Invalid M reset %s -> %s', mob_vnum, room_vnum)
+                logging.warning("Invalid M reset %s -> %s", mob_vnum, room_vnum)
                 last_mob = None
                 last_obj = None
                 continue
@@ -286,8 +285,7 @@ def apply_resets(area: Area) -> None:
             existing_in_room = sum(
                 1
                 for mob in room.people
-                if isinstance(mob, MobInstance)
-                and getattr(getattr(mob, 'prototype', None), 'vnum', None) == mob_vnum
+                if isinstance(mob, MobInstance) and getattr(getattr(mob, "prototype", None), "vnum", None) == mob_vnum
             )
             if existing_in_room >= room_limit:
                 last_mob = None
@@ -296,44 +294,44 @@ def apply_resets(area: Area) -> None:
 
             mob = spawn_mob(mob_vnum)
             if not mob:
-                logging.warning('Invalid M reset %s (missing prototype)', mob_vnum)
+                logging.warning("Invalid M reset %s (missing prototype)", mob_vnum)
                 last_mob = None
                 last_obj = None
                 continue
 
-            setattr(mob, "is_npc", True)
+            mob.is_npc = True
             proto_default = getattr(getattr(mob, "prototype", None), "default_pos", None)
             default_pos = proto_default or getattr(mob, "position", Position.STANDING)
-            setattr(mob, "default_pos", default_pos)
-            setattr(mob, "mprog_target", None)
-            setattr(mob, "mprog_delay", int(getattr(mob, "mprog_delay", 0)))
+            mob.default_pos = default_pos
+            mob.mprog_target = None
+            mob.mprog_delay = int(getattr(mob, "mprog_delay", 0))
             if not hasattr(mob, "mob_programs"):
                 programs = list(getattr(getattr(mob, "prototype", None), "mprogs", []) or [])
-                setattr(mob, "mob_programs", programs)
+                mob.mob_programs = programs
 
             room.add_mob(mob)
             mob_counts[mob_vnum] = mob_counts.get(mob_vnum, 0) + 1
-            proto = getattr(mob, 'prototype', None)
-            if proto is not None and hasattr(proto, 'count'):
+            proto = getattr(mob, "prototype", None)
+            if proto is not None and hasattr(proto, "count"):
                 proto.count = mob_counts[mob_vnum]
             last_mob = mob
             last_obj = None
-        elif cmd == 'O':
+        elif cmd == "O":
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)
             room_vnum = reset.arg3 or 0
             room = room_registry.get(room_vnum)
             if obj_vnum <= 0 or room is None:
-                logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
+                logging.warning("Invalid O reset %s -> %s", obj_vnum, room_vnum)
                 last_obj = None
                 continue
-            if getattr(area, 'nplayer', 0) > 0:
+            if getattr(area, "nplayer", 0) > 0:
                 last_obj = None
                 continue
             existing_in_room = [
                 obj
-                for obj in getattr(room, 'contents', [])
-                if getattr(getattr(obj, 'prototype', None), 'vnum', None) == obj_vnum
+                for obj in getattr(room, "contents", [])
+                if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_vnum
             ]
             if len(existing_in_room) >= limit:
                 last_obj = None
@@ -345,9 +343,9 @@ def apply_resets(area: Area) -> None:
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
-                logging.warning('Invalid O reset %s -> %s', obj_vnum, room_vnum)
+                logging.warning("Invalid O reset %s -> %s", obj_vnum, room_vnum)
                 last_obj = None
-        elif cmd == 'D':
+        elif cmd == "D":
             room_vnum = reset.arg1 or 0
             door = reset.arg2 or 0
             state = reset.arg3 or 0
@@ -388,7 +386,7 @@ def apply_resets(area: Area) -> None:
                     if rev_exit is not None:
                         rev_exit.rs_flags = base_flags
                         rev_exit.exit_info = base_flags
-        elif cmd == 'G':
+        elif cmd == "G":
             obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             limit_raw = reset.arg2
             if used_fallback:
@@ -396,17 +394,17 @@ def apply_resets(area: Area) -> None:
             limit = _resolve_reset_limit(limit_raw)
             proto_count = object_counts.get(obj_vnum, 0)
             if not last_mob:
-                logging.warning('Invalid G reset %s (no LastMob)', obj_vnum)
+                logging.warning("Invalid G reset %s (no LastMob)", obj_vnum)
                 continue
             existing = [
                 o
-                for o in getattr(last_mob, 'inventory', [])
-                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+                for o in getattr(last_mob, "inventory", [])
+                if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
             ]
             if len(existing) >= limit:
                 continue
             proto_count = object_counts.get(obj_vnum, 0)
-            is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+            is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                 continue
             obj = spawn_object(obj_vnum)
@@ -420,8 +418,8 @@ def apply_resets(area: Area) -> None:
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
             else:
-                logging.warning('Invalid G reset %s', obj_vnum)
-        elif cmd == 'E':
+                logging.warning("Invalid G reset %s", obj_vnum)
+        elif cmd == "E":
             obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             limit_raw = reset.arg2
             slot = reset.arg3 or 0
@@ -431,17 +429,17 @@ def apply_resets(area: Area) -> None:
             limit = _resolve_reset_limit(limit_raw)
             proto_count = object_counts.get(obj_vnum, 0)
             if not last_mob:
-                logging.warning('Invalid E reset %s (no LastMob)', obj_vnum)
+                logging.warning("Invalid E reset %s (no LastMob)", obj_vnum)
                 continue
             existing = [
                 o
-                for o in getattr(last_mob, 'inventory', [])
-                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+                for o in getattr(last_mob, "inventory", [])
+                if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
             ]
             if len(existing) >= limit:
                 continue
             proto_count = object_counts.get(obj_vnum, 0)
-            is_shopkeeper = getattr(getattr(last_mob, 'prototype', None), 'vnum', None) in shop_registry
+            is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
             if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                 continue
             obj = spawn_object(obj_vnum)
@@ -455,59 +453,59 @@ def apply_resets(area: Area) -> None:
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
             else:
-                logging.warning('Invalid E reset %s', obj_vnum)
-        elif cmd == 'P':
+                logging.warning("Invalid E reset %s", obj_vnum)
+        elif cmd == "P":
             obj_vnum, _ = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             container_vnum = reset.arg3 or 0
             target_count = max(1, int(reset.arg4 or 1))
             limit_raw = reset.arg2 if reset.arg2 is not None else 0
             limit = _resolve_reset_limit(limit_raw)
             if obj_vnum <= 0 or container_vnum <= 0:
-                logging.warning('Invalid P reset %s -> %s', obj_vnum, container_vnum)
+                logging.warning("Invalid P reset %s -> %s", obj_vnum, container_vnum)
                 last_obj = None
                 continue
-            if getattr(area, 'nplayer', 0) > 0:
+            if getattr(area, "nplayer", 0) > 0:
                 last_obj = None
                 continue
             obj_proto = obj_registry.get(obj_vnum)
             container_proto = obj_registry.get(container_vnum)
             if obj_proto is None or container_proto is None:
-                logging.warning('Invalid P reset %s -> %s (missing prototype)', obj_vnum, container_vnum)
+                logging.warning("Invalid P reset %s -> %s (missing prototype)", obj_vnum, container_vnum)
                 last_obj = None
                 continue
             remaining_global = max(0, limit - object_counts.get(obj_vnum, 0))
             if remaining_global <= 0:
                 last_obj = None
                 continue
-            container_obj: Optional[object] = None
-            if last_obj and getattr(getattr(last_obj, 'prototype', None), 'vnum', None) == container_vnum:
-                location = getattr(last_obj, 'location', None)
-                if location is not None and getattr(location, 'area', None) is area:
+            container_obj: object | None = None
+            if last_obj and getattr(getattr(last_obj, "prototype", None), "vnum", None) == container_vnum:
+                location = getattr(last_obj, "location", None)
+                if location is not None and getattr(location, "area", None) is area:
                     container_obj = last_obj
             if not container_obj:
                 candidates = spawned_objects.get(container_vnum) or []
                 for candidate in reversed(candidates):
-                    room = getattr(candidate, 'location', None)
-                    if room is not None and getattr(room, 'area', None) is area:
+                    room = getattr(candidate, "location", None)
+                    if room is not None and getattr(room, "area", None) is area:
                         container_obj = candidate
                         break
             if not container_obj:
                 for room in room_registry.values():
                     if room.area is not area:
                         continue
-                    for obj in getattr(room, 'contents', []):
-                        if getattr(getattr(obj, 'prototype', None), 'vnum', None) == container_vnum:
+                    for obj in getattr(room, "contents", []):
+                        if getattr(getattr(obj, "prototype", None), "vnum", None) == container_vnum:
                             container_obj = obj
                             spawned_objects.setdefault(container_vnum, []).append(obj)
                             break
                     if container_obj:
                         break
             if not container_obj:
-                logging.warning('Invalid P reset %s -> %s (no container instance)', obj_vnum, container_vnum)
+                logging.warning("Invalid P reset %s -> %s (no container instance)", obj_vnum, container_vnum)
                 last_obj = None
                 continue
 
-            if getattr(area, 'nplayer', 0) > 0:
+            if getattr(area, "nplayer", 0) > 0:
                 last_obj = container_obj
                 continue
 
@@ -519,8 +517,8 @@ def apply_resets(area: Area) -> None:
 
             existing = [
                 o
-                for o in getattr(container_obj, 'contained_items', [])
-                if getattr(getattr(o, 'prototype', None), 'vnum', None) == obj_vnum
+                for o in getattr(container_obj, "contained_items", [])
+                if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
             ]
             if len(existing) >= target_count:
                 last_obj = container_obj
@@ -532,9 +530,9 @@ def apply_resets(area: Area) -> None:
                     break
                 obj = spawn_object(obj_vnum)
                 if not obj:
-                    logging.warning('Invalid P reset %s', obj_vnum)
+                    logging.warning("Invalid P reset %s", obj_vnum)
                     break
-                getattr(container_obj, 'contained_items').append(obj)
+                container_obj.contained_items.append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 made += 1
                 remaining_global -= 1
@@ -546,7 +544,7 @@ def apply_resets(area: Area) -> None:
             except Exception:
                 pass
             last_obj = container_obj
-        elif cmd == 'R':
+        elif cmd == "R":
             room_vnum = reset.arg1 or 0
             max_dirs = int(reset.arg2 or 0)
             if (room_vnum <= 0 or room_vnum not in room_registry) and (reset.arg2 or 0) in room_registry:
@@ -582,10 +580,7 @@ def reset_tick() -> None:
             continue
 
         should_reset = False
-        if (
-            not getattr(area, "empty", False)
-            and (nplayer == 0 or area.age >= 15)
-        ) or area.age >= 31:
+        if (not getattr(area, "empty", False) and (nplayer == 0 or area.age >= 15)) or area.age >= 31:
             should_reset = True
 
         if not should_reset:

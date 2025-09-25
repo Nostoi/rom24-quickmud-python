@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import List, Tuple
-import time
 
 from .board_json import BoardJson
 from .note import Note
@@ -39,13 +38,13 @@ class Board:
     default_recipients: str = ""
     force_type: BoardForceType = BoardForceType.NORMAL
     purge_days: int = 0
-    notes: List[Note] = field(default_factory=list)
+    notes: list[Note] = field(default_factory=list)
 
     @staticmethod
-    def _split_recipients(value: str) -> List[str]:
+    def _split_recipients(value: str) -> list[str]:
         return [token for token in value.replace(",", " ").split() if token]
 
-    def resolve_recipients(self, recipients: str | None) -> Tuple[str, bool, bool]:
+    def resolve_recipients(self, recipients: str | None) -> tuple[str, bool, bool]:
         """Apply board-level recipient defaults and force rules."""
 
         tokens = self._split_recipients(recipients or "")
@@ -75,9 +74,7 @@ class Board:
             lower = {token.lower() for token in tokens}
             for req in required:
                 if req.lower() in lower:
-                    raise ValueError(
-                        f"You are not allowed to send notes to {self.default_recipients} on this board."
-                    )
+                    raise ValueError(f"You are not allowed to send notes to {self.default_recipients} on this board.")
 
         final = " ".join(tokens).strip()
         return final, added_required, used_default
@@ -134,7 +131,7 @@ class Board:
         )
 
     @classmethod
-    def from_json(cls, data: BoardJson) -> "Board":
+    def from_json(cls, data: BoardJson) -> Board:
         return cls(
             name=data.name,
             description=data.description,

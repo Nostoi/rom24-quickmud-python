@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import ActFlag, Position, LEVEL_IMMORTAL, convert_flags_from_letters
+from mud.models.constants import LEVEL_IMMORTAL, ActFlag, Position, convert_flags_from_letters
 from mud.skills.registry import skill_registry
 
 
@@ -99,7 +99,7 @@ def do_practice(char: Character, args: str) -> str:
 
     levels = getattr(skill, "levels", None)
     required_level = None
-    if isinstance(levels, (list, tuple)) and levels:
+    if isinstance(levels, list | tuple) and levels:
         try:
             idx = int(getattr(char, "ch_class", 0) or 0)
         except Exception:

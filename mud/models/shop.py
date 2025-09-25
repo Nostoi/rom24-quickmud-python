@@ -17,5 +17,5 @@ class Shop:
     close_hour: int = 23
 
     @classmethod
-    def from_json(cls, data: ShopJson) -> "Shop":
+    def from_json(cls, data: ShopJson) -> Shop:
         return cls(**data.to_dict())

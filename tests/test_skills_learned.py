@@ -33,4 +33,3 @@ def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 76)
     result2 = reg.use(caster, "fireball", target)
     assert result2 is False
-

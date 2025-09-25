@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
 
 from .json_io import JsonDataclass
 from .note_json import NoteJson
@@ -18,4 +17,4 @@ class BoardJson(JsonDataclass):
     default_recipients: str = ""
     force_type: int = 0
     purge_days: int = 0
-    notes: List[NoteJson] = field(default_factory=list)
+    notes: list[NoteJson] = field(default_factory=list)

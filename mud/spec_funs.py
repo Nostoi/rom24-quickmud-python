@@ -1,12 +1,17 @@
 from __future__ import annotations
-from typing import Any, Callable
+
+from collections.abc import Callable
+from typing import Any
+
 from mud.utils import rng_mm
 
 spec_fun_registry: dict[str, Callable[..., Any]] = {}
 
+
 def register_spec_fun(name: str, func: Callable[..., Any]) -> None:
     """Register *func* under *name*, storing key in lowercase."""
     spec_fun_registry[name.lower()] = func
+
 
 def get_spec_fun(name: str) -> Callable[..., Any] | None:
     """Return a spec_fun for *name* using case-insensitive lookup."""
@@ -39,6 +44,7 @@ def run_npc_specs() -> None:
 
 
 # --- Minimal ROM-like spec functions (rng_mm parity) ---
+
 
 def spec_cast_adept(mob: Any) -> bool:
     """Simplified Adept spec that uses ROM RNG.

@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 from mud.scripts import convert_are_to_json as mod
 
@@ -23,4 +22,3 @@ def test_convert_are_cli_writes_output(tmp_path):
     assert out_file.exists()
     data = out_file.read_text()
     assert '"rooms"' in data
-

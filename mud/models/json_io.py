@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import MISSING, asdict, fields, is_dataclass
-from typing import Any, Type, TypeVar, get_args, get_origin, get_type_hints, cast
+from typing import Any, TypeVar, cast, get_args, get_origin, get_type_hints
 
 T = TypeVar("T")
 JsonT = TypeVar("JsonT", bound="JsonDataclass")
@@ -22,7 +22,7 @@ def _convert_value(annotation, value):
     return value
 
 
-def dataclass_from_dict(cls: Type[T], data: dict) -> T:
+def dataclass_from_dict(cls: type[T], data: dict) -> T:
     """Instantiate ``cls`` from ``data`` applying dataclass defaults."""
     kwargs = {}
     hints = get_type_hints(cls)
@@ -42,7 +42,7 @@ def dataclass_to_dict(obj: Any) -> dict:
     return asdict(obj)
 
 
-def load_dataclass(cls: Type[T], fp) -> T:
+def load_dataclass(cls: type[T], fp) -> T:
     """Load ``cls`` from a JSON file-like object."""
     data = json.load(fp)
     return dataclass_from_dict(cls, data)
@@ -60,5 +60,5 @@ class JsonDataclass:
         return dataclass_to_dict(self)
 
     @classmethod
-    def from_dict(cls: Type[JsonT], data: dict) -> JsonT:
+    def from_dict(cls: type[JsonT], data: dict) -> JsonT:
         return dataclass_from_dict(cls, data)

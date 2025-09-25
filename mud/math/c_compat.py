@@ -3,6 +3,7 @@
 Matches C integer division semantics (truncate toward zero), unlike Python's
 "//" which floors toward negative infinity.
 """
+
 from __future__ import annotations
 
 
@@ -24,4 +25,3 @@ def c_mod(a: int, b: int) -> int:
 def urange(low: int, val: int, high: int) -> int:
     """Clamp to [low, high] inclusive, like ROM's URANGE macro."""
     return max(low, min(val, high))
-

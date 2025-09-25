@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from mud.models.character import Character
 
 
-def _find_healer(char: Character) -> Optional[object]:
+def _find_healer(char: Character) -> object | None:
     """Find a healer NPC in the room.
 
     Heuristic: a mob whose prototype has spec_fun == 'spec_healer',

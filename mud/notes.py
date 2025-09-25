@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Dict, Iterable
 import os
+from collections.abc import Iterable
+from pathlib import Path
 
 from mud.models.board import Board, BoardForceType
 from mud.models.board_json import BoardJson
-from mud.models.json_io import load_dataclass, dump_dataclass
+from mud.models.json_io import dump_dataclass, load_dataclass
 
 BOARDS_DIR = Path("data/boards")
 
@@ -16,7 +16,8 @@ DEFAULT_BOARD_NAME = "general"
 def _normalize_board_name(name: str) -> str:
     return name.strip().lower()
 
-board_registry: Dict[str, Board] = {}
+
+board_registry: dict[str, Board] = {}
 
 
 def load_boards() -> None:
@@ -64,9 +65,7 @@ def get_board(
             read_level=read_level or 0,
             write_level=write_level or 0,
             default_recipients=default_recipients or "",
-            force_type=BoardForceType(force_type)
-            if force_type is not None
-            else BoardForceType.NORMAL,
+            force_type=BoardForceType(force_type) if force_type is not None else BoardForceType.NORMAL,
             purge_days=purge_days or 0,
         )
         board_registry[key] = board

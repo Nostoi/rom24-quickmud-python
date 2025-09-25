@@ -3,10 +3,10 @@
 from .account_manager import load_character, save_character
 from .account_service import (
     create_account,
+    create_character,
+    list_characters,
     login,
     login_with_host,
-    list_characters,
-    create_character,
 )
 
 __all__ = [

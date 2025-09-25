@@ -1,5 +1,6 @@
-from mud.models.room import Room, Exit, ExtraDescr
+from mud.models.room import Exit, ExtraDescr, Room
 from mud.registry import room_registry
+
 from .base_loader import BaseTokenizer
 
 
@@ -8,39 +9,41 @@ def load_rooms(tokenizer: BaseTokenizer, area):
         line = tokenizer.next_line()
         if line is None:
             break
-        if line.startswith('#'):
-            if line == '#0':
+        if line.startswith("#"):
+            if line == "#0":
                 break
             vnum = int(line[1:])
-            name = tokenizer.next_line().rstrip('~')
+            name = tokenizer.next_line().rstrip("~")
             desc = tokenizer.read_string_tilde()
             flags_line = tokenizer.next_line()
-            while flags_line is not None and flags_line == '~':
+            while flags_line is not None and flags_line == "~":
                 flags_line = tokenizer.next_line()
             tokens = flags_line.split() if flags_line else []
             room_flags = int(tokens[0]) if tokens else 0
             sector_type = int(tokens[-1]) if tokens else 0
-            room = Room(vnum=vnum, name=name, description=desc, room_flags=room_flags, sector_type=sector_type, area=area)
+            room = Room(
+                vnum=vnum, name=name, description=desc, room_flags=room_flags, sector_type=sector_type, area=area
+            )
             room_registry[vnum] = room
             # parse additional blocks until 'S'
             while True:
                 peek = tokenizer.peek_line()
                 if peek is None:
                     break
-                if peek.startswith('H') or peek.startswith('M'):
+                if peek.startswith("H") or peek.startswith("M"):
                     line = tokenizer.next_line()
                     tokens = line.split()
                     idx = 0
                     while idx < len(tokens):
                         code = tokens[idx]
-                        if code == 'H' and idx + 1 < len(tokens):
+                        if code == "H" and idx + 1 < len(tokens):
                             try:
                                 room.heal_rate = int(tokens[idx + 1])
                             except ValueError:
                                 pass
                             idx += 2
                             continue
-                        if code == 'M' and idx + 1 < len(tokens):
+                        if code == "M" and idx + 1 < len(tokens):
                             try:
                                 room.mana_rate = int(tokens[idx + 1])
                             except ValueError:
@@ -49,10 +52,10 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                             continue
                         idx += 1
                     continue
-                if peek.startswith('C'):
+                if peek.startswith("C"):
                     line = tokenizer.next_line()
                     clan_value = line[1:].strip()
-                    if clan_value.endswith('~'):
+                    if clan_value.endswith("~"):
                         clan_value = clan_value[:-1]
                     if clan_value:
                         try:
@@ -60,14 +63,14 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                         except ValueError:
                             room.clan = clan_value
                     continue
-                if peek.startswith('O'):
+                if peek.startswith("O"):
                     line = tokenizer.next_line()
                     owner_value = line[1:].strip()
-                    if owner_value.endswith('~'):
+                    if owner_value.endswith("~"):
                         owner_value = owner_value[:-1]
                     room.owner = owner_value
                     continue
-                if peek.startswith('D'):
+                if peek.startswith("D"):
                     dir_line = tokenizer.next_line()
                     exit_desc = tokenizer.read_string_tilde()
                     exit_keywords = tokenizer.read_string_tilde()
@@ -75,7 +78,7 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                     if info_line is None:
                         break
                     info_parts = info_line.split()
-                    exit_flags = info_parts[0] if len(info_parts) >= 1 else '0'
+                    exit_flags = info_parts[0] if len(info_parts) >= 1 else "0"
                     try:
                         exit_bits = int(exit_flags)
                     except ValueError:
@@ -100,18 +103,18 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                     if idx < len(room.exits):
                         room.exits[idx] = exit_obj
                     continue
-                if peek.startswith('E'):
+                if peek.startswith("E"):
                     tokenizer.next_line()
-                    keyword = tokenizer.next_line().rstrip('~')
+                    keyword = tokenizer.next_line().rstrip("~")
                     descr = tokenizer.read_string_tilde()
                     room.extra_descr.append(ExtraDescr(keyword=keyword, description=descr))
                     continue
-                if peek == 'S':
+                if peek == "S":
                     tokenizer.next_line()
                     break
-                if peek.startswith('#'):
+                if peek.startswith("#"):
                     break
                 # consume unknown line
                 tokenizer.next_line()
-        elif line == '$':
+        elif line == "$":
             break
