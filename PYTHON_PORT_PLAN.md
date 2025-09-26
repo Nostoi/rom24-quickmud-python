@@ -1,5 +1,6 @@
-<!-- LAST-PROCESSED: mob_programs -->
+<!-- LAST-PROCESSED: STRATEGIC-IMPLEMENTATION-2025-09-25 -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: 7 subsystems require integration fixes, not task completion -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -22,32 +23,61 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | channels             | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                                                           | tests/test_communication.py                                                                                               |
 | wiznet_imm           | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                                                                   | tests/test_wiznet.py                                                                                                      |
 | world_loader         | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py               |
-| resets               | present_wired | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick                                                                                                                                                                           | tests/test_spawning.py                                                                                                    |
+| resets               | stub_or_partial | C: src/db.c:reset_area; PY: mud/spawning/reset_handler.py:reset_tick; CONF: 0.38 (architectural gaps: LastObj/LastMob state tracking missing)                                                                                                | tests/test_spawning.py; tests/integration/test_pilot_integration.py                                                       |
 | weather              | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                                                              | tests/test_game_loop.py                                                                                                   |
 | time_daynight        | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                                                              | tests/test_time_daynight.py; tests/test_time_persistence.py                                                               |
-| movement_encumbrance | present_wired | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character                                                                                                                                                                        | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py                                              |
+| movement_encumbrance | stub_or_partial | C: src/act_move.c:encumbrance; PY: mud/world/movement.py:move_character; CONF: 0.45 (architectural gaps: follower cascading, auto-look integration)                                                                                        | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/integration/test_pilot_integration.py |
 | stats_position       | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                                                       | tests/test_advancement.py                                                                                                 |
 | shops_economy        | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                             | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                                  |
-| boards_notes         | present_wired | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py                                                                                                                                                                 | tests/test_boards.py                                                                                                      |
+| boards_notes         | stub_or_partial | C: src/board.c; PY: mud/notes.py:load_boards/save_board; mud/commands/notes.py; CONF: 0.51 (architectural gaps: cross-system persistence)                                                                                                   | tests/test_boards.py                                                                                                      |
 | help_system          | present_wired | DOC: doc/area.txt § #HELPS; ARE: area/help.are § #HELPS; C: src/act_info.c:do_help; PY: mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help                                                                                | tests/test_help_system.py                                                                                                 |
 | mob_programs         | stub_or_partial | C: src/mob_prog.c:356-1235 (cmd_eval/expand_arg/trigger dispatch); C: src/mob_cmds.c:50-312 (mob command table); PY: mud/mobprog.py:120-640 (partial interpreter/triggers); PY: mud/mob_cmds.py:14-68 (truncated command set) | tests/test_mobprog_triggers.py (happy-path only) |
 | npc_spec_funs        | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                 | tests/test_spec_funs.py                                                                                                   |
-| game_update_loop     | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick                                                                                                                                                                                 | tests/test_game_loop.py                                                                                                   |
+| game_update_loop     | stub_or_partial | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; CONF: 0.70 (architectural gaps: timing synchronization)                                                                                                                      | tests/test_game_loop.py                                                                                                   |
 | persistence          | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                                                          | tests/test_persistence.py; tests/test_inventory_persistence.py                                                            |
 | login_account_nanny  | present_wired | C: src/nanny.c; PY: mud/account/account_service.py                                                                                                                                                                                             | tests/test_account_auth.py                                                                                                |
 | networking_telnet    | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server                                                                                                                                                                                       | tests/test_telnet_server.py                                                                                               |
 | security_auth_bans   | present_wired | C: src/ban.c:check_ban/do_ban/save_bans; PY: mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py                                                                                                                | tests/test_bans.py; tests/test_account_auth.py                                                                            |
-| logging_admin        | present_wired | C: src/act_wiz.c (admin flows); PY: mud/logging/admin.py:log_admin_command/rotate_admin_log                                                                                                                                                    | tests/test_logging_admin.py; tests/test_logging_rotation.py                                                               |
+| logging_admin        | stub_or_partial | C: src/act_wiz.c (admin flows); PY: mud/logging/admin.py:log_admin_command/rotate_admin_log; CONF: 0.70 (architectural gaps: admin flow integration)                                                                                        | tests/test_logging_admin.py; tests/test_logging_rotation.py                                                               |
 | olc_builders         | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit                                                                                                                                                                                          | tests/test_building.py                                                                                                    |
-| area_format_loader   | present_wired | DOC: doc/area.txt §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; ARE: area/midgaard.are §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; C: src/db.c:load_area; PY: mud/loaders/area_loader.py                                     | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py                                            |
-| imc_chat             | present_wired | C: imc/imc.c; PY: mud/imc/protocol.py:parse_frame/serialize_frame; mud/commands/imc.py:do_imc                                                                                                                                                  | tests/test_imc.py                                                                                                         |
+| area_format_loader   | stub_or_partial | DOC: doc/area.txt §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; ARE: area/midgaard.are §§ #AREADATA/#ROOMS/#MOBILES/#OBJECTS/#RESETS/#SHOPS; C: src/db.c:load_area; PY: mud/loaders/area_loader.py; CONF: 0.74 (architectural gaps: format validation) | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py                                            |
+| imc_chat             | stub_or_partial | C: imc/imc.c; PY: mud/imc/protocol.py:parse_frame/serialize_frame; mud/commands/imc.py:do_imc; CONF: 0.80 (architectural gaps: protocol integration)                                                                                         | tests/test_imc.py                                                                                                         |
 | player_save_format   | present_wired | C: src/save.c:save_char_obj; DOC: doc/pfile.txt; ARE/PLAYER: player/Shemp; PY: mud/scripts/convert_player_to_json.py:convert_player; mud/persistence.py                                                                                        | tests/test_player_save_format.py; tests/test_persistence.py                                                               |
 
 <!-- COVERAGE-END -->
 
+## Parity Gaps & Corrections
+
+<!-- PARITY-GAPS-START -->
+<!-- AUDITED: resets, movement_encumbrance, boards_notes, logging_admin, game_update_loop, area_format_loader, imc_chat -->
+
+### Strategic Implementation Status - 2025-09-25
+
+**Task-Completion Disconnect Identified**: 7 subsystems show individual task completion but confidence scores < 0.80, indicating architectural integration gaps.
+
+**Architectural Fixes Required:**
+- [P0] **resets** (0.38 confidence): LastObj/LastMob state tracking missing - ROM reset commands 'O' and 'P' need stateful context
+- [P0] **movement_encumbrance** (0.45 confidence): Follower cascading and auto-look integration incomplete
+- [P1] **boards_notes** (0.51 confidence): Cross-system persistence integration gaps
+- [P1] **logging_admin** (0.70 confidence): Admin flow integration incomplete  
+- [P1] **game_update_loop** (0.70 confidence): Timing synchronization issues
+- [P2] **area_format_loader** (0.74 confidence): Format validation edge cases
+- [P2] **imc_chat** (0.80 confidence): Protocol integration boundary cases
+
+**Integration Test Framework**: Pilot test operational at `tests/integration/test_pilot_integration.py` - demonstrates cross-subsystem validation approach.
+
+**Confidence Tracking**: Automated analysis via `scripts/confidence_tracker.py` - detects functional gaps that individual task completion misses.
+
+<!-- PARITY-GAPS-END -->
+
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- [P0] Implement LastObj/LastMob state tracking in reset_handler.py (resets subsystem architectural fix)
+- [P0] Add follower cascading auto-look integration in movement.py (movement_encumbrance architectural fix)  
+- [P1] Expand integration test coverage for cross-subsystem scenarios
+- [P1] Address boards_notes persistence integration gaps
+- [P1] Complete admin flow integration in logging_admin
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -1207,6 +1237,41 @@ NOTES:
   - tests: tests/test_shops.py::test_list_price_matches_buy_price
   - acceptance_criteria: gold deducted equals listed price
   - references: C src/act_obj.c:get_cost (buy path)
+
+<!-- SUBSYSTEM: resets START -->
+### resets — Architectural Integration Required 2025-09-25
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.38)
+KEY RISKS: LastObj/LastMob state tracking, reset command stateful context
+TASKS:
+- [P0] Implement LastObj state tracking in reset_handler.py — acceptance: 'O' command sets LastObj, 'P' command uses LastObj as container
+- [P0] Implement LastMob state tracking in reset_handler.py — acceptance: 'M' command sets LastMob, 'G'/'E' commands use LastMob as target
+- [P0] Add integration tests for reset state persistence — acceptance: tests/integration/test_reset_state_tracking.py validates cross-command state
+- [P1] Validate reset command sequence integrity — acceptance: ROM command sequence 'O'->'P' works correctly
+
+NOTES:
+- C: src/db.c:reset_area maintains LastObj/LastMob across reset commands for stateful operations
+- PY: mud/spawning/reset_handler.py lacks stateful context, causing 'P' commands to fail
+- TEST: tests/integration/test_pilot_integration.py demonstrates the architectural integration approach
+- Applied architectural fix needed: LastObj/LastMob state tracking implementation
+<!-- SUBSYSTEM: resets END -->
+
+<!-- SUBSYSTEM: movement_encumbrance START -->
+### movement_encumbrance — Architectural Integration Required 2025-09-25
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.45)
+KEY RISKS: follower cascading, auto-look integration, charmed follower movement
+TASKS:
+- [P0] Implement follower cascading auto-look in movement.py — acceptance: charmed followers receive look after movement
+- [P0] Add charmed follower standing logic — acceptance: sleeping/resting charmed followers stand before following
+- [P1] Add integration tests for movement cascading — acceptance: tests/integration/test_movement_cascading.py validates follower behavior
+
+NOTES:
+- C: src/act_move.c handles follower movement with position changes and auto-look
+- PY: mud/world/movement.py has individual features but lacks integration
+- TEST: tests/integration/test_pilot_integration.py demonstrates the cascading integration approach
+- Applied architectural fix needed: follower cascading with auto-look integration
+<!-- SUBSYSTEM: movement_encumbrance END -->
 
 ### Post-Completion Critical Fixes
 
