@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-25T20:25:20.458188",
+  "timestamp": "2025-09-25T21:19:13.480327",
   "current_scores": {
     "affects_saves": [
       "\u2705",
@@ -99,7 +99,29 @@
       "Refactor resets: completion probability 0.23 indicates architectural issues",
       "Refactor boards_notes: completion probability 0.36 indicates architectural issues"
     ],
-    "integration_tests": [],
+    "integration_tests": [
+      "Add integration tests for affects_saves: confidence score stagnation detected",
+      "Add integration tests for socials: confidence score stagnation detected",
+      "Add integration tests for wiznet_imm: confidence score stagnation detected",
+      "Add integration tests for world_loader: confidence score stagnation detected",
+      "Add integration tests for time_daynight: confidence score stagnation detected",
+      "Add integration tests for combat: confidence score stagnation detected",
+      "Add integration tests for skills_spells: confidence score stagnation detected",
+      "Add integration tests for movement_encumbrance: confidence score stagnation detected",
+      "Add integration tests for help_system: confidence score stagnation detected",
+      "Add integration tests for mob_programs: confidence score stagnation detected",
+      "Add integration tests for resets: confidence score stagnation detected",
+      "Add integration tests for security_auth_bans: confidence score stagnation detected",
+      "Add integration tests for area_format_loader: confidence score stagnation detected",
+      "Add integration tests for player_save_format: confidence score stagnation detected",
+      "Add integration tests for imc_chat: confidence score stagnation detected",
+      "Add integration tests for npc_spec_funs: confidence score stagnation detected",
+      "Add integration tests for logging_admin: confidence score stagnation detected",
+      "Add integration tests for shops_economy: confidence score stagnation detected",
+      "Add integration tests for boards_notes: confidence score stagnation detected",
+      "Add integration tests for command_interpreter: confidence score stagnation detected",
+      "Add integration tests for game_update_loop: confidence score stagnation detected"
+    ],
     "batch_optimizations": [
       "Increase MAX_SUBSYSTEMS_PER_RUN and enable ARCHITECTURAL_FIXES mode"
     ]
