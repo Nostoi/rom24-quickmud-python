@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-09-25T20:25:20.458188",
+  "current_scores": {
+    "affects_saves": [
+      "\u2705",
+      0.86
+    ],
+    "socials": [
+      "\u2705",
+      0.84
+    ],
+    "wiznet_imm": [
+      "\u2705",
+      0.96
+    ],
+    "world_loader": [
+      "\u2705",
+      0.71
+    ],
+    "time_daynight": [
+      "\u2705",
+      0.95
+    ],
+    "combat": [
+      "\u2705",
+      0.95
+    ],
+    "skills_spells": [
+      "\u2705",
+      0.74
+    ],
+    "movement_encumbrance": [
+      "\u274c",
+      0.45
+    ],
+    "help_system": [
+      "\u2705",
+      0.82
+    ],
+    "mob_programs": [
+      "\u2705",
+      0.62
+    ],
+    "resets": [
+      "\u274c",
+      0.38
+    ],
+    "security_auth_bans": [
+      "\u2705",
+      0.71
+    ],
+    "area_format_loader": [
+      "\u274c",
+      0.74
+    ],
+    "player_save_format": [
+      "\u2705",
+      0.7
+    ],
+    "imc_chat": [
+      "\u274c",
+      0.8
+    ],
+    "npc_spec_funs": [
+      "\u2705",
+      0.88
+    ],
+    "logging_admin": [
+      "\u274c",
+      0.7
+    ],
+    "shops_economy": [
+      "\u2705",
+      0.74
+    ],
+    "boards_notes": [
+      "\u274c",
+      0.51
+    ],
+    "command_interpreter": [
+      "\u2705",
+      0.78
+    ],
+    "game_update_loop": [
+      "\u274c",
+      0.7
+    ]
+  },
+  "recommendations": {
+    "immediate_actions": [
+      "Investigate movement_encumbrance: individual tasks completed but confidence < 0.80",
+      "Investigate resets: individual tasks completed but confidence < 0.80",
+      "Investigate logging_admin: individual tasks completed but confidence < 0.80",
+      "Investigate boards_notes: individual tasks completed but confidence < 0.80",
+      "Investigate game_update_loop: individual tasks completed but confidence < 0.80"
+    ],
+    "architectural_fixes": [
+      "Refactor movement_encumbrance: completion probability 0.30 indicates architectural issues",
+      "Refactor resets: completion probability 0.23 indicates architectural issues",
+      "Refactor boards_notes: completion probability 0.36 indicates architectural issues"
+    ],
+    "integration_tests": [],
+    "batch_optimizations": [
+      "Increase MAX_SUBSYSTEMS_PER_RUN and enable ARCHITECTURAL_FIXES mode"
+    ]
+  },
+  "completion_probabilities": {
+    "affects_saves": 1.0,
+    "socials": 1.0,
+    "wiznet_imm": 1.0,
+    "world_loader": 1.0,
+    "time_daynight": 1.0,
+    "combat": 1.0,
+    "skills_spells": 1.0,
+    "movement_encumbrance": 0.30000000000000004,
+    "help_system": 1.0,
+    "mob_programs": 1.0,
+    "resets": 0.23,
+    "security_auth_bans": 1.0,
+    "area_format_loader": 0.74,
+    "player_save_format": 1.0,
+    "imc_chat": 0.8,
+    "npc_spec_funs": 1.0,
+    "logging_admin": 0.7,
+    "shops_economy": 1.0,
+    "boards_notes": 0.36,
+    "command_interpreter": 1.0,
+    "game_update_loop": 0.6
+  }
+}

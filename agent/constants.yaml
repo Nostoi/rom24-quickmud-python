@@ -32,18 +32,36 @@ catalog:
   - player_save_format
 
 # Risk taxonomy (don’t invent new labels)
-risks: [RNG, c_div/c_mod, AC mapping, defense_order, RIV, tick_cadence, file_formats, flags, indexing, lag_wait, side_effects]
+risks:
+  [
+    RNG,
+    c_div/c_mod,
+    AC mapping,
+    defense_order,
+    RIV,
+    tick_cadence,
+    file_formats,
+    flags,
+    indexing,
+    lag_wait,
+    side_effects,
+  ]
 
 # Auditor knobs
-MAX_DISCOVERY_SUBSYSTEMS: 1
-MAX_SUBSYSTEMS_PER_RUN: 1
-MAX_TASKS_PER_SUBSYSTEM: 2
-MAX_TINY_FIXES_PER_RUN: 1
-MAX_AUDITOR_FILES_TOUCHED: 3
-MAX_AUDITOR_LINES_CHANGED: 120
+MAX_DISCOVERY_SUBSYSTEMS: 2
+MAX_SUBSYSTEMS_PER_RUN: 2
+MAX_TASKS_PER_SUBSYSTEM: 4
+MAX_TINY_FIXES_PER_RUN: 2
+MAX_AUDITOR_FILES_TOUCHED: 5
+MAX_AUDITOR_LINES_CHANGED: 200
 
-# Executor knobs
-MAX_TASKS_PER_RUN: 2
-MAX_FILES_TOUCHED: 8
-MAX_LINES_CHANGED: 400
-ALLOW_TINY_FIXES_OUTSIDE_TASK: false
+# Executor knobs (optimized for architectural integration)
+MAX_TASKS_PER_RUN: 4
+MAX_FILES_TOUCHED: 12
+MAX_LINES_CHANGED: 600
+ALLOW_TINY_FIXES_OUTSIDE_TASK: true
+
+# Completion phase optimization (for final 10-15%)
+ENABLE_INTEGRATION_TASKS: true
+ENABLE_ARCHITECTURAL_FIXES: true
+COMPLETION_CONFIDENCE_THRESHOLD: 0.85

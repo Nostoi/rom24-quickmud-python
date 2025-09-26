@@ -122,7 +122,24 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
         return "", ""
 
     first = stripped[0]
-    if not first.isalnum():
+    # Handle special case for @ commands (admin commands like @teleport, @who, etc.)
+    if first == "@":
+        # For @ commands, split normally by whitespace to preserve full command names
+        try:
+            parts = shlex.split(stripped)
+            if not parts:
+                return "", ""
+            head = parts[0]
+            tail = " ".join(parts[1:]) if len(parts) > 1 else ""
+            return head, tail
+        except ValueError:
+            fallback = stripped.split(None, 1)
+            if not fallback:
+                return "", ""
+            head = fallback[0]
+            tail = fallback[1] if len(fallback) > 1 else ""
+            return head, tail
+    elif not first.isalnum():
         return first, stripped[1:].lstrip()
 
     try:

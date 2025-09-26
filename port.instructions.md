@@ -1,13 +1,14 @@
 ## Port Instructions (ROM 2.4 -> Python) — Living Rules
 
 <!-- RULES-START -->
+
 - RULE: All combat randomness must use the ROM Mitchell–Moore `number_mm` family (`seed_mm`, `number_range`, `number_percent`, `dice`, `number_bits`); forbid `random.*` in combat paths.
   RATIONALE: Preserves ROM hit/damage distributions and exact RNG sequence.
   EXAMPLE: rng_mm.seed_mm(1234); rng_mm.number_percent()
 
 - RULE: Use C-semantics helpers `c_div` and `c_mod` in all combat math; forbid `//` and `%` in ported code.
   RATIONALE: C truncates toward zero; Python floors; negatives diverge.
-  EXAMPLE: c_div(-3, 2) == -1  # matches C
+  EXAMPLE: c_div(-3, 2) == -1 # matches C
 
 - RULE: Armor Class is better when more negative; map damage type -> AC index exactly as in ROM.
   RATIONALE: Prevents inverted hit curves and weapon-type bias.
@@ -65,10 +66,10 @@
 - RULE: Advance world time using ROM `time_info`; emit sunrise/sunset messages on `PULSE_TICK`.
   RATIONALE: Day/night transitions affect light levels and time-based effects.
   EXAMPLE: time_info.update(); broadcast("The sun rises in the east.")
- 
- - RULE: Over-encumbrance imposes a wait-state; overweight move attempts should increase `ch.wait` using ROM `WAIT_STATE` semantics.
-   RATIONALE: Movement penalties from weight are enforced via lag/wait in ROM.
-   EXAMPLE: if ch.carry_weight > can_carry_w(ch): WAIT_STATE(ch, PULSE_VIOLENCE/2)
+
+- RULE: Over-encumbrance imposes a wait-state; overweight move attempts should increase `ch.wait` using ROM `WAIT_STATE` semantics.
+  RATIONALE: Movement penalties from weight are enforced via lag/wait in ROM.
+  EXAMPLE: if ch.carry_weight > can_carry_w(ch): WAIT_STATE(ch, PULSE_VIOLENCE/2)
 
 - RULE: Hour advances on ROM `PULSE_TICK` (60 × `PULSE_PER_SECOND`), not every 4 pulses; tests may scale ticks but engine cadence must match ROM.
   RATIONALE: `update_handler` increments time on `pulse_point == 0` (i.e., `PULSE_TICK`), which triggers `weather_update` and sunrise/sunset.
@@ -86,9 +87,9 @@
   RATIONALE: Mirrors ROM hit calculation while keeping default behavior stable.
   EXAMPLE: monkeypatch.setattr('mud.combat.engine.COMBAT_USE_THAC0', True)
 
- - RULE: Conversions from `area/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
-   RATIONALE: Prevent silent data loss.
-   EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`
+- RULE: Conversions from `area/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
+  RATIONALE: Prevent silent data loss.
+  EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`
 
 - RULE: Player save JSON must preserve ROM bit widths and field order; never reorder keys that map to packed flags.
   RATIONALE: Save/load parity.
@@ -148,6 +149,31 @@
   EXAMPLE: if ch.position < POS_RESTING: "Nah... You feel too relaxed..."
 
 - RULE: Charge movement points by sector and apply short wait on moves; require boat for noswim and fly for air.
+
+<!-- ENHANCED-EVIDENCE-RULES-START -->
+
+# Enhanced Evidence Framework for Final Completion Phase
+
+- RULE: INTEGRATION evidence must demonstrate cross-subsystem interaction with concrete test cases.
+  RATIONALE: Individual task completion doesn't guarantee architectural coherence; integration failures cause task-completion disconnect.
+  EXAMPLE: INTEGRATION: tests/integration/test_reset_movement.py demonstrates reset state consistency during player movement
+
+- RULE: PERFORMANCE evidence must include ROM baseline comparisons with specific timing measurements.
+  RATIONALE: Python implementation must maintain ROM gameplay timing for authentic experience.
+  EXAMPLE: PERFORMANCE: Reset cycle completes within 500ms (ROM baseline: 450ms ±10%)
+
+- RULE: ARCHITECTURAL evidence must trace critical state variables across subsystem boundaries.
+  RATIONALE: Complex systems like resets/movement require state tracking beyond individual functions.
+  EXAMPLE: ARCHITECTURAL: LastObj/LastMob state maintained consistently across reset_room, char_to_room, and save/load cycles
+
+- RULE: COMPLETION evidence requires both individual task validation AND integration test success.
+  RATIONALE: Completed individual tasks without integration validation creates false completion status.
+  EXAMPLE: COMPLETION: All P0 tasks ✅ AND tests/integration/test\_[subsystem]\_integration.py passes
+
+- RULE: CONFIDENCE scoring must weight integration test results more heavily than individual task completion.
+  RATIONALE: Integration failures indicate deeper architectural issues that individual task fixes cannot resolve.
+  EXAMPLE: CONFIDENCE: max(0.5, task_completion _ 0.3 + integration_success _ 0.7)
+  <!-- ENHANCED-EVIDENCE-RULES-END -->
   RATIONALE: Movement economy and gating are core to ROM exploration pacing.
   EXAMPLE: move_cost = (movement_loss[from] + movement_loss[to]) / 2; WAIT_STATE(ch,1)
 - RULE: Block movement when `carry_weight` or `carry_number` exceed strength limits; update on inventory changes.
@@ -167,7 +193,7 @@
   EXAMPLE: spec_fun = spec_fun_registry.get(ch.spec_fun); spec_fun(ch)
 - RULE: Log admin commands to `log/admin.log` and rotate daily.
   RATIONALE: Ensures immortal actions are auditable like ROM's wiznet logs.
-  EXAMPLE: ban bob  # appends line to log/admin.log
+  EXAMPLE: ban bob # appends line to log/admin.log
 - RULE: Register `wiznet` command in dispatcher; restrict usage to immortals and toggle flag bits via helper.
   RATIONALE: Keeps admin communications controlled and consistent with ROM wiznet flags.
   EXAMPLE: command_registry["wiznet"] = wiznet_cmd; wiznet_cmd(ch, "show")
@@ -176,29 +202,29 @@
   EXAMPLE: class WiznetFlag(IntFlag): WIZ_ON = 0x00000001
 - RULE: Resolve saving throws with `rng_mm.number_percent` and `c_div`; forbid Python `%` or boolean short-circuit.
   RATIONALE: Preserves ROM probability and C arithmetic for saves.
-  EXAMPLE: save = rng_mm.number_percent() < c_div(level * 3, 2)
+  EXAMPLE: save = rng_mm.number_percent() < c_div(level \* 3, 2)
 - RULE: Index `area_registry` by area vnum; forbid filename keys.
   RATIONALE: ROM looks up areas by vnum; string keys break reset lookup.
   EXAMPLE: area_registry[area.min_vnum] = area
 - RULE: Reject duplicate area vnum ranges when loading; raise `ValueError` on conflict.
   RATIONALE: Overlapping vnum ranges corrupt world lookups.
-  EXAMPLE: load_area_file("mid.are"); load_area_file("mid.are")  # ValueError
+  EXAMPLE: load_area_file("mid.are"); load_area_file("mid.are") # ValueError
 - RULE: Require `$` sentinel at end of `area.lst`; raise `ValueError` if missing.
   RATIONALE: ROM uses `$` to terminate area lists; missing sentinel risks partial loads.
-  EXAMPLE: load_all_areas("bad.lst")  # ValueError
+  EXAMPLE: load_all_areas("bad.lst") # ValueError
 - RULE: Parse `#AREADATA` builders/security/flags into `Area`; forbid skipping this section.
   RATIONALE: ROM stores builder permissions and security in `#AREADATA`; omitting them loses access control.
   EXAMPLE: area = load_area_file('midgaard.are'); assert area.builders and area.security == 9
 - RULE: Map `$mself` pronouns by `Sex` (NONE->"itself", MALE->"himself", FEMALE->"herself", others->"themselves").
   RATIONALE: Reflexive pronouns depend on actor sex to match ROM socials.
   EXAMPLE: expand_placeholders("$n laughs at $mself.", ch)
-- RULE: Treat areas/*.are as canonical; conversions must preserve counts, ids, exits, flags, resets, specials.
+- RULE: Treat areas/\*.are as canonical; conversions must preserve counts, ids, exits, flags, resets, specials.
   RATIONALE: Prevent silent data loss during ROM->JSON migration.
   EXAMPLE: pytest -q tests/test_area_counts.py::test_midgaard_counts
 - RULE: Validate conversion with goldens: for each .are, store a {area}.golden.json and assert stable round-trip.
   RATIONALE: Detect accidental schema drift, field reordering, or flag width changes.
   EXAMPLE: tests/data/midgaard.golden.json vs converter output.
-- RULE: Player saves must preserve bit widths and field order from /player/* semantics; never reorder JSON keys that map to packed flags.
+- RULE: Player saves must preserve bit widths and field order from /player/\* semantics; never reorder JSON keys that map to packed flags.
   RATIONALE: Prevent save/load parity bugs.
   EXAMPLE: save_load_roundtrip("arthur"); assert flags == expected
 - RULE: Document-driven behavior takes precedence; when code and docs disagree, cite C+DOC evidence and lock tests to ROM semantics.
@@ -210,15 +236,16 @@
 - RULE: Register `spec_fun` names in lowercase for case-insensitive lookup.
   RATIONALE: ROM's `spec_lookup` compares names without regard to case.
   EXAMPLE: register_spec_fun("Spec_Cast_Adept", func)
- - RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
+- RULE: Enforce site/account bans at login using a ban registry; persist bans in ROM-compatible format and field order.
   RATIONALE: Security parity with ROM (`check_ban`/`do_ban`); prevents banned hosts/accounts from entering.
   EXAMPLE: add_ban(host="bad.example", type="all"); assert login(host) == "BANNED"
 - RULE: Shop commands must respect `Shop.open_hour`/`close_hour` from #SHOPS data and refuse service outside the window.
-  RATIONALE: Maintains ROM trading schedules (e.g., Midgaard captain opens 6-22).
-  EXAMPLE: pytest -q tests/test_shops.py::test_shop_respects_open_hours
+RATIONALE: Maintains ROM trading schedules (e.g., Midgaard captain opens 6-22).
+EXAMPLE: pytest -q tests/test_shops.py::test_shop_respects_open_hours
 <!-- RULES-END -->
 
 ## Ops Playbook (human tips the bot won’t manage)
+
 - Use `rg` for code searches; never run `grep -R`.
 - Quote paths with spaces (e.g., `src/'QuickMUD Fixes'`).
 - Update `doc/c_module_inventory.md` whenever C modules are added or removed.
