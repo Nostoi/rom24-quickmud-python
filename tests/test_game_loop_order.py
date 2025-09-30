@@ -11,6 +11,11 @@ def test_weather_time_reset_order_on_point_pulse(monkeypatch):
 
     import mud.game_loop as gl
 
+    gl._pulse_counter = 0
+    gl._point_counter = 0
+    gl._violence_counter = 0
+    gl._area_counter = 0
+
     monkeypatch.setattr(gl, "violence_tick", lambda: order.append("violence"))
     monkeypatch.setattr(gl, "time_tick", lambda: order.append("time"))
     monkeypatch.setattr(gl, "weather_tick", lambda: order.append("weather"))

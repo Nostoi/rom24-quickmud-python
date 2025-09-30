@@ -1,8 +1,12 @@
 import json
 from pathlib import Path
 
-import jsonschema
 import pytest
+
+jsonschema = pytest.importorskip(
+    "jsonschema",
+    reason="Install optional 'jsonschema' dependency to validate schema files",
+)
 
 SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
 

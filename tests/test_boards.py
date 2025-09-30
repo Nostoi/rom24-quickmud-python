@@ -23,7 +23,6 @@ def _teardown_boards(orig_dir):
 def test_note_persistence(tmp_path):
     orig_dir = _setup_boards(tmp_path)
     try:
-        notes.load_boards()
         initialize_world("area/area.lst")
         character_registry.clear()
         char = create_test_character("Author", 3001)
@@ -38,6 +37,38 @@ def test_note_persistence(tmp_path):
         notes.load_boards()
         list_output2 = process_command(char, "note list")
         assert "hello" in list_output2.lower()
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_initialize_world_loads_boards_from_disk(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        # Seed an existing board file before boot, mirroring ROM boot_db load order.
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        board.post("Immortal", "Welcome", "Follow the rules")
+        notes.save_board(board)
+        notes.board_registry.clear()
+
+        initialize_world("area/area.lst")
+        character_registry.clear()
+
+        loaded_board = notes.find_board("general")
+        assert loaded_board is not None
+        assert loaded_board.description == "General discussion"
+
+        char = create_test_character("Reader", 3001)
+        char.level = 5
+        board_output = process_command(char, "board")
+        assert "general" in board_output.lower()
+        assert "[  1]" in board_output
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
@@ -277,6 +308,142 @@ def test_note_remove_and_catchup(tmp_path):
         catchup_output = process_command(char, "note catchup")
         assert "skipped" in catchup_output.lower()
         assert char.pcdata.last_notes[board.storage_key()] == second.timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_read_defaults_to_next_unread(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        first = board.post("Immortal", "Welcome", "Read the rules", timestamp=time.time())
+        second = board.post(
+            "Immortal",
+            "Changes",
+            "Policy update",
+            timestamp=first.timestamp + 1,
+        )
+        notes.save_board(board)
+
+        char = create_test_character("Reader", 3001)
+        char.level = 50
+        char.trust = 50
+
+        output = process_command(char, "note")
+        assert "Welcome" in output
+        assert "Read the rules" in output
+        assert char.pcdata.last_notes[board.storage_key()] == first.timestamp
+
+        output = process_command(char, "note read")
+        assert "Changes" in output
+        assert "Policy update" in output
+        assert char.pcdata.last_notes[board.storage_key()] == second.timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_read_advances_to_next_board_when_exhausted(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        general = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        general_note = general.post(
+            "Immortal",
+            "Welcome",
+            "Read the rules",
+            timestamp=time.time(),
+        )
+        ideas = notes.get_board(
+            "Ideas",
+            description="Suggestion board",
+            read_level=0,
+            write_level=0,
+        )
+        ideas_note = ideas.post(
+            "Immortal",
+            "Proposal",
+            "Consider this",
+            timestamp=general_note.timestamp + 1,
+        )
+        notes.save_board(general)
+        notes.save_board(ideas)
+
+        char = create_test_character("Seeker", 3001)
+        char.level = 50
+        char.trust = 50
+        char.pcdata.last_notes[general.storage_key()] = general_note.timestamp
+
+        message = process_command(char, "note")
+        assert "No new notes" in message
+        assert "Changed to next board, Ideas." in message
+        assert char.pcdata.board_name == ideas.storage_key()
+
+        follow_up = process_command(char, "note")
+        assert "Proposal" in follow_up
+        assert "Consider this" in follow_up
+        assert char.pcdata.last_notes[ideas.storage_key()] == ideas_note.timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_board_change_blocked_during_note_draft(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        general = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        ideas = notes.get_board(
+            "Ideas",
+            description="Suggestion board",
+            read_level=0,
+            write_level=0,
+        )
+        notes.save_board(general)
+        notes.save_board(ideas)
+
+        char = create_test_character("Scribe", 3001)
+        char.level = 60
+        char.trust = 60
+
+        start = process_command(char, "note write")
+        assert "general" in start.lower()
+
+        blocked = process_command(char, "board ideas")
+        assert blocked == "Please finish your interrupted note first."
+        assert char.pcdata.board_name == general.storage_key()
+
+        process_command(char, "note subject Plans")
+        process_command(char, "note text Draft details")
+        send_output = process_command(char, "note send")
+        assert "posted" in send_output.lower()
+
+        change_output = process_command(char, "board ideas")
+        assert "ideas" in change_output.lower()
+        assert char.pcdata.board_name == ideas.storage_key()
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)

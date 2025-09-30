@@ -3,18 +3,20 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from importlib import import_module
-from math import ceil
 from pathlib import Path
 from random import Random
+from typing import TYPE_CHECKING
 
 from mud.advancement import gain_exp
-from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models import Skill, SkillJson
 from mud.models.constants import AffectFlag
 from mud.models.json_io import dataclass_from_dict
 from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.utils import rng_mm
+
+if TYPE_CHECKING:
+    from mud.models.character import Character
 
 
 class SkillRegistry:
@@ -67,6 +69,75 @@ class SkillRegistry:
 
     def get(self, name: str) -> Skill:
         return self.skills[name]
+
+    def find_spell(self, character: Character | None, name: str) -> Skill | None:
+        """Return the first skill matching the prefix, preferring known skills."""
+
+        query = (name or "").strip().lower()
+        if not query:
+            return None
+
+        first_match: Skill | None = None
+
+        prefer_known = False
+        class_index = 0
+        level = 0
+        learned_map: dict[str, object] = {}
+
+        if character is not None and not getattr(character, "is_npc", False):
+            prefer_known = True
+            try:
+                class_index = int(getattr(character, "ch_class", 0) or 0)
+            except Exception:
+                class_index = 0
+            try:
+                level = int(getattr(character, "level", 0) or 0)
+            except Exception:
+                level = 0
+            raw_skills = getattr(character, "skills", {}) or {}
+            if isinstance(raw_skills, dict):
+                learned_map = dict(raw_skills)
+
+        for skill in self.skills.values():
+            skill_name = getattr(skill, "name", "")
+            if not skill_name:
+                continue
+            lower_name = skill_name.lower()
+            if lower_name[0:1] != query[0:1]:
+                continue
+            if not lower_name.startswith(query):
+                continue
+
+            if first_match is None:
+                first_match = skill
+
+            if not prefer_known:
+                continue
+
+            known_key = skill_name
+            learned_value = learned_map.get(known_key)
+            if learned_value is None and lower_name != known_key:
+                learned_value = learned_map.get(lower_name)
+            try:
+                learned = int(learned_value) if learned_value is not None else None
+            except (TypeError, ValueError):
+                learned = None
+            if learned is None or learned <= 0:
+                continue
+
+            required_level: int | None = None
+            levels = getattr(skill, "levels", None)
+            if isinstance(levels, (list, tuple)) and len(levels) > 0:
+                try:
+                    required_level = int(levels[class_index])
+                except (ValueError, TypeError, IndexError):
+                    required_level = None
+            if required_level is not None and level < required_level:
+                continue
+
+            return skill
+
+        return first_match
 
     def use(self, caster, name: str, target=None):
         """Execute a skill and handle ROM-style success, lag, and advancement."""
@@ -127,9 +198,7 @@ class SkillRegistry:
         if flags & AffectFlag.SLOW:
             lag_pulses = lag_pulses * 2
 
-        pulses_per_tick = max(1, get_pulse_violence())
-        lag_ticks = ceil(lag_pulses / pulses_per_tick)
-        return max(1, int(lag_ticks))
+        return max(1, int(lag_pulses))
 
     def _apply_wait_state(self, caster, lag: int) -> None:
         """Apply WAIT_STATE semantics mirroring ROM's UMAX logic."""
@@ -185,6 +254,9 @@ class SkillRegistry:
             if cooldowns[key] <= 0:
                 del cooldowns[key]
         character.cooldowns = cooldowns
+
+        # Wait-state recovery occurs in the violence pulse cadence. Skill ticks
+        # only manage cooldown bookkeeping so they mirror ROM's update loop.
 
 
 skill_registry = SkillRegistry()

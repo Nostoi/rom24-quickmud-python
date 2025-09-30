@@ -230,14 +230,16 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     to_sector = Sector(target_room.sector_type)
 
     if not char.is_npc:
+        is_privileged = char.is_admin or char.is_immortal()
+
         # Air requires flying unless immortal/admin
         if from_sector == Sector.AIR or to_sector == Sector.AIR:
-            if not char.is_admin and not bool(char.affected_by & AffectFlag.FLYING):
+            if not (is_privileged or bool(char.affected_by & AffectFlag.FLYING)):
                 return "You can't fly."
 
         # Water (no swim) requires a boat unless flying or immortal
         if from_sector == Sector.WATER_NOSWIM or to_sector == Sector.WATER_NOSWIM:
-            if not char.is_admin and not bool(char.affected_by & AffectFlag.FLYING):
+            if not (is_privileged or bool(char.affected_by & AffectFlag.FLYING)):
 
                 def has_boat(objs: Iterable):
                     for o in objs:

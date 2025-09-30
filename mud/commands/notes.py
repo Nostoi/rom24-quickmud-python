@@ -52,6 +52,34 @@ def _set_last_read(pcdata: PCData, board, timestamp: float) -> None:
     pcdata.last_notes[key] = max(timestamp, pcdata.last_notes.get(key, 0.0))
 
 
+def _next_readable_board(current_board, trust: int):
+    readable = [board for board in iter_boards() if board.can_read(trust)]
+    current_key = current_board.storage_key()
+    for idx, board in enumerate(readable):
+        if board.storage_key() == current_key:
+            for candidate in readable[idx + 1 :]:
+                return candidate
+            break
+    return None
+
+
+def _read_next_unread_note(pcdata: PCData, board, trust: int) -> str:
+    last_read = _board_last_read(pcdata, board)
+    for note in board.notes:
+        if note.timestamp > last_read:
+            _set_last_read(pcdata, board, note.timestamp)
+            return f"{note.subject}\n{note.text}"
+
+    message_lines = ["No new notes in this board."]
+    next_board = _next_readable_board(board, trust)
+    if next_board is not None:
+        pcdata.board_name = next_board.storage_key()
+        message_lines.append(f"Changed to next board, {next_board.name}.")
+    else:
+        message_lines.append("There are no more boards.")
+    return "\n".join(message_lines)
+
+
 def _ensure_draft(char: Character, board) -> NoteDraft:
     pcdata = _ensure_pcdata(char)
     draft = pcdata.in_progress
@@ -103,6 +131,9 @@ def do_board(char: Character, args: str) -> str:
             lines.append("You can read and write on this board.")
         return "\n".join(lines)
 
+    if pcdata.in_progress:
+        return "Please finish your interrupted note first."
+
     if args.isdigit():
         number = int(args)
         if number < 1 or number > len(available):
@@ -122,9 +153,6 @@ def do_note(char: Character, args: str) -> str:
     if char.is_npc:
         return "NPCs cannot use boards."
 
-    if not args:
-        return "Note what?"
-
     pcdata = _ensure_pcdata(char)
     board = _resolve_current_board(char)
     trust = _get_trust(char)
@@ -132,7 +160,12 @@ def do_note(char: Character, args: str) -> str:
     if not board.can_read(trust):
         return "You cannot read notes on this board."
 
+    args = args.strip()
+    if not args:
+        return _read_next_unread_note(pcdata, board, trust)
+
     subcmd, *rest = args.split(None, 1)
+    subcmd = subcmd.lower()
     rest_str = rest[0] if rest else ""
 
     if subcmd == "post":
@@ -162,6 +195,8 @@ def do_note(char: Character, args: str) -> str:
         return "\n".join(lines)
 
     if subcmd == "read":
+        if not rest_str.strip():
+            return _read_next_unread_note(pcdata, board, trust)
         try:
             index = int(rest_str.strip()) - 1
         except ValueError:

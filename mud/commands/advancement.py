@@ -78,22 +78,77 @@ def do_practice(char: Character, args: str) -> str:
     """ROM-aligned practice command with trainer, rating, and INT scaling."""
 
     args = (args or "").strip()
-    if not args:
-        return f"You have {char.practice} practice sessions left."
     if char.is_npc:
         return ""
+    if not args:
+        class_index: int
+        try:
+            class_index = int(getattr(char, "ch_class", 0) or 0)
+        except Exception:
+            class_index = 0
+
+        level: int
+        try:
+            level = int(getattr(char, "level", 0) or 0)
+        except Exception:
+            level = 0
+
+        known: list[tuple[str, int]] = []
+        for name, skill in skill_registry.skills.items():
+            learned_raw = char.skills.get(name)
+            if learned_raw is None:
+                continue
+            try:
+                learned = int(learned_raw)
+            except (TypeError, ValueError):
+                continue
+            if learned <= 0:
+                continue
+
+            required_level: int | None = None
+            levels = getattr(skill, "levels", None)
+            if levels:
+                try:
+                    required_level = int(levels[class_index])
+                except (TypeError, ValueError, IndexError):
+                    required_level = None
+            if required_level is not None and level < required_level:
+                continue
+
+            known.append((name, learned))
+
+        if known:
+            parts: list[str] = []
+            column = 0
+            for name, learned in known:
+                parts.append(f"{name:<18} {learned:3d}%  ")
+                column += 1
+                if column % 3 == 0:
+                    parts.append("\n")
+            if column % 3 != 0:
+                parts.append("\n")
+            parts.append(f"You have {char.practice} practice sessions left.\n")
+            return "".join(parts)
+        return f"You have {char.practice} practice sessions left.\n"
     if not char.is_awake():
         return "In your dreams, or what?"
 
     if char.practice <= 0:
         return "You have no practice sessions left."
 
-    skill_name = args.lower()
-    skill = skill_registry.skills.get(skill_name)
+    skill = skill_registry.find_spell(char, args)
     if skill is None:
         return "You can't practice that."
 
-    current = char.skills.get(skill_name)
+    lookup_keys = [skill.name, skill.name.lower()]
+    if args:
+        lookup_keys.append(args.lower())
+
+    skill_key = next((key for key in lookup_keys if key in char.skills), None)
+    if skill_key is None:
+        return "You can't practice that."
+
+    current = char.skills.get(skill_key)
     if current is None:
         return "You can't practice that."
 
@@ -124,18 +179,18 @@ def do_practice(char: Character, args: str) -> str:
 
     adept = char.skill_adept_cap()
     if current >= adept:
-        return f"You are already learned at {skill_name}."
+        return f"You are already learned at {skill.name}."
 
     gain_rate = char.get_int_learn_rate()
     increment = max(1, gain_rate // max(1, rating))
 
     char.practice -= 1
     new_value = min(adept, current + increment)
-    char.skills[skill_name] = new_value
+    char.skills[skill_key] = new_value
 
     if new_value >= adept:
-        return f"You are now learned at {skill_name}."
-    return f"You practice {skill_name}."
+        return f"You are now learned at {skill.name}."
+    return f"You practice {skill.name}."
 
 
 def do_train(char: Character, args: str) -> str:

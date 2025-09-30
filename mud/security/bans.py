@@ -84,7 +84,7 @@ def _parse_host_pattern(host: str) -> tuple[str, BanFlag]:
 
 
 def _store_entry(pattern: str, flags: BanFlag, level: int, *, replace_existing: bool) -> None:
-    """Append a ban entry while optionally replacing existing patterns."""
+    """Store a ban entry, mirroring ROM insertion order semantics."""
 
     if not pattern:
         return
@@ -102,6 +102,9 @@ def _store_entry(pattern: str, flags: BanFlag, level: int, *, replace_existing: 
         if not level and existing_level:
             level = existing_level
         _ban_entries[:] = retained
+        entry = BanEntry(pattern=pattern, flags=flags, level=level)
+        _ban_entries.insert(0, entry)
+        return
     else:
         for entry in _ban_entries:
             if entry.pattern == pattern and (entry.flags & (BanFlag.PREFIX | BanFlag.SUFFIX)) == prefix_suffix:
@@ -113,13 +116,32 @@ def _store_entry(pattern: str, flags: BanFlag, level: int, *, replace_existing: 
     _ban_entries.append(BanEntry(pattern=pattern, flags=flags, level=level))
 
 
+class BanPermissionError(RuntimeError):
+    """Raised when attempting to change a higher-trust ban entry."""
+
+
+def _ensure_can_modify(pattern: str, trust_level: int | None) -> None:
+    if trust_level is None:
+        return
+    for entry in _ban_entries:
+        if entry.pattern == pattern and entry.level > trust_level:
+            raise BanPermissionError("insufficient trust to modify ban")
+
+
 def add_banned_host(
     host: str,
     *,
     flags: Iterable[BanFlag] | BanFlag | None = None,
     level: int = 0,
+    permanent: bool = True,
+    trust_level: int | None = None,
 ) -> None:
     pattern, wildcard_flags = _parse_host_pattern(host)
+    if not pattern:
+        return
+
+    _ensure_can_modify(pattern, trust_level)
+
     combined = BanFlag(0)
     if flags is None:
         combined = BanFlag.ALL
@@ -130,15 +152,21 @@ def add_banned_host(
             for flag in flags:
                 combined |= BanFlag(flag)
     combined |= wildcard_flags
-    combined |= BanFlag.PERMANENT
+    if permanent:
+        combined |= BanFlag.PERMANENT
+    if not level and trust_level:
+        level = trust_level
     _store_entry(pattern, combined, level, replace_existing=True)
 
 
-def remove_banned_host(host: str) -> None:
+def remove_banned_host(host: str, *, trust_level: int | None = None) -> bool:
     pattern, _ = _parse_host_pattern(host)
     if not pattern:
-        return
+        return False
+    _ensure_can_modify(pattern, trust_level)
+    before = len(_ban_entries)
     _ban_entries[:] = [entry for entry in _ban_entries if entry.pattern != pattern]
+    return len(_ban_entries) != before
 
 
 def is_host_banned(host: str | None, ban_type: BanFlag = BanFlag.ALL) -> bool:
@@ -223,7 +251,7 @@ def load_bans_file(path: Path | str | None = None) -> int:
             except ValueError:
                 level = 0
             flags = _flags_from_string(parts[2])
-            if not flags:
+            if not flags or not (flags & BanFlag.PERMANENT):
                 continue
             _store_entry(pattern, flags, level, replace_existing=False)
             count += 1

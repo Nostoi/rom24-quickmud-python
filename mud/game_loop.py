@@ -4,12 +4,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from mud import mobprog
-from mud.config import (
-    GAME_LOOP_STRICT_POINT,
-    get_pulse_area,
-    get_pulse_tick,
-    get_pulse_violence,
-)
+from mud.ai import aggressive_update
+from mud.config import get_pulse_area, get_pulse_tick, get_pulse_violence
+from mud.imc import pump_idle
 from mud.logging.admin import rotate_admin_log
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
@@ -88,17 +85,29 @@ def time_tick() -> None:
 
 
 _pulse_counter = 0
-_violence_counter = 0
+# Countdown counters mirror ROM's --pulse_X <= 0 semantics so cadence shifts
+# (e.g., TIME_SCALE changes) take effect immediately after the next pulse.
+_point_counter = get_pulse_tick()
+_violence_counter = get_pulse_violence()
 _area_counter = get_pulse_area()
 
 
 def violence_tick() -> None:
-    """Violence cadence updates: decrement wait/daze counters."""
+    """Consume wait/daze counters once per pulse for all characters."""
+
     for ch in list(character_registry):
-        ch.wait = max(0, int(getattr(ch, "wait", 0)) - 1)
-        # daze is optional in some tests; default to attr when present
+        wait = int(getattr(ch, "wait", 0) or 0)
+        if wait > 0:
+            ch.wait = wait - 1
+        else:
+            ch.wait = 0
+
         if hasattr(ch, "daze"):
-            ch.daze = max(0, int(getattr(ch, "daze", 0)) - 1)
+            daze = int(getattr(ch, "daze", 0) or 0)
+            if daze > 0:
+                ch.daze = daze - 1
+            else:
+                ch.daze = max(0, daze)
 
 
 def _mobprog_idle_tick() -> None:
@@ -117,28 +126,33 @@ def _mobprog_idle_tick() -> None:
 
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter, _violence_counter, _area_counter
+    global _pulse_counter, _point_counter, _violence_counter, _area_counter
     _pulse_counter += 1
-    # Violence cadence: decrement wait/daze on PULSE_VIOLENCE boundaries
-    # This mirrors ROM's update_handler calling violence_update.
-    _violence_counter += 1
-    if _violence_counter % get_pulse_violence() == 0:
-        violence_tick()
-    # Advance time/weather/resets on point pulses, preserving legacy behavior when not strict
-    point_pulse = _pulse_counter % get_pulse_tick() == 0
+
+    # Consume wait/daze every pulse before evaluating cadence counters.
+    violence_tick()
+
+    # Track pulses for future violence update hooks (combat rounds, etc.).
+    _violence_counter -= 1
+    if _violence_counter <= 0:
+        _violence_counter = get_pulse_violence()
+
+    # Point pulses drive time/weather/regen updates.
+    _point_counter -= 1
+    point_pulse = _point_counter <= 0
     if point_pulse:
+        _point_counter = get_pulse_tick()
         time_tick()
         weather_tick()
-    else:
-        if not GAME_LOOP_STRICT_POINT:
-            weather_tick()
+        regen_tick()
+        pump_idle()
 
     _area_counter -= 1
     if _area_counter <= 0:
-        reset_tick()
         _area_counter = get_pulse_area()
-    regen_tick()
+        reset_tick()
     event_tick()
     _mobprog_idle_tick()
+    aggressive_update()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()

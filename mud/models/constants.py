@@ -15,6 +15,10 @@ class Direction(IntEnum):
 # Canonical room vnums (merc.h)
 ROOM_VNUM_SCHOOL = 3700
 
+# Command/append-file limits (merc.h)
+MAX_CMD_LEN = 50
+OHELPS_FILE = "orphaned_helps.txt"
+
 
 class Sector(IntEnum):
     """Sector types from merc.h"""
@@ -231,6 +235,32 @@ class ActFlag(IntFlag):
     GAIN = 1 << 27  # (bb)
     UPDATE_ALWAYS = 1 << 28  # (cc)
     IS_CHANGER = 1 << 29  # (dd)
+
+
+class OffFlag(IntFlag):
+    """Mobile offensive flags from ROM merc.h OFF_* defines."""
+
+    AREA_ATTACK = 1 << 0  # (A)
+    BACKSTAB = 1 << 1  # (B)
+    BASH = 1 << 2  # (C)
+    BERSERK = 1 << 3  # (D)
+    DISARM = 1 << 4  # (E)
+    DODGE = 1 << 5  # (F)
+    FADE = 1 << 6  # (G)
+    FAST = 1 << 7  # (H)
+    KICK = 1 << 8  # (I)
+    KICK_DIRT = 1 << 9  # (J)
+    PARRY = 1 << 10  # (K)
+    RESCUE = 1 << 11  # (L)
+    TAIL = 1 << 12  # (M)
+    TRIP = 1 << 13  # (N)
+    CRUSH = 1 << 14  # (O)
+    ASSIST_ALL = 1 << 15  # (P)
+    ASSIST_ALIGN = 1 << 16  # (Q)
+    ASSIST_RACE = 1 << 17  # (R)
+    ASSIST_PLAYERS = 1 << 18  # (S)
+    ASSIST_GUARD = 1 << 19  # (T)
+    ASSIST_VNUM = 1 << 20  # (U)
 
 
 class RoomFlag(IntFlag):

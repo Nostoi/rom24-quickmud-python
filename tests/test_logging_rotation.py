@@ -10,7 +10,7 @@ from mud.time import time_info
 def test_rotate_admin_log_by_function(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # Write an entry
-    log_admin_command("Admin", "wiznet", "")
+    log_admin_command("Admin", "wiznet")
     # Rotate to a fixed date
     target = datetime(2099, 1, 2)
     active = rotate_admin_log(today=target)
@@ -38,12 +38,15 @@ def test_rotate_on_midnight_tick(tmp_path, monkeypatch):
     # Speed up time so one pulse advances an hour
     monkeypatch.setattr("mud.config.TIME_SCALE", 60 * 4)
     # Ensure a log file exists before midnight
-    log_admin_command("Admin", "wiznet", "")
+    log_admin_command("Admin", "wiznet")
     # Set time to 23h and tick once to midnight
     time_info.hour = 23
     ch = Character(name="Watcher")
     character_registry.append(ch)
     game_loop._pulse_counter = 0
+    game_loop._point_counter = 0
+    game_loop._violence_counter = 0
+    game_loop._area_counter = 0
     game_loop.game_tick()
     # After midnight, admin.log should be rotated to today's date
     # Use current UTC date for naming

@@ -1,23 +1,29 @@
 from pathlib import Path
 
 from mud.account.account_service import (
+    LoginFailureReason,
+    clear_active_accounts,
     create_account,
     create_character,
     list_characters,
     login,
     login_with_host,
+    release_account,
 )
 from mud.db.models import Base, PlayerAccount
 from mud.db.session import SessionLocal, engine
 from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
+from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
 
 
 def setup_module(module):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
 
 
 def test_account_create_and_login():
@@ -56,13 +62,19 @@ def test_banned_host_cannot_login():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
 
     assert create_account("carol", "pw")
     bans.add_banned_host("203.0.113.9")
     # Host-aware login wrapper should reject banned host
-    assert login_with_host("carol", "pw", "203.0.113.9") is None
+    result = login_with_host("carol", "pw", "203.0.113.9")
+    assert result.account is None
+    assert result.failure is LoginFailureReason.HOST_BANNED
     # Non-banned host should allow login
-    assert login_with_host("carol", "pw", "198.51.100.20") is not None
+    account = login_with_host("carol", "pw", "198.51.100.20").account
+    assert account is not None
+    release_account("carol")
 
 
 def test_ban_persistence_roundtrip(tmp_path):
@@ -136,8 +148,8 @@ def test_ban_file_round_trip_preserves_order(tmp_path):
 
     assert path.read_text() == original
     assert [entry.pattern for entry in bans.get_ban_entries()] == [
-        "first.example",
         "second.example",
+        "first.example",
     ]
 
 
@@ -166,16 +178,109 @@ def test_ban_prefix_suffix_types():
     assert not bans.is_host_banned("innocent.net")
 
 
+def test_wizlock_blocks_mortals():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("mortal", "pw")
+    account = login_with_host("mortal", "pw", None).account
+    assert account is not None
+    release_account("mortal")
+
+    set_wizlock(True)
+    try:
+        blocked = login_with_host("mortal", "pw", None)
+        assert blocked.account is None
+        assert blocked.failure is LoginFailureReason.WIZLOCK
+
+        assert create_account("immortal", "pw")
+        session = SessionLocal()
+        try:
+            imm = session.query(PlayerAccount).filter_by(username="immortal").first()
+            assert imm is not None
+            imm.is_admin = True
+            session.commit()
+        finally:
+            session.close()
+
+        admin = login_with_host("immortal", "pw", None).account
+        assert admin is not None
+    finally:
+        release_account("immortal")
+        set_wizlock(False)
+
+
+def test_newlock_blocks_new_accounts():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("elder", "pw")
+    account = login_with_host("elder", "pw", None).account
+    assert account is not None
+    release_account("elder")
+
+    set_newlock(True)
+    try:
+        account = login_with_host("elder", "pw", None).account
+        assert account is not None
+        release_account("elder")
+
+        blocked = login_with_host("brand", "pw", None)
+        assert blocked.account is None
+        assert blocked.failure is LoginFailureReason.NEWLOCK
+        session = SessionLocal()
+        try:
+            assert session.query(PlayerAccount).filter_by(username="brand").first() is None
+        finally:
+            session.close()
+
+        assert not create_account("brand", "pw")
+    finally:
+        set_newlock(False)
+        clear_active_accounts()
+
+
+def test_duplicate_login_requires_reconnect_consent():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("dup", "pw")
+    first = login_with_host("dup", "pw", None).account
+    assert first is not None
+    blocked = login_with_host("dup", "pw", None)
+    assert blocked.account is None
+    assert blocked.failure is LoginFailureReason.DUPLICATE_SESSION
+
+    reconnect = login_with_host("dup", "pw", None, allow_reconnect=True).account
+    assert reconnect is not None
+    release_account("dup")
+
+
 def test_newbie_permit_enforcement():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
 
     assert create_account("elder", "pw")
 
     bans.add_banned_host("blocked.example", flags=BanFlag.NEWBIES)
-    assert login_with_host("elder", "pw", "blocked.example") is not None
-    assert login_with_host("fresh", "pw", "blocked.example") is None
+    account = login_with_host("elder", "pw", "blocked.example").account
+    assert account is not None
+    release_account("elder")
+    blocked = login_with_host("fresh", "pw", "blocked.example")
+    assert blocked.account is None
+    assert blocked.failure is LoginFailureReason.HOST_NEWBIES
     session = SessionLocal()
     try:
         assert session.query(PlayerAccount).filter_by(username="fresh").first() is None
@@ -184,7 +289,11 @@ def test_newbie_permit_enforcement():
 
     bans.clear_all_bans()
     bans.add_banned_host("locked.example", flags=BanFlag.ALL)
-    assert login_with_host("elder", "pw", "locked.example") is None
+    locked = login_with_host("elder", "pw", "locked.example")
+    assert locked.account is None
+    assert locked.failure is LoginFailureReason.HOST_BANNED
 
     bans.add_banned_host("locked.example", flags=BanFlag.PERMIT)
-    assert login_with_host("elder", "pw", "locked.example") is not None
+    account = login_with_host("elder", "pw", "locked.example").account
+    assert account is not None
+    release_account("elder")

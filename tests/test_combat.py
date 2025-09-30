@@ -1,3 +1,7 @@
+from pathlib import Path
+
+import pytest
+
 from mud.combat import engine as combat_engine
 from mud.commands import process_command
 from mud.models.character import Character
@@ -13,6 +17,8 @@ from mud.models.constants import (
     ResFlag,
     VulnFlag,
 )
+from mud.skills import load_skills, skill_registry
+from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
 
 
@@ -21,7 +27,14 @@ def setup_combat() -> tuple[Character, Character]:
     room_vnum = 3001
     attacker = create_test_character("Attacker", room_vnum)
     victim = create_test_character("Victim", room_vnum)
+    victim.is_npc = True
     return attacker, victim
+
+
+def _load_kick_skill() -> None:
+    skill_registry.skills.clear()
+    skill_registry.handlers.clear()
+    load_skills(Path("data/skills.json"))
 
 
 def test_attack_damages_but_not_kill() -> None:
@@ -156,6 +169,120 @@ def test_multi_hit_second_attack():
     finally:
         # Restore original function
         rng_mm.number_percent = original_number_percent
+
+
+def test_kick_command_requires_fighting() -> None:
+    _load_kick_skill()
+    try:
+        attacker, victim = setup_combat()
+        attacker.position = int(Position.FIGHTING)
+        attacker.skills["kick"] = 75
+        attacker.max_hit = attacker.hit = 100
+        victim.max_hit = victim.hit = 100
+
+        out = process_command(attacker, "kick")
+        assert out == "You aren't fighting anyone."
+    finally:
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+
+
+def test_kick_command_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    _load_kick_skill()
+    try:
+        attacker, victim = setup_combat()
+        attacker.level = 20
+        attacker.ch_class = 3  # warrior learns kick at level 8
+        attacker.position = int(Position.FIGHTING)
+        attacker.skills["kick"] = 75
+        attacker.max_hit = attacker.hit = 100
+        victim.max_hit = victim.hit = 100
+        attacker.fighting = victim
+        victim.fighting = attacker
+
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
+        monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 12)
+
+        out = process_command(attacker, "kick")
+
+        assert out == "You hit Victim for 12 damage."
+        assert victim.hit == 88
+        assert attacker.wait == 1
+        assert attacker.cooldowns.get("kick") == 0
+    finally:
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+
+
+def test_kick_command_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    _load_kick_skill()
+    try:
+        attacker, victim = setup_combat()
+        attacker.level = 20
+        attacker.ch_class = 3
+        attacker.position = int(Position.FIGHTING)
+        attacker.skills["kick"] = 5
+        attacker.max_hit = attacker.hit = 100
+        victim.max_hit = victim.hit = 100
+        attacker.fighting = victim
+        victim.fighting = attacker
+
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 100)
+        monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 12)
+
+        out = process_command(attacker, "kick")
+
+        assert out == "Your attack has no effect."
+        assert victim.hit == 100
+        assert attacker.wait == 1
+        assert attacker.cooldowns.get("kick") == 0
+    finally:
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+
+
+def test_kick_command_requires_level() -> None:
+    _load_kick_skill()
+    try:
+        attacker, victim = setup_combat()
+        attacker.is_npc = False
+        attacker.ch_class = 3  # warrior table entry uses level 8
+        attacker.level = 5
+        attacker.position = int(Position.FIGHTING)
+        attacker.fighting = victim
+        victim.fighting = attacker
+
+        out = process_command(attacker, "kick")
+
+        assert out == "You better leave the martial arts to fighters."
+        assert attacker.wait == 0
+        assert "kick" not in getattr(attacker, "cooldowns", {})
+        assert victim.hit == victim.max_hit
+    finally:
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+
+
+def test_kick_command_requires_off_flag() -> None:
+    _load_kick_skill()
+    try:
+        attacker, victim = setup_combat()
+        attacker.is_npc = True
+        attacker.off_flags = 0
+        attacker.level = 20
+        attacker.position = int(Position.FIGHTING)
+        attacker.fighting = victim
+        victim.fighting = attacker
+
+        out = process_command(attacker, "kick")
+
+        assert out == ""
+        assert attacker.wait == 0
+        assert "kick" not in getattr(attacker, "cooldowns", {})
+        assert victim.hit == victim.max_hit
+    finally:
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
 
 
 def test_multi_hit_third_attack():

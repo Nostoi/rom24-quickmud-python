@@ -83,6 +83,10 @@
   RATIONALE: Trainers gate access and advancement on these fields; mana drain and casting lag derive from `skill_table` metadata.
   EXAMPLE: data/skills.json["acid blast"] includes level/rating arrays, slot 70, min_mana 20, beats 12 consumed by `do_practice` tests.
 
+- RULE: `practice` without arguments must list known skills in ROM's three-column learned% table before printing the remaining session count.
+  RATIONALE: Players rely on the practice listing to track progress and confirm trainer availability; omitting it hides parity-critical state.
+  EXAMPLE: calling `practice` at a trainer echoes "fireball         75%" style rows followed by "You have 3 practice sessions left.".
+
 - RULE: THAC0-based hit resolution uses `number_bits(5)` diceroll and `compute_thac0` (class-based) when `COMBAT_USE_THAC0` is enabled; tests must patch the engine module flag.
   RATIONALE: Mirrors ROM hit calculation while keeping default behavior stable.
   EXAMPLE: monkeypatch.setattr('mud.combat.engine.COMBAT_USE_THAC0', True)
@@ -150,6 +154,10 @@
 
 - RULE: Charge movement points by sector and apply short wait on moves; require boat for noswim and fly for air.
 
+- RULE: Admin ban commands must mirror ROM `ban`/`permban`/`allow` flows by listing existing entries, parsing wildcard prefix/suffix and type arguments, enforcing trust checks, and toggling BAN_PERMANENT only via `permban`.
+  RATIONALE: Discipline tooling relies on temporary vs. permanent bans plus newbies/permit gating; collapsing them into a single always-permanent path blocks staged lockouts and staff auditing.
+  EXAMPLE: `ban *midgaard permit` creates a temporary BAN_PERMIT row visible in the `ban` listing until an immortal issues `permban midgaard` or `allow midgaard`.
+
 <!-- ENHANCED-EVIDENCE-RULES-START -->
 
 # Enhanced Evidence Framework for Final Completion Phase
@@ -194,6 +202,12 @@
 - RULE: Log admin commands to `log/admin.log` and rotate daily.
   RATIONALE: Ensures immortal actions are auditable like ROM's wiznet logs.
   EXAMPLE: ban bob # appends line to log/admin.log
+- RULE: Honor ROM command log levels (`LOG_NEVER`, `LOG_ALWAYS`) before writing to admin logs; keep respecting `PLR_LOG` bits and the global `log all` toggle.
+  RATIONALE: Matches `interpret` logging so privileged commands aren't over-logged and always-log mortal commands stay audited.
+  EXAMPLE: pytest -q tests/test_logging_admin.py::test_log_levels_match_rom
+- RULE: The `help` command must default to the Summary topic when invoked without arguments, rebuild multi-word keywords via ROM `one_argument`/`is_name`, enforce help-level trust checks, and append missing requests to `OHELPS_FILE`.
+  RATIONALE: Preserves ROM documentation access control while capturing orphaned topics for staff review.
+  EXAMPLE: typing `help` shows the Summary entry; `help armor class` resolves the multi-word keyword, and a mortal requesting `wizhelp` is denied and logged to `OHELPS`.
 - RULE: Register `wiznet` command in dispatcher; restrict usage to immortals and toggle flag bits via helper.
   RATIONALE: Keeps admin communications controlled and consistent with ROM wiznet flags.
   EXAMPLE: command_registry["wiznet"] = wiznet_cmd; wiznet_cmd(ch, "show")

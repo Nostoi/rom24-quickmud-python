@@ -3,18 +3,19 @@ from __future__ import annotations
 import asyncio
 
 from mud.account import (
+    LoginFailureReason,
     create_account,
     create_character,
+    is_account_active,
     list_characters,
     load_character,
     login_with_host,
+    release_account,
     save_character,
 )
 from mud.commands import process_command
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
-from mud.security import bans
-from mud.security.bans import BanFlag
 
 
 async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
@@ -45,24 +46,69 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             if not pwd_data:
                 return
             password = pwd_data.decode().strip()
-            # Enforce site/account bans at login time
-            account = login_with_host(username, password, host_for_ban)
-            if not account:
-                permit_host = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
-                if host_for_ban and not permit_host:
-                    if bans.is_host_banned(host_for_ban, BanFlag.ALL):
-                        writer.write(b"Your site has been banned from this mud.\r\n")
-                        await writer.drain()
-                        return
-                    if bans.is_host_banned(host_for_ban, BanFlag.NEWBIES):
-                        writer.write(b"New players are not allowed from your site.\r\n")
-                        await writer.drain()
-                        return
-                if create_account(username, password):
-                    account = login_with_host(username, password, host_for_ban)
-                else:
-                    writer.write(b"Login failed.\r\n")
+            allow_reconnect = False
+            if is_account_active(username):
+                writer.write(b"This account is already playing. Reconnect? (Y/N) ")
+                await writer.drain()
+                answer = await reader.readline()
+                if not answer:
+                    return
+                allow_reconnect = answer.decode().strip().lower().startswith("y")
+                if not allow_reconnect:
+                    writer.write(b"Ok, please choose another account.\r\n")
                     await writer.drain()
+                    continue
+            # Enforce site/account bans at login time
+            result = login_with_host(
+                username,
+                password,
+                host_for_ban,
+                allow_reconnect=allow_reconnect,
+            )
+            account = result.account
+            reason = result.failure
+            if not account:
+                if reason is LoginFailureReason.UNKNOWN_ACCOUNT:
+                    if create_account(username, password):
+                        retry = login_with_host(username, password, host_for_ban)
+                        account = retry.account
+                        reason = retry.failure
+                    else:
+                        reason = LoginFailureReason.BAD_CREDENTIALS
+                if account:
+                    continue
+
+                if reason is LoginFailureReason.DUPLICATE_SESSION:
+                    writer.write(b"Ok, please choose another account.\r\n")
+                    await writer.drain()
+                    continue
+                if reason is LoginFailureReason.WIZLOCK:
+                    writer.write(b"The game is wizlocked.\r\n")
+                    await writer.drain()
+                    return
+                if reason is LoginFailureReason.NEWLOCK:
+                    writer.write(b"The game is newlocked.\r\n")
+                    await writer.drain()
+                    return
+                if reason is LoginFailureReason.ACCOUNT_BANNED:
+                    writer.write(b"You are denied access.\r\n")
+                    await writer.drain()
+                    return
+                if reason is LoginFailureReason.HOST_BANNED:
+                    writer.write(b"Your site has been banned from this mud.\r\n")
+                    await writer.drain()
+                    return
+                if reason is LoginFailureReason.HOST_NEWBIES:
+                    writer.write(b"New players are not allowed from your site.\r\n")
+                    await writer.drain()
+                    return
+                if allow_reconnect and reason is LoginFailureReason.BAD_CREDENTIALS:
+                    writer.write(b"Reconnect failed.\r\n")
+                    await writer.drain()
+                    continue
+
+                writer.write(b"Login failed.\r\n")
+                await writer.drain()
 
         # Character selection / creation
         chars = list_characters(account)
@@ -164,6 +210,9 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         if session and session.name in SESSIONS:
             SESSIONS.pop(session.name, None)
+
+        if username:
+            release_account(username)
 
         try:
             writer.close()
