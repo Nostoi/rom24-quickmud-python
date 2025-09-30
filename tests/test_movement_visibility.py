@@ -1,5 +1,13 @@
 from mud.models.character import Character
-from mud.models.constants import LEVEL_HERO, AffectFlag, Direction, Position, RoomFlag
+from mud.models.constants import (
+    LEVEL_HERO,
+    LEVEL_IMMORTAL,
+    AffectFlag,
+    Direction,
+    Position,
+    RoomFlag,
+    Sector,
+)
 from mud.models.room import Exit, Room
 from mud.world.movement import move_character
 
@@ -93,3 +101,29 @@ def test_high_invis_player_arrives_quietly() -> None:
     assert wizard.room is target
     assert observer_start.messages == []
     assert observer_target.messages == []
+
+
+def test_immortal_can_cross_air_without_flight() -> None:
+    start, target = _build_rooms()
+    target.sector_type = int(Sector.AIR)
+
+    immortal = Character(name="Sky", is_npc=False, move=20, level=LEVEL_IMMORTAL)
+    start.add_character(immortal)
+
+    result = move_character(immortal, "north")
+
+    assert "You walk north" in result
+    assert immortal.room is target
+
+
+def test_immortal_can_enter_noswim_without_boat() -> None:
+    start, target = _build_rooms()
+    target.sector_type = int(Sector.WATER_NOSWIM)
+
+    immortal = Character(name="Captain", is_npc=False, move=20, level=LEVEL_IMMORTAL)
+    start.add_character(immortal)
+
+    result = move_character(immortal, "north")
+
+    assert "You walk north" in result
+    assert immortal.room is target

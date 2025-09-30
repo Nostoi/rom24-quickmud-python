@@ -23,6 +23,63 @@ def test_duplicate_area_vnum_raises_value_error(tmp_path):
     area_registry.clear()
 
 
+def test_area_header_requires_terminating_tildes(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "invalid.are\n"  # missing trailing tilde
+        "Invalid~\n"
+        "Credits~\n"
+        "0 1\n"
+        "#$\n"
+    )
+    path = tmp_path / "invalid.are"
+    path.write_text(content, encoding="latin-1")
+
+    with pytest.raises(ValueError, match="must end with '~'"):
+        load_area_file(str(path))
+
+    area_registry.clear()
+
+
+def test_area_header_requires_two_vnum_integers(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "valid.are~\n"
+        "Valid~\n"
+        "Credits~\n"
+        "3000\n"  # missing max vnum
+        "#$\n"
+    )
+    path = tmp_path / "valid.are"
+    path.write_text(content, encoding="latin-1")
+
+    with pytest.raises(ValueError, match="vnum range"):
+        load_area_file(str(path))
+
+    area_registry.clear()
+
+
+def test_area_header_rejects_descending_vnum_range(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "reverse.are~\n"
+        "Reverse~\n"
+        "Credits~\n"
+        "4000 3999\n"
+        "#$\n"
+    )
+    path = tmp_path / "reverse.are"
+    path.write_text(content, encoding="latin-1")
+
+    with pytest.raises(ValueError, match="min_vnum cannot exceed max_vnum"):
+        load_area_file(str(path))
+
+    area_registry.clear()
+
+
 def test_areadata_parsing(tmp_path):
     area_registry.clear()
     content = "#AREA\ntest.are~\nTest Area~\nCredits~\n0 0\n#AREADATA\nBuilders Alice~\nSecurity 9\nFlags 3\n#$\n"

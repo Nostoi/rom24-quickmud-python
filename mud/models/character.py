@@ -110,9 +110,13 @@ class Character:
     messages: list[str] = field(default_factory=list)
     connection: object | None = None
     is_admin: bool = False
+    # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
+    imc_permission: str = "Mort"
     muted_channels: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
     wiznet: int = 0
+    # Per-character admin logging flag mirroring ROM PLR_LOG
+    log_commands: bool = False
     # Wait-state (pulses) applied by actions like movement (ROM WAIT_STATE)
     wait: int = 0
     # Daze (pulses) — separate action delay used by ROM combat

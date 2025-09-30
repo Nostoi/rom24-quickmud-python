@@ -3,25 +3,29 @@ from __future__ import annotations
 import shlex
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import Enum, auto
 
-from mud.logging.admin import log_admin_command
+from mud.logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
 from mud.models.constants import Position
 from mud.models.social import social_registry
 from mud.wiznet import cmd_wiznet
 
 from .admin_commands import (
+    cmd_allow,
     cmd_ban,
     cmd_banlist,
+    cmd_permban,
     cmd_spawn,
     cmd_teleport,
     cmd_unban,
+    cmd_log,
     cmd_who,
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_unalias
 from .build import cmd_redit
-from .combat import do_kill
+from .combat import do_kick, do_kill
 from .communication import do_say, do_shout, do_tell
 from .healer import do_heal
 from .help import do_help
@@ -36,6 +40,14 @@ from .socials import perform_social
 CommandFunc = Callable[[Character, str], str]
 
 
+class LogLevel(Enum):
+    """Mirror ROM command log levels."""
+
+    NORMAL = auto()
+    ALWAYS = auto()
+    NEVER = auto()
+
+
 @dataclass(frozen=True)
 class Command:
     name: str
@@ -43,16 +55,53 @@ class Command:
     aliases: tuple[str, ...] = ()
     admin_only: bool = False
     min_position: Position = Position.DEAD
+    log_level: LogLevel = LogLevel.NORMAL
 
 
 COMMANDS: list[Command] = [
     # Movement (require standing per ROM)
-    Command("north", do_north, aliases=("n",), min_position=Position.STANDING),
-    Command("east", do_east, aliases=("e",), min_position=Position.STANDING),
-    Command("south", do_south, aliases=("s",), min_position=Position.STANDING),
-    Command("west", do_west, aliases=("w",), min_position=Position.STANDING),
-    Command("up", do_up, aliases=("u",), min_position=Position.STANDING),
-    Command("down", do_down, aliases=("d",), min_position=Position.STANDING),
+    Command(
+        "north",
+        do_north,
+        aliases=("n",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
+    Command(
+        "east",
+        do_east,
+        aliases=("e",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
+    Command(
+        "south",
+        do_south,
+        aliases=("s",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
+    Command(
+        "west",
+        do_west,
+        aliases=("w",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
+    Command(
+        "up",
+        do_up,
+        aliases=("u",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
+    Command(
+        "down",
+        do_down,
+        aliases=("d",),
+        min_position=Position.STANDING,
+        log_level=LogLevel.NEVER,
+    ),
     Command("enter", do_enter, min_position=Position.STANDING),
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
@@ -67,6 +116,7 @@ COMMANDS: list[Command] = [
     Command("shout", do_shout, min_position=Position.RESTING),
     # Combat
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
+    Command("kick", do_kick, min_position=Position.FIGHTING),
     # Info
     Command("scan", do_scan, min_position=Position.SLEEPING),
     # Shops
@@ -87,11 +137,14 @@ COMMANDS: list[Command] = [
     Command("unalias", do_unalias, min_position=Position.DEAD),
     # Admin (leave position as DEAD; admin-only gating applies separately)
     Command("@who", cmd_who, admin_only=True),
-    Command("@teleport", cmd_teleport, admin_only=True),
-    Command("@spawn", cmd_spawn, admin_only=True),
-    Command("ban", cmd_ban, admin_only=True),
-    Command("unban", cmd_unban, admin_only=True),
+    Command("@teleport", cmd_teleport, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("@spawn", cmd_spawn, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("ban", cmd_ban, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("permban", cmd_permban, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("allow", cmd_allow, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("banlist", cmd_banlist, admin_only=True),
+    Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("@redit", cmd_redit, admin_only=True),
     Command("wiznet", cmd_wiznet, admin_only=True),
 ]
@@ -158,29 +211,59 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
         return head, tail
 
 
-def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> str:
-    """Expand the first token using per-character aliases, up to max_depth."""
+def _expand_aliases(
+    char: Character, input_str: str, *, max_depth: int = 5
+) -> tuple[str, bool]:
+    """Expand the first token using per-character aliases, up to max_depth.
+
+    Returns the expanded string and whether any alias substitution occurred.
+    """
 
     s = input_str
+    alias_used = False
     for _ in range(max_depth):
         head, tail = _split_command_and_args(s)
         if not head:
-            return s
+            return s, alias_used
         expansion = char.aliases.get(head)
         if not expansion:
-            return s
-        s = (expansion + (" " + tail if tail else "")).strip()
-    return s
+            return s, alias_used
+        alias_used = True
+        s = expansion + (" " + tail if tail else "")
+    return s, alias_used
 
 
 def process_command(char: Character, input_str: str) -> str:
     if not input_str.strip():
         return "What?"
-    expanded = _expand_aliases(char, input_str)
+    trimmed = input_str.lstrip()
+    core = trimmed.rstrip()
+    trailing_ws = trimmed[len(core) :]
+    expanded, alias_used = _expand_aliases(char, core)
     cmd_name, arg_str = _split_command_and_args(expanded)
     if not cmd_name:
         return "What?"
     command = resolve_command(cmd_name)
+    log_line = trimmed if not alias_used else expanded + trailing_ws
+    log_all_enabled = is_log_all_enabled()
+    log_allowed = True
+    should_log = False
+    if command:
+        if command.log_level is LogLevel.NEVER and not log_all_enabled:
+            log_allowed = False
+        if command.log_level is LogLevel.ALWAYS:
+            should_log = True
+    is_player = not getattr(char, "is_npc", False)
+    if is_player and getattr(char, "log_commands", False):
+        should_log = True
+    if log_all_enabled:
+        should_log = True
+    if should_log and log_allowed and log_line:
+        try:
+            log_admin_command(getattr(char, "name", "?"), log_line)
+        except Exception:
+            # Logging must never break command execution.
+            pass
     if not command:
         social = social_registry.get(cmd_name.lower())
         if social:
@@ -207,13 +290,6 @@ def process_command(char: Character, input_str: str) -> str:
             return "No way!  You are still fighting!"
         # Fallback (should not happen)
         return "You can't do that right now."
-    # Log admin commands (accepted) to admin log for auditability.
-    if command.admin_only and getattr(char, "is_admin", False):
-        try:
-            log_admin_command(getattr(char, "name", "?"), command.name, arg_str)
-        except Exception:
-            # Logging must never break command execution.
-            pass
     return command.func(char, arg_str)
 
 

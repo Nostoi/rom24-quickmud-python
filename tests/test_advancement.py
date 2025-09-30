@@ -144,6 +144,52 @@ def test_practice_rejects_unknown_skill():
     assert "fireball" not in char.skills
 
 
+def test_practice_lists_known_skills_with_percentages():
+    _load_fireball()
+
+    room = Room(vnum=4, name="Arcane Study")
+    char = Character(
+        name="Apprentice",
+        practice=3,
+        ch_class=0,
+        level=20,
+        is_npc=False,
+        room=room,
+        skills={
+            "acid blast": 60,  # gated by level; should not appear
+            "armor": 55,
+            "blindness": 72,
+            "burning hands": 80,
+            "detect magic": 40,
+            "magic missile": 35,
+            "colour spray": 0,
+        },
+    )
+    room.people.append(char)
+
+    msg = do_practice(char, "")
+    expected_entries = [
+        ("armor", 55),
+        ("blindness", 72),
+        ("burning hands", 80),
+        ("detect magic", 40),
+        ("magic missile", 35),
+    ]
+    expected_parts: list[str] = []
+    col = 0
+    for name, learned in expected_entries:
+        expected_parts.append(f"{name:<18} {learned:3d}%  ")
+        col += 1
+        if col % 3 == 0:
+            expected_parts.append("\n")
+    if col % 3 != 0:
+        expected_parts.append("\n")
+    expected_parts.append("You have 3 practice sessions left.\n")
+
+    assert msg == "".join(expected_parts)
+    assert "acid blast" not in msg
+
+
 def test_train_command_increases_stats():
     char = Character(practice=0, train=1)
     msg = do_train(char, "hp")

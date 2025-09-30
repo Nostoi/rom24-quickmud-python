@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from mud.db import models
 from mud.db.session import SessionLocal
+import mud.notes as notes
+from mud.imc import imc_enabled, maybe_open_socket
 from mud.loaders import load_all_areas
 from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import Position
@@ -13,6 +15,44 @@ from .linking import link_exits
 
 # Global skill registry for world initialization
 skill_registry = None
+
+_wizlock_enabled = False
+_newlock_enabled = False
+
+
+def is_wizlock_enabled() -> bool:
+    return _wizlock_enabled
+
+
+def set_wizlock(enabled: bool) -> None:
+    global _wizlock_enabled
+
+    _wizlock_enabled = enabled
+
+
+def toggle_wizlock() -> bool:
+    set_wizlock(not _wizlock_enabled)
+    return _wizlock_enabled
+
+
+def is_newlock_enabled() -> bool:
+    return _newlock_enabled
+
+
+def set_newlock(enabled: bool) -> None:
+    global _newlock_enabled
+
+    _newlock_enabled = enabled
+
+
+def toggle_newlock() -> bool:
+    set_newlock(not _newlock_enabled)
+    return _newlock_enabled
+
+
+def reset_lockdowns() -> None:
+    set_wizlock(False)
+    set_newlock(False)
 
 
 def load_world_from_db() -> bool:
@@ -96,6 +136,16 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     # Clearing here avoids leakage across test modules without affecting
     # persistence tests which explicitly save/load.
     bans.clear_all_bans()
+    reset_lockdowns()
+
+    # ROM boot_db loads board files before finishing startup (src/db.c:load_boards).
+    # Mirror that so board state persists across world reloads without manual hooks.
+    notes.load_boards()
+
+    # ROM imc_startup runs during boot_db when IMC is enabled. Load configuration
+    # and cached tables before continuing so idle pumps have the necessary data.
+    if imc_enabled():
+        maybe_open_socket()
 
     # Load skills registry from JSON
     from pathlib import Path

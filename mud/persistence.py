@@ -68,6 +68,7 @@ class PlayerSave:
     # ROM bitfields to preserve flags parity
     affected_by: int = 0
     wiznet: int = 0
+    log_commands: bool = False
     room_vnum: int | None = None
     inventory: list[int] = field(default_factory=list)
     equipment: dict[str, int] = field(default_factory=dict)
@@ -130,6 +131,7 @@ def save_character(char: Character) -> None:
         conditions=conditions,
         affected_by=getattr(char, "affected_by", 0),
         wiznet=getattr(char, "wiznet", 0),
+        log_commands=bool(getattr(char, "log_commands", False)),
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
         inventory=[obj.prototype.vnum for obj in char.inventory],
         equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
@@ -227,6 +229,7 @@ def load_character(name: str) -> Character | None:
     pcdata.board_name = board.storage_key()
     pcdata.last_notes.update(getattr(data, "last_notes", {}) or {})
     char.pcdata = pcdata
+    char.log_commands = bool(getattr(data, "log_commands", False))
     character_registry.append(char)
     return char
 

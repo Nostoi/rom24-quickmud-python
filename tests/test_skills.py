@@ -1,12 +1,12 @@
-from math import ceil
 from pathlib import Path
 from random import Random
 
 import pytest
 
 import mud.skills.handlers as skill_handlers
-from mud.config import get_pulse_violence
-from mud.models.character import Character
+from mud.game_loop import violence_tick
+from mud.math.c_compat import c_div
+from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag
 from mud.skills import SkillRegistry
 from mud.utils import rng_mm
@@ -31,7 +31,7 @@ def test_casting_uses_min_mana_and_beats() -> None:
     result = reg.use(caster, "fireball", target)
     assert result == 42
     assert caster.mana == 20  # 35 - min_mana 15
-    expected_wait = max(1, ceil(skill.lag / get_pulse_violence()))
+    expected_wait = max(1, skill.lag)
     assert caster.wait == expected_wait
     assert caster.cooldowns["fireball"] == 0  # Fireball has no cooldown in skills.json
 
@@ -136,8 +136,7 @@ def test_skill_use_sets_wait_state_and_blocks_until_ready(
 
     result = reg.use(caster, "acid blast", target)
     assert result == 60
-    pulses_per_tick = get_pulse_violence()
-    expected_wait = max(1, ceil(skill.lag / pulses_per_tick))
+    expected_wait = max(1, skill.lag)
     assert caster.wait == expected_wait
     assert caster.mana == 20
     assert caster.cooldowns.get("acid blast", 0) == skill.cooldown
@@ -147,6 +146,18 @@ def test_skill_use_sets_wait_state_and_blocks_until_ready(
     assert "recover" in str(excinfo.value)
     assert caster.messages[-1] == "You are still recovering."
     assert caster.mana == 20
+
+
+def test_skill_tick_only_reduces_cooldowns() -> None:
+    reg = SkillRegistry()
+    character = Character(wait=3)
+    character.cooldowns = {"fireball": 1, "shield": 2}
+
+    reg.tick(character)
+
+    # Wait-state recovery happens during the per-pulse violence tick, not the skill tick.
+    assert character.wait == 3
+    assert character.cooldowns == {"shield": 1}
 
 
 def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -162,8 +173,8 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
     )
     haste_target = Character()
     reg.use(haste_caster, "acid blast", haste_target)
-    haste_pulses = max(1, skill.lag // 2)
-    expected_haste = max(1, ceil(haste_pulses / get_pulse_violence()))
+    haste_pulses = max(1, c_div(skill.lag, 2))
+    expected_haste = max(1, haste_pulses)
     assert haste_caster.wait == expected_haste
 
     slow_caster = Character(
@@ -175,5 +186,80 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
     slow_target = Character()
     reg.use(slow_caster, "acid blast", slow_target)
     slow_pulses = skill.lag * 2
-    expected_slow = max(1, ceil(slow_pulses / get_pulse_violence()))
+    expected_slow = max(1, slow_pulses)
     assert slow_caster.wait == expected_slow
+
+
+def test_wait_state_recovery_matches_pulses() -> None:
+    reg = load_registry()
+    skill = reg.get("fireball")
+    caster = Character(mana=30, is_npc=False, skills={"fireball": 100})
+    target = Character()
+
+    original_lag = skill.lag
+    skill.lag = 7
+
+    character_registry.append(caster)
+    try:
+        reg.use(caster, "fireball", target)
+        assert caster.wait == 7
+
+        for remaining in range(7, 0, -1):
+            violence_tick()
+            assert caster.wait == remaining - 1
+    finally:
+        character_registry.remove(caster)
+        skill.lag = original_lag
+
+
+def test_kick_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker = Character(
+        name="Hero",
+        level=20,
+        is_npc=False,
+        max_hit=100,
+        hit=100,
+        skills={"kick": 75},
+    )
+    victim = Character(name="Orc", level=10, is_npc=True, max_hit=100, hit=100)
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 12)
+
+    result = skill_handlers.kick(attacker, victim)
+
+    assert result == "You hit Orc for 12 damage."
+    assert victim.hit == 88
+    assert attacker.fighting is victim
+    assert victim.fighting is attacker
+
+
+def test_kick_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker = Character(
+        name="Hero",
+        level=20,
+        is_npc=False,
+        max_hit=100,
+        hit=100,
+        skills={"kick": 10},
+    )
+    victim = Character(name="Orc", level=10, is_npc=True, max_hit=100, hit=100)
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 90)
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 5)
+
+    result = skill_handlers.kick(attacker, victim)
+
+    assert result == "Your attack has no effect."
+    assert victim.hit == 100
+    assert attacker.fighting is victim
+    assert victim.fighting is attacker
+
+
+def test_kick_requires_opponent() -> None:
+    attacker = Character(name="Hero", level=10, is_npc=False, skills={"kick": 60})
+
+    with pytest.raises(ValueError) as excinfo:
+        skill_handlers.kick(attacker)
+
+    assert "opponent" in str(excinfo.value)

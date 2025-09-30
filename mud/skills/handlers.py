@@ -3,7 +3,7 @@ from __future__ import annotations
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 from mud.affects.saves import saves_spell
-from mud.combat.engine import update_pos
+from mud.combat.engine import apply_damage, update_pos
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import DamageType, Position
@@ -690,11 +690,40 @@ def invis(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def kick(caster, target=None):
-    """Stub implementation for kick.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def kick(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    success: bool | None = None,
+    roll: int | None = None,
+) -> str:
+    """ROM do_kick: strike the current opponent for level-based damage."""
+
+    if caster is None:
+        raise ValueError("kick requires a caster")
+
+    opponent = target or getattr(caster, "fighting", None)
+    if opponent is None:
+        raise ValueError("kick requires an opponent")
+
+    try:
+        raw_chance = getattr(caster, "skills", {}).get("kick", 0)
+        chance = max(0, min(100, int(raw_chance)))
+    except (TypeError, ValueError):
+        chance = 0
+
+    if roll is None:
+        roll = rng_mm.number_percent()
+    if success is None:
+        success = chance > roll
+
+    if success:
+        level = max(1, int(getattr(caster, "level", 1) or 1))
+        damage = rng_mm.number_range(1, level)
+    else:
+        damage = 0
+
+    return apply_damage(caster, opponent, damage, DamageType.BASH)
 
 
 def know_alignment(caster, target=None):

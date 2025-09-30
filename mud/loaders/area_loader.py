@@ -29,15 +29,48 @@ def load_area_file(filepath: str) -> Area:
         if line is None:
             break
         if line == "#AREA":
-            area.file_name = tokenizer.next_line().rstrip("~")
-            area.name = tokenizer.next_line().rstrip("~")
-            area.credits = tokenizer.next_line().rstrip("~")
+            file_name = tokenizer.next_line()
+            if file_name is None or not file_name.endswith("~"):
+                raise ValueError("invalid #AREA header: file name must end with '~'")
+            area.file_name = file_name[:-1]
+
+            name = tokenizer.next_line()
+            if name is None or not name.endswith("~"):
+                raise ValueError("invalid #AREA header: area name must end with '~'")
+            area.name = name[:-1]
+
+            credits = tokenizer.next_line()
+            if credits is None or not credits.endswith("~"):
+                raise ValueError("invalid #AREA header: credits must end with '~'")
+            area.credits = credits[:-1]
+
             vnums = tokenizer.next_line()
-            if vnums:
-                parts = vnums.split()
-                if len(parts) >= 2:
-                    area.min_vnum = int(parts[0])
-                    area.max_vnum = int(parts[1])
+            if not vnums:
+                raise ValueError("invalid #AREA header: missing vnum range line")
+            parts = vnums.split()
+            if len(parts) < 2:
+                raise ValueError(
+                    "invalid #AREA header: expected at least two integers for vnum range"
+                )
+            try:
+                area.min_vnum = int(parts[0])
+                area.max_vnum = int(parts[1])
+            except ValueError as exc:
+                raise ValueError(
+                    "invalid #AREA header: vnum range must contain integers"
+                ) from exc
+            if area.min_vnum > area.max_vnum:
+                raise ValueError(
+                    "invalid #AREA header: min_vnum cannot exceed max_vnum"
+                )
+            if len(parts) >= 4:
+                try:
+                    area.low_range = int(parts[2])
+                    area.high_range = int(parts[3])
+                except ValueError as exc:
+                    raise ValueError(
+                        "invalid #AREA header: optional range values must be integers"
+                    ) from exc
         elif line in SECTION_HANDLERS:
             handler = SECTION_HANDLERS[line]
             handler(tokenizer, area)
@@ -51,15 +84,40 @@ def load_area_file(filepath: str) -> Area:
                     break
                 data_line = tokenizer.next_line()
                 if data_line.startswith("Builders"):
-                    area.builders = data_line.split(None, 1)[1].rstrip("~")
+                    if not data_line.endswith("~"):
+                        raise ValueError(
+                            "invalid #AREADATA entry: Builders value must end with '~'"
+                        )
+                    parts = data_line.split(None, 1)
+                    if len(parts) < 2:
+                        raise ValueError(
+                            "invalid #AREADATA entry: Builders requires a value"
+                        )
+                    area.builders = parts[1][:-1]
                 elif data_line.startswith("Security"):
                     parts = data_line.split()
-                    if len(parts) > 1:
+                    if len(parts) < 2:
+                        raise ValueError(
+                            "invalid #AREADATA entry: Security requires an integer value"
+                        )
+                    try:
                         area.security = int(parts[1])
+                    except ValueError as exc:
+                        raise ValueError(
+                            "invalid #AREADATA entry: Security must be an integer"
+                        ) from exc
                 elif data_line.startswith("Flags"):
                     parts = data_line.split()
-                    if len(parts) > 1:
+                    if len(parts) < 2:
+                        raise ValueError(
+                            "invalid #AREADATA entry: Flags requires an integer value"
+                        )
+                    try:
                         area.area_flags = int(parts[1])
+                    except ValueError as exc:
+                        raise ValueError(
+                            "invalid #AREADATA entry: Flags must be an integer"
+                        ) from exc
         elif line.startswith("#$") or line == "$":
             break
     key = area.min_vnum

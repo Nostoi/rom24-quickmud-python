@@ -2,17 +2,85 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+from mud.models.constants import OHELPS_FILE
+
+if TYPE_CHECKING:  # pragma: no cover - import for type checking only
+    from mud.models.character import Character
 
 
-def log_admin_command(actor: str, command: str, args: str) -> None:
+_LOG_ALL = False
+_ORPHANED_HELPS_PATH = Path("log") / OHELPS_FILE
+
+
+_CONTROL_CHAR_ORDS = set(range(0x00, 0x20))
+_CONTROL_CHAR_ORDS.add(0x7F)
+_SANITIZE_TRANSLATION = {ord("$"): "S"}
+_SANITIZE_TRANSLATION.update(dict.fromkeys(_CONTROL_CHAR_ORDS, " "))
+
+
+def is_log_all_enabled() -> bool:
+    """Return True when the global `log all` flag is active."""
+
+    return _LOG_ALL
+
+
+def set_log_all(enabled: bool) -> None:
+    """Force the global `log all` flag to a specific state (test helper)."""
+
+    global _LOG_ALL
+    _LOG_ALL = bool(enabled)
+
+
+def toggle_log_all() -> bool:
+    """Flip the global `log all` flag and return the new state."""
+
+    global _LOG_ALL
+    _LOG_ALL = not _LOG_ALL
+    return _LOG_ALL
+
+
+def _count_edge_control_chars(command_line: str, *, reverse: bool = False) -> int:
+    iterator = reversed(command_line) if reverse else command_line
+    count = 0
+    for char in iterator:
+        if ord(char) in _CONTROL_CHAR_ORDS:
+            count += 1
+            continue
+        break
+    return count
+
+
+def _sanitize_command_line(command_line: str) -> str:
+    """Mirror ROM's `smash_dollar` while trimming only control-character artifacts."""
+
+    sanitized = command_line.translate(_SANITIZE_TRANSLATION)
+
+    leading_controls = _count_edge_control_chars(command_line)
+    trailing_controls = _count_edge_control_chars(command_line, reverse=True)
+
+    if leading_controls:
+        sanitized = sanitized[leading_controls:]
+    if trailing_controls:
+        sanitized = sanitized[:-trailing_controls] if trailing_controls < len(sanitized) else ""
+
+    return sanitized
+
+
+def log_admin_command(actor: str, command_line: str) -> None:
     """Append a single admin-command entry to log/admin.log.
 
-    Format: ISO timestamp, actor, command, args (space-joined).
+    Format: ISO timestamp, actor, sanitized command line.
     Creates the log directory if missing.
     """
+
     Path("log").mkdir(exist_ok=True)
-    line = f"{datetime.now(UTC).isoformat()}Z\t{actor}\t{command}\t{args}\n"
-    (Path("log") / "admin.log").open("a", encoding="utf-8").write(line)
+    timestamp = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    sanitized = _sanitize_command_line(command_line)
+    log_path = Path("log") / "admin.log"
+    with log_path.open("a", encoding="utf-8") as handle:
+        handle.write(f"{timestamp}\t{actor}\t{sanitized}\n")
 
 
 def rotate_admin_log(today: datetime | None = None) -> Path:
@@ -31,10 +99,32 @@ def rotate_admin_log(today: datetime | None = None) -> Path:
     dated = log_dir / f"admin-{dt.strftime('%Y%m%d')}.log"
     # Avoid clobbering: if dated file exists, append current log and remove active
     if dated.exists():
-        dated.open("a", encoding="utf-8").write(active.read_text(encoding="utf-8"))
+        content = active.read_text(encoding="utf-8")
+        with dated.open("a", encoding="utf-8") as destination:
+            destination.write(content)
         active.unlink()
     else:
         active.rename(dated)
     # Create a fresh active log file
     active.touch()
     return active
+
+
+def log_orphan_help_request(character: Character, topic: str) -> None:
+    """Append an unmet help request to the orphaned helps log.
+
+    Mirrors ROM's ``append_file`` helper by recording the caller's room vnum
+    alongside their name so staff can fill in missing documentation topics.
+    NPC requests and blank topics are ignored to match the original guard.
+    """
+
+    if not topic:
+        return
+    if getattr(character, "is_npc", True):
+        return
+    Path("log").mkdir(exist_ok=True)
+    room = getattr(character, "room", None)
+    room_vnum = getattr(room, "vnum", 0) or 0
+    name = getattr(character, "name", "unknown") or "unknown"
+    with _ORPHANED_HELPS_PATH.open("a", encoding="utf-8") as handle:
+        handle.write(f"[{room_vnum:5d}] {name}: {topic}\n")

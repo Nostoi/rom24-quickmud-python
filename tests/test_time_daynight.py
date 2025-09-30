@@ -13,6 +13,9 @@ def setup_function(func):
     time_info.year = 0
     time_info.sunlight = Sunlight.DARK
     game_loop._pulse_counter = 0
+    game_loop._point_counter = 0
+    game_loop._violence_counter = 0
+    game_loop._area_counter = 0
 
 
 def teardown_function(func):

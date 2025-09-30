@@ -35,3 +35,21 @@ def test_practice_uses_class_levels() -> None:
 
     skill = skill_registry.get("acid blast")
     assert skill.slot == 70
+
+
+def test_practice_accepts_skill_abbreviations() -> None:
+    load_skills(Path("data/skills.json"))
+
+    char = Character(
+        practice=1,
+        level=25,
+        ch_class=1,
+        is_npc=False,
+        perm_stat=[0, 18, 0, 0, 0],
+        skills={"sanctuary": 1},
+    )
+
+    msg = do_practice(char, "sanc")
+    assert msg == "You practice sanctuary."
+    assert char.practice == 0
+    assert char.skills["sanctuary"] > 1
