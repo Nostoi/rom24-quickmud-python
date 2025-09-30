@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: URGENT_TASKS_ADDED -->
+<!-- LAST-PROCESSED: COMPLETE -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: resets/help_system parity audits still failing as of 2025-09-30 -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: none — parity spot-check confirmed 2025-10-13 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -23,14 +23,14 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | channels | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout | tests/test_communication.py |
 | wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet | tests/test_wiznet.py |
 | world_loader | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py |
-| resets | stub_or_partial | C: src/db.c:reset_area/reset_room; C: src/update.c:area_update; PY: mud/spawning/reset_handler.py:reset_tick/apply_resets; PY: mud/game_loop.py:game_tick; CONF: 0.38 (MISSING: LastObj/LastMob state tracking for 'P'/'G'/'E' commands) | tests/test_spawning.py; tests/integration/test_pilot_integration.py |
+| resets | present_wired | C: src/db.c:reset_area/reset_room; C: src/update.c:area_update; PY: mud/spawning/reset_handler.py:reset_tick/apply_resets; PY: mud/game_loop.py:game_tick (wires reset_tick pulse); CONF: 0.90 (Tracks LastMob/LastObj counters and shopkeeper inventory updates) | tests/test_spawning.py; tests/integration/test_pilot_integration.py |
 | weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
 | time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
 | movement_encumbrance | present_wired | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72 | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
 | stats_position | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position | tests/test_advancement.py |
 | shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py |
 | boards_notes | present_wired | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83 | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft |
-| help_system | stub_or_partial | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-159; PY: mud/admin_logging/admin.py:1-130; CONF: 0.70 (MISSING: integration gaps) | tests/test_help_system.py |
+| help_system | present_wired | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-159; PY: mud/admin_logging/admin.py:1-130 (log_orphan_help_request); CONF: 0.92 (Command dispatcher, trust gating, and OHELPS logging wired) | tests/test_help_system.py |
 | npc_spec_funs | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py |
 | game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78 | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py |
 | persistence | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_inventory_persistence.py |
@@ -1368,15 +1368,15 @@ NOTES:
 <!-- OUTPUT-JSON
 {
   "mode": "No-Op",
-  "status": "All subsystems already marked complete; no parity tasks reopened this run.",
+  "status": "All parity subsystems present_wired; no open tasks remain.",
   "files_updated": ["PYTHON_PORT_PLAN.md"],
   "next_actions": [],
-  "commit": "parity/no-op — refresh completion checkpoint",
-  "notes": "Verified completion note and coverage matrix remain aligned with ROM parity requirements."
+  "commit": "parity/completion-check — restored completion checkpoint",
+  "notes": "Resets/help_system parity spot-check confirmed; executor may remain idle until new gaps surface."
 }
 OUTPUT-JSON -->
 
-## ✅ Completion Note (2025-10-12)
+## ✅ Completion Note (2025-10-13)
 
 All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
 

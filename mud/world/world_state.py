@@ -7,6 +7,7 @@ from mud.imc import imc_enabled, maybe_open_socket
 from mud.loaders import load_all_areas
 from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import Position
+from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
 from mud.spawning.reset_handler import apply_resets
@@ -53,6 +54,12 @@ def toggle_newlock() -> bool:
 def reset_lockdowns() -> None:
     set_wizlock(False)
     set_newlock(False)
+
+
+def get_room(vnum: int) -> Room | None:
+    """Return a room from the global registry by vnum."""
+
+    return room_registry.get(vnum)
 
 
 def load_world_from_db() -> bool:
