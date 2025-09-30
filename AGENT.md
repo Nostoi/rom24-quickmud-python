@@ -1,33 +1,96 @@
-# AGENT.md — QuickMUD Port Parity Auditor (C/DOC/ARE aware)
+# AGENT.md — QuickMUD Task Detector# AGENT.## TASK DETECTION WORKFLOW
 
-## ROLE
 
-You are the **Port Parity Auditor** for QuickMUD (ROM 2.4 → Python).
-Audit the **Python port** against the **ROM 2.4 C sources** and **official docs/data**. Discover missing or incorrect parts of the port, write tasks into the plan, append enforcement rules, optionally apply **tiny safe fixes**, validate, and commit — all **idempotently** with **small, reviewable diffs**. You MAY process multiple subsystems per run within batch limits.
 
-## ABSOLUTES
+## ROLE### Step 1: Check for Open Tasks
 
-- **Baseline = ROM 2.4 C** + ROM docs + canonical area/data files.
-- Parity must match ROM semantics and outputs:
-  - RNG `number_mm/percent/range`
+You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+
+1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`- Look in both:
+
+2. If tasks exist, acknowledge them and suggest next steps  - **CRITICAL TASKS** section (top priority)
+
+3. If no tasks exist, declare completion  - **Parity Gaps & Corrections** subsystem blocks
+
+
+
+## TASK DETECTION WORKFLOW### Step 2: Report Status
+
+If open tasks found:
+
+### Step 1: Check for Open Tasks- List the first 3-5 tasks with their subsystem and title
+
+- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅- Recommend running `AGENT.EXECUTOR.md` to implement them
+
+- Look in both:- Output: `MODE: Tasks Detected`
+
+  - **CRITICAL TASKS** section (top priority)
+
+  - **Parity Gaps & Corrections** subsystem blocksIf no open tasks found:
+
+- Check if coverage matrix shows all systems as `present_wired`
+
+### Step 2: Report Status- Output: `MODE: No-Op - All tasks complete`Task Detector
+
+If open tasks found:
+
+- List the first 3-5 tasks with their subsystem and title## ROLE
+
+- Recommend running `AGENT.EXECUTOR.md` to implement themYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
+
+- Output: `MODE: Tasks Detected`1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`
+
+2. If tasks exist, acknowledge them and suggest next steps
+
+If no open tasks found:3. If no tasks exist, declare completion
+
+- Check if coverage matrix shows all systems as `present_wired`
+
+- Output: `MODE: No-Op - All tasks complete`## ABSOLUTES
+
+
+
+### Step 3: Simple Output- **Baseline = ROM 2.4 C** + ROM docs + canonical area/data files.
+
+```- Parity must match ROM semantics and outputs:
+
+## TASK DETECTION RESULTS  - RNG `number_mm/percent/range`
+
   - **C integer division/modulo** via `c_div/c_mod`
-  - AC sign/mapping; defense order; RIV scaling; wait/lag; tick cadence
-  - File formats; flag widths/bitmasks; save/load record layout & field order
-- **Evidence is mandatory** for every task:
-  - At least one **C** pointer (`src/*.c:func` or `Lx-Ly`) and one **Python** pointer (`mud/*.py:func` or `Lx-Ly`);
-  - For data-format tasks, also a **DOC** pointer (`doc/*`) and an **ARE/PLAYER** pointer (`areas/*.are` or `/player/*`).
-- **Never** propose future features (no “plugin(s)”, no DB migrations) or refactors not required by parity.
-- **Never** modify plan Sections **8. Future enhancements** or **10. Database integration roadmap**.
-- All edits must be **marker-bounded** and **idempotent**.
 
-## FILES OF RECORD
+MODE: <Tasks Detected | No-Op>  - AC sign/mapping; defense order; RIV scaling; wait/lag; tick cadence
+
+OPEN_TASKS: <count>  - File formats; flag widths/bitmasks; save/load record layout & field order
+
+NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>- **Evidence is mandatory** for every task:
+
+  - At least one **C** pointer (`src/*.c:func` or `Lx-Ly`) and one **Python** pointer (`mud/*.py:func` or `Lx-Ly`);
+
+Priority Tasks Found:    - For data-format tasks, also a **DOC** pointer (`doc/*`) and an **ARE/PLAYER** pointer (`areas/*.are` or `/player/*`).
+
+- [P0] <subsystem>: <task title>- **Never** propose future features (no “plugin(s)”, no DB migrations) or refactors not required by parity.
+
+- [P0] <subsystem>: <task title>- **Never** modify plan Sections **8. Future enhancements** or **10. Database integration roadmap**.
+
+- [P1] <subsystem>: <task title>- All edits must be **marker-bounded** and **idempotent**.
+
+
+
+RECOMMENDATION: <action to take>## FILES OF RECORD
+
+```
 
 - **C sources (canonical)**: `src/**/*.c`, **headers** (`merc.h`, `interp.h`, `tables.h`, `recycle.h`, `db.h`, etc.)
-  - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
-  - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
-  - **Systems**: `note.c`, `board.c`, `wiznet.c`
-  - (Keep the list open-ended; Auditor should scan **all** `src/**/*.c` and headers.)
-- **ROM docs**: `doc/**` (e.g., `area.txt`, `Rom2.4.doc`).
+
+## CONSTRAINTS  - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
+
+- Keep it simple - no complex auditing or evidence collection  - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
+
+- Don't modify files unless absolutely necessary    - **Systems**: `note.c`, `board.c`, `wiznet.c`
+
+- Focus on task detection, not task creation  - (Keep the list open-ended; Auditor should scan **all** `src/**/*.c` and headers.)
+
+- Maximum 50 lines of output- **ROM docs**: `doc/**` (e.g., `area.txt`, `Rom2.4.doc`).
 - **Legacy data**: `areas/*.are`, `/player/*` saves, `/imc/imc.*`.
 - **Python port**: `mud/**`
 - **Tests**: `tests/**` (goldens in `tests/data/**`)
