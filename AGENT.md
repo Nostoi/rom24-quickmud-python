@@ -1,50 +1,96 @@
-# AGENT.md — QuickMUD Task Detector# AGENT.## TASK DETECTION WORKFLOW
+# AGENT.md — QuickMUD Task Detector# AGENT.md — QuickMUD Task Detector# AGENT.## TASK DETECTION WORKFLOW
 
 
 
-## ROLE### Step 1: Check for Open Tasks
+## ROLE
 
-You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
 
-1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`- Look in both:
-
-2. If tasks exist, acknowledge them and suggest next steps  - **CRITICAL TASKS** section (top priority)
-
-3. If no tasks exist, declare completion  - **Parity Gaps & Corrections** subsystem blocks
-
-
-
-## TASK DETECTION WORKFLOW### Step 2: Report Status
-
-If open tasks found:
-
-### Step 1: Check for Open Tasks- List the first 3-5 tasks with their subsystem and title
-
-- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅- Recommend running `AGENT.EXECUTOR.md` to implement them
-
-- Look in both:- Output: `MODE: Tasks Detected`
-
-  - **CRITICAL TASKS** section (top priority)
-
-  - **Parity Gaps & Corrections** subsystem blocksIf no open tasks found:
-
-- Check if coverage matrix shows all systems as `present_wired`
-
-### Step 2: Report Status- Output: `MODE: No-Op - All tasks complete`Task Detector
-
-If open tasks found:
-
-- List the first 3-5 tasks with their subsystem and title## ROLE
-
-- Recommend running `AGENT.EXECUTOR.md` to implement themYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
-
-- Output: `MODE: Tasks Detected`1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`
+1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`## ROLE### Step 1: Check for Open Tasks
 
 2. If tasks exist, acknowledge them and suggest next steps
 
-If no open tasks found:3. If no tasks exist, declare completion
+3. If no tasks exist, declare completionYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+
+
+
+## TASK DETECTION WORKFLOW1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`- Look in both:
+
+
+
+### Step 1: Check for Open Tasks2. If tasks exist, acknowledge them and suggest next steps  - **CRITICAL TASKS** section (top priority)
+
+- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+
+- Look in both:3. If no tasks exist, declare completion  - **Parity Gaps & Corrections** subsystem blocks
+
+  - **CRITICAL TASKS** section (top priority)
+
+  - **Parity Gaps & Corrections** subsystem blocks
+
+
+
+### Step 2: Report Status## TASK DETECTION WORKFLOW### Step 2: Report Status
+
+If open tasks found:
+
+- List the first 3-5 tasks with their subsystem and titleIf open tasks found:
+
+- Recommend running `AGENT.EXECUTOR.md` to implement them
+
+- Output: `MODE: Tasks Detected`### Step 1: Check for Open Tasks- List the first 3-5 tasks with their subsystem and title
+
+
+
+If no open tasks found:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅- Recommend running `AGENT.EXECUTOR.md` to implement them
 
 - Check if coverage matrix shows all systems as `present_wired`
+
+- Output: `MODE: No-Op - All tasks complete`- Look in both:- Output: `MODE: Tasks Detected`
+
+
+
+### Step 3: Simple Output  - **CRITICAL TASKS** section (top priority)
+
+```
+
+## TASK DETECTION RESULTS  - **Parity Gaps & Corrections** subsystem blocksIf no open tasks found:
+
+
+
+MODE: <Tasks Detected | No-Op>- Check if coverage matrix shows all systems as `present_wired`
+
+OPEN_TASKS: <count>
+
+NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>### Step 2: Report Status- Output: `MODE: No-Op - All tasks complete`Task Detector
+
+
+
+Priority Tasks Found:  If open tasks found:
+
+- [P0] <subsystem>: <task title>
+
+- [P0] <subsystem>: <task title>- List the first 3-5 tasks with their subsystem and title## ROLE
+
+- [P1] <subsystem>: <task title>
+
+- Recommend running `AGENT.EXECUTOR.md` to implement themYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
+
+RECOMMENDATION: <action to take>
+
+```- Output: `MODE: Tasks Detected`1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`
+
+
+
+## CONSTRAINTS2. If tasks exist, acknowledge them and suggest next steps
+
+- Keep it simple - no complex auditing or evidence collection
+
+- Don't modify files unless absolutely necessary  If no open tasks found:3. If no tasks exist, declare completion
+
+- Focus on task detection, not task creation
+
+- Maximum 50 lines of output- Check if coverage matrix shows all systems as `present_wired`
 
 - Output: `MODE: No-Op - All tasks complete`## ABSOLUTES
 
