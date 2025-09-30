@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
+from mud.loaders.reset_loader import validate_resets
 from mud.models.constants import Direction, Sector
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
@@ -122,6 +123,10 @@ def object_to_dict(obj) -> dict:
 def convert_area(path: str) -> dict:
     clear_registries()
     area = load_area_file(path)
+    reset_errors = validate_resets(area)
+    if reset_errors:
+        joined = "; ".join(reset_errors)
+        raise ValueError(f"Reset validation failed: {joined}")
     rooms = [room_to_dict(r) for r in room_registry.values() if r.area is area]
     mobiles = [mob_to_dict(m) for m in mob_registry.values() if m.area is area]
     objects = [object_to_dict(o) for o in obj_registry.values() if o.area is area]

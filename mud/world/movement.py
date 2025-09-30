@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from collections.abc import Callable
+
 from mud import mobprog
 from mud.models.character import Character
 from mud.models.constants import (
@@ -19,6 +21,7 @@ from mud.models.constants import (
 )
 from mud.models.room import Exit, Room
 from mud.net.protocol import broadcast_room
+from mud.registry import room_registry
 from mud.world.look import look
 from mud.world.vision import can_see_room
 
@@ -30,6 +33,45 @@ dir_map: dict[str, Direction] = {
     "up": Direction.UP,
     "down": Direction.DOWN,
 }
+
+
+def _collect_followers(current_room: Room, leader: Character) -> list[Character]:
+    return [
+        follower
+        for follower in list(getattr(current_room, "people", []) or [])
+        if follower is not leader and getattr(follower, "master", None) is leader
+    ]
+
+
+def _move_followers(
+    leader: Character,
+    current_room: Room,
+    target_room: Room,
+    target_room_flags: int,
+    mover: Callable[[Character], None],
+) -> None:
+    for follower in _collect_followers(current_room, leader):
+        if follower.room is not current_room:
+            continue
+        if follower.has_affect(AffectFlag.CHARM) and follower.position < Position.STANDING:
+            _stand_charmed_follower(follower)
+        if follower.position < Position.STANDING:
+            continue
+        if not can_see_room(follower, target_room):
+            continue
+        if (
+            target_room_flags & int(RoomFlag.ROOM_LAW)
+            and follower.is_npc
+            and bool(getattr(follower, "act", 0) & int(ActFlag.AGGRESSIVE))
+        ):
+            if hasattr(leader, "send_to_char"):
+                leader.send_to_char("You can't bring that follower into the city.")
+            if hasattr(follower, "send_to_char"):
+                follower.send_to_char("You aren't allowed in the city.")
+            continue
+        if hasattr(follower, "send_to_char") and leader.name:
+            follower.send_to_char(f"You follow {leader.name}.")
+        mover(follower)
 
 
 # ROM str_app carry table (carry column only) for STR 0..25.
@@ -216,12 +258,6 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     if not trusted and not _is_room_owner(char, target_room) and _room_is_private(target_room):
         return "That room is private right now."
 
-    followers_to_move = [
-        follower
-        for follower in list(current_room.people)
-        if follower is not char and getattr(follower, "master", None) is char
-    ]
-
     if not char.is_npc and not trusted and _is_foreign_guild_room(target_room, char.ch_class):
         return "You aren't allowed in there."
 
@@ -295,29 +331,13 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     if current_room is target_room:
         return f"You walk {dir_key} to {target_room.name}."
 
-    for follower in followers_to_move:
-        if follower.room is not current_room:
-            continue
-        if follower.has_affect(AffectFlag.CHARM) and follower.position < Position.STANDING:
-            _stand_charmed_follower(follower)
-        if follower.position < Position.STANDING:
-            continue
-        if not can_see_room(follower, target_room):
-            continue
-        if (
-            target_room_flags & int(RoomFlag.ROOM_LAW)
-            and follower.is_npc
-            and bool(getattr(follower, "act", 0) & int(ActFlag.AGGRESSIVE))
-        ):
-            if hasattr(char, "send_to_char"):
-                char.send_to_char("You can't bring that follower into the city.")
-            if hasattr(follower, "send_to_char"):
-                follower.send_to_char("You aren't allowed in the city.")
-            continue
-
-        if hasattr(follower, "send_to_char") and char.name:
-            follower.send_to_char(f"You follow {char.name}.")
-        move_character(follower, direction, _is_follow=True)
+    _move_followers(
+        char,
+        current_room,
+        target_room,
+        target_room_flags,
+        lambda follower: move_character(follower, direction, _is_follow=True),
+    )
 
     if char.is_npc:
         mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
@@ -325,3 +345,52 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         mobprog.mp_greet_trigger(char)
 
     return f"You walk {dir_key} to {target_room.name}."
+
+
+def move_character_through_portal(char: Character, portal: object, *, _is_follow: bool = False) -> str:
+    current_room = getattr(char, "room", None)
+    if current_room is None:
+        return "You are nowhere."
+
+    proto = getattr(portal, "prototype", None)
+    values = getattr(proto, "value", getattr(portal, "value", [0, 0, 0, 0, 0]))
+    dest_vnum = values[3] if len(values) > 3 else 0
+    destination = room_registry.get(int(dest_vnum))
+    if destination is None:
+        return "It doesn't seem to go anywhere."
+
+    portal_name = (
+        (getattr(proto, "short_descr", "") or getattr(proto, "name", "") or getattr(portal, "short_descr", "")).strip()
+        or "portal"
+    )
+
+    char_name = char.name or "someone"
+    if not _is_follow:
+        broadcast_room(current_room, f"{char_name} enters {portal_name}.", exclude=char)
+
+    current_room.remove_character(char)
+    destination.add_character(char)
+
+    if not _is_follow:
+        broadcast_room(destination, f"{char_name} arrives through {portal_name}.", exclude=char)
+
+    _auto_look(char)
+    char.wait = max(char.wait, 1)
+
+    target_flags = int(getattr(destination, "room_flags", 0) or 0)
+    _move_followers(
+        char,
+        current_room,
+        destination,
+        target_flags,
+        lambda follower: move_character_through_portal(follower, portal, _is_follow=True),
+    )
+
+    if char.is_npc:
+        mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
+    else:
+        mobprog.mp_greet_trigger(char)
+
+    if destination.name:
+        return f"You enter the {portal_name} and arrive in {destination.name}."
+    return f"You enter the {portal_name}."
