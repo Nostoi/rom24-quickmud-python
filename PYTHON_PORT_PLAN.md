@@ -13,32 +13,32 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- COVERAGE-START -->
 
-| subsystem | status | evidence | tests |
-| --- | --- | --- | --- |
-| combat | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py; tests/test_weapon_special_attacks.py |
-| skills_spells | present_wired | C: src/act_info.c:2680-2760 (`do_practice` table + gains); C: src/magic.c:73-97 (`find_spell` abbreviations); PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142 | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py |
-| affects_saves | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/_check_immune | tests/test_affects.py; tests/test_defense_flags.py |
-| command_interpreter | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command | tests/test_commands.py |
-| socials | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py |
-| channels | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout | tests/test_communication.py |
-| wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet | tests/test_wiznet.py |
-| world_loader | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py |
-| resets | stub_or_partial | C: src/db.c:reset_area/reset_room; C: src/update.c:area_update; PY: mud/spawning/reset_handler.py:reset_tick/apply_resets; PY: mud/game_loop.py:game_tick; CONF: 0.38 (MISSING: LastObj/LastMob state tracking for 'P'/'G'/'E' commands) | tests/test_spawning.py; tests/integration/test_pilot_integration.py |
-| weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
-| time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
-| movement_encumbrance | present_wired | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72 | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
-| stats_position | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position | tests/test_advancement.py |
-| shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py |
-| boards_notes | present_wired | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83 | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft |
-| help_system | stub_or_partial | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-159; PY: mud/admin_logging/admin.py:1-130; CONF: 0.70 (MISSING: integration gaps) | tests/test_help_system.py |
-| npc_spec_funs | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py |
-| game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78 | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py |
-| persistence | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_inventory_persistence.py |
-| login_account_nanny | present_wired | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD (wizlock/newlock, reconnect prompts); PY: mud/account/account_service.py:login_with_host | tests/test_account_auth.py |
-| networking_telnet | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server | tests/test_telnet_server.py |
-| security_auth_bans | present_wired | C: src/ban.c:135-320 (`ban`/`permban` trust + listing); PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178 | tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py |
-| logging_admin | present_wired | C: src/act_wiz.c:2927-2982 (do_log toggles); PY: mud/commands/admin_commands.py:cmd_log; mud/commands/dispatcher.py:process_command (log levels + alias capture); mud/logging/admin.py:log_admin_command (sanitization + UTC timestamps); CONF: 0.72 | tests/test_logging_admin.py; tests/test_logging_rotation.py |
-| imc_chat | present_wired | C: src/imc.c:5392-5476 (imc_startup); C: src/comm.c:453-859 (imc_loop cadence); PY: mud/imc/__init__.py:24-214 (config/channel/help caches + idle pump); mud/game_loop.py:1-144 (point pulse pump) | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled |
+| subsystem            | status          | evidence                                                                                                                                                                                                                                             | tests                                                                                                                                                  |
+| -------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| combat               | present_wired   | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                                                                        | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py; tests/test_weapon_special_attacks.py                              |
+| skills_spells        | present_wired   | C: src/act_info.c:2680-2760 (`do_practice` table + gains); C: src/magic.c:73-97 (`find_spell` abbreviations); PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142                                                                  | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py                                                                                |
+| affects_saves        | present_wired   | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                                                                       | tests/test_affects.py; tests/test_defense_flags.py                                                                                                     |
+| command_interpreter  | present_wired   | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                                                                            | tests/test_commands.py                                                                                                                                 |
+| socials              | present_wired   | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                                                                          | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                                              |
+| channels             | present_wired   | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                                                                 | tests/test_communication.py                                                                                                                            |
+| wiznet_imm           | present_wired   | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                                                                         | tests/test_wiznet.py                                                                                                                                   |
+| world_loader         | present_wired   | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py      | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py                                            |
+| resets               | stub_or_partial | C: src/db.c:reset_area/reset_room; C: src/update.c:area_update; PY: mud/spawning/reset_handler.py:reset_tick/apply_resets; PY: mud/game_loop.py:game_tick; CONF: 0.38 (MISSING: LastObj/LastMob state tracking for 'P'/'G'/'E' commands)             | tests/test_spawning.py; tests/integration/test_pilot_integration.py                                                                                    |
+| weather              | present_wired   | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                                                                    | tests/test_game_loop.py                                                                                                                                |
+| time_daynight        | present_wired   | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                                                                    | tests/test_time_daynight.py; tests/test_time_persistence.py                                                                                            |
+| movement_encumbrance | present_wired   | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72                                                                                                                  | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py                                         |
+| stats_position       | present_wired   | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                                                             | tests/test_advancement.py                                                                                                                              |
+| shops_economy        | present_wired   | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                                   | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                                                               |
+| boards_notes         | present_wired   | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83                                              | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft                        |
+| help_system          | stub_or_partial | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-159; PY: mud/admin_logging/admin.py:1-130; CONF: 0.70 (MISSING: integration gaps)                                                 | tests/test_help_system.py                                                                                                                              |
+| npc_spec_funs        | present_wired   | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                       | tests/test_spec_funs.py                                                                                                                                |
+| game_update_loop     | present_wired   | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78                                                                                                                                   | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py |
+| persistence          | present_wired   | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                                                                | tests/test_persistence.py; tests/test_inventory_persistence.py                                                                                         |
+| login_account_nanny  | present_wired   | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD (wizlock/newlock, reconnect prompts); PY: mud/account/account_service.py:login_with_host                                                                                                            | tests/test_account_auth.py                                                                                                                             |
+| networking_telnet    | present_wired   | C: src/comm.c; PY: mud/net/telnet_server.py:start_server                                                                                                                                                                                             | tests/test_telnet_server.py                                                                                                                            |
+| security_auth_bans   | present_wired   | C: src/ban.c:135-320 (`ban`/`permban` trust + listing); PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178                                                                                                                       | tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py                                                                           |
+| logging_admin        | present_wired   | C: src/act_wiz.c:2927-2982 (do_log toggles); PY: mud/commands/admin_commands.py:cmd_log; mud/commands/dispatcher.py:process_command (log levels + alias capture); mud/logging/admin.py:log_admin_command (sanitization + UTC timestamps); CONF: 0.72 | tests/test_logging_admin.py; tests/test_logging_rotation.py                                                                                            |
+| imc_chat             | present_wired   | C: src/imc.c:5392-5476 (imc_startup); C: src/comm.c:453-859 (imc_loop cadence); PY: mud/imc/**init**.py:24-214 (config/channel/help caches + idle pump); mud/game_loop.py:1-144 (point pulse pump)                                                   | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled                                         |
 
 <!-- COVERAGE-END -->
 
@@ -52,7 +52,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
   - ISSUE: Missing LastObj/LastMob index state tracking causing reset validation mismatches
   - C_REF: src/db.c:1842-1950 (load_objects), src/db.c:1650-1741 (load_mobiles) track Last\*
   - ACCEPTANCE: pytest tests/test_area_loader.py::test_midgaard_reset_validation passes
-  EVIDENCE: C src/db.c:1009-1108 (load_resets maintains room context); PY mud/loaders/reset_loader.py:77-157 (validate_resets tracks LastMob/LastObj state with cross-area guard); TEST tests/test_area_loader.py::test_midgaard_reset_validation
+    EVIDENCE: C src/db.c:1009-1108 (load_resets maintains room context); PY mud/loaders/reset_loader.py:77-157 (validate_resets tracks LastMob/LastObj state with cross-area guard); TEST tests/test_area_loader.py::test_midgaard_reset_validation
 
 - ✅ [P0] **Movement System: Follower Cascading Integration** — done 2025-10-11
 
@@ -60,7 +60,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
   - ISSUE: Follower movement cascade not integrated with main movement flow
   - C_REF: src/act_move.c:127-184 (move_char) calls follower updates inline
   - ACCEPTANCE: Follower follows leader through exits; pytest tests/test_movement.py::test_follower_cascade
-  EVIDENCE: C src/act_move.c:127-184 (move_char cascades followers); PY mud/world/movement.py:38-396 (shared follower mover + portal support); PY mud/commands/movement.py:1-60 (do_enter delegates to portal mover); TEST tests/test_movement.py::test_follower_cascade; TEST tests/test_movement.py::test_followers_enter_portal
+    EVIDENCE: C src/act_move.c:127-184 (move_char cascades followers); PY mud/world/movement.py:38-396 (shared follower mover + portal support); PY mud/commands/movement.py:1-60 (do_enter delegates to portal mover); TEST tests/test_movement.py::test_follower_cascade; TEST tests/test_movement.py::test_followers_enter_portal
 
 - ✅ [P0] **Help System: Missing Command Topic Generation** — done 2025-10-11
 
@@ -68,14 +68,14 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
   - ISSUE: No command topic auto-generation when help not found
   - C_REF: src/act_info.c:892-1045 (do_help) generates command help dynamically
   - ACCEPTANCE: 'help cast' shows spell help; 'help unknown' shows command suggestion
-  EVIDENCE: C src/act_info.c:892-1045 (do_help fallback builds command topics); PY mud/commands/help.py:1-159 (command help generation with trust gating); TEST tests/test_help_system.py::test_help_generates_command_topic_when_missing; TEST tests/test_help_system.py::test_help_missing_topic_suggests_commands
+    EVIDENCE: C src/act_info.c:892-1045 (do_help fallback builds command topics); PY mud/commands/help.py:1-159 (command help generation with trust gating); TEST tests/test_help_system.py::test_help_generates_command_topic_when_missing; TEST tests/test_help_system.py::test_help_missing_topic_suggests_commands
 
 - ✅ [P0] **Reset System: Execute Integration** — done 2025-10-11
   - FILES: mud/world/reset_system.py execute methods, mud/game_loop.py area update integration
   - ISSUE: Reset execution not wired to area update cycle
   - C_REF: src/update.c:1234-1389 (area_update) calls reset_area inline
   - ACCEPTANCE: Items/mobs respawn on area reset; pytest tests/test_resets.py::test_execution_cycle
-  EVIDENCE: C src/update.c:1234-1389 (area_update triggers reset_area); PY mud/game_loop.py:143-198 (game_tick invokes reset_tick on area pulse); TEST tests/test_resets.py::test_execution_cycle
+    EVIDENCE: C src/update.c:1234-1389 (area_update triggers reset_area); PY mud/game_loop.py:143-198 (game_tick invokes reset_tick on area pulse); TEST tests/test_resets.py::test_execution_cycle
 
 ## Parity Gaps & Corrections
 
@@ -114,11 +114,89 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 **Confidence Tracking**: Automated analysis via `scripts/confidence_tracker.py` - detects functional gaps that individual task completion misses.
 
+## ARCHITECTURAL INTEGRATION TASKS (Generated by AGENT.md 2025-09-29)
+
+**Priority P0 Tasks (Architectural Gaps Requiring ROM Parity):**
+
+- [ ] [P0] **Reset System: Implement ROM LastObj/LastMob state tracking**
+
+  - FILES: mud/spawning/reset_handler.py, mud/loaders/reset_loader.py
+  - ISSUE: Missing LastObj/LastMob index state tracking causing reset validation mismatches and incorrect P command targeting
+  - C_REF: src/db.c:1009-1108 (load_resets maintains LastMob/LastObj context for P/G/E commands)
+  - ACCEPTANCE: pytest tests/test_area_loader.py::test_midgaard_reset_validation passes; P commands correctly target LastObj
+  - EVIDENCE: C src/db.c:1009-1108 (pLastMob/pLastObj tracking across reset commands); PY mud/spawning/reset_handler.py:258-589 (apply_resets lacks persistent LastObj/LastMob state); TEST Integration test for LastObj P command targeting with cross-area validation
+
+- [ ] [P0] **Movement System: Integrate encumbrance limits with inventory management**
+
+  - FILES: mud/world/movement.py, mud/world/inventory.py
+  - ISSUE: Encumbrance checks in movement not updated when inventory changes; carry limits not enforced consistently
+  - C_REF: src/act_move.c:75-95 (move_char checks can_carry_w before allowing movement)
+  - ACCEPTANCE: Movement blocked when carry_weight exceeds limits; limits updated on get/drop/give
+  - EVIDENCE: C src/act_move.c:75-95 (encumbrance blocking with carry_weight checks); PY mud/world/movement.py:225-230 (basic encumbrance check present but not integrated); TEST Encumbrance integration test with inventory changes
+
+- [ ] [P0] **Help System: Complete help command dispatcher integration**
+
+  - FILES: mud/commands/help.py, mud/systems/dispatcher.py
+  - ISSUE: Help command topic generation not fully integrated with command dispatcher for dynamic help
+  - C_REF: src/act_info.c:1540-1580 (do_help function with command lookup and topic generation)
+  - ACCEPTANCE: help commands generates dynamic command list; help topics integrate with dispatcher
+  - EVIDENCE: C src/act_info.c:1540-1580 (do_help with dynamic command topic generation); PY mud/commands/help.py:45-89 (\_generate_command_help exists but dispatcher integration incomplete); TEST Dynamic help command generation integration test
+
+- [ ] [P0] **Area Format Loader: Implement cross-area reference validation**
+  - FILES: mud/loaders/area_loader.py, mud/loaders/reset_loader.py
+  - ISSUE: Cross-area vnum references not validated during load; missing validation for area boundary violations
+  - C_REF: src/db.c:441-520 (load_area with vnum range validation and area boundary checks)
+  - ACCEPTANCE: Cross-area references rejected with meaningful errors; area boundary violations caught at load time
+  - EVIDENCE: C src/db.c:441-520 (area vnum validation with boundary enforcement); PY mud/loaders/area_loader.py:105-130 (duplicate vnum check exists but cross-area validation incomplete); TEST Cross-area reference validation integration test
+
+**Priority P1 Tasks (Architectural Completeness):**
+
+- [ ] [P1] **Reset System: Integrate reset area update cycle with ROM timing**
+
+  - FILES: mud/spawning/reset_handler.py, mud/world/game_loop.py
+  - ISSUE: Area age increment and reset scheduling not integrated with main game loop tick system
+  - C_REF: src/db.c:1590-1620 (area_update called from update.c with age tracking)
+  - ACCEPTANCE: Areas reset at ROM intervals (age 15 for normal, age 3 for empty areas)
+  - EVIDENCE: C src/db.c:1590-1620 (area_update with age-based reset scheduling); PY mud/spawning/reset_handler.py:700-728 (reset_tick exists but not integrated); TEST Time-based area reset integration test
+
+- [ ] [P1] **Movement System: Complete portal traversal with follower cascading**
+
+  - FILES: mud/world/movement.py, mud/commands/movement.py
+  - ISSUE: Portal traversal follower cascading incomplete; enter command integration gaps
+  - C_REF: src/act_move.c:127-184 (move_char follower recursion applies to all movement types)
+  - ACCEPTANCE: Followers follow through portals; enter command fully integrated with movement system
+  - EVIDENCE: C src/act_move.c:127-184 (universal follower cascading for all movement); PY mud/world/movement.py:372-396 (portal movement exists, cascading present); TEST tests/test_movement.py::test_followers_enter_portal (already exists, needs validation)
+
+- [ ] [P1] **Help System: Implement trust-based help topic filtering**
+
+  - FILES: mud/commands/help.py, mud/systems/help.py
+  - ISSUE: Trust level filtering for help topics not fully implemented; admin commands not properly gated
+  - C_REF: src/act_info.c:1540-1580 (do_help filters topics by character trust level)
+  - ACCEPTANCE: Low-trust players cannot see immortal help topics; help filtering by trust level
+  - EVIDENCE: C src/act_info.c:1540-1580 (trust-based help topic filtering); PY mud/commands/help.py:90-120 (trust gating present but not comprehensive); TEST Trust level help filtering integration test
+
+- [ ] [P1] **Area Format Loader: Complete format edge case error handling**
+  - FILES: mud/loaders/area_loader.py, mud/loaders/base_loader.py
+  - ISSUE: Edge cases in area format parsing not handled; malformed area files can cause silent failures
+  - C_REF: src/db.c:441-520 (load_area with comprehensive error handling for malformed entries)
+  - ACCEPTANCE: Malformed area files rejected with specific error messages; no silent failures
+  - EVIDENCE: C src/db.c:441-520 (comprehensive area format error handling); PY mud/loaders/area_loader.py:23-88 (basic validation present but edge cases incomplete); TEST Malformed area file error handling integration test
+
 <!-- PARITY-GAPS-END -->
 
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+
+**ARCHITECTURAL INTEGRATION P0s (Generated by AGENT.md):**
+
+1. Reset System: Implement ROM LastObj/LastMob state tracking (confidence 0.38 → target 0.80+)
+2. Movement System: Integrate encumbrance limits with inventory management (confidence 0.55 → target 0.80+)
+3. Help System: Complete help command dispatcher integration (confidence 0.70 → target 0.80+)
+4. Area Format Loader: Implement cross-area reference validation (confidence 0.74 → target 0.80+)
+
+**EXECUTION PRIORITY**: These tasks address the 4 incomplete subsystems identified by confidence tracking with architectural integration gaps requiring ROM C source parity.
+
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map

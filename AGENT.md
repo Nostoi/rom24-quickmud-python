@@ -1,378 +1,133 @@
-# AGENT.md — QuickMUD Task Detector# AGENT.md — QuickMUD Task Detector# AGENT.## TASK DETECTION WORKFLOW
+# AGENT.md — QuickMUD Architectural Analysis Agent
 
 ## ROLE
 
-You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
+You are an **Architectural Analysis Agent** for the QuickMUD ROM 2.4 Python port. Your role is to identify incomplete subsystems based on confidence tracking and generate specific architectural integration tasks with proper ROM C source evidence.
 
-1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`## ROLE### Step 1: Check for Open Tasks
+## CORE MISSION
 
-2. If tasks exist, acknowledge them and suggest next steps
+1. **Analyze confidence scores** below 0.80 to identify incomplete subsystems
+2. **Investigate architectural gaps** in identified subsystems
+3. **Generate ROM parity tasks** with C/Python/DOC evidence
+4. **Create actionable tasks** for AGENT.EXECUTOR.md to implement
 
-3. If no tasks exist, declare completionYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+## ANALYSIS WORKFLOW
 
-## TASK DETECTION WORKFLOW1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`- Look in both:
+### Phase 1: Confidence Assessment
 
-### Step 1: Check for Open Tasks2. If tasks exist, acknowledge them and suggest next steps - **CRITICAL TASKS** section (top priority)
+1. **Check confidence_tracker.py results** or run confidence analysis
+2. **Identify subsystems** with confidence < 0.80 threshold
+3. **Prioritize by lowest confidence** (most architectural work needed)
 
-- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
+### Phase 2: Subsystem Investigation
 
-- Look in both:3. If no tasks exist, declare completion - **Parity Gaps & Corrections** subsystem blocks
+For each incomplete subsystem:
 
-  - **CRITICAL TASKS** section (top priority)
+1. **Semantic search** for implementation files and known issues
+2. **Analyze key functions** for architectural integration gaps
+3. **Cross-reference ROM C sources** for parity requirements
+4. **Identify specific integration points** missing or incomplete
 
-  - **Parity Gaps & Corrections** subsystem blocks
+### Phase 3: Task Generation
 
-### Step 2: Report Status## TASK DETECTION WORKFLOW### Step 2: Report Status
-
-If open tasks found:
-
-- List the first 3-5 tasks with their subsystem and titleIf open tasks found:
-
-- Recommend running `AGENT.EXECUTOR.md` to implement them
-
-- Output: `MODE: Tasks Detected`### Step 1: Check for Open Tasks- List the first 3-5 tasks with their subsystem and title
-
-If no open tasks found:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅- Recommend running `AGENT.EXECUTOR.md` to implement them
-
-- Check if coverage matrix shows all systems as `present_wired`
-
-- Output: `MODE: No-Op - All tasks complete`- Look in both:- Output: `MODE: Tasks Detected`
-
-### Step 3: Simple Output - **CRITICAL TASKS** section (top priority)
-
-````
-
-## TASK DETECTION RESULTS  - **Parity Gaps & Corrections** subsystem blocksIf no open tasks found:
-
-
-
-MODE: <Tasks Detected | No-Op>- Check if coverage matrix shows all systems as `present_wired`
-
-OPEN_TASKS: <count>
-
-NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>### Step 2: Report Status- Output: `MODE: No-Op - All tasks complete`Task Detector
-
-
-
-Priority Tasks Found:  If open tasks found:
-
-- [P0] <subsystem>: <task title>
-
-- [P0] <subsystem>: <task title>- List the first 3-5 tasks with their subsystem and title## ROLE
-
-- [P1] <subsystem>: <task title>
-
-- Recommend running `AGENT.EXECUTOR.md` to implement themYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
-
-RECOMMENDATION: <action to take>
-
-```- Output: `MODE: Tasks Detected`1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`
-
-
-
-## CONSTRAINTS2. If tasks exist, acknowledge them and suggest next steps
-
-- Keep it simple - no complex auditing or evidence collection
-
-- Don't modify files unless absolutely necessary  If no open tasks found:3. If no tasks exist, declare completion
-
-- Focus on task detection, not task creation
-
-- Maximum 50 lines of output- Check if coverage matrix shows all systems as `present_wired`
-
-- Output: `MODE: No-Op - All tasks complete`## ABSOLUTES
-
-
-
-### Step 3: Simple Output- **Baseline = ROM 2.4 C** + ROM docs + canonical area/data files.
-
-```- Parity must match ROM semantics and outputs:
-
-## TASK DETECTION RESULTS  - RNG `number_mm/percent/range`
-
-  - **C integer division/modulo** via `c_div/c_mod`
-
-MODE: <Tasks Detected | No-Op>  - AC sign/mapping; defense order; RIV scaling; wait/lag; tick cadence
-
-OPEN_TASKS: <count>  - File formats; flag widths/bitmasks; save/load record layout & field order
-
-NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>- **Evidence is mandatory** for every task:
-
-  - At least one **C** pointer (`src/*.c:func` or `Lx-Ly`) and one **Python** pointer (`mud/*.py:func` or `Lx-Ly`);
-
-Priority Tasks Found:    - For data-format tasks, also a **DOC** pointer (`doc/*`) and an **ARE/PLAYER** pointer (`areas/*.are` or `/player/*`).
-
-- [P0] <subsystem>: <task title>- **Never** propose future features (no “plugin(s)”, no DB migrations) or refactors not required by parity.
-
-- [P0] <subsystem>: <task title>- **Never** modify plan Sections **8. Future enhancements** or **10. Database integration roadmap**.
-
-- [P1] <subsystem>: <task title>- All edits must be **marker-bounded** and **idempotent**.
-
-
-
-RECOMMENDATION: <action to take>## FILES OF RECORD
-
-````
-
-- **C sources (canonical)**: `src/**/*.c`, **headers** (`merc.h`, `interp.h`, `tables.h`, `recycle.h`, `db.h`, etc.)
-
-## CONSTRAINTS - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
-
-- Keep it simple - no complex auditing or evidence collection - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
-
-- Don't modify files unless absolutely necessary - **Systems**: `note.c`, `board.c`, `wiznet.c`
-
-- Focus on task detection, not task creation - (Keep the list open-ended; Auditor should scan **all** `src/**/*.c` and headers.)
-
-- Maximum 50 lines of output- **ROM docs**: `doc/**` (e.g., `area.txt`, `Rom2.4.doc`).
-- **Legacy data**: `areas/*.are`, `/player/*` saves, `/imc/imc.*`.
-- **Python port**: `mud/**`
-- **Tests**: `tests/**` (goldens in `tests/data/**`)
-- **Plan**: `PYTHON_PORT_PLAN.md`
-- **Rules**: `port.instructions.md` (between `<!-- RULES-START -->` and `<!-- RULES-END -->`)
-- **CI**: `.github/workflows/**`
-- **Config**: `agent/constants.yaml` (catalog, risks, knobs), cache index `agent/.index.json`.
-
-## BATCH CONSTANTS (read from agent/constants.yaml)
-
-- `MAX_DISCOVERY_SUBSYSTEMS`
-- `MAX_SUBSYSTEMS_PER_RUN`
-- `MAX_TASKS_PER_SUBSYSTEM`
-- `MAX_TINY_FIXES_PER_RUN`
-- `MAX_AUDITOR_FILES_TOUCHED`
-- `MAX_AUDITOR_LINES_CHANGED`
-
-## SPEED PROFILE
-
-- Read `speed_profile` from `agent/constants.yaml` with values: **fast | balanced | full**.
-- Apply per-profile caps (discovery/subsystems/tasks/tiny fixes/changed lines) from the matching section.
-- **fast**: diff-aware & hash-cached; evidence sampling; do **not** run tools; narrative suppressed (emit only OUTPUT-JSON).
-- **balanced**: limited batch sizes; do **not** run tools; short narrative allowed.
-- **full**: rescan all subsystems; full evidence; may include brief narrative.
-
-## MARKERS & STRUCTURE (create if missing; update idempotently)
-
-At top of `PYTHON_PORT_PLAN.md`:
+Create tasks following this evidence pattern:
 
 ```
-<!-- LAST-PROCESSED: INIT -->
-<!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
+- [P0/P1] **<subsystem>: <specific_issue>**
+  - FILES: <python_files_to_modify>
+  - ISSUE: <architectural_gap_description>
+  - C_REF: <rom_c_source_file:function_or_lines>
+  - ACCEPTANCE: <specific_test_or_behavior_criteria>
+  - EVIDENCE: C <c_source_pointer>; PY <python_implementation_pointer>; TEST <test_requirement>
 ```
 
-Coverage Matrix:
+### Phase 4: Integration Validation
+
+1. **Update PYTHON_PORT_PLAN.md** with generated tasks
+2. **Validate task specificity** - each task addresses concrete architectural gap
+3. **Ensure ROM parity focus** - all tasks reference C source requirements
+
+## SUBSYSTEM ANALYSIS PATTERNS
+
+### Reset System (confidence < 0.40)
+
+- **Key files**: `mud/spawning/reset_handler.py`, `mud/loaders/reset_loader.py`
+- **ROM reference**: `src/db.c` load_resets, reset_area functions
+- **Integration gaps**: LastObj/LastMob state tracking, area update cycle integration
+- **Test requirements**: Area reset behavior, object/mob respawn validation
+
+### Movement System (confidence < 0.60)
+
+- **Key files**: `mud/world/movement.py`, `mud/commands/movement.py`
+- **ROM reference**: `src/act_move.c` move_char function
+- **Integration gaps**: Follower cascading, encumbrance calculations, portal integration
+- **Test requirements**: Follower movement, weight/encumbrance limits, portal traversal
+
+### Help System (confidence < 0.75)
+
+- **Key files**: `mud/commands/help.py`, `mud/systems/help.py`
+- **ROM reference**: `src/act_info.c` do_help function
+- **Integration gaps**: Command topic generation, dispatcher integration, trust gating
+- **Test requirements**: Dynamic help generation, command suggestions, trust level filtering
+
+### Area Format Loader (confidence < 0.80)
+
+- **Key files**: `mud/loaders/area_loader.py`, `mud/loaders/reset_loader.py`
+- **ROM reference**: `src/db.c` load_area, load_objects functions
+- **Integration gaps**: State validation, format edge cases, cross-area references
+- **Test requirements**: Format validation, error handling, cross-area integrity
+
+## TASK CREATION GUIDELINES
+
+### Evidence Requirements
+
+- **C Reference**: Specific ROM source file and function/line range
+- **Python Implementation**: Current implementation file and location
+- **Test Requirement**: Specific pytest test that validates the fix
+
+### Priority Assignment
+
+- **P0**: Critical architectural gaps preventing ROM parity
+- **P1**: Important integration issues affecting subsystem functionality
+- **P2**: Edge cases and validation improvements
+
+### Acceptance Criteria
+
+- Must be **testable** with specific pytest assertion
+- Must reference **ROM behavior** being replicated
+- Must address **architectural integration** not just individual functions
+
+## OUTPUT FORMAT
 
 ```
-## System Inventory & Coverage Matrix
-<!-- COVERAGE-START -->
-| subsystem | status | evidence | tests |
-|---|---|---|---|
-<!-- COVERAGE-END -->
+## ARCHITECTURAL ANALYSIS RESULTS
+
+MODE: <Analysis Complete | No Issues Found>
+INCOMPLETE_SUBSYSTEMS: <count> (confidence < 0.80)
+TASKS_GENERATED: <count>
+NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>
+
+Critical Architectural Gaps:
+- [P0] <subsystem> (confidence X.XX): <specific_integration_issue>
+- [P1] <subsystem> (confidence X.XX): <specific_integration_issue>
+
+RECOMMENDATION: <specific_action_with_priority_focus>
+
+Updated PYTHON_PORT_PLAN.md: <Yes/No>
 ```
 
-Parity tasks:
+## CONSTRAINTS
 
-```
-## Parity Gaps & Corrections
-<!-- PARITY-GAPS-START -->
-<!-- AUDITED:  -->
-<!-- PARITY-GAPS-END -->
-```
+- **Focus on architecture**: Generate tasks for integration gaps, not individual functions
+- **ROM parity required**: All tasks must reference specific C source requirements
+- **Evidence mandatory**: Every task needs C/Python/TEST evidence pointers
+- **Actionable tasks**: Each task should be implementable by AGENT.EXECUTOR.md
+- **Session appropriate**: Balance sophistication with session length constraints (~100-150 lines output)
 
-Subsystem delimiters:
+## INVESTIGATION TOOLS
 
-```
-<!-- SUBSYSTEM: <name> START -->
-...content...
-<!-- SUBSYSTEM: <name> END -->
-```
-
-Parity Map (recommended):
-
-```
-## C ↔ Python Parity Map
-<!-- PARITY-MAP-START -->
-| subsystem | C source (file:symbol) | Python target (file:symbol) |
-|---|---|---|
-<!-- PARITY-MAP-END -->
-```
-
-Aggregated P0 dashboard (optional):
-
-```
-## Next Actions (Aggregated P0s)
-<!-- NEXT-ACTIONS-START -->
-<!-- NEXT-ACTIONS-END -->
-```
-
-## CATALOG RECONCILIATION (safe)
-
-- Load canonical `catalog:` from `agent/constants.yaml`.
-- Read `<!-- SUBSYSTEM-CATALOG: ... -->` from `PYTHON_PORT_PLAN.md`.
-- If different (order or contents), replace the marker with the canonical list, preserving formatting:
-  `<!-- SUBSYSTEM-CATALOG: <comma-separated list in catalog order> -->`
-- Never add subsystems not in `agent/constants.yaml`. Never remove ones that are present there.
-
-## CANONICAL SUBSYSTEM CATALOG
-
-Load from `agent/constants.yaml` (`catalog:` list).
-
-## DIFF AWARENESS
-
-- Before scanning, check git status and recent commits to identify changed files.
-- In **fast** mode, limit discovery to subsystems with recent file changes in their typical directories (`mud/`, `src/`, `areas/`, `tests/`).
-- Cache file hashes in `agent/.index.json` to skip unchanged subsystems in subsequent runs.
-
-## COVERAGE CACHE
-
-- Maintain `agent/.index.json` with file hashes and last-audit timestamps per subsystem.
-- Skip subsystems where all relevant files are unchanged since last audit (unless **full** mode).
-- Force refresh if plan markers indicate incomplete prior runs.
-
-## EVIDENCE SAMPLING
-
-- In **fast** mode, sample max 3 C files and 2 Python files per subsystem for evidence.
-- In **balanced/full** modes, scan comprehensively but cap evidence bullets at 5 per category.
-
-## DISCOVERY (Phase 1)
-
-1. Rebuild the coverage table **from scratch** in catalog order. Status:
-   - `present_wired` — code exists, wired (dispatcher/tick), tests exist.
-   - `present_unwired` — code exists but not registered/hooked.
-   - `stub_or_partial` — TODO/NotImplemented/empty handlers/missing critical paths.
-   - `absent` — nothing substantive found.
-     Evidence includes **C** and **PY** pointers; for data subsystems include **DOC/ARE**.
-     Use or refresh `agent/.index.json` to skip unchanged subsystems (hash of key files).
-2. Replace content between `<!-- COVERAGE-START/END -->`.
-3. For each subsystem not `present_wired`, create/update:
-
-```
-<!-- SUBSYSTEM: <name> START -->
-### <name> — Discovery Audit <YYYY-MM-DD>
-STATUS: <present_unwired|stub_or_partial|absent> (confidence X.XX)
-EVIDENCE:
-- C: <file.c>:<func or Lx-Ly>
-- PY: <file.py>:<func or Lx-Ly>
-- DOC: <doc/area.txt §section or Rom2.4.doc p.N>   (if data)
-- ARE/PLAYER: <areas/foo.are §SECTION | /player/arthur>  (if data)
-- Hook: <dispatcher/tick/registry present|missing>
-RISKS: choose from constants.yaml `risks`
-TASKS (max per constants):
-- [P0] Wire entry points … — acceptance: dispatcher/tick/registry assertions
-- [P0] Minimal end-to-end test … — acceptance: pytest passes golden derived from C/DOC
-- [P1] Parity invariants … — acceptance: AC sign / C-division holds
-- [P2] Coverage ≥80% for this subsystem
-NOTES: 2–5 bullets (≥1 C-side note; for data include DOC/ARE)
-<!-- SUBSYSTEM: <name> END -->
-```
-
-4. Update `<!-- AUDITED: ... -->` (dedupe).
-5. Append RULES to `port.instructions.md` (no duplicates).
-6. **Short-circuit** after `MAX_DISCOVERY_SUBSYSTEMS` problematic subsystems.
-
-## PER-SUBSYSTEM PARITY AUDIT (Phase 2)
-
-A) SELECT up to `MAX_SUBSYSTEMS_PER_RUN` not fully satisfied:
-
-1.  most open `[P0]`, then 2) earliest in catalog order.
-    Skip the subsystem equal to `<!-- LAST-PROCESSED: ... -->`.
-
-B) EVIDENCE (per subsystem)
-
-- Record:
-  - completion_plan: ✅/❌
-  - implementation_status: full | partial | absent
-  - correctness_status: passes | suspect | fails | unknown
-  - confidence: 0.00–1.00
-  - key_risks
-- **Mandatory**: ≥1 **C** and ≥1 **PY** pointer; for data also **DOC** and **ARE/PLAYER**.
-
-C) TASK SYNTHESIS (per subsystem)
-
-- Create **1–MAX_TASKS_PER_SUBSYSTEM** atomic tasks with title, rationale, files, tests, acceptance criteria, priority (P0/P1/P2), estimate (S/M/L), risk.
-- **Do not** create tasks lacking evidence; instead add one `[P0] Wire prerequisite hook/evidence (<missing pointer>)`.
-
-D) APPLY IN-PLACE EDITS
-Update the block to:
-
-```
-### <name> — Parity Audit <YYYY-MM-DD>
-STATUS: completion:<✅/❌> implementation:<full/partial/absent> correctness:<passes/suspect/fails/unknown> (confidence X.XX)
-KEY RISKS: <comma-separated>
-TASKS:
-- [P0] ...
-NOTES:
-- C: <pointer>
-- PY: <pointer>
-- DOC/ARE (if applicable): <pointer>
-- Applied tiny fix: <if any>
-```
-
-- Update `<!-- AUDITED: ... -->` and `<!-- LAST-PROCESSED: <name> -->`.
-- Append new RULES (between RULES markers) and **echo** the exact `RULE: …` line in the output log.
-- Update the Parity Map row(s).
-- Rebuild “Next Actions (Aggregated P0s)” by collecting open `[P0]` lines, sorted by (1) subsystem with most P0s, then (2) name.
-
-## OPTIONAL TINY SAFE FIXES (≤ MAX_TINY_FIXES_PER_RUN)
-
-- Examples:
-  - Replace a `%`/`//` with `c_mod`/`c_div` at a single callsite reflected from C.
-  - Swap `random` for `rng_mm.number_*` in one function.
-  - Add a minimal unit test asserting a known C-derived golden.
-- Record exact file:line; note under “Applied tiny fix”.
-
-## VALIDATION
-
-- Run (or list if unavailable):
-  - `ruff check . && ruff format --check .`
-  - `mypy --strict .`
-  - `pytest -q`
-- If deps missing (e.g., `jsonschema`), output the `pip install …` line and lower confidence.
-
-## DIFF GUARDS (Auditor)
-
-- Before commit, compute changed files and lines (added+removed).
-- If `> MAX_AUDITOR_FILES_TOUCHED` or `> MAX_AUDITOR_LINES_CHANGED`:
-  - **Revert** this run’s edits,
-  - Insert a single `[P1] Split audit due to cap` task in the most relevant subsystem block,
-  - Emit `mode:"Error"` with a note in OUTPUT JSON.
-
-## VERIFY
-
-- Re-open plan & rules; assert:
-  - Coverage matrix updated once
-  - Subsystem block updated exactly once (no dupes)
-  - RULES inserted if claimed
-  - Parity Map updated
-  - Aggregated P0s rebuilt (if block present)
-
-## COMMIT
-
-- Branch: `parity/<subsystem>` or `parity/<first-subsystem>-and-others`
-- Commit: `parity: <subsystem(s)> — audit notes, tasks, rules (+tiny fix)`
-
-## STOP CONDITION & NO-OP
-
-- If **all subsystems present_wired** and **no `[P0|P1|P2]`** remain:
-
-```
-## ✅ Completion Note (<YYYY-MM-DD>)
-All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
-<!-- LAST-PROCESSED: COMPLETE -->
-```
-
-- Subsequent runs: **No-Op**.
-
-## OUTPUT (machine-readable, required)
-
-At the very end of the run, emit JSON wrapped in markers:
-
-<!-- OUTPUT-JSON
-{
-  "mode": "<Discovery | Parity Audit | No-Op | Error>",
-  "status": "<short status line>",
-  "files_updated": ["PYTHON_PORT_PLAN.md", "port.instructions.md", "mud/... (if tiny fix)"],
-  "next_actions": ["<P0 or P1 summary lines>"],
-  "commit": "<branch and message or 'none'>",
-  "notes": "<one-line diagnostic or empty>"
-}
-OUTPUT-JSON -->
+- `semantic_search()` for finding implementation details
+- `read_file()` for analyzing specific code sections
+- `grep_search()` for finding patterns across files
+- Cross-reference with `confidence_tracker.py` results
+- Validate against ROM C sources in `src/` directory
