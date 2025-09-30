@@ -1,7 +1,5 @@
 # AGENT.md — QuickMUD Task Detector# AGENT.md — QuickMUD Task Detector# AGENT.## TASK DETECTION WORKFLOW
 
-
-
 ## ROLE
 
 You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:
@@ -12,23 +10,17 @@ You are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your jo
 
 3. If no tasks exist, declare completionYou are a **Task Detection Agent** for the QuickMUD ROM 2.4 Python port. Your job is simple:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
 
-
-
 ## TASK DETECTION WORKFLOW1. Check for open P0/P1/P2 tasks in `PYTHON_PORT_PLAN.md`- Look in both:
 
-
-
-### Step 1: Check for Open Tasks2. If tasks exist, acknowledge them and suggest next steps  - **CRITICAL TASKS** section (top priority)
+### Step 1: Check for Open Tasks2. If tasks exist, acknowledge them and suggest next steps - **CRITICAL TASKS** section (top priority)
 
 - Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅
 
-- Look in both:3. If no tasks exist, declare completion  - **Parity Gaps & Corrections** subsystem blocks
+- Look in both:3. If no tasks exist, declare completion - **Parity Gaps & Corrections** subsystem blocks
 
   - **CRITICAL TASKS** section (top priority)
 
   - **Parity Gaps & Corrections** subsystem blocks
-
-
 
 ### Step 2: Report Status## TASK DETECTION WORKFLOW### Step 2: Report Status
 
@@ -40,19 +32,15 @@ If open tasks found:
 
 - Output: `MODE: Tasks Detected`### Step 1: Check for Open Tasks- List the first 3-5 tasks with their subsystem and title
 
-
-
 If no open tasks found:- Scan `PYTHON_PORT_PLAN.md` for lines matching `- [P0]`, `- [P1]`, or `- [P2]` that are NOT marked with ✅- Recommend running `AGENT.EXECUTOR.md` to implement them
 
 - Check if coverage matrix shows all systems as `present_wired`
 
 - Output: `MODE: No-Op - All tasks complete`- Look in both:- Output: `MODE: Tasks Detected`
 
+### Step 3: Simple Output - **CRITICAL TASKS** section (top priority)
 
-
-### Step 3: Simple Output  - **CRITICAL TASKS** section (top priority)
-
-```
+````
 
 ## TASK DETECTION RESULTS  - **Parity Gaps & Corrections** subsystem blocksIf no open tasks found:
 
@@ -124,17 +112,17 @@ Priority Tasks Found:    - For data-format tasks, also a **DOC** pointer (`doc/*
 
 RECOMMENDATION: <action to take>## FILES OF RECORD
 
-```
+````
 
 - **C sources (canonical)**: `src/**/*.c`, **headers** (`merc.h`, `interp.h`, `tables.h`, `recycle.h`, `db.h`, etc.)
 
-## CONSTRAINTS  - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
+## CONSTRAINTS - **Core**: `db.c`, `update.c`, `save.c`, `handler.c`, `fight.c`, `interp.c`, `comm.c`, `recycle.c`, `const.c`, `tables.c`, `skills.c`, `magic.c`, `mob_prog.c`, `ban.c`
 
-- Keep it simple - no complex auditing or evidence collection  - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
+- Keep it simple - no complex auditing or evidence collection - **Commands (act\_\*)**: `act_move.c`, `act_obj.c`, `act_info.c`, `act_comm.c`, `act_other.c`, `act_wiz.c`, `socials.c`
 
-- Don't modify files unless absolutely necessary    - **Systems**: `note.c`, `board.c`, `wiznet.c`
+- Don't modify files unless absolutely necessary - **Systems**: `note.c`, `board.c`, `wiznet.c`
 
-- Focus on task detection, not task creation  - (Keep the list open-ended; Auditor should scan **all** `src/**/*.c` and headers.)
+- Focus on task detection, not task creation - (Keep the list open-ended; Auditor should scan **all** `src/**/*.c` and headers.)
 
 - Maximum 50 lines of output- **ROM docs**: `doc/**` (e.g., `area.txt`, `Rom2.4.doc`).
 - **Legacy data**: `areas/*.are`, `/player/*` saves, `/imc/imc.*`.
