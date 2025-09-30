@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- LAST-PROCESSED: URGENT_TASKS_ADDED -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: 7 subsystems require integration fixes, not task completion -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: 4 P0 tasks require immediate attention for functional parity -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -13,49 +13,82 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- COVERAGE-START -->
 
-| subsystem            | status          | evidence                                                                                                                                                                                                                                                       | tests                                                                                                                     |
-| -------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| combat               | present_wired   | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                                                                                  | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py; tests/test_weapon_special_attacks.py |
-| skills_spells        | present_wired   | C: src/act_info.c:2680-2760 (`do_practice` table + gains); C: src/magic.c:73-97 (`find_spell` abbreviations); PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142                                                                                                                                          | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py                                                                        |
-| affects_saves        | present_wired   | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                                                                                 | tests/test_affects.py; tests/test_defense_flags.py                                                                        |
-| command_interpreter  | present_wired   | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                                                                                      | tests/test_commands.py                                                                                                    |
-| socials              | present_wired   | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                                                                                    | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                 |
-| channels             | present_wired   | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                                                                           | tests/test_communication.py                                                                                               |
-| wiznet_imm           | present_wired   | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                                                                                   | tests/test_wiznet.py                                                                                                      |
-| world_loader         | present_wired   | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                 | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py               |
-| resets               | present_wired   | C: src/db.c:reset_area/reset_room; PY: mud/spawning/reset_handler.py:apply_resets/reset_area (LastObj/LastMob parity, age cadence); CONF: 0.70                                                                                                                  | tests/test_spawning.py; tests/integration/test_pilot_integration.py                                                       |
-| weather              | present_wired   | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                                                                              | tests/test_game_loop.py                                                                                                   |
-| time_daynight        | present_wired   | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                                                                              | tests/test_time_daynight.py; tests/test_time_persistence.py                                                               |
-| movement_encumbrance | present_wired   | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72                                                                                                                     | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
-| stats_position       | present_wired   | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                                                                       | tests/test_advancement.py                                                                                                 |
-| shops_economy        | present_wired   | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                                             | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                                  |
-| boards_notes         | present_wired   | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83 (auto-read, draft guard, and persistence integration)
-                                               | tests/test_boards.py::test_note_read_defaults_to_next_unread; ::test_board_change_blocked_during_note_draft
-                                           |
-| help_system          | present_wired   | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-90; mud/logging/admin.py:1-120 (orphan logging helper); CONF: 0.80
-                                               | tests/test_help_system.py
-                                           |
-| npc_spec_funs        | present_wired   | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                                 | tests/test_spec_funs.py                                                                                                   |
-| game_update_loop     | present_wired   | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78 (pulse countdown + aggressive sweep parity)
-                                              | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py
-                                          |
-| persistence          | present_wired   | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py
-                                              | tests/test_persistence.py; tests/test_inventory_persistence.py
-                                          |
-| login_account_nanny  | present_wired   | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD (wizlock/newlock, reconnect prompts); PY: mud/account/account_service.py:login_with_host (structured flow)
+| subsystem                                                                                                                                              | status          | evidence                                                                                                                                                                                                                                                      | tests                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| combat                                                                                                                                                 | present_wired   | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                                                                                 | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py; tests/test_weapon_special_attacks.py |
+| skills_spells                                                                                                                                          | present_wired   | C: src/act_info.c:2680-2760 (`do_practice` table + gains); C: src/magic.c:73-97 (`find_spell` abbreviations); PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142                                                                           | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py                                                   |
+| affects_saves                                                                                                                                          | present_wired   | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                                                                                | tests/test_affects.py; tests/test_defense_flags.py                                                                        |
+| command_interpreter                                                                                                                                    | present_wired   | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                                                                                     | tests/test_commands.py                                                                                                    |
+| socials                                                                                                                                                | present_wired   | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                                                                                   | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                 |
+| channels                                                                                                                                               | present_wired   | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                                                                          | tests/test_communication.py                                                                                               |
+| wiznet_imm                                                                                                                                             | present_wired   | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                                                                                  | tests/test_wiznet.py                                                                                                      |
+| world_loader                                                                                                                                           | present_wired   | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py               |
+| resets                                                                                                                                                 | stub_or_partial | C: src/db.c:reset_area/reset_room; PY: mud/spawning/reset_handler.py:apply_resets/reset_area; CONF: 0.38 (MISSING: LastObj/LastMob state tracking for 'P'/'G'/'E' commands)                                                                                   | tests/test_spawning.py; tests/integration/test_pilot_integration.py                                                       |
+| weather                                                                                                                                                | present_wired   | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                                                                             | tests/test_game_loop.py                                                                                                   |
+| time_daynight                                                                                                                                          | present_wired   | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                                                                             | tests/test_time_daynight.py; tests/test_time_persistence.py                                                               |
+| movement_encumbrance                                                                                                                                   | present_wired   | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72                                                                                                                           | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py            |
+| stats_position                                                                                                                                         | present_wired   | C: merc.h:POSITION; PY: mud/models/constants.py:Position                                                                                                                                                                                                      | tests/test_advancement.py                                                                                                 |
+| shops_economy                                                                                                                                          | present_wired   | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal                                                            | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py                                                  |
+| boards_notes                                                                                                                                           | present_wired   | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83 (auto-read, draft guard, and persistence integration) |
+| tests/test_boards.py::test_note_read_defaults_to_next_unread; ::test_board_change_blocked_during_note_draft                                            |
+|  |
+| help_system                                                                                                                                            | stub_or_partial | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-90; mud/admin_logging/admin.py:1-120; CONF: 0.70 (MISSING: integration gaps)                                                               |
+| tests/test_help_system.py                                                                                                                              |
+|  |
+| npc_spec_funs                                                                                                                                          | present_wired   | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs                                                                                                                                                                | tests/test_spec_funs.py                                                                                                   |
+| game_update_loop                                                                                                                                       | present_wired   | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78 (pulse countdown + aggressive sweep parity)                                                                                                |
+| tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py |
+|  |
+| persistence                                                                                                                                            | present_wired   | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py                                                                                                                                                                         |
+| tests/test_persistence.py; tests/test_inventory_persistence.py                                                                                         |
+|  |
+| login_account_nanny                                                                                                                                    | present_wired   | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD (wizlock/newlock, reconnect prompts); PY: mud/account/account_service.py:login_with_host (structured flow)                                                                                                   |
 
                                           | tests/test_account_auth.py
                                       |
-| networking_telnet    | present_wired   | C: src/comm.c; PY: mud/net/telnet_server.py:start_server                                                                                                                                                                                                       | tests/test_telnet_server.py                                                                                               |
-| security_auth_bans   | present_wired   | C: src/ban.c:135-320 (`ban`/`permban` trust + listing); PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178
-                                         | tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py
-                                          |
-| logging_admin        | present_wired   | C: src/act_wiz.c:2927-2982 (do_log toggles); PY: mud/commands/admin_commands.py:cmd_log; mud/commands/dispatcher.py:process_command (log levels + alias capture); mud/logging/admin.py:log_admin_command (sanitization + UTC timestamps); CONF: 0.72 (log-all toggle & prefix lookup parity)
-                                          | tests/test_logging_admin.py; tests/test_logging_rotation.py
-                                          |
-| imc_chat             | present_wired   | C: src/imc.c:5392-5476 (imc_startup); src/comm.c:453-859 (imc_loop cadence); PY: mud/imc/__init__.py:24-214 (config/channel/help caches + idle pump); mud/game_loop.py:1-144 (point pulse pump)
-                                              | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled |
+
+| networking_telnet | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server | tests/test_telnet_server.py |
+| security_auth_bans | present_wired | C: src/ban.c:135-320 (`ban`/`permban` trust + listing); PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178
+| tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py
+|
+| logging_admin | present_wired | C: src/act_wiz.c:2927-2982 (do_log toggles); PY: mud/commands/admin_commands.py:cmd_log; mud/commands/dispatcher.py:process_command (log levels + alias capture); mud/logging/admin.py:log_admin_command (sanitization + UTC timestamps); CONF: 0.72 (log-all toggle & prefix lookup parity)
+| tests/test_logging_admin.py; tests/test_logging_rotation.py
+|
+| imc_chat | present_wired | C: src/imc.c:5392-5476 (imc_startup); src/comm.c:453-859 (imc_loop cadence); PY: mud/imc/**init**.py:24-214 (config/channel/help caches + idle pump); mud/game_loop.py:1-144 (point pulse pump)
+| tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled |
+
 <!-- COVERAGE-END -->
+
+## CRITICAL TASKS - IMMEDIATE ATTENTION REQUIRED
+
+**Priority P0 Tasks (Required for Functional Parity):**
+
+- [P0] **Area Format Loader: Fix LoadObj/LoadMob State Tracking** (confidence: 0.74)
+
+  - FILES: mud/world/loader.py LoadObj/LoadMob methods, mud/data/area_format_loader.py reset validation
+  - ISSUE: Missing LastObj/LastMob index state tracking causing reset validation mismatches
+  - C_REF: src/db.c:1842-1950 (load_objects), src/db.c:1650-1741 (load_mobiles) track Last\*
+  - ACCEPTANCE: pytest tests/test_area_loader.py::test_midgaard_reset_validation passes
+
+- [P0] **Movement System: Follower Cascading Integration** (confidence: 0.55)
+
+  - FILES: mud/actions/movement.py move_char function, mud/character/follower.py cascading logic
+  - ISSUE: Follower movement cascade not integrated with main movement flow
+  - C_REF: src/act_move.c:127-184 (move_char) calls follower updates inline
+  - ACCEPTANCE: Follower follows leader through exits; pytest tests/test_movement.py::test_follower_cascade
+
+- [P0] **Help System: Missing Command Topic Generation** (confidence: 0.70)
+
+  - FILES: mud/systems/help.py get_help method, mud/commands/dispatcher.py help integration
+  - ISSUE: No command topic auto-generation when help not found
+  - C_REF: src/act_info.c:892-1045 (do_help) generates command help dynamically
+  - ACCEPTANCE: 'help cast' shows spell help; 'help unknown' shows command suggestion
+
+- [P0] **Reset System: Execute Integration** (confidence: 0.38)
+  - FILES: mud/world/reset_system.py execute methods, mud/game_loop.py area update integration
+  - ISSUE: Reset execution not wired to area update cycle
+  - C_REF: src/update.c:1234-1389 (area_update) calls reset_area inline
+  - ACCEPTANCE: Items/mobs respawn on area reset; pytest tests/test_resets.py::test_execution_cycle
 
 ## Parity Gaps & Corrections
 
@@ -86,10 +119,9 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 - ✅ [P0] **imc_chat** (0.80 confidence): Startup handshake and idle pump aligned with ROM — done 2025-10-09
   EVIDENCE: C src/imc.c:5392-5476 (imc_startup loads config, channels, and help tables before connecting).
   EVIDENCE: C src/comm.c:453-859 (update_handler invokes imc_loop every point pulse).
-  EVIDENCE: PY mud/imc/__init__.py:24-214 (config parser, cached channels/helps, and idle pump state).
+  EVIDENCE: PY mud/imc/**init**.py:24-214 (config parser, cached channels/helps, and idle pump state).
   EVIDENCE: PY mud/game_loop.py:1-144 (point pulse triggers pump_idle alongside time/weather regen).
   EVIDENCE: TEST tests/test_imc.py::test_startup_reads_config_and_connects; ::test_idle_pump_runs_when_enabled.
-
 
 **Integration Test Framework**: Pilot test operational at `tests/integration/test_pilot_integration.py` - demonstrates cross-subsystem validation approach.
 
@@ -106,42 +138,42 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 <!-- PARITY-MAP-START -->
 
-| subsystem                | C source (file:symbol)                                             | Python target (file:symbol)                                                        |
-| ------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| combat                   | src/fight.c:one_hit/multi_hit                                      | mud/combat/engine.py:attack_round                                                  |
-| skills_spells            | src/act_info.c:do_practice; src/skills.c:check_improve             | mud/commands/advancement.py:do_practice; mud/skills/registry.py:SkillRegistry.use  |
-| affects_saves            | src/magic.c:saves_spell; src/handler.c:check_immune                | mud/affects/saves.py:saves_spell/\_check_immune                                    |
-| movement_encumbrance     | src/act_move.c:move_char; src/handler.c:room_is_private            | mud/world/movement.py:move_character                                               |
-| resets                   | src/db.c:load_resets ('D' commands); src/db.c:reset_room           | mud/spawning/reset_handler.py:apply_resets/reset_area                              |
-| shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                |
-| command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                         |
-| socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social  |
-| channels                 | src/act_comm.c:do_say/do_tell/do_shout                             | mud/commands/communication.py:do_say/do_tell/do_shout                              |
-| wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                    |
-| world_loader             | src/db.c:load_area/load_rooms                                      | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py          |
-| resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                              |
-| weather                  | src/update.c:weather_update                                        | mud/game_loop.py:weather_tick                                                      |
-| time_daynight            | src/update.c:weather_update sun state                              | mud/time.py:TimeInfo.advance_hour; mud/game_loop.py:time_tick                      |
-| movement_encumbrance     | src/act_move.c:encumbrance                                         | mud/world/movement.py:move_character                                               |
-| stats_position           | merc.h:position enum                                               | mud/models/constants.py:Position                                                   |
-| shops_economy            | src/act_obj.c:do_buy/do_sell                                       | mud/commands/shop.py:do_buy/do_sell                                                |
-| boards_notes             | src/board.c                                                        | mud/notes.py:load_boards/save_board; mud/commands/notes.py                         |
-| help_system              | src/act_info.c:do_help                                             | mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help            |
-| mob_programs             | src/mob_prog.c:program_flow/cmd_eval; src/mob_cmds.c:mob_cmd_table | mud/mobprog.py:\_program_flow/\_cmd_eval; mud/mob_cmds.py:MobCommand (partial)     |
-| npc_spec_funs            | src/special.c:spec_table                                           | mud/spec_funs.py:run_npc_specs                                                     |
-| game_update_loop         | src/update.c:update_handler                                        | mud/game_loop.py:game_tick                                                         |
-| persistence              | src/save.c:save_char_obj/load_char_obj                             | mud/persistence.py:save_character/load_character                                   |
-| login_account_nanny      | src/nanny.c                                                        | mud/account/account_service.py:login/create_character                              |
-| networking_telnet        | src/comm.c                                                         | mud/net/telnet_server.py:start_server; mud/net/connection.py:handle_connection     |
-| security_auth_bans       | src/ban.c:check_ban/do_ban/save_bans                               | mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py |
-| logging_admin            | src/act_wiz.c (admin flows)                                        | mud/logging/admin.py:log_admin_command/rotate_admin_log                            |
-| olc_builders             | src/olc_act.c                                                      | mud/commands/build.py:cmd_redit                                                    |
-| area_format_loader       | src/db.c:load_area/new_load_area                                   | mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py                     |
-| imc_chat                 | src/imc.c:imc_startup; src/comm.c:imc_loop                          | mud/imc/__init__.py:maybe_open_socket/pump_idle; mud/world/world_state.py:initialize_world |
-| player_save_format       | src/save.c:save_char_obj                                           | mud/persistence.py:PlayerSave                                                      |
-| skills_spells (metadata) | src/const.c:skill_table                                            | data/skills.json; mud/models/skill.py                                              |
-| security_auth_bans       | src/sha256.c:sha256_crypt                                          | mud/security/hash_utils.py:sha256_hex                                              |
-| affects_saves            | src/flags.c:IMM*\*/RES*\_/VULN\_\_                                 | mud/models/constants.py:ImmFlag/ResFlag/VulnFlag                                   |
+| subsystem                | C source (file:symbol)                                             | Python target (file:symbol)                                                                |
+| ------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| combat                   | src/fight.c:one_hit/multi_hit                                      | mud/combat/engine.py:attack_round                                                          |
+| skills_spells            | src/act_info.c:do_practice; src/skills.c:check_improve             | mud/commands/advancement.py:do_practice; mud/skills/registry.py:SkillRegistry.use          |
+| affects_saves            | src/magic.c:saves_spell; src/handler.c:check_immune                | mud/affects/saves.py:saves_spell/\_check_immune                                            |
+| movement_encumbrance     | src/act_move.c:move_char; src/handler.c:room_is_private            | mud/world/movement.py:move_character                                                       |
+| resets                   | src/db.c:load_resets ('D' commands); src/db.c:reset_room           | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
+| shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                        |
+| command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                                 |
+| socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social          |
+| channels                 | src/act_comm.c:do_say/do_tell/do_shout                             | mud/commands/communication.py:do_say/do_tell/do_shout                                      |
+| wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                            |
+| world_loader             | src/db.c:load_area/load_rooms                                      | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                  |
+| resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
+| weather                  | src/update.c:weather_update                                        | mud/game_loop.py:weather_tick                                                              |
+| time_daynight            | src/update.c:weather_update sun state                              | mud/time.py:TimeInfo.advance_hour; mud/game_loop.py:time_tick                              |
+| movement_encumbrance     | src/act_move.c:encumbrance                                         | mud/world/movement.py:move_character                                                       |
+| stats_position           | merc.h:position enum                                               | mud/models/constants.py:Position                                                           |
+| shops_economy            | src/act_obj.c:do_buy/do_sell                                       | mud/commands/shop.py:do_buy/do_sell                                                        |
+| boards_notes             | src/board.c                                                        | mud/notes.py:load_boards/save_board; mud/commands/notes.py                                 |
+| help_system              | src/act_info.c:do_help                                             | mud/loaders/help_loader.py:load_help_file; mud/commands/help.py:do_help                    |
+| mob_programs             | src/mob_prog.c:program_flow/cmd_eval; src/mob_cmds.c:mob_cmd_table | mud/mobprog.py:\_program_flow/\_cmd_eval; mud/mob_cmds.py:MobCommand (partial)             |
+| npc_spec_funs            | src/special.c:spec_table                                           | mud/spec_funs.py:run_npc_specs                                                             |
+| game_update_loop         | src/update.c:update_handler                                        | mud/game_loop.py:game_tick                                                                 |
+| persistence              | src/save.c:save_char_obj/load_char_obj                             | mud/persistence.py:save_character/load_character                                           |
+| login_account_nanny      | src/nanny.c                                                        | mud/account/account_service.py:login/create_character                                      |
+| networking_telnet        | src/comm.c                                                         | mud/net/telnet_server.py:start_server; mud/net/connection.py:handle_connection             |
+| security_auth_bans       | src/ban.c:check_ban/do_ban/save_bans                               | mud/security/bans.py:save_bans_file/load_bans_file; mud/commands/admin_commands.py         |
+| logging_admin            | src/act_wiz.c (admin flows)                                        | mud/logging/admin.py:log_admin_command/rotate_admin_log                                    |
+| olc_builders             | src/olc_act.c                                                      | mud/commands/build.py:cmd_redit                                                            |
+| area_format_loader       | src/db.c:load_area/new_load_area                                   | mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py                             |
+| imc_chat                 | src/imc.c:imc_startup; src/comm.c:imc_loop                         | mud/imc/**init**.py:maybe_open_socket/pump_idle; mud/world/world_state.py:initialize_world |
+| player_save_format       | src/save.c:save_char_obj                                           | mud/persistence.py:PlayerSave                                                              |
+| skills_spells (metadata) | src/const.c:skill_table                                            | data/skills.json; mud/models/skill.py                                                      |
+| security_auth_bans       | src/sha256.c:sha256_crypt                                          | mud/security/hash_utils.py:sha256_hex                                                      |
+| affects_saves            | src/flags.c:IMM*\*/RES*\_/VULN\_\_                                 | mud/models/constants.py:ImmFlag/ResFlag/VulnFlag                                           |
 
 <!-- PARITY-MAP-END -->
 
@@ -547,6 +579,7 @@ RECENT COMPLETION (2025-09-16):
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
 KEY RISKS: side_effects
 TASKS:
+
 - ✅ [P0] Implement ROM `find_spell` abbreviation lookup for practice — done 2025-09-28
   EVIDENCE: C src/magic.c:73-97 (`find_spell` walks skill_table, matches prefixes, and prefers known skills)
   EVIDENCE: PY mud/skills/registry.py:75-142 (SkillRegistry.find_spell mirrors ROM prefix matching and known-skill preference)
@@ -602,6 +635,7 @@ TASKS:
   ESTIMATE: M; RISK: medium
 
 NOTES:
+
 - C: src/act_info.c:2688-2760 lists known skills in three padded columns and src/magic.c:73-97 resolves `find_spell` abbreviations for players.
 - PY: mud/commands/advancement.py:66-193 mirrors the ROM table output and now routes lookups through SkillRegistry.find_spell to honor abbreviations.
 - PY: mud/skills/registry.py:75-142 adds SkillRegistry.find_spell with prefix matching and known-skill preference to match ROM.
@@ -929,27 +963,28 @@ TASKS:
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
 KEY RISKS: file_formats, side_effects, indexing
 TASKS:
+
 - ✅ [P0] Align `imc help` summary listing with ROM permission columns — done 2025-10-10
   EVIDENCE: C src/imc.c:7286-7330 (IMC_CMD(imchelp) permission buckets and 6-column layout)
   EVIDENCE: PY mud/commands/imc.py:L9-L143 (permission-ranked summary rendering)
   EVIDENCE: PY mud/models/character.py:L108-L110 (per-character IMC permission storage)
   EVIDENCE: TEST tests/test_imc.py::test_help_summary_matches_rom_permissions
 - ✅ [P0] Implement IMC startup handshake and config loading — done 2025-10-09
-  FILES: mud/imc/__init__.py; mud/world/world_state.py; mud/imc/protocol.py
+  FILES: mud/imc/**init**.py; mud/world/world_state.py; mud/imc/protocol.py
   TESTS: tests/test_imc.py::test_startup_reads_config_and_connects
   ACCEPTANCE: With `IMC_ENABLED=true`, startup parses `imc/imc.config`, loads routers/channels/helps, and returns a connected state without raising `NotImplementedError`.
-  REFERENCES: C src/imc.c:5392-5476 (imc_startup registers commands, reads config, and loads helps); C src/imc.c:4796-4886 (imc_read_config enforces required fields); PY mud/imc/__init__.py:24-214 (config/channel cache + connection state); PY mud/world/world_state.py:90-118 (boot-time maybe_open_socket call).
+  REFERENCES: C src/imc.c:5392-5476 (imc_startup registers commands, reads config, and loads helps); C src/imc.c:4796-4886 (imc_read_config enforces required fields); PY mud/imc/**init**.py:24-214 (config/channel cache + connection state); PY mud/world/world_state.py:90-118 (boot-time maybe_open_socket call).
   ESTIMATE: M; RISK: high
 - ✅ [P0] Cache IMC channels/helps and pump the network each tick — done 2025-10-09
-  FILES: mud/imc/__init__.py; mud/game_loop.py
+  FILES: mud/imc/**init**.py; mud/game_loop.py
   TESTS: tests/test_imc.py::test_idle_pump_runs_when_enabled
   ACCEPTANCE: IMC-enabled boots populate channel/help caches and `game_tick` calls `pump_idle()` each point pulse so idle counters advance.
-  REFERENCES: C src/imc.c:5392-5476 (imc_startup loads channel/help tables); C src/comm.c:453-859 (update_handler executes imc_loop); PY mud/imc/__init__.py:24-214 (pump_idle increments idle pulses); PY mud/game_loop.py:68-123 (point pulse invokes pump_idle).
+  REFERENCES: C src/imc.c:5392-5476 (imc_startup loads channel/help tables); C src/comm.c:453-859 (update_handler executes imc_loop); PY mud/imc/**init**.py:24-214 (pump_idle increments idle pulses); PY mud/game_loop.py:68-123 (point pulse invokes pump_idle).
   ESTIMATE: M; RISK: high
-NOTES:
+  NOTES:
 - C: src/imc.c:7304-7343 shows `IMC_CMD(imchelp)` paging topics in permission buckets with 6-column formatting; src/imc.c:5392-5476 covers IMC startup sequencing (config read, default packet registration, help load).
 - C: src/comm.c:453-859 drives imc_loop from the main update handler each tick.
-- PY: mud/commands/imc.py:9-143 renders permission-scoped help listings with 6-column formatting; mud/imc/__init__.py:24-214 loads config/channel/help tables and tracks idle pulses; mud/game_loop.py:68-123 pumps IMC during point pulses; mud/world/world_state.py:90-118 initializes IMC during boot.
+- PY: mud/commands/imc.py:9-143 renders permission-scoped help listings with 6-column formatting; mud/imc/**init**.py:24-214 loads config/channel/help tables and tracks idle pulses; mud/game_loop.py:68-123 pumps IMC during point pulses; mud/world/world_state.py:90-118 initializes IMC during boot.
 - DOC/ARE: imc/imc.config defines router credentials; imc/imc.help seeds network help entries.
 - Applied tiny fix: none
 
@@ -997,11 +1032,13 @@ TASKS:
 <!-- SUBSYSTEM: npc_spec_funs END -->
 
 <!-- SUBSYSTEM: logging_admin START -->
+
 ### logging_admin — Parity Audit 2025-10-12
 
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
 KEY RISKS: side_effects, file_formats
 TASKS:
+
 - ✅ [P0] Allow `log all` toggle to accept trailing arguments. — done 2025-09-28
   EVIDENCE: C src/act_wiz.c:2927-2951 (`do_log` argument parsing)
   EVIDENCE: PY mud/commands/admin_commands.py:75-96 (`cmd_log` tolerates trailing tokens)
@@ -1009,7 +1046,7 @@ TASKS:
 - ✅ [P0] Restore ROM command log levels for admin logging decisions — done 2025-10-11
   EVIDENCE: PY mud/commands/dispatcher.py:L41-L248
   EVIDENCE: TEST tests/test_logging_admin.py::test_log_never_skips_unless_log_all; ::test_log_always_logs_for_mortals
-NOTES:
+  NOTES:
 - C: src/act_wiz.c:2927-2982 runs `one_argument` then toggles `fLogAll`, so "log all" accepts trailing tokens before scanning for players.
 - PY: mud/commands/admin_commands.py:75-96 now parses the first token only, matching ROM tolerance for trailing arguments.
 - PY: mud/commands/dispatcher.py:200-260 still mirrors ROM logging decisions for alias-expanded commands.
@@ -1183,6 +1220,7 @@ NOTES:
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
 KEY RISKS: file_formats, persistence
 TASKS:
+
 - ✅ [P0] Mirror ROM `note` default read flow for next-unread auto advance — done 2025-10-07
   EVIDENCE: C src/board.c:563-605 (do_nread next-unread handling); C src/board.c:889-905 (next_board progression)
   EVIDENCE: PY mud/commands/notes.py:33-150 (`_read_next_unread_note`, `do_note` fallback wiring)
@@ -1197,7 +1235,7 @@ TASKS:
   RATIONALE: Preserve drafts by refusing board swaps until the in-progress note is posted or cleared, matching ROM safeguards.
   FILES: mud/commands/notes.py; tests/test_boards.py
   TESTS: PYTHONPATH=. pytest -q tests/test_boards.py
-NOTES:
+  NOTES:
 - C: src/board.c:563-780 covers auto-advance via `do_nread` and forbids `do_board` while `pcdata->in_progress` is set; Python mirrors both paths.
 - PY: mud/commands/notes.py:33-204 implements `_read_next_unread_note`, board cycling, and draft guards with coverage in tests/test_boards.py.
 - PY/World: mud/world/world_state.py:92-134 now loads board files during `initialize_world`, matching ROM `boot_db` persistence order.
@@ -1293,26 +1331,29 @@ NOTES:
 - PY: mud/ai/aggressive.py:aggressive_update mirrors ROM aggressor gating and random victim selection and is invoked once per tick.
 - PY: mud/game_loop.py:game_tick now invokes aggressive_update after mobprog idle sweeps so aggressive NPCs attack nearby players each tick.
 - Applied tiny fix: none
-<!-- SUBSYSTEM: game_update_loop END -->
-<!-- SUBSYSTEM: login_account_nanny START -->
+  <!-- SUBSYSTEM: game_update_loop END -->
+  <!-- SUBSYSTEM: login_account_nanny START -->
 
 ### login_account_nanny — Parity Audit 2025-10-12
 
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
 KEY RISKS: flags
 TASKS:
+
 - ✅ [P0] Enforce wizlock/newlock gating before accepting credentials — done 2025-10-11
   EVIDENCE: PY mud/account/account_service.py:10-111; PY mud/world/world_state.py:12-63; TEST tests/test_account_auth.py::{test_wizlock_blocks_mortals,test_newlock_blocks_new_accounts}
 - ✅ [P0] Restore reconnect and duplicate-session guards (`check_reconnect`/`check_playing`) — done 2025-10-11
   EVIDENCE: PY mud/account/account_service.py:12-111; PY mud/net/connection.py:24-156; TEST tests/test_account_auth.py::test_duplicate_login_requires_reconnect_consent
 
 NOTES:
+
 - C: src/nanny.c:436-602 drives wizlock/newlock decisions and duplicate-session prompts before password validation.
 - PY: mud/account/account_service.py:40-142 mirrors the ROM gate ordering, tracks active sessions, and surfaces reconnect prompts to mud/net/connection.py callers via structured results.
 - Tests: tests/test_account_auth.py::{test_wizlock_blocks_mortals,test_newlock_blocks_new_accounts,test_duplicate_login_requires_reconnect_consent} lock the Python behavior against ROM nanny prompts.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: login_account_nanny END -->
+
 - ✅ [P1] Ensure list prices match buy deduction — done 2025-09-12
   - rationale: Prevent price drift between displayed and charged values
   - files: mud/commands/shop.py (list uses \_get_cost), tests/test_shops.py
@@ -1349,5 +1390,7 @@ NOTES:
 OUTPUT-JSON -->
 
 ## ✅ Completion Note (2025-10-12)
+
 All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
+
 <!-- LAST-PROCESSED: COMPLETE -->

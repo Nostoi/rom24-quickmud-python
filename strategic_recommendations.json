@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-29T20:11:30.309776",
+  "timestamp": "2025-09-29T20:34:32.594429",
   "current_scores": {
     "affects_saves": [
       "\u2705",
@@ -106,9 +106,6 @@
       "Add integration tests for world_loader: confidence score stagnation detected",
       "Add integration tests for time_daynight: confidence score stagnation detected",
       "Add integration tests for combat: confidence score stagnation detected",
-      "Add integration tests for skills_spells: confidence score stagnation detected",
-      "Add integration tests for movement_encumbrance: confidence score stagnation detected",
-      "Add integration tests for help_system: confidence score stagnation detected",
       "Add integration tests for mob_programs: confidence score stagnation detected",
       "Add integration tests for resets: confidence score stagnation detected",
       "Add integration tests for security_auth_bans: confidence score stagnation detected",
@@ -118,10 +115,7 @@
       "Add integration tests for npc_spec_funs: confidence score stagnation detected",
       "Add integration tests for logging_admin: confidence score stagnation detected",
       "Add integration tests for shops_economy: confidence score stagnation detected",
-      "Add integration tests for boards_notes: confidence score stagnation detected",
-      "Add integration tests for command_interpreter: confidence score stagnation detected",
-      "Add integration tests for game_update_loop: confidence score stagnation detected",
-      "Add integration tests for login_account_nanny: confidence score stagnation detected"
+      "Add integration tests for command_interpreter: confidence score stagnation detected"
     ],
     "batch_optimizations": []
   },

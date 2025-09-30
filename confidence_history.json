@@ -451,5 +451,98 @@
         0.7
       ]
     }
+  },
+  {
+    "timestamp": "2025-09-29T20:34:32.594429",
+    "scores": {
+      "affects_saves": [
+        "\u2705",
+        0.86
+      ],
+      "socials": [
+        "\u2705",
+        0.84
+      ],
+      "wiznet_imm": [
+        "\u2705",
+        0.96
+      ],
+      "world_loader": [
+        "\u2705",
+        0.71
+      ],
+      "time_daynight": [
+        "\u2705",
+        0.95
+      ],
+      "combat": [
+        "\u2705",
+        0.95
+      ],
+      "skills_spells": [
+        "\u2705",
+        0.82
+      ],
+      "movement_encumbrance": [
+        "\u274c",
+        0.55
+      ],
+      "help_system": [
+        "\u274c",
+        0.7
+      ],
+      "mob_programs": [
+        "\u2705",
+        0.62
+      ],
+      "resets": [
+        "\u274c",
+        0.38
+      ],
+      "security_auth_bans": [
+        "\u2705",
+        0.71
+      ],
+      "area_format_loader": [
+        "\u274c",
+        0.74
+      ],
+      "player_save_format": [
+        "\u2705",
+        0.7
+      ],
+      "imc_chat": [
+        "\u2705",
+        0.78
+      ],
+      "npc_spec_funs": [
+        "\u2705",
+        0.88
+      ],
+      "logging_admin": [
+        "\u2705",
+        0.7
+      ],
+      "shops_economy": [
+        "\u2705",
+        0.74
+      ],
+      "boards_notes": [
+        "\u2705",
+        0.74
+      ],
+      "command_interpreter": [
+        "\u2705",
+        0.78
+      ],
+      "game_update_loop": [
+        "\u2705",
+        0.78
+      ],
+      "login_account_nanny": [
+        "\u2705",
+        0.7
+      ]
+    }
   }
 ]
