@@ -7,7 +7,7 @@ from mud import mobprog
 from mud.ai import aggressive_update
 from mud.config import get_pulse_area, get_pulse_tick, get_pulse_violence
 from mud.imc import pump_idle
-from mud.logging.admin import rotate_admin_log
+from mud.admin_logging.admin import rotate_admin_log
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.net.protocol import broadcast_global

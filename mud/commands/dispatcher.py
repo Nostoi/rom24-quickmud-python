@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
 
-from mud.logging.admin import is_log_all_enabled, log_admin_command
+from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
 from mud.models.constants import Position
 from mud.models.social import social_registry

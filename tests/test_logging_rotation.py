@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from mud import game_loop
-from mud.logging.admin import log_admin_command, rotate_admin_log
+from mud.admin_logging.admin import log_admin_command, rotate_admin_log
 from mud.models.character import Character, character_registry
 from mud.time import time_info
 
@@ -24,7 +24,7 @@ def test_rotate_admin_log_by_function(tmp_path, monkeypatch):
 def test_rotate_no_active_returns_path(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # No log directory or file yet
-    from mud.logging.admin import rotate_admin_log
+    from mud.admin_logging.admin import rotate_admin_log
 
     path = rotate_admin_log(today=datetime(2099, 1, 2))
     assert path == Path("log") / "admin.log"
@@ -56,7 +56,7 @@ def test_rotate_on_midnight_tick(tmp_path, monkeypatch):
 
 def test_rotate_appends_when_dated_exists(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    from mud.logging.admin import rotate_admin_log
+    from mud.admin_logging.admin import rotate_admin_log
 
     log_dir = Path("log")
     log_dir.mkdir(exist_ok=True)

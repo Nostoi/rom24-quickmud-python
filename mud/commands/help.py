@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Iterable
 
-from mud.logging.admin import log_orphan_help_request
+from mud.admin_logging.admin import log_orphan_help_request
 from mud.models.character import Character
 from mud.models.constants import MAX_CMD_LEN
 from mud.models.help import HelpEntry, help_registry

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import mud.persistence as persistence
 from mud.commands import process_command
-from mud.logging.admin import (
+from mud.admin_logging.admin import (
     is_log_all_enabled,
     log_admin_command,
     rotate_admin_log,

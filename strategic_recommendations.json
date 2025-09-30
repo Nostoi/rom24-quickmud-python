@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-25T21:47:09.885040",
+  "timestamp": "2025-09-29T20:00:55.480879",
   "current_scores": {
     "affects_saves": [
       "\u2705",
@@ -27,15 +27,15 @@
     ],
     "skills_spells": [
       "\u2705",
-      0.74
+      0.82
     ],
     "movement_encumbrance": [
       "\u274c",
-      0.45
+      0.55
     ],
     "help_system": [
-      "\u2705",
-      0.82
+      "\u274c",
+      0.7
     ],
     "mob_programs": [
       "\u2705",
@@ -58,15 +58,15 @@
       0.7
     ],
     "imc_chat": [
-      "\u274c",
-      0.8
+      "\u2705",
+      0.78
     ],
     "npc_spec_funs": [
       "\u2705",
       0.88
     ],
     "logging_admin": [
-      "\u274c",
+      "\u2705",
       0.7
     ],
     "shops_economy": [
@@ -74,30 +74,30 @@
       0.74
     ],
     "boards_notes": [
-      "\u274c",
-      0.51
+      "\u2705",
+      0.74
     ],
     "command_interpreter": [
       "\u2705",
       0.78
     ],
     "game_update_loop": [
-      "\u274c",
+      "\u2705",
+      0.78
+    ],
+    "login_account_nanny": [
+      "\u2705",
       0.7
     ]
   },
   "recommendations": {
     "immediate_actions": [
       "Investigate movement_encumbrance: individual tasks completed but confidence < 0.80",
-      "Investigate resets: individual tasks completed but confidence < 0.80",
-      "Investigate logging_admin: individual tasks completed but confidence < 0.80",
-      "Investigate boards_notes: individual tasks completed but confidence < 0.80",
-      "Investigate game_update_loop: individual tasks completed but confidence < 0.80"
+      "Investigate resets: individual tasks completed but confidence < 0.80"
     ],
     "architectural_fixes": [
-      "Refactor movement_encumbrance: completion probability 0.30 indicates architectural issues",
-      "Refactor resets: completion probability 0.23 indicates architectural issues",
-      "Refactor boards_notes: completion probability 0.36 indicates architectural issues"
+      "Refactor movement_encumbrance: completion probability 0.40 indicates architectural issues",
+      "Refactor resets: completion probability 0.23 indicates architectural issues"
     ],
     "integration_tests": [
       "Add integration tests for affects_saves: confidence score stagnation detected",
@@ -106,9 +106,6 @@
       "Add integration tests for world_loader: confidence score stagnation detected",
       "Add integration tests for time_daynight: confidence score stagnation detected",
       "Add integration tests for combat: confidence score stagnation detected",
-      "Add integration tests for skills_spells: confidence score stagnation detected",
-      "Add integration tests for movement_encumbrance: confidence score stagnation detected",
-      "Add integration tests for help_system: confidence score stagnation detected",
       "Add integration tests for mob_programs: confidence score stagnation detected",
       "Add integration tests for resets: confidence score stagnation detected",
       "Add integration tests for security_auth_bans: confidence score stagnation detected",
@@ -118,13 +115,9 @@
       "Add integration tests for npc_spec_funs: confidence score stagnation detected",
       "Add integration tests for logging_admin: confidence score stagnation detected",
       "Add integration tests for shops_economy: confidence score stagnation detected",
-      "Add integration tests for boards_notes: confidence score stagnation detected",
-      "Add integration tests for command_interpreter: confidence score stagnation detected",
-      "Add integration tests for game_update_loop: confidence score stagnation detected"
+      "Add integration tests for command_interpreter: confidence score stagnation detected"
     ],
-    "batch_optimizations": [
-      "Increase MAX_SUBSYSTEMS_PER_RUN and enable ARCHITECTURAL_FIXES mode"
-    ]
+    "batch_optimizations": []
   },
   "completion_probabilities": {
     "affects_saves": 1.0,
@@ -134,19 +127,20 @@
     "time_daynight": 1.0,
     "combat": 1.0,
     "skills_spells": 1.0,
-    "movement_encumbrance": 0.30000000000000004,
-    "help_system": 1.0,
+    "movement_encumbrance": 0.4,
+    "help_system": 0.7,
     "mob_programs": 1.0,
     "resets": 0.23,
     "security_auth_bans": 1.0,
     "area_format_loader": 0.74,
     "player_save_format": 1.0,
-    "imc_chat": 0.8,
+    "imc_chat": 1.0,
     "npc_spec_funs": 1.0,
-    "logging_admin": 0.7,
+    "logging_admin": 1.0,
     "shops_economy": 1.0,
-    "boards_notes": 0.36,
+    "boards_notes": 1.0,
     "command_interpreter": 1.0,
-    "game_update_loop": 0.6
+    "game_update_loop": 1.0,
+    "login_account_nanny": 1.0
   }
 }

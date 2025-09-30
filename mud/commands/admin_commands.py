@@ -1,4 +1,4 @@
-from mud.logging.admin import toggle_log_all
+from mud.admin_logging.admin import toggle_log_all
 from mud.models.character import Character, character_registry
 from mud.net.session import SESSIONS
 from mud.registry import room_registry
