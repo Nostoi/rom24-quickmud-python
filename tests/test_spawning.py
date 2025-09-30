@@ -346,6 +346,81 @@ def test_reset_P_limit_single_apply():
     assert getattr(obj_registry.get(3123), "count", 0) == 1
 
 
+def test_reset_P_populates_multiple_items_up_to_limit():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    container_proto = ObjIndex(vnum=9105, short_descr="a sturdy crate")
+    loot_proto = ObjIndex(vnum=9106, short_descr="a bundle of bolts")
+    obj_registry[container_proto.vnum] = container_proto
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area = Area(vnum=9105, name="Crate Area", min_vnum=9105, max_vnum=9105)
+    room = Room(vnum=9105, name="Supply Closet", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    area.resets = [
+        ResetJson(command="O", arg1=container_proto.vnum, arg3=room.vnum),
+        ResetJson(command="P", arg1=loot_proto.vnum, arg2=3, arg3=container_proto.vnum, arg4=3),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    crate = next(
+        (
+            obj
+            for obj in room.contents
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == container_proto.vnum
+        ),
+        None,
+    )
+    assert crate is not None
+
+    contents = [getattr(getattr(item, "prototype", None), "vnum", None) for item in crate.contained_items]
+    assert contents.count(loot_proto.vnum) == 3
+    assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 3
+
+
+def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=9201, name="Reset Test Area", min_vnum=9201, max_vnum=9201)
+    room = Room(vnum=9201, name="Reset Room", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=9201, short_descr="reset mob", level=10)
+    mob_registry[mob_proto.vnum] = mob_proto
+    loot_proto = ObjIndex(vnum=9202, short_descr="reset loot")
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="G", arg1=loot_proto.vnum, arg2=2),
+        ResetJson(command="G", arg1=loot_proto.vnum, arg2=2),
+    ]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 1)
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+
+    carried = [
+        getattr(getattr(item, "prototype", None), "vnum", None)
+        for item in getattr(mob, "inventory", [])
+    ]
+    assert carried.count(loot_proto.vnum) == 2
+    assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 2
+
+
 def test_reset_P_skips_when_players_present():
     room_registry.clear()
     area_registry.clear()

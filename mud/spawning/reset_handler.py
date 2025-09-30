@@ -164,6 +164,20 @@ def _count_existing_objects() -> dict[int, int]:
     return counts
 
 
+def _sync_object_count(obj_vnum: int, object_counts: dict[int, int]) -> None:
+    """Keep the local object count cache aligned with prototype counters."""
+
+    proto = obj_registry.get(obj_vnum)
+    if proto is not None and hasattr(proto, "count"):
+        try:
+            object_counts[obj_vnum] = int(getattr(proto, "count", 0))
+            return
+        except Exception:
+            object_counts[obj_vnum] = int(object_counts.get(obj_vnum, 0)) + 1
+            return
+    object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
+
+
 def _resolve_vnum(primary: int, secondary: int, registry: dict[int, object]) -> tuple[int, bool]:
     """Return the best available vnum, signalling if the fallback was used."""
 
@@ -339,7 +353,7 @@ def apply_resets(area: Area) -> None:
             obj = spawn_object(obj_vnum)
             if obj:
                 room.add_object(obj)
-                object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
+                _sync_object_count(obj_vnum, object_counts)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
             else:
@@ -412,11 +426,10 @@ def apply_resets(area: Area) -> None:
                 obj.level = _compute_object_level(obj, last_mob)
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
-                object_counts[obj_vnum] = proto_count + 1
+                _sync_object_count(obj_vnum, object_counts)
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
-                object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
             else:
                 logging.warning("Invalid G reset %s", obj_vnum)
         elif cmd == "E":
@@ -447,11 +460,10 @@ def apply_resets(area: Area) -> None:
                 obj.level = _compute_object_level(obj, last_mob)
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
-                object_counts[obj_vnum] = proto_count + 1
+                _sync_object_count(obj_vnum, object_counts)
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
-                object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
             else:
                 logging.warning("Invalid E reset %s", obj_vnum)
         elif cmd == "P":
@@ -535,8 +547,8 @@ def apply_resets(area: Area) -> None:
                 container_obj.contained_items.append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 made += 1
-                remaining_global -= 1
-                object_counts[obj_vnum] = object_counts.get(obj_vnum, 0) + 1
+                _sync_object_count(obj_vnum, object_counts)
+                remaining_global = max(0, limit - object_counts.get(obj_vnum, 0))
                 if remaining_global <= 0:
                     break
             try:
