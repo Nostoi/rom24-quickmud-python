@@ -63,32 +63,36 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 **Priority P0 Tasks (Required for Functional Parity):**
 
-- [P0] **Area Format Loader: Fix LoadObj/LoadMob State Tracking** (confidence: 0.74)
+- ✅ [P0] **Area Format Loader: Fix LoadObj/LoadMob State Tracking** — done 2025-10-11
 
   - FILES: mud/world/loader.py LoadObj/LoadMob methods, mud/data/area_format_loader.py reset validation
   - ISSUE: Missing LastObj/LastMob index state tracking causing reset validation mismatches
   - C_REF: src/db.c:1842-1950 (load_objects), src/db.c:1650-1741 (load_mobiles) track Last\*
   - ACCEPTANCE: pytest tests/test_area_loader.py::test_midgaard_reset_validation passes
+  EVIDENCE: C src/db.c:1009-1108 (load_resets maintains room context); PY mud/loaders/reset_loader.py:77-157 (validate_resets tracks LastMob/LastObj state with cross-area guard); TEST tests/test_area_loader.py::test_midgaard_reset_validation
 
-- [P0] **Movement System: Follower Cascading Integration** (confidence: 0.55)
+- ✅ [P0] **Movement System: Follower Cascading Integration** — done 2025-10-11
 
   - FILES: mud/actions/movement.py move_char function, mud/character/follower.py cascading logic
   - ISSUE: Follower movement cascade not integrated with main movement flow
   - C_REF: src/act_move.c:127-184 (move_char) calls follower updates inline
   - ACCEPTANCE: Follower follows leader through exits; pytest tests/test_movement.py::test_follower_cascade
+  EVIDENCE: C src/act_move.c:127-184 (move_char cascades followers); PY mud/world/movement.py:38-396 (shared follower mover + portal support); PY mud/commands/movement.py:1-60 (do_enter delegates to portal mover); TEST tests/test_movement.py::test_follower_cascade; TEST tests/test_movement.py::test_followers_enter_portal
 
-- [P0] **Help System: Missing Command Topic Generation** (confidence: 0.70)
+- ✅ [P0] **Help System: Missing Command Topic Generation** — done 2025-10-11
 
   - FILES: mud/systems/help.py get_help method, mud/commands/dispatcher.py help integration
   - ISSUE: No command topic auto-generation when help not found
   - C_REF: src/act_info.c:892-1045 (do_help) generates command help dynamically
   - ACCEPTANCE: 'help cast' shows spell help; 'help unknown' shows command suggestion
+  EVIDENCE: C src/act_info.c:892-1045 (do_help fallback builds command topics); PY mud/commands/help.py:1-159 (command help generation with trust gating); TEST tests/test_help_system.py::test_help_generates_command_topic_when_missing; TEST tests/test_help_system.py::test_help_missing_topic_suggests_commands
 
-- [P0] **Reset System: Execute Integration** (confidence: 0.38)
+- ✅ [P0] **Reset System: Execute Integration** — done 2025-10-11
   - FILES: mud/world/reset_system.py execute methods, mud/game_loop.py area update integration
   - ISSUE: Reset execution not wired to area update cycle
   - C_REF: src/update.c:1234-1389 (area_update) calls reset_area inline
   - ACCEPTANCE: Items/mobs respawn on area reset; pytest tests/test_resets.py::test_execution_cycle
+  EVIDENCE: C src/update.c:1234-1389 (area_update triggers reset_area); PY mud/game_loop.py:143-198 (game_tick invokes reset_tick on area pulse); TEST tests/test_resets.py::test_execution_cycle
 
 ## Parity Gaps & Corrections
 

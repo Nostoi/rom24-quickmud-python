@@ -5,6 +5,7 @@ import pytest
 
 from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
+from mud.loaders.reset_loader import validate_resets
 from mud.models.constants import RoomFlag
 from mud.registry import area_registry, room_registry
 from mud.scripts.convert_are_to_json import clear_registries, convert_area
@@ -183,3 +184,10 @@ def test_json_loader_applies_defaults_and_law_flag(tmp_path):
 
     area_registry.clear()
     room_registry.clear()
+
+
+def test_midgaard_reset_validation():
+    clear_registries()
+    area = load_area_file("area/midgaard.are")
+    errors = validate_resets(area)
+    assert errors == []

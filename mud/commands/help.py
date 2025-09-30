@@ -52,6 +52,65 @@ def _is_keyword_match(term: str, entry: HelpEntry) -> bool:
     return True
 
 
+def _generate_command_help(term: str) -> str | None:
+    if not term:
+        return None
+
+    from mud.commands.dispatcher import COMMANDS, resolve_command
+
+    lookup = term.lower()
+    command = resolve_command(lookup)
+    if command is None or (command.name != lookup and lookup not in command.aliases):
+        for candidate in COMMANDS:
+            if lookup in candidate.aliases:
+                command = candidate
+                break
+    if command is None:
+        return None
+
+    aliases = ", ".join(command.aliases) if command.aliases else "None"
+    position = command.min_position.name.replace("_", " ").title()
+    restriction = "Immortal-only command." if command.admin_only else "Available to mortals."
+
+    lines = [
+        f"Command: {command.name}",
+        f"Aliases: {aliases}",
+        f"Minimum position: {position}",
+        restriction,
+    ]
+
+    if command.name == "cast":
+        lines.append("Usage: cast '<spell>' [target]")
+        lines.append("Casting a learned spell consumes mana based on the spell level.")
+
+    return "\n".join(lines)
+
+
+def _suggest_command_topics(term: str) -> list[str]:
+    if not term:
+        return []
+
+    from mud.commands.dispatcher import COMMANDS
+
+    lookup = term.lower()
+    suggestions: list[str] = []
+    for command in COMMANDS:
+        if command.name.startswith(lookup) or any(alias.startswith(lookup) for alias in command.aliases):
+            suggestions.append(command.name)
+
+    if not suggestions and len(lookup) > 1:
+        prefix = lookup[:2]
+        suggestions = [cmd.name for cmd in COMMANDS if cmd.name.startswith(prefix)]
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for name in suggestions:
+        if name not in seen:
+            seen.add(name)
+            ordered.append(name)
+    return ordered[:5]
+
+
 def do_help(ch: Character, args: str) -> str:
     topic = " ".join(args.strip().split())
     if not topic:
@@ -59,14 +118,28 @@ def do_help(ch: Character, args: str) -> str:
 
     # Direct lookup first for the common path.
     entry = help_registry.get(topic.lower())
-    if entry and _visible_level(entry) <= _get_trust(ch):
-        return entry.text
+    blocked_entry = None
+    if entry:
+        if _visible_level(entry) <= _get_trust(ch):
+            return entry.text
+        blocked_entry = entry
 
     for candidate in _iter_unique_entries(help_registry.values()):
         if _visible_level(candidate) > _get_trust(ch):
             continue
         if _is_keyword_match(topic, candidate):
             return candidate.text
+
+    if blocked_entry is None:
+        command_help = _generate_command_help(topic)
+        if command_help:
+            return command_help
+
+    if blocked_entry is None:
+        suggestions = _suggest_command_topics(topic)
+        if suggestions:
+            suggestion_text = ", ".join(suggestions)
+            return f"No help on that word. Try: {suggestion_text}"
 
     message = "No help on that word."
     if topic:

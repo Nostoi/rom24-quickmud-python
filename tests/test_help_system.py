@@ -82,3 +82,19 @@ def test_help_overlong_request_rebukes_and_skips_logging(monkeypatch, tmp_path, 
     assert any("Excessive help request length" in record.message for record in caplog.records)
     log_path = Path("log") / OHELPS_FILE
     assert not log_path.exists()
+
+
+def test_help_generates_command_topic_when_missing():
+    load_help_file("data/help.json")
+    ch = Character(name="Tester")
+    result = process_command(ch, "help unalias")
+    assert "Command: unalias" in result
+    assert "Minimum position" in result
+
+
+def test_help_missing_topic_suggests_commands():
+    load_help_file("data/help.json")
+    ch = Character(name="Tester")
+    result = process_command(ch, "help unknown")
+    assert "Try:" in result
+    assert "unban" in result or "unalias" in result

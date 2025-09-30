@@ -1,7 +1,7 @@
 from mud.models.character import Character
 from mud.models.constants import EX_CLOSED, ItemType
 from mud.registry import room_registry
-from mud.world.movement import move_character
+from mud.world.movement import move_character, move_character_through_portal
 
 
 def do_north(char: Character, args: str = "") -> str:
@@ -57,15 +57,4 @@ def do_enter(char: Character, args: str = "") -> str:
         return "The portal is closed."
 
     dest_vnum = values[3] if len(values) > 3 else 0
-    dest = room_registry.get(int(dest_vnum))
-    if dest is None:
-        return "It doesn't seem to go anywhere."
-
-    # Move character
-    old_room = char.room
-    if char in old_room.people:
-        old_room.people.remove(char)
-    dest.people.append(char)
-    char.room = dest
-    char.wait = max(char.wait, 1)
-    return f"You enter the portal and arrive in {dest.name}."
+    return move_character_through_portal(char, portal)
