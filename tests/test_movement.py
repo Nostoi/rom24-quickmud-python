@@ -40,11 +40,11 @@ def test_followers_enter_portal(portal_factory):
         follower.master = leader
         follower.position = Position.STANDING
 
-        portal_factory(3001, to_vnum=3054, closed=False)
+        portal_factory(3001, to_vnum=3054, closed=False, charges=2)
 
         out = process_command(leader, "enter portal")
 
-        assert "arrive" in out
+        assert out == "You walk through a shimmering portal and find yourself somewhere else..."
         assert follower.room is not None and follower.room.vnum == 3054
         assert any("follow" in msg.lower() for msg in follower.messages)
     finally:

@@ -29,13 +29,25 @@ def run_npc_specs() -> None:
 
     for room in list(room_registry.values()):
         for entity in list(getattr(room, "people", [])):
-            proto = getattr(entity, "prototype", None)
-            name = getattr(proto, "spec_fun", None)
-            if not name:
-                continue
-            func = get_spec_fun(name)
+            spec_attr = getattr(entity, "spec_fun", None)
+            func = None
+
+            if callable(spec_attr):
+                func = spec_attr
+            elif isinstance(spec_attr, str) and spec_attr:
+                func = get_spec_fun(spec_attr)
+
+            if func is None:
+                proto = getattr(entity, "prototype", None)
+                proto_spec = getattr(proto, "spec_fun", None)
+                if callable(proto_spec):
+                    func = proto_spec
+                elif isinstance(proto_spec, str) and proto_spec:
+                    func = get_spec_fun(proto_spec)
+
             if func is None:
                 continue
+
             try:
                 func(entity)
             except Exception:

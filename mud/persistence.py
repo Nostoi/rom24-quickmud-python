@@ -66,7 +66,9 @@ class PlayerSave:
     mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
     conditions: list[int] = field(default_factory=lambda: [0, 48, 48, 48])
     # ROM bitfields to preserve flags parity
+    act: int = 0
     affected_by: int = 0
+    comm: int = 0
     wiznet: int = 0
     log_commands: bool = False
     room_vnum: int | None = None
@@ -129,7 +131,9 @@ def save_character(char: Character) -> None:
         perm_stat=perm_stat,
         mod_stat=mod_stat,
         conditions=conditions,
+        act=getattr(char, "act", 0),
         affected_by=getattr(char, "affected_by", 0),
+        comm=getattr(char, "comm", 0),
         wiznet=getattr(char, "wiznet", 0),
         log_commands=bool(getattr(char, "log_commands", False)),
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
@@ -174,6 +178,7 @@ def load_character(name: str) -> Character | None:
         gold=data.gold,
         silver=data.silver,
         exp=data.exp,
+        act=int(getattr(data, "act", 0)),
         practice=int(getattr(data, "practice", 0)),
         train=int(getattr(data, "train", 0)),
         saving_throw=int(getattr(data, "saving_throw", 0)),
@@ -181,6 +186,7 @@ def load_character(name: str) -> Character | None:
         hitroll=int(getattr(data, "hitroll", 0)),
         damroll=int(getattr(data, "damroll", 0)),
         wimpy=int(getattr(data, "wimpy", 0)),
+        comm=int(getattr(data, "comm", 0)),
         position=data.position,
         armor=armor,
         perm_stat=perm_stat,

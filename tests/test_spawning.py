@@ -1,8 +1,29 @@
+import pytest
+
 import mud.spawning.reset_handler as reset_handler
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import EX_CLOSED, EX_LOCKED, ITEM_INVENTORY, Direction
-from mud.models.mob import MobIndex
+from mud.models.constants import (
+    EX_CLOSED,
+    EX_LOCKED,
+    ITEM_INVENTORY,
+    Direction,
+    ActFlag,
+    AffectFlag,
+    CommFlag,
+    DamageType,
+    ImmFlag,
+    MAX_STATS,
+    OffFlag,
+    Position,
+    ResFlag,
+    Sex,
+    Size,
+    Stat,
+    VulnFlag,
+    convert_flags_from_letters,
+)
+from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
@@ -14,6 +35,223 @@ from mud.spawning.templates import MobInstance
 from mud.utils import rng_mm
 from mud.world import initialize_world
 from mud.world.movement import move_character
+
+
+def test_spawned_mob_copies_proto_stats():
+    proto = MobIndex(
+        vnum=99999,
+        player_name="testmob",
+        short_descr="a test mob",
+        long_descr="A test mob waits here.\n",
+        description="This is a parity test mob.\n",
+        race="human",
+        act_flags="AF",
+        affected_by="CD",
+        alignment=-350,
+        group=7,
+        level=20,
+        hit_dice="4d8+30",
+        mana_dice="3d5+10",
+        damage_dice="2d5+6",
+        damage_type="slash",
+        ac_pierce=-10,
+        ac_bash=-11,
+        ac_slash=-12,
+        ac_exotic=-13,
+        offensive="AB",
+        immune="C",
+        resist="D",
+        vuln="E",
+        start_pos="sleep",
+        default_pos="stand",
+        sex="male",
+        wealth=600,
+        form="5",
+        parts="7",
+        size="large",
+        material="bone",
+        spec_fun="spec_cast_adept",
+    )
+    proto.hit = (4, 8, 30)
+    proto.mana = (3, 5, 10)
+    proto.damage = (2, 5, 6)
+    proto.hitroll = 3
+    proto.damroll = 4
+    proto.mprog_flags = 0x04
+    proto.mprogs = [MobProgram(trig_type=1, trig_phrase="hello", vnum=9000, code="say hello")]
+
+    mob = MobInstance.from_prototype(proto)
+
+    expected_act = convert_flags_from_letters("AF", ActFlag)
+    expected_affect = convert_flags_from_letters("CD", AffectFlag)
+    expected_off = convert_flags_from_letters("AB", OffFlag)
+    expected_imm = convert_flags_from_letters("C", ImmFlag)
+    expected_res = convert_flags_from_letters("D", ResFlag)
+    expected_vuln = convert_flags_from_letters("E", VulnFlag)
+
+    assert mob.prototype is proto
+    assert mob.is_npc is True
+    assert mob.act == int(expected_act)
+    assert mob.has_act_flag(ActFlag.AGGRESSIVE) is True
+    assert mob.affected_by == int(expected_affect)
+    assert mob.has_affect(AffectFlag.DETECT_INVIS) is True
+    assert mob.off_flags == int(expected_off)
+    assert mob.imm_flags == int(expected_imm)
+    assert mob.res_flags == int(expected_res)
+    assert mob.vuln_flags == int(expected_vuln)
+    assert mob.alignment == -350
+    assert mob.group == 7
+    assert mob.hitroll == 3
+    assert mob.damroll == 6
+    assert mob.damage == (2, 5, 6)
+    assert mob.dam_type == int(DamageType.SLASH)
+    assert mob.armor == (-10, -11, -12, -13)
+    assert mob.start_pos == Position.SLEEPING
+    assert mob.default_pos == Position.STANDING
+    assert mob.position == Position.STANDING
+    assert mob.sex == Sex.MALE
+    assert mob.size == Size.LARGE
+    assert mob.form == 5
+    assert mob.parts == 7
+    assert mob.material == "bone"
+    assert mob.race == "human"
+    assert mob.spec_fun == "spec_cast_adept"
+    assert mob.mprog_flags == proto.mprog_flags
+    assert mob.mob_programs is not proto.mprogs
+    assert mob.mob_programs == proto.mprogs
+    assert mob.mprog_target is None
+    assert mob.mprog_delay == 0
+    assert mob.max_hit >= mob.current_hp >= 0
+    assert mob.move == 100
+    assert mob.max_move == 100
+    assert mob.max_mana == mob.mana
+    assert mob.gold >= 0
+    assert mob.silver >= 0
+    expected_comm = CommFlag.NOSHOUT | CommFlag.NOTELL | CommFlag.NOCHANNELS
+    assert mob.comm == int(expected_comm)
+
+
+def test_spawned_mob_inherits_perm_stats():
+    proto = MobIndex(
+        vnum=88888,
+        player_name="permstat",
+        short_descr="a permstat mob",
+        act_flags="AST",
+        offensive="H",
+        level=60,
+        hit_dice="0d0+0",
+        mana_dice="0d0+0",
+        damage_dice="0d0+0",
+        damage_type="slash",
+        size="huge",
+    )
+    proto.hit = (0, 0, 0)
+    proto.mana = (0, 0, 0)
+    proto.damage = (0, 0, 0)
+
+    mob = MobInstance.from_prototype(proto)
+
+    assert mob.level == 60
+    assert len(mob.perm_stat) == MAX_STATS
+    expected_stats = [30, 25, 24, 30, 28]
+    assert mob.perm_stat == expected_stats
+    assert mob.perm_stat[Stat.STR] == 30
+    assert mob.perm_stat[Stat.INT] == 25
+    assert mob.perm_stat[Stat.WIS] == 24
+    assert mob.perm_stat[Stat.DEX] == 30
+    assert mob.perm_stat[Stat.CON] == 28
+
+
+def test_spawned_mob_randomizes_sex_when_either(monkeypatch):
+    proto = MobIndex(
+        vnum=54321,
+        player_name="randomsex",
+        short_descr="a random mob",
+        sex="either",
+        hit_dice="0d0+0",
+        mana_dice="0d0+0",
+        damage_dice="0d0+0",
+    )
+    proto.hit = (0, 0, 0)
+    proto.mana = (0, 0, 0)
+    proto.damage = (0, 0, 0)
+
+    calls: list[tuple[int, int]] = []
+
+    def fake_number_range(low: int, high: int) -> int:
+        calls.append((low, high))
+        assert low == int(Sex.MALE) and high == int(Sex.FEMALE)
+        return int(Sex.MALE)
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    mob = MobInstance.from_prototype(proto)
+
+    assert mob.sex == Sex.MALE
+    assert calls == [(int(Sex.MALE), int(Sex.FEMALE))]
+
+
+def test_spawned_mob_defaults_to_standing_when_proto_missing_positions():
+    proto = MobIndex(vnum=13579, short_descr="default stance mob")
+    proto.hit = (0, 0, 0)
+    proto.mana = (0, 0, 0)
+    proto.damage = (0, 0, 0)
+
+    mob = MobInstance.from_prototype(proto)
+
+    assert mob.start_pos == Position.STANDING
+    assert mob.default_pos == Position.STANDING
+    assert mob.position == Position.STANDING
+
+
+def test_spawned_mob_without_damage_type_rolls_rom_defaults(monkeypatch):
+    proto = MobIndex(
+        vnum=1234,
+        player_name="blank",
+        short_descr="a blank mob",
+        hit_dice="0d0+0",
+        mana_dice="0d0+0",
+        damage_dice="0d0+0",
+        damage_type="",
+        wealth=0,
+    )
+    proto.hit = (0, 0, 0)
+    proto.mana = (0, 0, 0)
+    proto.damage = (0, 0, 0)
+
+    calls: list[tuple[int, int]] = []
+
+    def fake_number_range(low: int, high: int) -> int:
+        calls.append((low, high))
+        assert low == 1 and high == 3
+        return 2
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    mob = MobInstance.from_prototype(proto)
+
+    assert mob.dam_type == int(DamageType.BASH)
+    assert calls == [(1, 3)]
+
+
+@pytest.mark.parametrize("raw_value", [7, "7"])
+def test_spawned_mob_translates_attack_index_damage_type(raw_value):
+    proto = MobIndex(
+        vnum=3333,
+        player_name="indexdamage",
+        short_descr="an indexed mob",
+        damage_type=raw_value,
+        hit_dice="0d0+0",
+        mana_dice="0d0+0",
+        damage_dice="0d0+0",
+    )
+    proto.hit = (0, 0, 0)
+    proto.mana = (0, 0, 0)
+    proto.damage = (0, 0, 0)
+
+    mob = MobInstance.from_prototype(proto)
+
+    assert mob.dam_type == int(DamageType.BASH)
 
 
 def test_resets_populate_world():

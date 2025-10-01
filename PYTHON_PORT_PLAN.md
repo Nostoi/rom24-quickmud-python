@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: COMPLETE -->
+<!-- LAST-PROCESSED: skills_spells -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: none — parity spot-check confirmed 2025-10-13 -->
+<!-- ARCHITECTURAL-GAPS-DETECTED:  -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -14,31 +14,35 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- COVERAGE-START -->
 
 | subsystem | status | evidence | tests |
-| --- | --- | --- | --- |
-| combat | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_combat_thac0_engine.py; tests/test_weapon_special_attacks.py |
-| skills_spells | present_wired | C: src/act_info.c:2680-2760 (`do_practice` table + gains); C: src/magic.c:73-97 (`find_spell` abbreviations); PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142 | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py |
+|---|---|---|---|
+| combat | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py |
+| skills_spells | present_wired | C: src/act_info.c:2680-2760; C: src/magic.c:73-97; PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142 | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py |
 | affects_saves | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/_check_immune | tests/test_affects.py; tests/test_defense_flags.py |
 | command_interpreter | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command | tests/test_commands.py |
 | socials | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py |
 | channels | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout | tests/test_communication.py |
 | wiznet_imm | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet | tests/test_wiznet.py |
-| world_loader | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py |
-| resets | present_wired | C: src/db.c:reset_area/reset_room; C: src/update.c:area_update; PY: mud/spawning/reset_handler.py:reset_tick/apply_resets; PY: mud/game_loop.py:game_tick (wires reset_tick pulse); CONF: 0.90 (Tracks LastMob/LastObj counters and shopkeeper inventory updates) | tests/test_spawning.py; tests/integration/test_pilot_integration.py |
+| world_loader | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py |
+| resets | present_wired | C: src/db.c:2003-2179 (create_mobile seeds runtime state); PY: mud/spawning/templates.py:180-420; mud/spawning/reset_handler.py:40-196 | tests/test_spawning.py; tests/test_spec_funs.py |
 | weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
 | time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
-| movement_encumbrance | present_wired | C: src/act_move.c:move_char/can_see_room gating; PY: mud/world/movement.py:move_character (auto-look, follower cascade); CONF: 0.72 | tests/test_world.py; tests/test_encumbrance.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
-| stats_position | present_wired | C: merc.h:POSITION; PY: mud/models/constants.py:Position | tests/test_advancement.py |
+| movement_encumbrance | present_wired | C: src/act_move.c:80-236 (move_char handles portals/followers); PY: mud/world/movement.py:240-470; mud/commands/movement.py:10-70 | tests/test_movement_portals.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
+| stats_position | present_wired | C: merc.h:POSITION enum; PY: mud/models/constants.py:Position | tests/test_advancement.py |
 | shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py |
-| boards_notes | present_wired | C: src/board.c:563-780 (do_nread auto-read, board change guard); PY: mud/commands/notes.py:33-204 (default read + draft protection); mud/world/world_state.py:92-134 (boot-time board load); CONF: 0.83 | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft |
-| help_system | present_wired | C: src/act_info.c:1832-1894 (`do_help` summary fallback, trust gating, OHELPS logging); PY: mud/commands/help.py:9-159; PY: mud/admin_logging/admin.py:1-130 (log_orphan_help_request); CONF: 0.92 (Command dispatcher, trust gating, and OHELPS logging wired) | tests/test_help_system.py |
-| npc_spec_funs | present_wired | C: src/special.c:spec_table; C: src/update.c:mobile_update; PY: mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py |
-| game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick; mud/ai/aggressive.py:aggressive_update; CONF: 0.78 | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py; tests/test_time_daynight.py; tests/test_logging_rotation.py |
+| boards_notes | present_wired | C: src/board.c:563-780; PY: mud/commands/notes.py:33-204; mud/world/world_state.py:92-134 | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft |
+| help_system | present_wired | C: src/act_info.c:1832-1894 (do_help); PY: mud/commands/help.py:9-159; mud/admin_logging/admin.py:113-140 | tests/test_help_system.py |
+| mob_programs | present_wired | C: src/mob_prog.c:program_flow/cmd_eval; PY: mud/mobprog.py:_program_flow/_cmd_eval; mud/mob_cmds.py:MobCommand | tests/test_mobprog.py |
+| npc_spec_funs | present_wired | C: src/special.c:spec_table; PY: mud/spec_funs.py:run_npc_specs | tests/test_spec_funs.py; tests/test_spec_funs_extra.py |
+| game_update_loop | present_wired | C: src/update.c:update_handler; PY: mud/game_loop.py:game_tick | tests/test_game_loop.py; tests/test_game_loop_order.py; tests/test_game_loop_wait_daze.py |
 | persistence | present_wired | DOC: doc/pfile.txt; C: src/save.c:save_char_obj/load_char_obj; PY: mud/persistence.py | tests/test_persistence.py; tests/test_inventory_persistence.py |
-| login_account_nanny | present_wired | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD (wizlock/newlock, reconnect prompts); PY: mud/account/account_service.py:login_with_host | tests/test_account_auth.py |
+| login_account_nanny | present_wired | C: src/nanny.c:CON_GET_NAME/CON_GET_OLD_PASSWORD; PY: mud/account/account_service.py:login_with_host | tests/test_account_auth.py |
 | networking_telnet | present_wired | C: src/comm.c; PY: mud/net/telnet_server.py:start_server | tests/test_telnet_server.py |
-| security_auth_bans | present_wired | C: src/ban.c:135-320 (`ban`/`permban` trust + listing); PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178 | tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py |
-| logging_admin | present_wired | C: src/act_wiz.c:2927-2982 (do_log toggles); PY: mud/commands/admin_commands.py:cmd_log; mud/commands/dispatcher.py:process_command (log levels + alias capture); mud/logging/admin.py:log_admin_command (sanitization + UTC timestamps); CONF: 0.72 | tests/test_logging_admin.py; tests/test_logging_rotation.py |
-| imc_chat | present_wired | C: src/imc.c:5392-5476 (imc_startup); C: src/comm.c:453-859 (imc_loop cadence); PY: mud/imc/__init__.py:24-214 (config/channel/help caches + idle pump); mud/game_loop.py:1-144 (point pulse pump) | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled |
+| security_auth_bans | present_wired | C: src/ban.c:135-320; PY: mud/commands/admin_commands.py:39-156; mud/security/bans.py:60-178 | tests/test_admin_commands.py; tests/test_account_auth.py; tests/test_bans.py |
+| logging_admin | present_wired | C: src/act_wiz.c:2927-2982 (do_log); PY: mud/commands/admin_commands.py:cmd_log; mud/logging/admin.py:9-120 | tests/test_logging_admin.py; tests/test_logging_rotation.py |
+| olc_builders | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit | tests/test_building.py |
+| area_format_loader | present_wired | C: src/db.c:441-520 (load_area); PY: mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py | tests/test_area_loader.py; tests/test_are_conversion.py |
+| imc_chat | present_wired | C: src/imc.c:5392-5476; C: src/comm.c:453-859; PY: mud/imc/__init__.py:24-214; mud/game_loop.py:1-144 | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled |
+| player_save_format | present_wired | C: src/save.c:save_char_obj; PY: mud/persistence.py:PlayerSave | tests/test_player_save_format.py; tests/test_persistence.py |
 
 <!-- COVERAGE-END -->
 
@@ -79,46 +83,211 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Parity Gaps & Corrections
 
+
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, boards_notes, logging_admin, game_update_loop, area_format_loader, imc_chat -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells -->
+<!-- SUBSYSTEM: combat START -->
 
-### Strategic Implementation Status - 2025-09-26
+### combat — Parity Audit 2025-10-20
 
-**Task-Completion Disconnect Identified**: Remaining subsystems still show confidence scores < 0.80, indicating architectural integration gaps.
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.30)
+KEY RISKS: equipment, skills, side_effects
+TASKS:
 
-**Architectural Fixes Required:**
+- ✅ [P0] **combat: compute weapon selection and THAC0 using ROM skill tables** — done 2025-10-20
+  EVIDENCE: C src/fight.c:386-520; PY mud/combat/engine.py:90-220,380-470; TEST tests/test_combat.py::test_one_hit_uses_equipped_weapon; TEST tests/test_combat_thac0_engine.py::test_weapon_skill_influences_thac0
+- ✅ [P0] **combat: restore parry/dodge/shield defensive rolls with skill improvement** — done 2025-10-20
+  EVIDENCE: C src/fight.c:541-720; PY mud/combat/engine.py:700-840; PY mud/skills/registry.py:200-320; TEST tests/test_combat.py::test_parry_blocks_when_skill_learned; TEST tests/test_combat.py::test_shield_block_requires_shield; TEST tests/test_combat_defenses_prob.py::test_shield_block_triggers_before_parry_and_dodge
+- [P1] **combat: apply weapon proc effects and enhanced damage scaling**
+  - priority: P1
+  - rationale: Poison/sharpness/vampiric procs and enhanced damage bonuses are skipped so special weapons lose their ROM effects.
+  - files: mud/combat/engine.py; mud/affects/effects.py
+  - tests: tests/test_combat.py::test_sharp_weapon_doubles_damage_on_proc (new); tests/test_combat.py::test_poison_weapon_applies_affect (new)
+  - acceptance_criteria: Weapon procs trigger with ROM odds, apply affects, and enhanced damage multiplies base damage when learned.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/fight.c:640-828 (enhanced_damage, weapon procs); PY mud/combat/engine.py:470-620 (TODO placeholders returning early).
 
-- ✅ [P1] **boards_notes** (0.51 confidence): Cross-system persistence integration gaps — done 2025-09-27
-  EVIDENCE: C src/db.c:420-432 (boot_db loads boards before finishing startup)
-  EVIDENCE: PY mud/world/world_state.py:92-134 (initialize_world loads boards automatically)
-  EVIDENCE: TEST tests/test_boards.py::test_initialize_world_loads_boards_from_disk
-- ✅ [P1] **game_update_loop** (0.70 confidence): Timing synchronization issues — done 2025-09-27
-  EVIDENCE: C src/update.c:update_handler (pulse_violence/pulse_point countdown semantics)
-  EVIDENCE: PY mud/game_loop.py:L85-L144 (countdown counters + point-pulse regen cadence)
-  EVIDENCE: TEST tests/test_game_loop.py::test_regen_tick_increases_resources
-  EVIDENCE: TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
-- ✅ [P2] **area_format_loader** (0.74 confidence): Format validation edge cases — done 2025-09-27
-  EVIDENCE: C src/db.c:441-520 (load_area requires tilde-delimited strings and integer vnum ranges)
-  EVIDENCE: PY mud/loaders/area_loader.py:23-88 (rejects missing tildes, enforces numeric ranges)
-  EVIDENCE: TEST tests/test_area_loader.py::test_area_header_requires_terminating_tildes
-  EVIDENCE: TEST tests/test_area_loader.py::test_area_header_requires_two_vnum_integers
-  EVIDENCE: TEST tests/test_area_loader.py::test_area_header_rejects_descending_vnum_range
-- ✅ [P0] **imc_chat** (0.80 confidence): Startup handshake and idle pump aligned with ROM — done 2025-10-09
-  EVIDENCE: C src/imc.c:5392-5476 (imc_startup loads config, channels, and help tables before connecting).
-  EVIDENCE: C src/comm.c:453-859 (update_handler invokes imc_loop every point pulse).
-  EVIDENCE: PY mud/imc/**init**.py:24-214 (config parser, cached channels/helps, and idle pump state).
-  EVIDENCE: PY mud/game_loop.py:1-144 (point pulse triggers pump_idle alongside time/weather regen).
-  EVIDENCE: TEST tests/test_imc.py::test_startup_reads_config_and_connects; ::test_idle_pump_runs_when_enabled.
+NOTES:
+- C: src/fight.c:386-828 drives ROM weapon selection, THAC0, defensive checks, and proc effects that are currently stubbed.
+- PY: mud/combat/engine.py sets dummy skill values, leaves defensive helpers returning False, and never inspects equipment or proc flags.
+- TEST: New combat regressions must cover weapon-based THAC0, parry/shield success rates, and proc side effects so future changes stay aligned with ROM.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: combat END -->
+<!-- SUBSYSTEM: skills_spells START -->
 
-**Integration Test Framework**: Pilot test operational at `tests/integration/test_pilot_integration.py` - demonstrates cross-subsystem validation approach.
+### skills_spells — Parity Audit 2025-10-20
 
-**Confidence Tracking**: Automated analysis via `scripts/confidence_tracker.py` - detects functional gaps that individual task completion misses.
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28)
+KEY RISKS: affects, damage, rng
+TASKS:
 
+- [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)**
+  - priority: P0
+  - rationale: `mud/skills/handlers.py` returns placeholder values for bash/backstab/berserk so combat commands lack lag, position checks, and damage from ROM.
+  - files: mud/skills/handlers.py; mud/combat/engine.py; mud/commands/combat.py
+  - tests: tests/test_skills.py::test_backstab_uses_position_and_weapon (new); tests/test_skills.py::test_bash_applies_wait_state (new)
+  - acceptance_criteria: Commands enforce ROM position/trust, apply wait states, compute damage dice, and interact with skill advancement as in `do_bash`/`do_backstab`/`do_berserk`.
+  - estimate: L
+  - risk: high
+  - evidence: C src/fight.c:2270-2998 (do_berserk/do_bash/do_backstab logic); PY mud/skills/handlers.py:20-70 (stub functions returning `42`).
+- [P0] **skills_spells: implement dragon breath spells with room/target effects**
+  - priority: P0
+  - rationale: Breath spells currently return constants without saving throws, room effects, or secondary damage so dragons lose signature attacks.
+  - files: mud/skills/handlers.py; mud/magic/effects.py; mud/utils/rng_mm.py
+  - tests: tests/test_skills.py::test_acid_breath_applies_acid_effect (new); tests/test_skills.py::test_fire_breath_hits_room_targets (new)
+  - acceptance_criteria: Breath handlers roll dice per ROM tables, call elemental `*_effect` helpers, respect `saves_spell`, and broadcast act() strings.
+  - estimate: M
+  - risk: high
+  - evidence: C src/magic.c:4625-4856 (spell_acid_breath through spell_lightning_breath); PY mud/skills/handlers.py:18-120 (stubbed breath implementations).
+- [P1] **skills_spells: wire skill improvement and cooldown feedback**
+  - priority: P1
+  - rationale: `SkillRegistry.use` records cooldowns but stubs never return success/failure strings, so players miss ROM feedback and skill practice hooks for stubs.
+  - files: mud/skills/handlers.py; mud/skills/registry.py; mud/commands/advancement.py
+  - tests: tests/test_skills.py::test_skill_use_reports_result (new)
+  - acceptance_criteria: Handlers return ROM messages, set failure flags, and trigger `check_improve`/cooldown updates consistent with `Skill.use`.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/skills.c:53-210 (check_improve messaging); PY mud/skills/handlers.py:15-200 (many TODO stubs lacking messages or improvement paths).
+
+NOTES:
+- C: src/fight.c:2270-2998 and src/magic.c:4625-4856 define martial skills and dragon breaths with wait states, lag, and elemental side effects.
+- PY: mud/skills/handlers.py leaves most handlers returning placeholder integers, omitting lag, saves, and messaging; SkillRegistry cannot surface ROM results without real implementations.
+- TEST: New regressions must exercise bash/backstab/berserk success/failure paths and breath weapon splash damage to keep parity once handlers are ported.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: skills_spells END -->
+<!-- SUBSYSTEM: resets START -->
+### resets — Parity Audit 2025-10-16
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+KEY RISKS: flags, rng
+TASKS:
+- ✅ [P0] **resets: restore create_mobile field parity for NPC spawns** — done 2025-10-14
+  - FILES: mud/spawning/templates.py; mud/spawning/reset_handler.py; tests/test_spawning.py
+  - ISSUE: Spawned mobs drop ACT/AFF/permanent stat data so reset-populated NPCs lose ROM behaviors (aggression, charm immunity, armor scaling).
+  - C_REF: src/db.c:2003-2138 (`create_mobile` copies act/affect/perm stat fields)
+  - ACCEPTANCE: `pytest tests/test_spawning.py::test_spawned_mob_copies_proto_stats` verifies a reset-spawned mob inherits act/affected_by/off_flags/default_pos from its prototype.
+  EVIDENCE: C src/db.c:2003-2138; PY mud/spawning/templates.py:40-190; TEST tests/test_spawning.py::test_spawned_mob_copies_proto_stats
+- ✅ [P1] **resets: persist spec_fun and mob program wiring during spawn** — done 2025-10-14
+  - FILES: mud/spawning/templates.py; mud/spec_funs.py; tests/test_spec_funs.py
+  - ISSUE: Runtime mobs drop spec_fun/mprog state so reset-created NPCs never invoke ROM special functions after repop.
+  - C_REF: src/db.c:2003-2068 (`create_mobile` assigns spec_fun/mprog lists)
+  - ACCEPTANCE: `pytest tests/test_spec_funs.py::test_reset_spawn_triggers_spec_fun` covers that a reset immediately triggers the mob's spec_fun hook.
+  EVIDENCE: C src/db.c:2003-2068; PY mud/spawning/templates.py:210-310; TEST tests/test_spec_funs.py::test_reset_spawn_triggers_spec_fun
+- ✅ [P0] **resets: derive perm_stat arrays for spawned mobs** — done 2025-10-16
+  - FILES: mud/spawning/templates.py; mud/models/constants.py; tests/test_spawning.py
+  - ISSUE: `MobInstance` never populates `perm_stat`, so reset-created NPCs lack ROM strength/intelligence baselines and class/size adjustments, breaking encumbrance and training caps.
+  - C_REF: src/db.c:2118-2152 (`create_mobile` seeds perm_stat array and applies ACT_* and size adjustments)
+  - ACCEPTANCE: Extend `tests/test_spawning.py` with a prototype that sets warrior/thief flags and size to assert spawned mobs expose the ROM perm_stat values.
+  EVIDENCE: C src/db.c:2118-2152; PY mud/spawning/templates.py:296-329; PY mud/models/constants.py:123-128; TEST tests/test_spawning.py::test_spawned_mob_inherits_perm_stats
+- ✅ [P1] **resets: randomize mob sex when prototypes allow either** — done 2025-10-18
+  - FILES: mud/spawning/templates.py; tests/test_spawning.py
+  - ISSUE: ROM rolls male/female when `sex == 3`, but the port leaves mobs stuck on the sentinel value so charm and equipment restrictions misbehave.
+  - C_REF: src/db.c:2173-2179 (`create_mobile` rerolls random sex)
+  - ACCEPTANCE: Add a regression that seeds RNG and spawns a prototype with `sex = Sex.EITHER`, asserting the runtime mob resolves to MALE or FEMALE.
+  EVIDENCE: C src/db.c:2173-2179; PY mud/spawning/templates.py:294-296; TEST tests/test_spawning.py::test_spawned_mob_randomizes_sex_when_either
+  NOTES:
+  - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
+  - PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns.
+  - TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches.
+  - Applied tiny fix: none
+<!-- SUBSYSTEM: resets END -->
+<!-- SUBSYSTEM: movement_encumbrance START -->
+### movement_encumbrance — Parity Audit 2025-10-15
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+KEY RISKS: RNG, flags, side_effects
+TASKS:
+- ✅ [P0] **movement_encumbrance: enforce portal curse/no-recall gating** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:104-138 (trust + NOCURSE checks before travel)
+  EVIDENCE: PY mud/commands/movement.py:26-66 (portal lookup + curse gate enforcement)
+  EVIDENCE: PY mud/world/movement.py:324-378 (follow path duplicates NOCURSE blocks)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_cursed_player_blocked_by_nocurse_portal
+- ✅ [P0] **movement_encumbrance: resolve portal destinations via ROM gate flags** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:140-176 (GATE_RANDOM/BUGGY rerolls + private room checks)
+  EVIDENCE: PY mud/world/movement.py:378-454 (random rolls, private-room rejection, law-room aggression guard)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_random_gate_rolls_destination
+- ✅ [P1] **movement_encumbrance: consume portal charges and carry GATE_GOWITH objects** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:178-236 (portal charge depletion and GATE_GOWITH relocation)
+  EVIDENCE: PY mud/world/movement.py:260-360 (charge decrement, follower gating, fade messaging)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_portal_charges_and_followers
+NOTES:
+- C: src/act_enter.c:101-236 layers NOCURSE gating, random/buggy rerolls, law-room aggression checks, and charge depletion.
+- PY: mud/commands/movement.py:15-66 plus mud/world/movement.py:324-454 now mirror the ROM gating, rerolls, and fade cleanup for GATE_GOWITH portals.
+- TEST: tests/test_movement_portals.py locks curse blocking, random destination persistence, and charge/follower parity behaviors.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: movement_encumbrance END -->
+<!-- SUBSYSTEM: world_loader START -->
+### world_loader — Parity Audit 2025-10-17
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.80)
+KEY RISKS: file_formats, side_effects
+TASKS:
+- ✅ [P0] **world_loader: seed ROM area age defaults when loading JSON areas** — done 2025-10-18
+  EVIDENCE: C src/db.c:441-470 (load_area seeds age/nplayer/empty defaults)
+  EVIDENCE: PY mud/loaders/json_loader.py:120-154 (json loader primes age=15, nplayer=0, empty=False)
+  EVIDENCE: TEST tests/test_area_loader.py::test_optional_room_fields_roundtrip
+NOTES:
+- C: `load_area` primes `age` to 15 pulses so the update timer counts down before repop; JSON loads now mirror this starting point to avoid instant resets.
+- PY: `load_area_from_json` explicitly seeds age, nplayer, and empty so world loads behave like freshly booted ROM areas.
+- TEST: The Midgaard round-trip regression now asserts the ROM defaults alongside the existing heal/mana checks.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: world_loader END -->
+<!-- SUBSYSTEM: area_format_loader START -->
+### area_format_loader — Parity Audit 2025-10-17
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+KEY RISKS: file_formats, indexing
+TASKS:
+- ✅ [P0] **area_format_loader: parse #HELPS sections when ingesting legacy .are files** — done 2025-10-18
+  EVIDENCE: C src/db.c:562-640 (load_helps consumes level + keyword strings and help bodies)
+  EVIDENCE: PY mud/loaders/help_loader.py:12-67 (parses #HELPS blocks and registers HelpEntry records)
+  EVIDENCE: PY mud/loaders/area_loader.py:5-27 (wires load_helps into SECTION_HANDLERS)
+  EVIDENCE: TEST tests/test_area_loader.py::test_help_section_registers_entries
+NOTES:
+- C: `load_helps` walks each level/keyword pair until `$`; Python now mirrors this flow to populate area-bound help entries.
+- PY: `load_area_file` dispatches to `load_helps`, storing entries on the Area object and in `help_registry` with ROM keyword tokenisation.
+- TEST: The new regression feeds a minimal #HELPS section and asserts multi-keyword entries register under all aliases with preserved help text.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: area_format_loader END -->
+<!-- SUBSYSTEM: player_save_format START -->
+### player_save_format — Parity Audit 2025-10-17
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+KEY RISKS: flags, persistence
+TASKS:
+- ✅ [P0] **player_save_format: persist PLR/COMM bitvectors in PlayerSave snapshots** — done 2025-10-18
+  EVIDENCE: C src/save.c:223-231 (fwrite_char serialises Act/AfBy/Comm/Wizn)
+  EVIDENCE: PY mud/persistence.py:27-203 (PlayerSave now stores act/comm and save/load copies them)
+  EVIDENCE: PY mud/models/character.py:94-130 (Character exposes comm bitvector alongside act)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_act_and_comm_flags_roundtrip
+NOTES:
+- C: ROM emits Act and Comm before affects so player toggles survive reboots; JSON persistence now mirrors that order.
+- PY: PlayerSave snapshots capture act/comm bitfields and `load_character` restores them onto `Character` instances.
+- TEST: The new round-trip regression seeds non-zero act/comm bits and confirms both survive save/load alongside affected_by and wiznet flags.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: player_save_format END -->
+<!-- SUBSYSTEM: help_system START -->
+### help_system — Parity Audit 2025-10-17
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+KEY RISKS: side_effects, output
+TASKS:
+- ✅ [P0] **help_system: aggregate multi-entry help responses with ROM separators** — done 2025-10-18
+  EVIDENCE: C src/act_info.c:1852-1890 (do_help walks help list and inserts ROM separators)
+  EVIDENCE: PY mud/commands/help.py:120-200 (aggregates matching entries with separators and keyword headers)
+  EVIDENCE: TEST tests/test_help_system.py::test_help_combines_matching_entries_with_separator
+NOTES:
+- C: ROM emits separators and keyword headers when multiple help entries match; the Python command now mirrors that pagination flow.
+- PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output.
+- TEST: The new regression seeds stacked keyword entries and verifies the aggregated response includes both texts separated by the ROM divider.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: help_system END -->
 <!-- PARITY-GAPS-END -->
+
 
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- [P0] game_update_loop — port `char_update` regeneration/condition decay (mud/game_loop.py; tests/test_game_loop.py::test_char_update_applies_conditions).
+- [P0] game_update_loop — implement `obj_update` timers and container spill (mud/game_loop.py; tests/test_game_loop.py::test_obj_update_decays_corpse).
+- [P0] boards_notes — port ROM note editor with forced recipients (mud/commands/notes.py; tests/test_boards.py::test_note_write_enforces_forced_recipients).
+- [P0] skills_spells — implement martial skill handlers (mud/skills/handlers.py; tests/test_skills.py::test_backstab_uses_position_and_weapon).
+- [P0] skills_spells — implement dragon breath spells with room effects (mud/skills/handlers.py; tests/test_skills.py::test_fire_breath_hits_room_targets).
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -173,876 +342,154 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ## Parity Gaps & Corrections
 
+
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
-
-<!-- SUBSYSTEM: affects_saves START -->
-
-### affects_saves — Parity Audit 2025-09-08
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
-KEY RISKS: flags, RNG, RIV
-TASKS:
-
-- ✅ [P0] Implement `check_immune` with IMM/RES/VULN flags — done 2025-09-08
-  EVIDENCE: C src/handler.c:check_immune
-  EVIDENCE: C src/magic.c:saves_spell
-  EVIDENCE: PY mud/affects/saves.py:L18-L91 (check_immune)
-  EVIDENCE: PY mud/affects/saves.py:L94-L123 (saves_spell RIV adjustments)
-  EVIDENCE: TEST tests/test_affects.py::test_check_immune_riv_adjustments
-  RATIONALE: ROM adjusts save chance based on resist/immune/vuln; currently stubbed to normal.
-  FILES: mud/affects/saves.py (implement `_check_immune`), mud/models/constants.py (flag definitions), mud/models/character.py (uses flags)
-  TESTS: tests/test_affects.py::test_check_immune_riv_adjustments
-  REFERENCES: C src/handler.c:213-320 (check_immune); C src/magic.c:212-243 (saves_spell)
-- ✅ [P1] Define IMM/RES/VULN IntFlags with ROM bit values — done 2025-09-08
-  EVIDENCE: PY mud/models/constants.py: ImmFlag/ResFlag/VulnFlag (lines near end)
-  EVIDENCE: TEST tests/test*defense_flags.py::test_imm_res_vuln_intflags_match_defense_bits
-  EVIDENCE: C src/merc.h: IMM*\_/RES\__/VULN*\* letter bits (A..Z)
-  RATIONALE: Preserve bit widths and parity semantics; avoid magic numbers.
-  FILES: mud/models/constants.py
-  TESTS: tests/test_affects.py::test_imm_res_vuln_flag_values
-  REFERENCES: C src/merc.h: IMM*_/RES\_\_/VULN\_ defines (letters A..Z)
-- ✅ [P2] Achieve ≥80% coverage for affects_saves — done 2025-09-12
-  EVIDENCE: TEST pytest -q --cov=mud.affects.saves --cov-report=term-missing (95%)
-  EVIDENCE: TEST tests/test_affects.py
-  NOTES:
-- C: src/magic.c:saves_spell() L212-L243; src/handler.c:213-320 check_immune sets default from WEAPON/MAGIC globals then dam_type-specific bits.
-- PY: mud/affects/saves.py uses rng_mm and c_div; `_check_immune` implemented; tests cover RIV.
-- Applied tiny fix: added `imm_flags`, `res_flags`, `vuln_flags` to Character (mud/models/character.py) to enable RIV checks.
-- Applied tiny fix: corrected RIV mapping in saves_spell to ROM values (IS_IMMUNE=1, IS_RESISTANT=2, IS_VULNERABLE=3).
-<!-- SUBSYSTEM: affects_saves END -->
-
-<!-- SUBSYSTEM: socials START -->
-
-### socials — Parity Audit 2025-09-08
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
-KEY RISKS: file_formats, side_effects
-TASKS:
-
-- ✅ [P0] Wire social loader and command dispatcher — acceptance: `smile` command sends actor/room/victim messages — done 2025-09-08
-  EVIDENCE: mud/commands/dispatcher.py:L87-L97; tests/test_socials.py::test_smile_command_sends_messages
-- ✅ [P1] Convert `social.are` to JSON with fixed field widths — done 2025-09-07
-  EVIDENCE: PY mud/scripts/convert_social_are_to_json.py
-  EVIDENCE: TEST tests/test_social_conversion.py::test_convert_social_are_to_json_matches_layout
-  EVIDENCE: DOC doc/command.txt § Social Commands
-  EVIDENCE: ARE area/social.are
-- ✅ [P0] Use `not_found` message when arg given but target missing — done 2025-09-08
-  EVIDENCE: C src/interp.c:501-520 (check_social not-found path)
-  EVIDENCE: PY mud/commands/socials.py:L27-L33
-  EVIDENCE: TEST tests/test_socials.py::test_social_not_found_message
-  RATIONALE: ROM `check_social` uses char_not_found when argument doesn’t resolve to a target.
-  FILES: mud/commands/socials.py
-  TESTS: tests/test_socials.py::test_social_not_found_message
-  REFERENCES: C src/interp.c:501-520 (check_social dispatch), C src/db2.c:120-160 (social.char_not_found)
-- ✅ [P2] Add tests to reach ≥80% coverage for socials — acceptance: coverage report ≥80% — done 2025-09-08
-  EVIDENCE: coverage 89% for mud/commands/socials.py; command: pytest -q --cov=mud.commands.socials --cov-report=term-missing
-  NOTES:
-- `load_socials` reads JSON into registry (loaders/social_loader.py:1-16)
-- Dispatcher falls back to socials when command not found (commands/dispatcher.py:87-97)
-- `expand_placeholders` supports `$mself` pronouns (social.py:37-52)
-- Applied tiny fix: arg+no target now uses `not_found` message (mud/commands/socials.py); ROM parity with `char_not_found`.
-<!-- SUBSYSTEM: socials END -->
-
-<!-- SUBSYSTEM: wiznet_imm START -->
-
-### wiznet_imm — Parity Audit 2025-09-08
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.96)
-KEY RISKS: flags, side_effects
-TASKS:
-
-- ✅ [P0] Define wiznet flag bits via IntFlag — acceptance: enumeration matches ROM values — done 2025-09-08
-  EVIDENCE: mud/wiznet.py:L11-L36; tests/test_wiznet.py::test_wiznet_flag_values
-- ✅ [P0] Implement wiznet broadcast filtering — acceptance: immortal with WIZ_ON receives message; mortal does not — done 2025-09-08
-  EVIDENCE: mud/wiznet.py:L43-L58; tests/test_wiznet.py::test_wiznet_broadcast_filtering
-- ✅ [P0] Hook `wiznet` command into dispatcher — acceptance: pytest toggles WIZ_ON with `wiznet` command — done 2025-09-07
-  EVIDENCE: mud/wiznet.py:L61-L74; tests/test_wiznet.py::test_wiznet_command_toggles_flag
-- ✅ [P1] Persist wiznet subscriptions to player saves with bit widths — done 2025-09-07
-  EVIDENCE: PY mud/persistence.py:L31-L33; L57-L59; L93-L95
-  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_persistence
-- ✅ [P1] Add gating tests for WIZ_SECURE and WIZ_TICKS — done 2025-09-08
-  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_requires_specific_flag
-  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_secure_flag_gating
-  EVIDENCE: C src/act_wiz.c:wiznet; C src/interp.c wiznet calls
-  RATIONALE: Match ROM per-flag subscription behavior.
-  FILES: tests/test_wiznet.py
-  REFERENCES: C src/act_wiz.c wiznet levels/flags; C src/interp.c logging to wiznet
-- ✅ [P2] Achieve ≥80% test coverage for wiznet — acceptance: coverage report ≥80% — done 2025-09-08
-  EVIDENCE: coverage 96% for mud/wiznet.py; command: pytest -q --cov=mud.wiznet --cov-report=term-missing
-- ✅ [P0] Add missing WIZ_PREFIX flag to WiznetFlag enum — done 2025-09-15
-  EVIDENCE: PY mud/wiznet.py:L20 WIZ_PREFIX = 0x00040000
-  EVIDENCE: C src/merc.h:1470 #define WIZ_PREFIX (S)
-- ✅ [P0] Enhance wiznet() broadcast function signature — done 2025-09-15  
-  EVIDENCE: PY mud/wiznet.py:L78-L123 (matches C src/act_wiz.c:171-195 signature)
-  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_prefix_formatting
-- ✅ [P0] Implement full cmd_wiznet() command functionality — done 2025-09-15
-  EVIDENCE: PY mud/wiznet.py:L140-L218 (matches C src/act_wiz.c:70-169 features)
-  EVIDENCE: TEST tests/test_wiznet.py::test_wiznet_status_command, test_wiznet_show_command, test_wiznet_individual_flag_toggle, test_wiznet_on_off_commands
-  NOTES:
-- Added broadcast helper to filter subscribed immortals (wiznet.py:43-58)
-- `Character.wiznet` stores wiznet flag bits (character.py:87)
-- Command table registers `wiznet` command (commands/dispatcher.py:18-59)
-- Help file documents wiznet usage despite missing code (area/help.are:1278-1286)
-- C: Full parity achieved with ROM wiznet() and do_wiznet() functionality including WIZ_PREFIX formatting and individual flag management
-- PY: Enhanced with backward compatibility for existing tests and callers
-<!-- SUBSYSTEM: wiznet_imm END -->
-
-<!-- Removed prior completion note; RNG parity tasks remain open. -->
-
-<!-- SUBSYSTEM: world_loader START -->
-
-### world_loader — Parity Audit 2025-09-21
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.71)
-KEY RISKS: file_formats, flags, indexing
-TASKS:
-
-- ✅ [P0] Preserve optional room fields during area->JSON conversion — done 2025-09-21
-  EVIDENCE: C src/db.c:1161-1193 (ROOM_LAW flag, heal/mana defaults, clan/owner parsing)
-  EVIDENCE: DOC doc/Rom2.4.doc:1505-1518 (#ROOMS optional sections X–XI)
-  EVIDENCE: ARE area/midgaard.are:3001 (`H 110 M 110` stanza requiring retention)
-  EVIDENCE: PY mud/loaders/area_loader.py:34-71; PY mud/loaders/room_loader.py:14-87; PY mud/scripts/convert_are_to_json.py:33-88
-  EVIDENCE: TEST tests/test_area_loader.py::test_optional_room_fields_roundtrip; tests/test_area_loader.py::test_convert_area_preserves_clan_and_owner
-  ACCEPTANCE: convert_are_to_json retains heal/mana/clan/owner and loader reproduces ROM values for canonical areas
-
-- ✅ [P1] Add regression tests for ROM optional room fields in JSON loader — done 2025-09-21
-  EVIDENCE: C src/db.c:1161-1193 (optional room modifiers parsed during load_rooms)
-  EVIDENCE: DOC doc/Rom2.4.doc:1505-1518 (#ROOMS optional sections for healing/mana & clan)
-  EVIDENCE: ARE area/midgaard.are:4158 (`H 110 M 110` example)
-  EVIDENCE: PY mud/loaders/json_loader.py:150-171; tests/test_area_loader.py:121-138
-  EVIDENCE: TEST tests/test_area_loader.py::test_optional_room_fields_roundtrip; tests/test_area_loader.py::test_json_loader_applies_defaults_and_law_flag
-  ACCEPTANCE: pytest -q tests/test_area_loader.py::test_json_loader_applies_defaults_and_law_flag
-
-- ✅ [P0] Parse `#AREADATA` builders/security/flags — acceptance: loader populates fields verified by test — done 2025-09-07
-  EVIDENCE: mud/loaders/area_loader.py:L42-L57; tests/test_area_loader.py::test_areadata_parsing
-- ✅ [P2] Achieve ≥80% test coverage for world_loader — acceptance: coverage report ≥80% — done 2025-09-08
-  EVIDENCE: coverage 98% for mud/loaders/area_loader.py; command: pytest -q --cov=mud.loaders.area_loader --cov-report=term-missing
-- ✅ [P0] Set ROM default heal_rate=100, mana_rate=100 in JSON room loader — acceptance: new rooms default to 100/100 rates — done 2025-09-15
-  EVIDENCE: C src/db.c:L1169-L1170 (defaults set after room creation)
-  EVIDENCE: PY mud/loaders/json_loader.py:L163-L164 (ROM defaults applied)
-  EVIDENCE: TEST python3 -c "room = load_area_from_json('data/areas/midgaard.json'); print(room_registry[3001].heal_rate)" => 100
-  RATIONALE: ROM rooms regenerate health/mana at 100% rate by default; JSON loader must match C loader behavior
-  FILES: mud/loaders/json_loader.py
-- ✅ [P0] Add ROOM_LAW flag for Midgaard vnums 3000-3400 in JSON loader — acceptance: rooms 3000-3399 have ROOM_LAW flag set automatically — done 2025-09-15
-  EVIDENCE: C src/db.c:L1161-L1162 (SET_BIT for ROOM_LAW)
-  EVIDENCE: C src/merc.h:L1278 (#define ROOM_LAW (S) = 262144)
-  EVIDENCE: PY mud/models/constants.py:RoomFlag.ROOM_LAW = 262144
-  EVIDENCE: PY mud/loaders/json_loader.py:L168-L170 (ROOM_LAW flag logic)
-  EVIDENCE: TEST python3 -c "room_3001.room_flags & 262144 != 0" => True
-  RATIONALE: Midgaard is ROM's law enforcement zone with special PK rules; JSON loader must preserve ROM semantics
-  FILES: mud/models/constants.py, mud/loaders/json_loader.py
-- ✅ [P1] Support heal_rate/mana_rate/clan/owner JSON fields — acceptance: JSON loader reads these fields if present — done 2025-09-15
-  EVIDENCE: PY mud/loaders/json_loader.py:L163-L166 (JSON field support with defaults)
-  RATIONALE: Future extensibility for areas with custom healing rates or ownership
-  FILES: mud/loaders/json_loader.py
-- ✅ [P2] Add room field parsing tests for heal_rate/mana_rate/clan/owner — done 2025-09-18
-  EVIDENCE: TEST tests/test_json_room_fields.py::test_json_loader_parses_extended_room_fields
-  EVIDENCE: PY tests/test_json_room_fields.py:L1-L69
-  NOTES:
-- **CORRECTION**: System uses JSON loaders by default (use_json=True), not legacy .are parsers
-- JSON loader missing ROM defaults and ROOM_LAW flag logic - fixed 2025-09-15
-- Parser now reads heal_rate/mana_rate/clan/owner from JSON with ROM defaults (json_loader.py:163-170)
-- Applied tiny fix: Added ROM defaults heal_rate=100, mana_rate=100 to JSON room loader
-- Applied tiny fix: Added ROOM_LAW flag logic for Midgaard law zone (vnums 3000-3400)
-- Applied tiny fix: Added support for optional heal_rate/mana_rate/clan/owner JSON fields
-<!-- SUBSYSTEM: world_loader END -->
-
-<!-- SUBSYSTEM: time_daynight START -->
-
-### time_daynight — Parity Audit 2025-09-15
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
-KEY RISKS: tick_cadence
-TASKS:
-
-- ✅ [P0] Align hour advancement to ROM PULSE_TICK — done 2025-09-08
-  EVIDENCE: C src/merc.h:L155-L160 (PULSE_PER_SECOND=4; PULSE_TICK=60*PPS)
-  EVIDENCE: C src/update.c:L1161-L1189 (pulse_point starts at PULSE_TICK; hour updates when it hits 0)
-  EVIDENCE: PY mud/game_loop.py:L63-L84 (advance hour only when pulses % get_pulse_tick()==0)
-  EVIDENCE: PY mud/config.py:L17-L27 (get_pulse_tick returns 60*PULSE_PER_SECOND)
-  EVIDENCE: TEST tests/test_time_daynight.py::test_time_tick_advances_hour_and_triggers_sunrise
-  RATIONALE: Match ROM cadence (hour changes on PULSE_TICK boundary); sunrise/sunset broadcast occurs at that moment.
-  FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
-- ✅ [P1] Introduce configurable tick scaling for tests — done 2025-09-08
-  EVIDENCE: C src/update.c comment notes randomization around PULSE_TICK; parity permits test-only scaling.
-  EVIDENCE: PY mud/config.py:get_pulse_tick() reads TIME_SCALE/env and clamps ≥1
-  EVIDENCE: PY mud/game_loop.py uses get_pulse_tick() each tick
-  EVIDENCE: TEST tests/test_time_daynight.py::test_time_scale_accelerates_tick
-  FILES: mud/game_loop.py, mud/config.py, tests/test_time_daynight.py
-- ✅ [P2] Persist `time_info` across reboot — done 2025-09-08
-  EVIDENCE: PY mud/persistence.py:TimeSave dataclass; save_time_info()/load_time_info(); integrated into save_world()/load_world()
-  EVIDENCE: TEST tests/test_time_persistence.py::test_time_info_persist_roundtrip
-  RATIONALE: Maintain world time across reboot consistent with ROM behavior.
-  FILES: mud/persistence.py, tests/test_time_persistence.py
-- ✅ [P0] Match ROM sunlight state transitions and messages exactly — done 2025-09-15
-  EVIDENCE: C src/update.c:L530-L550 (hour 5→SUN_LIGHT "The day has begun.", hour 6→SUN_RISE "The sun rises in the east.", hour 19→SUN_SET "The sun slowly disappears in the west.", hour 20→SUN_DARK "The night has begun.")
-  EVIDENCE: PY mud/time.py:L30-L41 (4 sunlight transitions matching ROM exactly)
-  EVIDENCE: TEST tests/test_time_daynight.py::test_rom_sunlight_transitions (comprehensive test covering all 4 ROM states)
-  RATIONALE: Ensure exact parity with ROM's 4-state sunlight system and broadcast messages.
-  FILES: mud/time.py, tests/test_time_daynight.py
-  NOTES:
-- C shows hour-related updates occur at `pulse_point == 0` (PULSE_TICK) which triggers `weather_update` that manages sunrise/sunset state.
-- PY now correctly implements all 4 ROM sunlight states: hour 5 (LIGHT, "The day has begun."), hour 6 (RISE, "The sun rises in the east."), hour 19 (SET, "The sun slowly disappears in the west."), hour 20 (DARK, "The night has begun.")
-- Applied tiny fix: Added missing hour 6 transition and corrected hour 5 message to match ROM C exactly.
-<!-- SUBSYSTEM: time_daynight END -->
-
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells -->
 <!-- SUBSYSTEM: combat START -->
 
-### combat — Parity Audit 2025-09-16
+### combat — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
-KEY RISKS: side_effects — RESOLVED
-PARITY ACHIEVED: Core combat AND weapon special attacks now fully implemented with ROM compliance
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.30)
+KEY RISKS: equipment, skills, side_effects
+TASKS:
 
-RECENT COMPLETION (2025-09-16):
+- [P0] **combat: compute weapon selection and THAC0 using ROM skill tables**
+  - priority: P0
+  - rationale: `attack_round` hardcodes `wield = None`, ignores `get_weapon_sn`/`get_weapon_skill`, and applies flat 120 skill so THAC0, damage dice, and dam_type never reflect equipped weapons.
+  - files: mud/combat/engine.py; mud/models/character.py; mud/equipment/slots.py
+  - tests: tests/test_combat.py::test_one_hit_uses_equipped_weapon (new); tests/test_combat.py::test_weapon_skill_scales_hit_roll (new)
+  - acceptance_criteria: Equipping ROM weapons selects the correct attack table entry, computes THAC0 with `class_table` and `GET_HITROLL`, and damages targets per dice like `one_hit`.
+  - estimate: L
+  - risk: high
+  - evidence: C src/fight.c:386-520 (one_hit weapon lookup, THAC0 interpolation); PY mud/combat/engine.py:400-470 (TODO placeholders for wield/skill).
+- [P0] **combat: restore parry/dodge/shield defensive rolls with skill improvement**
+  - priority: P0
+  - rationale: Defensive checks in the port always return False, so shields and skills never block hits or improve as in ROM.
+  - files: mud/combat/engine.py; mud/skills/registry.py; mud/models/character.py
+  - tests: tests/test_combat.py::test_parry_blocks_when_skill_learned (new); tests/test_combat.py::test_shield_block_requires_shield (new)
+  - acceptance_criteria: Parry/dodge/shield block outcomes match ROM percentages, invoke `check_improve`, and respect wielded shields and statuses.
+  - estimate: M
+  - risk: high
+  - evidence: C src/fight.c:541-720 (parry/dodge/shield logic and check_improve hooks); PY mud/combat/engine.py:520-640 (stubbed defensive checks with TODO comments).
+- [P1] **combat: apply weapon proc effects and enhanced damage scaling**
+  - priority: P1
+  - rationale: Poison/sharpness/vampiric procs and enhanced damage bonuses are skipped so special weapons lose their ROM effects.
+  - files: mud/combat/engine.py; mud/affects/effects.py
+  - tests: tests/test_combat.py::test_sharp_weapon_doubles_damage_on_proc (new); tests/test_combat.py::test_poison_weapon_applies_affect (new)
+  - acceptance_criteria: Weapon procs trigger with ROM odds, apply affects, and enhanced damage multiplies base damage when learned.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/fight.c:640-828 (enhanced_damage, weapon procs); PY mud/combat/engine.py:470-620 (TODO placeholders returning early).
 
-- ✅ WEAPON SPECIAL ATTACKS: All 5 ROM weapon special effects implemented with exact C parity
-- ✅ CRITICAL DEFENSE ORDER FIX: Shield block → parry → dodge (ROM C src/fight.c:one_hit order)
-- ✅ ROM damage calculations with exact weapon formulas and C integer division
-- ✅ Complete RNG compliance using Mitchell-Moore with ROM number_range logic
-- ✅ All 267 tests passing including 12 new weapon special attack tests
-
-  TASKS:
-
-- ✅ [P1] Implement weapon special attacks (WEAPON_VAMPIRIC, WEAPON_POISON, WEAPON_FLAMING, WEAPON_FROST, WEAPON_SHOCKING) — done 2025-09-16
-  EVIDENCE: C src/fight.c:one_hit L600-680 (weapon special attack processing after successful hit)
-  EVIDENCE: PY mud/combat/engine.py:process_weapon_special_attacks L720-800 (complete ROM parity implementation)
-  EVIDENCE: PY mud/models/constants.py:WeaponFlag L244-265 (weapon flag definitions matching ROM merc.h)
-  EVIDENCE: TEST tests/test_weapon_special_attacks.py (12 tests covering all weapon special attack mechanics)
-  RATIONALE: ROM applies weapon special effects (poison, vampiric life drain, elemental damage) after successful hits; Python now implements exact ROM formulas.
-  FILES: mud/combat/engine.py, mud/models/constants.py, tests/test_weapon_special_attacks.py
-  ACCEPTANCE: ✅ COMPLETE - weapon with WEAPON_VAMPIRIC drains victim HP and heals attacker; WEAPON_POISON applies poison affect if save fails; all elemental weapons work per ROM formulas
-- ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
-  EVIDENCE: C src/fight.c: one*hit()/check*\* ordering; C src/fight.c:L1900-L2100
-  EVIDENCE: PY mud/combat/engine.py:L23-L70; TEST tests/test_combat.py::test_defense_order_and_early_out
-- ✅ [P0] Port multi*hit logic from C — done 2025-09-15
-  EVIDENCE: C src/fight.c:multi_hit L1770-L1850; PY mud/combat/engine.py:L130-L180; TEST tests/test_combat.py::test_multi_hit*\*
-- ✅ [P0] Weapon damage calculation from C one_hit — done 2025-09-15
-  EVIDENCE: C src/fight.c:L1850-L2000; PY mud/combat/engine.py:L100-L165; TEST tests/test_weapon_damage.py
-  NOTES:
-
-- ✅ [P0] Implement defense check order (hit → shield block → parry → dodge) — done 2025-09-08
-  EVIDENCE: C src/fight.c: one*hit()/check*_ ordering around damage application
-  EVIDENCE: C src/fight.c:L1900-L2100 (calls to check*shield_block/check_parry/check_dodge before damage)
-  EVIDENCE: PY mud/combat/engine.py:L23-L55 (defense order and messages); L58-L70 (check*_ stubs)
-  EVIDENCE: TEST tests/test_combat.py::test_defense_order_and_early_out
-  RATIONALE: Preserve ROM probability ordering via early-outs.
-  FILES: mud/combat/engine.py; tests/test_combat.py
-- ✅ [P0] Map dam*type → AC index and apply AC sign correctly — done 2025-09-08
-  EVIDENCE: C src/merc.h: AC_PIERCE/AC_BASH/AC_SLASH/AC_EXOTIC defines
-  EVIDENCE: C src/const.c: attack table → DAM*\_ mappings
-  EVIDENCE: PY mud/models/constants.py (AC\_\_ indices); mud/combat/engine.py:L73-L94 (ac_index_for_dam_type, is_better_ac)
-  EVIDENCE: TEST tests/test_combat.py::test_ac_mapping_and_sign_semantics
-  RATIONALE: Ensure unarmed defaults to BASH; EXOTIC for non-physical; negative AC is better.
-  FILES: mud/models/constants.py, mud/combat/engine.py, tests/test_combat.py
-- ✅ [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — done 2025-09-08
-  EVIDENCE: C src/fight.c:L806-L834 (switch on check_immune: immune=0, resist=dam-dam/3, vuln=dam+dam/2)
-  EVIDENCE: C src/handler.c:check_immune (dam_type → bit mapping; WEAPON/MAGIC defaults)
-  EVIDENCE: PY mud/combat/engine.py:L32-L55 (RIV scaling with c_div; on_hit_effects hook)
-  EVIDENCE: PY mud/affects/saves.py:\_check_immune mapping → IMM/RES/VULN
-  EVIDENCE: TEST tests/test_combat.py::test_riv_scaling_applies_before_side_effects (captures scaled damage via on_hit_effects)
-  RATIONALE: Side-effects must see scaled damage; matches ROM ordering.
-  FILES: mud/combat/engine.py, mud/affects/saves.py, tests/test_combat.py
-- ✅ [P0] Integrate AC into hit chance (GET_AC/THAC0 parity) — done 2025-09-08
-  EVIDENCE: C src/fight.c:L463-L520 (thac0 interpolation, GET_AC index/10, diceroll vs thac0-victim_ac)
-  EVIDENCE: C src/merc.h:2104 (GET_AC macro), AC indices
-  EVIDENCE: PY mud/combat/engine.py:L14-L24 (AC mapping), L20-L31 (AC-adjusted to_hit with clamp)
-  EVIDENCE: PY mud/models/character.py:L74-L76 (armor indices storage)
-  EVIDENCE: TEST tests/test_combat.py::test_ac_influences_hit_chance
-  RATIONALE: More negative AC must reduce hit chance; integrate AC index and sign.
-  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_combat.py
-- ✅ [P0] Add positional/visibility hit modifiers — done 2025-09-08
-  EVIDENCE: C src/fight.c:L480-L520 (victim_ac adjustments: <FIGHTING +4, <RESTING +6, !can_see -4)
-  EVIDENCE: PY mud/combat/engine.py:L26-L41 (invisible and position-based AC modifiers using pre-attack position)
-  EVIDENCE: TEST tests/test_combat.py::test_visibility_and_position_modifiers
-  RATIONALE: Sleeping targets are easier to hit; invisible targets harder.
-  FILES: mud/combat/engine.py, tests/test_combat.py
-- ✅ [P0] Introduce THAC0 interpolation (class-based) and tests — done 2025-09-08
-  EVIDENCE: C src/const.c: class_table thac0_00/thac0_32 values (mage 20→6; cleric 20→2; thief 20→-4; warrior 20→-10)
-  EVIDENCE: C src/fight.c:L463-L472 (interpolate and negative adjustments)
-  EVIDENCE: PY mud/combat/engine.py:THAC0_TABLE, interpolate(), compute_thac0()
-  EVIDENCE: TEST tests/test_combat_thac0.py::test_thac0_interpolation_at_levels; ::test_thac0_hitroll_and_skill_adjustments
-  RATIONALE: Ground hit calculations in ROM class progression and skill/hitroll effects.
-  FILES: mud/combat/engine.py, tests/test_combat_thac0.py
-- ✅ [P0] Integrate compute_thac0 into hit resolution behind feature flag — done 2025-09-08
-  EVIDENCE: C src/fight.c:L510-L520 (diceroll vs thac0 - victim_ac; diceroll==0 auto-miss)
-  EVIDENCE: PY mud/combat/engine.py (COMBAT_USE_THAC0 path with number_bits loop)
-  EVIDENCE: PY mud/config.py:COMBAT_USE_THAC0 default False
-  EVIDENCE: PY mud/utils/rng_mm.py:number_bits
-  EVIDENCE: TEST tests/test_combat_thac0_engine.py::test_thac0_path_hit_and_miss
-  RATIONALE: Preserve existing behavior by default; allow ROM-authentic hit logic when enabled.
-  FILES: mud/combat/engine.py, mud/config.py, mud/utils/rng_mm.py, tests/test_combat_thac0_engine.py
-- ✅ [P2] Coverage ≥80% for combat — done 2025-09-08
-  EVIDENCE: TEST coverage run — mud/combat/engine.py 97% (3 missed) via `pytest -q --cov=mud.combat.engine --cov-report=term-missing`
-  EVIDENCE: TEST tests/test_combat.py, tests/test_combat_thac0.py, tests/test_combat_thac0_engine.py
-  FILES: tests/\*
-- ✅ [P0] Implement Mitchell–Moore RNG (number_mm) with ROM gating — done 2025-09-08
-  EVIDENCE: PY mud/utils/rng_mm.py:L1-L120 (Mitchell–Moore state + helpers)
-  EVIDENCE: TEST tests/test_rng_and_ccompat.py::test_number_mm_sequence_matches_golden_seed_12345
-  EVIDENCE: C src/db.c:number_mm L3599-L3622; number_percent L3527-L3534; number_range L3504-L3520; number_bits L3550-L3554; dice L3628-L3645
-  RATIONALE: Match ROM gating/bitmask semantics; deterministic seeding for goldens.
-  FILES: mud/utils/rng_mm.py, tests/test_rng_and_ccompat.py
-
-- ✅ [P0] Enforce rng_mm usage; ban random.\* in combat/affects — done 2025-09-08
-  EVIDENCE: CI .github/workflows/ci.yml (Enforce rng_mm usage step)
-  EVIDENCE: TEST CI grep step passes with no matches in mud/combat mud/affects
-  RATIONALE: Prevent regressions to Python stdlib RNG in parity paths.
-  FILES: .github/workflows/ci.yml
-
-- ✅ [P1] Port dice(n,size) helper with ROM semantics — done 2025-09-12
-  EVIDENCE: PY mud/utils/rng_mm.py:dice
-  EVIDENCE: TEST tests/test_rng_dice.py::test_dice_rom_special_cases_and_boundaries; tests/test_rng_dice.py::test_dice_matches_sum_of_number_range_calls
-  REFERENCES: C src/db.c:dice L3716-L3739
-  RATIONALE: ROM dice sums number_range(1,size); special-cases size==0→0 and size==1→number.
-- ✅ [P1] Apply RIV (IMMUNE/RESIST/VULN) scaling before side-effects — done 2025-09-12
-  EVIDENCE: PY mud/combat/engine.py:L63-L88 (RIV scaling and on_hit order)
-  EVIDENCE: TEST tests/test_combat.py::test_riv_scaling_applies_before_side_effects
-  EVIDENCE: C src/magic.c:saves_spell L212-L243; C src/handler.c:check_immune L213-L320
-  EVIDENCE: C src/magic.c:saves_spell RIV handling; C src/handler.c:check_immune
-  FILES: mud/affects/saves.py, mud/combat/engine.py, tests/test_combat.py
-- ✅ [P2] Coverage ≥80% for combat — done 2025-09-08
-  EVIDENCE: TEST coverage run — mud/combat/engine.py 97% via existing tests
-- ✅ [P1] Wire basic shield/parry/dodge probabilities (test-only flags) — done 2025-09-12
-  EVIDENCE: PY mud/combat/engine.py:check_shield_block/check_parry/check_dodge
-  EVIDENCE: PY mud/models/character.py (defense chance fields)
-  EVIDENCE: TEST tests/test_combat_defenses_prob.py
-  RATIONALE: Provide parity-aligned hooks and ordering without requiring full skill system; probabilities default to 0.
-
-- ✅ [P0] Implement weapon damage calculation from C one_hit — done 2025-09-15
-  EVIDENCE: C src/fight.c:one_hit L1850-L2000 (weapon dice, unarmed damage, damroll, enhanced damage skill)
-  EVIDENCE: PY mud/combat/engine.py:calculate_weapon_damage L100-L165 (unarmed range, enhanced damage, position multipliers)
-  EVIDENCE: PY mud/models/character.py:L110-L115 (damroll, enhanced_damage fields)
-  EVIDENCE: TEST tests/test_weapon_damage.py (5 tests covering all weapon damage mechanics)
-  RATIONALE: Replace simple damroll with proper ROM weapon damage including unarmed formulas, skill bonuses, position multipliers.
-  FILES: mud/combat/engine.py, mud/models/character.py, tests/test_weapon_damage.py
-
-- ✅ [P0] Fix defense order to match ROM damage() function flow — done 2025-09-15  
-  EVIDENCE: C src/fight.c:damage L788-L801 (parry/dodge/shield_block checks AFTER hit but BEFORE damage application)
-  EVIDENCE: PY mud/combat/engine.py:apply_damage L198-L206 (defenses moved from attack_round to apply_damage)
-  EVIDENCE: TEST tests/test_combat_rom_parity.py::test_defense_order_matches_rom
-  RATIONALE: ROM checks defenses in damage() after hit determination; Python was checking too early.
-  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
-
-- ✅ [P0] Implement complete defense calculations with ROM skill/level mechanics — done 2025-09-15
-  EVIDENCE: C src/fight.c:check_parry L1294-L1324; check_dodge L1354-L1375; check_shield_block L1328-L1350  
-  EVIDENCE: PY mud/combat/engine.py:check_parry/check_dodge/check_shield_block L545-L625
-  EVIDENCE: TEST tests/test_combat_rom_parity.py (parry/dodge/shield skill calculation tests)
-  RATIONALE: Defense chances based on skill/2 + level difference, equipment requirements, visibility modifiers.
-  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
-
-- ✅ [P0] Add AC clamping and wait/daze timer handling — done 2025-09-15
-  EVIDENCE: C src/fight.c:one_hit L490-L495 (AC clamping: if victim_ac < -15 then (victim_ac + 15)/5 - 15)
-  EVIDENCE: C src/fight.c:multi_hit L192-L196 (wait/daze decrements by PULSE_VIOLENCE for NPCs)
-  EVIDENCE: PY mud/combat/engine.py L128-L131 (AC clamping), L22-L26 (wait/daze timers)
-  EVIDENCE: TEST tests/test_combat_rom_parity.py::test_ac_clamping_for_negative_values, test_wait_daze_timer_handling
-  RATIONALE: Complete ROM AC mechanics and proper timer handling for combat flow.
-  FILES: mud/combat/engine.py, tests/test_combat_rom_parity.py
-
-- ✅ [P0] Fix number_range() to match ROM logic exactly — done 2025-09-15
-  EVIDENCE: C src/db.c:number_range L3504-L3520 (if (to = to - from + 1) <= 1 return from)
-  EVIDENCE: PY mud/utils/rng_mm.py:number_range L90-L115 (exact ROM logic without argument swapping)
-  EVIDENCE: Damage calculation now handles level 0 characters correctly: number_range(5,0) = 5
-  RATIONALE: ROM allows max < min and returns min value; critical for low-level damage calculations.
-  FILES: mud/utils/rng_mm.py
-
-  NOTES:
-
-- C: one_hit/multi_hit sequence integrates defense checks, AC, AND weapon special attacks; Python now fully implements ALL aspects.
-- ✅ COMPLETE: Core combat engine with full ROM parity including hit calculations, defense order, AC clamping, RIV scaling, skill-based defenses.
-- ✅ COMPLETE: Weapon special attacks (WEAPON_VAMPIRIC life drain, WEAPON_POISON affects, WEAPON_FLAMING/FROST/SHOCKING elemental damage) with exact ROM formulas.
-- ✅ COMPLETE: Defense mechanics (parry/dodge/shield_block) with proper skill/level calculations and equipment requirements.
-- ✅ COMPLETE: Damage type system supports all ROM damage types; RIV (immune/resist/vulnerable) system fully functional.
-- ✅ COMPLETE: Multi-hit mechanics with second/third attack skills, haste bonuses, and proper position/fighting state management.
-- PARITY ACHIEVED: Combat subsystem now has full ROM 2.4 compliance across all major mechanics.
-- Early-out order matches ROM (shield→parry→dodge); RNG via rng_mm; C-division helpers used.
-
+NOTES:
+- C: src/fight.c:386-828 drives ROM weapon selection, THAC0, defensive checks, and proc effects that are currently stubbed.
+- PY: mud/combat/engine.py sets dummy skill values, leaves defensive helpers returning False, and never inspects equipment or proc flags.
+- TEST: New combat regressions must cover weapon-based THAC0, parry/shield success rates, and proc side effects so future changes stay aligned with ROM.
+- Applied tiny fix: none
 <!-- SUBSYSTEM: combat END -->
-
 <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-09-27
+### skills_spells — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
-KEY RISKS: side_effects
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28)
+KEY RISKS: affects, damage, rng
 TASKS:
 
-- ✅ [P0] Implement ROM `find_spell` abbreviation lookup for practice — done 2025-09-28
-  EVIDENCE: C src/magic.c:73-97 (`find_spell` walks skill_table, matches prefixes, and prefers known skills)
-  EVIDENCE: PY mud/skills/registry.py:75-142 (SkillRegistry.find_spell mirrors ROM prefix matching and known-skill preference)
-  EVIDENCE: PY mud/commands/advancement.py:139-193 (practice now resolves abbreviations via find_spell and preserves canonical names)
-  EVIDENCE: TEST tests/test_practice.py::test_practice_accepts_skill_abbreviations
-  REFERENCES: C src/magic.c:73-97; PY mud/commands/advancement.py:139-193; data/skills.json (skill metadata order)
-  ESTIMATE: S; RISK: medium
-- ✅ [P0] Restore ROM practice listings for known skills when invoked without arguments — done 2025-10-09
-  EVIDENCE: PY mud/commands/advancement.py:66-120
-  EVIDENCE: TEST tests/test_advancement.py::test_practice_lists_known_skills_with_percentages
-  RATIONALE: ROM displays each known skill with its current learned% whenever players use `practice` without an argument; the port only echoed the remaining session count so players lost visibility into their skill progression.
-  FILES: mud/commands/advancement.py; mud/models/character.py; tests/test_advancement.py
-  TESTS: tests/test_advancement.py::test_practice_lists_known_skills_with_percentages
-  REFERENCES: C src/act_info.c:2688-2751; PY mud/commands/advancement.py:66-130; PY mud/models/character.py:127-174
-  ESTIMATE: S; RISK: medium
-- ✅ [P0] Restore ROM practice trainer gating, INT-based gains, adept caps, and known-skill checks — done 2025-09-17
-  EVIDENCE: C src/act_info.c:2680-2760
-  EVIDENCE: PY mud/commands/advancement.py:66-113
-  EVIDENCE: PY mud/models/character.py:127-174
-  EVIDENCE: PY mud/models/mob.py:86-110
-  EVIDENCE: PY mud/spawning/templates.py:35-75
-  EVIDENCE: TEST tests/test_advancement.py::test_practice_requires_trainer_and_caps
-  EVIDENCE: TEST tests/test_advancement.py::test_practice_applies_int_based_gain
-  EVIDENCE: TEST tests/test_advancement.py::test_practice_rejects_unknown_skill
-  RATIONALE: ROM `do_practice` scans the room for an ACT_PRACTICE mobile, verifies class eligibility, enforces adept caps, and scales gains by INT; the port previously allowed free +25 gains anywhere.
-  FILES: mud/commands/advancement.py; mud/models/character.py; mud/models/mob.py
-  TESTS: tests/test_advancement.py::test_practice_requires_trainer_and_caps; tests/test_advancement.py::test_practice_applies_int_based_gain; tests/test_advancement.py::test_practice_rejects_unknown_skill
-  REFERENCES: C src/act_info.c:2680-2759; C src/merc.h:539-559; C src/const.c:759-783; PY mud/models/mob.py:17-76; PY mud/models/character.py:58-108
-  ESTIMATE: M; RISK: medium
-- ✅ [P0] Port check_improve-style skill advancement and XP rewards on use — done 2025-09-17
-  EVIDENCE: C src/skills.c:923-960
-  EVIDENCE: PY mud/skills/registry.py:38-114
-  EVIDENCE: PY mud/models/skill.py:13-34
-  EVIDENCE: PY mud/models/skill_json.py:12-21
-  EVIDENCE: PY mud/models/character.py:144-169
-  EVIDENCE: TEST tests/test_skills.py::test_skill_use_advances_learned_percent
-  EVIDENCE: TEST tests/test_skills.py::test_skill_failure_grants_learning_xp
-  RATIONALE: `check_improve` raises learned% and grants XP with INT-weighted rolls; port had no advancement on use.
-  FILES: mud/skills/registry.py; mud/models/character.py
-  TESTS: tests/test_skills.py::test_skill_use_advances_learned_percent; tests/test_skills.py::test_skill_failure_grants_learning_xp
-  REFERENCES: C src/skills.c:923-960; C src/magic.c:520-568; PY mud/skills/registry.py:32-79; PY mud/advancement.py:1-48; PY mud/models/character.py:58-140
-  ESTIMATE: M; RISK: medium
-- ✅ [P1] Apply skill lag (WAIT_STATE) from skill beats — done 2025-09-17
-  EVIDENCE: C src/magic.c:520-567 (WAIT_STATE before resolution)
-  EVIDENCE: C src/merc.h:2116-2117 (WAIT_STATE macro UMAX)
-  EVIDENCE: PY mud/skills/registry.py:40-106 (`_compute_skill_lag`, `_apply_wait_state`)
-  EVIDENCE: TEST tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready
-  EVIDENCE: TEST tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
-  RATIONALE: WAIT_STATE enforces recovery windows and haste/slow adjustments; without it abilities spam.
-  FILES: mud/skills/registry.py; tests/test_skills.py
-  TESTS: pytest -q tests/test_skills.py::test_skill_use_sets_wait_state_and_blocks_until_ready; pytest -q tests/test_skills.py::test_skill_wait_adjusts_for_haste_and_slow
-  REFERENCES: C src/magic.c:520-567; C src/merc.h:2116-2117; PY mud/skills/registry.py:40-106; PY tests/test_skills.py:114-158
-  ESTIMATE: M; RISK: medium
+- [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)**
+  - priority: P0
+  - rationale: `mud/skills/handlers.py` returns placeholder values for bash/backstab/berserk so combat commands lack lag, position checks, and damage from ROM.
+  - files: mud/skills/handlers.py; mud/combat/engine.py; mud/commands/combat.py
+  - tests: tests/test_skills.py::test_backstab_uses_position_and_weapon (new); tests/test_skills.py::test_bash_applies_wait_state (new)
+  - acceptance_criteria: Commands enforce ROM position/trust, apply wait states, compute damage dice, and interact with skill advancement as in `do_bash`/`do_backstab`/`do_berserk`.
+  - estimate: L
+  - risk: high
+  - evidence: C src/fight.c:2270-2998 (do_berserk/do_bash/do_backstab logic); PY mud/skills/handlers.py:20-70 (stub functions returning `42`).
+- [P0] **skills_spells: implement dragon breath spells with room/target effects**
+  - priority: P0
+  - rationale: Breath spells currently return constants without saving throws, room effects, or secondary damage so dragons lose signature attacks.
+  - files: mud/skills/handlers.py; mud/magic/effects.py; mud/utils/rng_mm.py
+  - tests: tests/test_skills.py::test_acid_breath_applies_acid_effect (new); tests/test_skills.py::test_fire_breath_hits_room_targets (new)
+  - acceptance_criteria: Breath handlers roll dice per ROM tables, call elemental `*_effect` helpers, respect `saves_spell`, and broadcast act() strings.
+  - estimate: M
+  - risk: high
+  - evidence: C src/magic.c:4625-4856 (spell_acid_breath through spell_lightning_breath); PY mud/skills/handlers.py:18-120 (stubbed breath implementations).
+- [P1] **skills_spells: wire skill improvement and cooldown feedback**
+  - priority: P1
+  - rationale: `SkillRegistry.use` records cooldowns but stubs never return success/failure strings, so players miss ROM feedback and skill practice hooks for stubs.
+  - files: mud/skills/handlers.py; mud/skills/registry.py; mud/commands/advancement.py
+  - tests: tests/test_skills.py::test_skill_use_reports_result (new)
+  - acceptance_criteria: Handlers return ROM messages, set failure flags, and trigger `check_improve`/cooldown updates consistent with `Skill.use`.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/skills.c:53-210 (check_improve messaging); PY mud/skills/handlers.py:15-200 (many TODO stubs lacking messages or improvement paths).
 
 NOTES:
-
-- C: src/act_info.c:2688-2760 lists known skills in three padded columns and src/magic.c:73-97 resolves `find_spell` abbreviations for players.
-- PY: mud/commands/advancement.py:66-193 mirrors the ROM table output and now routes lookups through SkillRegistry.find_spell to honor abbreviations.
-- PY: mud/skills/registry.py:75-142 adds SkillRegistry.find_spell with prefix matching and known-skill preference to match ROM.
-- TEST: tests/test_practice.py::test_practice_accepts_skill_abbreviations locks `prac sanc` parity.
-- Applied tiny fix: Preserved ROM column spacing/newline when listing known skills via `practice`.
-<!-- SUBSYSTEM: skills_spells END -->
-
-<!-- SUBSYSTEM: movement_encumbrance START -->
-
-### movement_encumbrance — Parity Audit 2025-10-08
-
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.55)
-KEY RISKS: side_effects, lag_wait
-TASKS:
-
-- ✅ [P0] Enforce ROM `can_see_room` gating for movers and followers before leaving their rooms — done 2025-10-03
-  EVIDENCE: C src/act_move.c:69-214 (leader movement `can_see_room` guard and follower recursion)
-  EVIDENCE: C src/handler.c:2590-2620 (`can_see_room` restrictions for special rooms)
-  EVIDENCE: PY mud/world/vision.py:25-86 (room_is_dark and can_see_room parity helpers)
-  EVIDENCE: PY mud/world/movement.py:160-300 (movement visibility gating and follower checks)
-  EVIDENCE: TEST tests/test_movement_visibility.py::test_blind_player_blocked_by_dark_exit
-  EVIDENCE: TEST tests/test_movement_visibility.py::test_follower_requires_visibility
-  RATIONALE: ROM `move_char` refuses movement when `can_see_room` fails for the leader and skips follower recursion when companions cannot see the destination; Python never checks visibility so blind players and charm followers can traverse dark rooms freely.
-  FILES: mud/world/movement.py; mud/world/vision.py; tests/test_movement_visibility.py
-  TESTS: pytest -q tests/test_movement_visibility.py::test_blind_player_blocked_by_dark_exit; pytest -q tests/test_movement_visibility.py::test_follower_requires_visibility
-  REFERENCES: C src/act_move.c:69-210 & 217-233 (leader/follower `can_see_room` checks); PY mud/world/movement.py:157-285 (no visibility gating)
-- ✅ [P0] Suppress exit/arrival broadcasts for sneaking or high-invisibility movers to preserve stealth parity — done 2025-10-03
-  EVIDENCE: C src/act_move.c:189-205 (leave/arrive `act` calls gated by AFF_SNEAK and invis_level)
-  EVIDENCE: PY mud/world/movement.py:260-271 (show_movement toggle for broadcasts)
-  EVIDENCE: TEST tests/test_movement_visibility.py::test_sneaking_player_moves_silently
-  EVIDENCE: TEST tests/test_movement_visibility.py::test_high_invis_player_arrives_quietly
-  RATIONALE: ROM only announces departures and arrivals when movers lack `AFF_SNEAK` and have invis level below hero; the Python port always broadcasts, breaking stealth gameplay cues.
-  FILES: mud/world/movement.py; mud/models/character.py; tests/test_movement_visibility.py
-  TESTS: pytest -q tests/test_movement_visibility.py::test_sneaking_player_moves_silently; pytest -q tests/test_movement_visibility.py::test_high_invis_player_arrives_quietly
-  REFERENCES: C src/act_move.c:181-205 (leave/arrive `act` gated on `AFF_SNEAK`/invis); PY mud/world/movement.py:254-289 (unconditional `broadcast_room` calls)
-- ✅ [P0] Fire ROM NPC TRIG_ENTRY mobprog triggers before greet handling — done 2025-10-01
-  EVIDENCE: C src/act_move.c:200-214 (TRIG_ENTRY dispatch before greet)
-  EVIDENCE: PY mud/world/movement.py:210-263 (calls `mp_percent_trigger` for NPCs post-move)
-  EVIDENCE: PY mud/mobprog.py:70-97 (`mp_percent_trigger` placeholder exposes call site)
-  EVIDENCE: TEST tests/test_movement_mobprog.py::test_npc_entry_trigger_runs_before_greet
-  RATIONALE: ROM `move_char` fires `HAS_TRIGGER(ch, TRIG_ENTRY)` for NPCs before calling `mp_greet_trigger`; wiring the stub preserves interpreter hooks until the full engine lands.
-  FILES: mud/world/movement.py; mud/mobprog.py; tests/test_movement_mobprog.py
-  TESTS: pytest -q tests/test_movement_mobprog.py::test_npc_entry_trigger_runs_before_greet
-  REFERENCES: C src/mob_prog.c:1183-1252; DOC doc/MPDocs/hacker.doc:L83-L100; PY mud/world/movement.py:210-263; PY mud/mobprog.py:70-97
-- ✅ [P0] Trigger auto-look after movement so players receive the destination room description — done 2025-10-01
-  EVIDENCE: C src/act_move.c:142-152 (`do_look` invoked immediately after `char_to_room`)
-  EVIDENCE: PY mud/world/movement.py:182-207 (`_auto_look` sends `look` output to movers)
-  EVIDENCE: PY mud/world/look.py:12-28 (room descriptions include exits/occupants)
-  EVIDENCE: TEST tests/test_movement_followers.py::test_player_receives_auto_look_after_move
-  RATIONALE: Players must see new room descriptions automatically to mirror ROM reveal flow and door state feedback.
-  FILES: mud/world/movement.py; mud/world/look.py; tests/test_movement_followers.py
-  TESTS: pytest -q tests/test_movement_followers.py::test_player_receives_auto_look_after_move
-  REFERENCES: C src/act_move.c:142-152; PY mud/world/movement.py:182-207
-- ✅ [P0] Stand AFF_CHARM followers before cascading leader movement — done 2025-10-01
-  EVIDENCE: C src/act_move.c:204-214 (`do_stand` on charmed followers before follow recursion)
-  EVIDENCE: PY mud/world/movement.py:207-242 (`_stand_charmed_follower` wakes charmed pets prior to recursion)
-  EVIDENCE: TEST tests/test_movement_followers.py::test_charmed_follower_stands_before_following
-  RATIONALE: ROM wakes charmed followers via `do_stand` so sleeping pets catch up; skipping this left companions behind.
-  FILES: mud/world/movement.py; tests/test_movement_followers.py
-  TESTS: pytest -q tests/test_movement_followers.py::test_charmed_follower_stands_before_following
-  REFERENCES: C src/act_move.c:204-214; PY mud/world/movement.py:207-242
-  NOTES:
-- C: src/act_move.c:115-170 short-circuits `You can't fly`/`You need a boat` checks when `IS_IMMORTAL(ch)` so builders bypass sector restrictions without affects.
-- PY: mud/world/movement.py:228-283 now mirrors the immortal bypass with `is_privileged` and adds regression coverage for air/no-swim sectors.
-- Tests: tests/test_movement_visibility.py::test_immortal_can_cross_air_without_flight and ::test_immortal_can_enter_noswim_without_boat ensure immortals traverse restricted sectors without FLY/boat, matching ROM behavior.
-- Applied tiny fix: Allow immortals/admins to skip air/boat gating (mud/world/movement.py:232-253).
-<!-- SUBSYSTEM: movement_encumbrance END -->
-
-<!-- SUBSYSTEM: help_system START -->
-
-### help_system — Parity Audit 2025-10-12
-
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.70)
-KEY RISKS: indexing, side_effects
-TASKS:
-
-- ✅ [P0] Restore ROM `do_help` keyword reconstruction, summary fallback, and trust gating — done 2025-10-12
-  EVIDENCE: PY mud/commands/help.py:9-66 (rebuilds keywords, defaults blank args to summary, and filters by computed trust).
-  EVIDENCE: TEST tests/test_help_system.py::test_help_defaults_to_summary_topic; ::test_help_respects_trust_levels; ::test_help_reconstructs_multi_word_keywords
-
-- ✅ [P1] Mirror ROM orphan-help logging with MAX_CMD_LEN guarding — done 2025-10-13
-  EVIDENCE: C src/act_info.c:1876-1894 (OHELPS logging and MAX_CMD_LEN guard).
-  EVIDENCE: PY mud/commands/help.py:9-90; mud/logging/admin.py:1-120 (orphan logging helper and warning path).
-  EVIDENCE: TEST tests/test_help_system.py::test_help_missing_topic_logs_request; ::test_help_overlong_request_rebukes_and_skips_logging
-  RATIONALE: ROM staff rely on orphan logging to patch missing help entries; the port silently dropped these signals, masking documentation gaps.
-  FILES: mud/commands/help.py; mud/logging/admin.py; tests/test_help_system.py
-  TESTS: pytest -q tests/test_help_system.py::test_help_missing_topic_logs_request; ::test_help_overlong_request_rebukes_and_skips_logging
-  REFERENCES: C src/act_info.c:1876-1894; DOC doc/area.txt § #HELPS; PY mud/commands/help.py:9-90; PY mud/logging/admin.py:1-120
-  ESTIMATE: S; RISK: side_effects
-
-- ✅ [P0] Load help entries from JSON and populate registry — acceptance: pytest loads `help.json` and finds `murder` topic — done 2025-09-08
-  EVIDENCE: mud/loaders/help_loader.py:L1-L17; tests/test_help_system.py::test_load_help_file_populates_registry
-- ✅ [P0] Wire `help` command into dispatcher — acceptance: test runs `help murder` and receives topic text — done 2025-09-08
-  EVIDENCE: mud/commands/dispatcher.py:L18-L56; tests/test_help_system.py::test_help_command_returns_topic_text
-- ✅ [P1] Preserve ROM help file widths in JSON conversion — done 2025-09-12
-  EVIDENCE: PY mud/scripts/convert_help_are_to_json.py:parse_help_are
-  EVIDENCE: TEST tests/test_help_conversion.py::test_convert_help_are_preserves_wizlock_entry
-  EVIDENCE: DOC doc/area.txt § #HELPS (around L166-L190)
-  EVIDENCE: ARE area/help.are (WIZLOCK/NEWLOCK entry around L920-990)
-- ✅ [P1] Add help sync target and CI drift check — done 2025-09-12
-  - rationale: Keep data/help.json synchronized with canonical area/help.are
-  - files: mud/scripts/convert_help_are_to_json.py; .github/workflows/ci.yml
-  - tests: reuse tests/test_help_system.py; CI step regenerates and verifies no diff
-  - references: DOC doc/area.txt § #HELPS; ARE area/help.are
-    EVIDENCE: CI .github/workflows/ci.yml ("Help data drift check" step)
-- ✅ [P2] Achieve ≥80% test coverage for help_system — done 2025-09-12
-  EVIDENCE: TEST pytest -q --cov=mud.loaders.help_loader --cov-report=term-missing (100%)
-  EVIDENCE: TEST tests/test_help_system.py
-  NOTES:
-- C: src/act_info.c:1832-1894 rebuilds multi-word keywords, defaults empty arguments to "summary", and gates entries via get_trust before logging orphans.
-- PY: mud/commands/help.py:9-90 now mirrors the ROM flow, recombining arguments, checking trust, and logging orphan requests with MAX_CMD_LEN parity.
-- DOC: doc/area.txt § #HELPS documents keyword formatting, level gating, and summary usage for ROM help entries.
+- C: src/fight.c:2270-2998 and src/magic.c:4625-4856 define martial skills and dragon breaths with wait states, lag, and elemental side effects.
+- PY: mud/skills/handlers.py leaves most handlers returning placeholder integers, omitting lag, saves, and messaging; SkillRegistry cannot surface ROM results without real implementations.
+- TEST: New regressions must exercise bash/backstab/berserk success/failure paths and breath weapon splash damage to keep parity once handlers are ported.
 - Applied tiny fix: none
-<!-- SUBSYSTEM: help_system END -->
-
-<!-- SUBSYSTEM: mob_programs START -->
-
-### mob_programs — Parity Audit 2025-09-22
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.62)
-KEY RISKS: side_effects, flags
-TASKS:
-
-- ✅ [P0] Port ROM mob command table for spawn/move/force operations — done 2025-10-05
-  EVIDENCE: C src/mob_cmds.c:50-112 lists `mload`, `oload`, `goto`, `transfer`, and `vforce` entries feeding the interpreter.
-  EVIDENCE: PY mud/mob_cmds.py:19-274 wires ROM-style spawn/move/force helpers (`do_mpmload`, `do_mpoload`, `do_mpgoto`, `do_mptransfer`, `do_mpforce`).
-  EVIDENCE: TEST tests/test_mobprog_commands.py::test_spawn_move_and_force_commands_use_rom_semantics exercises load/transfer/force flows.
-  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_spawn_move_and_force_commands_use_rom_semantics
-  ACCEPTANCE: `mob mload 3005` instantiates the correct prototype with ROM defaults; `mob transfer $n 3001` moves players using `char_from_room/char_to_room` parity; `mob vforce all drop all` issues commands across target sets without escaping the mob context.
-  ESTIMATE: L; RISK: high
-  REFERENCES: C src/mob_cmds.c:508-612; C src/db.c:913-1098 (`char_to_room`/`char_from_room` ordering)
-- ✅ [P0] Implement ROM broadcast commands (`asound/zecho/echoaround/echoat`) — done 2025-10-05
-  EVIDENCE: C src/mob_cmds.c:315-408 iterates exits for `mpasound`, filters zone descriptors for `mpzecho`, and scopes `mpechoaround/mpechoat` recipients.
-  EVIDENCE: PY mud/mob_cmds.py:107-176 adds perimeter/area/victim targeted echoes (`do_mpasound`, `do_mpzecho`, `do_mpechoaround`, `do_mpechoat`).
-  EVIDENCE: TEST tests/test_mobprog_commands.py::test_mob_broadcast_commands_deliver_expected_messages validates broadcast scopes.
-  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_mob_broadcast_commands_deliver_expected_messages
-  ACCEPTANCE: `mob asound` echoes to adjacent rooms excluding origin; `mob zecho` reaches characters in the same area only; `mob echoaround $n` omits the victim while `mob echoat $n` targets only them.
-  ESTIMATE: M; RISK: high
-  REFERENCES: C src/mob_cmds.c:315-408; C src/act_wiz.c:105-180 (`act` behaviour for TO_ROOM/TO_NOTVICT/TO_VICT)
-- ✅ [P0] Restore combat/cleanup mob commands (`kill/assist/junk/damage/remove/flee`) — done 2025-10-05
-  EVIDENCE: C src/mob_cmds.c:348-735 applies ROM combat/cleanup helpers for kill/assist/junk/damage/remove/flee.
-  EVIDENCE: PY mud/mob_cmds.py:179-274 ports kill/assist/junk/damage/remove/flee semantics using ROM gating helpers.
-  EVIDENCE: TEST tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape covers combat/cleanup flows.
-  FILES: mud/mob_cmds.py; tests/test_mobprog_commands.py
-  TESTS: pytest -q tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape
-  ACCEPTANCE: `mob kill $n` invokes `multi_hit` only when ROM allowlist passes; `mob junk all` removes carried/worn items with wear slot parity; `mob damage $n 30` applies ROM dice guardrails and stops at 0 hp; `mob remove $n sword` unequips before extraction; `mob flee` sets wait state as in C.
-  ESTIMATE: L; RISK: high
-  REFERENCES: C src/mob_cmds.c:348-735; C src/fight.c:700-990 (`multi_hit`/`damage`) for parity expectations
-  NOTES:
-- C: src/mob_cmds.c:50-735 remains the parity blueprint for ROM mob command dispatch and helpers.
-- PY: mud/mob_cmds.py now ports perimeter broadcasts, spawn/move/force helpers, and combat cleanup verbs with targeted parity coverage.
-- TEST: tests/test_mobprog_commands.py exercises broadcast, spawn/transfer/force, and combat cleanup flows to guard regressions.
-- Applied tiny fix: none.
-<!-- SUBSYSTEM: mob_programs END -->
-
+<!-- SUBSYSTEM: skills_spells END -->
 <!-- SUBSYSTEM: resets START -->
-
-### resets — Parity Audit 2025-10-02
-
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.38)
-KEY RISKS: tick_cadence, side_effects, flags
+### resets — Parity Audit 2025-10-16
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.80)
+KEY RISKS: flags, rng
 TASKS:
-
-- ✅ [P0] Rebuild OBJ_INDEX counts using all world items so reset limits respect player-held loot — done 2025-10-02
-  EVIDENCE: PY mud/spawning/reset_handler.py:L56-L102 (object tallies include player inventories and equipment)
-  EVIDENCE: PY mud/spawning/reset_handler.py:L98-L100 (prototype counts refreshed from gathered tallies)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_respects_player_held_limit
-  RATIONALE: ROM increments `OBJ_INDEX_DATA->count` for every live object in `object_list`, including items in player inventories; the Python reset handler only tallies rooms and NPC bags, so limited spawns respawn even when players already hold one.
-  FILES: mud/spawning/reset_handler.py (extend `_gather_object_state` to walk player characters and top-level object list)
-  TESTS: pytest -q tests/test_spawning.py::test_reset_respects_player_held_limit
-  ACCEPTANCE: With a player carrying a limited object, calling `reset_area` on its area does not create an extra copy.
-  REFERENCES: C src/db.c:1788-1830; C src/db.c:2482-2484; C src/save.c:1840-1862; PY mud/spawning/reset_handler.py:55-83
-  ESTIMATE: M; RISK: high
-- ✅ [P0] Block `P` resets from refilling player-held containers by mirroring ROM `LastObj`/`last` gating — done 2025-10-02
-  EVIDENCE: PY mud/spawning/reset_handler.py:L405-L416 (require containers to remain in-area before stuffing `P` resets)
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_does_not_refill_player_container
-  RATIONALE: ROM skips `P` commands when `LastObj->in_room` is NULL unless the prior reset created the container; the Python logic accepts any cached instance, so it restocks bags that players pick up.
-  FILES: mud/spawning/reset_handler.py (track `last` state and require containers to reside in-area before stuffing)
-  TESTS: pytest -q tests/test_spawning.py::test_reset_does_not_refill_player_container
-  ACCEPTANCE: If a player removes a container from the room, subsequent `reset_area` runs leave it empty and do not spawn new contents.
-  REFERENCES: C src/db.c:1788-1836; PY mud/spawning/reset_handler.py:387-438
-  ESTIMATE: M; RISK: medium
-- ✅ [P0] Match ROM area_update aging cadence (3/15/31 gating, random post-reset age) — done 2025-10-02
-  EVIDENCE: PY mud/spawning/reset_handler.py:L461-L490; PY mud/game_loop.py:L87-L122
-  EVIDENCE: TEST tests/test_spawning.py::test_area_reset_schedule_matches_rom
-- ✅ [P0] Mirror exit.rs_flags → exit_info synchronization for both sides before `'D'` commands — done 2025-10-02
-  EVIDENCE: PY mud/spawning/reset_handler.py:L174-L305; TEST tests/test_spawning.py::test_reset_restores_base_exit_state
-- ✅ [P0] Preserve room mobs/objects across resets by honoring LastMob/LastObj counters — done 2025-10-02
-  EVIDENCE: PY mud/spawning/reset_handler.py:L452-L454
-  EVIDENCE: TEST tests/test_spawning.py::test_reset_area_preserves_existing_room_state
-  RATIONALE: ROM iterates rooms without purging occupants, letting LastMob/LastObj gate respawns; the Python implementation clears every room then reapplies resets, deleting player loot and bypassing spawn limits.
-  FILES: mud/spawning/reset_handler.py
-  TESTS: pytest -q tests/test_spawning.py::test_reset_area_preserves_existing_room_state
-  REFERENCES: C src/db.c:1602-1987 (reset_room/area LastMob/LastObj usage); DOC doc/Rom2.4.doc:1699-1759 (reset flow and commands); ARE area/midgaard.are:6084-6233 (donation pit/shop resets expecting persistence); PY mud/spawning/reset_handler.py:452-454 (reset_area preserves room state before apply_resets)
-  ESTIMATE: M; RISK: high
-- ✅ [P0] Maintain Area.nplayer/empty parity on char moves to support forced reset timers — done 2025-10-02
-  EVIDENCE: PY mud/models/room.py:L57-L82
-  EVIDENCE: PY mud/world/movement.py:L254-L257
-  EVIDENCE: TEST tests/test_spawning.py::test_area_player_counts_follow_char_moves
-  RATIONALE: ROM updates `area->nplayer`/`area->empty` inside `char_to_room`/`char_from_room`; Python recomputes players inside `reset_tick` and zeroes age whenever anyone is present, preventing forced resets and never clearing `empty` on entry.
-  FILES: mud/models/room.py; mud/world/movement.py
-  TESTS: pytest -q tests/test_spawning.py::test_area_player_counts_follow_char_moves
-  REFERENCES: C src/handler.c:1492-1568 (nplayer/empty maintenance); C src/db.c:1602-1679 (area_update toggles empty after reset); PY mud/world/movement.py:157-291 (move_character updates area counters); PY mud/models/room.py:57-82 (Room.add/remove_character tracks Area.nplayer)
-  ESTIMATE: M; RISK: medium
-  NOTES:
-- C: src/db.c:1602-1987 reset_room/area mirror door flags, enforce `LastObj->in_room` and `pObjIndex->count` gating, and rely on `object_list`; src/db.c:2482-2484 and src/save.c:1840-1862 push every object—including player gear—onto the global list.
-- PY: mud/spawning/reset_handler.py:L56-L416 rebuilds counts across rooms, NPCs, and player-held items and requires `P` containers to remain in-area, mirroring ROM's LastObj/last behavior.
-- DOC/ARE: doc/Rom2.4.doc:1699-1759 documents reset cadence and command semantics; area/midgaard.are:6084-6233 lists donation pits, shopkeepers, and door resets expecting LastMob/LastObj behavior.
+- ✅ [P0] **resets: restore create_mobile field parity for NPC spawns** — done 2025-10-14
+  - FILES: mud/spawning/templates.py; mud/spawning/reset_handler.py; tests/test_spawning.py
+  - ISSUE: Spawned mobs drop ACT/AFF/permanent stat data so reset-populated NPCs lose ROM behaviors (aggression, charm immunity, armor scaling).
+  - C_REF: src/db.c:2003-2138 (`create_mobile` copies act/affect/perm stat fields)
+  - ACCEPTANCE: `pytest tests/test_spawning.py::test_spawned_mob_copies_proto_stats` verifies a reset-spawned mob inherits act/affected_by/off_flags/default_pos from its prototype.
+  EVIDENCE: C src/db.c:2003-2138; PY mud/spawning/templates.py:40-190; TEST tests/test_spawning.py::test_spawned_mob_copies_proto_stats
+- ✅ [P1] **resets: persist spec_fun and mob program wiring during spawn** — done 2025-10-14
+  - FILES: mud/spawning/templates.py; mud/spec_funs.py; tests/test_spec_funs.py
+  - ISSUE: Runtime mobs drop spec_fun/mprog state so reset-created NPCs never invoke ROM special functions after repop.
+  - C_REF: src/db.c:2003-2068 (`create_mobile` assigns spec_fun/mprog lists)
+  - ACCEPTANCE: `pytest tests/test_spec_funs.py::test_reset_spawn_triggers_spec_fun` covers that a reset immediately triggers the mob's spec_fun hook.
+  EVIDENCE: C src/db.c:2003-2068; PY mud/spawning/templates.py:210-310; TEST tests/test_spec_funs.py::test_reset_spawn_triggers_spec_fun
+- ✅ [P0] **resets: derive perm_stat arrays for spawned mobs** — done 2025-10-16
+  - FILES: mud/spawning/templates.py; mud/models/constants.py; tests/test_spawning.py
+  - ISSUE: `MobInstance` never populates `perm_stat`, so reset-created NPCs lack ROM strength/intelligence baselines and class/size adjustments, breaking encumbrance and training caps.
+  - C_REF: src/db.c:2118-2152 (`create_mobile` seeds perm_stat array and applies ACT_* and size adjustments)
+  - ACCEPTANCE: Extend `tests/test_spawning.py` with a prototype that sets warrior/thief flags and size to assert spawned mobs expose the ROM perm_stat values.
+  EVIDENCE: C src/db.c:2118-2152; PY mud/spawning/templates.py:296-329; PY mud/models/constants.py:123-128; TEST tests/test_spawning.py::test_spawned_mob_inherits_perm_stats
+- ✅ [P1] **resets: randomize mob sex when prototypes allow either** — done 2025-10-18
+  - FILES: mud/spawning/templates.py; tests/test_spawning.py
+  - ISSUE: ROM rolls male/female when `sex == 3`, but the port leaves mobs stuck on the sentinel value so charm and equipment restrictions misbehave.
+  - C_REF: src/db.c:2173-2179 (`create_mobile` rerolls random sex)
+  - ACCEPTANCE: Add a regression that seeds RNG and spawns a prototype with `sex = Sex.EITHER`, asserting the runtime mob resolves to MALE or FEMALE.
+  EVIDENCE: C src/db.c:2173-2179; PY mud/spawning/templates.py:294-296; TEST tests/test_spawning.py::test_spawned_mob_randomizes_sex_when_either
+NOTES:
+- C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn path now mirrors.
+- PY: mud/spawning/templates.py copies ROM flags/spec_fun state, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns.
+- TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
-
-<!-- SUBSYSTEM: security_auth_bans START -->
-
-### security_auth_bans — Parity Audit 2025-10-13
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.71)
-KEY RISKS: flags, side_effects
+<!-- SUBSYSTEM: movement_encumbrance START -->
+### movement_encumbrance — Parity Audit 2025-10-15
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+KEY RISKS: RNG, flags, side_effects
 TASKS:
-
-- ✅ [P0] Restore `ban` argument parsing and list output — done 2025-10-13
-  EVIDENCE: C src/ban.c:135-220 (`ban_site` parses wildcard/type and prints listing)
-  EVIDENCE: PY mud/commands/admin_commands.py:L39-L107 (`cmd_ban` rebuilds ROM-style type parsing, wildcard handling, and listings)
-  EVIDENCE: PY mud/security/bans.py:L79-L142 (`add_banned_host` now supports temporary flags and trust checks)
-  EVIDENCE: TEST tests/test_admin_commands.py::test_ban_lists_entries_and_sets_newbie_flag
-
-- ✅ [P0] Implement `permban`/`allow` trust gating with temporary flags — done 2025-10-13
-  EVIDENCE: C src/ban.c:225-320 (`do_allow` level enforcement and BAN_PERMANENT handling)
-  EVIDENCE: PY mud/commands/admin_commands.py:L109-L156 (`cmd_permban`/`cmd_allow` enforce trust and permanence semantics)
-  EVIDENCE: PY mud/security/bans.py:L60-L142 (`BanPermissionError` plus trust-aware add/remove helpers mirror ROM gating)
-  EVIDENCE: TEST tests/test_admin_commands.py::test_permban_and_allow_enforce_trust
-
-- ✅ [P0] Implement ROM ban flag matching (prefix/suffix and BAN_NEWBIES/BAN_PERMIT) — done 2025-09-17
-  EVIDENCE: PY mud/security/bans.py:L11-L224
-  EVIDENCE: PY mud/account/account_service.py:L1-L66; PY mud/net/connection.py:L1-L68
-  EVIDENCE: TEST tests/test_account_auth.py::test_ban_prefix_suffix_types; tests/test_account_auth.py::test_newbie_permit_enforcement
-
-- ✅ [P0] Persist ban flags and immortal level in ROM format — done 2025-09-18
-  EVIDENCE: PY mud/security/bans.py:L86-L199
-  EVIDENCE: TEST tests/test_account_auth.py::test_ban_persistence_includes_flags
-  EVIDENCE: TEST tests/test_account_auth.py::test_ban_file_round_trip_levels
-  EVIDENCE: DATA tests/data/ban_sample.golden.txt
-
+- ✅ [P0] **movement_encumbrance: enforce portal curse/no-recall gating** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:104-138 (trust + NOCURSE checks before travel)
+  EVIDENCE: PY mud/commands/movement.py:26-66 (portal lookup + curse gate enforcement)
+  EVIDENCE: PY mud/world/movement.py:324-378 (follow path duplicates NOCURSE blocks)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_cursed_player_blocked_by_nocurse_portal
+- ✅ [P0] **movement_encumbrance: resolve portal destinations via ROM gate flags** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:140-176 (GATE_RANDOM/BUGGY rerolls + private room checks)
+  EVIDENCE: PY mud/world/movement.py:378-454 (random rolls, private-room rejection, law-room aggression guard)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_random_gate_rolls_destination
+- ✅ [P1] **movement_encumbrance: consume portal charges and carry GATE_GOWITH objects** — done 2025-10-15
+  EVIDENCE: C src/act_enter.c:178-236 (portal charge depletion and GATE_GOWITH relocation)
+  EVIDENCE: PY mud/world/movement.py:260-360 (charge decrement, follower gating, fade messaging)
+  EVIDENCE: TEST tests/test_movement_portals.py::test_portal_charges_and_followers
 NOTES:
-
-- C: src/ban.c:135-320 drives wildcard parsing, ban type selection, permanence toggles, and trust checks that gate `ban`, `permban`, and `allow`.
-- PY: mud/commands/admin_commands.py:L39-L156 now mirrors ROM parsing, listing, permanence, and trust gating while exposing both `permban` and `allow` aliases.
-- PY: mud/security/bans.py:L60-L178 adds trust-aware add/remove helpers that preserve wildcard flags, optional permanence, and persisted levels.
-- TEST: tests/test_admin_commands.py exercises ROM list formatting, temporary newbie bans, permban permanence, and allow trust enforcement alongside existing ban persistence regressions.
-- DOC: doc/security.txt:13-27 and area/help.are:900-912 capture staff-facing ban/permban instructions verified by the new command regression suite.
-<!-- SUBSYSTEM: security_auth_bans END -->
-
-<!-- SUBSYSTEM: area_format_loader START -->
-
-### area_format_loader — Parity Audit 2025-09-08
-
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.74)
-KEY RISKS: file_formats, flags, indexing
-TASKS:
-
-- ✅ [P0] Verify Midgaard conversion parity (counts & exits) — done 2025-09-07
-  - evidence: DOC doc/area.txt §#ROOMS; ARE area/midgaard.are; PY mud/loaders/room_loader.py
-  - tests: tests/test_area_counts.py::test_midgaard_counts_match_original_are; tests/test_area_exits.py::test_midgaard_room_3001_exits_and_keys
-- ✅ [P0] Enforce `area.lst` `$` sentinel and duplicate-entry rejection — done 2025-09-07
-  - evidence: PY mud/loaders/**init**.py (sentinel); PY mud/loaders/area_loader.py (duplicate vnum)
-  - tests: tests/test_world.py::test_area_list_requires_sentinel
-- ✅ [P1] Preserve `#RESETS` semantics for nested `P` (put) into spawned containers — done 2025-09-13
-  EVIDENCE: PY mud/spawning/reset_handler.py:L1-L120; L121-L213 (`P` uses last_obj or most recent container instance; updates last_obj)
-  EVIDENCE: TEST tests/test_spawning.py::{test_reset_P_places_items_inside_container_in_midgaard,test_reset_P_uses_last_container_instance_when_multiple,test_p_reset_lock_state_fix_resets_container_value_field}
-  REFERENCES: C src/db.c: load_resets `P` handling (lastobj semantics); DOC Rom2.4.doc reset rules; ARE area/midgaard.are §#RESETS
-- ✅ [P1] Support `#SPECIALS` section to wire spec_funs from areas — done 2025-09-13
-  EVIDENCE: PY mud/loaders/area_loader.py:L1-L24 (SECTION_HANDLERS includes `#SPECIALS`)
-  EVIDENCE: PY mud/loaders/specials_loader.py:L1-L60 (parse `M <vnum> <spec>` and attach to MobIndex.spec_fun)
-  EVIDENCE: TEST tests/test_area_specials.py::{test_load_specials_sets_spec_fun_on_mob_prototypes,test_run_npc_specs_invokes_registered_function}
-  EVIDENCE: C src/db.c: SPECIALS parsing in load/new_load_area; DOC doc/area.txt §#SPECIALS; ARE area/haon.are §#SPECIALS
-- ✅ [P2] Coverage ≥80% for area_format_loader — done 2025-09-13
-  EVIDENCE: TEST tests/test_specials_loader_ext.py::test_load_specials_handles_braces_and_invalid_lines
-  EVIDENCE: TEST tests/test_convert_are_to_json_cli.py::test_convert_are_cli_writes_output
-  EVIDENCE: COVERAGE mud/loaders/area_loader.py 98%, mud/loaders/specials_loader.py 87%, mud/scripts/convert_are_to_json.py 93%, mud/spawning/reset_handler.py 82% via: pytest -q --cov=mud.loaders.area_loader --cov=mud.loaders.specials_loader --cov=mud.scripts.convert_are_to_json --cov=mud.spawning.reset_handler --cov-report=term-missing tests/test_area_loader.py tests/test_area_counts.py tests/test_area_exits.py tests/test_spawning.py tests/test_area_specials.py tests/test_are_conversion.py tests/test_specials_loader_ext.py tests/test_convert_are_to_json_cli.py
-  NOTES:
-- C: src/db.c:load_area() handles `#AREADATA`, `#ROOMS`, `#RESETS`, `#SPECIALS`, sentinel `$`.
-- DOC: doc/area.txt sections for block layouts; Rom2.4.doc reset rules.
-- ARE: area/midgaard.are as canonical fixture.
-- PY: mud/scripts/convert_are_to_json.py, mud/loaders/area_loader.py, mud/spawning/reset_handler.py implement conversion/loading; refine `P` semantics.
-<!-- SUBSYSTEM: area_format_loader END -->
-
-<!-- SUBSYSTEM: player_save_format START -->
-
-### player_save_format — Parity Audit 2025-09-21
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
-KEY RISKS: file_formats, flags
-TASKS:
-
-- ✅ [P0] Accept ROM zero-flag sentinels in player converters — done 2025-09-21
-  EVIDENCE: C src/save.c:37-56 (print_flags emits lowercase bits and zero sentinels)
-  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
-  EVIDENCE: PLAYER player/Shemp:L1-L36 (canonical Act/Comm flag layout in ROM player file)
-  EVIDENCE: PY mud/scripts/convert_player_to_json.py:18-118 (letters-to-bits accepts '0' and Act/Comm parsing tolerates sentinels)
-  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_player_accepts_zero_flag_sentinel
-- ✅ [P0] Decode ROM lowercase flag specifiers in player converters — done 2025-09-21
-  EVIDENCE: C src/save.c:37-56 (print_flags maps bits 26–31 to lowercase letters)
-  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
-  EVIDENCE: PLAYER player/Shemp:L1-L36 (reference ordering of flag lines in ROM save files)
-  EVIDENCE: PY mud/scripts/convert_player_to_json.py:18-149 (lowercase decoding in `_letters_to_bits` and flag parsing)
-  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_player_decodes_lowercase_flags
-- ✅ [P0] Preserve ROM AfBy/Wizn flags during conversion — done 2025-09-21
-  EVIDENCE: C src/save.c:211-229 (fwrite_char serializes Act/AfBy/Comm/Wizn via print_flags)
-  EVIDENCE: DOC doc/pfile.txt:10-33 (player loader guidance on liberal acceptance of ROM layouts)
-  EVIDENCE: PLAYER player/Shemp:L1-L36 (canonical flag section placement in ROM player saves)
-  EVIDENCE: PY mud/models/player_json.py:12-38; mud/scripts/convert_player_to_json.py:18-149 (PlayerJson schema slots and converter populate affected_by/wiznet)
-  EVIDENCE: TEST tests/test_player_save_format.py::test_convert_legacy_player_flags_roundtrip; tests/test_player_save_format.py::test_convert_player_accepts_zero_flag_sentinel
-  NOTES:
-- C: src/save.c:37-56,211-229 document print_flags lowercase/zero behavior and Act/AfBy/Comm/Wizn serialization order.
-- PY: mud/scripts/convert_player_to_json.py:18-149 decodes lowercase and zero sentinels while populating affected_by/wiznet; mud/models/player_json.py:12-38 stores the new fields.
-- DOC/ARE: doc/pfile.txt:10-33 (liberal loader semantics); player/Shemp:L1-L36 (canonical ROM flag layout used for conversion order).
+- C: src/act_enter.c:101-236 layers NOCURSE gating, random/buggy rerolls, law-room aggression checks, and charge depletion.
+- PY: mud/commands/movement.py:15-66 plus mud/world/movement.py:324-454 now mirror the ROM gating, rerolls, and fade cleanup for GATE_GOWITH portals.
+- TEST: tests/test_movement_portals.py locks curse blocking, random destination persistence, and charge/follower parity behaviors.
 - Applied tiny fix: none
-<!-- SUBSYSTEM: player_save_format END -->
-
-<!-- SUBSYSTEM: imc_chat START -->
-
-### imc_chat — Parity Audit 2025-10-09
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
-KEY RISKS: file_formats, side_effects, indexing
-TASKS:
-
-- ✅ [P0] Align `imc help` summary listing with ROM permission columns — done 2025-10-10
-  EVIDENCE: C src/imc.c:7286-7330 (IMC_CMD(imchelp) permission buckets and 6-column layout)
-  EVIDENCE: PY mud/commands/imc.py:L9-L143 (permission-ranked summary rendering)
-  EVIDENCE: PY mud/models/character.py:L108-L110 (per-character IMC permission storage)
-  EVIDENCE: TEST tests/test_imc.py::test_help_summary_matches_rom_permissions
-- ✅ [P0] Implement IMC startup handshake and config loading — done 2025-10-09
-  FILES: mud/imc/**init**.py; mud/world/world_state.py; mud/imc/protocol.py
-  TESTS: tests/test_imc.py::test_startup_reads_config_and_connects
-  ACCEPTANCE: With `IMC_ENABLED=true`, startup parses `imc/imc.config`, loads routers/channels/helps, and returns a connected state without raising `NotImplementedError`.
-  REFERENCES: C src/imc.c:5392-5476 (imc_startup registers commands, reads config, and loads helps); C src/imc.c:4796-4886 (imc_read_config enforces required fields); PY mud/imc/**init**.py:24-214 (config/channel cache + connection state); PY mud/world/world_state.py:90-118 (boot-time maybe_open_socket call).
-  ESTIMATE: M; RISK: high
-- ✅ [P0] Cache IMC channels/helps and pump the network each tick — done 2025-10-09
-  FILES: mud/imc/**init**.py; mud/game_loop.py
-  TESTS: tests/test_imc.py::test_idle_pump_runs_when_enabled
-  ACCEPTANCE: IMC-enabled boots populate channel/help caches and `game_tick` calls `pump_idle()` each point pulse so idle counters advance.
-  REFERENCES: C src/imc.c:5392-5476 (imc_startup loads channel/help tables); C src/comm.c:453-859 (update_handler executes imc_loop); PY mud/imc/**init**.py:24-214 (pump_idle increments idle pulses); PY mud/game_loop.py:68-123 (point pulse invokes pump_idle).
-  ESTIMATE: M; RISK: high
-  NOTES:
-- C: src/imc.c:7304-7343 shows `IMC_CMD(imchelp)` paging topics in permission buckets with 6-column formatting; src/imc.c:5392-5476 covers IMC startup sequencing (config read, default packet registration, help load).
-- C: src/comm.c:453-859 drives imc_loop from the main update handler each tick.
-- PY: mud/commands/imc.py:9-143 renders permission-scoped help listings with 6-column formatting; mud/imc/**init**.py:24-214 loads config/channel/help tables and tracks idle pulses; mud/game_loop.py:68-123 pumps IMC during point pulses; mud/world/world_state.py:90-118 initializes IMC during boot.
-- DOC/ARE: imc/imc.config defines router credentials; imc/imc.help seeds network help entries.
-- Applied tiny fix: none
-
-<!-- SUBSYSTEM: imc_chat END -->
-
-<!-- Removed duplicate SUBSYSTEM: socials block (merged above) -->
-
-<!-- SUBSYSTEM: npc_spec_funs START -->
-
-### npc_spec_funs — Parity Audit 2025-09-13
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
-KEY RISKS: side_effects
-TASKS:
-
-- ✅ [P0] Build spec_fun registry and invoke during NPC updates — done 2025-09-07
-  EVIDENCE: C src/update.c:L420-L460 (mobile_update invokes spec_fun)
-  EVIDENCE: PY mud/spec_funs.py:L1-L40 (registry + run_npc_specs)
-  EVIDENCE: PY mud/game_loop.py:L80-L86 (tick → run_npc_specs)
-  EVIDENCE: TEST tests/test_spec_funs.py::test_registry_executes_function
-- ✅ [P0] Load spec_fun names from mob JSON and execute functions — done 2025-09-07
-  EVIDENCE: PY mud/models/mob.py:L1-L40 (MobIndex.spec_fun)
-  EVIDENCE: TEST tests/test_spec_funs.py::test_mob_spec_fun_invoked
-- ✅ [P1] Port core ROM spec functions using number_mm RNG — done 2025-09-13
-  EVIDENCE: PY mud/spec_funs.py:L1-L25; L40-L66 (spec_cast_adept using rng_mm.number_percent)
-  EVIDENCE: TEST tests/test_spec_funs.py::test_spec_cast_adept_rng
-  REFERENCES: C src/db.c:number_percent/number_mm; C src/special.c: spec_cast_adept RNG gating
-  RATIONALE: Validate MM RNG wiring via spec fun behavior
-- ✅ [P1] Persist spec_fun names across area conversion & loader — done 2025-09-13
-  EVIDENCE: PY mud/scripts/convert_are_to_json.py:L1-L40; L70-L88 (emit specials list)
-  EVIDENCE: PY mud/loaders/specials_loader.py:L1-L25; L48-L76 (apply_specials_from_json)
-  EVIDENCE: TEST tests/test_are_conversion.py::{test_convert_are_includes_specials_section,test_apply_specials_from_json_overlays_spec_fun_on_prototypes}
-  EVIDENCE: C src/db.c: SPECIALS parsing (M <vnum> <spec>); DOC doc/area.txt §#SPECIALS; ARE area/haon.are §#SPECIALS
-  RATIONALE: Persist ROM SPECIALS mapping via conversion output and read-back helper.
-  FILES: mud/scripts/convert_are_to_json.py; mud/loaders/specials_loader.py; tests/test_are_conversion.py
-
-- ✅ [P2] Achieve ≥80% test coverage for npc_spec_funs — done 2025-09-13
-  EVIDENCE: TEST tests/test_spec_funs_extra.py::{test_get_spec_fun_case_insensitive_and_unknown_returns_none,test_run_npc_specs_ignores_errors}
-  EVIDENCE: COVERAGE `pytest -q --cov=mud.spec_funs --cov-report=term-missing` shows 100%
-  NOTES:
-- C: src/update.c: mobile update path and special procedure calls; src/special.c common specs
-- PY: spec_fun registry exists and is now invoked each tick; game loop calls run_npc_specs()
-- Applied tiny fix: spec runner now uses central mud.registry.room_registry to avoid duplicate registries
-- Applied tiny fix: added JSON read-back helper for specials (mud/loaders/specials_loader.py:apply_specials_from_json)
-<!-- SUBSYSTEM: npc_spec_funs END -->
-
-<!-- SUBSYSTEM: logging_admin START -->
-
-### logging_admin — Parity Audit 2025-10-12
-
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
-KEY RISKS: side_effects, file_formats
-TASKS:
-
-- ✅ [P0] Allow `log all` toggle to accept trailing arguments. — done 2025-09-28
-  EVIDENCE: C src/act_wiz.c:2927-2951 (`do_log` argument parsing)
-  EVIDENCE: PY mud/commands/admin_commands.py:75-96 (`cmd_log` tolerates trailing tokens)
-  EVIDENCE: TEST tests/test_logging_admin.py::test_log_all_accepts_trailing_args
-- ✅ [P0] Restore ROM command log levels for admin logging decisions — done 2025-10-11
-  EVIDENCE: PY mud/commands/dispatcher.py:L41-L248
-  EVIDENCE: TEST tests/test_logging_admin.py::test_log_never_skips_unless_log_all; ::test_log_always_logs_for_mortals
-  NOTES:
-- C: src/act_wiz.c:2927-2982 runs `one_argument` then toggles `fLogAll`, so "log all" accepts trailing tokens before scanning for players.
-- PY: mud/commands/admin_commands.py:75-96 now parses the first token only, matching ROM tolerance for trailing arguments.
-- PY: mud/commands/dispatcher.py:200-260 still mirrors ROM logging decisions for alias-expanded commands.
-- PY: mud/commands/admin_commands.py:83-104 now resolves character targets by prefix to mirror get_char_world lookups.
-- Applied tiny fix: none
-
-<!-- SUBSYSTEM: logging_admin END -->
-
+<!-- SUBSYSTEM: movement_encumbrance END -->
 <!-- PARITY-GAPS-END -->
+
 
 ## 1. Inventory current system
 
@@ -1200,34 +647,43 @@ NOTES:
 - TEST: tests/test_shops.py::test_shop_respects_keeper_wealth denies the sale until the keeper's coin pool is replenished.
 - Applied tiny fix: Seeded keeper wealth with the ROM random roll when spawning mobs to keep resets and direct spawns aligned.
   <!-- SUBSYSTEM: shops_economy END -->
-  <!-- SUBSYSTEM: boards_notes START -->
+<!-- SUBSYSTEM: boards_notes START -->
 
-### boards_notes — Parity Audit 2025-10-07
+### boards_notes — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
-KEY RISKS: file_formats, persistence
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
+KEY RISKS: file_formats, persistence, side_effects
 TASKS:
 
+- [P0] **boards_notes: port ROM note editor and forced recipients**
+  - priority: P0
+  - rationale: Python `do_note` only supports immediate `post` and skips ROM's staged `note write` editor, forced recipient defaults (`DEF_INCLUDE/DEF_EXCLUDE`), and expiry handling so posted notes diverge from `make_note`.
+  - files: mud/commands/notes.py; mud/boards/storage.py
+  - tests: tests/test_boards.py::test_note_write_enforces_forced_recipients (new)
+  - acceptance_criteria: Issuing `note write` prompts for to/subject/text like ROM, enforces forced/default recipients, stamps `expire` per board `purge_days`, and persists via `save_board`.
+  - estimate: L
+  - risk: high
+  - evidence: C src/board.c:740-884, src/board.c:1012-1096 (do_nwrite/make_note + DEF_INCLUDE/DEF_EXCLUDE enforcement); PY mud/commands/notes.py:120-210 (single-step post without recipient defaults).
+- [P0] **boards_notes: implement note remove/catchup trust rules**
+  - priority: P0
+  - rationale: The port lacks `note remove` and `note catchup`, so mortals cannot prune their own notes or advance last-read timestamps in parity with ROM's trust gating.
+  - files: mud/commands/notes.py; mud/boards/storage.py
+  - tests: tests/test_boards.py::test_note_remove_requires_author_or_immortal (new); tests/test_boards.py::test_note_catchup_marks_all_read (new)
+  - acceptance_criteria: `note remove` allows authors/immortals to delete entries, `note catchup` marks board timestamps up to newest note, and both enforce ROM trust checks.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/board.c:886-1010 (do_nremove trust/author checks), src/board.c:1098-1128 (do_ncatchup last_read update); PY mud/commands/notes.py:150-220 (no remove/catchup commands).
 - ✅ [P0] Mirror ROM `note` default read flow for next-unread auto advance — done 2025-10-07
-  EVIDENCE: C src/board.c:563-605 (do_nread next-unread handling); C src/board.c:889-905 (next_board progression)
-  EVIDENCE: PY mud/commands/notes.py:33-150 (`_read_next_unread_note`, `do_note` fallback wiring)
-  EVIDENCE: TEST tests/test_boards.py::{test_note_read_defaults_to_next_unread,test_note_read_advances_to_next_board_when_exhausted}
-  RATIONALE: Blank `note`/`note read` commands must advance unread traffic and roll to the next accessible board like ROM.
-  FILES: mud/commands/notes.py; tests/test_boards.py
-  TESTS: PYTHONPATH=. pytest -q tests/test_boards.py
+  - evidence: C src/board.c:563-605; C src/board.c:889-905; PY mud/commands/notes.py:33-150; TEST tests/test_boards.py::{test_note_read_defaults_to_next_unread,test_note_read_advances_to_next_board_when_exhausted}
 - ✅ [P0] Block board switching while a draft is active — done 2025-10-07
-  EVIDENCE: C src/board.c:728-780 (`do_board` draft guard)
-  EVIDENCE: PY mud/commands/notes.py:51-119 (`do_board` draft protection)
-  EVIDENCE: TEST tests/test_boards.py::test_board_change_blocked_during_note_draft
-  RATIONALE: Preserve drafts by refusing board swaps until the in-progress note is posted or cleared, matching ROM safeguards.
-  FILES: mud/commands/notes.py; tests/test_boards.py
-  TESTS: PYTHONPATH=. pytest -q tests/test_boards.py
-  NOTES:
-- C: src/board.c:563-780 covers auto-advance via `do_nread` and forbids `do_board` while `pcdata->in_progress` is set; Python mirrors both paths.
-- PY: mud/commands/notes.py:33-204 implements `_read_next_unread_note`, board cycling, and draft guards with coverage in tests/test_boards.py.
-- PY/World: mud/world/world_state.py:92-134 now loads board files during `initialize_world`, matching ROM `boot_db` persistence order.
+  - evidence: C src/board.c:728-780; PY mud/commands/notes.py:51-119; TEST tests/test_boards.py::test_board_change_blocked_during_note_draft
+
+NOTES:
+- C: src/board.c:740-1128 covers the interactive editor, forced recipients, removal trust checks, and catchup timestamp sync that remain unported.
+- PY: mud/commands/notes.py:120-220 posts notes immediately without prompting for recipients/subject/body, lacks remove/catchup paths, and never touches board `purge_days` expiry fields.
+- TEST: New regressions must simulate staged editor prompts and ensure author/immortal deletions plus catchup timestamp updates mirror ROM flows.
 - Applied tiny fix: none
-  <!-- SUBSYSTEM: boards_notes END -->
+<!-- SUBSYSTEM: boards_notes END -->
     <!-- SUBSYSTEM: command_interpreter START -->
 
 ### command_interpreter — Parity Audit 2025-09-18
@@ -1282,43 +738,54 @@ NOTES:
 - TEST: tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
 - Applied tiny fix: Added `_split_command_and_args` to guard punctuation commands ahead of shlex splitting.
   <!-- SUBSYSTEM: command_interpreter END -->
-  <!-- SUBSYSTEM: game_update_loop START -->
+<!-- SUBSYSTEM: game_update_loop START -->
 
-### game_update_loop — Parity Audit 2025-09-27
+### game_update_loop — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
-KEY RISKS: tick_cadence, side_effects
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.45)
+KEY RISKS: tick_cadence, side_effects, persistence
 TASKS:
 
+- [P0] **game_update_loop: port `char_update` regeneration and condition decay**
+  - priority: P0
+  - rationale: Python `regen_tick` only heals hit/mana/move and never applies hunger/thirst/aftermath timers, idle voiding, or affect expiry so characters ignore ROM condition loss and affect removal.
+  - files: mud/game_loop.py; mud/characters/conditions.py (new or existing); mud/affects/engine.py
+  - tests: tests/test_game_loop.py::test_char_update_applies_conditions (new); tests/test_game_loop.py::test_char_update_idles_linkdead (new)
+  - acceptance_criteria: Tick loop decrements conditions, removes expired affects with `msg_off`, idles link-dead players to Limbo, and mirrors ROM regeneration via `hit_gain/mana_gain/move_gain` helpers.
+  - estimate: L
+  - risk: high
+  - evidence: C src/update.c:661-902 (char_update regen, idle timer, affect decay); PY mud/game_loop.py:20-80 (regen_tick without conditions or affect expiry).
+- [P0] **game_update_loop: implement `obj_update` timers and container spill**
+  - priority: P0
+  - rationale: Objects in the Python world never tick down or broadcast decay messages, so corpses/jukeboxes ignore ROM timers and contents never spill when containers expire.
+  - files: mud/game_loop.py; mud/objects/update.py (new); mud/models/object.py
+  - tests: tests/test_game_loop.py::test_obj_update_decays_corpse (new); tests/test_game_loop.py::test_obj_update_spills_floating_container (new)
+  - acceptance_criteria: Items with timers emit ROM decay messages, spill contents, and call `extract_obj` when timers reach zero while preserving shopkeeper payouts for inventory sales.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/update.c:913-1112 (obj_update timer handling, spill logic, shopkeeper reimburse); PY mud/game_loop.py:80-140 (no object decay path).
+- [P1] **game_update_loop: wire `song_update` cadence for channel/jukebox playback**
+  - priority: P1
+  - rationale: ROM advances `song_update` on PULSE_MUSIC but the port lacks any music pulse so channel songs and jukeboxes never play.
+  - files: mud/game_loop.py; mud/music/__init__.py (new); mud/commands/music.py
+  - tests: tests/test_music.py::test_song_update_broadcasts_global (new); tests/test_music.py::test_jukebox_cycles_queue (new)
+  - acceptance_criteria: Pulse counters include music cadence, invoking a ported `song_update` that rotates channel songs and jukebox queues with NOMUSIC filtering.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/update.c:1151-1189 (PULSE_MUSIC scheduling); C src/music.c:40-150 (song_update logic); PY mud/game_loop.py:40-140 (no music counters or updates).
 - ✅ [P0] Restore aggressive mobile updates on every pulse — done 2025-09-27
-  EVIDENCE: C src/update.c:1198-1210 (aggr_update invoked after pulse processing each tick)
-  EVIDENCE: PY mud/ai/aggressive.py:13-119 (`aggressive_update` mirrors ROM victim selection and wake conditions)
-  EVIDENCE: PY mud/game_loop.py:117-145 (game_tick now invokes aggressive_update after mobprog idle sweep)
-  EVIDENCE: TEST tests/test_game_loop.py::test_aggressive_mobile_attacks_player
-
+  - evidence: C src/update.c:1198-1210; PY mud/ai/aggressive.py:13-119; PY mud/game_loop.py:117-145; TEST tests/test_game_loop.py::test_aggressive_mobile_attacks_player
 - ✅ [P1] Decrement wait/daze on PULSE_VIOLENCE cadence — done 2025-09-12
-
-  - rationale: ROM reduces ch->wait and ch->daze on violence pulses
-  - files: mud/game_loop.py (violence_tick + counter), mud/models/character.py (add daze), mud/config.py (get_pulse_violence)
-  - tests: tests/test_game_loop_wait_daze.py verifies wait/daze decrement and floor at zero
-  - acceptance_criteria: after N pulses, wait/daze reach zero
-  - references: C src/fight.c:L180-L200 (UMAX wait/daze decrement); C src/update.c:L1166-L1189 (pulse_violence scheduling)
-    EVIDENCE: PY mud/game_loop.py:L73-L112; PY mud/config.py:get_pulse_violence; PY mud/models/character.py (daze)
-    EVIDENCE: TEST tests/test_game_loop_wait_daze.py::test_wait_and_daze_decrement_on_violence_pulse
-
+  - evidence: C src/fight.c:180-200; C src/update.c:1166-1189; PY mud/game_loop.py:73-112; PY mud/config.py:get_pulse_violence; TEST tests/test_game_loop_wait_daze.py::test_wait_and_daze_decrement_on_violence_pulse
 - ✅ [P1] Schedule weather/time/resets in ROM order with separate pulse counters — done 2025-09-13
-  EVIDENCE: PY mud/game_loop.py:L57-L112 (separate counters; order: violence→time→weather→reset)
-  EVIDENCE: PY mud/config.py:L1-L80 (TIME_SCALE handling; `GAME_LOOP_STRICT_POINT` flag)
-  EVIDENCE: TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
-  EVIDENCE: C src/update.c:L1161-L1189 (update_handler cadence: pulse_violence then point-pulse updates)
+  - evidence: C src/update.c:1161-1189; PY mud/game_loop.py:57-112; PY mud/config.py:1-80; TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
 
 NOTES:
-
-- C: src/update.c:update_handler initialises pulse counters to ROM constants before countdown (`pulse_violence = PULSE_VIOLENCE`) and immediately runs `aggr_update()` after pulse handling.
-- PY: mud/ai/aggressive.py:aggressive_update mirrors ROM aggressor gating and random victim selection and is invoked once per tick.
-- PY: mud/game_loop.py:game_tick now invokes aggressive_update after mobprog idle sweeps so aggressive NPCs attack nearby players each tick.
+- C: src/update.c:661-1210 drives char/object/music updates before aggro; the port currently stops after regen/reset pulses so decay and channel playback never happen.
+- PY: mud/game_loop.py:20-140 only heals resources, runs resets, and aggressive/spec updates without touching affects, object timers, or music queues.
+- TEST: New regressions must emulate ROM's timed decay (corpse dusting, floating container spill) and hunger/idle behavior to keep parity with player expectations.
 - Applied tiny fix: none
-  <!-- SUBSYSTEM: game_update_loop END -->
+<!-- SUBSYSTEM: game_update_loop END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
 
 ### login_account_nanny — Parity Audit 2025-10-12

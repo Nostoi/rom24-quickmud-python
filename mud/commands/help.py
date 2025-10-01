@@ -10,6 +10,8 @@ from mud.models.help import HelpEntry, help_registry
 
 _logger = logging.getLogger(__name__)
 
+ROM_HELP_SEPARATOR = "\n============================================================\n\n"
+
 
 def _get_trust(ch: Character) -> int:
     return ch.trust if ch.trust > 0 else ch.level
@@ -116,19 +118,50 @@ def do_help(ch: Character, args: str) -> str:
     if not topic:
         topic = "summary"
 
-    # Direct lookup first for the common path.
-    entry = help_registry.get(topic.lower())
+    topic_lower = topic.lower()
+    trust = _get_trust(ch)
+
+    entry = help_registry.get(topic_lower)
     blocked_entry = None
+    matches: list[HelpEntry] = []
+    seen_entries: set[int] = set()
+
+    def _add_entry(candidate: HelpEntry) -> None:
+        key = id(candidate)
+        if key in seen_entries:
+            return
+        seen_entries.add(key)
+        matches.append(candidate)
+
     if entry:
-        if _visible_level(entry) <= _get_trust(ch):
-            return entry.text
-        blocked_entry = entry
+        if _visible_level(entry) <= trust:
+            _add_entry(entry)
+        else:
+            blocked_entry = entry
 
     for candidate in _iter_unique_entries(help_registry.values()):
-        if _visible_level(candidate) > _get_trust(ch):
+        if candidate is entry:
             continue
-        if _is_keyword_match(topic, candidate):
-            return candidate.text
+        if not _is_keyword_match(topic, candidate):
+            continue
+        if _visible_level(candidate) > trust:
+            if blocked_entry is None:
+                blocked_entry = candidate
+            continue
+        _add_entry(candidate)
+
+    if matches:
+        chunks: list[str] = []
+        for candidate in matches:
+            sections: list[str] = []
+            if candidate.level >= 0 and topic_lower != "imotd":
+                sections.append(" ".join(candidate.keywords))
+            text = candidate.text
+            if text.startswith("."):
+                text = text[1:]
+            sections.append(text)
+            chunks.append("\n".join(sections))
+        return ROM_HELP_SEPARATOR.join(chunks)
 
     if blocked_entry is None:
         command_help = _generate_command_help(topic)

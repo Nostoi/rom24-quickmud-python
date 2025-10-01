@@ -1,11 +1,13 @@
-from mud.models.constants import ItemType, Sector
+from mud.models.constants import AffectFlag, ItemType, Sector
 from mud.registry import room_registry
+from mud.time import Sunlight, time_info
 from mud.world import create_test_character, initialize_world
 from mud.world import move_character as move
 
 
 def setup_world_at(vnum_from: int, vnum_to: int) -> tuple:
     initialize_world("area/area.lst")
+    time_info.sunlight = Sunlight.LIGHT
     ch = create_test_character("Walker", vnum_from)
     # Ensure a simple north exit exists in test data
     room_from = room_registry[vnum_from]
@@ -59,3 +61,20 @@ def test_boat_allows_water_noswim(object_factory):
     assert ch.room is room_to
     # Cost average of CITY(2) and WATER_NOSWIM(1) = 1
     assert ch.move == 19
+
+
+def test_flying_bypasses_water():
+    """AFF_FLYING should let characters cross no-swim sectors without a boat."""
+
+    ch, room_from, room_to = setup_world_at(3001, 3054)
+    room_to.sector_type = int(Sector.WATER_NOSWIM)
+    ch.add_affect(AffectFlag.FLYING)
+    ch.move = 20
+
+    out = move(ch, "north")
+
+    assert "You walk north" in out
+    assert ch.room is room_to
+    # Flying halves the already minimal movement cost → zero deduction
+    assert ch.move == 20
+    assert ch.wait == 1

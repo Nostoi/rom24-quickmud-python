@@ -1,4 +1,5 @@
 from enum import IntEnum, IntFlag
+from typing import NamedTuple
 
 
 class Direction(IntEnum):
@@ -103,6 +104,20 @@ class Sex(IntEnum):
     EITHER = 3
 
 
+class WeaponType(IntEnum):
+    """Weapon classes from merc.h WEAPON_* constants."""
+
+    EXOTIC = 0
+    SWORD = 1
+    DAGGER = 2
+    SPEAR = 3
+    MACE = 4
+    AXE = 5
+    FLAIL = 6
+    WHIP = 7
+    POLEARM = 8
+
+
 class Size(IntEnum):
     """Character sizes"""
 
@@ -115,6 +130,7 @@ class Size(IntEnum):
 
 
 # --- Primary stats (merc.h STAT_*) ---
+MAX_STATS = 5
 STAT_STR = 0
 STAT_INT = 1
 STAT_WIS = 2
@@ -166,6 +182,7 @@ CLASS_SKILL_ADEPT = {
 MAX_LEVEL = 60
 LEVEL_HERO = MAX_LEVEL - 9  # 51
 LEVEL_IMMORTAL = MAX_LEVEL - 8  # 52
+LEVEL_ANGEL = MAX_LEVEL - 7  # 53
 
 # Class guild entry rooms (ROM const.c: class_table)
 CLASS_GUILD_ROOMS: dict[int, tuple[int, int]] = {
@@ -235,6 +252,34 @@ class ActFlag(IntFlag):
     GAIN = 1 << 27  # (bb)
     UPDATE_ALWAYS = 1 << 28  # (cc)
     IS_CHANGER = 1 << 29  # (dd)
+
+
+class CommFlag(IntFlag):
+    """Communication toggles (merc.h COMM_* defines)."""
+
+    QUIET = 1 << 0  # (A)
+    DEAF = 1 << 1  # (B)
+    NOWIZ = 1 << 2  # (C)
+    NOAUCTION = 1 << 3  # (D)
+    NOGOSSIP = 1 << 4  # (E)
+    NOQUESTION = 1 << 5  # (F)
+    NOMUSIC = 1 << 6  # (G)
+    NOCLAN = 1 << 7  # (H)
+    NOQUOTE = 1 << 8  # (I)
+    SHOUTSOFF = 1 << 9  # (J)
+    COMPACT = 1 << 11  # (L)
+    BRIEF = 1 << 12  # (M)
+    PROMPT = 1 << 13  # (N)
+    COMBINE = 1 << 14  # (O)
+    TELNET_GA = 1 << 15  # (P)
+    SHOW_AFFECTS = 1 << 16  # (Q)
+    NOGRATS = 1 << 17  # (R)
+    NOEMOTE = 1 << 19  # (T)
+    NOSHOUT = 1 << 20  # (U)
+    NOTELL = 1 << 21  # (V)
+    NOCHANNELS = 1 << 22  # (W)
+    SNOOP_PROOF = 1 << 24  # (Y)
+    AFK = 1 << 25  # (Z)
 
 
 class OffFlag(IntFlag):
@@ -368,6 +413,94 @@ DAM_OTHER = DamageType.OTHER
 DAM_HARM = DamageType.HARM
 DAM_CHARM = DamageType.CHARM
 DAM_SOUND = DamageType.SOUND
+
+
+class AttackType(NamedTuple):
+    """Entry from ROM's attack_table (src/const.c)."""
+
+    name: str | None
+    noun: str | None
+    damage: int
+
+
+ATTACK_TABLE: tuple[AttackType, ...] = (
+    AttackType("none", "hit", -1),
+    AttackType("slice", "slice", int(DamageType.SLASH)),
+    AttackType("stab", "stab", int(DamageType.PIERCE)),
+    AttackType("slash", "slash", int(DamageType.SLASH)),
+    AttackType("whip", "whip", int(DamageType.SLASH)),
+    AttackType("claw", "claw", int(DamageType.SLASH)),
+    AttackType("blast", "blast", int(DamageType.BASH)),
+    AttackType("pound", "pound", int(DamageType.BASH)),
+    AttackType("crush", "crush", int(DamageType.BASH)),
+    AttackType("grep", "grep", int(DamageType.SLASH)),
+    AttackType("bite", "bite", int(DamageType.PIERCE)),
+    AttackType("pierce", "pierce", int(DamageType.PIERCE)),
+    AttackType("suction", "suction", int(DamageType.BASH)),
+    AttackType("beating", "beating", int(DamageType.BASH)),
+    AttackType("digestion", "digestion", int(DamageType.ACID)),
+    AttackType("charge", "charge", int(DamageType.BASH)),
+    AttackType("slap", "slap", int(DamageType.BASH)),
+    AttackType("punch", "punch", int(DamageType.BASH)),
+    AttackType("wrath", "wrath", int(DamageType.ENERGY)),
+    AttackType("magic", "magic", int(DamageType.ENERGY)),
+    AttackType("divine", "divine power", int(DamageType.HOLY)),
+    AttackType("cleave", "cleave", int(DamageType.SLASH)),
+    AttackType("scratch", "scratch", int(DamageType.PIERCE)),
+    AttackType("peck", "peck", int(DamageType.PIERCE)),
+    AttackType("peckb", "peck", int(DamageType.BASH)),
+    AttackType("chop", "chop", int(DamageType.SLASH)),
+    AttackType("sting", "sting", int(DamageType.PIERCE)),
+    AttackType("smash", "smash", int(DamageType.BASH)),
+    AttackType("shbite", "shocking bite", int(DamageType.LIGHTNING)),
+    AttackType("flbite", "flaming bite", int(DamageType.FIRE)),
+    AttackType("frbite", "freezing bite", int(DamageType.COLD)),
+    AttackType("acbite", "acidic bite", int(DamageType.ACID)),
+    AttackType("chomp", "chomp", int(DamageType.PIERCE)),
+    AttackType("drain", "life drain", int(DamageType.NEGATIVE)),
+    AttackType("thrust", "thrust", int(DamageType.PIERCE)),
+    AttackType("slime", "slime", int(DamageType.ACID)),
+    AttackType("shock", "shock", int(DamageType.LIGHTNING)),
+    AttackType("thwack", "thwack", int(DamageType.BASH)),
+    AttackType("flame", "flame", int(DamageType.FIRE)),
+    AttackType("chill", "chill", int(DamageType.COLD)),
+    AttackType(None, None, int(DamageType.BASH)),
+)
+
+
+def attack_lookup(name: str) -> int:
+    """Case-insensitive prefix lookup mirroring ROM attack_lookup."""
+
+    if not name:
+        return 0
+    lowered = name.strip().lower()
+    if not lowered:
+        return 0
+    for idx, attack in enumerate(ATTACK_TABLE):
+        attack_name = attack.name
+        if attack_name is None:
+            break
+        if lowered[0] == attack_name[0] and attack_name.startswith(lowered):
+            return idx
+    return 0
+
+
+def attack_damage_type(index: int) -> DamageType | None:
+    """Return the DamageType associated with an attack_table index."""
+
+    if not isinstance(index, int) or index < 0:
+        return None
+    try:
+        entry = ATTACK_TABLE[index]
+    except IndexError:
+        return None
+    damage = entry.damage
+    if damage == -1:
+        return DamageType.BASH
+    try:
+        return DamageType(damage)
+    except ValueError:
+        return None
 
 
 class WeaponFlag(IntFlag):
@@ -597,6 +730,23 @@ EX_HARD = 1 << 8
 EX_INFURIATING = 1 << 9
 EX_NOCLOSE = 1 << 10
 EX_NOLOCK = 1 << 11
+
+
+class PortalFlag(IntFlag):
+    """Portal gate flags mirroring ROM GATE_* bitmasks."""
+
+    NORMAL_EXIT = 1 << 0  # (A)
+    NOCURSE = 1 << 1  # (B)
+    GOWITH = 1 << 2  # (C)
+    BUGGY = 1 << 3  # (D)
+    RANDOM = 1 << 4  # (E)
+
+
+GATE_NORMAL_EXIT = PortalFlag.NORMAL_EXIT
+GATE_NOCURSE = PortalFlag.NOCURSE
+GATE_GOWITH = PortalFlag.GOWITH
+GATE_BUGGY = PortalFlag.BUGGY
+GATE_RANDOM = PortalFlag.RANDOM
 
 
 def convert_flags_from_letters(flag_letters: str, flag_enum_class) -> int:

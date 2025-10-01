@@ -35,8 +35,9 @@ def test_charmed_character_cannot_leave_master_room() -> None:
 
     move_character(master, "north")
     assert master.room is target
+    assert follower.room is target
 
     result = move_character(follower, "north")
 
-    assert "You walk north" in result
+    assert result == "You cannot go that way."
     assert follower.room is target

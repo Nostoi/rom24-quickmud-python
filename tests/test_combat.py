@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -16,6 +17,8 @@ from mud.models.constants import (
     Position,
     ResFlag,
     VulnFlag,
+    WeaponType,
+    attack_lookup,
 )
 from mud.skills import load_skills, skill_registry
 from mud.utils import rng_mm
@@ -26,6 +29,7 @@ def setup_combat() -> tuple[Character, Character]:
     initialize_world("area/area.lst")
     room_vnum = 3001
     attacker = create_test_character("Attacker", room_vnum)
+    attacker.skills["hand to hand"] = 100
     victim = create_test_character("Victim", room_vnum)
     victim.is_npc = True
     return attacker, victim
@@ -37,11 +41,16 @@ def _load_kick_skill() -> None:
     load_skills(Path("data/skills.json"))
 
 
-def test_attack_damages_but_not_kill() -> None:
+def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     attacker, victim = setup_combat()
+    attacker.level = 10
+    attacker.skills["hand to hand"] = 100
     attacker.damroll = 3
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 10
+    victim.max_hit = 10
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
     out = process_command(attacker, "kill victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Message includes "That really did HURT!" for significant damage
@@ -52,11 +61,16 @@ def test_attack_damages_but_not_kill() -> None:
     assert victim in attacker.room.people
 
 
-def test_attack_kills_target():
+def test_attack_kills_target(monkeypatch: pytest.MonkeyPatch) -> None:
     attacker, victim = setup_combat()
+    attacker.level = 10
+    attacker.skills["hand to hand"] = 100
     attacker.damroll = 0  # Use 0 damroll so we get exactly 5 base damage
     attacker.hitroll = 100  # guarantee hit
     victim.hit = 5
+    victim.max_hit = 5
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
     out = process_command(attacker, "kill victim")
     assert out == "You kill Victim."
     assert victim.hit == 0
@@ -107,6 +121,44 @@ def test_defense_order_and_early_out(monkeypatch):
     assert out == "Victim dodges your attack."
     # ROM defense order: shield_block → parry → dodge (dodge early-exits, so shield not reached after)
     assert calls == ["shield", "parry", "dodge"]
+
+
+def test_parry_blocks_when_skill_learned(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100
+    victim.is_npc = False
+    victim.skills["parry"] = 75
+    victim.has_weapon_equipped = True
+
+    recorded: list[tuple[Character, str, bool, int]] = []
+
+    def fake_check_improve(ch: Character, name: str, success: bool, multiplier: int = 1) -> None:
+        recorded.append((ch, name, success, multiplier))
+
+    monkeypatch.setattr(combat_engine, "check_improve", fake_check_improve)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+
+    out = process_command(attacker, "kill victim")
+
+    assert out == "Victim parries your attack."
+    assert "You parry Attacker's attack." in victim.messages
+    assert recorded == [(victim, "parry", True, 6)]
+
+
+def test_shield_block_requires_shield(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100
+    attacker.damroll = 3
+    victim.skills["shield block"] = 95
+    victim.has_shield_equipped = False
+
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+
+    out = process_command(attacker, "kill victim")
+
+    assert "blocks your attack" not in out
+    assert any(out.startswith(prefix) for prefix in {"You hit Victim", "You kill Victim"})
 
 
 def test_multi_hit_single_attack():
@@ -455,3 +507,39 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     out = process_command(attacker, "kill victim")
     assert out == "Your attack has no effect."
     assert captured[-1] == 0
+def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker, victim = setup_combat()
+    attacker.level = 20
+    attacker.damroll = 0
+    attacker.hitroll = 0
+    attacker.skills["sword"] = 100
+    victim.hit = 100
+    victim.max_hit = 100
+
+    attack_index = attack_lookup("slash")
+    weapon_proto = SimpleNamespace(
+        item_type="weapon",
+        value=[int(WeaponType.SWORD), 2, 6, attack_index],
+        new_format=True,
+        level=20,
+    )
+    weapon = SimpleNamespace(
+        prototype=weapon_proto,
+        value=weapon_proto.value,
+        item_type="weapon",
+        weapon_flags=0,
+        new_format=True,
+        level=20,
+        name="practice sword",
+    )
+    attacker.equipment["wield"] = weapon
+
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.dice", lambda number, size: number * size)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+
+    out = process_command(attacker, "kill victim")
+
+    assert "15 damage" in out
+    assert victim.hit == 85
+

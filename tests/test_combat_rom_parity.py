@@ -60,9 +60,9 @@ def test_ac_clamping_for_negative_values():
     victim.armor = [-25, -25, -25, -25]  # Very negative AC
 
     # Ensure no defenses trigger to test pure AC calculation
-    victim.shield_block_skill = 0
-    victim.parry_skill = 0
-    victim.dodge_skill = 0
+    victim.skills["shield block"] = 0
+    victim.skills["parry"] = 0
+    victim.skills["dodge"] = 0
     victim.has_shield_equipped = False
     victim.has_weapon_equipped = False
 
@@ -82,7 +82,7 @@ def test_parry_skill_calculation():
     attacker, victim = setup_combat()
 
     # Set up parry skill
-    victim.parry_skill = 80
+    victim.skills["parry"] = 80
     victim.has_weapon_equipped = True
     attacker.level = 5
     victim.level = 15  # Higher level for better parry
@@ -105,7 +105,7 @@ def test_dodge_skill_calculation():
     attacker, victim = setup_combat()
 
     # Set up dodge skill
-    victim.dodge_skill = 60
+    victim.skills["dodge"] = 60
     attacker.level = 8
     victim.level = 12
 
@@ -129,7 +129,7 @@ def test_shield_block_skill_calculation():
     attacker, victim = setup_combat()
 
     # Set up shield block skill
-    victim.shield_block_skill = 75
+    victim.skills["shield block"] = 75
     victim.has_shield_equipped = True
     attacker.level = 6
     victim.level = 14
@@ -151,7 +151,7 @@ def test_visibility_affects_defense():
     attacker, victim = setup_combat()
 
     # Set up high skill but poor visibility
-    victim.parry_skill = 80
+    victim.skills["parry"] = 80
     victim.has_weapon_equipped = True
     victim.can_see = lambda x: False  # Can't see attacker
 
@@ -186,7 +186,7 @@ def test_npc_unarmed_parry_half_chance():
 
     # Make victim an NPC without weapon
     victim.is_npc = True
-    victim.parry_skill = 60
+    victim.skills["parry"] = 60
     victim.has_weapon_equipped = False
     victim.can_see = lambda x: True
 
@@ -209,7 +209,7 @@ def test_player_needs_weapon_to_parry():
 
     # Make victim a PC without weapon
     victim.is_npc = False
-    victim.parry_skill = 80
+    victim.skills["parry"] = 80
     victim.has_weapon_equipped = False
 
     # Should always return False regardless of skill
@@ -223,9 +223,9 @@ def test_unconscious_cannot_defend():
 
     # Make victim unconscious
     victim.position = Position.SLEEPING
-    victim.parry_skill = 100
-    victim.dodge_skill = 100
-    victim.shield_block_skill = 100
+    victim.skills["parry"] = 100
+    victim.skills["dodge"] = 100
+    victim.skills["shield block"] = 100
     victim.has_weapon_equipped = True
     victim.has_shield_equipped = True
 

@@ -7,6 +7,7 @@ from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
 from mud.loaders.reset_loader import validate_resets
 from mud.models.constants import RoomFlag
+from mud.models.help import help_registry
 from mud.registry import area_registry, room_registry
 from mud.scripts.convert_are_to_json import clear_registries, convert_area
 
@@ -93,6 +94,40 @@ def test_areadata_parsing(tmp_path):
     area_registry.clear()
 
 
+def test_help_section_registers_entries(tmp_path):
+    help_registry.clear()
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "help_test.are~\n"
+        "Help Test~\n"
+        "Credits~\n"
+        "0 0\n"
+        "#HELPS\n"
+        "0 PRIMARY 'Second Keyword' third~\n"
+        "First line.\n"
+        "Second line.\n"
+        "~\n"
+        "0 $~\n"
+        "#$\n"
+    )
+    path = tmp_path / "help_test.are"
+    path.write_text(content, encoding="latin-1")
+
+    area = load_area_file(str(path))
+
+    entry = help_registry["primary"]
+    assert entry in area.helps
+    assert entry.level == 0
+    assert entry.text == "First line.\nSecond line.\n"
+    assert set(entry.keywords) == {"PRIMARY", "Second Keyword", "third"}
+    assert help_registry["second keyword"] is entry
+    assert help_registry["third"] is entry
+
+    help_registry.clear()
+    area_registry.clear()
+
+
 def test_optional_room_fields_roundtrip(tmp_path):
     clear_registries()
     data = convert_area("area/midgaard.are")
@@ -106,11 +141,15 @@ def test_optional_room_fields_roundtrip(tmp_path):
 
     area_registry.clear()
     room_registry.clear()
-    load_area_from_json(str(out_file))
+    area = load_area_from_json(str(out_file))
 
     loaded_room = room_registry[3054]
     assert loaded_room.heal_rate == 110
     assert loaded_room.mana_rate == 110
+
+    assert area.age == 15
+    assert area.nplayer == 0
+    assert area.empty is False
 
     area_registry.clear()
     room_registry.clear()

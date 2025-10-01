@@ -399,3 +399,32 @@ def test_combat_stats_roundtrip(tmp_path):
     finally:
         persistence.PLAYERS_DIR = old_dir
         character_registry.clear()
+
+
+def test_act_and_comm_flags_roundtrip(tmp_path):
+    old_dir = persistence.PLAYERS_DIR
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        char = create_test_character("Flagged", 3001)
+        act_flags = (1 << 2) | (1 << 9)
+        comm_flags = (1 << 1) | (1 << 7)
+        affect_flags = 1 << 5
+        wiznet_flags = 1 << 3
+        char.act = act_flags
+        char.comm = comm_flags
+        char.affected_by = affect_flags
+        char.wiznet = wiznet_flags
+        persistence.save_character(char)
+        character_registry.clear()
+        loaded = persistence.load_character("Flagged")
+        assert loaded is not None
+        assert loaded.act == act_flags
+        assert loaded.comm == comm_flags
+        assert loaded.affected_by == affect_flags
+        assert loaded.wiznet == wiznet_flags
+    finally:
+        persistence.PLAYERS_DIR = old_dir
+        character_registry.clear()

@@ -154,6 +154,14 @@ def load_area_from_json(json_file_path: str) -> Area:
         mobs_key = "mobiles"  # Different key in format 1
         objects_key = "objects"
 
+    # ROM `load_area` seeds freshly loaded areas with age 15 so the update
+    # loop counts down before the first reset and so that `empty` and
+    # population counters start from the canonical values. Mirror that here
+    # so JSON loads behave like freshly booted areas.
+    area.age = 15
+    area.nplayer = 0
+    area.empty = False
+
     # Register area
     area_registry[area.vnum] = area
 

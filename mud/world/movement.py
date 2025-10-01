@@ -10,11 +10,15 @@ from mud.models.constants import (
     CLASS_GUILD_ROOMS,
     EX_CLOSED,
     EX_NOPASS,
+    LEVEL_ANGEL,
     LEVEL_HERO,
+    LEVEL_IMMORTAL,
+    MAX_LEVEL,
     ActFlag,
     AffectFlag,
     Direction,
     ItemType,
+    PortalFlag,
     Position,
     RoomFlag,
     Sector,
@@ -24,6 +28,7 @@ from mud.net.protocol import broadcast_room
 from mud.registry import room_registry
 from mud.world.look import look
 from mud.world.vision import can_see_room
+from mud.utils import rng_mm
 
 dir_map: dict[str, Direction] = {
     "north": Direction.NORTH,
@@ -33,6 +38,15 @@ dir_map: dict[str, Direction] = {
     "up": Direction.UP,
     "down": Direction.DOWN,
 }
+
+
+def _get_trust(char: Character) -> int:
+    trust = int(getattr(char, "trust", 0) or 0)
+    if trust <= 0:
+        trust = int(getattr(char, "level", 0) or 0)
+    if char.is_admin and trust < LEVEL_IMMORTAL:
+        return LEVEL_IMMORTAL
+    return trust
 
 
 def _collect_followers(current_room: Room, leader: Character) -> list[Character]:
@@ -184,6 +198,28 @@ def _room_is_private(room: Room) -> bool:
     if flags & int(RoomFlag.ROOM_IMP_ONLY):
         return True
     return False
+
+
+def _get_random_room(ch: Character) -> Room | None:
+    attempts = max(len(room_registry), 1) * 2
+    for _ in range(attempts):
+        vnum = rng_mm.number_range(0, 65535)
+        room = room_registry.get(vnum)
+        if room is None:
+            continue
+        if not can_see_room(ch, room):
+            continue
+        if _room_is_private(room):
+            continue
+        flags = int(getattr(room, "room_flags", 0) or 0)
+        if flags & (int(RoomFlag.ROOM_PRIVATE) | int(RoomFlag.ROOM_SOLITARY) | int(RoomFlag.ROOM_SAFE)):
+            continue
+        act_flags = int(getattr(ch, "act", 0) or 0)
+        if not ch.is_npc and not (act_flags & int(ActFlag.AGGRESSIVE)):
+            if flags & int(RoomFlag.ROOM_LAW):
+                continue
+        return room
+    return None
 
 
 def _is_foreign_guild_room(room: Room, ch_class: int) -> bool:
@@ -353,11 +389,63 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
         return "You are nowhere."
 
     proto = getattr(portal, "prototype", None)
-    values = getattr(proto, "value", getattr(portal, "value", [0, 0, 0, 0, 0]))
-    dest_vnum = values[3] if len(values) > 3 else 0
-    destination = room_registry.get(int(dest_vnum))
-    if destination is None:
+    values = getattr(portal, "value", None)
+    if not isinstance(values, list):
+        proto_values = getattr(proto, "value", None)
+        if isinstance(proto_values, list):
+            values = list(proto_values)
+        else:
+            values = [0, 0, 0, 0, 0]
+        if hasattr(portal, "value"):
+            portal.value = values
+
+    exit_flags = int(values[1]) if len(values) > 1 else 0
+    gate_flags = int(values[2]) if len(values) > 2 else 0
+    dest_vnum = int(values[3]) if len(values) > 3 else 0
+
+    trust = _get_trust(char)
+    is_trusted = char.is_admin or trust >= LEVEL_ANGEL
+
+    if _is_follow and not is_trusted and not (gate_flags & int(PortalFlag.NOCURSE)):
+        room_flags = int(getattr(current_room, "room_flags", 0) or 0)
+        if char.has_affect(AffectFlag.CURSE) or room_flags & int(RoomFlag.ROOM_NO_RECALL):
+            if hasattr(char, "send_to_char"):
+                char.send_to_char("Something prevents you from leaving...")
+            return "Something prevents you from leaving..."
+
+    if exit_flags & EX_CLOSED and not is_trusted:
+        return "The portal is closed."
+
+    if not is_trusted and not (gate_flags & int(PortalFlag.NOCURSE)):
+        room_flags = int(getattr(current_room, "room_flags", 0) or 0)
+        if char.has_affect(AffectFlag.CURSE) or room_flags & int(RoomFlag.ROOM_NO_RECALL):
+            return "Something prevents you from leaving..."
+
+    destination: Room | None
+    if gate_flags & int(PortalFlag.RANDOM) or dest_vnum == -1:
+        destination = _get_random_room(char)
+        if destination is not None and len(values) > 3:
+            values[3] = int(getattr(destination, "vnum", 0) or 0)
+    elif gate_flags & int(PortalFlag.BUGGY) and rng_mm.number_percent() < 5:
+        destination = _get_random_room(char)
+    else:
+        destination = room_registry.get(dest_vnum)
+
+    if (
+        destination is None
+        or destination is current_room
+        or not can_see_room(char, destination)
+        or (_room_is_private(destination) and not (char.is_admin or trust >= MAX_LEVEL))
+    ):
         return "It doesn't seem to go anywhere."
+
+    dest_flags = int(getattr(destination, "room_flags", 0) or 0)
+    if (
+        char.is_npc
+        and bool(getattr(char, "act", 0) & int(ActFlag.AGGRESSIVE))
+        and dest_flags & int(RoomFlag.ROOM_LAW)
+    ):
+        return "Something prevents you from leaving..."
 
     portal_name = (
         (getattr(proto, "short_descr", "") or getattr(proto, "name", "") or getattr(portal, "short_descr", "")).strip()
@@ -365,32 +453,66 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
     )
 
     char_name = char.name or "someone"
+    uses_normal_exit = bool(gate_flags & int(PortalFlag.NORMAL_EXIT))
     if not _is_follow:
-        broadcast_room(current_room, f"{char_name} enters {portal_name}.", exclude=char)
+        broadcast_room(current_room, f"{char_name} steps into {portal_name}.", exclude=char)
 
     current_room.remove_character(char)
     destination.add_character(char)
 
+    if gate_flags & int(PortalFlag.GOWITH):
+        contents = getattr(current_room, "contents", None)
+        if isinstance(contents, list) and portal in contents:
+            contents.remove(portal)
+        destination.add_object(portal)
+
     if not _is_follow:
-        broadcast_room(destination, f"{char_name} arrives through {portal_name}.", exclude=char)
+        arrival_message = (
+            f"{char_name} has arrived."
+            if uses_normal_exit
+            else f"{char_name} has arrived through {portal_name}."
+        )
+        broadcast_room(destination, arrival_message, exclude=char)
 
     _auto_look(char)
-    char.wait = max(char.wait, 1)
 
-    target_flags = int(getattr(destination, "room_flags", 0) or 0)
-    _move_followers(
-        char,
-        current_room,
-        destination,
-        target_flags,
-        lambda follower: move_character_through_portal(follower, portal, _is_follow=True),
-    )
+    if len(values) > 0 and int(values[0]) > 0:
+        values[0] = int(values[0]) - 1
+        if values[0] == 0:
+            values[0] = -1
+
+    charges_remaining = int(values[0]) if len(values) > 0 else 0
+
+    if not (gate_flags & int(PortalFlag.GOWITH)) and charges_remaining != -1:
+        target_flags = dest_flags
+        _move_followers(
+            char,
+            current_room,
+            destination,
+            target_flags,
+            lambda follower: move_character_through_portal(follower, portal, _is_follow=True),
+        )
 
     if char.is_npc:
         mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
     else:
         mobprog.mp_greet_trigger(char)
 
-    if destination.name:
-        return f"You enter the {portal_name} and arrive in {destination.name}."
-    return f"You enter the {portal_name}."
+    if charges_remaining == -1:
+        fade_message = f"{portal_name} fades out of existence."
+        if hasattr(char, "send_to_char"):
+            char.send_to_char(fade_message)
+        for room in (current_room, destination):
+            contents = getattr(room, "contents", None)
+            if isinstance(contents, list) and portal in contents:
+                contents.remove(portal)
+                broadcast_room(room, fade_message, exclude=char if room is destination else None)
+        if hasattr(portal, "location"):
+            portal.location = None
+
+    entry_message = (
+        f"You enter {portal_name}."
+        if uses_normal_exit
+        else f"You walk through {portal_name} and find yourself somewhere else..."
+    )
+    return entry_message
