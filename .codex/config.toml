@@ -1,0 +1,53 @@
+# ~/.codex/config.toml - Configuration for OpenAI Codex CLI
+# This file should be created in your home directory
+
+# Model configuration
+model = "gpt-5-codex"  # Use the coding-optimized model
+# model = "o1-mini"     # Alternative for complex reasoning
+
+# Approval and sandbox settings
+approval_policy = "on-request"  # Let the model decide when to ask for approval
+sandbox_mode = "workspace-write"  # Allow file edits in workspace only
+
+# Optional: Enable network access (be cautious)
+[sandbox_workspace_write]
+network_access = false  # Set to true if needed for package installs
+
+# Agent memory and context
+memory_enabled = true
+max_context_files = 50
+
+# Hide verbose agent reasoning for cleaner output
+hide_agent_reasoning = false  # Set to true for less verbose output
+
+# Notification hook (optional - requires custom script)
+# notify = ["python3", "/path/to/notify_script.py"]
+
+# Quality settings
+auto_format = true
+auto_lint = true
+
+# Logging
+log_level = "info"  # debug, info, warn, error
+
+# Session settings
+max_turn_length = 5000  # Maximum tokens per turn
+temperature = 0.1  # Lower temperature for more deterministic coding
+
+# Project-specific instructions (optional)
+[project_context]
+language = "python"
+framework = "pytest"
+style_guide = "ruff"
+type_checker = "mypy"
+
+# Custom instructions for ROM 2.4 port project
+instructions = """
+You are working on a ROM 2.4 MUD Python port. Key constraints:
+- Maintain ROM parity with C sources in src/ directory
+- Use deterministic RNG via rng_mm and c_div/c_mod helpers
+- Follow existing project structure in mud/ directory
+- Add comprehensive tests with pytest
+- Update PYTHON_PORT_PLAN.md with evidence when completing tasks
+- Reference agent/constants.yaml for batch limits and risk taxonomy
+"""
