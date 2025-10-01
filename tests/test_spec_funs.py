@@ -1,5 +1,12 @@
-from mud.registry import mob_registry
+from mud.models.area import Area
+from mud.models.character import character_registry
+from mud.models.mob import MobIndex, MobProgram
+from mud.models.room import Room
+from mud.models.room_json import ResetJson
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
+from mud.spawning.templates import MobInstance
+from mud.spawning.reset_handler import apply_resets
 from mud.spec_funs import get_spec_fun, register_spec_fun, run_npc_specs, spec_fun_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
@@ -99,6 +106,63 @@ def test_mob_spec_fun_invoked():
 
         run_npc_specs()
         assert any(msg.startswith("tick:") for msg in messages)
+    finally:
+        spec_fun_registry.clear()
+        spec_fun_registry.update(prev)
+
+
+def test_reset_spawn_triggers_spec_fun() -> None:
+    character_registry.clear()
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=4242, name="Spec Reset Test")
+    room = Room(vnum=4243, name="Spec Room", area=area)
+    area.resets.append(ResetJson(command="M", arg1=7777, arg2=1, arg3=room.vnum, arg4=1))
+
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    program = MobProgram(trig_type=1, trig_phrase="greet", vnum=9001, code="say hi")
+    proto = MobIndex(vnum=7777, short_descr="spec sentinel", level=10)
+    proto.spec_fun = "Spec_ResetEcho"
+    spec_name = proto.spec_fun
+    proto.mprog_flags = 0x08
+    proto.mprogs = [program]
+    proto.area = area
+    mob_registry[proto.vnum] = proto
+
+    calls: list[MobInstance] = []
+
+    def reset_echo(mob: MobInstance) -> None:
+        calls.append(mob)
+
+    prev = dict(spec_fun_registry)
+    try:
+        register_spec_fun("Spec_ResetEcho", reset_echo)
+
+        apply_resets(area)
+
+        spawned = next(m for m in room.people if isinstance(m, MobInstance))
+        assert spawned.prototype is proto
+        assert spawned.spec_fun == spec_name
+        assert spawned.mprog_flags == proto.mprog_flags
+        assert spawned.mob_programs is not proto.mprogs
+        assert spawned.mob_programs == proto.mprogs
+        assert spawned.mprog_target is None
+        assert spawned.mprog_delay == 0
+
+        run_npc_specs()
+        assert calls and calls[0] is spawned
+
+        proto.spec_fun = None
+        assert spawned.spec_fun == spec_name
+        calls.clear()
+
+        run_npc_specs()
+        assert calls and calls[0] is spawned
     finally:
         spec_fun_registry.clear()
         spec_fun_registry.update(prev)

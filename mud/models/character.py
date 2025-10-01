@@ -115,6 +115,7 @@ class Character:
     muted_channels: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
     wiznet: int = 0
+    comm: int = 0
     # Per-character admin logging flag mirroring ROM PLR_LOG
     log_commands: bool = False
     # Wait-state (pulses) applied by actions like movement (ROM WAIT_STATE)

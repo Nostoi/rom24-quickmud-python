@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .area import Area
 
-from mud.models.constants import ActFlag, convert_flags_from_letters
+from mud.models.constants import ActFlag, Sex, Size, convert_flags_from_letters
 
 
 @dataclass
@@ -28,7 +28,7 @@ class MobIndex:
     short_descr: str | None = None
     long_descr: str | None = None
     description: str | None = None
-    race: str | None = None
+    race: str | int = 0
     act_flags: str = ""
     affected_by: str = ""
     alignment: int = 0
@@ -48,14 +48,14 @@ class MobIndex:
     immune: str = ""
     resist: str = ""
     vuln: str = ""
-    start_pos: str = "standing"
-    default_pos: str = "standing"
-    sex: str = "neutral"
+    start_pos: str | int = "standing"
+    default_pos: str | int = "standing"
+    sex: Sex | str | int = Sex.NONE
     wealth: int = 0
-    form: str = "0"
-    parts: str = "0"
-    size: str = "medium"
-    material: str = "0"
+    form: str | int = 0
+    parts: str | int = 0
+    size: Size | str | int = Size.MEDIUM
+    material: str | None = "0"
     spec_fun: str | None = None
     pShop: object | None = None
     mprogs: list[MobProgram] = field(default_factory=list)
@@ -74,15 +74,6 @@ class MobIndex:
     imm_flags: int = 0
     res_flags: int = 0
     vuln_flags: int = 0
-    start_pos: int = 0
-    default_pos: int = 0
-    sex: int = 0
-    race: int = 0
-    wealth: int = 0
-    form: int = 0
-    parts: int = 0
-    size: int = 0
-    material: str | None = None
     mprog_flags: int = 0
 
     def __repr__(self) -> str:

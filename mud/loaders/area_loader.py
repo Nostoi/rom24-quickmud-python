@@ -2,6 +2,7 @@ from mud.models.area import Area
 from mud.registry import area_registry
 
 from .base_loader import BaseTokenizer
+from .help_loader import load_helps
 from .mob_loader import load_mobiles
 from .obj_loader import load_objects
 from .reset_loader import load_resets
@@ -10,6 +11,7 @@ from .shop_loader import load_shops
 from .specials_loader import load_specials
 
 SECTION_HANDLERS = {
+    "#HELPS": load_helps,
     "#ROOMS": load_rooms,
     "#MOBILES": load_mobiles,
     "#OBJECTS": load_objects,

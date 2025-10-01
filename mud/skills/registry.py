@@ -208,7 +208,14 @@ class SkillRegistry:
         current = int(getattr(caster, "wait", 0) or 0)
         caster.wait = max(current, lag)
 
-    def _check_improve(self, caster, skill: Skill, name: str, success: bool) -> None:
+    def _check_improve(
+        self,
+        caster,
+        skill: Skill,
+        name: str,
+        success: bool,
+        multiplier: int = 1,
+    ) -> None:
         from mud.models.character import Character  # Local import to avoid cycle
 
         if not isinstance(caster, Character):
@@ -226,7 +233,6 @@ class SkillRegistry:
             return
 
         chance = 10 * caster.get_int_learn_rate()
-        multiplier = 1
         chance //= max(1, multiplier * rating * 4)
         chance += caster.level
         if rng_mm.number_range(1, 1000) > chance:
@@ -258,9 +264,23 @@ class SkillRegistry:
         # Wait-state recovery occurs in the violence pulse cadence. Skill ticks
         # only manage cooldown bookkeeping so they mirror ROM's update loop.
 
+    def check_improve(self, caster, name: str, success: bool, multiplier: int = 1) -> None:
+        """Public entry mirroring ROM check_improve helper."""
+
+        skill = self.skills.get(name)
+        if skill is None:
+            return
+        self._check_improve(caster, skill, name, success, multiplier)
+
 
 skill_registry = SkillRegistry()
 
 
 def load_skills(path: Path) -> None:
     skill_registry.load(path)
+
+
+def check_improve(caster, name: str, success: bool, multiplier: int = 1) -> None:
+    """Convenience wrapper delegating to the global skill registry."""
+
+    skill_registry.check_improve(caster, name, success, multiplier)

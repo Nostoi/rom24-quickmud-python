@@ -16,5 +16,5 @@ def test_enter_open_portal_moves_character(portal_factory):
     ch = create_test_character("Traveler", 3001)
     portal_factory(3001, to_vnum=3054, closed=False)
     out = process_command(ch, "enter portal")
-    assert "arrive" in out
+    assert out == "You walk through a shimmering portal and find yourself somewhere else..."
     assert ch.room.vnum == 3054

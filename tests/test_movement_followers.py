@@ -3,7 +3,9 @@ from __future__ import annotations
 from mud import mobprog
 from mud.models.character import Character
 from mud.models.constants import ActFlag, AffectFlag, Direction, Position, RoomFlag
+from mud.models.mob import MobIndex
 from mud.models.room import Exit, Room
+from mud.spawning.templates import MobInstance
 from mud.world.movement import move_character
 
 
@@ -105,3 +107,26 @@ def test_charmed_follower_stands_before_following() -> None:
     stand_idx = follower.messages.index("You wake and stand up.")
     follow_idx = follower.messages.index("You follow Leader.")
     assert stand_idx < follow_idx
+
+
+def test_charmed_follower_stays_with_master() -> None:
+    start, _ = _build_rooms()
+
+    leader = Character(name="Leader", is_npc=False, move=20)
+    start.add_character(leader)
+
+    proto = MobIndex(vnum=4000, short_descr="A charmed pixie", affected_by="R")
+    follower = MobInstance.from_prototype(proto)
+    follower.master = leader
+    follower.is_npc = True
+    follower.move = 10
+    follower.wait = 0
+    follower.messages = []
+
+    start.add_mob(follower)
+
+    outcome = move_character(follower, "north")
+
+    assert outcome == "What?  And leave your beloved master?"
+    assert follower.room is start
+    assert follower.affected_by & int(AffectFlag.CHARM)

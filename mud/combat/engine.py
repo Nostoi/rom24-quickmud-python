@@ -19,8 +19,185 @@ from mud.models.constants import (
     AffectFlag,
     DamageType,
     Position,
+    WeaponType,
+    attack_damage_type,
 )
 from mud.utils import rng_mm
+from mud.skills import check_improve
+
+
+HAND_TO_HAND_SKILL = "hand to hand"
+
+WEAPON_SKILL_BY_TYPE: dict[WeaponType, str] = {
+    WeaponType.SWORD: "sword",
+    WeaponType.DAGGER: "dagger",
+    WeaponType.SPEAR: "spear",
+    WeaponType.MACE: "mace",
+    WeaponType.AXE: "axe",
+    WeaponType.FLAIL: "flail",
+    WeaponType.WHIP: "whip",
+    WeaponType.POLEARM: "polearm",
+}
+
+
+def get_wielded_weapon(attacker: Character | None):
+    """Return the currently wielded weapon for an attacker."""
+
+    if attacker is None:
+        return None
+
+    wield = getattr(attacker, "wielded_weapon", None)
+    if wield is not None:
+        return wield
+
+    equipment = getattr(attacker, "equipment", None)
+    if isinstance(equipment, dict):
+        for slot in ("wield", "weapon", "main_hand", "primary"):
+            candidate = equipment.get(slot)
+            if candidate is not None:
+                return candidate
+    return None
+
+
+def _weapon_values(weapon) -> list[int]:
+    values = getattr(weapon, "value", None)
+    if values is None and hasattr(weapon, "prototype"):
+        values = getattr(weapon.prototype, "value", None)
+    if isinstance(values, (list, tuple)):
+        return [int(v) for v in values]
+    return []
+
+
+def _weapon_type(weapon) -> WeaponType | None:
+    values = _weapon_values(weapon)
+    if not values:
+        return None
+    try:
+        return WeaponType(int(values[0]))
+    except (ValueError, TypeError):
+        return None
+
+
+def _weapon_attack_index(weapon) -> int:
+    values = _weapon_values(weapon)
+    if len(values) > 3:
+        try:
+            return int(values[3])
+        except (TypeError, ValueError):
+            return 0
+    return 0
+
+
+def _weapon_is_new_format(weapon) -> bool:
+    if hasattr(weapon, "new_format"):
+        return bool(getattr(weapon, "new_format"))
+    if hasattr(weapon, "prototype") and hasattr(weapon.prototype, "new_format"):
+        return bool(getattr(weapon.prototype, "new_format"))
+    return False
+
+
+def _weapon_level(weapon) -> int:
+    if hasattr(weapon, "level"):
+        try:
+            return int(getattr(weapon, "level"))
+        except (TypeError, ValueError):
+            return 0
+    if hasattr(weapon, "prototype") and hasattr(weapon.prototype, "level"):
+        try:
+            return int(getattr(weapon.prototype, "level"))
+        except (TypeError, ValueError):
+            return 0
+    return 0
+
+
+def _is_weapon(weapon) -> bool:
+    item_type = getattr(weapon, "item_type", None)
+    if isinstance(item_type, str):
+        if item_type.lower() == "weapon":
+            return True
+    if hasattr(weapon, "prototype"):
+        proto_type = getattr(weapon.prototype, "item_type", None)
+        if isinstance(proto_type, str) and proto_type.lower() == "weapon":
+            return True
+    return False
+
+
+def _has_shield_equipped(attacker: Character) -> bool:
+    has_attr = getattr(attacker, "has_shield_equipped", None)
+    if has_attr is not None:
+        return bool(has_attr)
+    equipment = getattr(attacker, "equipment", None)
+    if isinstance(equipment, dict):
+        return equipment.get("shield") is not None
+    return False
+
+
+def get_weapon_sn(attacker: Character, weapon=None) -> str | None:
+    """Return the weapon skill name for the attacker's wielded weapon."""
+
+    weapon = weapon if weapon is not None else get_wielded_weapon(attacker)
+    if weapon is None or not _is_weapon(weapon):
+        return HAND_TO_HAND_SKILL
+
+    wtype = _weapon_type(weapon)
+    if wtype is None:
+        return None
+    if wtype == WeaponType.EXOTIC:
+        return None
+    return WEAPON_SKILL_BY_TYPE.get(wtype, HAND_TO_HAND_SKILL)
+
+
+def _lookup_skill_percent(attacker: Character, skill_name: str) -> int:
+    skills = getattr(attacker, "skills", {})
+    if not isinstance(skills, dict):
+        return 0
+    lowered = skill_name.lower()
+    for key, value in skills.items():
+        try:
+            if str(key).lower() != lowered:
+                continue
+            percent = int(value)
+        except (TypeError, ValueError):
+            continue
+        return max(0, min(100, percent))
+    return 0
+
+
+def _get_skill_percent(attacker: Character, skill_name: str, fallback_attr: str | None = None) -> int:
+    """Return the learned percentage for a skill with optional attribute fallback."""
+
+    percent = _lookup_skill_percent(attacker, skill_name)
+    if percent <= 0 and fallback_attr is not None:
+        fallback_val = getattr(attacker, fallback_attr, None)
+        if fallback_val is not None:
+            try:
+                percent = int(fallback_val)
+            except (TypeError, ValueError):
+                percent = 0
+    return max(0, min(100, percent))
+
+
+def _push_message(character: Character | None, message: str) -> None:
+    if character is None:
+        return
+    mailbox = getattr(character, "messages", None)
+    if isinstance(mailbox, list):
+        mailbox.append(message)
+
+
+def get_weapon_skill(attacker: Character, weapon_sn: str | None) -> int:
+    """Return the attacker's proficiency for the given weapon skill."""
+
+    level = int(getattr(attacker, "level", 0) or 0)
+    if weapon_sn is None:
+        return max(0, min(100, 3 * level))
+
+    if getattr(attacker, "is_npc", False):
+        if weapon_sn == HAND_TO_HAND_SKILL:
+            return max(0, min(100, 40 + 2 * level))
+        return max(0, min(100, 40 + (5 * level) // 2))
+
+    return _lookup_skill_percent(attacker, weapon_sn)
 
 
 def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[str]:
@@ -110,7 +287,18 @@ def attack_round(attacker: Character, victim: Character) -> str:
     # Capture victim's pre-attack position for ROM-like modifiers
     _victim_pos_before = victim.position
 
-    dam_type = attacker.dam_type or int(DamageType.BASH)
+    wield = get_wielded_weapon(attacker)
+    weapon_sn = get_weapon_sn(attacker, wield)
+    weapon_skill = get_weapon_skill(attacker, weapon_sn)
+    skill_total = 20 + weapon_skill
+    if skill_total <= 0:
+        skill_total = 1
+
+    attack_index = attacker.dam_type or 0
+    if wield is not None:
+        attack_index = _weapon_attack_index(wield)
+    dam_type_lookup = attack_damage_type(attack_index)
+    dam_type = int(dam_type_lookup) if dam_type_lookup is not None else int(DamageType.BASH)
     ac_idx = ac_index_for_dam_type(dam_type)
     victim_ac = 0
     if hasattr(victim, "armor") and 0 <= ac_idx < len(victim.armor):
@@ -134,7 +322,7 @@ def attack_round(attacker: Character, victim: Character) -> str:
             if diceroll < 20:
                 break
         # Compute class-based thac0 with hitroll/skill contributions
-        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=100)
+        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=skill_total)
         vac = c_div(victim_ac, 10)
         # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
         if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
@@ -153,7 +341,7 @@ def attack_round(attacker: Character, victim: Character) -> str:
             return f"You miss {victim.name}."
 
     # Hit determined - calculate weapon damage following C src/fight.c:one_hit logic
-    damage = calculate_weapon_damage(attacker, victim, dam_type)
+    damage = calculate_weapon_damage(attacker, victim, dam_type, wield=wield, skill=skill_total)
 
     # Apply damage reduction modifiers (sanctuary, protection, drunk) following C src/fight.c:damage logic
     damage = apply_damage_reduction(attacker, victim, damage)
@@ -400,7 +588,14 @@ def _handle_death(attacker: Character, victim: Character) -> str:
     return f"You kill {victim.name}."
 
 
-def calculate_weapon_damage(attacker: Character, victim: Character, dam_type: int) -> int:
+def calculate_weapon_damage(
+    attacker: Character,
+    victim: Character,
+    dam_type: int,
+    *,
+    wield=None,
+    skill: int | None = None,
+) -> int:
     """Calculate weapon damage following C src/fight.c:one_hit logic.
 
     This includes:
@@ -411,39 +606,48 @@ def calculate_weapon_damage(attacker: Character, victim: Character, dam_type: in
     - Position-based multipliers (sleeping/resting victims)
     - Damroll bonus application
     """
-    # Get wielded weapon - for now assume no weapon (unarmed)
-    wield = None  # TODO: get_eq_char(attacker, WEAR_WIELD) when equipment system exists
+    if wield is None:
+        wield = get_wielded_weapon(attacker)
 
-    # Get weapon skill - default to 20 base + skill level (100 = mastery)
-    skill = 20 + 100  # TODO: get_weapon_skill(attacker, sn) when skill system exists
+    if skill is None:
+        weapon_sn = get_weapon_sn(attacker, wield)
+        weapon_skill = get_weapon_skill(attacker, weapon_sn)
+        skill_total = 20 + weapon_skill
+    else:
+        skill_total = int(skill)
+
+    if skill_total <= 0:
+        skill_total = 1
 
     # Base damage calculation
-    if wield is not None:
+    if wield is not None and _is_weapon(wield):
         # Weapon damage from dice
-        if hasattr(wield, "new_format") and wield.new_format:
-            # dice(wield.value[1], wield.value[2]) * skill / 100
-            dam = rng_mm.dice(wield.value[1], wield.value[2]) * skill // 100
+        values = _weapon_values(wield)
+        if _weapon_is_new_format(wield) and len(values) > 2:
+            dice_number = max(0, values[1])
+            dice_type = max(0, values[2])
+            dam = rng_mm.dice(dice_number, dice_type) * skill_total // 100
         else:
-            # number_range(wield.value[1] * skill / 100, wield.value[2] * skill / 100)
-            min_dam = wield.value[1] * skill // 100
-            max_dam = wield.value[2] * skill // 100
+            min_val = values[1] if len(values) > 1 else 0
+            max_val = values[2] if len(values) > 2 else 0
+            min_dam = min_val * skill_total // 100
+            max_dam = max_val * skill_total // 100
             dam = rng_mm.number_range(min_dam, max_dam)
 
         # Shield bonus - no shield equipped gives 11/10 multiplier
-        has_shield = False  # TODO: get_eq_char(attacker, WEAR_SHIELD) when equipment exists
-        if not has_shield:
-            dam = dam * 11 // 10
+        if not _has_shield_equipped(attacker):
+            dam = c_div(dam * 11, 10)
 
         # Sharpness weapon effect
         if hasattr(wield, "weapon_stats") and "sharp" in wield.weapon_stats:
             percent = rng_mm.number_percent()
-            if percent <= (skill // 8):
+            if percent <= (skill_total // 8):
                 dam = 2 * dam + (dam * 2 * percent // 100)
     else:
         # Unarmed damage from ROM C: number_range(1 + 4*skill/100, 2*ch->level/3*skill/100)
         # This is the exact ROM formula from src/fight.c:556-557
-        min_dam = 1 + (4 * skill // 100)
-        max_dam = (2 * attacker.level // 3) * skill // 100
+        min_dam = 1 + (4 * skill_total // 100)
+        max_dam = (2 * attacker.level // 3) * skill_total // 100
         # ROM allows max_dam to be less than min_dam for very low levels
         dam = rng_mm.number_range(min_dam, max_dam)
 
@@ -463,7 +667,7 @@ def calculate_weapon_damage(attacker: Character, victim: Character, dam_type: in
         dam = dam * 3 // 2
 
     # Add damroll bonus - ROM: GET_DAMROLL(ch) * UMIN(100, skill) / 100
-    dam += attacker.damroll * min(100, skill) // 100
+    dam += attacker.damroll * min(100, skill_total) // 100
 
     # Ensure minimum damage - ROM: if (dam <= 0) dam = 1
     if dam <= 0:
@@ -546,13 +750,10 @@ def check_shield_block(attacker: Character, victim: Character) -> bool:
     if not is_awake(victim):
         return False
 
-    # Must have shield equipped (TODO: implement equipment system)
-    has_shield = getattr(victim, "has_shield_equipped", False)
-    if not has_shield:
+    if not _has_shield_equipped(victim):
         return False
 
-    # Get shield block skill (defaults to 0 if not learned)
-    shield_skill = getattr(victim, "shield_block_skill", 0)
+    shield_skill = _get_skill_percent(victim, "shield block", "shield_block_skill")
     chance = c_div(shield_skill, 5) + 3
 
     # Level difference modifier
@@ -561,7 +762,11 @@ def check_shield_block(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    # TODO: check_improve(victim, gsn_shield_block, TRUE, 6) when skill system exists
+    attacker_name = getattr(attacker, "name", "Someone")
+    victim_name = getattr(victim, "name", "Someone")
+    _push_message(victim, f"You block {attacker_name}'s attack with your shield.")
+    _push_message(attacker, f"{victim_name} blocks your attack with a shield.")
+    check_improve(victim, "shield block", True, 6)
     return True
 
 
@@ -578,11 +783,9 @@ def check_parry(attacker: Character, victim: Character) -> bool:
     if not is_awake(victim):
         return False
 
-    # Get parry skill (defaults to 0 if not learned)
-    parry_skill = getattr(victim, "parry_skill", 0)
+    parry_skill = _get_skill_percent(victim, "parry", "parry_skill")
     chance = c_div(parry_skill, 2)
 
-    # Check weapon requirement
     has_weapon = getattr(victim, "has_weapon_equipped", False)
     if not has_weapon:
         if getattr(victim, "is_npc", False):
@@ -600,7 +803,11 @@ def check_parry(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    # TODO: check_improve(victim, gsn_parry, TRUE, 6) when skill system exists
+    attacker_name = getattr(attacker, "name", "Someone")
+    victim_name = getattr(victim, "name", "Someone")
+    _push_message(victim, f"You parry {attacker_name}'s attack.")
+    _push_message(attacker, f"{victim_name} parries your attack.")
+    check_improve(victim, "parry", True, 6)
     return True
 
 
@@ -616,8 +823,7 @@ def check_dodge(attacker: Character, victim: Character) -> bool:
     if not is_awake(victim):
         return False
 
-    # Get dodge skill (defaults to 0 if not learned)
-    dodge_skill = getattr(victim, "dodge_skill", 0)
+    dodge_skill = _get_skill_percent(victim, "dodge", "dodge_skill")
     chance = c_div(dodge_skill, 2)
 
     # Visibility modifier
@@ -630,7 +836,11 @@ def check_dodge(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    # TODO: check_improve(victim, gsn_dodge, TRUE, 6) when skill system exists
+    attacker_name = getattr(attacker, "name", "Someone")
+    victim_name = getattr(victim, "name", "Someone")
+    _push_message(victim, f"You dodge {attacker_name}'s attack.")
+    _push_message(attacker, f"{victim_name} dodges your attack.")
+    check_improve(victim, "dodge", True, 6)
     return True
 
 
@@ -705,8 +915,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     """
     messages = []
 
-    # Get wielded weapon - for now use test stubs
-    wield = getattr(attacker, "wielded_weapon", None)
+    wield = get_wielded_weapon(attacker)
     if wield is None:
         return messages
 
@@ -721,7 +930,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     elif hasattr(wield, "extra_flags"):
         weapon_flags = wield.extra_flags
 
-    weapon_level = getattr(wield, "level", 1)
+    weapon_level = _weapon_level(wield) or 1
 
     # WEAPON_POISON - ROM src/fight.c L600-634
     if weapon_flags & WEAPON_POISON:

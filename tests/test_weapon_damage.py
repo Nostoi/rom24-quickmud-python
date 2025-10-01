@@ -19,6 +19,7 @@ def setup_damage_test():
     attacker.level = 20
     attacker.damroll = 5
     attacker.enhanced_damage_skill = 0  # Start with no enhanced damage
+    attacker.skills["hand to hand"] = 100
 
     # Create victim
     victim = create_test_character("Victim", room_vnum)

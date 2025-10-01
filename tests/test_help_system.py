@@ -51,6 +51,20 @@ def test_help_reconstructs_multi_word_keywords():
     assert "Armor class overview" in result
 
 
+def test_help_combines_matching_entries_with_separator():
+    first = HelpEntry(keywords=["ARMOR"], text="Basics.\n")
+    second = HelpEntry(keywords=["ARMOR IMMORTAL"], text="Advanced tips.\n")
+    register_help(first)
+    register_help(second)
+
+    ch = Character(name="Tester")
+    result = process_command(ch, "help armor")
+
+    assert "Basics." in result
+    assert "Advanced tips." in result
+    assert result.count("============================================================") == 1
+
+
 def test_help_missing_topic_logs_request(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     help_path = Path(__file__).resolve().parent.parent / "data" / "help.json"

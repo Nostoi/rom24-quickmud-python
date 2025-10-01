@@ -118,7 +118,14 @@ def portal_factory(place_object_factory):
     """
     from mud.models.constants import EX_CLOSED, ItemType
 
-    def _factory(room_vnum: int, *, to_vnum: int, closed: bool = False):
+    def _factory(
+        room_vnum: int,
+        *,
+        to_vnum: int,
+        closed: bool = False,
+        gate_flags: int = 0,
+        charges: int = 1,
+    ):
         flags = EX_CLOSED if closed else 0
         obj = place_object_factory(
             room_vnum=room_vnum,
@@ -129,8 +136,11 @@ def portal_factory(place_object_factory):
                 "item_type": int(ItemType.PORTAL),
             },
         )
-        # value: [charges, exit_flags, key, to_vnum, portal_flags]
-        obj.prototype.value = [1, flags, 0, to_vnum, 0]
+        # ROM portal values: [charges, exit_flags, portal_flags, to_vnum, placeholder]
+        values = [charges, flags, gate_flags, to_vnum, 0]
+        obj.prototype.value = values.copy()
+        if hasattr(obj, "value"):
+            obj.value = values.copy()
         return obj
 
     return _factory

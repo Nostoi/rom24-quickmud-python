@@ -23,9 +23,9 @@ def test_shield_block_triggers_before_parry_and_dodge(monkeypatch):
 
     attacker, victim = _setup_pair()
     # Set ROM-style skill attributes that our implementation uses
-    victim.shield_block_skill = 100  # Will give 100/5 + 3 = 23% base chance
-    victim.parry_skill = 100
-    victim.dodge_skill = 100
+    victim.skills["shield block"] = 100  # Will give 100/5 + 3 = 23% base chance
+    victim.skills["parry"] = 100
+    victim.skills["dodge"] = 100
     # Must have shield equipped for shield block to work
     victim.has_shield_equipped = True
     # Ensure percent roll always hits the threshold
@@ -39,7 +39,8 @@ def test_parry_triggers_when_no_shield(monkeypatch):
 
     attacker, victim = _setup_pair()
     # Set ROM-style skill attribute that our implementation uses
-    victim.parry_skill = 100  # Will give 100/2 = 50% base chance
+    victim.skills["parry"] = 100  # Will give 100/2 = 50% base chance
+    victim.has_weapon_equipped = True
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
     out = process_command(attacker, "kill victim")
     assert out == "Victim parries your attack."
@@ -50,7 +51,7 @@ def test_dodge_triggers_when_no_shield_or_parry(monkeypatch):
 
     attacker, victim = _setup_pair()
     # Set ROM-style skill attribute that our implementation uses
-    victim.dodge_skill = 100  # Will give (100/2) + (victim.level/2) base chance
+    victim.skills["dodge"] = 100  # Will give (100/2) + (victim.level/2) base chance
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
     out = process_command(attacker, "kill victim")
     assert out == "Victim dodges your attack."
