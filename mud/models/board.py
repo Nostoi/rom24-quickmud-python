@@ -25,6 +25,7 @@ class NoteDraft:
     to: str = ""
     subject: str = ""
     text: str = ""
+    expire: float | None = None
 
 
 @dataclass
@@ -79,6 +80,12 @@ class Board:
         final = " ".join(tokens).strip()
         return final, added_required, used_default
 
+    def default_expire(self, *, base_timestamp: float | None = None) -> float:
+        base = base_timestamp if base_timestamp is not None else time.time()
+        if self.purge_days <= 0:
+            return base
+        return base + self.purge_days * 24 * 60 * 60
+
     def post(
         self,
         sender: str,
@@ -87,16 +94,21 @@ class Board:
         to: str | None = None,
         *,
         timestamp: float | None = None,
+        expire: float | None = None,
     ) -> Note:
         resolved_to, _, _ = self.resolve_recipients(to)
         if not resolved_to:
             resolved_to = (self.default_recipients or "all").strip() or "all"
+        actual_timestamp = time.time() if timestamp is None else timestamp
         note = Note(
             sender=sender,
             to=resolved_to,
             subject=subject,
             text=text,
-            timestamp=time.time() if timestamp is None else timestamp,
+            timestamp=actual_timestamp,
+            expire=self.default_expire(base_timestamp=actual_timestamp)
+            if expire is None
+            else expire,
         )
         self.notes.append(note)
         return note

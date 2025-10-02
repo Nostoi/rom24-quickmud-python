@@ -200,7 +200,22 @@ def get_weapon_skill(attacker: Character, weapon_sn: str | None) -> int:
     return _lookup_skill_percent(attacker, weapon_sn)
 
 
-def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[str]:
+def _normalize_dt(dt: str | int | None) -> str | None:
+    """Return a normalized string identifier for a damage type/skill token."""
+
+    if dt is None:
+        return None
+    if isinstance(dt, str):
+        return dt.lower()
+    try:
+        # Many callers pass gsn indices.  We only need special handling for
+        # backstab right now, and the skills.json entry uses the same name.
+        return str(dt).lower()
+    except Exception:  # pragma: no cover - defensive
+        return None
+
+
+def multi_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
     """Perform multiple attacks following ROM multi_hit mechanics.
 
     Returns a list of attack result messages.
@@ -219,11 +234,15 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
         return results
 
     # First attack always happens
-    result = attack_round(attacker, victim)
+    result = attack_round(attacker, victim, dt=dt)
     results.append(result)
 
     # Check if victim died or combat ended
     if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
+        return results
+
+    # ROM allows only a single strike for backstab.
+    if _normalize_dt(dt) == "backstab":
         return results
 
     # Haste gives extra attack
@@ -232,10 +251,6 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
         results.append(result)
         if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
             return results
-
-    # Skip extra attacks for backstab
-    if dt and getattr(dt, "name", "") == "backstab":
-        return results
 
     # Second attack skill check
     second_attack_skill = getattr(attacker, "second_attack_skill", 0)
@@ -274,7 +289,7 @@ def multi_hit(attacker: Character, victim: Character, dt: int = None) -> list[st
     return results
 
 
-def attack_round(attacker: Character, victim: Character) -> str:
+def attack_round(attacker: Character, victim: Character, dt: str | int | None = None) -> str:
     """Resolve a single attack round.
 
     The attacker attempts to hit the victim.  Hit chance is derived from a
@@ -341,7 +356,14 @@ def attack_round(attacker: Character, victim: Character) -> str:
             return f"You miss {victim.name}."
 
     # Hit determined - calculate weapon damage following C src/fight.c:one_hit logic
-    damage = calculate_weapon_damage(attacker, victim, dam_type, wield=wield, skill=skill_total)
+    damage = calculate_weapon_damage(
+        attacker,
+        victim,
+        dam_type,
+        wield=wield,
+        skill=skill_total,
+        dt=dt,
+    )
 
     # Apply damage reduction modifiers (sanctuary, protection, drunk) following C src/fight.c:damage logic
     damage = apply_damage_reduction(attacker, victim, damage)
@@ -595,6 +617,7 @@ def calculate_weapon_damage(
     *,
     wield=None,
     skill: int | None = None,
+    dt: str | int | None = None,
 ) -> int:
     """Calculate weapon damage following C src/fight.c:one_hit logic.
 
@@ -665,6 +688,16 @@ def calculate_weapon_damage(
         dam *= 2
     elif victim.position < Position.FIGHTING:
         dam = dam * 3 // 2
+
+    dt_name = _normalize_dt(dt)
+    if dt_name == "backstab" and wield is not None:
+        weapon_type = _weapon_type(wield)
+        level = int(getattr(attacker, "level", 0) or 0)
+        if weapon_type == WeaponType.DAGGER:
+            multiplier = 2 + c_div(level, 8)
+        else:
+            multiplier = 2 + c_div(level, 10)
+        dam *= max(2, multiplier)
 
     # Add damroll bonus - ROM: GET_DAMROLL(ch) * UMIN(100, skill) / 100
     dam += attacker.damroll * min(100, skill_total) // 100

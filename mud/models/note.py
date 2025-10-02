@@ -14,6 +14,7 @@ class Note:
     subject: str
     text: str
     timestamp: float
+    expire: float = 0.0
 
     def to_json(self) -> NoteJson:
         return NoteJson(
@@ -22,6 +23,7 @@ class Note:
             subject=self.subject,
             text=self.text,
             timestamp=self.timestamp,
+            expire=self.expire,
         )
 
     @classmethod

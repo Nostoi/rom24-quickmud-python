@@ -1,10 +1,13 @@
 import time
 
+import pytest
+
 import mud.notes as notes
 from mud import persistence
 from mud.commands.dispatcher import process_command
 from mud.models.board import BoardForceType
 from mud.models.character import character_registry
+from mud.models.constants import MAX_LEVEL
 from mud.world import create_test_character, initialize_world
 
 
@@ -37,6 +40,10 @@ def test_note_persistence(tmp_path):
         notes.load_boards()
         list_output2 = process_command(char, "note list")
         assert "hello" in list_output2.lower()
+        board = notes.find_board("general")
+        assert board is not None
+        assert board.notes
+        assert board.notes[0].expire >= board.notes[0].timestamp
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
@@ -247,6 +254,7 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
             write_level=0,
             default_recipients="imm",
             force_type=BoardForceType.INCLUDE,
+            purge_days=14,
         )
         notes.save_board(board)
 
@@ -273,6 +281,8 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
         send_output = process_command(char, "note send")
         assert "posted" in send_output.lower()
         assert board.notes[-1].to.lower() == "mortal imm"
+        expire_expected = board.notes[-1].timestamp + board.purge_days * 24 * 60 * 60
+        assert board.notes[-1].expire == pytest.approx(expire_expected)
         assert char.pcdata.in_progress is None
         assert char.pcdata.last_notes[board.storage_key()] == board.notes[-1].timestamp
     finally:
@@ -280,7 +290,7 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
         _teardown_boards(orig_dir)
 
 
-def test_note_remove_and_catchup(tmp_path):
+def test_note_remove_requires_author_or_immortal(tmp_path):
     boards_dir = tmp_path / "boards"
     orig_dir = _setup_boards(boards_dir)
     try:
@@ -293,21 +303,139 @@ def test_note_remove_and_catchup(tmp_path):
             write_level=0,
         )
         board.post("Scribe", "Hello", "Testing removal", timestamp=time.time())
-        second = board.post("Immortal", "Rules", "Read carefully", timestamp=time.time() + 1)
+        board.post("Immortal", "Rules", "Read carefully", timestamp=time.time() + 1)
         notes.save_board(board)
 
-        char = create_test_character("Scribe", 3001)
-        char.level = 50
-        char.trust = 50
+        visitor = create_test_character("Visitor", 3001)
+        visitor.level = 30
+        visitor.trust = 30
 
-        remove_output = process_command(char, "note remove 1")
-        assert "removed" in remove_output.lower()
+        deny_output = process_command(visitor, "note remove 1")
+        assert deny_output == "You are not authorized to remove this note."
+        assert len(board.notes) == 2
+
+        author = create_test_character("Scribe", 3001)
+        author.level = 40
+        author.trust = 40
+
+        author_output = process_command(author, "note remove 1")
+        assert author_output == "Note removed!"
         assert len(board.notes) == 1
-        assert board.notes[0] == second
+        assert board.notes[0].subject == "Rules"
 
-        catchup_output = process_command(char, "note catchup")
-        assert "skipped" in catchup_output.lower()
+        implementor = create_test_character("Implementor", 3001)
+        implementor.level = MAX_LEVEL
+        implementor.trust = MAX_LEVEL
+
+        imm_output = process_command(implementor, "note remove 1")
+        assert imm_output == "Note removed!"
+        assert not board.notes
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_remove_rejects_notes_not_addressed_to_character(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        board.post("Implementor", "Staff", "Immortal briefing", to="imm")
+        notes.save_board(board)
+
+        mortal = create_test_character("Adventurer", 3001)
+        mortal.level = 30
+        mortal.trust = 30
+
+        mortal_output = process_command(mortal, "note remove 1")
+        assert mortal_output == "No such note."
+        assert len(board.notes) == 1
+
+        implementor = create_test_character("Implementor", 3002)
+        implementor.level = MAX_LEVEL
+        implementor.trust = MAX_LEVEL
+
+        imm_output = process_command(implementor, "note remove 1")
+        assert imm_output == "Note removed!"
+        assert not board.notes
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_read_respects_visibility(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        board.post("Implementor", "Staff", "Immortal briefing", to="imm")
+        visible = board.post("Scribe", "News", "Public update")
+        notes.save_board(board)
+
+        mortal = create_test_character("Adventurer", 3001)
+        mortal.level = 30
+        mortal.trust = 30
+
+        hidden_output = process_command(mortal, "note read 1")
+        assert hidden_output == "No such note."
+
+        auto_output = process_command(mortal, "note")
+        assert "News" in auto_output
+        assert "Staff" not in auto_output
+
+        explicit_output = process_command(mortal, "note read 2")
+        assert "News" in explicit_output
+        assert mortal.pcdata.last_notes[board.storage_key()] == visible.timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_catchup_marks_all_read(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        first = board.post("Immortal", "Welcome", "Read the rules", timestamp=time.time())
+        second = board.post(
+            "Immortal",
+            "Changes",
+            "Policy update",
+            timestamp=first.timestamp + 1,
+        )
+        notes.save_board(board)
+
+        char = create_test_character("Archivist", 3001)
+        char.level = 45
+        char.trust = 45
+
+        output = process_command(char, "note catchup")
+        assert output == "All mesages skipped."
         assert char.pcdata.last_notes[board.storage_key()] == second.timestamp
+
+        follow_up = process_command(char, "note")
+        assert "no new notes" in follow_up.lower()
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)

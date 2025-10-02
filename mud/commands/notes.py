@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import time
+
 from mud.models.board import BoardForceType, NoteDraft
 from mud.models.character import Character, PCData
+from mud.models.constants import MAX_LEVEL
 from mud.notes import (
     DEFAULT_BOARD_NAME,
     find_board,
@@ -52,6 +55,67 @@ def _set_last_read(pcdata: PCData, board, timestamp: float) -> None:
     pcdata.last_notes[key] = max(timestamp, pcdata.last_notes.get(key, 0.0))
 
 
+_IMMORTAL_TOKENS = {
+    "imm",
+    "imms",
+    "immortal",
+    "immortals",
+    "god",
+    "gods",
+}
+
+_IMPLEMENTOR_TOKENS = {
+    "imp",
+    "imps",
+    "implementor",
+    "implementors",
+}
+
+
+def _split_tokens(value: str) -> set[str]:
+    return {token.lower() for token in value.replace(",", " ").split() if token}
+
+
+def _is_note_visible_to(char: Character, note) -> bool:
+    """Mirror ROM is_note_to checks for removal visibility."""
+
+    name = (char.name or "").strip().lower()
+    sender = (note.sender or "").strip().lower()
+    if name and sender and name == sender:
+        return True
+
+    tokens = _split_tokens(note.to or "")
+    if "all" in tokens:
+        return True
+
+    if char.is_immortal() and tokens & _IMMORTAL_TOKENS:
+        return True
+
+    trust = _get_trust(char)
+    if trust == MAX_LEVEL and tokens & _IMPLEMENTOR_TOKENS:
+        return True
+
+    if name and name in tokens:
+        return True
+
+    to_field = (note.to or "").strip()
+    if to_field.isdigit() and trust >= int(to_field):
+        return True
+
+    return False
+
+
+def _find_visible_note_index(char: Character, board, number: int) -> int | None:
+    if number < 1:
+        return None
+
+    for position, note in enumerate(board.notes, start=1):
+        if position == number:
+            return position - 1 if _is_note_visible_to(char, note) else None
+
+    return None
+
+
 def _next_readable_board(current_board, trust: int):
     readable = [board for board in iter_boards() if board.can_read(trust)]
     current_key = current_board.storage_key()
@@ -63,9 +127,11 @@ def _next_readable_board(current_board, trust: int):
     return None
 
 
-def _read_next_unread_note(pcdata: PCData, board, trust: int) -> str:
+def _read_next_unread_note(char: Character, pcdata: PCData, board, trust: int) -> str:
     last_read = _board_last_read(pcdata, board)
     for note in board.notes:
+        if not _is_note_visible_to(char, note):
+            continue
         if note.timestamp > last_read:
             _set_last_read(pcdata, board, note.timestamp)
             return f"{note.subject}\n{note.text}"
@@ -85,10 +151,16 @@ def _ensure_draft(char: Character, board) -> NoteDraft:
     draft = pcdata.in_progress
     board_key = board.storage_key()
     if draft is None or draft.board_key != board_key:
-        draft = NoteDraft(sender=char.name or "someone", board_key=board_key)
+        draft = NoteDraft(
+            sender=char.name or "someone",
+            board_key=board_key,
+            expire=board.default_expire(),
+        )
         pcdata.in_progress = draft
     else:
         draft.sender = char.name or draft.sender
+        if draft.expire is None:
+            draft.expire = board.default_expire()
     return draft
 
 
@@ -162,7 +234,7 @@ def do_note(char: Character, args: str) -> str:
 
     args = args.strip()
     if not args:
-        return _read_next_unread_note(pcdata, board, trust)
+        return _read_next_unread_note(char, pcdata, board, trust)
 
     subcmd, *rest = args.split(None, 1)
     subcmd = subcmd.lower()
@@ -174,12 +246,18 @@ def do_note(char: Character, args: str) -> str:
         if "|" not in rest_str:
             return "Usage: note post <subject>|<text>"
         subject, text = rest_str.split("|", 1)
-        note = board.post(
-            char.name or "someone",
-            subject.strip(),
-            text.strip(),
-            to=None,
-        )
+        timestamp = time.time()
+        try:
+            note = board.post(
+                char.name or "someone",
+                subject.strip(),
+                text.strip(),
+                to=None,
+                timestamp=timestamp,
+                expire=board.default_expire(base_timestamp=timestamp),
+            )
+        except ValueError as exc:
+            return str(exc)
         save_board(board)
         _set_last_read(pcdata, board, note.timestamp)
         return "Note posted."
@@ -196,12 +274,13 @@ def do_note(char: Character, args: str) -> str:
 
     if subcmd == "read":
         if not rest_str.strip():
-            return _read_next_unread_note(pcdata, board, trust)
+            return _read_next_unread_note(char, pcdata, board, trust)
         try:
-            index = int(rest_str.strip()) - 1
+            number = int(rest_str.strip())
         except ValueError:
             return "Read which note?"
-        if index < 0 or index >= len(board.notes):
+        index = _find_visible_note_index(char, board, number)
+        if index is None:
             return "No such note."
         note = board.notes[index]
         _set_last_read(pcdata, board, note.timestamp)
@@ -269,11 +348,17 @@ def do_note(char: Character, args: str) -> str:
         except ValueError as exc:
             return str(exc)
         draft.to = final
+        timestamp = time.time()
+        expire = draft.expire
+        if expire is None:
+            expire = board.default_expire(base_timestamp=timestamp)
         note = board.post(
             draft.sender or char.name or "someone",
             draft.subject,
             draft.text,
             to=final,
+            timestamp=timestamp,
+            expire=expire,
         )
         save_board(board)
         _set_last_read(pcdata, board, note.timestamp)
@@ -284,25 +369,26 @@ def do_note(char: Character, args: str) -> str:
         if not rest_str.strip():
             return "Remove which note?"
         try:
-            index = int(rest_str.strip()) - 1
+            number = int(rest_str.strip())
         except ValueError:
             return "Remove which note?"
-        if index < 0 or index >= len(board.notes):
+        index = _find_visible_note_index(char, board, number)
+        if index is None:
             return "No such note."
         note = board.notes[index]
         sender = (note.sender or "").lower()
         actor = (char.name or "").lower()
-        if not char.is_immortal() and sender != actor:
-            return "You are not the author of that note."
+        if sender != actor and trust < MAX_LEVEL:
+            return "You are not authorized to remove this note."
         del board.notes[index]
         save_board(board)
-        return "Note removed."
+        return "Note removed!"
 
     if subcmd == "catchup":
         if not board.notes:
             return "Alas, there are no notes in that board."
         last_note = board.notes[-1]
         _set_last_read(pcdata, board, last_note.timestamp)
-        return "All messages skipped."
+        return "All mesages skipped."
 
     return "Huh?"
