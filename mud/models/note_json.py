@@ -14,3 +14,4 @@ class NoteJson(JsonDataclass):
     subject: str
     text: str
     timestamp: float
+    expire: float = 0.0

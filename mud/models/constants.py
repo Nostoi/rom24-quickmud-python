@@ -14,6 +14,7 @@ class Direction(IntEnum):
 
 
 # Canonical room vnums (merc.h)
+ROOM_VNUM_LIMBO = 2
 ROOM_VNUM_SCHOOL = 3700
 
 # Command/append-file limits (merc.h)
@@ -50,6 +51,15 @@ class Position(IntEnum):
     SITTING = 6
     FIGHTING = 7
     STANDING = 8
+
+
+class Condition(IntEnum):
+    """Character condition slots (COND_* indexes in merc.h)."""
+
+    DRUNK = 0
+    FULL = 1
+    THIRST = 2
+    HUNGER = 3
 
 
 class Stat(IntEnum):
@@ -93,6 +103,28 @@ class WearLocation(IntEnum):
     WIELD = 16
     HOLD = 17
     FLOAT = 18
+
+
+class WearFlag(IntFlag):
+    """Object wear flags mirroring ROM ITEM_* bitmasks."""
+
+    TAKE = 1 << 0
+    WEAR_FINGER = 1 << 1
+    WEAR_NECK = 1 << 2
+    WEAR_BODY = 1 << 3
+    WEAR_HEAD = 1 << 4
+    WEAR_LEGS = 1 << 5
+    WEAR_FEET = 1 << 6
+    WEAR_HANDS = 1 << 7
+    WEAR_ARMS = 1 << 8
+    WEAR_SHIELD = 1 << 9
+    WEAR_ABOUT = 1 << 10
+    WEAR_WAIST = 1 << 11
+    WEAR_WRIST = 1 << 12
+    WIELD = 1 << 13
+    HOLD = 1 << 14
+    NO_SAC = 1 << 15
+    WEAR_FLOAT = 1 << 16
 
 
 class Sex(IntEnum):

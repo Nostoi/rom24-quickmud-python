@@ -3,13 +3,16 @@ from random import Random
 
 import pytest
 
+import mud.magic.effects as magic_effects
 import mud.skills.handlers as skill_handlers
+from mud.commands.combat import do_backstab, do_bash, do_berserk
 from mud.game_loop import violence_tick
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
-from mud.models.constants import AffectFlag
-from mud.skills import SkillRegistry
+from mud.models.constants import AffectFlag, Position, WeaponType
+from mud.skills import SkillRegistry, load_skills
 from mud.utils import rng_mm
+from mud.config import get_pulse_violence
 
 
 def load_registry() -> SkillRegistry:
@@ -263,3 +266,248 @@ def test_kick_requires_opponent() -> None:
         skill_handlers.kick(attacker)
 
     assert "opponent" in str(excinfo.value)
+
+
+class DummyRoom:
+    def __init__(self) -> None:
+        self.people: list[Character] = []
+
+
+class DummyWeapon:
+    def __init__(self, weapon_type: WeaponType = WeaponType.DAGGER, dice: tuple[int, int] = (2, 4)) -> None:
+        self.item_type = "weapon"
+        self.new_format = True
+        self.value = [int(weapon_type), dice[0], dice[1], 0]
+        self.weapon_stats: set[str] = set()
+
+
+def test_backstab_uses_position_and_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_skills(Path("data/skills.json"))
+
+    room = DummyRoom()
+    attacker = Character(
+        name="Rogue",
+        level=20,
+        is_npc=False,
+        max_hit=100,
+        hit=100,
+        skills={"backstab": 75, "dagger": 100},
+        position=Position.STANDING,
+    )
+    attacker.room = room
+    attacker.equipment["wield"] = DummyWeapon()
+    room.people.append(attacker)
+
+    victim = Character(
+        name="Guard",
+        level=15,
+        is_npc=True,
+        max_hit=120,
+        hit=120,
+        position=Position.STANDING,
+    )
+    victim.room = room
+    room.people.append(victim)
+
+    percent_iter = iter([10, 5])
+
+    def fake_percent() -> int:
+        return next(percent_iter, 50)
+
+    monkeypatch.setattr(rng_mm, "number_percent", fake_percent)
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: number * size)
+
+    result = do_backstab(attacker, "Guard")
+
+    assert result.startswith("You hit Guard for")
+    assert attacker.wait == 24
+    assert attacker.cooldowns.get("backstab", None) == 0
+    assert attacker.fighting is victim
+    assert victim.fighting is attacker
+    assert victim.hit == 84  # 120 - (base 9 * dagger multiplier 4)
+
+
+def test_bash_applies_wait_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_skills(Path("data/skills.json"))
+
+    room = DummyRoom()
+    attacker = Character(
+        name="Warrior",
+        level=30,
+        is_npc=False,
+        skills={"bash": 75},
+        size=2,
+        position=Position.FIGHTING,
+    )
+    attacker.room = room
+    room.people.append(attacker)
+
+    victim = Character(
+        name="Ogre",
+        level=25,
+        is_npc=True,
+        max_hit=150,
+        hit=150,
+        position=Position.FIGHTING,
+    )
+    victim.room = room
+    room.people.append(victim)
+
+    attacker.fighting = victim
+    victim.fighting = attacker
+
+    percent_iter = iter([10])
+
+    def fake_percent() -> int:
+        return next(percent_iter, 100)
+
+    monkeypatch.setattr(rng_mm, "number_percent", fake_percent)
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: b)
+
+    result = do_bash(attacker, "")
+
+    assert result.startswith("You hit Ogre for")
+    assert attacker.wait == 24
+    assert attacker.cooldowns.get("bash", None) == 0
+    assert victim.position == Position.RESTING
+    assert victim.daze == 3 * get_pulse_violence()
+
+
+def test_berserk_applies_rage_effects(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_skills(Path("data/skills.json"))
+
+    attacker = Character(
+        name="Barbarian",
+        level=20,
+        is_npc=False,
+        skills={"berserk": 75},
+        max_hit=100,
+        hit=40,
+        mana=100,
+        move=60,
+        position=Position.FIGHTING,
+        armor=[0, 0, 0, 0],
+    )
+
+    percent_iter = iter([10])
+
+    def fake_percent() -> int:
+        return next(percent_iter, 100)
+
+    base_duration = max(1, c_div(attacker.level, 8))
+
+    monkeypatch.setattr(rng_mm, "number_percent", fake_percent)
+    monkeypatch.setattr(rng_mm, "number_fuzzy", lambda n: base_duration)
+
+    result = do_berserk(attacker, "")
+
+    assert result == "Your pulse races as you are consumed by rage!"
+    assert attacker.wait == get_pulse_violence()
+    assert attacker.mana == 50
+    assert attacker.move == c_div(60, 2)
+    assert attacker.hit == 80
+    assert attacker.has_affect(AffectFlag.BERSERK)
+    assert attacker.has_spell_effect("berserk")
+    assert attacker.hitroll == max(1, c_div(attacker.level, 5))
+    assert attacker.damroll == max(1, c_div(attacker.level, 5))
+    assert attacker.armor == [40, 40, 40, 40]
+    assert attacker.cooldowns.get("berserk", None) == 0
+
+
+def test_acid_breath_applies_acid_effect(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("acid breath")
+
+    caster = Character(
+        name="Ancient Dragon",
+        level=40,
+        hit=250,
+        mana=skill.mana_cost + 25,
+        is_npc=False,
+        skills={"acid breath": 95},
+    )
+    target = Character(name="Knight", hit=320, max_hit=320, is_npc=True)
+
+    monkeypatch.setattr(SkillRegistry, "_check_improve", lambda *args, **kwargs: None)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: 200)
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: a)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    result = reg.use(caster, "acid breath", target)
+
+    assert result == 202
+    assert target.hit == 118
+    assert caster.wait == max(1, skill.lag)
+    assert caster.mana == 25
+    assert caster.cooldowns.get("acid breath", None) == 0
+
+    effects = getattr(target, "last_spell_effects", [])
+    assert effects
+    assert effects[-1] == {
+        "effect": "acid",
+        "level": 40,
+        "damage": 202,
+        "target": magic_effects.SpellTarget.CHAR,
+    }
+
+
+def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("fire breath")
+
+    room = DummyRoom()
+    caster = Character(
+        name="Red Dragon",
+        level=40,
+        hit=250,
+        mana=skill.mana_cost + 50,
+        is_npc=True,
+        skills={"fire breath": 100},
+    )
+    target = Character(name="Hero", hit=360, max_hit=360, is_npc=False)
+    bystander = Character(name="Bystander", hit=180, max_hit=180, is_npc=False)
+
+    room.people.extend([caster, target, bystander])
+    caster.room = room
+    target.room = room
+    bystander.room = room
+
+    monkeypatch.setattr(SkillRegistry, "_check_improve", lambda *args, **kwargs: None)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: 200)
+    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: a)
+
+    def fake_saves(level, victim, dtype):  # pragma: no cover - helper
+        return victim is not target
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", fake_saves)
+
+    result = reg.use(caster, "fire breath", target)
+
+    assert result == 202
+    assert target.hit == 158
+    assert bystander.hit == 130
+    assert caster.wait == max(1, skill.lag)
+    assert caster.mana == skill.mana_cost + 50 - skill.mana_cost
+    assert caster.cooldowns.get("fire breath", None) == 0
+
+    room_effects = getattr(room, "last_spell_effects", [])
+    assert {"effect": "fire", "level": 40, "damage": 101, "target": magic_effects.SpellTarget.ROOM} in room_effects
+
+    target_effects = getattr(target, "last_spell_effects", [])
+    assert target_effects
+    assert target_effects[-1] == {
+        "effect": "fire",
+        "level": 40,
+        "damage": 202,
+        "target": magic_effects.SpellTarget.CHAR,
+    }
+
+    bystander_effects = getattr(bystander, "last_spell_effects", [])
+    assert {
+        "effect": "fire",
+        "level": 10,
+        "damage": 25,
+        "target": magic_effects.SpellTarget.CHAR,
+    } in bystander_effects

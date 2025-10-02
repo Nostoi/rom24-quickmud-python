@@ -45,6 +45,7 @@ class SpellEffect:
     damroll_mod: int = 0
     saving_throw_mod: int = 0
     affect_flag: AffectFlag | None = None
+    wear_off_message: str | None = None
 
 
 @dataclass
@@ -108,7 +109,9 @@ class Character:
     inventory: list[Object] = field(default_factory=list)
     equipment: dict[str, Object] = field(default_factory=dict)
     messages: list[str] = field(default_factory=list)
+    cooldowns: dict[str, int] = field(default_factory=dict)
     connection: object | None = None
+    desc: object | None = None
     is_admin: bool = False
     # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
     imc_permission: str = "Mort"
@@ -135,6 +138,8 @@ class Character:
     third_attack_skill: int = 0
     # Combat state - currently fighting target
     fighting: Character | None = None
+    timer: int = 0
+    was_in_room: Room | None = None
     # Enhanced damage skill level (0-100)
     enhanced_damage_skill: int = 0
     # Character type flag

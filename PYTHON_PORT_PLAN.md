@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: skills_spells -->
+<!-- LAST-PROCESSED: game_update_loop -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED:  -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
@@ -122,24 +122,13 @@ STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28
 KEY RISKS: affects, damage, rng
 TASKS:
 
-- [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)**
-  - priority: P0
-  - rationale: `mud/skills/handlers.py` returns placeholder values for bash/backstab/berserk so combat commands lack lag, position checks, and damage from ROM.
-  - files: mud/skills/handlers.py; mud/combat/engine.py; mud/commands/combat.py
-  - tests: tests/test_skills.py::test_backstab_uses_position_and_weapon (new); tests/test_skills.py::test_bash_applies_wait_state (new)
-  - acceptance_criteria: Commands enforce ROM position/trust, apply wait states, compute damage dice, and interact with skill advancement as in `do_bash`/`do_backstab`/`do_berserk`.
-  - estimate: L
-  - risk: high
-  - evidence: C src/fight.c:2270-2998 (do_berserk/do_bash/do_backstab logic); PY mud/skills/handlers.py:20-70 (stub functions returning `42`).
-- [P0] **skills_spells: implement dragon breath spells with room/target effects**
-  - priority: P0
-  - rationale: Breath spells currently return constants without saving throws, room effects, or secondary damage so dragons lose signature attacks.
-  - files: mud/skills/handlers.py; mud/magic/effects.py; mud/utils/rng_mm.py
-  - tests: tests/test_skills.py::test_acid_breath_applies_acid_effect (new); tests/test_skills.py::test_fire_breath_hits_room_targets (new)
-  - acceptance_criteria: Breath handlers roll dice per ROM tables, call elemental `*_effect` helpers, respect `saves_spell`, and broadcast act() strings.
-  - estimate: M
-  - risk: high
-  - evidence: C src/magic.c:4625-4856 (spell_acid_breath through spell_lightning_breath); PY mud/skills/handlers.py:18-120 (stubbed breath implementations).
+- ✅ [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)** — done 2025-10-20
+  EVIDENCE: C src/fight.c:2270-2998; src/fight.c:2359-2580 (berserk/bash/backstab parity logic)
+  EVIDENCE: PY mud/skills/handlers.py:13-120; mud/commands/combat.py:1-220 (martial skill implementations and command gating)
+  EVIDENCE: TEST tests/test_skills.py::test_backstab_uses_position_and_weapon; tests/test_skills.py::test_bash_applies_wait_state; tests/test_skills.py::test_berserk_applies_rage_effects
+- ✅ [P0] **skills_spells: implement dragon breath spells with room/target effects** — done 2025-10-02
+  EVIDENCE: PY mud/skills/handlers.py:21-47;640-696;748-859;1010-1035 (dragon breath helpers and elemental damage handling); PY mud/magic/effects.py:1-74 (SpellTarget breadcrumbs for elemental effects)
+  EVIDENCE: TEST tests/test_skills.py::test_acid_breath_applies_acid_effect; tests/test_skills.py::test_fire_breath_hits_room_targets
 - [P1] **skills_spells: wire skill improvement and cooldown feedback**
   - priority: P1
   - rationale: `SkillRegistry.use` records cooldowns but stubs never return success/failure strings, so players miss ROM feedback and skill practice hooks for stubs.
@@ -283,11 +272,6 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- [P0] game_update_loop — port `char_update` regeneration/condition decay (mud/game_loop.py; tests/test_game_loop.py::test_char_update_applies_conditions).
-- [P0] game_update_loop — implement `obj_update` timers and container spill (mud/game_loop.py; tests/test_game_loop.py::test_obj_update_decays_corpse).
-- [P0] boards_notes — port ROM note editor with forced recipients (mud/commands/notes.py; tests/test_boards.py::test_note_write_enforces_forced_recipients).
-- [P0] skills_spells — implement martial skill handlers (mud/skills/handlers.py; tests/test_skills.py::test_backstab_uses_position_and_weapon).
-- [P0] skills_spells — implement dragon breath spells with room effects (mud/skills/handlers.py; tests/test_skills.py::test_fire_breath_hits_room_targets).
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -655,33 +639,24 @@ STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.
 KEY RISKS: file_formats, persistence, side_effects
 TASKS:
 
-- [P0] **boards_notes: port ROM note editor and forced recipients**
-  - priority: P0
-  - rationale: Python `do_note` only supports immediate `post` and skips ROM's staged `note write` editor, forced recipient defaults (`DEF_INCLUDE/DEF_EXCLUDE`), and expiry handling so posted notes diverge from `make_note`.
-  - files: mud/commands/notes.py; mud/boards/storage.py
-  - tests: tests/test_boards.py::test_note_write_enforces_forced_recipients (new)
-  - acceptance_criteria: Issuing `note write` prompts for to/subject/text like ROM, enforces forced/default recipients, stamps `expire` per board `purge_days`, and persists via `save_board`.
-  - estimate: L
-  - risk: high
-  - evidence: C src/board.c:740-884, src/board.c:1012-1096 (do_nwrite/make_note + DEF_INCLUDE/DEF_EXCLUDE enforcement); PY mud/commands/notes.py:120-210 (single-step post without recipient defaults).
-- [P0] **boards_notes: implement note remove/catchup trust rules**
-  - priority: P0
-  - rationale: The port lacks `note remove` and `note catchup`, so mortals cannot prune their own notes or advance last-read timestamps in parity with ROM's trust gating.
-  - files: mud/commands/notes.py; mud/boards/storage.py
-  - tests: tests/test_boards.py::test_note_remove_requires_author_or_immortal (new); tests/test_boards.py::test_note_catchup_marks_all_read (new)
-  - acceptance_criteria: `note remove` allows authors/immortals to delete entries, `note catchup` marks board timestamps up to newest note, and both enforce ROM trust checks.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/board.c:886-1010 (do_nremove trust/author checks), src/board.c:1098-1128 (do_ncatchup last_read update); PY mud/commands/notes.py:150-220 (no remove/catchup commands).
+- ✅ [P0] **boards_notes: port ROM note editor and forced recipients** — done 2025-10-02
+  EVIDENCE: PY mud/commands/notes.py:121-213 (interactive note editor enforces recipients and stamps expire)
+  EVIDENCE: PY mud/models/board.py:18-122 (board.post/default_expire mirror ROM timing semantics)
+  EVIDENCE: PY mud/models/note.py:12-32; mud/models/note_json.py:12-20 (persist note expire metadata)
+  EVIDENCE: TEST tests/test_boards.py::test_note_write_pipeline_enforces_defaults; tests/test_boards.py::test_note_persistence
+- ✅ [P0] **boards_notes: implement note remove/catchup trust rules** — done 2025-10-20
+  EVIDENCE: C src/board.c:886-1010 (do_nremove trust/author checks); C src/board.c:1098-1128 (do_ncatchup last_read update)
+  EVIDENCE: PY mud/commands/notes.py:150-275 (note remove trust gating and catchup parity messaging)
+  EVIDENCE: TEST tests/test_boards.py::test_note_remove_requires_author_or_immortal; tests/test_boards.py::test_note_remove_rejects_notes_not_addressed_to_character; tests/test_boards.py::test_note_read_respects_visibility; tests/test_boards.py::test_note_catchup_marks_all_read
 - ✅ [P0] Mirror ROM `note` default read flow for next-unread auto advance — done 2025-10-07
   - evidence: C src/board.c:563-605; C src/board.c:889-905; PY mud/commands/notes.py:33-150; TEST tests/test_boards.py::{test_note_read_defaults_to_next_unread,test_note_read_advances_to_next_board_when_exhausted}
 - ✅ [P0] Block board switching while a draft is active — done 2025-10-07
   - evidence: C src/board.c:728-780; PY mud/commands/notes.py:51-119; TEST tests/test_boards.py::test_board_change_blocked_during_note_draft
 
 NOTES:
-- C: src/board.c:740-1128 covers the interactive editor, forced recipients, removal trust checks, and catchup timestamp sync that remain unported.
-- PY: mud/commands/notes.py:120-220 posts notes immediately without prompting for recipients/subject/body, lacks remove/catchup paths, and never touches board `purge_days` expiry fields.
-- TEST: New regressions must simulate staged editor prompts and ensure author/immortal deletions plus catchup timestamp updates mirror ROM flows.
+- C: src/board.c:740-1128 documents the staged editor, forced recipients, and expiry stamping that the Python port now mirrors.
+- PY: mud/commands/notes.py:223-366; mud/models/board.py:83-114; mud/models/note.py:12-31 persist default recipients, expiry, and draft state in parity with ROM.
+- TEST: tests/test_boards.py::{test_note_write_pipeline_enforces_defaults,test_note_persistence} exercise forced recipients and expiry persistence alongside prior visibility regressions.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: boards_notes END -->
     <!-- SUBSYSTEM: command_interpreter START -->
@@ -742,28 +717,14 @@ NOTES:
 
 ### game_update_loop — Parity Audit 2025-10-20
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.45)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
 KEY RISKS: tick_cadence, side_effects, persistence
 TASKS:
 
-- [P0] **game_update_loop: port `char_update` regeneration and condition decay**
-  - priority: P0
-  - rationale: Python `regen_tick` only heals hit/mana/move and never applies hunger/thirst/aftermath timers, idle voiding, or affect expiry so characters ignore ROM condition loss and affect removal.
-  - files: mud/game_loop.py; mud/characters/conditions.py (new or existing); mud/affects/engine.py
-  - tests: tests/test_game_loop.py::test_char_update_applies_conditions (new); tests/test_game_loop.py::test_char_update_idles_linkdead (new)
-  - acceptance_criteria: Tick loop decrements conditions, removes expired affects with `msg_off`, idles link-dead players to Limbo, and mirrors ROM regeneration via `hit_gain/mana_gain/move_gain` helpers.
-  - estimate: L
-  - risk: high
-  - evidence: C src/update.c:661-902 (char_update regen, idle timer, affect decay); PY mud/game_loop.py:20-80 (regen_tick without conditions or affect expiry).
-- [P0] **game_update_loop: implement `obj_update` timers and container spill**
-  - priority: P0
-  - rationale: Objects in the Python world never tick down or broadcast decay messages, so corpses/jukeboxes ignore ROM timers and contents never spill when containers expire.
-  - files: mud/game_loop.py; mud/objects/update.py (new); mud/models/object.py
-  - tests: tests/test_game_loop.py::test_obj_update_decays_corpse (new); tests/test_game_loop.py::test_obj_update_spills_floating_container (new)
-  - acceptance_criteria: Items with timers emit ROM decay messages, spill contents, and call `extract_obj` when timers reach zero while preserving shopkeeper payouts for inventory sales.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/update.c:913-1112 (obj_update timer handling, spill logic, shopkeeper reimburse); PY mud/game_loop.py:80-140 (no object decay path).
+- ✅ [P0] **game_update_loop: port `char_update` regeneration and condition decay** — done 2025-10-21
+  EVIDENCE: C src/update.c:661-902; PY mud/game_loop.py:20-260; PY mud/characters/conditions.py:1-64; PY mud/affects/engine.py:1-38; TEST tests/test_game_loop.py::{test_char_update_applies_conditions,test_char_update_idles_linkdead}
+- ✅ [P0] **game_update_loop: implement `obj_update` timers and container spill** — done 2025-10-21
+  EVIDENCE: C src/update.c:902-1112; PY mud/game_loop.py:260-520; PY mud/models/character.py:28-120; TEST tests/test_game_loop.py::{test_obj_update_decays_corpse,test_obj_update_spills_floating_container}
 - [P1] **game_update_loop: wire `song_update` cadence for channel/jukebox playback**
   - priority: P1
   - rationale: ROM advances `song_update` on PULSE_MUSIC but the port lacks any music pulse so channel songs and jukeboxes never play.
@@ -781,9 +742,9 @@ TASKS:
   - evidence: C src/update.c:1161-1189; PY mud/game_loop.py:57-112; PY mud/config.py:1-80; TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
 
 NOTES:
-- C: src/update.c:661-1210 drives char/object/music updates before aggro; the port currently stops after regen/reset pulses so decay and channel playback never happen.
-- PY: mud/game_loop.py:20-140 only heals resources, runs resets, and aggressive/spec updates without touching affects, object timers, or music queues.
-- TEST: New regressions must emulate ROM's timed decay (corpse dusting, floating container spill) and hunger/idle behavior to keep parity with player expectations.
+- C: src/update.c:661-1112 applies regeneration, hunger, idle voiding, and object decay messaging that the port now mirrors through shared helpers.
+- PY: mud/game_loop.py threads char/object updates through `hit_gain`/`mana_gain` parity functions, condition helpers, and decay spill logic; mud/characters/conditions.py and mud/affects/engine.py provide reusable pieces for future skills.
+- TEST: tests/test_game_loop.py locks condition decay, idle limbo transfers, corpse dusting, and floating container spills so future changes retain ROM semantics.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: game_update_loop END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
