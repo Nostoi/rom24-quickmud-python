@@ -1,4 +1,4 @@
-<!-- LAST-PROCESSED: game_update_loop -->
+<!-- LAST-PROCESSED: security_auth_bans -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED:  -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
@@ -85,7 +85,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans -->
 <!-- SUBSYSTEM: combat START -->
 
 ### combat — Parity Audit 2025-10-20
@@ -272,6 +272,13 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- combat: compute weapon selection and THAC0 using ROM skill tables
+- combat: restore parry/dodge/shield defensive rolls with skill improvement
+- skills_spells: port martial skill handlers (bash/backstab/berserk)
+- skills_spells: implement dragon breath spells with room/target effects
+- login_account_nanny: enforce ROM name and site gating before account auto-creation
+- networking_telnet: add telnet option negotiation and buffered output like ROM process_output
+- security_auth_bans: load persistent ban list during server startup
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -328,7 +335,7 @@ NOTES:
 
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans -->
 <!-- SUBSYSTEM: combat START -->
 
 ### combat — Parity Audit 2025-10-20
@@ -472,6 +479,134 @@ NOTES:
 - TEST: tests/test_movement_portals.py locks curse blocking, random destination persistence, and charge/follower parity behaviors.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
+<!-- SUBSYSTEM: persistence START -->
+
+### persistence — Parity Audit 2025-10-20
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.24)
+KEY RISKS: file_formats, side_effects, flags
+TASKS:
+
+- ✅ [P0] **persistence: persist carried/equipped object state with ROM serialization** — done 2025-10-03
+  EVIDENCE: C src/save.c:526-645 (`fwrite_obj` serializes nested object state with wear_loc, timer, cost, values, affects)
+  EVIDENCE: PY mud/persistence.py:25-220 (ObjectSave snapshots, serialization helpers, and load/save upgrades for inventory/equipment)
+  EVIDENCE: PY mud/models/object.py:1-60; mud/spawning/obj_spawner.py:1-80 (runtime objects track ROM wear_loc/timer/cost metadata for persistence)
+  EVIDENCE: TEST tests/test_persistence.py::test_inventory_round_trip_preserves_object_state
+- [P1] **persistence: restore pcdata metadata and login counters on save/load**
+  - priority: P1
+  - rationale: The port drops prompt/title/played/logon fields so players lose MOTD gating, color preferences, and board pointers after reconnecting.
+  - files: mud/persistence.py
+  - tests: tests/test_persistence.py::test_pcdata_metadata_round_trip (new)
+  - acceptance_criteria: PlayerSave captures logon timestamp, played minutes, prompt, title, and board storage key so `load_character` reproduces ROM `fread_char` defaults.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/save.c:330-520 (`fwrite_char` writes prompt/title/played/logon/board); PY mud/persistence.py:32-190 (PlayerSave omits those fields and resets board metadata each login).
+
+NOTES:
+- C: src/save.c:330-645 persists prompts, playtime counters, and full object trees via `fwrite_char`/`fwrite_obj`.
+- PY: mud/persistence.py:32-198 collapses inventory to prototype identifiers and never records prompt/title/logon metadata.
+- TEST: tests/test_persistence.py only covers basic stat round-trips and misses inventory/equipment parity assertions.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: persistence END -->
+<!-- SUBSYSTEM: login_account_nanny START -->
+
+### login_account_nanny — Parity Audit 2025-10-20
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.20)
+KEY RISKS: security, lag_wait, side_effects
+TASKS:
+
+- [P0] **login_account_nanny: enforce ROM name and site gating before account auto-creation**
+  - priority: P0
+  - rationale: The asyncio login loop skips `check_parse_name`, `wizlock`, `newlock`, and `BAN_NEWBIES` checks when it autocreates accounts, letting illegal names and banned hosts join.
+  - files: mud/net/connection.py; mud/account/account_service.py
+  - tests: tests/test_account_auth.py::test_illegal_name_rejected (new); tests/test_account_auth.py::test_newlock_blocks_new_accounts (new)
+  - acceptance_criteria: Connections must reject names failing ROM validation, honor wizlock/newlock/newbie bans before account creation, and surface ROM nanny prompts.
+  - estimate: M
+  - risk: high
+  - evidence: C src/nanny.c:188-244 (`CON_GET_NAME` validates name, wizlock/newlock/newbie bans before password); PY mud/net/connection.py:33-102 (auto-creates accounts after a single password prompt without validation); PY mud/account/account_service.py:57-142 (creates accounts without ROM nanny gating).
+- [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow**
+  - priority: P1
+  - rationale: ROM disables echo during password entry and offers CON_BREAK_CONNECT handshakes; the port leaves echo on and skips duplicate-session prompts beyond a yes/no reconnect.
+  - files: mud/net/connection.py; mud/net/protocol.py
+  - tests: tests/test_account_auth.py::test_password_echo_suppressed (new)
+  - acceptance_criteria: Password prompts send IAC WILL/WONT ECHO transitions, reuse ROM reconnect messaging, and restore echo on success/failure.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/comm.c:118-210 (`echo_off_str`/`echo_on_str` negotiation); C src/nanny.c:246-320 (`CON_GET_OLD_PASSWORD` echo handling and reconnect flow); PY mud/net/connection.py:40-120 (password input read with line buffering and no telnet negotiation).
+
+NOTES:
+- C: src/nanny.c:180-360 drives the state machine for name, password, reconnection, and wizlock/newlock enforcement with telnet echo toggles.
+- PY: mud/net/connection.py:20-170 flattens the nanny flow into a linear prompt that creates accounts before validation and never toggles echo.
+- TEST: tests/test_account_auth.py only covers high-level ban helpers and lacks nanny state regression coverage.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: login_account_nanny END -->
+<!-- SUBSYSTEM: networking_telnet START -->
+
+### networking_telnet — Parity Audit 2025-10-20
+
+STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.18)
+KEY RISKS: lag_wait, networking, side_effects
+TASKS:
+
+- [P0] **networking_telnet: add telnet option negotiation and buffered output like ROM process_output**
+  - priority: P0
+  - rationale: The asyncio server writes raw strings and reads lines verbatim, so client IAC negotiations and GA prompts appear in-band and echo is never disabled for passwords.
+  - files: mud/net/connection.py; mud/net/protocol.py
+  - tests: tests/test_telnet_server.py::test_telnet_negotiation_filtered (new)
+  - acceptance_criteria: Telnet control codes (IAC WILL/WONT/DO/DONT) are filtered, GA is emitted with prompts, and password prompts suppress echo consistent with ROM's descriptor buffers.
+  - estimate: M
+  - risk: high
+  - evidence: C src/comm.c:118-210 (telnet control constants and go-ahead strings); C src/comm.c:836-1112 (`read_from_descriptor`/`process_output` filter IAC and send GA); PY mud/net/connection.py:20-200 (reads/writes plain text); PY mud/net/protocol.py:8-42 (no telnet control handling).
+- [P1] **networking_telnet: send ROM help_greeting and descriptor initialization on connect**
+  - priority: P1
+  - rationale: ROM greets players with the configurable MOTD/help banner and seeds descriptor flags, while the port prints a hardcoded message without ANSI prompt negotiation.
+  - files: mud/net/connection.py; mud/net/telnet_server.py; mud/help/loader.py
+  - tests: tests/test_telnet_server.py::test_help_greeting_displayed (new)
+  - acceptance_criteria: Connections load `help_greeting`, honor ansi prompts when configured, and mirror descriptor initialization before entering the nanny state machine.
+  - estimate: S
+  - risk: low
+  - evidence: C src/comm.c:577-612/1037-1055 (`help_greeting` banner before CON_GET_NAME); PY mud/net/connection.py:28-60 (prints "Welcome to PythonMUD" with no configuration hook).
+
+NOTES:
+- C: src/comm.c:480-1112 initializes descriptors, negotiates telnet options, and buffers output before handing control to `nanny`.
+- PY: mud/net/connection.py:16-210 handles networking with direct readline/write calls, bypassing telnet negotiation and buffered output semantics.
+- TEST: tests/test_telnet_server.py exercises basic connect/disconnect but lacks telnet control and greeting assertions.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: networking_telnet END -->
+<!-- SUBSYSTEM: security_auth_bans START -->
+
+### security_auth_bans — Parity Audit 2025-10-20
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.26)
+KEY RISKS: security, file_formats
+TASKS:
+
+- [P0] **security_auth_bans: load persistent ban list during server startup**
+  - priority: P0
+  - rationale: ROM loads `ban.txt` on boot so permanent bans survive restarts; the asyncio server never calls `load_bans_file`, letting previously banned hosts straight back in.
+  - files: mud/net/telnet_server.py; mud/security/bans.py
+  - tests: tests/test_account_auth.py::test_permanent_ban_survives_restart (new)
+  - acceptance_criteria: Starting the server reads `data/bans.txt`, populates in-memory entries, and blocks banned hosts without invoking admin commands.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/ban.c:61-120 (`load_bans` runs at boot to populate ban_list); PY mud/net/telnet_server.py:12-24 (initialization skips loading bans); PY mud/security/bans.py:235-268 (`load_bans_file` unused).
+- [P1] **security_auth_bans: persist account-level denies alongside host bans**
+  - priority: P1
+  - rationale: ROM supports `PLR_DENY` characters that remain blocked after save/load, but the port only tracks in-memory sets so denied accounts reset on restart.
+  - files: mud/security/bans.py; mud/persistence.py
+  - tests: tests/test_bans.py::test_plr_deny_persists_across_restart (new)
+  - acceptance_criteria: Account-level deny state is stored in `data/bans.txt` (or a companion file) and reloaded so denied players remain blocked after reboot.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/save.c:214-260 (`fwrite_char` writes `Act` flags including `PLR_DENY`); C src/nanny.c:200-220 (denied players kicked at login); PY mud/security/bans.py:160-214 (account bans stored in transient set only).
+
+NOTES:
+- C: src/ban.c:61-180 persists and reloads permanent bans; src/nanny.c:200-224 enforces `PLR_DENY` on connect.
+- PY: mud/net/telnet_server.py:12-24 never loads `data/bans.txt`, and mud/security/bans.py:150-210 forgets account bans once the process exits.
+- TEST: tests/test_account_auth.py covers ban helpers but does not assert restart persistence or PLR_DENY enforcement.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: security_auth_bans END -->
 <!-- PARITY-GAPS-END -->
 
 
@@ -725,15 +860,10 @@ TASKS:
   EVIDENCE: C src/update.c:661-902; PY mud/game_loop.py:20-260; PY mud/characters/conditions.py:1-64; PY mud/affects/engine.py:1-38; TEST tests/test_game_loop.py::{test_char_update_applies_conditions,test_char_update_idles_linkdead}
 - ✅ [P0] **game_update_loop: implement `obj_update` timers and container spill** — done 2025-10-21
   EVIDENCE: C src/update.c:902-1112; PY mud/game_loop.py:260-520; PY mud/models/character.py:28-120; TEST tests/test_game_loop.py::{test_obj_update_decays_corpse,test_obj_update_spills_floating_container}
-- [P1] **game_update_loop: wire `song_update` cadence for channel/jukebox playback**
-  - priority: P1
-  - rationale: ROM advances `song_update` on PULSE_MUSIC but the port lacks any music pulse so channel songs and jukeboxes never play.
-  - files: mud/game_loop.py; mud/music/__init__.py (new); mud/commands/music.py
-  - tests: tests/test_music.py::test_song_update_broadcasts_global (new); tests/test_music.py::test_jukebox_cycles_queue (new)
-  - acceptance_criteria: Pulse counters include music cadence, invoking a ported `song_update` that rotates channel songs and jukebox queues with NOMUSIC filtering.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/update.c:1151-1189 (PULSE_MUSIC scheduling); C src/music.c:40-150 (song_update logic); PY mud/game_loop.py:40-140 (no music counters or updates).
+- ✅ [P1] **game_update_loop: wire `song_update` cadence for channel/jukebox playback** — done 2025-10-02
+  EVIDENCE: C src/update.c:1151-1189 (PULSE_MUSIC scheduling); C src/music.c:40-150 (song_update logic)
+  EVIDENCE: PY mud/game_loop.py:600-700 (music pulse counter); PY mud/music/__init__.py:1-140 (channel/jukebox updates)
+  EVIDENCE: TEST tests/test_music.py::test_song_update_broadcasts_global; tests/test_music.py::test_jukebox_cycles_queue
 - ✅ [P0] Restore aggressive mobile updates on every pulse — done 2025-09-27
   - evidence: C src/update.c:1198-1210; PY mud/ai/aggressive.py:13-119; PY mud/game_loop.py:117-145; TEST tests/test_game_loop.py::test_aggressive_mobile_attacks_player
 - ✅ [P1] Decrement wait/daze on PULSE_VIOLENCE cadence — done 2025-09-12
