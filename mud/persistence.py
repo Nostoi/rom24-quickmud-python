@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from mud.models.character import Character, PCData, character_registry
-from mud.models.json_io import dump_dataclass, load_dataclass
+from mud.models.constants import WearLocation
+from mud.models.json_io import dataclass_from_dict, dump_dataclass, load_dataclass
+from mud.models.obj import Affect
 from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
 from mud.registry import room_registry
 from mud.spawning.obj_spawner import spawn_object
@@ -25,6 +29,38 @@ def _normalize_int_list(values: Iterable[int] | None, length: int) -> list[int]:
         except (TypeError, ValueError):
             normalized[idx] = 0
     return normalized
+
+
+@dataclass
+class ObjectAffectSave:
+    """Serializable snapshot of an object's affect."""
+
+    where: int = 0
+    type: int = 0
+    level: int = 0
+    duration: int = 0
+    location: int = 0
+    modifier: int = 0
+    bitvector: int = 0
+
+
+@dataclass
+class ObjectSave:
+    """Serializable snapshot of a runtime object and its nested contents."""
+
+    vnum: int
+    wear_slot: str | None = None
+    wear_loc: int = int(WearLocation.NONE)
+    level: int = 0
+    timer: int = 0
+    cost: int = 0
+    value: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    extra_flags: int = 0
+    condition: int | str | None = None
+    enchanted: bool = False
+    item_type: str | None = None
+    contains: list["ObjectSave"] = field(default_factory=list)
+    affects: list[ObjectAffectSave] = field(default_factory=list)
 
 
 @dataclass
@@ -72,11 +108,180 @@ class PlayerSave:
     wiznet: int = 0
     log_commands: bool = False
     room_vnum: int | None = None
-    inventory: list[int] = field(default_factory=list)
-    equipment: dict[str, int] = field(default_factory=dict)
+    inventory: list[ObjectSave] = field(default_factory=list)
+    equipment: dict[str, ObjectSave] = field(default_factory=dict)
     aliases: dict[str, str] = field(default_factory=dict)
     board: str = DEFAULT_BOARD_NAME
     last_notes: dict[str, float] = field(default_factory=dict)
+
+
+_SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
+for _loc in WearLocation:
+    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower()] = int(_loc)
+    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower().replace("_", "")] = int(_loc)
+_SLOT_TO_WEAR_LOC_MAP.update(
+    {
+        "fingerleft": int(WearLocation.FINGER_L),
+        "fingerright": int(WearLocation.FINGER_R),
+        "neck1": int(WearLocation.NECK_1),
+        "neck2": int(WearLocation.NECK_2),
+        "wristleft": int(WearLocation.WRIST_L),
+        "wristright": int(WearLocation.WRIST_R),
+    }
+)
+
+
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _slot_to_wear_loc(slot: str | None) -> int:
+    if not slot:
+        return int(WearLocation.NONE)
+    key = slot.lower().replace(" ", "")
+    if key in _SLOT_TO_WEAR_LOC_MAP:
+        return _SLOT_TO_WEAR_LOC_MAP[key]
+    return int(WearLocation.NONE)
+
+
+def _serialize_affects(obj: Any) -> list[ObjectAffectSave]:
+    affects: list[ObjectAffectSave] = []
+    for affect in getattr(obj, "affected", []) or []:
+        affects.append(
+            ObjectAffectSave(
+                where=_safe_int(getattr(affect, "where", 0)),
+                type=_safe_int(getattr(affect, "type", 0)),
+                level=_safe_int(getattr(affect, "level", 0)),
+                duration=_safe_int(getattr(affect, "duration", 0)),
+                location=_safe_int(getattr(affect, "location", 0)),
+                modifier=_safe_int(getattr(affect, "modifier", 0)),
+                bitvector=_safe_int(getattr(affect, "bitvector", 0)),
+            )
+        )
+    return affects
+
+
+def _serialize_object(obj: Any, *, wear_slot: str | None = None) -> ObjectSave:
+    proto = getattr(obj, "prototype", None)
+    vnum = getattr(proto, "vnum", None)
+    if vnum is None:
+        raise ValueError("Cannot serialize object without prototype vnum")
+
+    value_source = getattr(obj, "value", None)
+    if not value_source and proto is not None:
+        value_source = getattr(proto, "value", None)
+
+    return ObjectSave(
+        vnum=_safe_int(vnum),
+        wear_slot=wear_slot,
+        wear_loc=_safe_int(getattr(obj, "wear_loc", _slot_to_wear_loc(wear_slot)), int(WearLocation.NONE)),
+        level=_safe_int(getattr(obj, "level", getattr(proto, "level", 0))),
+        timer=_safe_int(getattr(obj, "timer", 0)),
+        cost=_safe_int(getattr(obj, "cost", getattr(proto, "cost", 0))),
+        value=_normalize_int_list(value_source, 5),
+        extra_flags=_safe_int(getattr(obj, "extra_flags", getattr(proto, "extra_flags", 0))),
+        condition=getattr(obj, "condition", getattr(proto, "condition", None)),
+        enchanted=bool(getattr(obj, "enchanted", False)),
+        item_type=getattr(obj, "item_type", getattr(proto, "item_type", None)),
+        contains=[_serialize_object(child) for child in getattr(obj, "contained_items", []) or []],
+        affects=_serialize_affects(obj),
+    )
+
+
+def _deserialize_object(snapshot: ObjectSave) -> Any:
+    obj = spawn_object(snapshot.vnum)
+    if obj is None:
+        return None
+
+    obj.level = _safe_int(snapshot.level, getattr(obj, "level", 0))
+    obj.timer = _safe_int(snapshot.timer, getattr(obj, "timer", 0))
+    obj.cost = _safe_int(snapshot.cost, getattr(obj, "cost", 0))
+    obj.value = _normalize_int_list(snapshot.value, 5)
+    obj.extra_flags = _safe_int(snapshot.extra_flags, getattr(obj, "extra_flags", 0))
+    obj.condition = snapshot.condition if snapshot.condition is not None else getattr(obj, "condition", 0)
+    obj.enchanted = bool(snapshot.enchanted)
+    obj.item_type = snapshot.item_type or getattr(obj, "item_type", None)
+    wear_loc = snapshot.wear_loc if snapshot.wear_loc is not None else _slot_to_wear_loc(snapshot.wear_slot)
+    obj.wear_loc = _safe_int(wear_loc, int(WearLocation.NONE))
+
+    obj.affected = []
+    for affect in snapshot.affects:
+        obj.affected.append(
+            Affect(
+                where=_safe_int(getattr(affect, "where", 0)),
+                type=_safe_int(getattr(affect, "type", 0)),
+                level=_safe_int(getattr(affect, "level", 0)),
+                duration=_safe_int(getattr(affect, "duration", 0)),
+                location=_safe_int(getattr(affect, "location", 0)),
+                modifier=_safe_int(getattr(affect, "modifier", 0)),
+                bitvector=_safe_int(getattr(affect, "bitvector", 0)),
+            )
+        )
+
+    obj.contained_items = []
+    for child_snapshot in snapshot.contains:
+        child = _deserialize_object(child_snapshot)
+        if child is not None:
+            obj.contained_items.append(child)
+
+    return obj
+
+
+def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
+    upgraded: dict[str, Any] = dict(raw_data)
+
+    raw_inventory = upgraded.get("inventory", [])
+    if isinstance(raw_inventory, list):
+        new_inventory: list[dict[str, Any]] = []
+        for entry in raw_inventory:
+            if isinstance(entry, dict):
+                normalized = dict(entry)
+                normalized.setdefault("wear_loc", normalized.get("wear_loc", int(WearLocation.NONE)))
+                normalized.setdefault("wear_slot", normalized.get("wear_slot"))
+                normalized.setdefault("value", _normalize_int_list(normalized.get("value", []), 5))
+                normalized.setdefault("contains", [])
+                normalized.setdefault("affects", [])
+                new_inventory.append(normalized)
+            elif entry is not None:
+                new_inventory.append(
+                    {
+                        "vnum": _safe_int(entry),
+                        "wear_loc": int(WearLocation.NONE),
+                        "wear_slot": None,
+                        "value": [0, 0, 0, 0, 0],
+                        "contains": [],
+                        "affects": [],
+                    }
+                )
+        upgraded["inventory"] = new_inventory
+
+    raw_equipment = upgraded.get("equipment", {})
+    if isinstance(raw_equipment, dict):
+        new_equipment: dict[str, dict[str, Any]] = {}
+        for slot, entry in raw_equipment.items():
+            if isinstance(entry, dict):
+                normalized = dict(entry)
+                normalized.setdefault("wear_slot", slot)
+                normalized.setdefault("wear_loc", _slot_to_wear_loc(slot))
+                normalized.setdefault("value", _normalize_int_list(normalized.get("value", []), 5))
+                normalized.setdefault("contains", [])
+                normalized.setdefault("affects", [])
+                new_equipment[slot] = normalized
+            elif entry is not None:
+                new_equipment[slot] = {
+                    "vnum": _safe_int(entry),
+                    "wear_slot": slot,
+                    "wear_loc": _slot_to_wear_loc(slot),
+                    "value": [0, 0, 0, 0, 0],
+                    "contains": [],
+                    "affects": [],
+                }
+        upgraded["equipment"] = new_equipment
+
+    return upgraded
 
 
 PLAYERS_DIR = Path("data/players")
@@ -137,8 +342,8 @@ def save_character(char: Character) -> None:
         wiznet=getattr(char, "wiznet", 0),
         log_commands=bool(getattr(char, "log_commands", False)),
         room_vnum=char.room.vnum if getattr(char, "room", None) else None,
-        inventory=[obj.prototype.vnum for obj in char.inventory],
-        equipment={slot: obj.prototype.vnum for slot, obj in char.equipment.items()},
+        inventory=[_serialize_object(obj) for obj in char.inventory],
+        equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
         aliases=dict(getattr(char, "aliases", {})),
         board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
@@ -158,7 +363,8 @@ def load_character(name: str) -> Character | None:
     if not path.exists():
         return None
     with path.open() as f:
-        data = load_dataclass(PlayerSave, f)
+        raw_data = json.load(f)
+    data = dataclass_from_dict(PlayerSave, _upgrade_legacy_save(raw_data))
     armor = _normalize_int_list(getattr(data, "armor", []), 4)
     perm_stat = _normalize_int_list(getattr(data, "perm_stat", []), 5)
     mod_stat = _normalize_int_list(getattr(data, "mod_stat", []), 5)
@@ -200,13 +406,13 @@ def load_character(name: str) -> Character | None:
         room = room_registry.get(data.room_vnum)
         if room:
             room.add_character(char)
-    for vnum in data.inventory:
-        obj = spawn_object(vnum)
-        if obj:
+    for snapshot in data.inventory:
+        obj = _deserialize_object(snapshot)
+        if obj is not None:
             char.add_object(obj)
-    for slot, vnum in data.equipment.items():
-        obj = spawn_object(vnum)
-        if obj:
+    for slot, snapshot in data.equipment.items():
+        obj = _deserialize_object(snapshot)
+        if obj is not None:
             char.equip_object(obj, slot)
     # restore aliases
     try:

@@ -340,6 +340,15 @@ class OffFlag(IntFlag):
     ASSIST_VNUM = 1 << 20  # (U)
 
 
+class AreaFlag(IntFlag):
+    """Area flags from ROM merc.h AREA_* defines."""
+
+    NONE = 0
+    CHANGED = 1 << 0  # AREA_CHANGED
+    ADDED = 1 << 1  # AREA_ADDED
+    LOADING = 1 << 2  # AREA_LOADING
+
+
 class RoomFlag(IntFlag):
     """Room flags from ROM merc.h ROOM_* defines"""
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -7,6 +8,7 @@ import pytest
 import mud.game_loop as game_loop
 from mud.commands import process_command
 from mud.imc import get_state, imc_enabled, maybe_open_socket, reset_state
+from mud.imc.commands import IMCPacket
 from mud.imc.protocol import Frame, parse_frame, serialize_frame
 from mud.world import create_test_character, initialize_world
 
@@ -315,3 +317,44 @@ def test_idle_pump_runs_when_enabled(monkeypatch, tmp_path):
         game_loop._point_counter = previous_counter
 
     assert after == before + 1
+
+
+@pytest.fixture
+def imc_default_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    root = _default_imc_dir()
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(root / "imc.config"))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(root / "imc.channels"))
+    monkeypatch.setenv("IMC_HELP_PATH", str(root / "imc.help"))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(root / "imc.commands"))
+    reset_state()
+    try:
+        yield
+    finally:
+        reset_state()
+
+
+def test_maybe_open_socket_loads_commands(imc_default_environment: None) -> None:
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+
+    command = state.commands["imc"]
+    assert command.function == "imc_other"
+    assert command.permission == "Mort"
+    assert command.requires_connection is False
+
+    alias = state.commands["ichan"]
+    assert alias.name == "imclisten"
+    assert "ichan" in alias.aliases
+
+
+def test_maybe_open_socket_registers_packet_handlers(
+    imc_default_environment: None,
+) -> None:
+    state = maybe_open_socket(force_reload=True)
+    packet = IMCPacket(type="who", payload={})
+
+    state.dispatch_packet(packet)
+
+    assert packet.handled_by == "imc_recv_who"
+    assert state.packet_handlers["keepalive-request"].__name__ == "imc_send_keepalive"

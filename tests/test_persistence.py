@@ -1,5 +1,7 @@
 import mud.persistence as persistence
 from mud.models.character import character_registry
+from mud.models.constants import WearLocation
+from mud.models.obj import Affect
 from mud.world import create_test_character, initialize_world
 
 
@@ -46,3 +48,59 @@ def test_save_and_load_world(tmp_path):
     names = {c.name for c in loaded}
     assert names == {"One", "Two"}
     assert all(c.room.vnum == 3001 for c in loaded)
+
+
+def test_inventory_round_trip_preserves_object_state(
+    tmp_path,
+    inventory_object_factory,
+):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Saver", 3001)
+    container = inventory_object_factory(3010)
+    nested = inventory_object_factory(3012)
+    weapon = inventory_object_factory(3022)
+
+    container.timer = 12
+    container.cost = 777
+    container.level = 8
+    container.value[0] = 999
+    container.affected = [Affect(where=0, type=0, level=5, duration=3, location=2, modifier=4, bitvector=0)]
+    container.contained_items.append(nested)
+
+    nested.timer = 2
+    nested.value[1] = 55
+
+    weapon.timer = 5
+    weapon.cost = 4444
+    weapon.value[2] = 13
+    weapon.wear_loc = int(WearLocation.WIELD)
+
+    char.add_object(container)
+    char.equip_object(weapon, "wield")
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Saver")
+    assert loaded is not None
+
+    loaded_container = next(obj for obj in loaded.inventory if obj.prototype.vnum == 3010)
+    assert loaded_container.timer == 12
+    assert loaded_container.cost == 777
+    assert loaded_container.level == 8
+    assert loaded_container.value[0] == 999
+    assert loaded_container.affected and loaded_container.affected[0].modifier == 4
+    assert len(loaded_container.contained_items) == 1
+    child = loaded_container.contained_items[0]
+    assert child.prototype.vnum == nested.prototype.vnum
+    assert child.timer == 2
+    assert child.value[1] == 55
+
+    equipped = loaded.equipment["wield"]
+    assert equipped.prototype.vnum == weapon.prototype.vnum
+    assert equipped.timer == 5
+    assert equipped.cost == 4444
+    assert equipped.value[2] == 13
+    assert int(getattr(equipped, "wear_loc", WearLocation.NONE)) == int(WearLocation.WIELD)

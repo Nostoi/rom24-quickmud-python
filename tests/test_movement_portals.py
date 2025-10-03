@@ -1,7 +1,8 @@
 from mud.commands.dispatcher import process_command
-from mud.models.constants import AffectFlag, PortalFlag, RoomFlag
+from mud.models.constants import AffectFlag, PortalFlag, Position, RoomFlag
 from mud.registry import room_registry
 from mud.world import create_test_character, initialize_world
+from mud.world.movement import move_character_through_portal
 
 
 def test_cursed_player_blocked_by_nocurse_portal(portal_factory):
@@ -117,3 +118,22 @@ def test_enter_portal_does_not_add_wait(portal_factory):
 
     assert out == "You walk through a shimmering portal and find yourself somewhere else..."
     assert ch.wait == 0
+
+
+def test_move_through_portal_blocked_while_fighting(portal_factory):
+    initialize_world("area/area.lst")
+    ch = create_test_character("Fighter", 3001)
+    opponent = create_test_character("Opponent", 3001)
+
+    portal = portal_factory(3001, to_vnum=3054)
+
+    ch.fighting = opponent
+    opponent.fighting = ch
+    ch.position = int(Position.FIGHTING)
+    ch.messages.clear()
+
+    out = move_character_through_portal(ch, portal)
+
+    assert out == "No way!  You are still fighting!"
+    assert ch.room.vnum == 3001
+    assert "No way!  You are still fighting!" in ch.messages

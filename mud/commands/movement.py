@@ -49,6 +49,9 @@ def do_enter(char: Character, args: str = "") -> str:
     if not target:
         return "Enter what?"
 
+    if getattr(char, "fighting", None) is not None:
+        return "No way!  You are still fighting!"
+
     # Find a portal object in the room matching target token
     portal = None
     for obj in getattr(char.room, "contents", []):

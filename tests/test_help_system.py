@@ -1,4 +1,5 @@
 from pathlib import Path
+from pathlib import Path
 
 from mud.commands.dispatcher import process_command
 from mud.loaders.help_loader import load_help_file
@@ -39,6 +40,22 @@ def test_help_respects_trust_levels():
     immortal = Character(name="Imm", level=60)
     result = process_command(immortal, "help wizhelp")
     assert "Syntax: wizhelp" in result
+
+
+def test_help_restricted_topic_logs_request(monkeypatch, tmp_path):
+    help_path = Path(__file__).resolve().parent.parent / "data" / "help.json"
+    monkeypatch.chdir(tmp_path)
+    load_help_file(help_path)
+
+    ch = Character(name="Newbie", level=1, trust=0, is_npc=False)
+    ch.room = Room(vnum=3001)
+
+    result = process_command(ch, "help wizhelp")
+
+    log_path = Path("log") / OHELPS_FILE
+    assert log_path.exists()
+    assert "[ 3001] Newbie: wizhelp" in log_path.read_text(encoding="utf-8")
+    assert result == "No help on that word."
 
 
 def test_help_reconstructs_multi_word_keywords():

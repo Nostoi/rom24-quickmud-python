@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from mud.models.character import Character, character_registry
 from mud.net.ansi import translate_ansi
@@ -45,9 +45,12 @@ def broadcast_global(
     message: str,
     channel: str,
     exclude: Character | None = None,
+    should_send: Callable[[Character], bool] | None = None,
 ) -> None:
     for char in list(character_registry):
         if char is exclude:
+            continue
+        if should_send is not None and not should_send(char):
             continue
         if channel in getattr(char, "muted_channels", set()):
             continue
