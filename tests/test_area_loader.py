@@ -6,7 +6,7 @@ import pytest
 from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
 from mud.loaders.reset_loader import validate_resets
-from mud.models.constants import RoomFlag
+from mud.models.constants import AreaFlag, RoomFlag
 from mud.models.help import help_registry
 from mud.registry import area_registry, room_registry
 from mud.scripts.convert_are_to_json import clear_registries, convert_area
@@ -91,6 +91,31 @@ def test_areadata_parsing(tmp_path):
     assert area.builders == "Alice"
     assert area.security == 9
     assert area.area_flags == 3
+    area_registry.clear()
+
+
+def test_area_loader_seeds_rom_defaults(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "defaults.are~\n"
+        "Defaults~\n"
+        "Credits~\n"
+        "0 0\n"
+        "#$\n"
+    )
+    path = tmp_path / "defaults.are"
+    path.write_text(content, encoding="latin-1")
+
+    area = load_area_file(str(path))
+
+    assert area.age == 15
+    assert area.nplayer == 0
+    assert area.empty is False
+    assert area.security == 9
+    assert area.builders == "None"
+    assert area.area_flags == AreaFlag.LOADING
+
     area_registry.clear()
 
 

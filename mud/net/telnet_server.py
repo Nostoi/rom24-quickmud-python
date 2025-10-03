@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 
 from mud.db.migrations import run_migrations
+from mud.security import bans
 from mud.world.world_state import initialize_world
 
 from .connection import handle_connection
@@ -14,8 +15,10 @@ async def create_server(
     """Return a started telnet server without blocking the loop."""
     # Initialize database tables
     run_migrations()
-    # Initialize world data
+    # Initialize world data (resets transient ban/account state)
     initialize_world(area_list)
+    # Reload persistent ban entries after world bootstrap clears runtime registries
+    bans.load_bans_file()
     return await asyncio.start_server(handle_connection, host, port)
 
 

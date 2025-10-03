@@ -1,4 +1,5 @@
 from mud.models.area import Area
+from mud.models.constants import AreaFlag
 from mud.registry import area_registry
 
 from .base_loader import BaseTokenizer
@@ -26,6 +27,14 @@ def load_area_file(filepath: str) -> Area:
         lines = f.readlines()
     tokenizer = BaseTokenizer(lines)
     area = Area()
+    # Mirror ROM load_area defaults so freshly loaded areas age before
+    # repopping and expose builder/security metadata to staff tools.
+    area.age = 15
+    area.nplayer = 0
+    area.empty = False
+    area.security = 9
+    area.builders = "None"
+    area.area_flags = AreaFlag.LOADING
     while True:
         line = tokenizer.next_line()
         if line is None:

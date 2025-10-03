@@ -35,6 +35,71 @@ class LoginResult(NamedTuple):
 
 _active_accounts: set[str] = set()
 
+_RESERVED_NAMES = {
+    "all",
+    "auto",
+    "immortal",
+    "self",
+    "someone",
+    "something",
+    "the",
+    "you",
+    "loner",
+    "none",
+}
+
+
+def sanitize_account_name(username: str) -> str:
+    """Trim surrounding whitespace from a submitted account name."""
+
+    return username.strip()
+
+
+def is_valid_account_name(username: str) -> bool:
+    """Return True when the candidate matches ROM's `check_parse_name`."""
+
+    candidate = sanitize_account_name(username)
+    if not candidate:
+        return False
+
+    lowered = candidate.lower()
+    if lowered in _RESERVED_NAMES:
+        return False
+
+    capitalized = candidate.capitalize()
+    if capitalized != "Alander" and (
+        capitalized.startswith("Alan") or capitalized.endswith("Alander")
+    ):
+        return False
+
+    if len(candidate) < 2 or len(candidate) > 12:
+        return False
+
+    f_ill = True
+    adjcaps = False
+    cleancaps = False
+    total_caps = 0
+    for char in candidate:
+        if not char.isalpha():
+            return False
+        if char.isupper():
+            if adjcaps:
+                cleancaps = True
+            total_caps += 1
+            adjcaps = True
+        else:
+            adjcaps = False
+        if char.lower() not in {"i", "l"}:
+            f_ill = False
+
+    if f_ill:
+        return False
+
+    if cleancaps or (total_caps > len(candidate) // 2 and len(candidate) < 3):
+        return False
+
+    return True
+
 
 def _normalize(username: str) -> str:
     return username.strip().lower()
@@ -74,6 +139,9 @@ def is_account_active(username: str) -> bool:
 
 def create_account(username: str, raw_password: str) -> bool:
     """Create a new PlayerAccount if username is available."""
+    username = sanitize_account_name(username)
+    if not is_valid_account_name(username):
+        return False
     if is_newlock_enabled():
         return False
     session = SessionLocal()
@@ -92,6 +160,9 @@ def create_account(username: str, raw_password: str) -> bool:
 
 def login(username: str, raw_password: str) -> PlayerAccount | None:
     """Return PlayerAccount if credentials match."""
+    username = sanitize_account_name(username)
+    if not username:
+        return None
     # Enforce account-name bans irrespective of host.
     if bans.is_account_banned(username):
         return None
@@ -120,6 +191,10 @@ def login_with_host(
     successful) or the reason the attempt failed so callers can mirror ROM's
     nanny prompts.
     """
+
+    username = sanitize_account_name(username)
+    if not is_valid_account_name(username):
+        return LoginResult(None, LoginFailureReason.UNKNOWN_ACCOUNT)
 
     if bans.is_account_banned(username):
         return LoginResult(None, LoginFailureReason.ACCOUNT_BANNED)

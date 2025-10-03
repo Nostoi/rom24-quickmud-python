@@ -352,6 +352,7 @@ def apply_resets(area: Area) -> None:
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
+                obj.cost = 0
                 room.add_object(obj)
                 _sync_object_count(obj_vnum, object_counts)
                 last_obj = obj

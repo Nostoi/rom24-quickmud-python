@@ -6,6 +6,13 @@ from typing import Dict, List, Optional
 
 import os
 
+from .commands import (
+    IMCCommand,
+    IMCPacket,
+    PacketHandler,
+    build_default_packet_handlers,
+    load_command_table,
+)
 
 @dataclass(frozen=True)
 class IMCChannel:
@@ -35,11 +42,19 @@ class IMCState:
     config: Dict[str, str]
     channels: List[IMCChannel]
     helps: Dict[str, IMCHelp]
+    commands: Dict[str, IMCCommand]
+    packet_handlers: Dict[str, PacketHandler]
     connected: bool
     config_path: Path
     channels_path: Path
     help_path: Path
+    commands_path: Path
     idle_pulses: int = 0
+
+    def dispatch_packet(self, packet: IMCPacket) -> None:
+        handler = self.packet_handlers.get(packet.type)
+        if handler:
+            handler(packet)
 
 
 _state: Optional[IMCState] = None
@@ -227,6 +242,7 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
     config_path = _resolve_path("IMC_CONFIG_PATH", "imc.config")
     channels_path = _resolve_path("IMC_CHANNELS_PATH", "imc.channels")
     help_path = _resolve_path("IMC_HELP_PATH", "imc.help")
+    commands_path = _resolve_path("IMC_COMMANDS_PATH", "imc.commands")
 
     if (
         _state
@@ -235,22 +251,28 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
         and _state.config_path == config_path
         and _state.channels_path == channels_path
         and _state.help_path == help_path
+        and _state.commands_path == commands_path
     ):
         return _state
 
+    commands = load_command_table(commands_path)
     config = _parse_config(config_path)
     channels = _parse_channels(channels_path)
     helps = _parse_helps(help_path)
+    packet_handlers = build_default_packet_handlers()
 
     idle_pulses = _state.idle_pulses if _state else 0
     _state = IMCState(
         config=config,
         channels=channels,
         helps=helps,
+        commands=commands,
+        packet_handlers=packet_handlers,
         connected=True,
         config_path=config_path,
         channels_path=channels_path,
         help_path=help_path,
+        commands_path=commands_path,
         idle_pulses=idle_pulses,
     )
     return _state

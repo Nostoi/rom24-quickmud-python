@@ -1,3 +1,5 @@
+import asyncio
+from contextlib import suppress
 from pathlib import Path
 
 from mud.account.account_service import (
@@ -16,6 +18,7 @@ from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
+from mud.net.telnet_server import create_server
 
 
 def setup_module(module):
@@ -24,6 +27,49 @@ def setup_module(module):
     bans.clear_all_bans()
     clear_active_accounts()
     reset_lockdowns()
+
+
+def test_illegal_name_rejected():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = server.sockets[0].getsockname()
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+            await reader.readline()
+            await reader.readuntil(b"Account: ")
+            writer.write(b"self\n")
+            await writer.drain()
+
+            response = await asyncio.wait_for(
+                reader.readuntil(b"Account: "),
+                timeout=1,
+            )
+            assert b"Illegal name, try another." in response
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+    session = SessionLocal()
+    try:
+        assert session.query(PlayerAccount).filter_by(username="self").first() is None
+    finally:
+        session.close()
 
 
 def test_account_create_and_login():
@@ -75,6 +121,33 @@ def test_banned_host_cannot_login():
     account = login_with_host("carol", "pw", "198.51.100.20").account
     assert account is not None
     release_account("carol")
+
+
+def test_permanent_ban_survives_restart(tmp_path):
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    bans.add_banned_host("203.0.113.9")
+    original_file = bans.BANS_FILE
+    path = tmp_path / "bans.txt"
+    bans.BANS_FILE = path
+    try:
+        bans.save_bans_file()
+        bans.clear_all_bans()
+
+        async def run() -> None:
+            server = await create_server(host="127.0.0.1", port=0)
+            server.close()
+            await server.wait_closed()
+
+        asyncio.run(run())
+    finally:
+        bans.BANS_FILE = original_file
+
+    assert bans.is_host_banned("203.0.113.9")
 
 
 def test_ban_persistence_roundtrip(tmp_path):
@@ -234,6 +307,37 @@ def test_newlock_blocks_new_accounts():
         blocked = login_with_host("brand", "pw", None)
         assert blocked.account is None
         assert blocked.failure is LoginFailureReason.NEWLOCK
+        
+        async def run_connection_check() -> None:
+            server = await create_server(host="127.0.0.1", port=0)
+            host, port = server.sockets[0].getsockname()
+            server_task = asyncio.create_task(server.serve_forever())
+            try:
+                set_newlock(True)
+                reader, writer = await asyncio.open_connection(host, port)
+                await reader.readline()
+                await reader.readuntil(b"Account: ")
+                writer.write(b"brand\n")
+                await writer.drain()
+                await reader.readuntil(b"Password: ")
+                writer.write(b"pw\n")
+                await writer.drain()
+
+                message = await asyncio.wait_for(reader.readline(), timeout=1)
+                assert b"The game is newlocked." in message
+
+                writer.close()
+                with suppress(Exception):
+                    await writer.wait_closed()
+            finally:
+                server.close()
+                await server.wait_closed()
+                server_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await server_task
+
+        asyncio.run(run_connection_check())
+
         session = SessionLocal()
         try:
             assert session.query(PlayerAccount).filter_by(username="brand").first() is None

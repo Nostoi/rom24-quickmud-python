@@ -8,7 +8,7 @@ from mud.affects.engine import tick_spell_effects
 from mud.ai import aggressive_update
 from mud.characters.conditions import gain_condition
 from mud.combat.engine import update_pos
-from mud.config import get_pulse_area, get_pulse_tick, get_pulse_violence
+from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick, get_pulse_violence
 from mud.imc import pump_idle
 from mud.math.c_compat import c_div
 from mud.admin_logging.admin import rotate_admin_log
@@ -28,6 +28,7 @@ from mud.models.constants import (
 from mud.models.obj import ObjectData, object_registry
 from mud.models.room import room_registry
 from mud.net.protocol import broadcast_global
+from mud.music import song_update
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
@@ -597,6 +598,7 @@ _pulse_counter = 0
 _point_counter = get_pulse_tick()
 _violence_counter = get_pulse_violence()
 _area_counter = get_pulse_area()
+_music_counter = get_pulse_music()
 
 
 def violence_tick() -> None:
@@ -633,7 +635,7 @@ def _mobprog_idle_tick() -> None:
 
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter, _point_counter, _violence_counter, _area_counter
+    global _pulse_counter, _point_counter, _violence_counter, _area_counter, _music_counter
     _pulse_counter += 1
 
     # Consume wait/daze every pulse before evaluating cadence counters.
@@ -659,6 +661,10 @@ def game_tick() -> None:
     if _area_counter <= 0:
         _area_counter = get_pulse_area()
         reset_tick()
+    _music_counter -= 1
+    if _music_counter <= 0:
+        _music_counter = get_pulse_music()
+        song_update()
     event_tick()
     _mobprog_idle_tick()
     aggressive_update()

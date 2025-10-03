@@ -622,6 +622,37 @@ def test_reset_P_populates_multiple_items_up_to_limit():
     assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 3
 
 
+def test_room_reset_zeroes_object_cost():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    idol_proto = ObjIndex(vnum=9303, short_descr="a gilded idol", cost=750)
+    obj_registry[idol_proto.vnum] = idol_proto
+
+    area = Area(vnum=9303, name="Idol Area", min_vnum=9303, max_vnum=9303)
+    room = Room(vnum=9303, name="Treasure Nook", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    area.resets = [ResetJson(command="O", arg1=idol_proto.vnum, arg3=room.vnum)]
+
+    reset_handler.apply_resets(area)
+
+    idol = next(
+        (
+            obj
+            for obj in room.contents
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == idol_proto.vnum
+        ),
+        None,
+    )
+    assert idol is not None
+    assert idol.cost == 0
+    assert getattr(idol.prototype, "cost", None) == 750
+
+
 def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
     room_registry.clear()
     area_registry.clear()
