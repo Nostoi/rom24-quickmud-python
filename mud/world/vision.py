@@ -21,6 +21,75 @@ def _get_trust(char: Character) -> int:
     return trust if trust > 0 else level
 
 
+def _has_affect(char: Character, flag: AffectFlag) -> bool:
+    """Gracefully probe ``char`` for an active affect flag."""
+
+    checker = getattr(char, "has_affect", None)
+    if callable(checker):
+        try:
+            return bool(checker(flag))
+        except Exception:
+            pass
+    affected = getattr(char, "affected_by", 0)
+    try:
+        return bool(int(affected) & int(flag))
+    except Exception:
+        return False
+
+
+def can_see_character(observer: Character, target: Character | None) -> bool:
+    """Replicate ROM ``can_see`` for character-to-character checks."""
+
+    if observer is None or target is None:
+        return False
+    if observer is target:
+        return True
+
+    observer_room = getattr(observer, "room", None)
+    target_room = getattr(target, "room", None)
+    if observer_room is None or target_room is None:
+        return False
+
+    trust = _get_trust(observer)
+    invis_level = int(getattr(target, "invis_level", 0) or 0)
+    if trust < invis_level:
+        return False
+
+    incog_level = int(getattr(target, "incog_level", 0) or 0)
+    if incog_level and observer_room is not target_room and trust < incog_level:
+        return False
+
+    if getattr(observer, "is_admin", False):
+        return True
+
+    immortal_checker = getattr(observer, "is_immortal", None)
+    if callable(immortal_checker) and immortal_checker():
+        return True
+
+    if _has_affect(observer, AffectFlag.BLIND):
+        return False
+
+    if observer_room is target_room and room_is_dark(observer_room):
+        if not (_has_affect(observer, AffectFlag.INFRARED) or _has_affect(observer, AffectFlag.DARK_VISION)):
+            return False
+
+    if _has_affect(target, AffectFlag.INVISIBLE) and not _has_affect(observer, AffectFlag.DETECT_INVIS):
+        return False
+
+    if _has_affect(target, AffectFlag.SNEAK) and getattr(target, "fighting", None) is None:
+        if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
+            return False
+
+    if _has_affect(target, AffectFlag.HIDE) and getattr(target, "fighting", None) is None:
+        if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
+            return False
+
+    if observer_room is not target_room:
+        return False
+
+    return True
+
+
 def room_is_dark(room: Room) -> bool:
     """Replicate ROM `room_is_dark` visibility logic."""
 

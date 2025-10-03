@@ -388,6 +388,12 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
     if current_room is None:
         return "You are nowhere."
 
+    if getattr(char, "fighting", None) is not None:
+        message = "No way!  You are still fighting!"
+        if hasattr(char, "send_to_char"):
+            char.send_to_char(message)
+        return message
+
     proto = getattr(portal, "prototype", None)
     values = getattr(portal, "value", None)
     if not isinstance(values, list):

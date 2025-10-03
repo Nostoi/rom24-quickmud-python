@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .room import Room
 
-from .obj import ObjIndex
+from .obj import Affect, ObjIndex
+from .constants import WearLocation
 
 
 @dataclass
@@ -20,6 +21,16 @@ class Object:
     level: int = 0
     # Instance values — copy of prototype.value for runtime mutations (e.g., locks/charges)
     value: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    # ROM runtime state persisted alongside prototypes
+    timer: int = 0
+    wear_loc: int = int(WearLocation.NONE)
+    cost: int = 0
+    extra_flags: int = 0
+    wear_flags: int = 0
+    condition: int | str = 0
+    enchanted: bool = False
+    item_type: str | None = None
+    affected: list[Affect] = field(default_factory=list)
 
     @property
     def name(self) -> str | None:

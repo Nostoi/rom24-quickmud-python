@@ -6,6 +6,7 @@ from enum import IntFlag
 from typing import TYPE_CHECKING
 
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, Position
+from mud.world.vision import can_see_character
 from mud.utils import rng_mm
 
 if TYPE_CHECKING:
@@ -110,20 +111,33 @@ def _get_programs(mob: object) -> list[MobProgram]:
 def _can_see(mob: object, target: object | None) -> bool:
     if mob is None or target is None:
         return False
-    room = getattr(mob, "room", None)
-    if room is None:
-        return False
-    return target in getattr(room, "people", [])
+    try:
+        return bool(can_see_character(mob, target))
+    except Exception:
+        room = getattr(mob, "room", None)
+        if room is None:
+            return False
+        return target in getattr(room, "people", [])
 
 
 def _get_random_char(mob: object) -> object | None:
     room = getattr(mob, "room", None)
     if room is None:
         return None
-    for occupant in getattr(room, "people", []):
-        if occupant is not mob:
-            return occupant
-    return None
+    winner = None
+    highest = -1
+    for occupant in getattr(room, "people", []) or []:
+        if occupant is mob:
+            continue
+        if getattr(occupant, "is_npc", False):
+            continue
+        if not _can_see(mob, occupant):
+            continue
+        roll = rng_mm.number_percent()
+        if roll > highest:
+            highest = roll
+            winner = occupant
+    return winner
 
 
 def _match_name(name: object, token: str) -> bool:
@@ -264,6 +278,8 @@ def _count_people_room(mob: object, flag: int) -> int:
                 or occupant_leader is mob_leader
             ):
                 continue
+        if not _can_see(mob, occupant):
+            continue
         count += 1
     return count
 
