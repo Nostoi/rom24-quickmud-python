@@ -6,11 +6,13 @@ from .account_service import (
     create_character,
     clear_active_accounts,
     is_account_active,
+    is_valid_account_name,
     LoginFailureReason,
     LoginResult,
     list_characters,
     login,
     login_with_host,
+    sanitize_account_name,
     release_account,
 )
 
@@ -22,6 +24,8 @@ __all__ = [
     "login_with_host",
     "list_characters",
     "create_character",
+    "is_valid_account_name",
+    "sanitize_account_name",
     "clear_active_accounts",
     "is_account_active",
     "release_account",

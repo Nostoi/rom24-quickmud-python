@@ -7,10 +7,12 @@ from mud.account import (
     create_account,
     create_character,
     is_account_active,
+    is_valid_account_name,
     list_characters,
     load_character,
     login_with_host,
     release_account,
+    sanitize_account_name,
     save_character,
 )
 from mud.commands import process_command
@@ -39,7 +41,14 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             name_data = await reader.readline()
             if not name_data:
                 return
-            username = name_data.decode().strip()
+            username = sanitize_account_name(name_data.decode())
+            if not username:
+                continue
+            if not is_valid_account_name(username):
+                writer.write(b"Illegal name, try another.\r\n")
+                await writer.drain()
+                continue
+
             writer.write(b"Password: ")
             await writer.drain()
             pwd_data = await reader.readline()
