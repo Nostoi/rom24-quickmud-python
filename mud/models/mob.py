@@ -29,7 +29,7 @@ class MobIndex:
     long_descr: str | None = None
     description: str | None = None
     race: str | int = 0
-    act_flags: str = ""
+    act_flags: str | ActFlag | int = ""
     affected_by: str = ""
     alignment: int = 0
     group: int = 0
@@ -79,12 +79,13 @@ class MobIndex:
     def __repr__(self) -> str:
         return f"<MobIndex vnum={self.vnum} name={self.short_descr!r}>"
 
+    _act_cache: ActFlag | None = field(default=None, init=False, repr=False)
+
     def get_act_flags(self) -> ActFlag:
         """Return act flags as an IntFlag, converting from ROM letters on demand."""
 
-        raw = getattr(self, "_act_cache", None)
-        if isinstance(raw, ActFlag):
-            return raw
+        if self._act_cache is not None:
+            return self._act_cache
         if isinstance(self.act_flags, ActFlag):
             self._act_cache = self.act_flags
             return self.act_flags

@@ -14,6 +14,7 @@ from mud.models.constants import (
     DamageType,
     Direction,
     ImmFlag,
+    LEVEL_HERO,
     OffFlag,
     Position,
     ResFlag,
@@ -28,7 +29,7 @@ from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
-from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.reset_handler import RESET_TICKS, reset_tick
@@ -741,6 +742,86 @@ def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
     ]
     assert carried.count(loot_proto.vnum) == 2
     assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 2
+
+
+def test_reset_equips_scale_with_lastmob_level(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    area = Area(vnum=9300, name="Reset Scale Area", min_vnum=9300, max_vnum=9301)
+    room_low = Room(vnum=9300, name="Low Mob Room", area=area)
+    room_high = Room(vnum=9301, name="High Mob Room", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room_low.vnum] = room_low
+    room_registry[room_high.vnum] = room_high
+
+    mob_low = MobIndex(vnum=9300, short_descr="a lowbie mob", level=20)
+    mob_high = MobIndex(vnum=9301, short_descr="a hero mob", level=LEVEL_HERO + 5)
+    mob_registry[mob_low.vnum] = mob_low
+    mob_registry[mob_high.vnum] = mob_high
+
+    loot_low = ObjIndex(vnum=9302, short_descr="a training blade")
+    loot_high = ObjIndex(vnum=9303, short_descr="a hero blade")
+    obj_registry[loot_low.vnum] = loot_low
+    obj_registry[loot_high.vnum] = loot_high
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_low.vnum, arg2=1, arg3=room_low.vnum, arg4=1),
+        ResetJson(command="G", arg1=loot_low.vnum, arg2=1),
+        ResetJson(command="M", arg1=mob_high.vnum, arg2=1, arg3=room_high.vnum, arg4=1),
+        ResetJson(command="E", arg1=loot_high.vnum, arg2=1, arg3=0),
+    ]
+
+    fuzzy_calls: list[int] = []
+    fuzzy_returns = [12, LEVEL_HERO + 5]
+
+    def fake_number_fuzzy(value: int) -> int:
+        fuzzy_calls.append(value)
+        return fuzzy_returns.pop(0)
+
+    original_number_range = rng_mm.number_range
+
+    def fake_number_range(low: int, high: int) -> int:
+        if low == 0 and high == 4:
+            return 0
+        return original_number_range(low, high)
+
+    monkeypatch.setattr(rng_mm, "number_fuzzy", fake_number_fuzzy)
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    reset_handler.apply_resets(area)
+
+    low_mob = next((m for m in room_low.people if isinstance(m, MobInstance)), None)
+    assert low_mob is not None
+    low_loot = next(
+        (
+            obj
+            for obj in getattr(low_mob, "inventory", [])
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == loot_low.vnum
+        ),
+        None,
+    )
+    assert low_loot is not None
+    assert low_loot.level == 12
+
+    high_mob = next((m for m in room_high.people if isinstance(m, MobInstance)), None)
+    assert high_mob is not None
+    high_loot = next(
+        (
+            obj
+            for obj in getattr(high_mob, "inventory", [])
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == loot_high.vnum
+        ),
+        None,
+    )
+    assert high_loot is not None
+    assert high_loot.level == LEVEL_HERO - 1
+
+    assert fuzzy_calls == [max(0, mob_low.level - 2), min(LEVEL_HERO - 1, max(0, mob_high.level - 2))]
+    assert fuzzy_returns == []
 
 
 def test_reset_P_skips_when_players_present():

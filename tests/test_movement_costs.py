@@ -78,3 +78,17 @@ def test_flying_bypasses_water():
     # Flying halves the already minimal movement cost → zero deduction
     assert ch.move == 20
     assert ch.wait == 1
+
+
+def test_unknown_sector_defaults_to_highest_loss():
+    ch, room_from, room_to = setup_world_at(3001, 3054)
+    room_from.sector_type = 999
+    room_to.sector_type = -12
+    ch.move = 20
+
+    out = move(ch, "north")
+
+    assert "You walk north" in out
+    assert ch.room is room_to
+    assert ch.move == 14
+    assert ch.wait == 1

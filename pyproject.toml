@@ -122,3 +122,21 @@ ignore = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.mypy]
+python_version = "3.10"
+follow_imports = "skip"
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "mud.db.models",
+    "mud.account.account_manager",
+    "mud.models.character",
+    "mud.net.connection",
+    "mud.persistence",
+    "tests.test_account_auth",
+]
+follow_imports = "normal"
+disallow_untyped_defs = true

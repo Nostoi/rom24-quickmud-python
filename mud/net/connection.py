@@ -38,6 +38,8 @@ from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
 from mud.skills.groups import list_groups
+from mud.security import bans
+from mud.security.bans import BanFlag
 
 STAT_LABELS = ("Str", "Int", "Wis", "Dex", "Con")
 
@@ -58,6 +60,7 @@ SPAM_REPEAT_THRESHOLD = 25
 
 if TYPE_CHECKING:
     from mud.models.character import Character
+    from mud.account.account_service import ClassType, PcRaceType
 
 
 class TelnetStream:
@@ -425,7 +428,7 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
         return None
 
 
-async def _prompt_for_race(conn: TelnetStream):
+async def _prompt_for_race(conn: TelnetStream) -> "PcRaceType" | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
     while True:
@@ -451,7 +454,7 @@ async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
         await _send_line(conn, "Please enter M or F.")
 
 
-async def _prompt_for_class(conn: TelnetStream):
+async def _prompt_for_class(conn: TelnetStream) -> "ClassType" | None:
     classes = get_creation_classes()
     await _send_line(conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes))
     while True:
@@ -559,7 +562,7 @@ async def _run_customization_menu(conn: TelnetStream, selection: CreationSelecti
         await _send_line(conn, "Choices are: list, add <group>, help, and done.")
 
 
-async def _prompt_for_stats(conn: TelnetStream, race):
+async def _prompt_for_stats(conn: TelnetStream, race: "PcRaceType") -> list[int] | None:
     while True:
         stats = roll_creation_stats(race)
         await _send_line(conn, "Rolled stats: " + _format_stats(stats))
@@ -597,14 +600,14 @@ async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
             response = await _prompt(conn, "Choose your hometown: ")
             if response is None:
                 return None
-            vnum = lookup_hometown(response)
-            if vnum is not None:
-                return vnum
+            selected_vnum = lookup_hometown(response)
+            if selected_vnum is not None:
+                return selected_vnum
             await _send_line(conn, "That is not a valid hometown.")
     return None
 
 
-async def _prompt_for_weapon(conn: TelnetStream, class_type) -> int | None:
+async def _prompt_for_weapon(conn: TelnetStream, class_type: "ClassType") -> int | None:
     choices = get_weapon_choices(class_type)
     await _send_line(conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices))
     normalized = {choice.lower(): choice for choice in choices}
@@ -700,7 +703,7 @@ async def _select_character(
     conn: TelnetStream,
     account: PlayerAccount,
     username: str,
-):
+) -> "Character" | None:
     while True:
         characters = list_characters(account)
         if characters:
@@ -736,6 +739,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     conn = TelnetStream(reader, writer)
 
     try:
+        if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
+            await conn.send_line("Your site has been banned from this mud.")
+            return
+
         await conn.negotiate()
         ansi_result = await _prompt_ansi_preference(conn)
         if ansi_result is None:

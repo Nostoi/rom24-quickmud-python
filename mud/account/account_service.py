@@ -15,6 +15,7 @@ from mud.models.constants import (
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
     OBJ_VNUM_SCHOOL_SWORD,
+    PlayerFlag,
     ROOM_VNUM_SCHOOL,
     Sex,
     Stat,
@@ -451,8 +452,8 @@ def login_with_host(
     if was_active and not allow_reconnect:
         return LoginResult(None, LoginFailureReason.DUPLICATE_SESSION)
 
-    permit_host = bool(host and bans.is_host_banned(host, BanFlag.PERMIT))
-    if host and not permit_host and bans.is_host_banned(host, BanFlag.ALL):
+    permit_ban = bool(host and bans.is_host_banned(host, BanFlag.PERMIT))
+    if host and not permit_ban and bans.is_host_banned(host, BanFlag.ALL):
         return LoginResult(None, LoginFailureReason.HOST_BANNED)
 
     session = SessionLocal()
@@ -460,11 +461,18 @@ def login_with_host(
     exists = False
     is_admin = False
     password_valid = False
+    has_permit_character = False
     try:
         account_record = session.query(PlayerAccount).filter_by(username=username).first()
         if account_record:
             exists = True
             is_admin = bool(getattr(account_record, "is_admin", False))
+            if permit_ban:
+                for character in getattr(account_record, "characters", ()):
+                    act_flags = int(getattr(character, "act", 0) or 0)
+                    if act_flags & int(PlayerFlag.PERMIT):
+                        has_permit_character = True
+                        break
             password_valid = verify_password(raw_password, account_record.password_hash)
             if password_valid:
                 # Preload related characters before detaching.
@@ -473,7 +481,10 @@ def login_with_host(
     finally:
         session.close()
 
-    if host and not permit_host and not exists and bans.is_host_banned(host, BanFlag.NEWBIES):
+    if permit_ban and not has_permit_character:
+        return LoginResult(None, LoginFailureReason.HOST_BANNED)
+
+    if host and not permit_ban and not exists and bans.is_host_banned(host, BanFlag.NEWBIES):
         return LoginResult(None, LoginFailureReason.HOST_NEWBIES)
     if is_newlock_enabled() and not exists:
         return LoginResult(None, LoginFailureReason.NEWLOCK)

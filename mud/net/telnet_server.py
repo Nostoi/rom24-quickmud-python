@@ -24,8 +24,10 @@ async def create_server(
 
 async def start_server(host: str = "0.0.0.0", port: int = 4000, area_list: str = "area/area.lst") -> None:
     server = await create_server(host, port, area_list)
-    addr = server.sockets[0].getsockname()
-    print(f"Serving on {addr}")
+    sockets = getattr(server, "sockets", None)
+    if sockets:
+        addr = sockets[0].getsockname()
+        print(f"Serving on {addr}")
     async with server:
         await server.serve_forever()
 

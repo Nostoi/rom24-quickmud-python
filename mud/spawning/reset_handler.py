@@ -9,11 +9,13 @@ from mud.models.constants import (
     EX_ISDOOR,
     EX_LOCKED,
     ITEM_INVENTORY,
+    LEVEL_HERO,
     ROOM_VNUM_SCHOOL,
     ActFlag,
     AffectFlag,
     Direction,
     ExtraFlag,
+    ItemType,
     Position,
     RoomFlag,
     convert_flags_from_letters,
@@ -207,34 +209,60 @@ def _resolve_reset_limit(raw: int | None) -> int:
 
 
 def _compute_object_level(obj: object, mob: object) -> int:
-    """Approximate ROM object level computation for G/E resets.
+    """Derive object level for G/E resets using ROM parity rules.
 
-    Mirrors src/db.c case 'G'/'E' for shopkeepers and equips (simplified):
-    - WAND: 10..20
-    - STAFF: 15..25
-    - ARMOR: 5..15
-    - WEAPON: 5..15
-    - TREASURE: 10..20
-    - Default: 0
-    For new-format objects, or unrecognized types, return 0.
+    Shopkeepers keep the simplified random ranges from ROM for
+    vendor stock, while regular mobs receive gear scaled from the
+    last mob's level with `number_fuzzy` clamping below `LEVEL_HERO`.
     """
+
+    if mob is None:
+        return 0
+
+    proto = getattr(obj, "prototype", None)
+    mob_proto = getattr(mob, "prototype", None)
+
     try:
-        item_type = int(getattr(getattr(obj, "prototype", None), "item_type", 0))
+        item_type = int(getattr(proto, "item_type", 0) or 0)
     except Exception:
         item_type = 0
-    from mud.models.constants import ItemType
 
-    if item_type == int(ItemType.WAND):
-        return rng_mm.number_range(10, 20)
-    if item_type == int(ItemType.STAFF):
-        return rng_mm.number_range(15, 25)
-    if item_type == int(ItemType.ARMOR):
-        return rng_mm.number_range(5, 15)
-    if item_type == int(ItemType.WEAPON):
-        return rng_mm.number_range(5, 15)
-    if item_type == int(ItemType.TREASURE):
-        return rng_mm.number_range(10, 20)
-    return 0
+    is_shopkeeper = False
+    if mob_proto is not None:
+        keeper_vnum = getattr(mob_proto, "vnum", None)
+        is_shopkeeper = keeper_vnum in shop_registry
+
+    if is_shopkeeper:
+        if getattr(proto, "new_format", False):
+            return 0
+        if item_type == int(ItemType.WAND):
+            return rng_mm.number_range(10, 20)
+        if item_type == int(ItemType.STAFF):
+            return rng_mm.number_range(15, 25)
+        if item_type == int(ItemType.ARMOR):
+            return rng_mm.number_range(5, 15)
+        if item_type == int(ItemType.WEAPON):
+            return rng_mm.number_range(5, 15)
+        if item_type == int(ItemType.TREASURE):
+            return rng_mm.number_range(10, 20)
+        return 0
+
+    try:
+        mob_level = int(getattr(mob, "level", 0) or 0)
+    except Exception:
+        mob_level = 0
+
+    base_level = max(0, mob_level - 2)
+    hero_cap = max(0, LEVEL_HERO - 1)
+    if base_level > hero_cap:
+        base_level = hero_cap
+
+    fuzzed = rng_mm.number_fuzzy(base_level)
+    if fuzzed > hero_cap:
+        return hero_cap
+    if fuzzed < 0:
+        return 0
+    return fuzzed
 
 
 def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:

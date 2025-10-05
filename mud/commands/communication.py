@@ -4,8 +4,42 @@ import asyncio
 
 from mud import mobprog
 from mud.models.character import Character, character_registry
-from mud.models.constants import Position
+from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
+
+
+def _has_comm_flag(char: Character, flag: CommFlag) -> bool:
+    if hasattr(char, "has_comm_flag"):
+        try:
+            return bool(char.has_comm_flag(flag))
+        except Exception:
+            pass
+    try:
+        return bool(int(getattr(char, "comm", 0) or 0) & int(flag))
+    except Exception:
+        return False
+
+
+def _set_comm_flag(char: Character, flag: CommFlag) -> None:
+    if hasattr(char, "set_comm_flag"):
+        try:
+            char.set_comm_flag(flag)
+            return
+        except Exception:
+            pass
+    current = int(getattr(char, "comm", 0) or 0)
+    char.comm = current | int(flag)
+
+
+def _clear_comm_flag(char: Character, flag: CommFlag) -> None:
+    if hasattr(char, "clear_comm_flag"):
+        try:
+            char.clear_comm_flag(flag)
+            return
+        except Exception:
+            pass
+    current = int(getattr(char, "comm", 0) or 0)
+    char.comm = current & ~int(flag)
 
 
 def do_say(char: Character, args: str) -> str:
@@ -28,6 +62,12 @@ def do_say(char: Character, args: str) -> str:
 def do_tell(char: Character, args: str) -> str:
     if "tell" in char.banned_channels:
         return "You are banned from tell."
+    if _has_comm_flag(char, CommFlag.NOCHANNELS):
+        return "The gods have revoked your channel privileges."
+    if _has_comm_flag(char, CommFlag.NOTELL) or _has_comm_flag(char, CommFlag.DEAF):
+        return "Your message didn't get through."
+    if _has_comm_flag(char, CommFlag.QUIET):
+        return "You must turn off quiet mode first."
     if not args:
         return "Tell whom what?"
     try:
@@ -42,6 +82,11 @@ def do_tell(char: Character, args: str) -> str:
         return "They aren't here."
     if "tell" in target.muted_channels:
         return "They aren't listening."
+    if (
+        (_has_comm_flag(target, CommFlag.QUIET) or _has_comm_flag(target, CommFlag.DEAF))
+        and not char.is_immortal()
+    ):
+        return f"{target.name} is not receiving tells."
     text = f"{char.name} tells you, '{message}'"
     writer = getattr(target, "connection", None)
     if writer:
@@ -58,8 +103,29 @@ def do_tell(char: Character, args: str) -> str:
 def do_shout(char: Character, args: str) -> str:
     if "shout" in char.banned_channels:
         return "You are banned from shout."
-    if not args:
-        return "Shout what?"
-    message = f"{char.name} shouts, '{args}'"
-    broadcast_global(message, channel="shout", exclude=char)
-    return f"You shout, '{args}'"
+    cleaned = args.strip()
+    if not cleaned:
+        if _has_comm_flag(char, CommFlag.SHOUTSOFF):
+            _clear_comm_flag(char, CommFlag.SHOUTSOFF)
+            return "You can hear shouts again."
+        _set_comm_flag(char, CommFlag.SHOUTSOFF)
+        return "You will no longer hear shouts."
+    if _has_comm_flag(char, CommFlag.NOCHANNELS):
+        return "The gods have revoked your channel privileges."
+    if _has_comm_flag(char, CommFlag.QUIET):
+        return "You must turn off quiet mode first."
+    if _has_comm_flag(char, CommFlag.NOSHOUT):
+        return "You can't shout."
+    if _has_comm_flag(char, CommFlag.SHOUTSOFF):
+        return "You must turn shouts back on first."
+    message = f"{char.name} shouts, '{cleaned}'"
+    current_wait = getattr(char, "wait", 0) or 0
+    char.wait = max(int(current_wait), 12)
+
+    def _should_receive(target: Character) -> bool:
+        return not (
+            _has_comm_flag(target, CommFlag.SHOUTSOFF)
+            or _has_comm_flag(target, CommFlag.QUIET)
+        )
+    broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)
+    return f"You shout, '{cleaned}'"

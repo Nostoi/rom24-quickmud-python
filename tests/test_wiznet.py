@@ -169,3 +169,41 @@ def test_wiznet_prefix_formatting():
     # Check that non-prefix character gets plain message
     assert "Test prefix" in imm_without_prefix.messages
     assert not any("{Z-->" in msg for msg in imm_without_prefix.messages)
+
+
+def test_wiznet_trust_allows_secure_options():
+    trusted = Character(
+        name="Trusted",
+        is_admin=True,
+        level=50,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    low_trust = Character(
+        name="Low",
+        is_admin=True,
+        level=50,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    character_registry.extend([trusted, low_trust])
+
+    # Elevated trust should expose secure option despite lower base level.
+    show_output = process_command(trusted, "wiznet show")
+    assert "secure" in show_output
+
+    toggle_result = process_command(trusted, "wiznet secure")
+    assert "will now see secure" in toggle_result.lower()
+    assert trusted.wiznet & int(WiznetFlag.WIZ_SECURE)
+
+    trusted.messages.clear()
+    wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
+    assert "secure notice" in trusted.messages
+
+    # Base level without additional trust should not see or toggle secure.
+    show_low = process_command(low_trust, "wiznet show")
+    assert "secure" not in show_low
+
+    toggle_low = process_command(low_trust, "wiznet secure")
+    assert toggle_low == "No such option."
+    wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
+    assert "secure notice" not in low_trust.messages

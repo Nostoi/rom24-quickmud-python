@@ -54,7 +54,7 @@ class Room:
     exits: list[Exit | None] = field(default_factory=lambda: [None] * len(Direction))
     extra_descr: list[ExtraDescr] = field(default_factory=list)
     resets: list[ResetJson] = field(default_factory=list)
-    people: list[Character] = field(default_factory=list)
+    people: list[Character | MobInstance] = field(default_factory=list)
     contents: list[Object] = field(default_factory=list)
     next: Room | None = None
 

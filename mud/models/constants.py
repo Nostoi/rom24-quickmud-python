@@ -1,5 +1,8 @@
 from enum import IntEnum, IntFlag
-from typing import NamedTuple
+from typing import NamedTuple, TypeVar
+
+
+F = TypeVar("F", bound=IntFlag)
 
 
 class Direction(IntEnum):
@@ -884,7 +887,7 @@ GATE_BUGGY = PortalFlag.BUGGY
 GATE_RANDOM = PortalFlag.RANDOM
 
 
-def convert_flags_from_letters(flag_letters: str, flag_enum_class) -> int:
+def convert_flags_from_letters(flag_letters: str, flag_enum_class: type[F]) -> F:
     """Convert ROM letter-based flags (e.g., "ABCD") to integer bitmask.
 
     Args:

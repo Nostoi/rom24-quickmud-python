@@ -75,6 +75,13 @@ def wiznet_lookup(name: str) -> int:
     return -1
 
 
+def _get_trust(char: Any) -> int:
+    """Return the effective trust level mirroring ROM's ``get_trust`` helper."""
+
+    trust = getattr(char, "trust", 0)
+    return trust if trust > 0 else getattr(char, "level", 0)
+
+
 def wiznet(
     message: str,
     sender_ch_or_flag: Any = None,
@@ -130,8 +137,7 @@ def wiznet(
             continue
 
         # Check min level (get_trust equivalent)
-        ch_level = getattr(ch, "level", 0)
-        if ch_level < min_level:
+        if _get_trust(ch) < min_level:
             continue
 
         # Format message - only use colors if WIZ_PREFIX is set
@@ -186,7 +192,6 @@ def cmd_wiznet(char: Any, args: str) -> str:
         if not (getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON):
             result += "off "
 
-        char_level = getattr(char, "level", 0)
         for entry in WIZNET_TABLE:
             if (getattr(char, "wiznet", 0) & int(entry["flag"])) and entry["name"] != "on":
                 result += f"{entry['name']} "
@@ -197,10 +202,9 @@ def cmd_wiznet(char: Any, args: str) -> str:
     if args.lower().startswith("show"):
         result = "Wiznet options available to you are:\n"
 
-        char_level = getattr(char, "level", 0)
         options = []
         for entry in WIZNET_TABLE:
-            if char_level >= entry["level"]:
+            if _get_trust(char) >= entry["level"]:
                 options.append(entry["name"])
 
         return result + " ".join(options)
@@ -211,9 +215,7 @@ def cmd_wiznet(char: Any, args: str) -> str:
         return "No such option."
 
     entry = WIZNET_TABLE[flag_index]
-    char_level = getattr(char, "level", 0)
-
-    if char_level < entry["level"]:
+    if _get_trust(char) < entry["level"]:
         return "No such option."
 
     # Toggle the flag

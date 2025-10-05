@@ -32,9 +32,9 @@ class ObjIndex:
     short_descr: str | None = None
     description: str | None = None
     material: str | None = None
-    item_type: str = "trash"
-    extra_flags: int = 0
-    wear_flags: str = ""
+    item_type: str | int = "trash"
+    extra_flags: int | str = 0
+    wear_flags: str | int = ""
     level: int = 0
     condition: str = "P"
     count: int = 0

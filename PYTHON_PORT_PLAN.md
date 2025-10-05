@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: networking_telnet -->
+<!-- LAST-PROCESSED: security_auth_bans -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: area_format_loader,login_account_nanny,networking_telnet,security_auth_bans,imc_chat,olc_builders,mob_programs -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: combat,channels,area_format_loader,login_account_nanny,security_auth_bans,imc_chat,olc_builders,mob_programs -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -85,12 +85,76 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 
 <!-- PARITY-GAPS-START -->
+<!-- SUBSYSTEM: channels START -->
+
+### channels — Parity Audit 2025-11-07
+
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.35)
+KEY RISKS: side_effects, lag_wait, visibility
+TASKS:
+
+- ✅ [P0] **channels: honor ROM comm flag toggles before broadcasting global chatter** — done 2025-11-07
+  EVIDENCE: PY mud/commands/communication.py:L11-L131; PY mud/models/character.py:L219-L243; TEST tests/test_communication.py::test_shout_and_tell_respect_comm_flags
+  - priority: P0
+  - rationale: `do_shout`/`do_tell` ignore COMM_QUIET/COMM_SHOUTSOFF/COMM_NOTELL/COMM_DEAF so mortals cannot silence channels or stop shouts, breaking wiz-imposed quiet hours and player mute expectations.
+  - files: mud/commands/communication.py; mud/models/character.py; mud/models/constants.py
+  - tests: tests/test_communication.py::test_shout_and_tell_respect_comm_flags (new)
+  - acceptance_criteria: Channel commands must flip COMM_SHOUTSOFF when issued with no args, block shouts when COMM_QUIET/COMM_SHOUTSOFF/NOSHOUT are set, and prevent tells when COMM_NOTELL/COMM_DEAF/COMM_QUIET are enabled while recording wait-state pulses like ROM.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_comm.c:786-858 (`do_shout` toggles COMM_SHOUTSOFF, checks COMM_NOSHOUT/COMM_QUIET, and applies WAIT_STATE); C src/act_comm.c:860-948 (`do_tell` enforces COMM_NOTELL/COMM_DEAF/COMM_QUIET and MOB trigger hooks); PY mud/commands/communication.py:9-74 (shout/tell ignore comm bits and never mutate Character.comm); PY mud/models/constants.py:329-356 (CommFlag definitions unused by the channel handlers).
+- [P1] **channels: port reply/AFK tell buffering for absent recipients**
+  - priority: P1
+  - rationale: ROM queues tells to AFK/link-dead players and exposes `reply`, but the port drops messages when `desc` is missing and leaves mortals without a reply shortcut.
+  - files: mud/commands/communication.py; mud/net/connection.py
+  - tests: tests/test_communication.py::test_reply_and_afk_buffer_match_rom (new)
+  - acceptance_criteria: `reply` mirrors ROM by sending to the last tell partner, AFK or note-writing players receive buffered tells appended to their message queue, and offline PCs show the “link dead” notice without losing the text.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_comm.c:900-1012 (`do_tell` buffers AFK/link-dead tells and sets `reply`); C src/act_comm.c:1014-1080 (`do_reply` reuses the stored target with COMM flag gating); PY mud/commands/communication.py:17-63 (tell appends to messages only when the target is connected and omits reply support); PY mud/net/connection.py:256-420 (connection session lacks AFK/note-state buffering hooks).
+
+NOTES:
+- C: src/act_comm.c guards every global channel with COMM_* toggles, applies wait-state lag to shouts, and funnels speech triggers after broadcasting.
+- PY: mud/commands/communication.py now flips COMM bits, enforces quiet/notell/noshout gating, and records shout wait pulses while reply/AFK buffering remains outstanding.
+- TEST: tests/test_communication.py covers mute/banned sets plus new COMM flag regressions; follow-ups still need reply/AFK buffering coverage.
+- Applied tiny fix: none
+
+<!-- SUBSYSTEM: channels END -->
+<!-- SUBSYSTEM: wiznet_imm START -->
+
+### wiznet_imm — Parity Audit 2025-11-08
+
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
+KEY RISKS: flags, visibility
+
+TASKS:
+
+- ✅ [P0] **wiznet_imm: gate wiznet options and broadcasts by ROM get_trust semantics** — done 2025-11-08
+  EVIDENCE: PY mud/wiznet.py:L74-L170; TEST tests/test_wiznet.py::test_wiznet_trust_allows_secure_options
+
+- [P1] **wiznet_imm: wrap immortal broadcasts with ROM color envelopes when WIZ_PREFIX is unset**
+  - priority: P1
+  - rationale: ROM always wraps wiznet output in `{Z` … `{x` regardless of prefix, but the Python broadcast sends plain text when `WIZ_PREFIX` is cleared so immortals lose the cyan highlight and color reset.
+  - files: mud/wiznet.py
+  - tests: tests/test_wiznet.py::test_wiznet_color_wrapped_without_prefix (new)
+  - acceptance_criteria: Non-prefix subscribers receive `{Z<message>{x`, prefix subscribers continue to see `{Z--> <message>{x`, and broadcasts reset colors afterward to mirror ROM.
+  - estimate: S
+  - risk: low
+  - evidence: C src/act_wiz.c:184-189 (prefix toggles arrow but always emits `{Z`/`{x`), PY mud/wiznet.py:137-144 (drops color wrapper when prefix flag absent).
+
+NOTES:
+- C: `do_wiznet`/`wiznet` trust promotions and `{Z` cyan envelopes ensure all immortals receive secure chatter with the expected highlight.
+- PY: `wiznet` and `cmd_wiznet` ignore `trust` fallback and skip color wrappers unless `WIZ_PREFIX` is set, so promoted immortals miss secure traffic and broadcasts revert to plain text.
+- TEST: `tests/test_wiznet.py` validates prefix formatting and flag toggles but lacks trust elevation and non-prefix color coverage.
+- Applied tiny fix: none
+
+<!-- SUBSYSTEM: wiznet_imm END -->
 <!-- SUBSYSTEM: combat START -->
 
-### combat — Parity Audit 2025-10-20
+### combat — Parity Audit 2025-11-07
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.30)
-KEY RISKS: equipment, skills, side_effects
+KEY RISKS: equipment, skills, messaging, side_effects
 TASKS:
 
 - ✅ [P0] **combat: compute weapon selection and THAC0 using ROM skill tables** — done 2025-10-20
@@ -106,11 +170,32 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/fight.c:640-828 (enhanced_damage, weapon procs); PY mud/combat/engine.py:470-620 (TODO placeholders returning early).
+- ✅ [P0] **combat: port ROM dam_message severity messaging** — done 2025-10-31
+  - priority: P0
+  - rationale: `apply_damage` emits generic strings while ROM's `dam_message` scales verbs by damage percent, picks attack nouns, and broadcasts to attacker/victim/bystanders, erasing parity and color codes.
+  - files: mud/combat/engine.py; mud/combat/messages.py (new)
+  - tests: tests/test_combat_messages.py::test_dam_message_uses_rom_tiers (new); tests/test_combat_messages.py::test_dam_message_handles_immune (new)
+  - acceptance_criteria: Damage resolution reproduces ROM verbs for representative damage tiers, differentiates TYPE_HIT vs. skill noun messaging, and sends distinct attacker/victim/room strings with ROM color sequences.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/fight.c:2035-2208 (`dam_message` tiers and broadcasts); PY mud/combat/engine.py:395-470 (returns single generic string without severity verbs).
+  EVIDENCE: PY mud/combat/messages.py:1-141; PY mud/combat/engine.py:292-471; TEST tests/test_combat_messages.py::test_dam_message_uses_rom_tiers; TEST tests/test_combat_messages.py::test_dam_message_handles_immune
+- ✅ [P0] **combat: trigger check_improve for extra attacks and enhanced damage** — done 2025-10-31
+  - priority: P0
+  - rationale: Second/third attack rolls and enhanced damage successes never call `check_improve`, so players can never advance those combat skills during fights.
+  - files: mud/combat/engine.py; mud/skills/registry.py
+  - tests: tests/test_combat_skills.py::test_second_attack_trains_on_success (new); tests/test_combat_skills.py::test_enhanced_damage_checks_improve (new)
+  - acceptance_criteria: Successful extra attack rolls and enhanced damage procs invoke `check_improve` with ROM parameters, incrementing the underlying skill percentages when RNG passes.
+  - estimate: S
+  - risk: low
+  - evidence: C src/fight.c:228-241 (second/third attack `check_improve`); C src/fight.c:555-572 (enhanced damage `check_improve`); PY mud/combat/engine.py:255-284/677-684 (TODO comments leaving improvements unimplemented).
+  EVIDENCE: PY mud/combat/engine.py:288-316; PY mud/combat/engine.py:727-734
+  EVIDENCE: TEST tests/test_combat_skills.py::test_second_attack_trains_on_success; TEST tests/test_combat_skills.py::test_enhanced_damage_checks_improve
 
 NOTES:
-- C: src/fight.c:386-828 drives ROM weapon selection, THAC0, defensive checks, and proc effects that are currently stubbed.
-- PY: mud/combat/engine.py sets dummy skill values, leaves defensive helpers returning False, and never inspects equipment or proc flags.
-- TEST: New combat regressions must cover weapon-based THAC0, parry/shield success rates, and proc side effects so future changes stay aligned with ROM.
+- C: src/fight.c:386-828 plus src/fight.c:2035-2208 cover weapon selection, proc effects, and `dam_message` tiers that still need parity in the Python engine.
+- PY: mud/combat/messages.py and mud/combat/engine.py now broadcast ROM dam_message outputs and wire `check_improve` for multi_hit and enhanced damage; remaining gaps include proc side effects and additional messaging polish.
+- TEST: New combat regressions cover damage tiers, immunity handling, and skill training so future changes stay aligned with ROM severity verbs and advancement hooks.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: combat END -->
 <!-- SUBSYSTEM: skills_spells START -->
@@ -195,11 +280,32 @@ TASKS:
   EVIDENCE: C src/db.c:1754-1784; PY mud/spawning/reset_handler.py:353-359; TEST tests/test_spawning.py::test_room_reset_zeroes_object_cost
 - ✅ [P0] **resets: grant infravision in dark rooms and flag pet shop mobs** — done 2025-10-31
   EVIDENCE: C src/db.c:1706-1744; PY mud/spawning/reset_handler.py:309-335; TEST tests/test_spawning.py::{test_reset_spawn_in_dark_room_grants_infravision,test_reset_spawn_adjacent_to_pet_shop_sets_act_pet}
+- ✅ [P0] **resets: fuzz non-shopkeeper G/E object levels to LastMob's tier** — done 2025-11-03
+  EVIDENCE: C src/db.c:1688-2008; PY mud/spawning/reset_handler.py:207-263; TEST tests/test_spawning.py::test_reset_equips_scale_with_lastmob_level
+- [P1] **resets: broadcast wiznet reset notifications during area repops**
+  - priority: P1
+  - rationale: ROM announces successful area resets via `WIZ_RESETS`, but the Python `reset_tick` never emits the wiznet message so immortals lose the parity signal when debugging reset scripts.
+  - files: mud/spawning/reset_handler.py; mud/wiznet.py
+  - tests: tests/test_spawning.py::test_reset_tick_announces_wiznet (new)
+  - acceptance_criteria: When `reset_tick` repops a non-empty area, it calls `wiznet` with the area's name and `WIZ_RESETS`, mirroring the ROM broadcast.
+  - estimate: S
+  - risk: low
+  - evidence: C src/db.c:1602-1629; PY mud/spawning/reset_handler.py:598-624
+- [P1] **resets: restore shopkeeper potion/scroll level calculations on G/E resets**
+  - priority: P1
+  - rationale: ROM derives potion/scroll/pill object levels from the spell table before handing them to shopkeepers, but `_compute_object_level` drops to `0` so vendor stock never scales with spell difficulty.
+  - files: mud/spawning/reset_handler.py; mud/skills/registry.py
+  - tests: tests/test_spawning.py::test_shop_reset_rolls_scroll_levels (new)
+  - acceptance_criteria: Shopkeeper G/E resets set potion/scroll/pill `obj.level` using the ROM `skill_table` minimum level formula, matching wand/staff randomisation bounds.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/db.c:1838-1920; PY mud/spawning/reset_handler.py:209-237
 
 NOTES:
 - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
-- PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns.
-- TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches.
+- C: src/db.c:1688-2008 also fuzzes G/E equipment with `number_fuzzy(level)` so mob loot follows LastMob's tier, a clamp the Python reset handler still lacks.
+- PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns while `_compute_object_level` currently drops to `0` for most items.
+- TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches; add a regression that inspects `obj.level` after G/E resets on low/high level mobs.
 - PY: mud/spawning/reset_handler.py now mirrors src/db.c:1706-1744 by seeding `AFF_INFRARED` in dark rooms and adding `ACT_PET` for pet shop spawns.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
@@ -213,11 +319,14 @@ TASKS:
   EVIDENCE: PY mud/world/movement.py:131-175
   EVIDENCE: TEST tests/test_encumbrance.py::test_immortal_and_pet_caps
   EVIDENCE: TEST tests/test_encumbrance.py::test_encumbrance_movement_gating_respects_caps
+- ✅ [P0] **movement_encumbrance: clamp sector movement loss lookup for unknown sectors** — done 2025-11-03
+  EVIDENCE: C src/act_move.c:70-120; PY mud/world/movement.py:33-118; TEST tests/test_movement_costs.py::test_unknown_sector_defaults_to_highest_loss
 
 NOTES:
 - C: src/handler.c:899-923 returns 1000 carry slots and effectively unlimited weight for immortals while zeroing both caps for pets before falling back to STR/DEX calculations.
-- PY: mud/world/movement.py:131-175 now short-circuits immortals and pets before applying the stat-based formulas so the overrides mirror ROM.
-- TEST: tests/test_encumbrance.py adds coverage for the immortal/pet caps and ensures the movement gating enforces the zero-cap pet behavior.
+- C: src/act_move.c:70-120 clamps `in_room->sector_type`/`to_room->sector_type` through `UMIN(SECT_MAX-1, ...)` before indexing `movement_loss`, avoiding crashes when builders use extended sector ids.
+- PY: mud/world/movement.py:131-356 now short-circuits immortals and pets before stat-based formulas but still casts raw `sector_type` values into the `Sector` enum, raising `ValueError` for out-of-range sectors instead of defaulting to the ROM fallback tier.
+- TEST: tests/test_encumbrance.py adds coverage for the immortal/pet caps and ensures the movement gating enforces the zero-cap pet behavior; add a movement cost regression that loads rooms with sector ids above `Sector.DESERT` and expects successful travel.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 <!-- SUBSYSTEM: world_loader START -->
@@ -249,6 +358,15 @@ TASKS:
   EVIDENCE: PY mud/loaders/area_loader.py:25-140
   EVIDENCE: PY mud/models/constants.py:343-349
   EVIDENCE: TEST tests/test_area_loader.py::test_area_loader_seeds_rom_defaults
+- [P1] **area_format_loader: parse new-format #AREADATA name/credits/vnum blocks**
+  - priority: P1
+  - rationale: ROM's `new_load_area` consumes `Name`, `Credits`, and `VNUMs` directives inside `#AREADATA`, but the Python loader ignores them so converted areas retain placeholder metadata.
+  - files: mud/loaders/area_loader.py; mud/models/area.py
+  - tests: tests/test_area_loader.py::test_new_areadata_header_populates_metadata (new)
+  - acceptance_criteria: Loading an area containing `#AREADATA` with `Name`, `Credits`, and `VNUMs` fields overwrites the existing values on the Area object exactly like ROM.
+  - estimate: S
+  - risk: low
+  - evidence: C src/db.c:441-520; PY mud/loaders/area_loader.py:32-121
 NOTES:
 - C: `load_helps` walks each level/keyword pair until `$`; Python now mirrors this flow to populate area-bound help entries.
 - PY: `load_area_file` dispatches to `load_helps`, storing entries on the Area object and in `help_registry` with ROM keyword tokenisation.
@@ -271,6 +389,8 @@ TASKS:
   EVIDENCE: TEST tests/test_imc.py::test_maybe_open_socket_registers_packet_handlers
 - ✅ [P0] **imc_chat: load router bans and cache metadata during startup** — done 2025-10-27
   EVIDENCE: C src/imc.c:3884-4158; C src/imc.c:4614-4670; PY mud/imc/__init__.py:39-414; TEST tests/test_imc.py::test_maybe_open_socket_loads_bans
+- ✅ [P0] **imc_chat: establish router connection and handshake during maybe_open_socket** — done 2025-10-05
+  EVIDENCE: PY mud/imc/network.py:1-80; PY mud/imc/__init__.py:469-581; TEST tests/test_imc.py::test_maybe_open_socket_opens_connection
 
 NOTES:
 - C: `imc_startup` invokes `imc_load_color_table` and `imc_load_templates` so color tags and IMCWHO formatting are available before the network connects. (src/imc.c:4221-4270; src/imc.c:4964-5048)
@@ -430,7 +550,7 @@ NOTES:
 
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
 <!-- SUBSYSTEM: persistence START -->
 
 ### persistence — Parity Audit 2025-11-03
@@ -506,13 +626,17 @@ TASKS:
   - estimate: M
   - risk: high
   - evidence: C src/nanny.c:520-660 (`CON_GET_ALIGNMENT`, `CON_DEFAULT_CHOICE`, `CON_GEN_GROUPS` branch into customization, grant `rom basics`/base/default groups); C src/group.c:45-220 (`group_add` applies base/default skills and practice costs); PY mud/net/connection.py:300-420 (creation flow jumps from class pick directly to hometown/weapon prompts with no alignment or customization); PY mud/account/account_service.py:430-520 (characters default to alignment 0 with fixed practice/train values regardless of group selection).
+- ✅ [P0] **login_account_nanny: enforce BAN_PERMIT host gating with PlayerFlag.PERMIT checks** — done 2025-11-08
+  EVIDENCE: PY mud/account/account_service.py:450-503
+  EVIDENCE: TEST tests/test_account_auth.py::test_ban_permit_requires_permit_flag
 
 NOTES:
 - C: src/nanny.c:180-690 drives name validation, duplicate-session handling, and the multi-step creation prompts before `CON_ENTER_GAME`.
 - PY: mud/net/connection.py:20-420 now walks race/class/stat prompts but still omits alignment selection, customization groups, and telnet echo toggles; mud/models/races.py:36-168 aliases `RACE_TABLE` to playable races only so archetype lookups fail for NPC entries.
 - C: src/nanny.c:84-132 asks for ANSI preference, sets `d->ansi`, and prints `help_greeting` with or without the leading dot, ensuring non-ANSI players avoid brace tokens.
 - PY: mud/net/connection.py:700-776 skips ANSI negotiation entirely and `mud/net/protocol.py:9-34` always calls `translate_ansi`, so descriptors lacking ANSI support see raw `{x` tokens with no opt-out.
-- TEST: tests/test_account_auth.py lacks coverage for nanny race/class prompts, telnet echo negotiation, illegal-name rejections, or NPC race archetype lookups.
+- C: src/nanny.c:207-244 defers BAN_PERMIT hosts unless `PLR_PERMIT` is set on the reconnecting character; `login_with_host` now mirrors the gating by inspecting `PlayerFlag.PERMIT` before allowing permit-banned hosts.
+- TEST: tests/test_account_auth.py covers the creation flow plus BAN_PERMIT gating via `test_ban_permit_requires_permit_flag`.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: login_account_nanny END -->
 <!-- SUBSYSTEM: networking_telnet START -->
@@ -542,9 +666,12 @@ NOTES:
 
 ### security_auth_bans — Parity Audit 2025-10-20
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.26)
-KEY RISKS: security, file_formats, persistence
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+KEY RISKS: security
 TASKS:
+
+- ✅ [P0] **security_auth_bans: reject BAN_ALL hosts before telnet greeting** — done 2025-11-09
+  EVIDENCE: PY mud/net/connection.py:L732-L744; TEST tests/test_account_auth.py::test_banned_host_disconnects_before_greeting
 
 - ✅ [P0] **security_auth_bans: load persistent ban list during server startup** — done 2025-10-23
   EVIDENCE: C src/ban.c:61-120 (`load_bans` runs at boot to populate ban_list); PY mud/net/telnet_server.py:11-34 (create_server loads bans file before accepting connections); TEST tests/test_account_auth.py::test_permanent_ban_survives_restart
@@ -554,9 +681,9 @@ TASKS:
   EVIDENCE: PY mud/security/bans.py:1-220; PY mud/models/constants.py:260-310; TEST tests/test_bans.py::test_account_denies_persist_across_restart; TEST tests/test_account_auth.py::test_denied_account_cannot_login
 
 NOTES:
-- C: src/ban.c:61-180 persists and reloads permanent host bans, while src/act_wiz.c:3160-3218 exposes `do_deny` so immortals can flag characters immediately.
-- PY: mud/commands/admin_commands.py:cmd_deny now mirrors ROM's toggle semantics, updates PlayerFlag.DENY, disconnects the victim session, and persists bans; mud/security/bans.py saves `_banned_accounts` alongside host bans and reloads them at startup.
-- TEST: tests/test_admin_commands.py::test_deny_sets_plr_deny_and_kicks drives the command end-to-end, while tests/test_bans.py::test_account_denies_persist_across_restart and tests/test_account_auth.py::test_denied_account_cannot_login verify persistence and login enforcement.
+- C: src/comm.c:1008-1034 drops BAN_ALL hosts before calling `help_greeting`, preventing banned sites from idling at the prompt, while src/ban.c:61-180 persists permanent bans across reboots.
+- PY: mud/net/connection.py:L732-L744 now checks `BanFlag.ALL` before ANSI negotiation and closes the descriptor after sending the ROM ban message.
+- TEST: tests/test_account_auth.py::test_banned_host_disconnects_before_greeting confirms banned hosts receive the ROM message, never hit the greeting prompts, and do not register a session.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: security_auth_bans END -->
 <!-- SUBSYSTEM: logging_admin START -->

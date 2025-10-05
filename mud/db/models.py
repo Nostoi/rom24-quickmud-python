@@ -1,90 +1,104 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import declarative_base, relationship
+"""Typed SQLAlchemy ORM models used throughout the persistence layer."""
 
-Base = declarative_base()
+from __future__ import annotations
+
+from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+class Base(DeclarativeBase):
+    """Declarative base with typing support for SQLAlchemy models."""
 
 
 class Area(Base):
     __tablename__ = "areas"
-    id = Column(Integer, primary_key=True)
-    vnum = Column(Integer, unique=True)
-    name = Column(String)
-    min_vnum = Column(Integer)
-    max_vnum = Column(Integer)
-    rooms = relationship("Room", back_populates="area")
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vnum: Mapped[int] = mapped_column(Integer, unique=True)
+    name: Mapped[str] = mapped_column(String)
+    min_vnum: Mapped[int] = mapped_column(Integer)
+    max_vnum: Mapped[int] = mapped_column(Integer)
+    rooms: Mapped[list["Room"]] = relationship("Room", back_populates="area")
 
 
 class Room(Base):
     __tablename__ = "rooms"
-    id = Column(Integer, primary_key=True)
-    vnum = Column(Integer, unique=True)
-    name = Column(String)
-    description = Column(String)
-    sector_type = Column(Integer)
-    room_flags = Column(Integer)
-    area_id = Column(Integer, ForeignKey("areas.id"))
-    area = relationship("Area", back_populates="rooms")
-    exits = relationship("Exit", back_populates="room")
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vnum: Mapped[int] = mapped_column(Integer, unique=True)
+    name: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(String)
+    sector_type: Mapped[int] = mapped_column(Integer)
+    room_flags: Mapped[int] = mapped_column(Integer)
+    area_id: Mapped[int | None] = mapped_column(ForeignKey("areas.id"), nullable=True)
+    area: Mapped[Area | None] = relationship("Area", back_populates="rooms")
+    exits: Mapped[list["Exit"]] = relationship("Exit", back_populates="room")
 
 
 class Exit(Base):
     __tablename__ = "exits"
-    id = Column(Integer, primary_key=True)
-    room_id = Column(Integer, ForeignKey("rooms.id"))
-    direction = Column(String)
-    to_room_vnum = Column(Integer)
-    room = relationship("Room", back_populates="exits")
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    room_id: Mapped[int | None] = mapped_column(ForeignKey("rooms.id"), nullable=True)
+    direction: Mapped[str] = mapped_column(String)
+    to_room_vnum: Mapped[int] = mapped_column(Integer)
+    room: Mapped[Room | None] = relationship("Room", back_populates="exits")
 
 
 class MobPrototype(Base):
     __tablename__ = "mob_prototypes"
-    id = Column(Integer, primary_key=True)
-    vnum = Column(Integer, unique=True)
-    name = Column(String)
-    short_desc = Column(String)
-    long_desc = Column(String)
-    level = Column(Integer)
-    alignment = Column(Integer)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vnum: Mapped[int] = mapped_column(Integer, unique=True)
+    name: Mapped[str] = mapped_column(String)
+    short_desc: Mapped[str] = mapped_column(String)
+    long_desc: Mapped[str] = mapped_column(String)
+    level: Mapped[int] = mapped_column(Integer)
+    alignment: Mapped[int] = mapped_column(Integer)
 
 
 class ObjPrototype(Base):
     __tablename__ = "obj_prototypes"
-    id = Column(Integer, primary_key=True)
-    vnum = Column(Integer, unique=True)
-    name = Column(String)
-    short_desc = Column(String)
-    long_desc = Column(String)
-    item_type = Column(Integer)
-    flags = Column(Integer)
-    value0 = Column(Integer)
-    value1 = Column(Integer)
-    value2 = Column(Integer)
-    value3 = Column(Integer)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vnum: Mapped[int] = mapped_column(Integer, unique=True)
+    name: Mapped[str] = mapped_column(String)
+    short_desc: Mapped[str] = mapped_column(String)
+    long_desc: Mapped[str] = mapped_column(String)
+    item_type: Mapped[int] = mapped_column(Integer)
+    flags: Mapped[int] = mapped_column(Integer)
+    value0: Mapped[int] = mapped_column(Integer)
+    value1: Mapped[int] = mapped_column(Integer)
+    value2: Mapped[int] = mapped_column(Integer)
+    value3: Mapped[int] = mapped_column(Integer)
 
 
 class ObjectInstance(Base):
     __tablename__ = "object_instances"
-    id = Column(Integer, primary_key=True)
-    prototype_vnum = Column(Integer, ForeignKey("obj_prototypes.vnum"))
-    location = Column(String)
-    character_id = Column(Integer, ForeignKey("characters.id"))
 
-    prototype = relationship("ObjPrototype")
-    character = relationship("Character", back_populates="objects")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    prototype_vnum: Mapped[int] = mapped_column(Integer, ForeignKey("obj_prototypes.vnum"))
+    location: Mapped[str] = mapped_column(String)
+    character_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("characters.id"), nullable=True)
+
+    prototype: Mapped[ObjPrototype | None] = relationship("ObjPrototype")
+    character: Mapped["Character" | None] = relationship("Character", back_populates="objects")
 
 
 class PlayerAccount(Base):
     __tablename__ = "player_accounts"
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True)
-    email = Column(String)
-    password_hash = Column(String)
-    is_admin = Column(Boolean, default=False)
 
-    characters = relationship("Character", back_populates="player")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String, unique=True)
+    email: Mapped[str] = mapped_column(String)
+    password_hash: Mapped[str] = mapped_column(String)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    def set_password(self, password: str):
+    characters: Mapped[list["Character"]] = relationship("Character", back_populates="player")
+
+    def set_password(self, password: str) -> None:
         """Set the password hash for this account."""
+
         from mud.security.hash_utils import hash_password
 
         self.password_hash = hash_password(password)
@@ -92,30 +106,31 @@ class PlayerAccount(Base):
 
 class Character(Base):
     __tablename__ = "characters"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-    level = Column(Integer)
-    hp = Column(Integer)
-    room_vnum = Column(Integer)
-    race = Column(Integer, default=0)
-    ch_class = Column(Integer, default=0)
-    sex = Column(Integer, default=0)
-    alignment = Column(Integer, default=0)
-    act = Column(Integer, default=0)
-    hometown_vnum = Column(Integer, default=0)
-    perm_stats = Column(String, default="")
-    size = Column(Integer, default=0)
-    form = Column(Integer, default=0)
-    parts = Column(Integer, default=0)
-    imm_flags = Column(Integer, default=0)
-    res_flags = Column(Integer, default=0)
-    vuln_flags = Column(Integer, default=0)
-    practice = Column(Integer, default=0)
-    train = Column(Integer, default=0)
-    default_weapon_vnum = Column(Integer, default=0)
-    creation_points = Column(Integer, default=40)
-    creation_groups = Column(String, default="")
 
-    player_id = Column(Integer, ForeignKey("player_accounts.id"))
-    player = relationship("PlayerAccount", back_populates="characters")
-    objects = relationship("ObjectInstance", back_populates="character")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True)
+    level: Mapped[int] = mapped_column(Integer)
+    hp: Mapped[int] = mapped_column(Integer)
+    room_vnum: Mapped[int] = mapped_column(Integer)
+    race: Mapped[int] = mapped_column(Integer, default=0)
+    ch_class: Mapped[int] = mapped_column(Integer, default=0)
+    sex: Mapped[int] = mapped_column(Integer, default=0)
+    alignment: Mapped[int] = mapped_column(Integer, default=0)
+    act: Mapped[int] = mapped_column(Integer, default=0)
+    hometown_vnum: Mapped[int] = mapped_column(Integer, default=0)
+    perm_stats: Mapped[str] = mapped_column(String, default="")
+    size: Mapped[int] = mapped_column(Integer, default=0)
+    form: Mapped[int] = mapped_column(Integer, default=0)
+    parts: Mapped[int] = mapped_column(Integer, default=0)
+    imm_flags: Mapped[int] = mapped_column(Integer, default=0)
+    res_flags: Mapped[int] = mapped_column(Integer, default=0)
+    vuln_flags: Mapped[int] = mapped_column(Integer, default=0)
+    practice: Mapped[int] = mapped_column(Integer, default=0)
+    train: Mapped[int] = mapped_column(Integer, default=0)
+    default_weapon_vnum: Mapped[int] = mapped_column(Integer, default=0)
+    creation_points: Mapped[int] = mapped_column(Integer, default=40)
+    creation_groups: Mapped[str] = mapped_column(String, default="")
+
+    player_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("player_accounts.id"), nullable=True)
+    player: Mapped[PlayerAccount | None] = relationship("PlayerAccount", back_populates="characters")
+    objects: Mapped[list[ObjectInstance]] = relationship("ObjectInstance", back_populates="character")

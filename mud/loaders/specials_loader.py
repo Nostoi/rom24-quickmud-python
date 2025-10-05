@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from typing import Mapping, Sequence
+
 from mud.registry import mob_registry
 
 from .base_loader import BaseTokenizer
+
+SpecialEntry = Mapping[str, object]
 
 
 def load_specials(tokenizer: BaseTokenizer, area) -> None:
@@ -51,14 +55,20 @@ def apply_specials_from_json(entries: list[dict]) -> None:
     Each entry must be a dict with keys: {"mob_vnum": int, "spec": str}.
     Unknown vnums are ignored (matching ROM's tolerant loaders).
     """
-    for entry in entries or []:
+    for entry in entries or ():
+        raw_vnum = entry.get("mob_vnum")
+        if not isinstance(raw_vnum, (str, int)):
+            continue
         try:
-            vnum = int(entry.get("mob_vnum"))
-        except Exception:
+            vnum = int(raw_vnum)
+        except (TypeError, ValueError):
             continue
-        spec = entry.get("spec")
-        if not spec:
+
+        spec_value = entry.get("spec")
+        if not spec_value:
             continue
+        spec = spec_value if isinstance(spec_value, str) else str(spec_value)
+
         proto = mob_registry.get(vnum)
         if proto is not None:
-            proto.spec_fun = str(spec)
+            proto.spec_fun = spec

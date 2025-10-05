@@ -2,6 +2,8 @@ import asyncio
 import json
 from contextlib import suppress
 from pathlib import Path
+from socket import socket as Socket
+from typing import Sequence, cast
 
 from mud.account import load_character as load_player_character
 from mud.account.account_service import (
@@ -20,7 +22,7 @@ from mud.account.account_service import (
     lookup_creation_race,
     release_account,
 )
-from mud.db.models import Base, PlayerAccount
+from mud.db.models import Base, Character, PlayerAccount
 from mud.db.session import SessionLocal, engine
 from mud.models.constants import (
     OBJ_VNUM_SCHOOL_DAGGER,
@@ -159,7 +161,7 @@ def test_new_character_creation_sequence():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -309,7 +311,7 @@ def test_creation_prompts_include_alignment_and_groups():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -444,7 +446,7 @@ def test_password_prompt_hides_echo():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -487,7 +489,7 @@ def test_ansi_prompt_negotiates_preference():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -520,7 +522,7 @@ def test_illegal_name_rejected():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -568,7 +570,7 @@ def test_help_greeting_respects_ansi_choice():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             # ANSI-enabled login
@@ -645,7 +647,7 @@ def test_ansi_preference_persists_between_sessions():
 
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
-        host, port = server.sockets[0].getsockname()
+        host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
@@ -757,6 +759,40 @@ def test_banned_host_cannot_login():
     account = login_with_host("carol", "pw", "198.51.100.20").account
     assert account is not None
     release_account("carol")
+
+
+def test_banned_host_disconnects_before_greeting():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+    SESSIONS.clear()
+
+    bans.add_banned_host("127.0.0.1")
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = _server_address(server)
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+            data = await asyncio.wait_for(reader.read(), timeout=5)
+            assert b"Your site has been banned from this mud." in data
+            assert b"Do you want ANSI?" not in data
+            assert b"Account:" not in data
+            writer.close()
+            await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(Exception):
+                await server_task
+
+    asyncio.run(run())
+    assert not SESSIONS
+    bans.clear_all_bans()
 
 
 def test_permanent_ban_survives_restart(tmp_path):
@@ -966,7 +1002,7 @@ def test_newlock_blocks_new_accounts():
 
         async def run_connection_check() -> None:
             server = await create_server(host="127.0.0.1", port=0)
-            host, port = server.sockets[0].getsockname()
+            host, port = _server_address(server)
             server_task = asyncio.create_task(server.serve_forever())
             try:
                 set_newlock(True)
@@ -1052,7 +1088,49 @@ def test_newbie_permit_enforcement():
     assert locked.account is None
     assert locked.failure is LoginFailureReason.HOST_BANNED
 
-    bans.add_banned_host("locked.example", flags=BanFlag.PERMIT)
-    account = login_with_host("elder", "pw", "locked.example").account
-    assert account is not None
-    release_account("elder")
+
+def test_ban_permit_requires_permit_flag():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("warden", "pw")
+
+    session = SessionLocal()
+    try:
+        account = session.query(PlayerAccount).filter_by(username="warden").first()
+        assert account is not None
+        assert create_character(account, "Guardian")
+    finally:
+        session.close()
+
+    bans.add_banned_host("permit.example", flags=BanFlag.PERMIT)
+
+    blocked = login_with_host("warden", "pw", "permit.example")
+    assert blocked.account is None
+    assert blocked.failure is LoginFailureReason.HOST_BANNED
+
+    session = SessionLocal()
+    try:
+        character = session.query(Character).filter_by(name="Guardian").first()
+        assert character is not None
+        character.act = int(character.act or 0) | int(PlayerFlag.PERMIT)
+        session.commit()
+    finally:
+        session.close()
+
+    permitted = login_with_host("warden", "pw", "permit.example")
+    assert permitted.account is not None
+    release_account("warden")
+def _server_address(server: asyncio.AbstractServer) -> tuple[str, int]:
+    sockets = cast(Sequence[Socket], getattr(server, "sockets", ()))
+    if not sockets:
+        raise RuntimeError("Server missing sockets")
+    addr = sockets[0].getsockname()
+    if isinstance(addr, tuple) and len(addr) >= 2:
+        host = str(addr[0])
+        port = int(addr[1])
+        return host, port
+    raise RuntimeError("Unsupported socket address")

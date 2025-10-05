@@ -8,6 +8,12 @@ from mud.models.constants import AffectFlag, Position
 from mud.utils import rng_mm
 
 
+def assert_attack_message(message: str, target: str) -> None:
+    assert message.startswith("{2")
+    assert target in message
+    assert message.endswith("{x")
+
+
 def setup_combat_with_damage_reduction():
     """Set up combat scenario for damage reduction testing."""
     attacker = Character(
@@ -43,7 +49,7 @@ def test_sanctuary_integration_in_combat():
     result = attack_round(attacker, victim)
 
     # Should hit but with reduced damage due to sanctuary
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # Damage should be less than it would be without sanctuary
@@ -63,7 +69,7 @@ def test_protection_spell_integration_in_combat():
     original_hp = victim.hit
     result = attack_round(attacker, victim)
 
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # Should have reduced damage due to protect_evil vs evil attacker
@@ -81,7 +87,7 @@ def test_drunk_condition_integration_in_combat():
     original_hp = victim.hit
     result = attack_round(attacker, victim)
 
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # Should have 10% reduced damage due to drunk condition
@@ -103,7 +109,7 @@ def test_multiple_reductions_stack_in_combat():
     original_hp = victim.hit
     result = attack_round(attacker, victim)
 
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # With all reductions stacking, damage should be significantly reduced
@@ -125,7 +131,7 @@ def test_no_damage_reduction_for_npcs():
     original_hp = victim.hit
     result = attack_round(attacker, victim)
 
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # Should still get sanctuary reduction but no drunk reduction
@@ -148,7 +154,7 @@ def test_damage_reduction_with_riv_scaling():
     original_hp = victim.hit
     result = attack_round(attacker, victim)
 
-    assert "You hit" in result
+    assert_attack_message(result, "Victim")
     damage_dealt = original_hp - victim.hit
 
     # Damage should be: base -> sanctuary reduction -> vulnerability increase
