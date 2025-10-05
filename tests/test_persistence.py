@@ -104,3 +104,38 @@ def test_inventory_round_trip_preserves_object_state(
     assert equipped.cost == 4444
     assert equipped.value[2] == 13
     assert int(getattr(equipped, "wear_loc", WearLocation.NONE)) == int(WearLocation.WIELD)
+
+
+def test_skill_progress_persists(tmp_path):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Learner", 3001)
+    char.level = 20
+    char.skills["fireball"] = 75
+    char.skills["backstab"] = 42
+    char.pcdata.group_known = ("rom basics",)
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Learner")
+    assert loaded is not None
+    assert loaded.skills["fireball"] == 75
+    assert loaded.skills["backstab"] == 42
+    assert loaded.pcdata.learned["fireball"] == 75
+
+
+def test_group_knowledge_persists(tmp_path):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Scholar", 3001)
+    char.pcdata.group_known = ("rom basics", "Mage Default", "rom basics")
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Scholar")
+    assert loaded is not None
+    assert loaded.pcdata.group_known == ("rom basics", "mage default")

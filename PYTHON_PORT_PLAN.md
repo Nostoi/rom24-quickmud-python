@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: security_auth_bans -->
+<!-- LAST-PROCESSED: networking_telnet -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: movement_encumbrance,help_system,area_format_loader,login_account_nanny,networking_telnet,security_auth_bans,imc_chat,olc_builders,mob_programs,affects_saves -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: area_format_loader,login_account_nanny,networking_telnet,security_auth_bans,imc_chat,olc_builders,mob_programs -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -26,7 +26,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | resets | present_wired | C: src/db.c:2003-2179 (create_mobile seeds runtime state); PY: mud/spawning/templates.py:180-420; mud/spawning/reset_handler.py:40-196 | tests/test_spawning.py; tests/test_spec_funs.py |
 | weather | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick | tests/test_game_loop.py |
 | time_daynight | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour | tests/test_time_daynight.py; tests/test_time_persistence.py |
-| movement_encumbrance | present_wired | C: src/act_move.c:80-236 (move_char handles portals/followers); PY: mud/world/movement.py:240-470; mud/commands/movement.py:10-70 | tests/test_movement_portals.py; tests/test_movement_costs.py; tests/test_movement_followers.py |
+| movement_encumbrance | present_wired | C: src/act_move.c:80-236 (move_char handles portals/followers); C: src/handler.c:899-923 (carry caps); PY: mud/world/movement.py:131-470; mud/commands/movement.py:10-70 | tests/test_movement_portals.py; tests/test_movement_costs.py; tests/test_movement_followers.py; tests/test_encumbrance.py |
 | stats_position | present_wired | C: merc.h:POSITION enum; PY: mud/models/constants.py:Position | tests/test_advancement.py |
 | shops_economy | present_wired | DOC: doc/area.txt § #SHOPS; ARE: area/midgaard.are § #SHOPS; C: src/act_obj.c:do_buy/do_sell; PY: mud/commands/shop.py:do_buy/do_sell; C: src/healer.c:do_heal; PY: mud/commands/healer.py:do_heal | tests/test_shops.py; tests/test_shop_conversion.py; tests/test_healer.py |
 | boards_notes | present_wired | C: src/board.c:563-780; PY: mud/commands/notes.py:33-204; mud/world/world_state.py:92-134 | tests/test_boards.py::test_note_read_defaults_to_next_unread; tests/test_boards.py::test_board_change_blocked_during_note_draft |
@@ -193,38 +193,31 @@ TASKS:
   EVIDENCE: C src/db.c:2173-2179; PY mud/spawning/templates.py:294-296; TEST tests/test_spawning.py::test_spawned_mob_randomizes_sex_when_either
 - ✅ [P0] **resets: zero room-spawned object cost on O resets** — done 2025-10-21
   EVIDENCE: C src/db.c:1754-1784; PY mud/spawning/reset_handler.py:353-359; TEST tests/test_spawning.py::test_room_reset_zeroes_object_cost
+- ✅ [P0] **resets: grant infravision in dark rooms and flag pet shop mobs** — done 2025-10-31
+  EVIDENCE: C src/db.c:1706-1744; PY mud/spawning/reset_handler.py:309-335; TEST tests/test_spawning.py::{test_reset_spawn_in_dark_room_grants_infravision,test_reset_spawn_adjacent_to_pet_shop_sets_act_pet}
 
 NOTES:
 - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
 - PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns.
 - TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches.
-  - Applied tiny fix: none
+- PY: mud/spawning/reset_handler.py now mirrors src/db.c:1706-1744 by seeding `AFF_INFRARED` in dark rooms and adding `ACT_PET` for pet shop spawns.
+- Applied tiny fix: none
 <!-- SUBSYSTEM: resets END -->
 <!-- SUBSYSTEM: movement_encumbrance START -->
-### movement_encumbrance — Parity Audit 2025-10-15
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.55)
-KEY RISKS: RNG, flags, side_effects, combat
+### movement_encumbrance — Parity Audit 2025-10-31
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.80)
+KEY RISKS: encumbrance, flags, side_effects
 TASKS:
-- ✅ [P0] **movement_encumbrance: enforce portal curse/no-recall gating** — done 2025-10-15
-  EVIDENCE: C src/act_enter.c:104-138 (trust + NOCURSE checks before travel)
-  EVIDENCE: PY mud/commands/movement.py:26-66 (portal lookup + curse gate enforcement)
-  EVIDENCE: PY mud/world/movement.py:324-378 (follow path duplicates NOCURSE blocks)
-  EVIDENCE: TEST tests/test_movement_portals.py::test_cursed_player_blocked_by_nocurse_portal
-- ✅ [P0] **movement_encumbrance: resolve portal destinations via ROM gate flags** — done 2025-10-15
-  EVIDENCE: C src/act_enter.c:140-176 (GATE_RANDOM/BUGGY rerolls + private room checks)
-  EVIDENCE: PY mud/world/movement.py:378-454 (random rolls, private-room rejection, law-room aggression guard)
-  EVIDENCE: TEST tests/test_movement_portals.py::test_random_gate_rolls_destination
-- ✅ [P1] **movement_encumbrance: consume portal charges and carry GATE_GOWITH objects** — done 2025-10-15
-  EVIDENCE: C src/act_enter.c:178-236 (portal charge depletion and GATE_GOWITH relocation)
-  EVIDENCE: PY mud/world/movement.py:260-360 (charge decrement, follower gating, fade messaging)
-  EVIDENCE: TEST tests/test_movement_portals.py::test_portal_charges_and_followers
-- ✅ [P0] **movement_encumbrance: block portal entry while fighting** — done 2025-10-22
-  EVIDENCE: C src/act_enter.c:70-140; PY mud/commands/movement.py:47-87; PY mud/world/movement.py:386-440; TEST tests/test_movement_portals.py::test_move_through_portal_blocked_while_fighting
+- ✅ [P0] **movement_encumbrance: restore immortal/pet carry caps** — done 2025-10-05
+  EVIDENCE: C src/handler.c:899-923 (immortal/pet overrides for can_carry_n/w)
+  EVIDENCE: PY mud/world/movement.py:131-175
+  EVIDENCE: TEST tests/test_encumbrance.py::test_immortal_and_pet_caps
+  EVIDENCE: TEST tests/test_encumbrance.py::test_encumbrance_movement_gating_respects_caps
 
 NOTES:
-- C: src/act_enter.c:101-236 layers NOCURSE gating, random/buggy rerolls, law-room aggression checks, and charge depletion.
-- PY: mud/commands/movement.py:15-66 plus mud/world/movement.py:324-454 now mirror the ROM gating, rerolls, and fade cleanup for GATE_GOWITH portals.
-- TEST: tests/test_movement_portals.py locks curse blocking, random destination persistence, and charge/follower parity behaviors.
+- C: src/handler.c:899-923 returns 1000 carry slots and effectively unlimited weight for immortals while zeroing both caps for pets before falling back to STR/DEX calculations.
+- PY: mud/world/movement.py:131-175 now short-circuits immortals and pets before applying the stat-based formulas so the overrides mirror ROM.
+- TEST: tests/test_encumbrance.py adds coverage for the immortal/pet caps and ensures the movement gating enforces the zero-cap pet behavior.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: movement_encumbrance END -->
 <!-- SUBSYSTEM: world_loader START -->
@@ -353,6 +346,28 @@ NOTES:
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: mob_programs END -->
+<!-- SUBSYSTEM: npc_spec_funs START -->
+
+### npc_spec_funs — Parity Audit 2025-11-02
+
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+KEY RISKS: ai, scripting, side_effects
+
+TASKS:
+
+- ✅ [P0] **npc_spec_funs: port ROM law-enforcement specs (guard/executioner/patrolman)** — done 2025-11-02
+  EVIDENCE: PY mud/spec_funs.py:L246-L403; TEST tests/test_spec_funs.py::test_guard_attacks_flagged_criminal; tests/test_spec_funs.py::test_patrolman_blows_whistle_when_breaking_fight
+
+- ✅ [P0] **npc_spec_funs: implement caster spec functions (spec_cast_cleric/mage/undead/judge)** — done 2025-11-02
+  EVIDENCE: PY mud/spec_funs.py:L409-L488; TEST tests/test_spec_funs.py::test_spec_cast_cleric_casts_expected_spells; tests/test_spec_funs.py::test_spec_cast_mage_uses_rom_spell_table
+
+NOTES:
+- C: src/special.c:261-995 implements the justice AI and caster spell tables that ROM relies on for town guards and magic-using mobs.
+- PY: mud/spec_funs.py registers only spec_cast_adept and lacks entries for guards, executioners, patrolmen, or caster behaviors, so no NPC ever runs ROM spec logic.
+- TEST: tests/test_spec_funs.py presently covers registry plumbing and spec_cast_adept RNG only; new regressions must simulate wanted PCs and combat targets to lock down behavior once the specs are ported.
+- Applied tiny fix: none
+
+<!-- SUBSYSTEM: npc_spec_funs END -->
 <!-- PARITY-GAPS-END -->
 
 
@@ -381,7 +396,7 @@ NOTES:
 | resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
 | weather                  | src/update.c:weather_update                                        | mud/game_loop.py:weather_tick                                                              |
 | time_daynight            | src/update.c:weather_update sun state                              | mud/time.py:TimeInfo.advance_hour; mud/game_loop.py:time_tick                              |
-| movement_encumbrance     | src/act_move.c:encumbrance                                         | mud/world/movement.py:move_character                                                       |
+| movement_encumbrance     | src/handler.c:can_carry_n/can_carry_w                              | mud/world/movement.py:can_carry_n/can_carry_w                                              |
 | stats_position           | merc.h:position enum                                               | mud/models/constants.py:Position                                                           |
 | shops_economy            | src/act_obj.c:do_buy/do_sell                                       | mud/commands/shop.py:do_buy/do_sell                                                        |
 | boards_notes             | src/board.c                                                        | mud/notes.py:load_boards/save_board; mud/commands/notes.py                                 |
@@ -415,15 +430,17 @@ NOTES:
 
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs -->
 <!-- SUBSYSTEM: persistence START -->
 
-### persistence — Parity Audit 2025-10-20
+### persistence — Parity Audit 2025-11-03
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.24)
-KEY RISKS: file_formats, side_effects, flags
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.64)
+KEY RISKS: file_formats, progression
 TASKS:
 
+- ✅ [P0] **persistence: persist learned skill percentages and group knowledge** — done 2025-11-04
+  EVIDENCE: C src/save.c:296-356 (`Sk`/`Gr` entries persist learned skills and group membership); PY mud/persistence.py:L34-L140; PY mud/persistence.py:L402-L566; PY mud/models/character.py:L19-L39; TEST tests/test_persistence.py::test_skill_progress_persists; TEST tests/test_persistence.py::test_group_knowledge_persists
 - ✅ [P0] **persistence: persist carried/equipped object state with ROM serialization** — done 2025-10-03
   EVIDENCE: C src/save.c:526-645 (`fwrite_obj` serializes nested object state with wear_loc, timer, cost, values, affects)
   EVIDENCE: PY mud/persistence.py:25-220 (ObjectSave snapshots, serialization helpers, and load/save upgrades for inventory/equipment)
@@ -437,24 +454,25 @@ TASKS:
   - acceptance_criteria: PlayerSave captures logon timestamp, played minutes, prompt, title, and board storage key so `load_character` reproduces ROM `fread_char` defaults.
   - estimate: M
   - risk: medium
-  - evidence: C src/save.c:330-520 (`fwrite_char` writes prompt/title/played/logon/board); PY mud/persistence.py:32-190 (PlayerSave omits those fields and resets board metadata each login).
+  - evidence: C src/save.c:216-320 (`fwrite_char` writes prompt/title/played/logon/board); PY mud/persistence.py:32-190 (PlayerSave omits those fields and resets board metadata each login).
 
 NOTES:
-- C: src/save.c:330-645 persists prompts, playtime counters, and full object trees via `fwrite_char`/`fwrite_obj`.
-- PY: mud/persistence.py:32-198 collapses inventory to prototype identifiers and never records prompt/title/logon metadata.
-- TEST: tests/test_persistence.py only covers basic stat round-trips and misses inventory/equipment parity assertions.
-- Applied tiny fix: none
+- C: src/save.c:216-356 persists prompts, playtime counters, learned skill percentages, and group tables so characters retain training across reboots.
+- PY: mud/persistence.py:L34-L566 now serializes `Character.skills` entries and `pcdata.group_known`, but prompt/title/played/logon metadata remain outstanding under the P1 follow-up.
+- TEST: tests/test_persistence.py::{test_inventory_round_trip_preserves_object_state,test_skill_progress_persists,test_group_knowledge_persists} lock inventory, skill, and group persistence behavior.
 <!-- SUBSYSTEM: persistence END -->
 <!-- SUBSYSTEM: login_account_nanny START -->
 
 ### login_account_nanny — Parity Audit 2025-10-28
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.18)
-KEY RISKS: security, lag_wait, side_effects
+KEY RISKS: security, lag_wait, side_effects, ansi
 TASKS:
 
 - ✅ [P0] **login_account_nanny: enforce ROM name and site gating before account auto-creation** — done 2025-10-21
   EVIDENCE: C src/nanny.c:188-244; C src/comm.c:1699-1830; PY mud/account/account_service.py:38-158; PY mud/net/connection.py:33-121; TEST tests/test_account_auth.py::test_illegal_name_rejected; TEST tests/test_account_auth.py::test_newlock_blocks_new_accounts
+- ✅ [P0] **login_account_nanny: restore ANSI negotiation and descriptor color flags before help greeting** — done 2025-11-05
+  EVIDENCE: PY mud/net/connection.py:L60-L115; PY mud/net/connection.py:L231-L784; PY mud/net/ansi.py:L5-L40; PY mud/net/protocol.py:L1-L33; PY mud/loaders/help_loader.py:L14-L75; PY mud/world/world_state.py:L135-L166; DATA data/help.json:L1-L24; TEST tests/test_account_auth.py:L53-L627; TEST tests/test_account_auth.py::test_ansi_prompt_negotiates_preference; tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
 - [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow**
   - priority: P1
   - rationale: ROM disables echo during password entry and offers CON_BREAK_CONNECT handshakes; the port leaves echo on and skips duplicate-session prompts beyond a yes/no reconnect.
@@ -492,35 +510,32 @@ TASKS:
 NOTES:
 - C: src/nanny.c:180-690 drives name validation, duplicate-session handling, and the multi-step creation prompts before `CON_ENTER_GAME`.
 - PY: mud/net/connection.py:20-420 now walks race/class/stat prompts but still omits alignment selection, customization groups, and telnet echo toggles; mud/models/races.py:36-168 aliases `RACE_TABLE` to playable races only so archetype lookups fail for NPC entries.
+- C: src/nanny.c:84-132 asks for ANSI preference, sets `d->ansi`, and prints `help_greeting` with or without the leading dot, ensuring non-ANSI players avoid brace tokens.
+- PY: mud/net/connection.py:700-776 skips ANSI negotiation entirely and `mud/net/protocol.py:9-34` always calls `translate_ansi`, so descriptors lacking ANSI support see raw `{x` tokens with no opt-out.
 - TEST: tests/test_account_auth.py lacks coverage for nanny race/class prompts, telnet echo negotiation, illegal-name rejections, or NPC race archetype lookups.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: login_account_nanny END -->
 <!-- SUBSYSTEM: networking_telnet START -->
 
-### networking_telnet — Parity Audit 2025-10-29
+### networking_telnet — Parity Audit 2025-11-06
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.16)
-KEY RISKS: lag_wait, networking, side_effects, security
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.24)
+KEY RISKS: lag_wait, networking, persistence, side_effects, security
 TASKS:
 
 - ✅ [P0] **networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:1-380; PY mud/net/protocol.py:1-80; TEST tests/test_telnet_server.py::test_telnet_negotiates_iac_and_disables_echo; TEST tests/test_account_auth.py::test_password_prompt_hides_echo
 - ✅ [P0] **networking_telnet: implement ROM line editing, history recall, and spam throttling for descriptor input** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:L1-L220; PY mud/net/session.py:L1-L40; TEST tests/test_telnet_server.py::test_backspace_editing_preserves_input; TEST tests/test_telnet_server.py::test_excessive_repeats_trigger_spam_warning
-- [P1] **networking_telnet: send ROM help_greeting and descriptor initialization on connect**
-  - priority: P1
-  - rationale: ROM greets players with the configurable MOTD/help banner and seeds descriptor flags, while the port prints a hardcoded message without ANSI prompt negotiation.
-  - files: mud/net/connection.py; mud/net/telnet_server.py; mud/help/loader.py
-  - tests: tests/test_telnet_server.py::test_help_greeting_displayed (new)
-  - acceptance_criteria: Connections load `help_greeting`, honor ansi prompts when configured, and mirror descriptor initialization before entering the nanny state machine.
-  - estimate: S
-  - risk: low
-  - evidence: C src/comm.c:577-612/1037-1055 (`help_greeting` banner before CON_GET_NAME); PY mud/net/connection.py:28-60 (prints "Welcome to PythonMUD" with no configuration hook).
+- ✅ [P1] **networking_telnet: send ROM help_greeting and descriptor initialization on connect** — done 2025-11-05
+  EVIDENCE: PY mud/loaders/help_loader.py:13-39; mud/world/world_state.py:60-84; mud/net/connection.py:224-338; TEST tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
+- ✅ [P0] **networking_telnet: persist ANSI preference via PLR_COLOUR flag** — done 2025-11-06
+  EVIDENCE: PY mud/net/connection.py:230-360; PY mud/account/account_manager.py:15-120; PY mud/db/models.py:90-140; PY mud/models/character.py:400-470; PY mud/persistence.py:400-540; TEST tests/test_account_auth.py::test_ansi_preference_persists_between_sessions
 
 NOTES:
-- C: src/comm.c:480-1374 initializes descriptors, negotiates telnet options, buffers output, and appends `go_ahead_str` before handing control to `nanny`; `read_from_buffer` trims backspaces, enforces `MAX_INPUT_LENGTH`, and tracks spam repeats.
-- PY: mud/net/connection.py:1-460 now negotiates echo/suppress-GA, buffers prompts through `TelnetStream`, and hides passwords, but still lacks ROM line editing/history/spam throttling; mud/net/session.py:1-80 exposes no repeat counters or history for spam detection.
-- TEST: tests/test_telnet_server.py covers negotiation/echo parity and still needs coverage for backspace/history spam behavior expected by the remaining P0 task.
+- C: src/comm.c:480-1374 negotiates telnet options, buffers prompts, and sends `help_greeting` before `CON_GET_NAME`, while src/nanny.c:283-367 syncs PLR_COLOUR with descriptor ANSI to persist player colour choices.
+- PY: mud/net/connection.py now syncs `PlayerFlag.COLOUR` with descriptor ANSI negotiation while the account manager and persistence layers persist the bit and derived `char.ansi_enabled`, so reconnects reuse the saved preference without an extra prompt toggle.
+- TEST: tests/test_account_auth.py includes regressions that cover the greeting flow and persistence of ANSI preference across sessions.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: networking_telnet END -->
 <!-- SUBSYSTEM: security_auth_bans START -->

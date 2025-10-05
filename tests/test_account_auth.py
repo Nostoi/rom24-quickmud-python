@@ -3,15 +3,16 @@ import json
 from contextlib import suppress
 from pathlib import Path
 
+from mud.account import load_character as load_player_character
 from mud.account.account_service import (
     LoginFailureReason,
     clear_active_accounts,
     create_account,
     create_character,
+    finalize_creation_stats,
     get_creation_classes,
     get_creation_races,
     get_race_archetype,
-    finalize_creation_stats,
     list_characters,
     login,
     login_with_host,
@@ -19,34 +20,48 @@ from mud.account.account_service import (
     lookup_creation_race,
     release_account,
 )
+from mud.db.models import Base, PlayerAccount
+from mud.db.session import SessionLocal, engine
 from mud.models.constants import (
-    ActFlag,
-    AffectFlag,
-    ImmFlag,
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
     OBJ_VNUM_SCHOOL_SWORD,
     ROOM_VNUM_SCHOOL,
+    ActFlag,
+    AffectFlag,
+    ImmFlag,
     OffFlag,
     PartFlag,
+    PlayerFlag,
     ResFlag,
+    Sex,
     Size,
     Stat,
     VulnFlag,
-    Sex,
 )
-from mud.db.models import Base, PlayerAccount
-from mud.db.session import SessionLocal, engine
+from mud.net.session import SESSIONS
+from mud.net.telnet_server import create_server
 from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
-from mud.net.telnet_server import create_server
 
 TELNET_IAC = 255
 TELNET_WILL = 251
 TELNET_WONT = 252
 TELNET_TELOPT_ECHO = 1
+
+
+async def negotiate_ansi(
+    reader: asyncio.StreamReader, writer: asyncio.StreamWriter, reply: bytes = b""
+) -> tuple[bytes, bytes]:
+    prompt = await asyncio.wait_for(reader.readuntil(b"Do you want ANSI? (Y/n) "), timeout=5)
+    response = reply.strip() if reply else b""
+    payload = response + b"\r\n" if response else b"\r\n"
+    writer.write(payload)
+    await writer.drain()
+    greeting = await asyncio.wait_for(reader.readuntil(b"Account: "), timeout=5)
+    return prompt, greeting
 
 
 def setup_module(module):
@@ -149,10 +164,11 @@ def test_new_character_creation_sequence():
         try:
             reader, writer = await asyncio.open_connection(host, port)
 
-            welcome = await reader.readline()
-            assert welcome.startswith(b"Welcome to PythonMUD")
+            prompt, greeting = await negotiate_ansi(reader, writer)
+            assert prompt.endswith(b"(Y/n) ")
+            assert b"THIS IS A MUD" in greeting.upper()
+            assert b"\x1b[" in greeting
 
-            await asyncio.wait_for(reader.readuntil(b"Account: "), timeout=5)
             writer.write(b"rookie\r\n")
             await writer.drain()
 
@@ -179,7 +195,9 @@ def test_new_character_creation_sequence():
             writer.write(b"y\r\n")
             await writer.drain()
 
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Available races: Human, Elf, Dwarf, Giant\r\n"
+            assert (
+                await asyncio.wait_for(reader.readline(), timeout=5) == b"Available races: Human, Elf, Dwarf, Giant\r\n"
+            )
             await asyncio.wait_for(reader.readuntil(b"Choose your race: "), timeout=5)
             writer.write(b"elf\r\n")
             await writer.drain()
@@ -188,16 +206,17 @@ def test_new_character_creation_sequence():
             writer.write(b"F\r\n")
             await writer.drain()
 
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Available classes: Mage, Cleric, Thief, Warrior\r\n"
+            assert (
+                await asyncio.wait_for(reader.readline(), timeout=5)
+                == b"Available classes: Mage, Cleric, Thief, Warrior\r\n"
+            )
             await asyncio.wait_for(reader.readuntil(b"Choose your class: "), timeout=5)
             writer.write(b"mage\r\n")
             await writer.drain()
 
             # Alignment prompt
             assert await asyncio.wait_for(reader.readline(), timeout=5) == b"\r\n"
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == (
-                b"You may be good, neutral, or evil.\r\n"
-            )
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == (b"You may be good, neutral, or evil.\r\n")
             await asyncio.wait_for(reader.readuntil(b"Which alignment (G/N/E)? "), timeout=5)
             writer.write(b"g\r\n")
             await writer.drain()
@@ -295,8 +314,8 @@ def test_creation_prompts_include_alignment_and_groups():
         try:
             reader, writer = await asyncio.open_connection(host, port)
 
-            await reader.readline()
-            await asyncio.wait_for(reader.readuntil(b"Account: "), timeout=5)
+            _, greeting = await negotiate_ansi(reader, writer)
+            assert b"\x1b[" in greeting
             writer.write(b"scribe\r\n")
             await writer.drain()
 
@@ -430,8 +449,9 @@ def test_password_prompt_hides_echo():
         try:
             reader, writer = await asyncio.open_connection(host, port)
 
-            greeting = await reader.readuntil(b"Account: ")
-            assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in greeting
+            prompt, greeting = await negotiate_ansi(reader, writer)
+            combined = prompt + greeting
+            assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in combined
 
             writer.write(b"sentinel\r\n")
             await writer.drain()
@@ -458,6 +478,39 @@ def test_password_prompt_hides_echo():
     asyncio.run(run())
 
 
+def test_ansi_prompt_negotiates_preference():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = server.sockets[0].getsockname()
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+
+            prompt, greeting = await negotiate_ansi(reader, writer)
+            assert prompt.endswith(b"(Y/n) ")
+            assert b"{W" not in greeting
+            assert b"\x1b[" in greeting
+            assert b"THIS IS A MUD" in greeting.upper()
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
 def test_illegal_name_rejected():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -471,8 +524,7 @@ def test_illegal_name_rejected():
         server_task = asyncio.create_task(server.serve_forever())
         try:
             reader, writer = await asyncio.open_connection(host, port)
-            await reader.readline()
-            await reader.readuntil(b"Account: ")
+            await negotiate_ansi(reader, writer)
             writer.write(b"self\n")
             await writer.drain()
 
@@ -499,6 +551,161 @@ def test_illegal_name_rejected():
         assert session.query(PlayerAccount).filter_by(username="self").first() is None
     finally:
         session.close()
+
+
+def test_help_greeting_respects_ansi_choice():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("ansiuser", "secret")
+    account = login("ansiuser", "secret")
+    assert account is not None
+    assert create_character(account, "Ansi")
+    release_account("ansiuser")
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = server.sockets[0].getsockname()
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            # ANSI-enabled login
+            reader, writer = await asyncio.open_connection(host, port)
+            _, greeting_on = await negotiate_ansi(reader, writer)
+            assert b"\x1b[" in greeting_on
+            assert b"{W" not in greeting_on
+            assert b"THIS IS A MUD" in greeting_on.upper()
+
+            writer.write(b"ansiuser\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Password: ")
+            writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Character: ")
+            writer.write(b"Ansi\r\n")
+            await writer.drain()
+            await reader.readuntil(b"> ")
+            session = SESSIONS.get("Ansi")
+            assert session is not None
+            assert session.character.ansi_enabled is True
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+            release_account("ansiuser")
+
+            # ANSI-disabled login
+            reader, writer = await asyncio.open_connection(host, port)
+            _, greeting_off = await negotiate_ansi(reader, writer, reply=b"n")
+            assert b"\x1b[" not in greeting_off
+            assert b"{" not in greeting_off
+            assert b"THIS IS A MUD" in greeting_off.upper()
+
+            writer.write(b"ansiuser\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Password: ")
+            writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Character: ")
+            writer.write(b"Ansi\r\n")
+            await writer.drain()
+            await reader.readuntil(b"> ")
+            session = SESSIONS.get("Ansi")
+            assert session is not None
+            assert session.character.ansi_enabled is False
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+            release_account("ansiuser")
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
+def test_ansi_preference_persists_between_sessions():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("ansiuser", "secret")
+    account = login("ansiuser", "secret")
+    assert account is not None
+    assert create_character(account, "Ansi")
+    release_account("ansiuser")
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = server.sockets[0].getsockname()
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+            _, greeting_off = await negotiate_ansi(reader, writer, reply=b"n")
+            assert b"\x1b[" not in greeting_off
+
+            writer.write(b"ansiuser\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Password: ")
+            writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Character: ")
+            writer.write(b"Ansi\r\n")
+            await writer.drain()
+            await reader.readuntil(b"> ")
+            session = SESSIONS.get("Ansi")
+            assert session is not None
+            assert session.character.ansi_enabled is False
+            assert session.connection.ansi_enabled is False
+            assert session.character.act & int(PlayerFlag.COLOUR) == 0
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+            release_account("ansiuser")
+
+            player_state = load_player_character("ansiuser", "Ansi")
+            assert player_state is not None
+            assert player_state.act & int(PlayerFlag.COLOUR) == 0
+            assert getattr(player_state, "ansi_enabled", True) is False
+
+            reader, writer = await asyncio.open_connection(host, port)
+            await negotiate_ansi(reader, writer)
+            writer.write(b"ansiuser\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Password: ")
+            writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"Character: ")
+            writer.write(b"Ansi\r\n")
+            await writer.drain()
+            await reader.readuntil(b"> ")
+            session = SESSIONS.get("Ansi")
+            assert session is not None
+            assert session.character.ansi_enabled is False
+            assert session.connection.ansi_enabled is False
+            assert session.character.act & int(PlayerFlag.COLOUR) == 0
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+            release_account("ansiuser")
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
 
 
 def test_account_create_and_login():
@@ -756,7 +963,7 @@ def test_newlock_blocks_new_accounts():
         blocked = login_with_host("brand", "pw", None)
         assert blocked.account is None
         assert blocked.failure is LoginFailureReason.NEWLOCK
-        
+
         async def run_connection_check() -> None:
             server = await create_server(host="127.0.0.1", port=0)
             host, port = server.sockets[0].getsockname()
@@ -764,8 +971,7 @@ def test_newlock_blocks_new_accounts():
             try:
                 set_newlock(True)
                 reader, writer = await asyncio.open_connection(host, port)
-                await reader.readline()
-                await reader.readuntil(b"Account: ")
+                await negotiate_ansi(reader, writer)
                 writer.write(b"brand\n")
                 await writer.drain()
                 await reader.readuntil(b"Password: ")

@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character, character_registry
-from mud.net.ansi import translate_ansi
+from mud.net.ansi import render_ansi
 
 if TYPE_CHECKING:
     from mud.net.connection import TelnetStream
@@ -21,12 +21,12 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
         text = "\r\n".join(str(m) for m in message)
     else:
         text = str(message)
-    text = translate_ansi(text)
     if hasattr(writer, "send_line"):
-        telnet: "TelnetStream" = writer
+        telnet: TelnetStream = writer
         await telnet.send_line(text)
         return
 
+    text = render_ansi(text, getattr(char, "ansi_enabled", True))
     if not text.endswith("\r\n"):
         text += "\r\n"
     writer.write(text.encode())

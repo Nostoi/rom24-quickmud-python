@@ -10,15 +10,28 @@ from mud.models.help_json import HelpJson
 
 from .base_loader import BaseTokenizer
 
+help_greeting: str = ""
+
+
+def _maybe_set_help_greeting(entry: HelpEntry) -> None:
+    global help_greeting
+    for keyword in entry.keywords:
+        if keyword.lower() == "greeting":
+            help_greeting = entry.text
+            break
+
 
 def load_help_file(path: str | Path) -> None:
     """Load help entries from ``path`` into ``help_registry``."""
     with open(path, encoding="utf-8") as fp:
         data = json.load(fp)
     help_registry.clear()
+    global help_greeting
+    help_greeting = ""
     for raw in data:
         entry = HelpEntry.from_json(HelpJson.from_dict(raw))
         register_help(entry)
+        _maybe_set_help_greeting(entry)
 
 
 def load_helps(tokenizer: BaseTokenizer, area: Area) -> None:
@@ -58,3 +71,4 @@ def load_helps(tokenizer: BaseTokenizer, area: Area) -> None:
         entry = HelpEntry(keywords=keyword_tokens, text=text, level=level)
         area.helps.append(entry)
         register_help(entry)
+        _maybe_set_help_greeting(entry)

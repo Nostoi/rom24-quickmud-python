@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import mud.notes as notes
 from mud.db import models
 from mud.db.session import SessionLocal
-import mud.notes as notes
 from mud.imc import imc_enabled, maybe_open_socket
 from mud.loaders import load_all_areas
+from mud.loaders.help_loader import load_help_file
 from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import Position
 from mud.models.room import Room
@@ -148,6 +149,7 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     # ROM boot_db loads board files before finishing startup (src/db.c:load_boards).
     # Mirror that so board state persists across world reloads without manual hooks.
     notes.load_boards()
+    load_help_file("data/help.json")
 
     # ROM imc_startup runs during boot_db when IMC is enabled. Load configuration
     # and cached tables before continuing so idle pumps have the necessary data.

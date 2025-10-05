@@ -1,4 +1,11 @@
-[
+[ 
+  {
+    "level": -1,
+    "keywords": [
+      "GREETING"
+    ],
+    "text": ".{WTHIS IS A MUD BASED ON.....{x\n\n{C                                ROM Version 2.4 beta{x\n\n               Original DikuMUD by Hans Staerfeldt, Katja Nyboe,\n               Tom Madsen, Michael Seifert, and Sebastian Hammer\n               Based on MERC 2.1 code by Hatchet, Furey, and Kahn\n               ROM 2.4 copyright (c) 1993-1998 Russ Taylor\n\nBy what name do you wish to be known?"
+  },
   {
     "level": 0,
     "keywords": [

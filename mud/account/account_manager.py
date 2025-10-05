@@ -50,6 +50,7 @@ def save_character(character: Character) -> None:
             db_char.ch_class = int(character.ch_class or 0)
             db_char.sex = int(character.sex or 0)
             db_char.alignment = int(character.alignment or 0)
+            db_char.act = int(getattr(character, "act", 0) or 0)
             db_char.hometown_vnum = int(character.hometown_vnum or 0)
             db_char.perm_stats = json.dumps([int(val) for val in character.perm_stat])
             db_char.size = int(character.size or 0)
@@ -62,9 +63,7 @@ def save_character(character: Character) -> None:
             db_char.train = int(character.train or 0)
             db_char.default_weapon_vnum = int(character.default_weapon_vnum or 0)
             db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)
-            db_char.creation_groups = json.dumps(
-                list(getattr(character, "creation_groups", ()))
-            )
+            db_char.creation_groups = json.dumps(list(getattr(character, "creation_groups", ())))
             if getattr(character, "room", None):
                 db_char.room_vnum = character.room.vnum
             save_objects_for_character(session, character, db_char)

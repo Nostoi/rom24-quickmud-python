@@ -7,16 +7,17 @@ from mud.models.constants import (
     EX_CLOSED,
     EX_LOCKED,
     ITEM_INVENTORY,
-    Direction,
+    MAX_STATS,
     ActFlag,
     AffectFlag,
     CommFlag,
     DamageType,
+    Direction,
     ImmFlag,
-    MAX_STATS,
     OffFlag,
     Position,
     ResFlag,
+    RoomFlag,
     Sex,
     Size,
     Stat,
@@ -301,6 +302,58 @@ def test_resets_repop_after_tick():
     )
     assert pit_count_after_player == 1
     donation.people.remove(dummy_player)
+
+
+def test_reset_spawn_in_dark_room_grants_infravision():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9100, name="Dark Area", min_vnum=9100, max_vnum=9101)
+    room = Room(vnum=9101, name="Lightless Den", area=area)
+    room.room_flags = int(RoomFlag.ROOM_DARK)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    proto = MobIndex(vnum=9102, short_descr="a shadow lurker")
+    mob_registry[proto.vnum] = proto
+
+    area.resets = [ResetJson(command="M", arg1=proto.vnum, arg2=1, arg3=room.vnum, arg4=1)]
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+    assert mob.has_affect(AffectFlag.INFRARED) is True
+
+
+def test_reset_spawn_adjacent_to_pet_shop_sets_act_pet():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9200, name="Pet Plaza", min_vnum=9200, max_vnum=9201)
+    storefront = Room(vnum=9200, name="Pet Shop Lobby", area=area)
+    storefront.room_flags = int(RoomFlag.ROOM_PET_SHOP)
+    kennel = Room(vnum=9201, name="Kennel", area=area)
+    area_registry[area.vnum] = area
+    room_registry[storefront.vnum] = storefront
+    room_registry[kennel.vnum] = kennel
+
+    proto = MobIndex(vnum=9202, short_descr="a cuddly companion")
+    mob_registry[proto.vnum] = proto
+
+    area.resets = [ResetJson(command="M", arg1=proto.vnum, arg2=1, arg3=kennel.vnum, arg4=1)]
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in kennel.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+    assert mob.has_act_flag(ActFlag.PET) is True
 
 
 def test_reset_area_preserves_existing_room_state():

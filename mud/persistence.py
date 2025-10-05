@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from mud.models.character import Character, PCData, character_registry
-from mud.models.constants import WearLocation
+from mud.models.constants import PlayerFlag, WearLocation
 from mud.models.json_io import dataclass_from_dict, dump_dataclass, load_dataclass
 from mud.models.obj import Affect
 from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
@@ -29,6 +29,115 @@ def _normalize_int_list(values: Iterable[int] | None, length: int) -> list[int]:
         except (TypeError, ValueError):
             normalized[idx] = 0
     return normalized
+
+
+def _serialize_skill_map(raw_skills: Any) -> dict[str, int]:
+    """Return a sanitized mapping of skill name -> learned percent."""
+
+    if not raw_skills:
+        return {}
+    try:
+        items = dict(raw_skills).items()
+    except Exception:
+        return {}
+    snapshot: dict[str, int] = {}
+    for name, value in items:
+        try:
+            key = str(name).strip()
+        except Exception:
+            continue
+        if not key:
+            continue
+        try:
+            learned = int(value)
+        except (TypeError, ValueError):
+            continue
+        learned = max(0, min(100, learned))
+        if learned <= 0:
+            continue
+        snapshot[key] = learned
+    return snapshot
+
+
+def _serialize_groups(raw_groups: Any) -> list[str]:
+    """Return a deduplicated, normalized list of known group names."""
+
+    if not raw_groups:
+        return []
+    if isinstance(raw_groups, str):
+        iterable = [raw_groups]
+    else:
+        try:
+            iterable = list(raw_groups)
+        except Exception:
+            return []
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for entry in iterable:
+        try:
+            name = str(entry).strip().lower()
+        except Exception:
+            continue
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        ordered.append(name)
+    return ordered
+
+
+def _deserialize_skill_map(raw_skills: Any) -> dict[str, int]:
+    """Convert persisted skill data back into a runtime map."""
+
+    if isinstance(raw_skills, dict):
+        items = raw_skills.items()
+    else:
+        try:
+            items = dict(raw_skills or {}).items()
+        except Exception:
+            return {}
+    skills: dict[str, int] = {}
+    for name, value in items:
+        try:
+            key = str(name).strip()
+        except Exception:
+            continue
+        if not key:
+            continue
+        try:
+            learned = int(value)
+        except (TypeError, ValueError):
+            continue
+        learned = max(0, min(100, learned))
+        if learned <= 0:
+            continue
+        skills[key] = learned
+    return skills
+
+
+def _deserialize_groups(raw_groups: Any) -> tuple[str, ...]:
+    """Convert persisted group knowledge into a tuple of group names."""
+
+    if isinstance(raw_groups, str):
+        iterable = [raw_groups]
+    elif raw_groups is None:
+        iterable = []
+    else:
+        try:
+            iterable = list(raw_groups)
+        except Exception:
+            iterable = []
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for entry in iterable:
+        try:
+            name = str(entry).strip().lower()
+        except Exception:
+            continue
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        ordered.append(name)
+    return tuple(ordered)
 
 
 @dataclass
@@ -59,7 +168,7 @@ class ObjectSave:
     condition: int | str | None = None
     enchanted: bool = False
     item_type: str | None = None
-    contains: list["ObjectSave"] = field(default_factory=list)
+    contains: list[ObjectSave] = field(default_factory=list)
     affects: list[ObjectAffectSave] = field(default_factory=list)
 
 
@@ -111,6 +220,8 @@ class PlayerSave:
     inventory: list[ObjectSave] = field(default_factory=list)
     equipment: dict[str, ObjectSave] = field(default_factory=dict)
     aliases: dict[str, str] = field(default_factory=dict)
+    skills: dict[str, int] = field(default_factory=dict)
+    groups: list[str] = field(default_factory=list)
     board: str = DEFAULT_BOARD_NAME
     last_notes: dict[str, float] = field(default_factory=dict)
 
@@ -301,6 +412,20 @@ def save_character(char: Character) -> None:
     armor = _normalize_int_list(getattr(char, "armor", []), 4)
     perm_stat = _normalize_int_list(getattr(char, "perm_stat", []), 5)
     mod_stat = _normalize_int_list(getattr(char, "mod_stat", []), 5)
+    skills_snapshot = _serialize_skill_map(getattr(char, "skills", {}))
+    groups_snapshot = _serialize_groups(getattr(pcdata, "group_known", ()))
+    pcdata.learned = dict(skills_snapshot)
+    pcdata.group_known = tuple(groups_snapshot)
+    ansi_enabled = bool(getattr(char, "ansi_enabled", True))
+    act_flags = int(getattr(char, "act", 0))
+    colour_bit = int(PlayerFlag.COLOUR)
+    if ansi_enabled:
+        act_flags |= colour_bit
+    else:
+        act_flags &= ~colour_bit
+    char.act = act_flags
+    char.ansi_enabled = ansi_enabled
+
     data = PlayerSave(
         name=char.name or "",
         level=char.level,
@@ -336,7 +461,7 @@ def save_character(char: Character) -> None:
         perm_stat=perm_stat,
         mod_stat=mod_stat,
         conditions=conditions,
-        act=getattr(char, "act", 0),
+        act=act_flags,
         affected_by=getattr(char, "affected_by", 0),
         comm=getattr(char, "comm", 0),
         wiznet=getattr(char, "wiznet", 0),
@@ -345,6 +470,8 @@ def save_character(char: Character) -> None:
         inventory=[_serialize_object(obj) for obj in char.inventory],
         equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
         aliases=dict(getattr(char, "aliases", {})),
+        skills=skills_snapshot,
+        groups=groups_snapshot,
         board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
     )
@@ -365,6 +492,8 @@ def load_character(name: str) -> Character | None:
     with path.open() as f:
         raw_data = json.load(f)
     data = dataclass_from_dict(PlayerSave, _upgrade_legacy_save(raw_data))
+    skills_map = _deserialize_skill_map(getattr(data, "skills", {}))
+    groups_tuple = _deserialize_groups(getattr(data, "groups", []))
     armor = _normalize_int_list(getattr(data, "armor", []), 4)
     perm_stat = _normalize_int_list(getattr(data, "perm_stat", []), 5)
     mod_stat = _normalize_int_list(getattr(data, "mod_stat", []), 5)
@@ -399,6 +528,9 @@ def load_character(name: str) -> Character | None:
         mod_stat=mod_stat,
     )
     char.is_npc = False
+    act_flags = int(getattr(data, "act", 0))
+    char.ansi_enabled = bool(act_flags & int(PlayerFlag.COLOUR))
+    char.skills = skills_map
     # restore bitfields
     char.affected_by = getattr(data, "affected_by", 0)
     char.wiznet = getattr(data, "wiznet", 0)
@@ -440,6 +572,8 @@ def load_character(name: str) -> Character | None:
     pcdata.perm_move = int(getattr(data, "perm_move", 0))
     pcdata.board_name = board.storage_key()
     pcdata.last_notes.update(getattr(data, "last_notes", {}) or {})
+    pcdata.learned = dict(skills_map)
+    pcdata.group_known = groups_tuple
     char.pcdata = pcdata
     char.log_commands = bool(getattr(data, "log_commands", False))
     character_registry.append(char)
