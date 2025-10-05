@@ -289,6 +289,7 @@ def apply_resets(area: Area) -> None:
 
     last_mob: MobInstance | None = None
     last_obj: object | None = None
+    last_mob_level = 0
     object_counts, existing_objects = _gather_object_state()
     spawned_objects: dict[int, list[object]] = {vnum: list(instances) for vnum, instances in existing_objects.items()}
     mob_counts = _count_existing_mobs()
@@ -371,6 +372,15 @@ def apply_resets(area: Area) -> None:
             proto = getattr(mob, "prototype", None)
             if proto is not None and hasattr(proto, "count"):
                 proto.count = mob_counts[mob_vnum]
+            try:
+                mob_level = int(getattr(mob, "level", 0) or 0)
+            except Exception:
+                mob_level = 0
+            hero_cap = max(0, LEVEL_HERO - 1)
+            base_level = max(0, mob_level - 2)
+            if base_level > hero_cap:
+                base_level = hero_cap
+            last_mob_level = base_level
             last_mob = mob
             last_obj = None
         elif cmd == "O":
@@ -395,6 +405,16 @@ def apply_resets(area: Area) -> None:
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
+                hero_cap = max(0, LEVEL_HERO - 1)
+                base_level = max(0, min(last_mob_level, hero_cap))
+                fuzzed_level = rng_mm.number_fuzzy(base_level)
+                if fuzzed_level > hero_cap:
+                    fuzzed_level = hero_cap
+                if fuzzed_level < 0:
+                    fuzzed_level = 0
+                proto = getattr(obj, "prototype", None)
+                if proto is None or not getattr(proto, "new_format", False):
+                    obj.level = fuzzed_level
                 obj.cost = 0
                 room.add_object(obj)
                 _sync_object_count(obj_vnum, object_counts)
