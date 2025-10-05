@@ -1,7 +1,14 @@
 import pytest
 
-from mud.commands.admin_commands import cmd_allow, cmd_ban, cmd_permban
-from mud.models.character import Character
+from mud.commands.admin_commands import (
+    cmd_allow,
+    cmd_ban,
+    cmd_deny,
+    cmd_permban,
+)
+from mud.models.character import Character, character_registry
+from mud.models.constants import PlayerFlag
+from mud.net.session import SESSIONS, Session
 from mud.security import bans
 from mud.security.bans import BanFlag
 
@@ -78,3 +85,55 @@ def test_permban_and_allow_enforce_trust():
     assert not bans.get_ban_entries()
 
     assert cmd_allow(high, "unknown.example") == "Site is not banned."
+
+
+class DummyConnection:
+    def __init__(self):
+        self.sent: list[str] = []
+        self.closed = False
+
+    async def send_line(self, message: str) -> None:
+        self.sent.append(message)
+
+    async def close(self) -> None:
+        self.closed = True
+
+
+def test_deny_sets_plr_deny_and_kicks():
+    admin = _make_admin(60)
+    target = Character(name="Trouble", is_npc=False, level=10, trust=10)
+    target.messages = []
+    target.act = 0
+    target.account_name = "trouble"
+    character_registry.append(target)
+
+    conn = DummyConnection()
+    target.connection = conn
+    session = Session(
+        name=target.name or "",
+        character=target,
+        reader=None,  # type: ignore[arg-type]
+        connection=conn,  # type: ignore[arg-type]
+        account_name="trouble",
+    )
+    SESSIONS[session.name] = session
+
+    try:
+        response = cmd_deny(admin, "Trouble")
+        assert response == "DENY set."
+        assert target.act & int(PlayerFlag.DENY)
+        assert "You are denied access!" in target.messages
+        assert conn.closed
+        assert bans.is_account_banned("trouble")
+
+        response = cmd_deny(admin, "Trouble")
+        assert response == "DENY removed."
+        assert not target.act & int(PlayerFlag.DENY)
+        assert any(
+            msg == "You are granted access again." for msg in target.messages
+        )
+        assert not bans.is_account_banned("trouble")
+    finally:
+        SESSIONS.pop(session.name, None)
+        if target in character_registry:
+            character_registry.remove(target)

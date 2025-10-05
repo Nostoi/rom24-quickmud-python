@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
-from mud.affects.saves import saves_spell
+from mud.affects.saves import check_dispel, saves_spell
 from mud.combat.engine import apply_damage, attack_round, get_wielded_weapon, update_pos
 from mud.magic.effects import (
     SpellTarget,
@@ -96,7 +96,8 @@ def armor(caster: Character, target: Character | None = None) -> bool:
     if target is None:
         raise ValueError("armor requires a target")
 
-    effect = SpellEffect(name="armor", duration=24, ac_mod=-20)
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(name="armor", duration=24, level=level, ac_mod=-20)
     return target.apply_spell_effect(effect)
 
 
@@ -177,6 +178,7 @@ def berserk(
     effect = SpellEffect(
         name="berserk",
         duration=duration,
+        level=level,
         ac_mod=ac_penalty,
         hitroll_mod=hit_mod,
         damroll_mod=hit_mod,
@@ -199,6 +201,7 @@ def bless(caster: Character, target: Character | None = None) -> bool:
     effect = SpellEffect(
         name="bless",
         duration=6 + level,
+        level=level,
         hitroll_mod=modifier,
         saving_throw_mod=-modifier,
     )
@@ -553,11 +556,27 @@ def dispel_good(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def dispel_magic(caster, target=None):
-    """Stub implementation for dispel_magic.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def dispel_magic(caster: Character, target: Character | None = None) -> bool:
+    """ROM-style dispel_magic: attempt to strip active spell effects."""
+
+    if caster is None:
+        raise ValueError("dispel_magic requires a caster")
+
+    target = target or caster
+    if target is None:
+        raise ValueError("dispel_magic requires a target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effects = getattr(target, "spell_effects", {})
+    if not isinstance(effects, dict) or not effects:
+        return False
+
+    success = False
+    for effect_name in list(effects.keys()):
+        if check_dispel(level, target, effect_name):
+            success = True
+
+    return success
 
 
 def dodge(caster, target=None):

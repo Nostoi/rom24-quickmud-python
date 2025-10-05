@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING
 
 from mud.models.character import Character, character_registry
 from mud.net.ansi import translate_ansi
+
+if TYPE_CHECKING:
+    from mud.net.connection import TelnetStream
 
 
 async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
@@ -18,6 +22,10 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
     else:
         text = str(message)
     text = translate_ansi(text)
+    if hasattr(writer, "send_line"):
+        telnet: "TelnetStream" = writer
+        await telnet.send_line(text)
+        return
 
     if not text.endswith("\r\n"):
         text += "\r\n"

@@ -45,3 +45,18 @@ def test_load_ignores_non_permanent(tmp_path):
     assert loaded == 1
     assert not bans.is_host_banned("temp.example")
     assert bans.is_host_banned("perm.example")
+
+
+def test_account_denies_persist_across_restart(tmp_path):
+    bans.clear_all_bans()
+    bans.add_banned_account("Denied")
+    path = tmp_path / "ban.txt"
+
+    bans.save_bans_file(path)
+    account_path = path.with_name("ban_accounts.txt")
+    assert account_path.exists()
+    assert account_path.read_text().strip() == "denied"
+
+    bans.clear_all_bans()
+    bans.load_bans_file(path)
+    assert bans.is_account_banned("denied")
