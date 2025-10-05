@@ -26,3 +26,15 @@ def translate_ansi(text: str) -> str:
     for token, code in ANSI_CODES.items():
         text = text.replace(token, code)
     return text
+
+
+def strip_ansi(text: str) -> str:
+    """Remove ROM color tokens, returning plain text for non-ANSI clients."""
+    for token in ANSI_CODES.keys():
+        text = text.replace(token, "")
+    return text.replace("{{", "{")
+
+
+def render_ansi(text: str, enabled: bool) -> str:
+    """Render text based on whether ANSI color codes are enabled."""
+    return translate_ansi(text) if enabled else strip_ansi(text)

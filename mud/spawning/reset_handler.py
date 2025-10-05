@@ -10,13 +10,17 @@ from mud.models.constants import (
     EX_LOCKED,
     ITEM_INVENTORY,
     ROOM_VNUM_SCHOOL,
+    ActFlag,
+    AffectFlag,
     Direction,
     ExtraFlag,
     Position,
+    RoomFlag,
     convert_flags_from_letters,
 )
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
 from mud.utils import rng_mm
+from mud.world.vision import room_is_dark
 
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
@@ -322,6 +326,17 @@ def apply_resets(area: Area) -> None:
             if not hasattr(mob, "mob_programs"):
                 programs = list(getattr(getattr(mob, "prototype", None), "mprogs", []) or [])
                 mob.mob_programs = programs
+
+            if room_is_dark(room):
+                mob.affected_by = int(getattr(mob, "affected_by", 0)) | int(AffectFlag.INFRARED)
+
+            room_vnum_value = getattr(room, "vnum", None)
+            if room_vnum_value is not None:
+                prev_room = room_registry.get(room_vnum_value - 1)
+                if prev_room is not None:
+                    prev_flags = int(getattr(prev_room, "room_flags", 0) or 0)
+                    if prev_flags & int(RoomFlag.ROOM_PET_SHOP):
+                        mob.act = int(getattr(mob, "act", 0)) | int(ActFlag.PET)
 
             room.add_mob(mob)
             mob_counts[mob_vnum] = mob_counts.get(mob_vnum, 0) + 1

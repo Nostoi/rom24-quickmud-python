@@ -15,12 +15,13 @@ class Session:
     name: str
     character: Character
     reader: asyncio.StreamReader
-    connection: "TelnetStream"
+    connection: TelnetStream
     account_name: str = ""
     last_command: str = field(default="")
     repeat_count: int = field(default=0)
     editor: str | None = None
     editor_state: dict[str, object] = field(default_factory=dict)
+    ansi_enabled: bool = True
 
 
 SESSIONS: dict[str, Session] = {}

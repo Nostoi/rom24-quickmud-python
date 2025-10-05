@@ -128,17 +128,30 @@ def _get_curr_stat(ch: Character, idx: int) -> int | None:
     return None
 
 
+def _is_pet(ch: Character) -> bool:
+    if not getattr(ch, "is_npc", True):
+        return False
+    act_flags = int(getattr(ch, "act", 0) or 0)
+    return bool(act_flags & int(ActFlag.PET))
+
+
 def can_carry_w(ch: Character) -> int:
     """Carry weight capacity.
 
     - If STR stat present: use ROM formula `str_app[STR].carry * 10 + level * 25`.
     - Otherwise: preserve prior fixed cap (100) to avoid changing existing tests.
     """
+    level = int(getattr(ch, "level", 0) or 0)
+    if not getattr(ch, "is_npc", True) and level >= LEVEL_IMMORTAL:
+        return 10_000_000
+    if _is_pet(ch):
+        return 0
+
     s = _get_curr_stat(ch, 0)  # STAT_STR
     if s is None:
         return 100
     carry = _STR_CARRY[s]
-    return carry * 10 + ch.level * 25
+    return carry * 10 + level * 25
 
 
 def can_carry_n(ch: Character) -> int:
@@ -147,11 +160,17 @@ def can_carry_n(ch: Character) -> int:
     - If DEX stat present: use ROM-like `MAX_WEAR + 2*DEX + level` (MAX_WEAR≈19).
     - Otherwise: preserve prior fixed cap (30).
     """
+    level = int(getattr(ch, "level", 0) or 0)
+    if not getattr(ch, "is_npc", True) and level >= LEVEL_IMMORTAL:
+        return 1000
+    if _is_pet(ch):
+        return 0
+
     d = _get_curr_stat(ch, 1)  # STAT_DEX
     if d is None:
         return 30
     MAX_WEAR = 19
-    return MAX_WEAR + 2 * d + ch.level
+    return MAX_WEAR + 2 * d + level
 
 
 def _exit_block_message(char: Character, exit: Exit) -> str | None:

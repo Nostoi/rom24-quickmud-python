@@ -101,6 +101,7 @@ class Character(Base):
     ch_class = Column(Integer, default=0)
     sex = Column(Integer, default=0)
     alignment = Column(Integer, default=0)
+    act = Column(Integer, default=0)
     hometown_vnum = Column(Integer, default=0)
     perm_stats = Column(String, default="")
     size = Column(Integer, default=0)

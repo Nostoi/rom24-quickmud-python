@@ -27,6 +27,8 @@ OBJ_VNUM_SCHOOL_AXE = 3719
 OBJ_VNUM_SCHOOL_FLAIL = 3720
 OBJ_VNUM_SCHOOL_WHIP = 3721
 OBJ_VNUM_SCHOOL_POLEARM = 3722
+# Justice system utility items (merc.h)
+OBJ_VNUM_WHISTLE = 2116
 
 # Command/append-file limits (merc.h)
 MAX_CMD_LEN = 50

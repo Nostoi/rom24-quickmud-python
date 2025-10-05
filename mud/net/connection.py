@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Iterable, Optional
-
 from collections import deque
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from mud.account import (
     LoginFailureReason,
@@ -32,7 +32,9 @@ from mud.account import (
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
 from mud.db.models import PlayerAccount
-from mud.models.constants import Sex
+from mud.loaders.help_loader import help_greeting
+from mud.models.constants import PlayerFlag, Sex
+from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
 from mud.skills.groups import list_groups
@@ -54,6 +56,10 @@ MAX_INPUT_LENGTH = 256
 SPAM_REPEAT_THRESHOLD = 25
 
 
+if TYPE_CHECKING:
+    from mud.models.character import Character
+
+
 class TelnetStream:
     def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         self.reader = reader
@@ -61,6 +67,13 @@ class TelnetStream:
         self._buffer = bytearray()
         self._echo_enabled = True
         self._pushback: deque[int] = deque()
+        self.ansi_enabled = True
+
+    def set_ansi(self, enabled: bool) -> None:
+        self.ansi_enabled = bool(enabled)
+
+    def _render(self, message: str) -> str:
+        return render_ansi(message, self.ansi_enabled)
 
     def _queue(self, data: bytes) -> None:
         if data:
@@ -97,7 +110,8 @@ class TelnetStream:
             await self._send_option(TELNET_WONT, TELNET_TELOPT_ECHO)
 
     async def send_text(self, message: str, *, newline: bool = False) -> None:
-        data = message.encode()
+        rendered = self._render(message)
+        data = rendered.encode()
         if newline and not data.endswith(b"\r\n"):
             data += b"\r\n"
         self._queue(data)
@@ -112,7 +126,7 @@ class TelnetStream:
         self.writer.write(data + bytes([TELNET_IAC, TELNET_GA]))
         await self.writer.drain()
 
-    async def _read_byte(self) -> Optional[int]:
+    async def _read_byte(self) -> int | None:
         if self._pushback:
             return self._pushback.popleft()
         data = await self.reader.read(1)
@@ -123,7 +137,7 @@ class TelnetStream:
     def _push_byte(self, value: int) -> None:
         self._pushback.appendleft(value)
 
-    async def readline(self, *, max_length: int = MAX_INPUT_LENGTH) -> Optional[str]:
+    async def readline(self, *, max_length: int = MAX_INPUT_LENGTH) -> str | None:
         buffer = bytearray()
         too_long = False
 
@@ -203,7 +217,7 @@ async def _send_line(conn: TelnetStream, message: str) -> None:
     await conn.send_line(message)
 
 
-async def _prompt(conn: TelnetStream, prompt: str, *, hide_input: bool = False) -> Optional[str]:
+async def _prompt(conn: TelnetStream, prompt: str, *, hide_input: bool = False) -> str | None:
     if hide_input:
         await conn.disable_echo()
     try:
@@ -218,7 +232,44 @@ async def _prompt(conn: TelnetStream, prompt: str, *, hide_input: bool = False) 
     return data.strip()
 
 
-async def _read_player_command(conn: TelnetStream, session: Session) -> Optional[str]:
+async def _prompt_ansi_preference(conn: TelnetStream) -> tuple[bool, bool] | None:
+    while True:
+        response = await _prompt(conn, "Do you want ANSI? (Y/n) ")
+        if response is None:
+            return None
+        lowered = response.lower()
+        if not lowered:
+            return conn.ansi_enabled, False
+        if lowered.startswith("y"):
+            return True, True
+        if lowered.startswith("n"):
+            return False, True
+        await _send_line(conn, "Please answer Y or N.")
+
+
+def _apply_colour_preference(char: Character, enabled: bool) -> None:
+    """Synchronize ``char`` ANSI state with PLR_COLOUR bit."""
+
+    colour_bit = int(PlayerFlag.COLOUR)
+    act_flags = int(getattr(char, "act", 0))
+    if enabled:
+        act_flags |= colour_bit
+    else:
+        act_flags &= ~colour_bit
+    char.act = act_flags
+    char.ansi_enabled = bool(enabled)
+
+
+async def _send_help_greeting(conn: TelnetStream) -> None:
+    if not help_greeting:
+        return
+    text = help_greeting[1:] if help_greeting.startswith(".") else help_greeting
+    if not text:
+        return
+    await conn.send_text(text, newline=True)
+
+
+async def _read_player_command(conn: TelnetStream, session: Session) -> str | None:
     line = await conn.readline()
     if line is None:
         return None
@@ -244,7 +295,7 @@ async def _read_player_command(conn: TelnetStream, session: Session) -> Optional
     return command
 
 
-async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> Optional[bool]:
+async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
     while True:
         response = await _prompt(conn, prompt)
         if response is None:
@@ -257,15 +308,13 @@ async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> Optional[bool]:
         await _send_line(conn, "Please answer Y or N.")
 
 
-async def _prompt_new_password(conn: TelnetStream) -> Optional[str]:
+async def _prompt_new_password(conn: TelnetStream) -> str | None:
     while True:
         password = await _prompt(conn, "New password: ", hide_input=True)
         if password is None:
             return None
         if len(password) < 5:
-            await _send_line(
-                conn, "Password must be at least five characters long."
-            )
+            await _send_line(conn, "Password must be at least five characters long.")
             continue
         confirm = await _prompt(conn, "Confirm password: ", hide_input=True)
         if confirm is None:
@@ -277,12 +326,10 @@ async def _prompt_new_password(conn: TelnetStream) -> Optional[str]:
 
 
 def _format_stats(stats: Iterable[int]) -> str:
-    return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats))
+    return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_account_login(
-    conn: TelnetStream, host_for_ban: Optional[str]
-) -> Optional[tuple[PlayerAccount, str]]:
+async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[PlayerAccount, str] | None:
     while True:
         submitted = await _prompt(conn, "Account: ")
         if submitted is None:
@@ -297,9 +344,7 @@ async def _run_account_login(
         if account_exists(username):
             allow_reconnect = False
             if is_account_active(username):
-                decision = await _prompt_yes_no(
-                    conn, "This account is already playing. Reconnect? (Y/N) "
-                )
+                decision = await _prompt_yes_no(conn, "This account is already playing. Reconnect? (Y/N) ")
                 if decision is None:
                     return None
                 if not decision:
@@ -310,9 +355,7 @@ async def _run_account_login(
             password = await _prompt(conn, "Password: ", hide_input=True)
             if password is None:
                 return None
-            result = login_with_host(
-                username, password, host_for_ban, allow_reconnect=allow_reconnect
-            )
+            result = login_with_host(username, password, host_for_ban, allow_reconnect=allow_reconnect)
             if result.account:
                 return result.account, username
 
@@ -359,9 +402,7 @@ async def _run_account_login(
                 await _send_line(conn, "Account creation is unavailable right now.")
             return None
 
-        confirm = await _prompt_yes_no(
-            conn, f"Create new account '{username.capitalize()}'? (Y/N) "
-        )
+        confirm = await _prompt_yes_no(conn, f"Create new account '{username.capitalize()}'? (Y/N) ")
         if confirm is None:
             return None
         if not confirm:
@@ -386,9 +427,7 @@ async def _run_account_login(
 
 async def _prompt_for_race(conn: TelnetStream):
     races = get_creation_races()
-    await _send_line(
-        conn, "Available races: " + ", ".join(race.name.title() for race in races)
-    )
+    await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
     while True:
         response = await _prompt(conn, "Choose your race: ")
         if response is None:
@@ -399,7 +438,7 @@ async def _prompt_for_race(conn: TelnetStream):
         await _send_line(conn, "That is not a valid race.")
 
 
-async def _prompt_for_sex(conn: TelnetStream) -> Optional[Sex]:
+async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
     while True:
         response = await _prompt(conn, "Sex (M/F): ")
         if response is None:
@@ -414,9 +453,7 @@ async def _prompt_for_sex(conn: TelnetStream) -> Optional[Sex]:
 
 async def _prompt_for_class(conn: TelnetStream):
     classes = get_creation_classes()
-    await _send_line(
-        conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes)
-    )
+    await _send_line(conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes))
     while True:
         response = await _prompt(conn, "Choose your class: ")
         if response is None:
@@ -427,7 +464,7 @@ async def _prompt_for_class(conn: TelnetStream):
         await _send_line(conn, "That's not a valid class.")
 
 
-async def _prompt_for_alignment(conn: TelnetStream) -> Optional[int]:
+async def _prompt_for_alignment(conn: TelnetStream) -> int | None:
     await _send_line(conn, "")
     await _send_line(conn, "You may be good, neutral, or evil.")
     while True:
@@ -444,7 +481,7 @@ async def _prompt_for_alignment(conn: TelnetStream) -> Optional[int]:
         await _send_line(conn, "That's not a valid alignment.")
 
 
-async def _prompt_customization_choice(conn: TelnetStream) -> Optional[bool]:
+async def _prompt_customization_choice(conn: TelnetStream) -> bool | None:
     await _send_line(conn, "")
     await _send_line(conn, "Do you wish to customize this character?")
     await _send_line(
@@ -454,15 +491,11 @@ async def _prompt_customization_choice(conn: TelnetStream) -> Optional[bool]:
     return await _prompt_yes_no(conn, "Customize (Y/N)? ")
 
 
-async def _run_customization_menu(
-    conn: TelnetStream, selection: CreationSelection
-) -> Optional[CreationSelection]:
+async def _run_customization_menu(conn: TelnetStream, selection: CreationSelection) -> CreationSelection | None:
     await _send_line(conn, "")
     groups = selection.group_names()
     if groups:
-        await _send_line(
-            conn, "You already have the following groups: " + ", ".join(groups)
-        )
+        await _send_line(conn, "You already have the following groups: " + ", ".join(groups))
     await _send_line(
         conn,
         "Type 'list' to see costs, 'add <group>' to learn a group, or 'done' when finished.",
@@ -531,9 +564,7 @@ async def _prompt_for_stats(conn: TelnetStream, race):
         stats = roll_creation_stats(race)
         await _send_line(conn, "Rolled stats: " + _format_stats(stats))
         while True:
-            choice = await _prompt(
-                conn, "Keep these stats? (K to keep, R to reroll): "
-            )
+            choice = await _prompt(conn, "Keep these stats? (K to keep, R to reroll): ")
             if choice is None:
                 return None
             lowered = choice.lower()
@@ -544,23 +575,19 @@ async def _prompt_for_stats(conn: TelnetStream, race):
             await _send_line(conn, "Please type K to keep or R to reroll.")
 
 
-async def _prompt_for_hometown(conn: TelnetStream) -> Optional[int]:
+async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
     options = get_hometown_choices()
     if not options:
         return None
     if len(options) == 1:
         label, vnum = options[0]
         while True:
-            decision = await _prompt_yes_no(
-                conn, f"Your hometown will be {label}. Accept? (Y/N) "
-            )
+            decision = await _prompt_yes_no(conn, f"Your hometown will be {label}. Accept? (Y/N) ")
             if decision is None:
                 return None
             if decision:
                 return vnum
-            await _send_line(
-                conn, f"{label} is currently the only available hometown."
-            )
+            await _send_line(conn, f"{label} is currently the only available hometown.")
     else:
         await _send_line(
             conn,
@@ -577,11 +604,9 @@ async def _prompt_for_hometown(conn: TelnetStream) -> Optional[int]:
     return None
 
 
-async def _prompt_for_weapon(conn: TelnetStream, class_type) -> Optional[int]:
+async def _prompt_for_weapon(conn: TelnetStream, class_type) -> int | None:
     choices = get_weapon_choices(class_type)
-    await _send_line(
-        conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices)
-    )
+    await _send_line(conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices))
     normalized = {choice.lower(): choice for choice in choices}
     while True:
         response = await _prompt(conn, "Choose your starting weapon: ")
@@ -679,9 +704,7 @@ async def _select_character(
     while True:
         characters = list_characters(account)
         if characters:
-            await _send_line(
-                conn, "Characters: " + ", ".join(characters)
-            )
+            await _send_line(conn, "Characters: " + ", ".join(characters))
         response = await _prompt(conn, "Character: ")
         if response is None:
             return None
@@ -708,13 +731,18 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     host_for_ban = addr[0] if isinstance(addr, tuple) and addr else None
     session = None
     char = None
-    account: Optional[PlayerAccount] = None
+    account: PlayerAccount | None = None
     username = ""
     conn = TelnetStream(reader, writer)
 
     try:
         await conn.negotiate()
-        await _send_line(conn, "Welcome to PythonMUD")
+        ansi_result = await _prompt_ansi_preference(conn)
+        if ansi_result is None:
+            return
+        ansi_preference, ansi_explicit = ansi_result
+        conn.set_ansi(ansi_preference)
+        await _send_help_greeting(conn)
 
         login_result = await _run_account_login(conn, host_for_ban)
         if not login_result:
@@ -725,6 +753,11 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         if char is None:
             return
 
+        saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
+        desired_colour = ansi_preference if ansi_explicit else saved_colour
+        _apply_colour_preference(char, desired_colour)
+        conn.set_ansi(char.ansi_enabled)
+
         if char.room:
             try:
                 char.room.add_character(char)
@@ -733,13 +766,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         char.connection = conn
         char.account_name = username
-
         session = Session(
             name=char.name or "",
             character=char,
             reader=reader,
             connection=conn,
             account_name=username,
+            ansi_enabled=conn.ansi_enabled,
         )
         SESSIONS[session.name] = session
         char.desc = session
@@ -785,9 +818,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             except asyncio.CancelledError:
                 break
             except Exception as exc:
-                print(
-                    f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}"
-                )
+                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}")
                 break
 
     except Exception as exc:

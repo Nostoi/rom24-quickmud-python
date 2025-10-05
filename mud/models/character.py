@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from collections.abc import Iterable
-
 import json
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from mud.models.constants import AffectFlag, Position, Stat
+from mud.models.constants import AffectFlag, PlayerFlag, Position, Stat
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -35,6 +34,8 @@ class PCData:
     board_name: str = "general"
     last_notes: dict[str, float] = field(default_factory=dict)
     in_progress: NoteDraft | None = None
+    learned: dict[str, int] = field(default_factory=dict)
+    group_known: tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass
@@ -157,6 +158,7 @@ class Character:
     default_weapon_vnum: int = 0
     creation_points: int = 0
     creation_groups: tuple[str, ...] = field(default_factory=tuple)
+    ansi_enabled: bool = True
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -412,6 +414,8 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.race = db_char.race or 0
     char.sex = db_char.sex or 0
     char.alignment = db_char.alignment or 0
+    char.act = db_char.act or 0
+    char.ansi_enabled = bool(char.act & int(PlayerFlag.COLOUR))
     char.practice = db_char.practice or 0
     char.train = db_char.train or 0
     char.size = db_char.size or 0
@@ -423,9 +427,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.hometown_vnum = db_char.hometown_vnum or 0
     char.default_weapon_vnum = db_char.default_weapon_vnum or 0
     char.creation_points = getattr(db_char, "creation_points", 0) or 0
-    char.creation_groups = _decode_creation_groups(
-        getattr(db_char, "creation_groups", "")
-    )
+    char.creation_groups = _decode_creation_groups(getattr(db_char, "creation_groups", ""))
     char.perm_stat = _decode_perm_stats(db_char.perm_stats)
     char.is_npc = False
     if db_char.player is not None:
@@ -455,11 +457,10 @@ def to_orm(character: Character, player_id: int) -> DBCharacter:
         vuln_flags=int(character.vuln_flags or 0),
         practice=int(character.practice or 0),
         train=int(character.train or 0),
+        act=int(character.act or 0),
         default_weapon_vnum=int(character.default_weapon_vnum or 0),
         creation_points=int(getattr(character, "creation_points", 0) or 0),
-        creation_groups=_encode_creation_groups(
-            getattr(character, "creation_groups", ())
-        ),
+        creation_groups=_encode_creation_groups(getattr(character, "creation_groups", ())),
         player_id=player_id,
     )
 
