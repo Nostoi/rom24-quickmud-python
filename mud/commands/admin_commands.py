@@ -1,6 +1,11 @@
+import asyncio
+
+from mud.account import release_account
 from mud.admin_logging.admin import toggle_log_all
 from mud.models.character import Character, character_registry
+from mud.models.constants import PlayerFlag
 from mud.net.session import SESSIONS
+from mud.persistence import save_character as save_player_file
 from mud.registry import room_registry
 from mud.security import bans
 from mud.security.bans import BanFlag, BanPermissionError
@@ -175,3 +180,89 @@ def cmd_log(char: Character, args: str) -> str:
 def list_hosts() -> list[str]:
     """Deprecated helper kept for backward compatibility in tests."""
     return sorted(entry.to_pattern() for entry in bans.get_ban_entries())
+
+
+def _schedule_coro(coro) -> None:
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        asyncio.run(coro)
+    else:
+        loop.create_task(coro)
+
+
+async def _notify_and_disconnect(target: Character, message: str) -> None:
+    session = next((sess for sess in SESSIONS.values() if sess.character is target), None)
+    connection = getattr(target, "connection", None)
+    if session and session.connection is not None:
+        connection = session.connection
+    if connection:
+        try:
+            await connection.send_line(message)
+        except Exception:
+            pass
+        try:
+            await connection.close()
+        except Exception:
+            pass
+
+
+def cmd_deny(char: Character, args: str) -> str:
+    target_token = args.strip()
+    if not target_token:
+        return "Deny whom?"
+
+    lowered = target_token.lower()
+    target = next(
+        (
+            candidate
+            for candidate in character_registry
+            if candidate.name and candidate.name.lower().startswith(lowered)
+        ),
+        None,
+    )
+    if target is None:
+        return "They aren't here."
+    if getattr(target, "is_npc", False):
+        return "Not on NPC's."
+
+    actor_trust = _get_trust(char)
+    target_trust = _get_trust(target)
+    if target_trust >= actor_trust and target is not char:
+        return "You failed."
+
+    session = next((sess for sess in SESSIONS.values() if sess.character is target), None)
+    account_name = None
+    if session and getattr(session, "account_name", None):
+        account_name = session.account_name
+    elif getattr(target, "account_name", None):
+        account_name = target.account_name
+    if not account_name:
+        return "They aren't here."
+
+    deny_bit = int(PlayerFlag.DENY)
+    already_denied = bool(getattr(target, "act", 0) & deny_bit)
+    if already_denied:
+        target.act &= ~deny_bit
+        target.messages.append("You are granted access again.")
+        bans.remove_banned_account(account_name)
+        response = "DENY removed."
+    else:
+        target.act |= deny_bit
+        target.messages.append("You are denied access!")
+        bans.add_banned_account(account_name)
+        response = "DENY set."
+        if session:
+            SESSIONS.pop(session.name, None)
+        release_account(account_name)
+        _schedule_coro(_notify_and_disconnect(target, "You are denied access."))
+
+    try:
+        save_player_file(target)
+    except Exception:
+        pass
+    try:
+        bans.save_bans_file()
+    except Exception:
+        pass
+    return response

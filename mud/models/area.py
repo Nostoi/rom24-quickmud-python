@@ -26,6 +26,7 @@ class Area:
     helps: list[object] = field(default_factory=list)
     resets: list[ResetJson] = field(default_factory=list)
     next: Area | None = None
+    changed: bool = False
 
     def __repr__(self) -> str:
         return f"<Area vnum={self.vnum} name={self.name!r}>"

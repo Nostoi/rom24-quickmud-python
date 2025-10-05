@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from collections.abc import Iterable
+
+import json
 from typing import TYPE_CHECKING
 
 from mud.models.constants import AffectFlag, Position, Stat
@@ -40,6 +43,7 @@ class SpellEffect:
 
     name: str
     duration: int
+    level: int = 0
     ac_mod: int = 0
     hitroll_mod: int = 0
     damroll_mod: int = 0
@@ -105,6 +109,7 @@ class Character:
     start_pos: int = 0
     default_pos: int = 0
     mprog_delay: int = 0
+    hometown_vnum: int = 0
     pcdata: PCData | None = None
     inventory: list[Object] = field(default_factory=list)
     equipment: dict[str, Object] = field(default_factory=dict)
@@ -149,6 +154,9 @@ class Character:
     mprog_target: Character | None = None
     # Active spell effects keyed by skill name for parity restores
     spell_effects: dict[str, SpellEffect] = field(default_factory=dict)
+    default_weapon_vnum: int = 0
+    creation_points: int = 0
+    creation_groups: tuple[str, ...] = field(default_factory=tuple)
 
     def __repr__(self) -> str:
         return f"<Character name={self.name!r} level={self.level}>"
@@ -295,11 +303,11 @@ class Character:
         self.spell_effects[effect.name] = effect
         return True
 
-    def remove_spell_effect(self, name: str) -> None:
+    def remove_spell_effect(self, name: str) -> SpellEffect | None:
         """Remove a spell effect and restore stat changes."""
         effect = self.spell_effects.pop(name, None)
         if effect is None:
-            return
+            return None
 
         if effect.ac_mod:
             self.armor = [ac - effect.ac_mod for ac in self.armor]
@@ -312,11 +320,80 @@ class Character:
         if effect.affect_flag is not None:
             self.remove_affect(effect.affect_flag)
 
+        return effect
+
 
 # END affects_saves
 
 
 character_registry: list[Character] = []
+
+
+def _decode_perm_stats(value: str | None) -> list[int]:
+    if not value:
+        return []
+    try:
+        raw = json.loads(value)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        parts = [part for part in value.split(",") if part]
+        decoded: list[int] = []
+        for part in parts:
+            try:
+                decoded.append(int(part))
+            except ValueError:
+                continue
+        return decoded
+    if isinstance(raw, list):
+        decoded = []
+        for entry in raw:
+            try:
+                decoded.append(int(entry))
+            except (TypeError, ValueError):
+                continue
+        return decoded
+    return []
+
+
+def _encode_perm_stats(values: Iterable[int]) -> str:
+    return json.dumps([int(val) for val in values])
+
+
+def _decode_creation_groups(value: str | None) -> tuple[str, ...]:
+    if not value:
+        return ()
+    try:
+        raw = json.loads(value)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        parts = [part.strip().lower() for part in value.split(",") if part.strip()]
+        return tuple(dict.fromkeys(parts))
+    if isinstance(raw, list):
+        ordered: list[str] = []
+        seen: set[str] = set()
+        for entry in raw:
+            if not isinstance(entry, str):
+                continue
+            lowered = entry.strip().lower()
+            if not lowered or lowered in seen:
+                continue
+            seen.add(lowered)
+            ordered.append(lowered)
+        return tuple(ordered)
+    if isinstance(raw, str):
+        lowered = raw.strip().lower()
+        return (lowered,) if lowered else ()
+    return ()
+
+
+def _encode_creation_groups(groups: Iterable[str]) -> str:
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for name in groups:
+        lowered = str(name).strip().lower()
+        if not lowered or lowered in seen:
+            continue
+        seen.add(lowered)
+        ordered.append(lowered)
+    return json.dumps(ordered)
 
 
 def from_orm(db_char: DBCharacter) -> Character:
@@ -331,6 +408,26 @@ def from_orm(db_char: DBCharacter) -> Character:
         position=int(Position.STANDING),  # Default to standing for loaded chars
     )
     char.room = room
+    char.ch_class = db_char.ch_class or 0
+    char.race = db_char.race or 0
+    char.sex = db_char.sex or 0
+    char.alignment = db_char.alignment or 0
+    char.practice = db_char.practice or 0
+    char.train = db_char.train or 0
+    char.size = db_char.size or 0
+    char.form = db_char.form or 0
+    char.parts = db_char.parts or 0
+    char.imm_flags = db_char.imm_flags or 0
+    char.res_flags = db_char.res_flags or 0
+    char.vuln_flags = db_char.vuln_flags or 0
+    char.hometown_vnum = db_char.hometown_vnum or 0
+    char.default_weapon_vnum = db_char.default_weapon_vnum or 0
+    char.creation_points = getattr(db_char, "creation_points", 0) or 0
+    char.creation_groups = _decode_creation_groups(
+        getattr(db_char, "creation_groups", "")
+    )
+    char.perm_stat = _decode_perm_stats(db_char.perm_stats)
+    char.is_npc = False
     if db_char.player is not None:
         char.is_admin = bool(getattr(db_char.player, "is_admin", False))
     return char
@@ -344,6 +441,25 @@ def to_orm(character: Character, player_id: int) -> DBCharacter:
         level=character.level,
         hp=character.hit,
         room_vnum=character.room.vnum if character.room else None,
+        race=int(character.race or 0),
+        ch_class=int(character.ch_class or 0),
+        sex=int(character.sex or 0),
+        alignment=int(character.alignment or 0),
+        hometown_vnum=int(character.hometown_vnum or 0),
+        perm_stats=_encode_perm_stats(character.perm_stat),
+        size=int(character.size or 0),
+        form=int(character.form or 0),
+        parts=int(character.parts or 0),
+        imm_flags=int(character.imm_flags or 0),
+        res_flags=int(character.res_flags or 0),
+        vuln_flags=int(character.vuln_flags or 0),
+        practice=int(character.practice or 0),
+        train=int(character.train or 0),
+        default_weapon_vnum=int(character.default_weapon_vnum or 0),
+        creation_points=int(getattr(character, "creation_points", 0) or 0),
+        creation_groups=_encode_creation_groups(
+            getattr(character, "creation_groups", ())
+        ),
         player_id=player_id,
     )
 

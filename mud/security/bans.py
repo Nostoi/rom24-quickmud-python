@@ -62,8 +62,21 @@ class BanEntry:
 _ban_entries: list[BanEntry] = []
 _banned_accounts: set[str] = set()
 
-# Default storage location, mirroring ROM's BAN_FILE semantics.
+# Default storage locations, mirroring ROM's BAN_FILE semantics.
 BANS_FILE = Path("data/bans.txt")
+ACCOUNT_BANS_FILE = Path("data/bans_accounts.txt")
+
+
+def _resolve_path(path: Path | str | None, *, account: bool = False) -> Path:
+    if path is None:
+        return ACCOUNT_BANS_FILE if account else BANS_FILE
+    base = Path(path)
+    if not account:
+        return base
+    suffix = base.suffix or ""
+    stem = base.stem if suffix else base.name
+    account_name = f"{stem}_accounts{suffix}"
+    return base.with_name(account_name)
 
 
 def clear_all_bans() -> None:
@@ -198,6 +211,10 @@ def is_account_banned(username: str | None) -> bool:
     return username.strip().lower() in _banned_accounts
 
 
+def get_banned_accounts() -> list[str]:
+    return sorted(_banned_accounts)
+
+
 def _flags_to_string(flags: BanFlag) -> str:
     letters: list[str] = []
     for flag in (BanFlag.SUFFIX, BanFlag.PREFIX, BanFlag.NEWBIES, BanFlag.ALL, BanFlag.PERMIT, BanFlag.PERMANENT):
@@ -215,9 +232,41 @@ def _flags_from_string(text: str) -> BanFlag:
     return result
 
 
+def save_account_bans_file(path: Path | str | None = None) -> None:
+    target = _resolve_path(path, account=True)
+    if not _banned_accounts:
+        try:
+            if target.exists():
+                target.unlink()
+        except OSError:
+            pass
+        return
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("w", encoding="utf-8") as fp:
+        for username in sorted(_banned_accounts):
+            fp.write(f"{username}\n")
+
+
+def load_account_bans_file(path: Path | str | None = None) -> int:
+    target = _resolve_path(path, account=True)
+    _banned_accounts.clear()
+    if not target.exists():
+        return 0
+    count = 0
+    with target.open("r", encoding="utf-8") as fp:
+        for raw in fp:
+            username = raw.strip().lower()
+            if not username:
+                continue
+            _banned_accounts.add(username)
+            count += 1
+    return count
+
+
 def save_bans_file(path: Path | str | None = None) -> None:
-    target = Path(path) if path else BANS_FILE
+    target = _resolve_path(path)
     persistent = [entry for entry in _ban_entries if entry.flags & BanFlag.PERMANENT]
+    save_account_bans_file(path)
     if not persistent:
         try:
             if target.exists():
@@ -233,8 +282,9 @@ def save_bans_file(path: Path | str | None = None) -> None:
 
 
 def load_bans_file(path: Path | str | None = None) -> int:
-    target = Path(path) if path else BANS_FILE
+    target = _resolve_path(path)
     if not target.exists():
+        load_account_bans_file(path)
         return 0
     count = 0
     with target.open("r", encoding="utf-8") as fp:
@@ -255,4 +305,5 @@ def load_bans_file(path: Path | str | None = None) -> int:
                 continue
             _store_entry(pattern, flags, level, replace_existing=False)
             count += 1
+    load_account_bans_file(path)
     return count

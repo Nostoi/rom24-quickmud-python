@@ -13,9 +13,20 @@ class Direction(IntEnum):
     DOWN = 5
 
 
-# Canonical room vnums (merc.h)
+# Canonical room/object vnums (merc.h)
 ROOM_VNUM_LIMBO = 2
 ROOM_VNUM_SCHOOL = 3700
+
+# School equipment (OBJ_VNUM_SCHOOL_*) used during character creation (merc.h)
+OBJ_VNUM_SCHOOL_MACE = 3700
+OBJ_VNUM_SCHOOL_DAGGER = 3701
+OBJ_VNUM_SCHOOL_SWORD = 3702
+OBJ_VNUM_SCHOOL_SPEAR = 3717
+OBJ_VNUM_SCHOOL_STAFF = 3718
+OBJ_VNUM_SCHOOL_AXE = 3719
+OBJ_VNUM_SCHOOL_FLAIL = 3720
+OBJ_VNUM_SCHOOL_WHIP = 3721
+OBJ_VNUM_SCHOOL_POLEARM = 3722
 
 # Command/append-file limits (merc.h)
 MAX_CMD_LEN = 50
@@ -284,6 +295,29 @@ class ActFlag(IntFlag):
     GAIN = 1 << 27  # (bb)
     UPDATE_ALWAYS = 1 << 28  # (cc)
     IS_CHANGER = 1 << 29  # (dd)
+
+
+class PlayerFlag(IntFlag):
+    """Player-specific act flags (merc.h PLR_* bitmasks)."""
+
+    IS_NPC = 1 << 0  # (A)
+    AUTOASSIST = 1 << 2  # (C)
+    AUTOEXIT = 1 << 3  # (D)
+    AUTOLOOT = 1 << 4  # (E)
+    AUTOSAC = 1 << 5  # (F)
+    AUTOGOLD = 1 << 6  # (G)
+    AUTOSPLIT = 1 << 7  # (H)
+    HOLYLIGHT = 1 << 13  # (N)
+    CANLOOT = 1 << 15  # (P)
+    NOSUMMON = 1 << 16  # (Q)
+    NOFOLLOW = 1 << 17  # (R)
+    COLOUR = 1 << 19  # (T)
+    PERMIT = 1 << 20  # (U)
+    LOG = 1 << 22  # (W)
+    DENY = 1 << 23  # (X)
+    FREEZE = 1 << 24  # (Y)
+    THIEF = 1 << 25  # (Z)
+    KILLER = 1 << 26  # (aa)
 
 
 class CommFlag(IntFlag):
@@ -698,6 +732,64 @@ class VulnFlag(IntFlag):
 
 
 # END imm_res_vuln_flags
+
+
+class FormFlag(IntFlag):
+    """FORM_* flags (merc.h) describing anatomical archetypes."""
+
+    EDIBLE = 1 << 0  # A
+    POISON = 1 << 1  # B
+    MAGICAL = 1 << 2  # C
+    INSTANT_DECAY = 1 << 3  # D
+    OTHER = 1 << 4  # E
+    ANIMAL = 1 << 6  # G
+    SENTIENT = 1 << 7  # H
+    UNDEAD = 1 << 8  # I
+    CONSTRUCT = 1 << 9  # J
+    MIST = 1 << 10  # K
+    INTANGIBLE = 1 << 11  # L
+    BIPED = 1 << 12  # M
+    CENTAUR = 1 << 13  # N
+    INSECT = 1 << 14  # O
+    SPIDER = 1 << 15  # P
+    CRUSTACEAN = 1 << 16  # Q
+    WORM = 1 << 17  # R
+    BLOB = 1 << 18  # S
+    MAMMAL = 1 << 21  # V
+    BIRD = 1 << 22  # W
+    REPTILE = 1 << 23  # X
+    SNAKE = 1 << 24  # Y
+    DRAGON = 1 << 25  # Z
+    AMPHIBIAN = 1 << 26  # aa
+    FISH = 1 << 27  # bb
+    COLD_BLOOD = 1 << 28  # cc
+
+
+class PartFlag(IntFlag):
+    """PART_* flags (merc.h) describing body parts present."""
+
+    HEAD = 1 << 0  # A
+    ARMS = 1 << 1  # B
+    LEGS = 1 << 2  # C
+    HEART = 1 << 3  # D
+    BRAINS = 1 << 4  # E
+    GUTS = 1 << 5  # F
+    HANDS = 1 << 6  # G
+    FEET = 1 << 7  # H
+    FINGERS = 1 << 8  # I
+    EARS = 1 << 9  # J
+    EYES = 1 << 10  # K
+    LONG_TONGUE = 1 << 11  # L
+    EYESTALKS = 1 << 12  # M
+    TENTACLES = 1 << 13  # N
+    FINS = 1 << 14  # O
+    WINGS = 1 << 15  # P
+    TAIL = 1 << 16  # Q
+    CLAWS = 1 << 20  # U
+    FANGS = 1 << 21  # V
+    HORNS = 1 << 22  # W
+    SCALES = 1 << 23  # X
+    TUSKS = 1 << 24  # Y
 
 
 # START extra_flags

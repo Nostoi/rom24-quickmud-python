@@ -9,12 +9,14 @@ from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
 from mud.models.constants import Position
 from mud.models.social import social_registry
+from mud.net.session import Session
 from mud.wiznet import cmd_wiznet
 
 from .admin_commands import (
     cmd_allow,
     cmd_ban,
     cmd_banlist,
+    cmd_deny,
     cmd_permban,
     cmd_spawn,
     cmd_teleport,
@@ -24,7 +26,7 @@ from .admin_commands import (
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_unalias
-from .build import cmd_redit
+from .build import cmd_redit, handle_redit_command
 from .combat import do_kick, do_kill
 from .communication import do_say, do_shout, do_tell
 from .healer import do_heal
@@ -141,6 +143,7 @@ COMMANDS: list[Command] = [
     Command("@spawn", cmd_spawn, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("ban", cmd_ban, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("permban", cmd_permban, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("deny", cmd_deny, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("allow", cmd_allow, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("banlist", cmd_banlist, admin_only=True),
@@ -234,6 +237,10 @@ def _expand_aliases(
 
 
 def process_command(char: Character, input_str: str) -> str:
+    session = getattr(char, "desc", None)
+    if isinstance(session, Session) and session.editor == "redit":
+        return handle_redit_command(char, session, input_str)
+
     if not input_str.strip():
         return "What?"
     trimmed = input_str.lstrip()
@@ -260,7 +267,11 @@ def process_command(char: Character, input_str: str) -> str:
         should_log = True
     if should_log and log_allowed and log_line:
         try:
-            log_admin_command(getattr(char, "name", "?"), log_line)
+            log_admin_command(
+                getattr(char, "name", "?"),
+                log_line,
+                character=char,
+            )
         except Exception:
             # Logging must never break command execution.
             pass

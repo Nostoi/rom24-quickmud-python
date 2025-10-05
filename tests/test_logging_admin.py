@@ -11,6 +11,7 @@ from mud.admin_logging.admin import (
 )
 from mud.models.character import character_registry
 from mud.net.session import SESSIONS
+from mud.wiznet import WiznetFlag
 from mud.world import create_test_character, initialize_world
 
 
@@ -151,6 +152,23 @@ def test_log_all_captures_unknown_command_and_sanitizes(monkeypatch, tmp_path):
     lines = log_path.read_text(encoding="utf-8").splitlines()
     entry = next(line for line in lines if "\tPlayer\t" in line and "frobnicate" in line)
     assert entry.endswith("frobnicateS  42")
+
+
+def test_log_all_notifies_secure_wiznet(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    admin, player = _create_admin_and_player()
+    watcher = create_test_character("Watcher", 3001)
+    watcher.is_admin = True
+    watcher.level = 60
+    watcher.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SECURE)
+
+    process_command(admin, "log all")
+    assert watcher.messages == ["Log Admin: log all"]
+
+    process_command(player, "say {hello")
+
+    assert watcher.messages[-1] == "Log Player: say {{hello"
 
 
 def test_logging_logs_alias_expansion(monkeypatch, tmp_path):

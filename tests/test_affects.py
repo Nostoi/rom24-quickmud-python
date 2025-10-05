@@ -1,7 +1,7 @@
 # START affects_saves
 import mud.persistence as persistence
-from mud.affects.saves import saves_spell
-from mud.models.character import Character
+from mud.affects.saves import check_dispel, saves_dispel, saves_spell
+from mud.models.character import Character, SpellEffect
 from mud.models.constants import AffectFlag, DamageType, DefenseBit
 from mud.utils import rng_mm
 
@@ -60,7 +60,9 @@ def test_saves_spell_fmana_reduction(monkeypatch):
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 55)
     # Base save would be high; with fMana reduction it drops and may fail
     mage = Character(level=20, ch_class=0)  # mage fMana=True
+    mage.is_npc = False
     thief = Character(level=20, ch_class=2)  # thief fMana=False
+    thief.is_npc = False
     # Compute outcomes at the same RNG roll
     mage_result = saves_spell(10, mage, 0)
     thief_result = saves_spell(10, thief, 0)
@@ -77,7 +79,64 @@ def test_saves_spell_berserk_bonus(monkeypatch):
     assert saves_spell(12, vict, 0) is True
 
 
+def test_saves_spell_npc_skips_fmana_reduction(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 55)
+    mage = Character(level=20, ch_class=0)  # NPC mage should not get fMana penalty
+    thief = Character(level=20, ch_class=2)
+    mage_result = saves_spell(10, mage, 0)
+    thief_result = saves_spell(10, thief, 0)
+    assert mage_result == thief_result
+
+
 # END affects_saves_saves_spell
+
+
+def test_saves_dispel_matches_rom(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 74)
+    # Temporary affect at equal level fails to save at roll 74 (50% threshold)
+    assert saves_dispel(10, 10, duration=5) is False
+    # Permanent affects gain +5 effective levels and succeed on the same roll
+    assert saves_dispel(10, 10, duration=-1) is True
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 24)
+    # Dispel level higher than spell lowers threshold (25 here) so 24 succeeds
+    assert saves_dispel(10, 5, duration=3) is True
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 25)
+    # Rolling the threshold or higher fails the save and allows dispel
+    assert saves_dispel(10, 5, duration=3) is False
+
+
+def test_check_dispel_strips_affect(monkeypatch):
+    target = Character(level=20)
+    effect = SpellEffect(
+        name="sanctuary",
+        duration=5,
+        level=20,
+        affect_flag=AffectFlag.SANCTUARY,
+        wear_off_message="The white aura fades away."
+    )
+    assert target.apply_spell_effect(effect) is True
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 95)
+    assert check_dispel(30, target, "sanctuary") is True
+    assert not target.has_spell_effect("sanctuary")
+    assert not target.has_affect(AffectFlag.SANCTUARY)
+    assert target.messages[-1] == "The white aura fades away."
+
+    # Permanent affects are harder to dispel but failed attempts lower their level
+    perm_effect = SpellEffect(
+        name="sanctuary",
+        duration=-1,
+        level=18,
+        affect_flag=AffectFlag.SANCTUARY,
+        wear_off_message="The white aura fades away."
+    )
+    assert target.apply_spell_effect(perm_effect) is True
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
+    assert check_dispel(30, target, "sanctuary") is False
+    assert target.has_spell_effect("sanctuary")
+    assert target.spell_effects["sanctuary"].level == 17
 
 
 def test_imm_res_vuln_flag_values():

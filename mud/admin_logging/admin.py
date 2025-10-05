@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from mud.models.constants import OHELPS_FILE
+from mud.wiznet import WiznetFlag, wiznet
 
 if TYPE_CHECKING:  # pragma: no cover - import for type checking only
     from mud.models.character import Character
@@ -68,7 +69,30 @@ def _sanitize_command_line(command_line: str) -> str:
     return sanitized
 
 
-def log_admin_command(actor: str, command_line: str) -> None:
+def _duplicate_wiznet_chars(text: str) -> str:
+    """Duplicate ROM color sentinels (`$`, `{`) for wiznet parity."""
+
+    duplicated: list[str] = []
+    for char in text:
+        duplicated.append(char)
+        if char in {"$", "{"}:
+            duplicated.append(char)
+    return "".join(duplicated)
+
+
+def _get_effective_trust(character: "Character") -> int:
+    """Mirror ROM's ``get_trust`` helper used for wiznet broadcasts."""
+
+    trust = getattr(character, "trust", 0)
+    return trust if trust > 0 else getattr(character, "level", 0)
+
+
+def log_admin_command(
+    actor: str,
+    command_line: str,
+    *,
+    character: "Character" | None = None,
+) -> None:
     """Append a single admin-command entry to log/admin.log.
 
     Format: ISO timestamp, actor, sanitized command line.
@@ -78,6 +102,19 @@ def log_admin_command(actor: str, command_line: str) -> None:
     Path("log").mkdir(exist_ok=True)
     timestamp = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     sanitized = _sanitize_command_line(command_line)
+    if character is not None:
+        try:
+            wiznet(
+                _duplicate_wiznet_chars(f"Log {actor}: {sanitized}"),
+                character,
+                None,
+                WiznetFlag.WIZ_SECURE,
+                None,
+                _get_effective_trust(character),
+            )
+        except Exception:
+            # Wiznet notifications must never break logging.
+            pass
     log_path = Path("log") / "admin.log"
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(f"{timestamp}\t{actor}\t{sanitized}\n")

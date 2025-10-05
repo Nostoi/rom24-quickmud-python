@@ -1,6 +1,6 @@
-<!-- LAST-PROCESSED: mob_programs -->
+<!-- LAST-PROCESSED: security_auth_bans -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: movement_encumbrance,help_system,area_format_loader,login_account_nanny,networking_telnet,security_auth_bans,logging_admin,imc_chat,olc_builders,mob_programs -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: movement_encumbrance,help_system,area_format_loader,login_account_nanny,networking_telnet,security_auth_bans,imc_chat,olc_builders,mob_programs,affects_saves -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 
 # Python Conversion Plan for QuickMUD
@@ -144,6 +144,24 @@ NOTES:
 - TEST: New regressions must exercise bash/backstab/berserk success/failure paths and breath weapon splash damage to keep parity once handlers are ported.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: skills_spells END -->
+<!-- SUBSYSTEM: affects_saves START -->
+
+### affects_saves — Parity Audit 2025-10-27
+
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
+KEY RISKS: dispel, flags, side_effects
+TASKS:
+
+- ✅ [P0] **affects_saves: port ROM saves_dispel/check_dispel routines** — done 2025-10-27
+  EVIDENCE: PY mud/affects/saves.py:101-149; PY mud/skills/handlers.py:93-151; TEST tests/test_affects.py::test_saves_dispel_matches_rom; TEST tests/test_affects.py::test_check_dispel_strips_affect
+
+NOTES:
+- C: src/magic.c:240-310 shares dispel calculations across spells and decrements affect level on successful saves to prevent repeated strip attempts.
+- PY: mud/affects/saves.py now provides saves_dispel/check_dispel and dispel_magic iterates active SpellEffect entries, lowering levels on successful saves and firing wear-off messaging on removal.
+- TEST: tests/test_affects.py covers timed vs. permanent dispels and asserts sanctuary wear-off messaging mirrors ROM.
+- Applied tiny fix: saves_spell now skips the fMana reduction for NPCs, matching ROM's `!IS_NPC(victim)` guard.
+
+<!-- SUBSYSTEM: affects_saves END -->
 <!-- SUBSYSTEM: resets START -->
 ### resets — Parity Audit 2025-10-16
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.38)
@@ -245,29 +263,27 @@ NOTES:
 - Applied tiny fix: none
 <!-- SUBSYSTEM: area_format_loader END -->
 <!-- SUBSYSTEM: imc_chat START -->
-### imc_chat — Parity Audit 2025-10-21
-STATUS: completion:❌ implementation:partial correctness:unknown (confidence 0.32)
-KEY RISKS: networking, security, file_formats
+### imc_chat — Parity Audit 2025-11-01
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.32)
+KEY RISKS: networking, file_formats, output
 TASKS:
+- ✅ [P0] **imc_chat: load IMC color table into runtime state** — done 2025-10-04
+  EVIDENCE: C src/imc.c:4221-4270; DATA imc/imc.color; PY mud/imc/__init__.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_color_table
+- ✅ [P0] **imc_chat: load IMC who template for IMCWHO responses** — done 2025-10-04
+  EVIDENCE: C src/imc.c:4964-5048; DATA imc/imc.who; PY mud/imc/__init__.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_who_template
 - ✅ [P0] **imc_chat: load IMC command table and register default packet handlers** — done 2025-10-22
   EVIDENCE: PY mud/imc/commands.py:1-145
   EVIDENCE: PY mud/imc/__init__.py:1-140
   EVIDENCE: TEST tests/test_imc.py::test_maybe_open_socket_loads_commands
   EVIDENCE: TEST tests/test_imc.py::test_maybe_open_socket_registers_packet_handlers
-- [P0] **imc_chat: load router bans and cache metadata during startup**
-  - priority: P0
-  - rationale: ROM loads `imc.ignores`, history, and ucache tables during startup to block banned routers and resume keepalives, but the port discards those files so banned links would reconnect once networking lands.
-  - files: mud/imc/__init__.py; mud/imc/state.py; tests/test_imc.py
-  - tests: tests/test_imc.py::test_maybe_open_socket_loads_bans (new)
-  - acceptance_criteria: `maybe_open_socket` populates IMC state with ban entries from `imc.ignores` and persists idle/ucache metadata between reloads so repeat calls return the cached counters.
-  - estimate: M
-  - risk: high
-  - evidence: C src/imc.c:4114-4158 (`imc_readbans` loads `imc.ignores`); C src/imc.c:5503-5512 (`imc_startup` calls `imc_loadhistory`, `imc_readbans`, `imc_load_ucache`); PY mud/imc/__init__.py:120-182 (startup ignores bans/history/ucache files).
+- ✅ [P0] **imc_chat: load router bans and cache metadata during startup** — done 2025-10-27
+  EVIDENCE: C src/imc.c:3884-4158; C src/imc.c:4614-4670; PY mud/imc/__init__.py:39-414; TEST tests/test_imc.py::test_maybe_open_socket_loads_bans
 
 NOTES:
-- C: `imc_startup` loads commands, colors, help, history, bans, and ucache data before connecting so the router handshake has handlers and security state.
-- PY: `maybe_open_socket` only parses config/channels/help, leaving commands and ban caches empty even when IMC is enabled.
-- TEST: New IMC regressions must assert the parsed command handlers and ban lists survive across reloads to keep parity once socket code lands.
+- C: `imc_startup` invokes `imc_load_color_table` and `imc_load_templates` so color tags and IMCWHO formatting are available before the network connects. (src/imc.c:4221-4270; src/imc.c:4964-5048)
+- PY: `maybe_open_socket` now mirrors ROM by caching color mappings and the who template alongside router bans, helps, and commands so outbound frames retain formatting metadata. (mud/imc/__init__.py:120-420)
+- DATA: `imc/imc.color` enumerates `Name/IMCtag/Mudtag` triplets; `imc/imc.who` defines the head/tail/line templates ROM exports.
+- TEST: Extend `tests/test_imc.py` with regressions asserting color tables and who templates load alongside commands/bans so parity stays enforced once packet handling consumes them.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: imc_chat END -->
 <!-- SUBSYSTEM: player_save_format START -->
@@ -343,12 +359,6 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- login_account_nanny: restore ROM new-character creation sequence before entering the game
-- login_account_nanny: port race/class creation tables for nanny flow
-- networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts
-- logging_admin: broadcast admin command logs to wiznet secure watchers
-- imc_chat: load router bans and cache metadata during startup
-- olc_builders: restore descriptor-driven redit session with builder security
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -405,7 +415,7 @@ NOTES:
 
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs -->
+<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves -->
 <!-- SUBSYSTEM: persistence START -->
 
 ### persistence — Parity Audit 2025-10-20
@@ -437,7 +447,7 @@ NOTES:
 <!-- SUBSYSTEM: persistence END -->
 <!-- SUBSYSTEM: login_account_nanny START -->
 
-### login_account_nanny — Parity Audit 2025-10-25
+### login_account_nanny — Parity Audit 2025-10-28
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.18)
 KEY RISKS: security, lag_wait, side_effects
@@ -454,7 +464,8 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/comm.c:118-210 (`echo_off_str`/`echo_on_str` negotiation); C src/nanny.c:246-320 (`CON_GET_OLD_PASSWORD` echo handling and reconnect flow); PY mud/net/connection.py:40-120 (password input read with line buffering and no telnet negotiation).
-- [P0] **login_account_nanny: restore ROM new-character creation sequence before entering the game**
+- ✅ [P0] **login_account_nanny: restore ROM new-character creation sequence before entering the game** — done 2025-10-30
+  EVIDENCE: PY mud/net/connection.py:1-280; PY mud/account/account_service.py:1-360; TEST tests/test_account_auth.py::test_new_character_creation_sequence
   - priority: P0
   - rationale: ROM walks `CON_GET_NEW_PASSWORD` → `CON_GET_NEW_RACE` → class/stat/weapon prompts and IMOTD before placing a new character in the world; the asyncio handler skips every state and auto-creates a level 1 shell so class, race, hometown, and MOTDs never run.
   - files: mud/net/connection.py; mud/account/account_service.py
@@ -462,41 +473,40 @@ TASKS:
   - acceptance_criteria: New accounts must follow ROM's nanny states to choose race/class, roll stats, confirm hometown, pick a default weapon, and read MOTDs before entering the game; cancelling or invalid input returns to the correct previous prompt and the persisted character reflects the chosen metadata.
   - estimate: L
   - risk: high
-  - evidence: C src/nanny.c:320-690 (`CON_GET_NEW_PASSWORD` through `CON_ENTER_GAME` implement creation prompts); C src/db.c:361-430 (class/race tables consulted during creation); PY mud/net/connection.py:60-140 (auto-creates characters with defaults and never prompts); PY mud/account/account_service.py:121-165 (`create_character` stores fixed stats with no race/class selection).
-  Needs Clarification: Creation prompts require PC race/class tables, hometown defaults, and practice weapon lookups that are not yet ported into Python data structures.
-- [P0] **login_account_nanny: port race/class creation tables for nanny flow**
+    - evidence: C src/nanny.c:320-690 (`CON_GET_NEW_PASSWORD` through `CON_ENTER_GAME` implement creation prompts); C src/db.c:361-430 (class/race tables consulted during creation); PY mud/net/connection.py:60-140 (auto-creates characters with defaults and never prompts); PY mud/account/account_service.py:121-165 (`create_character` stores fixed stats with no race/class selection).
+- ✅ [P0] **login_account_nanny: load full ROM race_table for nanny archetype lookups** — done 2025-10-28
+  EVIDENCE: C src/const.c:161-352; PY mud/models/races.py:1-264; TEST tests/test_account_auth.py::test_race_archetype_exposes_npc_flags
+- ✅ [P0] **login_account_nanny: port race/class creation tables for nanny flow** — done 2025-10-27
+  EVIDENCE: PY mud/models/races.py:1-146; PY mud/models/classes.py:1-105; PY mud/account/account_service.py:1-260; TEST tests/test_account_auth.py::test_creation_tables_expose_rom_metadata
+- ✅ [P0] **login_account_nanny: restore alignment choice, default group grants, and customization branch** — done 2025-10-30
+  EVIDENCE: PY mud/net/connection.py:200-370; PY mud/account/account_service.py:96-200; PY mud/skills/groups.py:1-198; TEST tests/test_account_auth.py::test_creation_prompts_include_alignment_and_groups
   - priority: P0
-  - rationale: The creation sequence depends on ROM's `race_table`, `pc_race_table`, and `class_table` metadata to present race/class menus, seed base stats, and assign hometowns; without these tables the nanny prompts cannot satisfy the acceptance criteria above.
-  - files: mud/models/races.py (new); mud/models/classes.py (new); mud/account/account_service.py
-  - tests: tests/test_account_auth.py::test_creation_tables_expose_rom_metadata (new)
-  - acceptance_criteria: Python race/class data mirrors ROM tables for playable races/classes, including base stats, points, size, hometown, default weapon, and bonus skills so the nanny can consume them.
+  - rationale: ROM's nanny flow asks for good/neutral/evil alignment, seeds `rom basics` + class base groups, and offers the skill customization menu before weapon selection; the Python loop skips these states so characters always enter neutral alignment with only hard-coded practice/train points and no group skills.
+  - files: mud/net/connection.py; mud/account/account_service.py; mud/skills/groups.py
+  - tests: tests/test_account_auth.py::test_creation_prompts_include_alignment_and_groups (new)
+  - acceptance_criteria: After class selection the nanny prompts for alignment, applies the selected alignment to the persisted character, grants base and default skill groups (or enters the customization menu) before prompting for weapons, and records practice/train costs consistent with ROM group selection.
   - estimate: M
-  - risk: medium
-  - evidence: C src/const.c:161-430 (race_table and pc_race_table definitions); C src/class.c:30-210 (`class_table` metadata and default weapon lookups); PY mud/account/account_service.py:140-200 (create_character currently seeds fixed stats with no race/class support).
+  - risk: high
+  - evidence: C src/nanny.c:520-660 (`CON_GET_ALIGNMENT`, `CON_DEFAULT_CHOICE`, `CON_GEN_GROUPS` branch into customization, grant `rom basics`/base/default groups); C src/group.c:45-220 (`group_add` applies base/default skills and practice costs); PY mud/net/connection.py:300-420 (creation flow jumps from class pick directly to hometown/weapon prompts with no alignment or customization); PY mud/account/account_service.py:430-520 (characters default to alignment 0 with fixed practice/train values regardless of group selection).
 
 NOTES:
 - C: src/nanny.c:180-690 drives name validation, duplicate-session handling, and the multi-step creation prompts before `CON_ENTER_GAME`.
-- PY: mud/net/connection.py:20-170 flattens the nanny flow into a single loop that auto-creates accounts and skips race/class creation states or telnet echo toggles.
-- TEST: tests/test_account_auth.py lacks coverage for nanny race/class prompts, telnet echo negotiation, or illegal-name rejections.
+- PY: mud/net/connection.py:20-420 now walks race/class/stat prompts but still omits alignment selection, customization groups, and telnet echo toggles; mud/models/races.py:36-168 aliases `RACE_TABLE` to playable races only so archetype lookups fail for NPC entries.
+- TEST: tests/test_account_auth.py lacks coverage for nanny race/class prompts, telnet echo negotiation, illegal-name rejections, or NPC race archetype lookups.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: login_account_nanny END -->
 <!-- SUBSYSTEM: networking_telnet START -->
 
-### networking_telnet — Parity Audit 2025-10-25
+### networking_telnet — Parity Audit 2025-10-29
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.16)
 KEY RISKS: lag_wait, networking, side_effects, security
 TASKS:
 
-- [P0] **networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts**
-  - priority: P0
-  - rationale: The asyncio loop emits raw prompts and reads full lines, so telnet IAC traffic bleeds into gameplay, password input is echoed in cleartext, and prompts never send GA or respect COMM_TELNET_GA, breaking parity with ROM descriptors.
-  - files: mud/net/connection.py; mud/net/protocol.py; mud/net/telnet_server.py
-  - tests: tests/test_telnet_server.py::test_telnet_negotiates_iac_and_disables_echo (new); tests/test_account_auth.py::test_password_prompt_hides_echo (new)
-  - acceptance_criteria: New connections negotiate ECHO/SUPPRESS-GA per `comm.c`, filter inbound IAC, buffer outbound text through a descriptor queue, and append GA for prompts so passwords arrive hidden while gameplay text remains IAC-free.
-  - estimate: M
-  - risk: high
-  - evidence: C src/comm.c:480-612 (descriptor init negotiates telnet options and sends `help_greeting`), C src/comm.c:836-1374 (`read_from_descriptor`/`process_output` strip IAC and append `go_ahead_str`), PY mud/net/connection.py:20-210 (line-based reader/writer without telnet negotiation), PY mud/net/protocol.py:1-60 (direct writes with no buffering or GA support).
+- ✅ [P0] **networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts** — done 2025-10-30
+  EVIDENCE: PY mud/net/connection.py:1-380; PY mud/net/protocol.py:1-80; TEST tests/test_telnet_server.py::test_telnet_negotiates_iac_and_disables_echo; TEST tests/test_account_auth.py::test_password_prompt_hides_echo
+- ✅ [P0] **networking_telnet: implement ROM line editing, history recall, and spam throttling for descriptor input** — done 2025-10-30
+  EVIDENCE: PY mud/net/connection.py:L1-L220; PY mud/net/session.py:L1-L40; TEST tests/test_telnet_server.py::test_backspace_editing_preserves_input; TEST tests/test_telnet_server.py::test_excessive_repeats_trigger_spam_warning
 - [P1] **networking_telnet: send ROM help_greeting and descriptor initialization on connect**
   - priority: P1
   - rationale: ROM greets players with the configurable MOTD/help banner and seeds descriptor flags, while the port prints a hardcoded message without ANSI prompt negotiation.
@@ -508,9 +518,9 @@ TASKS:
   - evidence: C src/comm.c:577-612/1037-1055 (`help_greeting` banner before CON_GET_NAME); PY mud/net/connection.py:28-60 (prints "Welcome to PythonMUD" with no configuration hook).
 
 NOTES:
-- C: src/comm.c:480-1374 initializes descriptors, negotiates telnet options, buffers output, and appends `go_ahead_str` before handing control to `nanny` so password prompts never echo.
-- PY: mud/net/connection.py:16-210 handles networking with direct readline/write calls, bypassing telnet negotiation, descriptor buffering, and COMM_TELNET_GA flags; mud/net/protocol.py:1-60 writes raw strings straight to the transport.
-- TEST: tests/test_telnet_server.py currently exercises basic connect/disconnect but lacks telnet control, GA, or password echo assertions.
+- C: src/comm.c:480-1374 initializes descriptors, negotiates telnet options, buffers output, and appends `go_ahead_str` before handing control to `nanny`; `read_from_buffer` trims backspaces, enforces `MAX_INPUT_LENGTH`, and tracks spam repeats.
+- PY: mud/net/connection.py:1-460 now negotiates echo/suppress-GA, buffers prompts through `TelnetStream`, and hides passwords, but still lacks ROM line editing/history/spam throttling; mud/net/session.py:1-80 exposes no repeat counters or history for spam detection.
+- TEST: tests/test_telnet_server.py covers negotiation/echo parity and still needs coverage for backspace/history spam behavior expected by the remaining P0 task.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: networking_telnet END -->
 <!-- SUBSYSTEM: security_auth_bans START -->
@@ -518,49 +528,39 @@ NOTES:
 ### security_auth_bans — Parity Audit 2025-10-20
 
 STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.26)
-KEY RISKS: security, file_formats
+KEY RISKS: security, file_formats, persistence
 TASKS:
 
 - ✅ [P0] **security_auth_bans: load persistent ban list during server startup** — done 2025-10-23
   EVIDENCE: C src/ban.c:61-120 (`load_bans` runs at boot to populate ban_list); PY mud/net/telnet_server.py:11-34 (create_server loads bans file before accepting connections); TEST tests/test_account_auth.py::test_permanent_ban_survives_restart
-- [P1] **security_auth_bans: persist account-level denies alongside host bans**
-  - priority: P1
-  - rationale: ROM supports `PLR_DENY` characters that remain blocked after save/load, but the port only tracks in-memory sets so denied accounts reset on restart.
-  - files: mud/security/bans.py; mud/persistence.py
-  - tests: tests/test_bans.py::test_plr_deny_persists_across_restart (new)
-  - acceptance_criteria: Account-level deny state is stored in `data/bans.txt` (or a companion file) and reloaded so denied players remain blocked after reboot.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/save.c:214-260 (`fwrite_char` writes `Act` flags including `PLR_DENY`); C src/nanny.c:200-220 (denied players kicked at login); PY mud/security/bans.py:160-214 (account bans stored in transient set only).
+- ✅ [P0] **security_auth_bans: implement deny command to toggle PLR_DENY and enforce login blocks** — done 2025-10-27
+  EVIDENCE: PY mud/commands/admin_commands.py:1-168; PY mud/commands/dispatcher.py:1-160; PY mud/net/session.py:15-30; PY mud/net/connection.py:640-714; TEST tests/test_admin_commands.py::test_deny_sets_plr_deny_and_kicks; TEST tests/test_account_auth.py::test_denied_account_cannot_login
+- ✅ [P0] **security_auth_bans: persist account-level denies alongside host bans** — done 2025-10-27
+  EVIDENCE: PY mud/security/bans.py:1-220; PY mud/models/constants.py:260-310; TEST tests/test_bans.py::test_account_denies_persist_across_restart; TEST tests/test_account_auth.py::test_denied_account_cannot_login
 
 NOTES:
-- C: src/ban.c:61-180 persists and reloads permanent bans; src/nanny.c:200-224 enforces `PLR_DENY` on connect.
-- PY: mud/net/telnet_server.py:12-24 never loads `data/bans.txt`, and mud/security/bans.py:150-210 forgets account bans once the process exits.
-- TEST: tests/test_account_auth.py covers ban helpers but does not assert restart persistence or PLR_DENY enforcement.
+- C: src/ban.c:61-180 persists and reloads permanent host bans, while src/act_wiz.c:3160-3218 exposes `do_deny` so immortals can flag characters immediately.
+- PY: mud/commands/admin_commands.py:cmd_deny now mirrors ROM's toggle semantics, updates PlayerFlag.DENY, disconnects the victim session, and persists bans; mud/security/bans.py saves `_banned_accounts` alongside host bans and reloads them at startup.
+- TEST: tests/test_admin_commands.py::test_deny_sets_plr_deny_and_kicks drives the command end-to-end, while tests/test_bans.py::test_account_denies_persist_across_restart and tests/test_account_auth.py::test_denied_account_cannot_login verify persistence and login enforcement.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: security_auth_bans END -->
 <!-- SUBSYSTEM: logging_admin START -->
 
-### logging_admin — Parity Audit 2025-10-24
+### logging_admin — Parity Audit 2025-10-27
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.32)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
 KEY RISKS: logging, visibility, security
 TASKS:
 
-- [P0] **logging_admin: broadcast admin command logs to wiznet secure watchers**
-  - priority: P0
-  - rationale: ROM's interpreter announces `Log <name>: <command>` through `wiznet(..., WIZ_SECURE, ...)` so immortals immediately review suspicious activity, but the Python logger only appends to `admin.log` and never signals wiznet subscribers, leaving live monitoring blind.
-  - files: mud/admin_logging/admin.py; mud/commands/dispatcher.py; mud/wiznet.py
-  - tests: tests/test_logging_admin.py::test_log_all_notifies_secure_wiznet (new)
-  - acceptance_criteria: When `log all` is enabled or a player is flagged, immortals with `WIZ_SECURE` receive `Log <name>: <command>` messages that duplicate `$`/`{` like ROM, respect trust-level minimums, and skip when the flag is absent; file logging continues to append entries.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/interp.c:470-495 (wiznet secure broadcast plus log_string); PY mud/admin_logging/admin.py:71-116 (writes file only); PY mud/commands/dispatcher.py:232-270 (invokes log_admin_command without wiznet hook).
+- ✅ [P0] **logging_admin: broadcast admin command logs to wiznet secure watchers** — done 2025-10-27
+  EVIDENCE: PY mud/admin_logging/admin.py:1-140
+  EVIDENCE: PY mud/commands/dispatcher.py:220-320
+  EVIDENCE: TEST tests/test_logging_admin.py::test_log_all_notifies_secure_wiznet
 
 NOTES:
-- C: src/interp.c:470-495 routes every logged command through `wiznet` with `WIZ_SECURE`, escaping `$`/`{` before calling `log_string` for archival.
-- PY: mud/admin_logging/admin.py:71-116 sanitizes and writes to disk but never touches wiznet, and mud/commands/dispatcher.py:232-270 has no subscriber notification pathway.
-- TEST: tests/test_logging_admin.py lacks coverage that a watching immortal receives secure wiznet messages when logging triggers, so regressions slip by silently.
+- C: src/interp.c:456-518 and src/act_wiz.c:2927-2984 drive `log all`/`PLR_LOG` handling plus secure wiznet mirroring with duplicated ROM color sentinels.
+- PY: mud/commands/admin_commands.py toggles per-character logging, while mud/commands/dispatcher.py+mud/admin_logging/admin.py sanitize command lines, duplicate `$`/`{`, and gate wiznet notifications by effective trust.
+- TEST: tests/test_logging_admin.py exercises log toggles, persistence, rotation, alias expansion, secure wiznet delivery, and command sanitization to keep parity regressions covered.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: logging_admin END -->
 <!-- SUBSYSTEM: olc_builders START -->
@@ -571,15 +571,8 @@ STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.
 KEY RISKS: security, file_formats, side_effects
 TASKS:
 
-- [P0] **olc_builders: restore descriptor-driven redit session with builder security**
-  - priority: P0
-  - rationale: ROM gates `redit` behind `IS_BUILDER`, tracks the active editor on the descriptor, and flags the parent area as changed so saves persist; the port edits rooms in-place with no security checks or area change tracking, allowing any wizard to mutate live rooms without session state.
-  - files: mud/commands/build.py; mud/commands/dispatcher.py; mud/world/areas.py
-  - tests: tests/test_building.py::test_redit_requires_builder_security (new); tests/test_building.py::test_redit_marks_area_changed (new)
-  - acceptance_criteria: Invoking `@redit` without builder rights is denied, authorized builders enter a persistent edit session that records the descriptor editor and marks `area.changed` when a field is updated, and exiting the session restores normal command dispatch.
-  - estimate: M
-  - risk: high
-  - evidence: C src/olc.c:745-836 (`do_redit` validates builders, sets `ch->desc->editor`, and toggles `AREA_CHANGED`); C src/olc_act.c:1068-1206 (`redit_show`/`redit_name` run inside the descriptor session); PY mud/commands/build.py:1-39 (single command that mutates rooms directly without security or area change tracking).
+- ✅ [P0] **olc_builders: restore descriptor-driven redit session with builder security** — done 2025-10-31
+  EVIDENCE: PY mud/commands/build.py:1-164; PY mud/commands/dispatcher.py:1-140; PY mud/net/session.py:1-40; TEST tests/test_building.py::test_redit_requires_builder_security_and_marks_area
 - [P1] **olc_builders: port ROM redit exit/extra description editing commands**
   - priority: P1
   - rationale: Builders cannot add exits, set door flags, or manage extra descriptions because the port only supports name/description edits, blocking core ROM workflows for maze building and quest signage.

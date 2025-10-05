@@ -115,8 +115,39 @@ def saves_spell(level: int, victim: Character, dam_type: int) -> bool:
         save -= 2
 
     # Not NPC → apply fMana reduction if class gains mana
-    if FMANA_BY_CLASS.get(victim.ch_class, False):
+    if (
+        not victim.is_npc
+        and FMANA_BY_CLASS.get(victim.ch_class, False)
+    ):
         save = c_div(9 * save, 10)
 
     save = urange(5, save, 95)
     return rng_mm.number_percent() < save
+
+
+def saves_dispel(dis_level: int, spell_level: int, duration: int) -> bool:
+    """ROM saves_dispel helper (src/magic.c:243-252)."""
+
+    if duration == -1:
+        spell_level += 5
+
+    save = 50 + (spell_level - dis_level) * 5
+    save = urange(5, save, 95)
+    return rng_mm.number_percent() < save
+
+
+def check_dispel(dis_level: int, victim: Character, effect_name: str) -> bool:
+    """Attempt to dispel an active spell effect by name."""
+
+    effect = victim.spell_effects.get(effect_name)
+    if effect is None:
+        return False
+
+    if not saves_dispel(dis_level, effect.level, effect.duration):
+        removed = victim.remove_spell_effect(effect_name)
+        if removed and removed.wear_off_message:
+            victim.send_to_char(removed.wear_off_message)
+        return True
+
+    effect.level = max(0, effect.level - 1)
+    return False

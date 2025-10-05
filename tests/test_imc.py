@@ -122,6 +122,34 @@ def _write_imc_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return config, channels, helps
 
 
+def _write_ban_and_ucache(tmp_path: Path) -> tuple[Path, Path]:
+    ignores = tmp_path / "imc.ignores"
+    ignores.write_text("#IGNORES\nrouter.bad\nworse@mud\n#END\n", encoding="latin-1")
+
+    ucache = tmp_path / "imc.ucache"
+    ucache.write_text(
+        "\n".join(
+            [
+                "#UCACHE",
+                "Name Test@Mud",
+                "Sex 1",
+                "Time 1690000000",
+                "End",
+                "#UCACHE",
+                "Name Another@Mud",
+                "Sex 2",
+                "Time 1680000000",
+                "End",
+                "#END",
+            ]
+        )
+        + "\n",
+        encoding="latin-1",
+    )
+
+    return ignores, ucache
+
+
 def test_imc_disabled_by_default(monkeypatch):
     monkeypatch.delenv("IMC_ENABLED", raising=False)
     reset_state()
@@ -327,6 +355,8 @@ def imc_default_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(root / "imc.channels"))
     monkeypatch.setenv("IMC_HELP_PATH", str(root / "imc.help"))
     monkeypatch.setenv("IMC_COMMANDS_PATH", str(root / "imc.commands"))
+    monkeypatch.setenv("IMC_COLOR_PATH", str(root / "imc.color"))
+    monkeypatch.setenv("IMC_WHO_PATH", str(root / "imc.who"))
     reset_state()
     try:
         yield
@@ -358,3 +388,130 @@ def test_maybe_open_socket_registers_packet_handlers(
 
     assert packet.handled_by == "imc_recv_who"
     assert state.packet_handlers["keepalive-request"].__name__ == "imc_send_keepalive"
+
+
+def test_maybe_open_socket_loads_bans(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    ignores, ucache = _write_ban_and_ucache(tmp_path)
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
+    monkeypatch.setenv("IMC_IGNORES_PATH", str(ignores))
+    monkeypatch.setenv("IMC_UCACHE_PATH", str(ucache))
+    monkeypatch.setenv("IMC_HISTORY_DIR", str(tmp_path))
+
+    reset_state()
+    try:
+        state = maybe_open_socket(force_reload=True)
+        assert state is not None
+
+        assert [ban.name for ban in state.router_bans] == ["router.bad", "worse@mud"]
+
+        key = "test@mud"
+        assert key in state.user_cache
+        entry = state.user_cache[key]
+        assert entry.gender == 1
+        assert entry.last_seen == 1_690_000_000
+
+        state.idle_pulses = 7
+        state.ucache_refresh_deadline = 99_999
+        entry.last_seen = 1_690_009_999
+
+        reloaded = maybe_open_socket(force_reload=True)
+        assert reloaded is not None
+        assert reloaded.idle_pulses == 7
+        assert reloaded.ucache_refresh_deadline == 99_999
+        assert reloaded.user_cache[key].last_seen == 1_690_009_999
+    finally:
+        reset_state()
+
+
+def test_maybe_open_socket_loads_color_table(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    color_path = tmp_path / "imc.color"
+    color_path.write_text(
+        "\n".join(
+            [
+                "#COLOR",
+                "Name Alert",
+                "Mudtag {R",
+                "IMCtag ~R",
+                "End",
+                "#COLOR",
+                "Name Calm",
+                "Mudtag {g",
+                "IMCtag ~g",
+                "End",
+                "#END",
+            ]
+        )
+        + "\n",
+        encoding="latin-1",
+    )
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
+    monkeypatch.setenv("IMC_COLOR_PATH", str(color_path))
+    reset_state()
+
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+    assert "alert" in state.colors
+    entry = state.colors["alert"]
+    assert entry.name == "Alert"
+    assert entry.mud_tag == "{R"
+    assert entry.imc_tag == "~R"
+
+    calm = state.colors["calm"]
+    assert calm.mud_tag == "{g"
+    assert calm.imc_tag == "~g"
+
+
+def test_maybe_open_socket_loads_who_template(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    who_path = tmp_path / "imc.who"
+    who_path.write_text(
+        "\n".join(
+            [
+                "Head: ~RHead",
+                "Tail: ~GTail",
+                "Plrline: player",
+                "Immline: immortal",
+                "Plrheader: players",
+                "Immheader: immortals",
+                "Master: master template",
+            ]
+        )
+        + "\n",
+        encoding="latin-1",
+    )
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
+    monkeypatch.setenv("IMC_WHO_PATH", str(who_path))
+    reset_state()
+
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+    template = state.who_template
+    assert template is not None
+    assert template.head == "~RHead"
+    assert template.tail == "~GTail"
+    assert template.plrline == "player"
+    assert template.immline == "immortal"
+    assert template.plrheader == "players"
+    assert template.immheader == "immortals"
+    assert template.master == "master template"
