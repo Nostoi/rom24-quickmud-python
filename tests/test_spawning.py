@@ -707,6 +707,53 @@ def test_room_reset_zeroes_object_cost():
     assert getattr(idol.prototype, "cost", None) == 750
 
 
+def test_room_reset_fuzzes_object_level(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    mob_proto = MobIndex(vnum=9400, short_descr="fuzzy mob", level=60)
+    loot_proto = ObjIndex(vnum=9401, short_descr="fuzzy loot")
+    mob_registry[mob_proto.vnum] = mob_proto
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area = Area(vnum=9400, name="Fuzzy Area", min_vnum=9400, max_vnum=9401)
+    room = Room(vnum=9400, name="Fuzzy Room", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="O", arg1=loot_proto.vnum, arg2=1, arg3=room.vnum),
+    ]
+
+    expected_base = min(max(mob_proto.level - 2, 0), LEVEL_HERO - 1)
+    fuzzy_calls: list[int] = []
+
+    def fake_number_fuzzy(value: int) -> int:
+        fuzzy_calls.append(value)
+        return LEVEL_HERO + 5
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: low)
+    monkeypatch.setattr(rng_mm, "number_fuzzy", fake_number_fuzzy)
+
+    reset_handler.apply_resets(area)
+
+    loot = next(
+        (
+            obj
+            for obj in room.contents
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == loot_proto.vnum
+        ),
+        None,
+    )
+
+    assert loot is not None
+    assert loot.level == LEVEL_HERO - 1
+    assert fuzzy_calls == [expected_base]
+
+
 def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
     room_registry.clear()
     area_registry.clear()
