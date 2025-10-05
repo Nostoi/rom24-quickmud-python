@@ -754,6 +754,63 @@ def test_room_reset_fuzzes_object_level(monkeypatch):
     assert fuzzy_calls == [expected_base]
 
 
+def test_nested_reset_scales_object_level(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    mob_proto = MobIndex(vnum=9450, short_descr="reset mob", level=35)
+    container_proto = ObjIndex(vnum=9451, short_descr="a lacquered chest")
+    loot_proto = ObjIndex(vnum=9452, short_descr="a velvet pouch")
+
+    mob_registry[mob_proto.vnum] = mob_proto
+    obj_registry[container_proto.vnum] = container_proto
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area = Area(vnum=9450, name="Chest Area", min_vnum=9450, max_vnum=9450)
+    room = Room(vnum=9450, name="Treasure Vault", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    fuzz_inputs: list[int] = []
+
+    def fake_number_fuzzy(value: int) -> int:
+        fuzz_inputs.append(value)
+        if len(fuzz_inputs) == 1:
+            return value - 1
+        return value + 1
+
+    monkeypatch.setattr(reset_handler.rng_mm, "number_fuzzy", fake_number_fuzzy)
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="O", arg1=container_proto.vnum, arg3=room.vnum),
+        ResetJson(command="P", arg1=loot_proto.vnum, arg2=1, arg3=container_proto.vnum, arg4=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    chest = next(
+        (
+            obj
+            for obj in room.contents
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == container_proto.vnum
+        ),
+        None,
+    )
+    assert chest is not None
+    assert chest.level == 32
+
+    assert fuzz_inputs == [33, 32]
+
+    assert len(chest.contained_items) == 1
+    nested = chest.contained_items[0]
+    assert getattr(getattr(nested, "prototype", None), "vnum", None) == loot_proto.vnum
+    assert nested.level == 33
+
+
 def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
     room_registry.clear()
     area_registry.clear()

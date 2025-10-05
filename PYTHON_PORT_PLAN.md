@@ -302,21 +302,16 @@ TASKS:
   - evidence: C src/db.c:1838-1920; PY mud/spawning/reset_handler.py:209-237
 - ✅ [P0] **resets: fuzz room-spawned object levels for O resets** — done 2025-10-05
   EVIDENCE: PY mud/spawning/reset_handler.py:300-417; TEST tests/test_spawning.py::test_room_reset_fuzzes_object_level
-- [P0] **resets: scale nested P reset object levels to LastObj fuzz**
-  - priority: P0
-  - rationale: ROM calls `create_object` with `number_fuzzy(LastObj->level)` for container spawns, but the Python handler appends objects without adjusting `obj.level` so chest contents remain level 0 and ignore the parent mob/chest difficulty tier.
-  - files: mud/spawning/reset_handler.py; tests/test_spawning.py
-  - tests: tests/test_spawning.py::test_nested_reset_scales_object_level (new)
-  - acceptance_criteria: P resets seed contained loot with a `number_fuzzy(LastObj->level)` roll capped to `LEVEL_HERO - 1`, matching ROM so old-format treasure chests receive appropriately tiered items.
-  - estimate: S
-  - risk: low
-  - evidence: C src/db.c:1814-1833 (`create_object` for P resets fuzzes `LastObj->level`); PY mud/spawning/reset_handler.py:533-585 (spawns nested objects without setting level); TEST tests/test_spawning.py (lacks regression covering container loot levels).
+- ✅ [P0] **resets: scale nested P reset object levels to LastObj fuzz** — done 2025-10-05
+  EVIDENCE: C src/db.c:1814-1833
+  EVIDENCE: PY mud/spawning/reset_handler.py:533-620
+  EVIDENCE: TEST tests/test_spawning.py::test_nested_reset_scales_object_level
 
 NOTES:
 - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
 - C: src/db.c:1688-2008 also fuzzes G/E equipment with `number_fuzzy(level)` so mob loot follows LastMob's tier, a clamp the Python reset handler still lacks.
 - PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns while `_compute_object_level` currently drops to `0` for most items.
-- PY: mud/spawning/reset_handler.py now fuzzes `O` resets with `number_fuzzy` but still skips level rolls when `P` resets stuff containers, leaving nested loot at level 0 instead of tracking `LastObj->level` like ROM.
+- PY: mud/spawning/reset_handler.py now fuzzes `O` resets with `number_fuzzy` and scales nested `P` reset loot from the container's level roll so old-format items mirror ROM's `create_object` behavior.
 - TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches; add a regression that inspects `obj.level` after G/E resets on low/high level mobs.
 - PY: mud/spawning/reset_handler.py now mirrors src/db.c:1706-1744 by seeding `AFF_INFRARED` in dark rooms and adding `ACT_PET` for pet shop spawns.
 - Applied tiny fix: none
