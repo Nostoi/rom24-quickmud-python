@@ -608,6 +608,21 @@ def apply_resets(area: Area) -> None:
                 if not obj:
                     logging.warning("Invalid P reset %s", obj_vnum)
                     break
+
+                try:
+                    container_level = int(getattr(container_obj, "level", 0) or 0)
+                except Exception:
+                    container_level = 0
+
+                base_level = max(0, container_level)
+                fuzzed_level = rng_mm.number_fuzzy(base_level)
+                if fuzzed_level < 0:
+                    fuzzed_level = 0
+
+                obj_proto = getattr(obj, "prototype", None)
+                if obj_proto is None or not getattr(obj_proto, "new_format", False):
+                    obj.level = fuzzed_level
+
                 container_obj.contained_items.append(obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 made += 1
