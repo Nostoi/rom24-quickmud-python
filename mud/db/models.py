@@ -82,7 +82,7 @@ class ObjectInstance(Base):
     character_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("characters.id"), nullable=True)
 
     prototype: Mapped[ObjPrototype | None] = relationship("ObjPrototype")
-    character: Mapped["Character" | None] = relationship("Character", back_populates="objects")
+    character: Mapped["Character | None"] = relationship("Character", back_populates="objects")
 
 
 class PlayerAccount(Base):

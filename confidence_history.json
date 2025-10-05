@@ -1102,5 +1102,106 @@
         0.7
       ]
     }
+  },
+  {
+    "timestamp": "2025-10-05T15:37:45.634409",
+    "scores": {
+      "channels": [
+        "\u274c",
+        0.35
+      ],
+      "wiznet_imm": [
+        "\u274c",
+        0.4
+      ],
+      "combat": [
+        "\u274c",
+        0.3
+      ],
+      "skills_spells": [
+        "\u274c",
+        0.28
+      ],
+      "affects_saves": [
+        "\u2705",
+        0.74
+      ],
+      "resets": [
+        "\u274c",
+        0.38
+      ],
+      "movement_encumbrance": [
+        "\u2705",
+        0.8
+      ],
+      "world_loader": [
+        "\u2705",
+        0.8
+      ],
+      "area_format_loader": [
+        "\u274c",
+        0.74
+      ],
+      "imc_chat": [
+        "\u274c",
+        0.32
+      ],
+      "player_save_format": [
+        "\u2705",
+        0.78
+      ],
+      "help_system": [
+        "\u274c",
+        0.7
+      ],
+      "mob_programs": [
+        "\u274c",
+        0.62
+      ],
+      "npc_spec_funs": [
+        "\u2705",
+        0.82
+      ],
+      "persistence": [
+        "\u2705",
+        0.64
+      ],
+      "login_account_nanny": [
+        "\u2705",
+        0.7
+      ],
+      "networking_telnet": [
+        "\u274c",
+        0.24
+      ],
+      "security_auth_bans": [
+        "\u2705",
+        0.55
+      ],
+      "logging_admin": [
+        "\u2705",
+        0.9
+      ],
+      "olc_builders": [
+        "\u274c",
+        0.22
+      ],
+      "shops_economy": [
+        "\u2705",
+        0.74
+      ],
+      "boards_notes": [
+        "\u274c",
+        0.4
+      ],
+      "command_interpreter": [
+        "\u2705",
+        0.78
+      ],
+      "game_update_loop": [
+        "\u2705",
+        0.55
+      ]
+    }
   }
 ]

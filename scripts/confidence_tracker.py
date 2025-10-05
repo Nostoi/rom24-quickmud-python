@@ -8,6 +8,8 @@ issues requiring different approaches than individual task completion.
 
 import json
 import re
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -19,6 +21,39 @@ class ConfidenceTracker:
     def __init__(self, plan_file: Path = None):
         self.plan_file = plan_file or Path("PYTHON_PORT_PLAN.md")
         self.history: List[Dict] = []
+        
+    def validate_test_pipeline(self) -> Tuple[bool, str]:
+        """
+        Validate that the test infrastructure is functional before analyzing scores.
+        
+        Returns:
+            (is_valid, message): True if tests can collect, False otherwise with error details
+        """
+        try:
+            result = subprocess.run(
+                ["pytest", "--collect-only", "-q"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            # Check for collection errors
+            if "error" in result.stdout.lower() or "error" in result.stderr.lower():
+                return False, f"Test collection errors detected:\n{result.stderr or result.stdout}"
+            
+            # Check for successful collection
+            if "collected" in result.stdout or "collected" in result.stderr:
+                return True, "Test pipeline is functional"
+            
+            # No clear success or failure
+            return False, f"Unexpected test collection output:\n{result.stdout}\n{result.stderr}"
+            
+        except subprocess.TimeoutExpired:
+            return False, "Test collection timed out after 30s"
+        except FileNotFoundError:
+            return False, "pytest not found - test infrastructure not installed"
+        except Exception as e:
+            return False, f"Unexpected error validating tests: {e}"
         
     def extract_current_scores(self) -> Dict[str, Tuple[str, float]]:
         """Extract current confidence scores from the plan file."""
@@ -206,6 +241,26 @@ class ConfidenceTracker:
 def main():
     """Main confidence tracking analysis."""
     tracker = ConfidenceTracker()
+    
+    # PHASE 0: Validate test infrastructure
+    print("=" * 80)
+    print("PHASE 0: Test Infrastructure Validation")
+    print("=" * 80)
+    is_valid, message = tracker.validate_test_pipeline()
+    print(f"\n{message}\n")
+    
+    if not is_valid:
+        print("❌ CRITICAL: Test pipeline is broken!")
+        print("   Confidence scores cannot be validated without functional tests.")
+        print("   Fix test infrastructure before analyzing confidence scores.")
+        print("\nRecommended actions:")
+        print("  1. Run: pytest --collect-only -q")
+        print("  2. Fix any collection errors")
+        print("  3. Re-run this script")
+        sys.exit(1)
+    
+    print("✅ Test pipeline is functional - proceeding with analysis\n")
+    
     tracker.load_history()
     
     # Record current snapshot
@@ -222,7 +277,8 @@ def main():
             "timestamp": snapshot["timestamp"],
             "current_scores": snapshot["scores"],
             "recommendations": recommendations,
-            "completion_probabilities": tracker.calculate_completion_probability()
+            "completion_probabilities": tracker.calculate_completion_probability(),
+            "test_pipeline_status": "functional"
         }, f, indent=2)
     
     print(f"\nDetailed analysis saved to strategic_recommendations.json")

@@ -1,81 +1,93 @@
 {
-  "timestamp": "2025-09-29T23:47:52.861167",
+  "timestamp": "2025-10-05T15:37:45.634409",
   "current_scores": {
-    "affects_saves": [
-      "\u2705",
-      0.86
-    ],
-    "socials": [
-      "\u2705",
-      0.84
+    "channels": [
+      "\u274c",
+      0.35
     ],
     "wiznet_imm": [
+      "\u274c",
+      0.4
+    ],
+    "combat": [
+      "\u274c",
+      0.3
+    ],
+    "skills_spells": [
+      "\u274c",
+      0.28
+    ],
+    "affects_saves": [
       "\u2705",
-      0.96
+      0.74
+    ],
+    "resets": [
+      "\u274c",
+      0.38
+    ],
+    "movement_encumbrance": [
+      "\u2705",
+      0.8
     ],
     "world_loader": [
       "\u2705",
-      0.71
+      0.8
     ],
-    "time_daynight": [
-      "\u2705",
-      0.95
-    ],
-    "combat": [
-      "\u2705",
-      0.95
-    ],
-    "skills_spells": [
-      "\u2705",
-      0.82
-    ],
-    "movement_encumbrance": [
+    "area_format_loader": [
       "\u274c",
-      0.55
+      0.74
+    ],
+    "imc_chat": [
+      "\u274c",
+      0.32
+    ],
+    "player_save_format": [
+      "\u2705",
+      0.78
     ],
     "help_system": [
       "\u274c",
       0.7
     ],
     "mob_programs": [
-      "\u2705",
+      "\u274c",
       0.62
-    ],
-    "resets": [
-      "\u274c",
-      0.38
-    ],
-    "security_auth_bans": [
-      "\u2705",
-      0.71
-    ],
-    "area_format_loader": [
-      "\u274c",
-      0.74
-    ],
-    "player_save_format": [
-      "\u2705",
-      0.7
-    ],
-    "imc_chat": [
-      "\u2705",
-      0.78
     ],
     "npc_spec_funs": [
       "\u2705",
-      0.88
+      0.82
+    ],
+    "persistence": [
+      "\u2705",
+      0.64
+    ],
+    "login_account_nanny": [
+      "\u2705",
+      0.7
+    ],
+    "networking_telnet": [
+      "\u274c",
+      0.24
+    ],
+    "security_auth_bans": [
+      "\u2705",
+      0.55
     ],
     "logging_admin": [
       "\u2705",
-      0.7
+      0.9
+    ],
+    "olc_builders": [
+      "\u274c",
+      0.22
     ],
     "shops_economy": [
       "\u2705",
       0.74
     ],
     "boards_notes": [
-      "\u2705",
-      0.74
+      "\u274c",
+      0.4
     ],
     "command_interpreter": [
       "\u2705",
@@ -83,64 +95,59 @@
     ],
     "game_update_loop": [
       "\u2705",
-      0.78
-    ],
-    "login_account_nanny": [
-      "\u2705",
-      0.7
+      0.55
     ]
   },
   "recommendations": {
     "immediate_actions": [
-      "Investigate movement_encumbrance: individual tasks completed but confidence < 0.80",
-      "Investigate resets: individual tasks completed but confidence < 0.80"
+      "Investigate resets: individual tasks completed but confidence < 0.80",
+      "Investigate imc_chat: individual tasks completed but confidence < 0.80",
+      "Investigate boards_notes: individual tasks completed but confidence < 0.80"
     ],
     "architectural_fixes": [
-      "Refactor movement_encumbrance: completion probability 0.40 indicates architectural issues",
-      "Refactor resets: completion probability 0.23 indicates architectural issues"
+      "Refactor channels: completion probability 0.35 indicates architectural issues",
+      "Refactor wiznet_imm: completion probability 0.40 indicates architectural issues",
+      "Refactor combat: completion probability 0.30 indicates architectural issues",
+      "Refactor skills_spells: completion probability 0.28 indicates architectural issues",
+      "Refactor resets: completion probability 0.23 indicates architectural issues",
+      "Refactor imc_chat: completion probability 0.32 indicates architectural issues",
+      "Refactor networking_telnet: completion probability 0.24 indicates architectural issues",
+      "Refactor olc_builders: completion probability 0.22 indicates architectural issues",
+      "Refactor boards_notes: completion probability 0.25 indicates architectural issues"
     ],
     "integration_tests": [
-      "Add integration tests for affects_saves: confidence score stagnation detected",
-      "Add integration tests for socials: confidence score stagnation detected",
-      "Add integration tests for wiznet_imm: confidence score stagnation detected",
-      "Add integration tests for world_loader: confidence score stagnation detected",
-      "Add integration tests for time_daynight: confidence score stagnation detected",
-      "Add integration tests for combat: confidence score stagnation detected",
-      "Add integration tests for mob_programs: confidence score stagnation detected",
       "Add integration tests for resets: confidence score stagnation detected",
-      "Add integration tests for security_auth_bans: confidence score stagnation detected",
       "Add integration tests for area_format_loader: confidence score stagnation detected",
-      "Add integration tests for player_save_format: confidence score stagnation detected",
-      "Add integration tests for imc_chat: confidence score stagnation detected",
-      "Add integration tests for npc_spec_funs: confidence score stagnation detected",
-      "Add integration tests for logging_admin: confidence score stagnation detected",
+      "Add integration tests for mob_programs: confidence score stagnation detected",
       "Add integration tests for shops_economy: confidence score stagnation detected",
       "Add integration tests for command_interpreter: confidence score stagnation detected"
     ],
     "batch_optimizations": []
   },
   "completion_probabilities": {
+    "channels": 0.35,
+    "wiznet_imm": 0.4,
+    "combat": 0.3,
+    "skills_spells": 0.28,
     "affects_saves": 1.0,
-    "socials": 1.0,
-    "wiznet_imm": 1.0,
-    "world_loader": 1.0,
-    "time_daynight": 1.0,
-    "combat": 1.0,
-    "skills_spells": 1.0,
-    "movement_encumbrance": 0.4,
-    "help_system": 0.7,
-    "mob_programs": 1.0,
     "resets": 0.23,
-    "security_auth_bans": 1.0,
+    "movement_encumbrance": 1.0,
+    "world_loader": 1.0,
     "area_format_loader": 0.74,
+    "imc_chat": 0.32,
     "player_save_format": 1.0,
-    "imc_chat": 1.0,
+    "help_system": 0.7,
+    "mob_programs": 0.62,
     "npc_spec_funs": 1.0,
+    "persistence": 1.0,
+    "login_account_nanny": 1.0,
+    "networking_telnet": 0.24,
+    "security_auth_bans": 1.0,
     "logging_admin": 1.0,
+    "olc_builders": 0.22,
     "shops_economy": 1.0,
-    "boards_notes": 1.0,
+    "boards_notes": 0.25,
     "command_interpreter": 1.0,
-    "game_update_loop": 1.0,
-    "login_account_nanny": 1.0
+    "game_update_loop": 1.0
   }
 }

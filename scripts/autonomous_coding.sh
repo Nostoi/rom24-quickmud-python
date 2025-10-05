@@ -42,6 +42,31 @@ log_warning() {
     log "${YELLOW}⚠️  $1${NC}"
 }
 
+# Check test infrastructure
+check_test_infrastructure() {
+    log_step "Validating test infrastructure..."
+    
+    # Check if pytest is available
+    if ! command -v pytest &> /dev/null; then
+        log_error "pytest not found - test infrastructure not installed"
+        exit 1
+    fi
+    
+    # Check if tests can collect
+    if ! pytest --collect-only -q > /dev/null 2>&1; then
+        log_error "Test collection failed! Infrastructure is broken."
+        log_warning "Confidence scores cannot be validated without functional tests."
+        log ""
+        log "Run this to see details:"
+        log "  pytest --collect-only -q"
+        log ""
+        log "Fix test infrastructure before running agents."
+        exit 1
+    fi
+    
+    log_success "Test infrastructure is functional"
+}
+
 # Check prerequisites
 check_prerequisites() {
     log_step "Checking prerequisites..."
@@ -77,6 +102,9 @@ check_prerequisites() {
 # Parse confidence scores from PYTHON_PORT_PLAN.md
 get_low_confidence_subsystems() {
     log_step "Analyzing subsystem confidence scores..."
+    
+    # PHASE 0: Validate test infrastructure first
+    check_test_infrastructure
     
     # Extract subsystems with confidence < 0.80 from STATUS lines
     local low_confidence_systems=()

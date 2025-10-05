@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0 -- /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /Users/markjedrzejczyk/dev/projects/rom24-quickmud-python
+configfile: pyproject.toml
+plugins: timeout-2.4.0, anyio-4.10.0, cov-6.2.1
+collecting ... collected 501 items
+
+diagnostic_test.py::test_world_state PASSED                              [  0%]
+diagnostic_test.py::test_look_command PASSED                             [  0%]
+diagnostic_test.py::test_authentication PASSED                           [  0%]
+tests/integration/test_pilot_integration.py::TestResetMovementIntegration::test_reset_preserves_player_items_during_movement PASSED [  0%]
+tests/integration/test_pilot_integration.py::TestResetMovementIntegration::test_last_obj_state_consistency_across_rooms PASSED [  0%]
+tests/integration/test_pilot_integration.py::TestResetMovementIntegration::test_reset_timing_with_movement_wait_states PASSED [  1%]
+tests/integration/test_pilot_integration.py::TestMovementCascadingIntegration::test_charmed_follower_auto_look_integration PASSED [  1%]
+tests/integration/test_pilot_integration.py::test_integration_test_framework_structure PASSED [  1%]
+tests/test_account_auth.py::test_creation_tables_expose_rom_metadata PASSED [  1%]
+tests/test_account_auth.py::test_race_archetype_exposes_npc_flags PASSED [  1%]
+tests/test_account_auth.py::test_new_character_creation_sequence 
