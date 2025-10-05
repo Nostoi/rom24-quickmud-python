@@ -36,22 +36,39 @@ def register_social(social: Social) -> None:
 
 
 # START socials
+_SUBJECT_PRONOUNS: dict[Sex, str] = {
+    Sex.MALE: "he",
+    Sex.FEMALE: "she",
+    Sex.NONE: "it",
+}
+_OBJECT_PRONOUNS: dict[Sex, str] = {
+    Sex.MALE: "him",
+    Sex.FEMALE: "her",
+    Sex.NONE: "it",
+}
+_POSSESSIVE_PRONOUNS: dict[Sex, str] = {
+    Sex.MALE: "his",
+    Sex.FEMALE: "her",
+    Sex.NONE: "its",
+}
+
+
 def expand_placeholders(message: str, actor: object, victim: object | None = None) -> str:
     """Replace basic ROM placeholders in social messages."""
 
     def subj(sex: Sex | object) -> str:
         if isinstance(sex, Sex):
-            return {Sex.MALE: "he", Sex.FEMALE: "she", Sex.NONE: "it"}.get(sex, "they")
+            return _SUBJECT_PRONOUNS.get(sex, "they")
         return "they"
 
     def obj(sex: Sex | object) -> str:
         if isinstance(sex, Sex):
-            return {Sex.MALE: "him", Sex.FEMALE: "her", Sex.NONE: "it"}.get(sex, "them")
+            return _OBJECT_PRONOUNS.get(sex, "them")
         return "them"
 
     def poss(sex: Sex | object) -> str:
         if isinstance(sex, Sex):
-            return {Sex.MALE: "his", Sex.FEMALE: "her", Sex.NONE: "its"}.get(sex, "their")
+            return _POSSESSIVE_PRONOUNS.get(sex, "their")
         return "their"
 
     # Names

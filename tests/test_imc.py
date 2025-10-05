@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from pathlib import Path
+import socket
 
 import pytest
 
@@ -150,6 +151,30 @@ def _write_ban_and_ucache(tmp_path: Path) -> tuple[Path, Path]:
     return ignores, ucache
 
 
+def _install_fake_imc_connection(monkeypatch: pytest.MonkeyPatch) -> None:
+    import mud.imc.network as network
+
+    class DummySocket:
+        def close(self) -> None:
+            pass
+
+    def fake_connect(config: Mapping[str, str]) -> network.IMCConnection:
+        handshake = network.build_handshake_frame(config)
+        port_raw = config.get("ServerPort", "0")
+        try:
+            port = int(port_raw) if port_raw else 0
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            port = 0
+        return network.IMCConnection(
+            socket=DummySocket(),
+            address=(config.get("ServerAddr", ""), port),
+            handshake_frame=handshake,
+            handshake_complete=True,
+        )
+
+    monkeypatch.setattr("mud.imc.network.connect_and_handshake", fake_connect)
+
+
 def test_imc_disabled_by_default(monkeypatch):
     monkeypatch.delenv("IMC_ENABLED", raising=False)
     reset_state()
@@ -203,6 +228,7 @@ def test_imc_command_enabled_lists_topics(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
     initialize_world("area/area.lst")
     ch = create_test_character("IMCUser", 3001)
@@ -229,6 +255,7 @@ def test_imc_help_topic_returns_entry(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
     initialize_world("area/area.lst")
     ch = create_test_character("IMCUser", 3001)
@@ -244,6 +271,7 @@ def test_imc_help_missing_topic(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
     initialize_world("area/area.lst")
     ch = create_test_character("IMCUser", 3001)
@@ -258,6 +286,7 @@ def test_help_summary_matches_rom_permissions(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
     initialize_world("area/area.lst")
 
@@ -312,6 +341,7 @@ def test_startup_reads_config_and_connects(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
 
     initialize_world("area/area.lst")
@@ -321,6 +351,8 @@ def test_startup_reads_config_and_connects(monkeypatch, tmp_path):
     assert state.config["LocalName"] == "QuickMUD"
     assert state.channels and state.channels[0].name == "IMC2"
     assert "imc2" in state.helps
+    assert state.connection is not None
+    assert state.connection.handshake_frame.startswith("PW QuickMUD")
 
 
 def test_idle_pump_runs_when_enabled(monkeypatch, tmp_path):
@@ -329,6 +361,7 @@ def test_idle_pump_runs_when_enabled(monkeypatch, tmp_path):
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
     monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
 
     initialize_world("area/area.lst")
@@ -382,6 +415,7 @@ def test_maybe_open_socket_registers_packet_handlers(
     imc_default_environment: None,
 ) -> None:
     state = maybe_open_socket(force_reload=True)
+    assert state is not None
     packet = IMCPacket(type="who", payload={})
 
     state.dispatch_packet(packet)
@@ -402,6 +436,7 @@ def test_maybe_open_socket_loads_bans(monkeypatch: pytest.MonkeyPatch, tmp_path:
     monkeypatch.setenv("IMC_IGNORES_PATH", str(ignores))
     monkeypatch.setenv("IMC_UCACHE_PATH", str(ucache))
     monkeypatch.setenv("IMC_HISTORY_DIR", str(tmp_path))
+    _install_fake_imc_connection(monkeypatch)
 
     reset_state()
     try:
@@ -460,6 +495,7 @@ def test_maybe_open_socket_loads_color_table(
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
     monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
     monkeypatch.setenv("IMC_COLOR_PATH", str(color_path))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
 
     state = maybe_open_socket(force_reload=True)
@@ -502,6 +538,7 @@ def test_maybe_open_socket_loads_who_template(
     monkeypatch.setenv("IMC_HELP_PATH", str(helps))
     monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
     monkeypatch.setenv("IMC_WHO_PATH", str(who_path))
+    _install_fake_imc_connection(monkeypatch)
     reset_state()
 
     state = maybe_open_socket(force_reload=True)
@@ -515,3 +552,41 @@ def test_maybe_open_socket_loads_who_template(
     assert template.plrheader == "players"
     assert template.immheader == "immortals"
     assert template.master == "master template"
+
+
+def test_maybe_open_socket_opens_connection(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+
+    captured_peers: list[socket.socket] = []
+
+    def fake_create_connection(address: tuple[str, int]) -> socket.socket:
+        sock1, sock2 = socket.socketpair()
+        captured_peers.append(sock2)
+        return sock1
+
+    monkeypatch.setattr(socket, "create_connection", fake_create_connection)
+
+    reset_state()
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+    assert state.connected is True
+    assert state.connection is not None
+    assert state.connection.address == ("router.quickmud", 4000)
+
+    peer = captured_peers.pop()
+    try:
+        handshake_line = peer.recv(256).decode("latin-1").strip()
+    finally:
+        peer.close()
+
+    assert handshake_line == "PW QuickMUD clientpw version=2 autosetup serverpw SHA256"
+    assert state.connection.handshake_frame == handshake_line
+
+    reset_state()

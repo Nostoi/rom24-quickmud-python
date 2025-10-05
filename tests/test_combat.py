@@ -35,6 +35,12 @@ def setup_combat() -> tuple[Character, Character]:
     return attacker, victim
 
 
+def assert_attack_message(message: str, victim_name: str = "Victim") -> None:
+    assert message.startswith("{2")
+    assert victim_name in message
+    assert message.endswith("{x")
+
+
 def _load_kick_skill() -> None:
     skill_registry.skills.clear()
     skill_registry.handlers.clear()
@@ -53,8 +59,9 @@ def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
     out = process_command(attacker, "kill victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
-    # Message includes "That really did HURT!" for significant damage
-    assert out == "You hit Victim for 8 damage. That really did HURT!"
+    # Damage tier should match ROM's *** DEVASTATE *** verb (80% of max HP)
+    assert out == "{2You *** DEVASTATE *** Victim!{x"
+    assert victim.messages[-1] == "{4Attacker *** DEVASTATES *** you!{x"
     assert victim.hit == 2  # 10 - 8 = 2
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
@@ -158,7 +165,8 @@ def test_shield_block_requires_shield(monkeypatch: pytest.MonkeyPatch) -> None:
     out = process_command(attacker, "kill victim")
 
     assert "blocks your attack" not in out
-    assert any(out.startswith(prefix) for prefix in {"You hit Victim", "You kill Victim"})
+    if out != "You kill Victim.":
+        assert_attack_message(out)
 
 
 def test_multi_hit_single_attack():
@@ -171,7 +179,7 @@ def test_multi_hit_single_attack():
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 1
     # ROM damage: base 5 + damroll 1 = 6 total
-    assert "You hit Victim for" in results[0] and "damage." in results[0]
+    assert_attack_message(results[0])
     assert victim.hit == 4  # 10 - 6 = 4
 
 
@@ -187,7 +195,8 @@ def test_multi_hit_with_haste():
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 2  # Normal + haste attack
     # With weapon damage calculation, damage will be higher than just damroll
-    assert all("You hit Victim for" in r and "damage." in r for r in results)
+    for message in results:
+        assert_attack_message(message)
     assert victim.hit == 8  # 20 - (6 + 6) = 8
 
 
@@ -218,6 +227,8 @@ def test_multi_hit_second_attack():
         assert victim.fighting == attacker
         # ROM damage: 2 hits × 6 damage = 12 total, so 20 - 12 = 8
         assert victim.hit == 8
+        for message in results:
+            assert_attack_message(message)
     finally:
         # Restore original function
         rng_mm.number_percent = original_number_percent
@@ -257,7 +268,7 @@ def test_kick_command_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
         out = process_command(attacker, "kick")
 
-        assert out == "You hit Victim for 12 damage."
+        assert_attack_message(out)
         assert victim.hit == 88
         assert attacker.wait == 1
         assert attacker.cooldowns.get("kick") == 0
@@ -284,7 +295,7 @@ def test_kick_command_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
         out = process_command(attacker, "kick")
 
-        assert out == "Your attack has no effect."
+        assert out == "{2You miss Victim.{x"
         assert victim.hit == 100
         assert attacker.wait == 1
         assert attacker.cooldowns.get("kick") == 0
@@ -423,7 +434,7 @@ def test_ac_influences_hit_chance(monkeypatch):
     victim.hit = 10
     out = process_command(attacker, "kill victim")
     # ROM damage: base 5 + damroll 3 = 8 total
-    assert out == "You hit Victim for 8 damage. That really did HURT!"
+    assert_attack_message(out)
 
     # Strong negative AC on BASH index lowers to_hit: victim.armor[AC_BASH] = -22 → +(-22//2) = -11 → 49 → miss
     victim.hit = 50
@@ -435,7 +446,7 @@ def test_ac_influences_hit_chance(monkeypatch):
     victim.hit = 50
     victim.armor[AC_BASH] = 20
     out = process_command(attacker, "kill victim")
-    assert out.startswith("You hit")
+    assert_attack_message(out)
 
 
 def test_visibility_and_position_modifiers(monkeypatch):
@@ -449,7 +460,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
     # At roll 60, baseline to_hit=60 → hit; invisible should make it miss
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
     out = process_command(attacker, "kill victim")
-    assert out.startswith("You hit")
+    assert_attack_message(out)
     victim.hit = 50
     victim.add_affect(AffectFlag.INVISIBLE)
     out = process_command(attacker, "kill victim")
@@ -461,7 +472,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 62)
     victim.position = Position.SLEEPING
     out = process_command(attacker, "kill victim")
-    assert out.startswith("You hit")
+    assert_attack_message(out)
 
 
 def test_riv_scaling_applies_before_side_effects(monkeypatch):
@@ -484,7 +495,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     out = process_command(attacker, "kill victim")
 
     # The exact damage will depend on RNG, but it should be RIV-scaled
-    assert "You hit Victim for" in out and "damage." in out
+    assert_attack_message(out)
 
     # More importantly, check that on_hit_effects received the scaled damage
     assert len(captured) == 1
@@ -497,7 +508,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     victim.res_flags = 0
     victim.vuln_flags = int(VulnFlag.BASH)
     out = process_command(attacker, "kill victim")
-    assert out == "You hit Victim for 7 damage. That really did HURT!"
+    assert_attack_message(out)
     assert captured[-1] == 7
 
     # Immune: dam = 0
@@ -505,7 +516,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     victim.vuln_flags = 0
     victim.imm_flags = int(ImmFlag.BASH)
     out = process_command(attacker, "kill victim")
-    assert out == "Your attack has no effect."
+    assert out == "{2Victim is unaffected by your attack!{x"
     assert captured[-1] == 0
 def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
     attacker, victim = setup_combat()

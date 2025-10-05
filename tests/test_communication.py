@@ -1,5 +1,6 @@
 from mud.commands import process_command
 from mud.models.character import character_registry
+from mud.models.constants import CommFlag
 from mud.registry import (
     area_registry,
     mob_registry,
@@ -51,3 +52,49 @@ def test_tell_respects_mute_and_ban():
     alice.banned_channels.add("tell")
     out = process_command(alice, "tell Bob hi")
     assert out == "You are banned from tell."
+
+
+def test_shout_and_tell_respect_comm_flags():
+    alice = create_test_character("Alice", 3001)
+    bob = create_test_character("Bob", 3001)
+
+    out = process_command(alice, "shout")
+    assert out == "You will no longer hear shouts."
+    assert alice.has_comm_flag(CommFlag.SHOUTSOFF)
+
+    bob.messages.clear()
+    out = process_command(alice, "shout hello")
+    assert out == "You must turn shouts back on first."
+    assert not bob.messages
+
+    out = process_command(alice, "shout")
+    assert out == "You can hear shouts again."
+    assert not alice.has_comm_flag(CommFlag.SHOUTSOFF)
+
+    alice.set_comm_flag(CommFlag.QUIET)
+    out = process_command(alice, "shout hi")
+    assert out == "You must turn off quiet mode first."
+    alice.clear_comm_flag(CommFlag.QUIET)
+
+    bob.messages.clear()
+    out = process_command(alice, "shout hi")
+    assert out == "You shout, 'hi'"
+    assert alice.wait == 12
+    assert "Alice shouts, 'hi'" in bob.messages
+
+    alice.set_comm_flag(CommFlag.NOTELL)
+    bob.messages.clear()
+    out = process_command(alice, "tell Bob hi")
+    assert out == "Your message didn't get through."
+    assert not bob.messages
+
+    alice.clear_comm_flag(CommFlag.NOTELL)
+    alice.set_comm_flag(CommFlag.QUIET)
+    out = process_command(alice, "tell Bob hi")
+    assert out == "You must turn off quiet mode first."
+    alice.clear_comm_flag(CommFlag.QUIET)
+
+    bob.set_comm_flag(CommFlag.QUIET)
+    out = process_command(alice, "tell Bob hi")
+    assert out == "Bob is not receiving tells."
+    assert not bob.messages

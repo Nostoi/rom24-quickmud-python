@@ -426,6 +426,10 @@ def save_character(char: Character) -> None:
     char.act = act_flags
     char.ansi_enabled = ansi_enabled
 
+    room = getattr(char, "room", None)
+    room_vnum = room.vnum if room is not None else None
+    char_name = char.name or ""
+
     data = PlayerSave(
         name=char.name or "",
         level=char.level,
@@ -454,28 +458,28 @@ def save_character(char: Character) -> None:
         damroll=int(getattr(char, "damroll", 0)),
         wimpy=int(getattr(char, "wimpy", 0)),
         points=int(getattr(pcdata, "points", 0)),
-        true_sex=int(getattr(pcdata, "true_sex", 0)),
-        last_level=int(getattr(pcdata, "last_level", 0)),
-        position=char.position,
-        armor=armor,
-        perm_stat=perm_stat,
-        mod_stat=mod_stat,
-        conditions=conditions,
-        act=act_flags,
-        affected_by=getattr(char, "affected_by", 0),
-        comm=getattr(char, "comm", 0),
-        wiznet=getattr(char, "wiznet", 0),
-        log_commands=bool(getattr(char, "log_commands", False)),
-        room_vnum=char.room.vnum if getattr(char, "room", None) else None,
-        inventory=[_serialize_object(obj) for obj in char.inventory],
-        equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
-        aliases=dict(getattr(char, "aliases", {})),
-        skills=skills_snapshot,
-        groups=groups_snapshot,
-        board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
+            true_sex=int(getattr(pcdata, "true_sex", 0)),
+            last_level=int(getattr(pcdata, "last_level", 0)),
+            position=char.position,
+            armor=armor,
+            perm_stat=perm_stat,
+            mod_stat=mod_stat,
+            conditions=conditions,
+            act=act_flags,
+            affected_by=getattr(char, "affected_by", 0),
+            comm=getattr(char, "comm", 0),
+            wiznet=getattr(char, "wiznet", 0),
+            log_commands=bool(getattr(char, "log_commands", False)),
+            room_vnum=room_vnum,
+            inventory=[_serialize_object(obj) for obj in char.inventory],
+            equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
+            aliases=dict(getattr(char, "aliases", {})),
+            skills=skills_snapshot,
+            groups=groups_snapshot,
+            board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
     )
-    path = PLAYERS_DIR / f"{char.name.lower()}.json"
+    path = PLAYERS_DIR / f"{char_name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
     with tmp_path.open("w") as f:
         dump_dataclass(data, f, indent=2)

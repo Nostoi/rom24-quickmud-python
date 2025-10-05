@@ -15,6 +15,12 @@ from mud.utils import rng_mm
 from mud.config import get_pulse_violence
 
 
+def assert_attack_message(message: str, target: str) -> None:
+    assert message.startswith("{2")
+    assert target in message
+    assert message.endswith("{x")
+
+
 def load_registry() -> SkillRegistry:
     reg = SkillRegistry(rng=Random(0))
     reg.load(Path("data/skills.json"))
@@ -231,7 +237,7 @@ def test_kick_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = skill_handlers.kick(attacker, victim)
 
-    assert result == "You hit Orc for 12 damage."
+    assert_attack_message(result, "Orc")
     assert victim.hit == 88
     assert attacker.fighting is victim
     assert victim.fighting is attacker
@@ -253,7 +259,7 @@ def test_kick_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = skill_handlers.kick(attacker, victim)
 
-    assert result == "Your attack has no effect."
+    assert result == "{2You miss Orc.{x"
     assert victim.hit == 100
     assert attacker.fighting is victim
     assert victim.fighting is attacker
@@ -319,7 +325,7 @@ def test_backstab_uses_position_and_weapon(monkeypatch: pytest.MonkeyPatch) -> N
 
     result = do_backstab(attacker, "Guard")
 
-    assert result.startswith("You hit Guard for")
+    assert_attack_message(result, "Guard")
     assert attacker.wait == 24
     assert attacker.cooldowns.get("backstab", None) == 0
     assert attacker.fighting is victim
@@ -366,7 +372,7 @@ def test_bash_applies_wait_state(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = do_bash(attacker, "")
 
-    assert result.startswith("You hit Ogre for")
+    assert_attack_message(result, "Ogre")
     assert attacker.wait == 24
     assert attacker.cooldowns.get("bash", None) == 0
     assert victim.position == Position.RESTING

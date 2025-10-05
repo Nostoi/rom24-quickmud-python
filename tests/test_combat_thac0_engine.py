@@ -5,6 +5,12 @@ from mud.models.constants import DamageType, WeaponType, attack_lookup
 from mud.world import create_test_character, initialize_world
 
 
+def assert_attack_message(message: str, target: str) -> None:
+    assert message.startswith("{2")
+    assert target in message
+    assert message.endswith("{x")
+
+
 def setup_thac0_env():
     initialize_world("area/area.lst")
     atk = create_test_character("Atk", 3001)
@@ -29,7 +35,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to survive ROM damage calculation
     out = process_command(atk, "kill vic")
-    assert out.startswith("You hit")
+    assert_attack_message(out, "Vic")
 
     # Weak attacker (mage0) should miss with same diceroll
     atk, vic = setup_thac0_env()

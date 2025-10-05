@@ -13,6 +13,12 @@ from .commands import (
     build_default_packet_handlers,
     load_command_table,
 )
+from .network import (
+    IMCConnection,
+    IMCConnectionError,
+    autoconnect_enabled,
+    connect_and_handshake,
+)
 
 @dataclass(frozen=True)
 class IMCChannel:
@@ -95,6 +101,7 @@ class IMCState:
     who_template: Optional[IMCWhoTemplate]
     user_cache: Dict[str, IMCUserCacheEntry]
     channel_history: Dict[str, List[str]]
+    connection: Optional[IMCConnection]
     idle_pulses: int = 0
     ucache_refresh_deadline: int = 0
     color_path: Path | None = None
@@ -462,6 +469,8 @@ def reset_state() -> None:
     """Helper for tests to clear cached IMC state."""
 
     global _state
+    if _state and _state.connection:
+        _state.connection.close()
     _state = None
 
 
@@ -520,13 +529,39 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
     ucache_refresh_deadline = (
         previous_state.ucache_refresh_deadline if previous_state else 0
     )
+    autoconnect = autoconnect_enabled(config)
+    connection: Optional[IMCConnection] = None
+    connected = False
+
+    if autoconnect:
+        if (
+            previous_state
+            and previous_state.connected
+            and not force_reload
+            and previous_state.connection
+        ):
+            connection = previous_state.connection
+            connected = previous_state.connected
+        else:
+            if previous_state and previous_state.connection:
+                previous_state.connection.close()
+            try:
+                connection = connect_and_handshake(config)
+                connected = connection.handshake_complete
+            except IMCConnectionError:
+                connection = None
+                connected = False
+    else:
+        if previous_state and previous_state.connection:
+            previous_state.connection.close()
+
     _state = IMCState(
         config=config,
         channels=channels,
         helps=helps,
         commands=commands,
         packet_handlers=packet_handlers,
-        connected=True,
+        connected=connected,
         config_path=config_path,
         channels_path=channels_path,
         help_path=help_path,
@@ -539,6 +574,7 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
         who_template=who_template,
         user_cache=user_cache,
         channel_history=channel_history,
+        connection=connection,
         idle_pulses=idle_pulses,
         ucache_refresh_deadline=ucache_refresh_deadline,
         color_path=color_path,

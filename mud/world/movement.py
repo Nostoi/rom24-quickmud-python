@@ -40,6 +40,26 @@ dir_map: dict[str, Direction] = {
 }
 
 
+def _coerce_sector_type(raw: object) -> Sector:
+    """Clamp sector identifiers into the ROM sector enum range."""
+
+    if isinstance(raw, Sector):
+        numeric = int(raw)
+    else:
+        try:
+            numeric = int(raw)
+        except (TypeError, ValueError):
+            numeric = 0
+
+    max_index = int(Sector.MAX) - 1
+    if numeric < 0:
+        numeric = 0
+    elif numeric > max_index:
+        numeric = max_index
+
+    return Sector(numeric)
+
+
 def _get_trust(char: Character) -> int:
     trust = int(getattr(char, "trust", 0) or 0)
     if trust <= 0:
@@ -317,8 +337,8 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         return "You aren't allowed in there."
 
     # --- Sector-based gating and movement costs (ROM act_move.c) ---
-    from_sector = Sector(current_room.sector_type)
-    to_sector = Sector(target_room.sector_type)
+    from_sector = _coerce_sector_type(getattr(current_room, "sector_type", 0))
+    to_sector = _coerce_sector_type(getattr(target_room, "sector_type", 0))
 
     if not char.is_npc:
         is_privileged = char.is_admin or char.is_immortal()

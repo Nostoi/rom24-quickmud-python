@@ -3,6 +3,7 @@ from __future__ import annotations
 from mud import mobprog
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
+from mud.combat.messages import DamageMessages, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
@@ -185,6 +186,38 @@ def _push_message(character: Character | None, message: str) -> None:
         mailbox.append(message)
 
 
+def _dispatch_damage_messages(
+    attacker: Character,
+    victim: Character,
+    messages: DamageMessages | None,
+) -> None:
+    if messages is None:
+        return
+
+    if messages.attacker:
+        _push_message(attacker, messages.attacker)
+
+    if not messages.self_inflicted and messages.victim:
+        _push_message(victim, messages.victim)
+
+    if not messages.room:
+        return
+
+    room = getattr(victim, "room", None)
+    if room is None:
+        return
+
+    if messages.self_inflicted:
+        room.broadcast(messages.room, exclude=victim)
+        return
+
+    for occupant in getattr(room, "people", []):
+        if occupant is attacker or occupant is victim:
+            continue
+        if hasattr(occupant, "messages"):
+            occupant.messages.append(messages.room)
+
+
 def get_weapon_skill(attacker: Character, weapon_sn: str | None) -> int:
     """Return the attacker's proficiency for the given weapon skill."""
 
@@ -264,7 +297,7 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
         if rng_mm.number_percent() < chance:
             result = attack_round(attacker, victim)
             results.append(result)
-            # In ROM, would call check_improve here
+            check_improve(attacker, "second attack", True, 5)
             if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
                 return results
 
@@ -280,7 +313,7 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
         if rng_mm.number_percent() < chance:
             result = attack_round(attacker, victim)
             results.append(result)
-            # In ROM, would call check_improve here
+            check_improve(attacker, "third attack", True, 6)
 
     if getattr(attacker, "is_npc", False):
         mobprog.mp_fight_trigger(attacker, victim)
@@ -370,7 +403,8 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
 
     # Apply RIV (IMMUNE/RESIST/VULN) scaling before any side-effects.
     riv = _riv_check(victim, dam_type)
-    if riv == 1:  # IS_IMMUNE
+    immune = riv == 1
+    if immune:  # IS_IMMUNE
         damage = 0
     elif riv == 2:  # IS_RESISTANT: dam -= dam/3 (ROM)
         damage = damage - c_div(damage, 3)
@@ -384,15 +418,26 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     weapon_special_messages = process_weapon_special_attacks(attacker, victim)
 
     # Apply damage and update fighting state (defenses checked inside apply_damage)
-    main_message = apply_damage(attacker, victim, damage, dam_type)
+    main_message = apply_damage(attacker, victim, damage, dam_type, dt=dt, immune=immune)
 
     # Combine main attack message with weapon special messages
     if weapon_special_messages:
-        return main_message + " " + " ".join(weapon_special_messages)
+        parts = [msg for msg in (main_message,) if msg]
+        parts.extend(weapon_special_messages)
+        return " ".join(parts)
     return main_message
 
 
-def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: int = None) -> str:
+def apply_damage(
+    attacker: Character,
+    victim: Character,
+    damage: int,
+    dam_type: int = None,
+    *,
+    dt: str | int | None = None,
+    immune: bool = False,
+    show: bool = True,
+) -> str:
     """Apply damage and manage fighting state following C src/fight.c:damage logic.
 
     Handles:
@@ -426,6 +471,11 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
         if check_dodge(attacker, victim):
             return f"{victim.name} dodges your attack."
 
+    message_bundle: DamageMessages | None = None
+    if show:
+        message_bundle = dam_message(attacker, victim, damage, dt, immune)
+        _dispatch_damage_messages(attacker, victim, message_bundle)
+
     # Set up fighting state if not already fighting
     if victim != attacker:
         # Victim starts fighting back if able
@@ -443,6 +493,11 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
             if attacker.fighting is None:
                 set_fighting(attacker, victim)
 
+    if damage <= 0:
+        if message_bundle and message_bundle.attacker:
+            return message_bundle.attacker
+        return "Your attack has no effect."
+
     # Apply damage
     old_pos = victim.position
     victim.hit -= damage
@@ -455,9 +510,10 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
     update_pos(victim)
 
     # Handle position change messages
-    message = ""
     if victim.position != old_pos:
-        message = _position_change_message(victim, old_pos)
+        change_message = _position_change_message(victim, old_pos)
+        if change_message:
+            _push_message(victim, change_message)
 
     # Stop fighting if unconscious
     if not is_awake(victim):
@@ -475,15 +531,9 @@ def apply_damage(attacker: Character, victim: Character, damage: int, dam_type: 
         message = _handle_death(attacker, victim)
         return message
 
-    # Regular hit messages
-    if damage == 0:
-        return "Your attack has no effect."
-    elif damage > victim.max_hit // 4:
-        return f"You hit {victim.name} for {damage} damage. That really did HURT!"
-    elif victim.hit < victim.max_hit // 4:
-        return f"You hit {victim.name} for {damage} damage. {victim.name} is BLEEDING!"
-    else:
-        return f"You hit {victim.name} for {damage} damage."
+    if message_bundle and message_bundle.attacker:
+        return message_bundle.attacker
+    return ""
 
 
 def set_fighting(ch: Character, victim: Character) -> None:
@@ -679,7 +729,7 @@ def calculate_weapon_damage(
     if enhanced_damage_skill > 0:
         diceroll = rng_mm.number_percent()
         if diceroll <= enhanced_damage_skill:
-            # check_improve(attacker, gsn_enhanced_damage, True, 6) would go here
+            check_improve(attacker, "enhanced damage", True, 6)
             dam += 2 * (dam * diceroll // 300)
 
     # Position-based damage multipliers

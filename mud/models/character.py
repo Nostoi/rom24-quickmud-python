@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from mud.models.constants import AffectFlag, PlayerFlag, Position, Stat
+from mud.models.constants import AffectFlag, CommFlag, PlayerFlag, Position, Stat
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -58,6 +58,7 @@ class Character:
     """Python representation of CHAR_DATA"""
 
     name: str | None = None
+    account_name: str = ""
     short_descr: str | None = None
     long_descr: str | None = None
     description: str | None = None
@@ -219,6 +220,27 @@ class Character:
         """Append a message to the character's buffer (used in tests)."""
 
         self.messages.append(message)
+
+    def _comm_value(self) -> int:
+        try:
+            return int(self.comm or 0)
+        except Exception:
+            return 0
+
+    def has_comm_flag(self, flag: CommFlag) -> bool:
+        """Return True when the character has the provided COMM bit set."""
+
+        return bool(self._comm_value() & int(flag))
+
+    def set_comm_flag(self, flag: CommFlag) -> None:
+        """Set the provided COMM bit."""
+
+        self.comm = self._comm_value() | int(flag)
+
+    def clear_comm_flag(self, flag: CommFlag) -> None:
+        """Clear the provided COMM bit."""
+
+        self.comm = self._comm_value() & ~int(flag)
 
     def add_object(self, obj: Object) -> None:
         self.inventory.append(obj)
