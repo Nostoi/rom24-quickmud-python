@@ -5,14 +5,15 @@ import pytest
 
 import mud.magic.effects as magic_effects
 import mud.skills.handlers as skill_handlers
-from mud.commands.combat import do_backstab, do_bash, do_berserk
+from mud.commands.combat import do_backstab, do_bash, do_berserk, do_rescue
+from mud.config import get_pulse_violence
 from mud.game_loop import violence_tick
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, Position, WeaponType
-from mud.skills import SkillRegistry, load_skills
+from mud.models.room import Room
+from mud.skills import SkillRegistry, load_skills, skill_registry
 from mud.utils import rng_mm
-from mud.config import get_pulse_violence
 
 
 def assert_attack_message(message: str, target: str) -> None:
@@ -197,6 +198,82 @@ def test_skill_wait_adjusts_for_haste_and_slow(monkeypatch: pytest.MonkeyPatch) 
     slow_pulses = skill.lag * 2
     expected_slow = max(1, slow_pulses)
     assert slow_caster.wait == expected_slow
+
+
+def test_rescue_switches_tank_and_wait_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_skills(Path("data/skills.json"))
+    skill = skill_registry.get("rescue")
+    assert skill is not None
+
+    rescuer = Character(name="Rescuer", level=40, is_npc=False, skills={"rescue": 75})
+    ally = Character(name="Ally", is_npc=False)
+    foe = Character(name="Ogre", is_npc=True)
+    onlooker = Character(name="Onlooker", is_npc=False)
+
+    room = Room(vnum=3001)
+    for ch in (rescuer, ally, foe, onlooker):
+        room.add_character(ch)
+
+    ally.leader = rescuer
+    ally.fighting = foe
+    ally.position = Position.FIGHTING
+    foe.fighting = ally
+    foe.position = Position.FIGHTING
+
+    rescuer.wait = 0
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+    out = do_rescue(rescuer, "ally")
+
+    assert out == "{5You rescue Ally!{x"
+    assert rescuer.fighting is foe
+    assert foe.fighting is rescuer
+    assert ally.fighting is None
+    assert rescuer.wait == skill_registry._compute_skill_lag(rescuer, skill)
+    assert rescuer.cooldowns["rescue"] == skill.cooldown
+    assert "{5You rescue Ally!{x" in rescuer.messages
+    assert "{5Rescuer rescues you!{x" in ally.messages
+    assert "{5Rescuer rescues Ally!{x" in onlooker.messages
+
+
+def test_sanctuary_applies_affect_and_messages() -> None:
+    caster = Character(name="Cleric", level=24, is_npc=False)
+    target = Character(name="Tank", is_npc=False)
+    observer = Character(name="Observer", is_npc=False)
+
+    room = Room(vnum=3001)
+    for ch in (caster, target, observer):
+        room.add_character(ch)
+
+    applied = skill_handlers.sanctuary(caster, target)
+
+    assert applied is True
+    assert target.has_affect(AffectFlag.SANCTUARY)
+    effect = target.spell_effects["sanctuary"]
+    assert effect.duration == c_div(caster.level, 6)
+    assert effect.affect_flag == AffectFlag.SANCTUARY
+    assert target.messages[-1] == "You are surrounded by a white aura."
+    assert "Tank is surrounded by a white aura." in observer.messages
+    assert "Tank is surrounded by a white aura." in caster.messages
+
+
+def test_shield_applies_ac_bonus_and_duration() -> None:
+    caster = Character(name="Mage", level=18, is_npc=False)
+    target = Character(name="Tank", is_npc=False)
+    watcher = Character(name="Watcher", is_npc=False)
+
+    room = Room(vnum=3001)
+    for ch in (caster, target, watcher):
+        room.add_character(ch)
+
+    result = skill_handlers.shield(caster, target)
+
+    assert result is True
+    effect = target.spell_effects["shield"]
+    assert effect.duration == 8 + caster.level
+    assert target.armor == [-20, -20, -20, -20]
+    assert target.messages[-1] == "You are surrounded by a force shield."
+    assert "Tank is surrounded by a force shield." in watcher.messages
 
 
 def test_wait_state_recovery_matches_pulses() -> None:

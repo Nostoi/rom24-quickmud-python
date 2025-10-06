@@ -17,18 +17,18 @@ from .admin_commands import (
     cmd_ban,
     cmd_banlist,
     cmd_deny,
+    cmd_log,
     cmd_permban,
     cmd_spawn,
     cmd_teleport,
     cmd_unban,
-    cmd_log,
     cmd_who,
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_unalias
 from .build import cmd_redit, handle_redit_command
-from .combat import do_kick, do_kill
-from .communication import do_say, do_shout, do_tell
+from .combat import do_kick, do_kill, do_rescue
+from .communication import do_clantalk, do_immtalk, do_say, do_shout, do_tell
 from .healer import do_heal
 from .help import do_help
 from .imc import do_imc
@@ -116,9 +116,12 @@ COMMANDS: list[Command] = [
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
+    Command("clan", do_clantalk, min_position=Position.SLEEPING),
+    Command("immtalk", do_immtalk, aliases=(":",), min_position=Position.DEAD),
     # Combat
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
+    Command("rescue", do_rescue, min_position=Position.FIGHTING),
     # Info
     Command("scan", do_scan, min_position=Position.SLEEPING),
     # Shops
@@ -214,9 +217,7 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
         return head, tail
 
 
-def _expand_aliases(
-    char: Character, input_str: str, *, max_depth: int = 5
-) -> tuple[str, bool]:
+def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> tuple[str, bool]:
     """Expand the first token using per-character aliases, up to max_depth.
 
     Returns the expanded string and whether any alias substitution occurred.

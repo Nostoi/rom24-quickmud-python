@@ -1,10 +1,10 @@
-<!-- LAST-PROCESSED: resets -->
+<!-- LAST-PROCESSED: wiznet_imm -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: combat,channels,area_format_loader,login_account_nanny,security_auth_bans,imc_chat,olc_builders,mob_programs -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,channels,wiznet_imm,resets,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: functional -->
 <!-- VALIDATION-STATUS: validated -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-05 -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-12 -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -19,12 +19,12 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem            | status        | evidence                                                                                                                                                                                              | tests                                                                                                                           |
 | -------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
-| skills_spells        | present_wired | C: src/act_info.c:2680-2760; C: src/magic.c:73-97; PY: mud/commands/advancement.py:66-193; mud/skills/registry.py:75-142                                                                              | tests/test_advancement.py; tests/test_practice.py; tests/test_skills.py                                                         |
+| skills_spells        | stub_or_partial | C: src/fight.c:3032-3094 (`do_rescue`); C: src/magic.c:4274-4320 (`spell_sanctuary`/`spell_shield`); PY: mud/skills/handlers.py:106-1367 (skill stubs); mud/commands/combat.py (missing rescue) | tests/test_skills.py; tests/test_advancement.py (add rescue/sanctuary regressions)                                             |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
-| channels             | present_wired | C: src/act_comm.c:do_say/do_tell/do_shout; PY: mud/commands/communication.py:do_say/do_tell/do_shout                                                                                                  | tests/test_communication.py                                                                                                     |
-| wiznet_imm           | present_wired | C: src/act_wiz.c:wiznet; PY: mud/wiznet.py:wiznet/cmd_wiznet                                                                                                                                          | tests/test_wiznet.py                                                                                                            |
+| channels             | stub_or_partial | C: src/act_comm.c:505-760 (`do_question`/`do_answer`/`do_music`); C: src/act_comm.c:760-1048 (`do_clantalk`/`do_immtalk`/`do_yell`); PY: mud/commands/communication.py:1-130 (only say/tell/shout) | tests/test_communication.py                                          |
+| wiznet_imm           | stub_or_partial | C: src/nanny.c:520-560 (new player WIZ_NEWBIE/WIZ_SITES alerts); PY: mud/net/connection.py:720-810 (creation flow lacks wiznet broadcast)         | tests/test_wiznet.py; tests/test_account_auth.py                                                                                |
 | world_loader         | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py                     |
 | resets               | present_wired | C: src/db.c:2003-2179 (create_mobile seeds runtime state); PY: mud/spawning/templates.py:180-420; mud/spawning/reset_handler.py:40-196                                                                | tests/test_spawning.py; tests/test_spec_funs.py                                                                                 |
 | weather              | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                     | tests/test_game_loop.py                                                                                                         |
@@ -89,10 +89,10 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- PARITY-GAPS-START -->
 <!-- SUBSYSTEM: channels START -->
 
-### channels — Parity Audit 2025-11-07
+### channels — Parity Audit 2025-11-11
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.35)
-KEY RISKS: side_effects, lag_wait, visibility
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.25)
+KEY RISKS: side_effects, lag_wait, visibility, flags
 TASKS:
 
 - ✅ [P0] **channels: honor ROM comm flag toggles before broadcasting global chatter** — done 2025-11-07
@@ -105,6 +105,18 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/act_comm.c:786-858 (`do_shout` toggles COMM_SHOUTSOFF, checks COMM_NOSHOUT/COMM_QUIET, and applies WAIT_STATE); C src/act_comm.c:860-948 (`do_tell` enforces COMM_NOTELL/COMM_DEAF/COMM_QUIET and MOB trigger hooks); PY mud/commands/communication.py:9-74 (shout/tell ignore comm bits and never mutate Character.comm); PY mud/models/constants.py:329-356 (CommFlag definitions unused by the channel handlers).
+- ✅ [P0] **channels: implement clan and immortal broadcast channels with ROM comm gating** — done 2025-10-05
+  EVIDENCE: PY mud/commands/communication.py:L104-L198; PY mud/commands/dispatcher.py:L31-L120; PY mud/characters/__init__.py:L1-L56; PY mud/models/character.py:L60-L120; TEST tests/test_communication.py::test_clantalk_reaches_clan_members; TEST tests/test_communication.py::test_immtalk_restricts_to_immortals
+  - priority: P0
+  - rationale: Without `clantalk`/`immtalk` the port drops all clan coordination and immortal staff chatter; ROM expects COMM_NOCLAN/COMM_NOWIZ toggles plus clan membership and trust checks before broadcasting.
+  - files: mud/commands/communication.py; mud/commands/dispatcher.py; mud/models/character.py; mud/characters/__init__.py
+  - tests: tests/test_communication.py::test_clantalk_reaches_clan_members; tests/test_communication.py::test_immtalk_restricts_to_immortals
+  - acceptance_criteria: `clan`/`immtalk` commands must toggle COMM_NOCLAN/COMM_NOWIZ with no arguments, reject players without clan membership or non-immortals, and broadcast formatted messages only to eligible listeners.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_comm.c:676-760 (`do_clantalk` enforces clan membership, COMM_NOCLAN toggles, and quiet/nochannels checks); C src/act_comm.c:730-764 (`do_immtalk` gates by COMM_NOWIZ and immortal trust); PY mud/commands/communication.py:1-130 (no clan/immortal handlers); PY mud/commands/dispatcher.py:1-200 (no registrations for clantalk/immtalk).
+- ✅ [P0] **channels: align clan/immortal broadcast gating with ROM quiet/nochannels semantics** — done 2025-10-05
+  EVIDENCE: PY mud/commands/communication.py:L132-L183; TEST tests/test_communication.py::test_clantalk_ignores_quiet_on_speaker; TEST tests/test_communication.py::test_immtalk_bypasses_nochannels_for_speaker
 - [P1] **channels: port reply/AFK tell buffering for absent recipients**
   - priority: P1
   - rationale: ROM queues tells to AFK/link-dead players and exposes `reply`, but the port drops messages when `desc` is missing and leaves mortals without a reply shortcut.
@@ -114,26 +126,58 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/act_comm.c:900-1012 (`do_tell` buffers AFK/link-dead tells and sets `reply`); C src/act_comm.c:1014-1080 (`do_reply` reuses the stored target with COMM flag gating); PY mud/commands/communication.py:17-63 (tell appends to messages only when the target is connected and omits reply support); PY mud/net/connection.py:256-420 (connection session lacks AFK/note-state buffering hooks).
+- [P1] **channels: restore ROM Q/A channel toggles and broadcasts**
+  - priority: P1
+  - rationale: The Q/A channel is completely absent so mortals cannot ask or answer help questions, breaking clan school workflows and immortal onboarding that rely on `{q`/`{f` color-coded broadcasts.
+  - files: mud/commands/communication.py; mud/commands/dispatcher.py
+  - tests: tests/test_communication.py::test_question_channel_toggle_and_broadcast (new); tests/test_communication.py::test_answer_channel_respects_comm_flags (new)
+  - acceptance_criteria: `question`/`answer` mirror ROM by toggling `COMM_NOQUESTION` with no args, respecting QUIET/NOCHANNELS gating, broadcasting to all connected players without the flag, and echoing `{q`/`{f` formatted responses to speaker and listeners.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_comm.c:505-580 (`do_question` toggles COMM_NOQUESTION and broadcasts with `{q/{Q` formatting); C src/act_comm.c:580-644 (`do_answer` shares the same gating and formatting); PY mud/commands/communication.py:1-120 (no question/answer handlers or dispatcher registrations).
+- [P1] **channels: port ROM music channel with quiet/nochannel enforcement**
+  - priority: P1
+  - rationale: ROM builders and bards rely on `music` to broadcast colour-formatted lyrics, but the Python port omits the command so MUSIC/NOMUSIC toggles never flip and global music spam filters are untested.
+  - files: mud/commands/communication.py; mud/commands/dispatcher.py; mud/net/protocol.py
+  - tests: tests/test_communication.py::test_music_channel_toggle_and_broadcast (new)
+  - acceptance_criteria: `music` with no args flips `COMM_NOMUSIC`, sending parity messages; sending lyrics enforces QUIET/NOCHANNELS, clears `COMM_NOMUSIC`, and broadcasts through `broadcast_global` only to listeners without COMM_NOMUSIC.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_comm.c:600-644 (`do_music` toggles COMM_NOMUSIC, enforces QUIET/NOCHANNELS, and broadcasts via descriptor loop); PY mud/commands/communication.py:1-120 (lacks any music handler or COMM_NOMUSIC toggles); PY mud/net/protocol.py:1-160 (broadcast helper missing channel metadata for music).
 
 NOTES:
 
-- C: src/act*comm.c guards every global channel with COMM*\* toggles, applies wait-state lag to shouts, and funnels speech triggers after broadcasting.
-- PY: mud/commands/communication.py now flips COMM bits, enforces quiet/notell/noshout gating, and records shout wait pulses while reply/AFK buffering remains outstanding.
+- C: src/act_comm.c:505-644 wires `do_question`/`do_answer`/`do_music` with COMM bit toggles, wait-state lag, and trigger hooks before/after broadcasting.
+- C: src/act_comm.c:676-764 drives `do_clantalk` and `do_immtalk` with COMM_NOCLAN/COMM_NOWIZ toggles, clan membership checks, and immortal-only visibility.
+- PY: mud/commands/communication.py only wires say/tell/shout, so Q/A and music commands never toggle COMM_NOQUESTION/COMM_NOMUSIC or broadcast formatted output, leaving whole-channel workflows missing alongside the outstanding reply buffer work; dispatcher registration also omits these verbs entirely. Clan and immortal broadcasts now mirror ROM by ignoring speaker-side QUIET/NOCHANNELS while still filtering listeners on their own toggles.
 - TEST: tests/test_communication.py covers mute/banned sets plus new COMM flag regressions; follow-ups still need reply/AFK buffering coverage.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: channels END -->
 <!-- SUBSYSTEM: wiznet_imm START -->
 
-### wiznet_imm — Parity Audit 2025-11-08
+### wiznet_imm — Parity Audit 2025-11-12
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
-KEY RISKS: flags, visibility
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.40)
+KEY RISKS: flags, visibility, logging, side_effects
 
 TASKS:
 
 - ✅ [P0] **wiznet_imm: gate wiznet options and broadcasts by ROM get_trust semantics** — done 2025-11-08
   EVIDENCE: PY mud/wiznet.py:L74-L170; TEST tests/test_wiznet.py::test_wiznet_trust_allows_secure_options
+
+- ✅ [P0] **wiznet_imm: broadcast login/logout activity over WIZ_LOGINS** — done 2025-11-10
+  EVIDENCE: PY mud/net/connection.py:L67-L105,L828-L885; TEST tests/test_wiznet.py::test_wiznet_logins_channel_broadcasts
+
+- [P0] **wiznet_imm: announce new player creation over WIZ_NEWBIE and WIZ_SITES**
+  - priority: P0
+  - rationale: ROM fires `"Newbie alert!  $N sighted."` and `<name>@<host> new player.` wiznet notices as soon as a character finishes class selection so immortals can vet fresh accounts, but the Python nanny flow stays silent and hides the new arrival until they fully enter the game.
+  - files: mud/net/connection.py; mud/wiznet.py; mud/account/account_service.py
+  - tests: tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert (new)
+  - acceptance_criteria: Completing character creation must call `wiznet` with WIZ_NEWBIE and WIZ_SITES, logging `<name>@<host> new player.` and broadcasting to eligible listeners even before the player loads into the world, matching ROM messaging.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/nanny.c:520-560 (`CON_GET_NEW_CLASS` logs "new player" and fires WIZ_NEWBIE/WIZ_SITES); PY mud/net/connection.py:720-810 (creation flow returns without any wiznet call); PY mud/account/account_service.py:120-210 (character creation finishes silently).
 
 - [P1] **wiznet_imm: wrap immortal broadcasts with ROM color envelopes when WIZ_PREFIX is unset**
   - priority: P1
@@ -147,9 +191,9 @@ TASKS:
 
 NOTES:
 
-- C: `do_wiznet`/`wiznet` trust promotions and `{Z` cyan envelopes ensure all immortals receive secure chatter with the expected highlight.
-- PY: `wiznet` and `cmd_wiznet` ignore `trust` fallback and skip color wrappers unless `WIZ_PREFIX` is set, so promoted immortals miss secure traffic and broadcasts revert to plain text.
-- TEST: `tests/test_wiznet.py` validates prefix formatting and flag toggles but lacks trust elevation and non-prefix color coverage.
+- C: `wiznet` in `comm.c` and `nanny.c` emits `{Z`-wrapped WIZ_LOGINS notices on both connect and reconnect paths so immortals can police suspicious traffic in real time, and `src/nanny.c:520-560` logs `<name>@<host> new player.` with a WIZ_NEWBIE alert during creation.
+- PY: Connection handshake now calls `announce_wiznet_login`/`announce_wiznet_logout` to mirror ROM broadcasts while `_run_character_creation_flow` never fires WIZ_NEWBIE/WIZ_SITES, leaving new player vetting invisible until the character fully enters the world.
+- TEST: `tests/test_wiznet.py::test_wiznet_logins_channel_broadcasts` locks in login and logout broadcasts plus skip/min_level gating, leaving the color wrapper parity and new-player wiznet alerts tracked by the outstanding tasks.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: wiznet_imm END -->
@@ -205,9 +249,9 @@ NOTES:
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-10-20
+### skills_spells — Parity Audit 2025-11-09
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.28)
+STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.25)
 KEY RISKS: affects, damage, rng
 TASKS:
 
@@ -218,6 +262,12 @@ TASKS:
 - ✅ [P0] **skills_spells: implement dragon breath spells with room/target effects** — done 2025-10-02
   EVIDENCE: PY mud/skills/handlers.py:21-47;640-696;748-859;1010-1035 (dragon breath helpers and elemental damage handling); PY mud/magic/effects.py:1-74 (SpellTarget breadcrumbs for elemental effects)
   EVIDENCE: TEST tests/test_skills.py::test_acid_breath_applies_acid_effect; tests/test_skills.py::test_fire_breath_hits_room_targets
+- ✅ [P0] **skills_spells: port ROM rescue command and skill handler** — done 2025-11-10
+  EVIDENCE: PY mud/commands/combat.py:L1-L220; PY mud/commands/dispatcher.py:L20-L120; PY mud/skills/handlers.py:L1-L1400; PY mud/characters/__init__.py:L1-L80
+  EVIDENCE: TEST tests/test_skills.py::test_rescue_switches_tank_and_wait_state; TEST tests/test_combat.py::test_rescue_checks_group_permission
+- ✅ [P0] **skills_spells: implement sanctuary and shield defensive spells with ROM affects** — done 2025-11-10
+  EVIDENCE: PY mud/skills/handlers.py:L1100-L1400; PY mud/models/character.py:L240-L340
+  EVIDENCE: TEST tests/test_skills.py::test_sanctuary_applies_affect_and_messages; TEST tests/test_skills.py::test_shield_applies_ac_bonus_and_duration
 - [P1] **skills_spells: wire skill improvement and cooldown feedback**
   - priority: P1
   - rationale: `SkillRegistry.use` records cooldowns but stubs never return success/failure strings, so players miss ROM feedback and skill practice hooks for stubs.
@@ -231,8 +281,9 @@ TASKS:
 NOTES:
 
 - C: src/fight.c:2270-2998 and src/magic.c:4625-4856 define martial skills and dragon breaths with wait states, lag, and elemental side effects.
-- PY: mud/skills/handlers.py leaves most handlers returning placeholder integers, omitting lag, saves, and messaging; SkillRegistry cannot surface ROM results without real implementations.
-- TEST: New regressions must exercise bash/backstab/berserk success/failure paths and breath weapon splash damage to keep parity once handlers are ported.
+- C: src/magic.c:4274-4320 applies sanctuary/shield affects with ROM durations, reinforcing that defensive buffs must update Affect flags and AC modifiers while broadcasting color-coded messaging.
+- PY: mud/skills/handlers.py now ports rescue plus sanctuary/shield, but numerous spell stubs remain without ROM lag, saves, or messaging so SkillRegistry feedback is still incomplete.
+- TEST: Latest regressions cover bash/backstab/berserk flows along with the rescue tank swap and sanctuary/shield affect application; additional coverage is needed for remaining spell handlers and failure messaging.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
@@ -533,6 +584,7 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- [P0] wiznet_imm — announce WIZ_NEWBIE/WIZ_SITES alerts when new characters finish creation; test with `tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert`.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -549,7 +601,7 @@ NOTES:
 | shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                        |
 | command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                                 |
 | socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social          |
-| channels                 | src/act_comm.c:do_say/do_tell/do_shout                             | mud/commands/communication.py:do_say/do_tell/do_shout                                      |
+| channels                 | src/act_comm.c:do_question/do_answer/do_music                     | mud/commands/communication.py:(missing do_question/do_answer/do_music handlers)            |
 | wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                            |
 | world_loader             | src/db.c:load_area/load_rooms                                      | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                  |
 | resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
@@ -622,16 +674,20 @@ NOTES:
   <!-- SUBSYSTEM: persistence END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
 
-### login_account_nanny — Parity Audit 2025-10-28
+### login_account_nanny — Parity Audit 2025-11-12
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.18)
-KEY RISKS: security, lag_wait, side_effects, ansi
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.35)
+KEY RISKS: security, lag_wait, side_effects, visibility, ansi
 TASKS:
 
 - ✅ [P0] **login_account_nanny: enforce ROM name and site gating before account auto-creation** — done 2025-10-21
   EVIDENCE: C src/nanny.c:188-244; C src/comm.c:1699-1830; PY mud/account/account_service.py:38-158; PY mud/net/connection.py:33-121; TEST tests/test_account_auth.py::test_illegal_name_rejected; TEST tests/test_account_auth.py::test_newlock_blocks_new_accounts
 - ✅ [P0] **login_account_nanny: restore ANSI negotiation and descriptor color flags before help greeting** — done 2025-11-05
   EVIDENCE: PY mud/net/connection.py:L60-L115; PY mud/net/connection.py:L231-L784; PY mud/net/ansi.py:L5-L40; PY mud/net/protocol.py:L1-L33; PY mud/loaders/help_loader.py:L14-L75; PY mud/world/world_state.py:L135-L166; DATA data/help.json:L1-L24; TEST tests/test_account_auth.py:L53-L627; TEST tests/test_account_auth.py::test_ansi_prompt_negotiates_preference; tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
+- ✅ [P0] **login_account_nanny: restore ROM WIZ_LINKS reconnect alerts and player messaging** — done 2025-11-12
+  EVIDENCE: PY mud/net/connection.py:L61-L128,L821-L866; PY mud/account/account_service.py:L54-L59,L431-L509; TEST tests/test_account_auth.py::test_reconnect_announces_wiz_links
+- ✅ [P0] **login_account_nanny: broadcast WIZ_SITES site notices after successful logins** — done 2025-11-12
+  EVIDENCE: PY mud/net/connection.py:L68-L129,L836-L879; TEST tests/test_wiznet.py::test_wiz_sites_announces_successful_login
 - [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow**
   - priority: P1
   - rationale: ROM disables echo during password entry and offers CON_BREAK_CONNECT handshakes; the port leaves echo on and skips duplicate-session prompts beyond a yes/no reconnect.
@@ -671,12 +727,11 @@ TASKS:
 
 NOTES:
 
-- C: src/nanny.c:180-690 drives name validation, duplicate-session handling, and the multi-step creation prompts before `CON_ENTER_GAME`.
-- PY: mud/net/connection.py:20-420 now walks race/class/stat prompts but still omits alignment selection, customization groups, and telnet echo toggles; mud/models/races.py:36-168 aliases `RACE_TABLE` to playable races only so archetype lookups fail for NPC entries.
-- C: src/nanny.c:84-132 asks for ANSI preference, sets `d->ansi`, and prints `help_greeting` with or without the leading dot, ensuring non-ANSI players avoid brace tokens.
-- PY: mud/net/connection.py:700-776 skips ANSI negotiation entirely and `mud/net/protocol.py:9-34` always calls `translate_ansi`, so descriptors lacking ANSI support see raw `{x` tokens with no opt-out.
-- C: src/nanny.c:207-244 defers BAN_PERMIT hosts unless `PLR_PERMIT` is set on the reconnecting character; `login_with_host` now mirrors the gating by inspecting `PlayerFlag.PERMIT` before allowing permit-banned hosts.
-- TEST: tests/test_account_auth.py covers the creation flow plus BAN_PERMIT gating via `test_ban_permit_requires_permit_flag`.
+- C: src/comm.c:1836-1866 documents ROM's reconnect flow, including the "Reconnecting" self-message, room echo, log write, and WIZ_LINKS broadcast that staff rely on to spot suspicious link attempts.
+- PY: mud/net/connection.py now resets reconnect timers, delivers the replay prompt to the returning player, echoes the room message, and emits the WIZ_LINKS broadcast alongside the existing WIZ_LOGINS hook.
+- PY: mud/net/protocol.py:20-74 still leaves password echo negotiation and CON_BREAK_CONNECT prompts unimplemented, keeping the outstanding P1 task relevant.
+- PY: mud/net/connection.py now sanitizes descriptor hosts, logs `<name>@<host>` to stdout, and broadcasts WIZ_SITES notices with trust gating so immortals see new arrivals in real time, mirroring ROM `wiznet` semantics.
+- TEST: tests/test_account_auth.py exercises the nanny flow, including the new reconnect broadcast coverage, while the remaining P1 task tracks telnet echo parity.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: login_account_nanny END -->
   <!-- SUBSYSTEM: networking_telnet START -->

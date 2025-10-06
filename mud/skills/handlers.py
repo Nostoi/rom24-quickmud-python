@@ -3,7 +3,14 @@ from __future__ import annotations
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 from mud.affects.saves import check_dispel, saves_spell
-from mud.combat.engine import apply_damage, attack_round, get_wielded_weapon, update_pos
+from mud.combat.engine import (
+    apply_damage,
+    attack_round,
+    get_wielded_weapon,
+    set_fighting,
+    stop_fighting,
+    update_pos,
+)
 from mud.magic.effects import (
     SpellTarget,
     acid_effect,
@@ -870,9 +877,7 @@ def gas_breath(caster: Character, target: Character | None = None) -> int:
         person.hit -= actual
         update_pos(person)
 
-        if primary_damage == 0 and (
-            (target is None) or person is target
-        ):
+        if primary_damage == 0 and ((target is None) or person is target):
             primary_damage = actual
 
     return primary_damage
@@ -1215,18 +1220,98 @@ def remove_curse(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def rescue(caster, target=None):
-    """Stub implementation for rescue.
-    TODO: Implement actual ROM logic from C source.
+def rescue(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    opponent: Character | None = None,
+) -> str:
+    """ROM ``do_rescue`` tank swap.
+
+    Args:
+        caster: Character performing the rescue.
+        target: Ally being rescued.
+        opponent: Target's opponent (defaults to ``target.fighting``).
+
+    Returns:
+        Attacker-facing rescue message mirroring ROM colour codes.
     """
-    return 42  # Placeholder damage/effect
+
+    if caster is None or target is None:
+        raise ValueError("rescue requires a caster and target")
+
+    foe = opponent or getattr(target, "fighting", None)
+    if foe is None:
+        raise ValueError("rescue requires an opponent")
+
+    rescuer_name = getattr(caster, "name", "someone") or "someone"
+    victim_name = getattr(target, "name", "someone") or "someone"
+
+    char_msg = f"{{5You rescue {victim_name}!{{x"
+    vict_msg = f"{{5{rescuer_name} rescues you!{{x"
+    room_msg = f"{{5{rescuer_name} rescues {victim_name}!{{x"
+
+    if hasattr(caster, "messages"):
+        caster.messages.append(char_msg)
+    if hasattr(target, "messages"):
+        target.messages.append(vict_msg)
+
+    room = getattr(caster, "room", None)
+    if room is not None:
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is caster or occupant is target:
+                continue
+            if hasattr(occupant, "messages"):
+                occupant.messages.append(room_msg)
+
+    stop_fighting(foe, False)
+    stop_fighting(target, False)
+    set_fighting(caster, foe)
+    set_fighting(foe, caster)
+
+    return char_msg
 
 
 def sanctuary(caster, target=None):
-    """Stub implementation for sanctuary.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    """ROM ``spell_sanctuary`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("sanctuary requires a target")
+
+    if target.has_affect(AffectFlag.SANCTUARY) or target.has_spell_effect("sanctuary"):
+        message = "You are already in sanctuary." if target is caster else f"{target.name} is already in sanctuary."
+        if hasattr(caster, "messages"):
+            caster.messages.append(message)
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="sanctuary",
+        duration=c_div(level, 6),
+        level=level,
+        affect_flag=AffectFlag.SANCTUARY,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    if hasattr(target, "messages"):
+        target.messages.append("You are surrounded by a white aura.")
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is target:
+                continue
+            if hasattr(occupant, "messages"):
+                occupant.messages.append(
+                    f"{target.name} is surrounded by a white aura."
+                    if target.name
+                    else "Someone is surrounded by a white aura."
+                )
+
+    return True
 
 
 def scrolls(caster, target=None):
@@ -1244,10 +1329,49 @@ def second_attack(caster, target=None):
 
 
 def shield(caster, target=None):
-    """Stub implementation for shield.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    """ROM ``spell_shield`` AC reduction aura."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("shield requires a target")
+
+    if target.has_spell_effect("shield"):
+        message = (
+            "You are already shielded from harm."
+            if target is caster
+            else f"{target.name} is already protected by a shield."
+        )
+        if hasattr(caster, "messages"):
+            caster.messages.append(message)
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="shield",
+        duration=8 + level,
+        level=level,
+        ac_mod=-20,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    if hasattr(target, "messages"):
+        target.messages.append("You are surrounded by a force shield.")
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is target:
+                continue
+            if hasattr(occupant, "messages"):
+                occupant.messages.append(
+                    f"{target.name} is surrounded by a force shield."
+                    if target.name
+                    else "Someone is surrounded by a force shield."
+                )
+
+    return True
 
 
 def shield_block(caster, target=None):

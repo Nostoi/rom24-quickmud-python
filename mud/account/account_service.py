@@ -56,6 +56,7 @@ class LoginResult(NamedTuple):
 
     account: PlayerAccount | None
     failure: LoginFailureReason | None
+    was_reconnect: bool
 
 
 _active_accounts: set[str] = set()
@@ -443,18 +444,19 @@ def login_with_host(
 
     username = sanitize_account_name(username)
     if not is_valid_account_name(username):
-        return LoginResult(None, LoginFailureReason.UNKNOWN_ACCOUNT)
+        return LoginResult(None, LoginFailureReason.UNKNOWN_ACCOUNT, False)
 
     if bans.is_account_banned(username):
-        return LoginResult(None, LoginFailureReason.ACCOUNT_BANNED)
+        return LoginResult(None, LoginFailureReason.ACCOUNT_BANNED, False)
 
     was_active = _is_account_active(username)
+    reconnect_requested = was_active and allow_reconnect
     if was_active and not allow_reconnect:
-        return LoginResult(None, LoginFailureReason.DUPLICATE_SESSION)
+        return LoginResult(None, LoginFailureReason.DUPLICATE_SESSION, False)
 
     permit_ban = bool(host and bans.is_host_banned(host, BanFlag.PERMIT))
     if host and not permit_ban and bans.is_host_banned(host, BanFlag.ALL):
-        return LoginResult(None, LoginFailureReason.HOST_BANNED)
+        return LoginResult(None, LoginFailureReason.HOST_BANNED, reconnect_requested)
 
     session = SessionLocal()
     account_record: PlayerAccount | None = None
@@ -482,14 +484,14 @@ def login_with_host(
         session.close()
 
     if permit_ban and not has_permit_character:
-        return LoginResult(None, LoginFailureReason.HOST_BANNED)
+        return LoginResult(None, LoginFailureReason.HOST_BANNED, reconnect_requested)
 
     if host and not permit_ban and not exists and bans.is_host_banned(host, BanFlag.NEWBIES):
-        return LoginResult(None, LoginFailureReason.HOST_NEWBIES)
+        return LoginResult(None, LoginFailureReason.HOST_NEWBIES, reconnect_requested)
     if is_newlock_enabled() and not exists:
-        return LoginResult(None, LoginFailureReason.NEWLOCK)
+        return LoginResult(None, LoginFailureReason.NEWLOCK, reconnect_requested)
     if is_wizlock_enabled() and not is_admin and not (allow_reconnect and was_active):
-        return LoginResult(None, LoginFailureReason.WIZLOCK)
+        return LoginResult(None, LoginFailureReason.WIZLOCK, reconnect_requested)
 
     account: PlayerAccount | None = None
     if password_valid and account_record is not None:
@@ -499,12 +501,12 @@ def login_with_host(
         if was_active:
             release_account(username)
         _mark_account_active(username)
-        return LoginResult(account, None)
+        return LoginResult(account, None, reconnect_requested)
 
     failure = (
         LoginFailureReason.BAD_CREDENTIALS if exists else LoginFailureReason.UNKNOWN_ACCOUNT
     )
-    return LoginResult(None, failure)
+    return LoginResult(None, failure, reconnect_requested)
 
 
 def list_characters(account: PlayerAccount) -> list[str]:

@@ -67,6 +67,7 @@ class Character:
     sex: int = 0
     ch_class: int = 0
     race: int = 0
+    clan: int = 0
     level: int = 0
     trust: int = 0
     invis_level: int = 0

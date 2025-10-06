@@ -1,6 +1,7 @@
 import mud.persistence as persistence
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
+from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
 
 
@@ -207,3 +208,107 @@ def test_wiznet_trust_allows_secure_options():
     assert toggle_low == "No such option."
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
     assert "secure notice" not in low_trust.messages
+
+
+def test_wiznet_logins_channel_broadcasts():
+    watcher = Character(
+        name="Watcher",
+        is_admin=True,
+        level=60,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_PREFIX),
+    )
+    skip_sites = Character(
+        name="Sites",
+        is_admin=True,
+        level=60,
+        trust=60,
+        wiznet=int(
+            WiznetFlag.WIZ_ON
+            | WiznetFlag.WIZ_LOGINS
+            | WiznetFlag.WIZ_SITES
+            | WiznetFlag.WIZ_PREFIX
+        ),
+    )
+    low_trust = Character(
+        name="Low",
+        is_admin=True,
+        level=50,
+        trust=50,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_PREFIX),
+    )
+    logging_char = Character(name="Artemis", level=60, trust=60, is_admin=True)
+
+    character_registry.extend([watcher, skip_sites, low_trust, logging_char])
+
+    announce_wiznet_login(logging_char, host="aurora.example")
+
+    assert "{Z--> Artemis has left real life behind.{x" in watcher.messages
+    assert any("{Z--> Artemis@aurora.example has connected.{x" in msg for msg in skip_sites.messages)
+    assert not any("has left real life behind" in msg for msg in skip_sites.messages)
+    assert low_trust.messages == []
+
+    watcher.messages.clear()
+    skip_sites.messages.clear()
+    low_trust.messages.clear()
+
+    announce_wiznet_logout(logging_char)
+
+    assert "{Z--> Artemis rejoins the real world.{x" in watcher.messages
+    assert "{Z--> Artemis rejoins the real world.{x" in skip_sites.messages
+    assert low_trust.messages == []
+
+
+def test_wiz_sites_announces_successful_login(capsys):
+    prefix_listener = Character(
+        name="Prefix",
+        is_admin=True,
+        level=60,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES | WiznetFlag.WIZ_PREFIX),
+    )
+    plain_listener = Character(
+        name="Plain",
+        is_admin=True,
+        level=60,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
+    )
+    uninterested = Character(
+        name="NoSites",
+        is_admin=True,
+        level=60,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    low_trust = Character(
+        name="Low",
+        is_admin=True,
+        level=50,
+        trust=40,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
+    )
+    logging_char = Character(name="Lyra", level=60, trust=60, is_admin=True)
+
+    character_registry.extend(
+        [prefix_listener, plain_listener, uninterested, low_trust, logging_char]
+    )
+
+    announce_wiznet_login(logging_char, host="academy.example")
+
+    out = capsys.readouterr().out
+    assert "Lyra@academy.example has connected." in out
+
+    assert any(
+        "Lyra@academy.example has connected." in msg
+        for msg in plain_listener.messages
+    )
+    assert any(
+        "{Z--> Lyra@academy.example has connected.{x" in msg
+        for msg in prefix_listener.messages
+    )
+    assert all(
+        "Lyra@academy.example has connected." not in msg
+        for msg in uninterested.messages
+    )
+    assert low_trust.messages == []

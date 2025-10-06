@@ -37,6 +37,7 @@ from mud.models.constants import PlayerFlag, Sex
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
+from mud.wiznet import WiznetFlag, wiznet
 from mud.skills.groups import list_groups
 from mud.security import bans
 from mud.security.bans import BanFlag
@@ -57,10 +58,98 @@ TELNET_TELOPT_SUPPRESS_GA = 3
 MAX_INPUT_LENGTH = 256
 SPAM_REPEAT_THRESHOLD = 25
 
+RECONNECT_MESSAGE = "Reconnecting. Type replay to see missed tells."
+
 
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.account.account_service import ClassType, PcRaceType
+
+
+def _effective_trust(char: "Character") -> int:
+    """Mirror ROM's ``get_trust`` helper for wiznet broadcasts."""
+
+    trust = getattr(char, "trust", 0)
+    return trust if trust > 0 else getattr(char, "level", 0)
+
+
+def _sanitize_host(host: str | None) -> str | None:
+    """Return a trimmed host string or ``None`` when unavailable."""
+
+    if not host:
+        return None
+    cleaned = host.strip()
+    return cleaned or None
+
+
+def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
+    """Broadcast a WIZ_LOGINS notice when *char* enters the game."""
+
+    if not getattr(char, "name", None):
+        return
+
+    message = f"{char.name} has left real life behind."
+    wiznet(
+        message,
+        char,
+        None,
+        WiznetFlag.WIZ_LOGINS,
+        WiznetFlag.WIZ_SITES,
+        _effective_trust(char),
+    )
+
+    host_display = _sanitize_host(host)
+    if not host_display:
+        return
+
+    site_message = f"{char.name}@{host_display} has connected."
+    wiznet(
+        site_message,
+        char,
+        None,
+        WiznetFlag.WIZ_SITES,
+        None,
+        _effective_trust(char),
+    )
+    print(f"[SITES] {site_message}")
+
+
+def announce_wiznet_logout(char: "Character") -> None:
+    """Broadcast a WIZ_LOGINS notice when *char* leaves the game."""
+
+    if not getattr(char, "name", None):
+        return
+
+    message = f"{char.name} rejoins the real world."
+    wiznet(
+        message,
+        char,
+        None,
+        WiznetFlag.WIZ_LOGINS,
+        None,
+        _effective_trust(char),
+    )
+
+
+def _broadcast_reconnect_notifications(char: "Character") -> None:
+    """Notify the room and wiznet listeners about a successful reconnect."""
+
+    name = getattr(char, "name", None)
+    if not name:
+        return
+
+    room = getattr(char, "room", None)
+    if room is not None:
+        room.broadcast(f"{name} has reconnected.", exclude=char)
+
+    wiznet(
+        "$N groks the fullness of $S link.",
+        char,
+        None,
+        WiznetFlag.WIZ_LINKS,
+        None,
+        _effective_trust(char),
+    )
 
 
 class TelnetStream:
@@ -332,7 +421,9 @@ def _format_stats(stats: Iterable[int]) -> str:
     return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[PlayerAccount, str] | None:
+async def _run_account_login(
+    conn: TelnetStream, host_for_ban: str | None
+) -> tuple[PlayerAccount, str, bool] | None:
     while True:
         submitted = await _prompt(conn, "Account: ")
         if submitted is None:
@@ -360,7 +451,7 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
                 return None
             result = login_with_host(username, password, host_for_ban, allow_reconnect=allow_reconnect)
             if result.account:
-                return result.account, username
+                return result.account, username, bool(result.was_reconnect)
 
             reason = result.failure
             if reason is LoginFailureReason.DUPLICATE_SESSION:
@@ -422,7 +513,7 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
         result = login_with_host(username, password, host_for_ban)
         if result.account:
             await _send_line(conn, "Account created.")
-            return result.account, username
+            return result.account, username, bool(result.was_reconnect)
 
         await _send_line(conn, "Login failed.")
         return None
@@ -731,7 +822,12 @@ async def _select_character(
 
 async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     addr = writer.get_extra_info("peername")
-    host_for_ban = addr[0] if isinstance(addr, tuple) and addr else None
+    host_for_ban: str | None = None
+    if isinstance(addr, tuple) and addr:
+        host_candidate = addr[0]
+        host_for_ban = host_candidate if isinstance(host_candidate, str) else None
+    elif isinstance(addr, str):
+        host_for_ban = addr
     session = None
     char = None
     account: PlayerAccount | None = None
@@ -754,11 +850,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         login_result = await _run_account_login(conn, host_for_ban)
         if not login_result:
             return
-        account, username = login_result
+        account, username, was_reconnect = login_result
 
         char = await _select_character(conn, account, username)
         if char is None:
             return
+
+        reconnecting = bool(was_reconnect)
 
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
         desired_colour = ansi_preference if ansi_explicit else saved_colour
@@ -773,6 +871,11 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         char.connection = conn
         char.account_name = username
+        if reconnecting:
+            try:
+                char.timer = 0
+            except Exception:
+                pass
         session = Session(
             name=char.name or "",
             character=char,
@@ -784,6 +887,14 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         SESSIONS[session.name] = session
         char.desc = session
         print(f"[CONNECT] {addr} as {session.name}")
+
+        try:
+            if reconnecting:
+                await send_to_char(char, RECONNECT_MESSAGE)
+                _broadcast_reconnect_notifications(char)
+            announce_wiznet_login(char, host_for_ban)
+        except Exception as exc:
+            print(f"[ERROR] Failed to announce wiznet login for {session.name}: {exc}")
 
         try:
             if char.room:
@@ -831,6 +942,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     except Exception as exc:
         print(f"[ERROR] Connection handler error for {addr}: {exc}")
     finally:
+        try:
+            if char:
+                announce_wiznet_logout(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
+
         try:
             if char:
                 save_character(char)

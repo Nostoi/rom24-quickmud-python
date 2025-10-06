@@ -20,6 +20,7 @@ from mud.models.constants import (
     WeaponType,
     attack_lookup,
 )
+from mud.models.room import Room
 from mud.skills import load_skills, skill_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
@@ -39,6 +40,32 @@ def assert_attack_message(message: str, victim_name: str = "Victim") -> None:
     assert message.startswith("{2")
     assert victim_name in message
     assert message.endswith("{x")
+
+
+def test_rescue_checks_group_permission(monkeypatch: pytest.MonkeyPatch) -> None:
+    load_skills(Path("data/skills.json"))
+
+    rescuer = Character(name="Rescuer", level=35, is_npc=False, skills={"rescue": 75})
+    stranger = Character(name="Stranger", is_npc=False)
+    foe = Character(name="Ogre", is_npc=True)
+
+    room = Room(vnum=3001)
+    for ch in (rescuer, stranger, foe):
+        room.add_character(ch)
+
+    stranger.fighting = foe
+    stranger.position = Position.FIGHTING
+    foe.fighting = stranger
+    foe.position = Position.FIGHTING
+
+    rescuer.wait = 0
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+    out = process_command(rescuer, "rescue stranger")
+
+    assert out == "Kill stealing is not permitted."
+    assert rescuer.wait == 0
+    assert rescuer.fighting is None
 
 
 def _load_kick_skill() -> None:
@@ -518,6 +545,8 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     out = process_command(attacker, "kill victim")
     assert out == "{2Victim is unaffected by your attack!{x"
     assert captured[-1] == 0
+
+
 def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
     attacker, victim = setup_combat()
     attacker.level = 20
@@ -553,4 +582,3 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert "15 damage" in out
     assert victim.hit == 85
-

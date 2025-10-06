@@ -1,13 +1,13 @@
+import mud.skills.handlers as skill_handlers
 from mud import mobprog
+from mud.characters import is_same_group
 from mud.combat import attack_round, multi_hit
 from mud.combat.engine import apply_damage, get_wielded_weapon, stop_fighting
 from mud.config import get_pulse_violence
-from mud.skills import skill_registry
-import mud.skills.handlers as skill_handlers
-from mud.utils import rng_mm
-from mud.models.character import Character
 from mud.math.c_compat import c_div
+from mud.models.character import Character
 from mud.models.constants import (
+    AC_BASH,
     AffectFlag,
     DamageType,
     OffFlag,
@@ -15,7 +15,8 @@ from mud.models.constants import (
     Stat,
     convert_flags_from_letters,
 )
-from mud.models.constants import AC_BASH
+from mud.skills import skill_registry
+from mud.utils import rng_mm
 
 
 def do_kill(char: Character, args: str) -> str:
@@ -57,7 +58,7 @@ def do_kick(char: Character, args: str) -> str:
     elif skill is not None:
         required_level: int | None = None
         levels = getattr(skill, "levels", ())
-        if isinstance(levels, (list, tuple)):
+        if isinstance(levels, list | tuple):
             try:
                 class_index = int(getattr(char, "ch_class", 0) or 0)
                 required_level = int(levels[class_index])
@@ -90,6 +91,69 @@ def do_kick(char: Character, args: str) -> str:
     if skill is not None:
         skill_registry._check_improve(char, skill, "kick", success)
 
+    return message
+
+
+def do_rescue(char: Character, args: str) -> str:
+    target_name = (args or "").strip()
+    if not target_name:
+        return "Rescue whom?"
+
+    room = getattr(char, "room", None)
+    if room is None:
+        return "You are nowhere."
+
+    victim = _find_room_target(char, target_name)
+    if victim is None:
+        return "They aren't here."
+
+    if victim is char:
+        return "What about fleeing instead?"
+
+    if not getattr(char, "is_npc", False) and getattr(victim, "is_npc", False):
+        return "Doesn't need your help!"
+
+    if getattr(char, "fighting", None) is victim:
+        return "Too late."
+
+    opponent = getattr(victim, "fighting", None)
+    if opponent is None:
+        return "That person is not fighting right now."
+
+    if getattr(opponent, "is_npc", False) and not is_same_group(char, victim):
+        return "Kill stealing is not permitted."
+
+    if int(getattr(char, "wait", 0) or 0) > 0:
+        char.messages.append("You are still recovering.")
+        return "You are still recovering."
+
+    try:
+        skill = skill_registry.get("rescue")
+    except KeyError:
+        skill = None
+
+    lag = 12
+    if skill is not None:
+        lag = skill_registry._compute_skill_lag(char, skill)
+    skill_registry._apply_wait_state(char, lag)
+
+    cooldowns = getattr(char, "cooldowns", {})
+    cooldowns["rescue"] = getattr(skill, "cooldown", 0) if skill is not None else 0
+    char.cooldowns = cooldowns
+
+    roll = rng_mm.number_percent()
+    learned = _character_skill_percent(char, "rescue")
+    success = roll <= learned
+
+    if not success:
+        char.messages.append("You fail the rescue.")
+        if skill is not None:
+            skill_registry._check_improve(char, skill, "rescue", False)
+        return "You fail the rescue."
+
+    message = skill_handlers.rescue(char, victim, opponent=opponent)
+    if skill is not None:
+        skill_registry._check_improve(char, skill, "rescue", True)
     return message
 
 
@@ -229,7 +293,7 @@ def do_bash(char: Character, args: str) -> str:
     # Armor class (bash index)
     victim_ac = 0
     armor = getattr(victim, "armor", None)
-    if isinstance(armor, (list, tuple)) and len(armor) > AC_BASH:
+    if isinstance(armor, list | tuple) and len(armor) > AC_BASH:
         try:
             victim_ac = int(armor[AC_BASH])
         except (TypeError, ValueError):
@@ -245,9 +309,8 @@ def do_bash(char: Character, args: str) -> str:
             char_flags = OffFlag(off_flags_val)
         except ValueError:
             char_flags = OffFlag(0)
-    char_fast = (
-        (getattr(char, "has_affect", None) and char.has_affect(AffectFlag.HASTE))
-        or bool(char_flags & OffFlag.FAST)
+    char_fast = (getattr(char, "has_affect", None) and char.has_affect(AffectFlag.HASTE)) or bool(
+        char_flags & OffFlag.FAST
     )
     if char_fast:
         chance += 10
@@ -260,9 +323,8 @@ def do_bash(char: Character, args: str) -> str:
             victim_flags = OffFlag(victim_off)
         except ValueError:
             victim_flags = OffFlag(0)
-    victim_fast = (
-        (getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.HASTE))
-        or bool(victim_flags & OffFlag.FAST)
+    victim_fast = (getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.HASTE)) or bool(
+        victim_flags & OffFlag.FAST
     )
     if victim_fast:
         chance -= 30
