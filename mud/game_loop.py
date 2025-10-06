@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import IntEnum
 
 from mud import mobprog
 from mud.affects.engine import tick_spell_effects
@@ -36,14 +37,46 @@ from mud.time import time_info
 from mud.utils import rng_mm
 
 
+class SkyState(IntEnum):
+    """ROM sky states for weather updates."""
+
+    CLOUDLESS = 0
+    CLOUDY = 1
+    RAINING = 2
+    LIGHTNING = 3
+
+
 @dataclass
 class WeatherState:
-    """Very small placeholder for global weather."""
+    """ROM-style weather state tracking pressure and sky."""
 
-    sky: str = "sunny"
+    sky: SkyState
+    mmhg: int
+    change: int
 
 
-weather = WeatherState()
+def _seed_weather_state() -> WeatherState:
+    """Mirror ROM boot-time weather seeding from db.c."""
+
+    mmhg = 960
+    if 7 <= time_info.month <= 12:
+        mmhg += rng_mm.number_range(1, 50)
+    else:
+        mmhg += rng_mm.number_range(1, 80)
+
+    if mmhg <= 980:
+        sky = SkyState.LIGHTNING
+    elif mmhg <= 1000:
+        sky = SkyState.RAINING
+    elif mmhg <= 1020:
+        sky = SkyState.CLOUDY
+    else:
+        sky = SkyState.CLOUDLESS
+
+    return WeatherState(sky=sky, mmhg=mmhg, change=0)
+
+
+weather = _seed_weather_state()
 
 
 @dataclass
@@ -571,13 +604,48 @@ def obj_update() -> None:
         _extract_obj(obj)
 
 
-_WEATHER_STATES = ["sunny", "cloudy", "rainy"]
-
-
 def weather_tick() -> None:
-    """Cycle through simple weather states."""
-    index = _WEATHER_STATES.index(weather.sky)
-    weather.sky = _WEATHER_STATES[(index + 1) % len(_WEATHER_STATES)]
+    """Update barometric pressure and sky state like ROM weather_update."""
+
+    if 9 <= time_info.month <= 16:
+        diff = -2 if weather.mmhg > 985 else 2
+    else:
+        diff = -2 if weather.mmhg > 1015 else 2
+
+    weather.change += diff * rng_mm.dice(1, 4)
+    weather.change += rng_mm.dice(2, 6)
+    weather.change -= rng_mm.dice(2, 6)
+    weather.change = max(-12, min(weather.change, 12))
+
+    weather.mmhg += weather.change
+    weather.mmhg = max(960, min(weather.mmhg, 1040))
+
+    if weather.sky == SkyState.CLOUDLESS:
+        if weather.mmhg < 990 or (
+            weather.mmhg < 1010 and rng_mm.number_bits(2) == 0
+        ):
+            weather.sky = SkyState.CLOUDY
+    elif weather.sky == SkyState.CLOUDY:
+        if weather.mmhg < 970 or (
+            weather.mmhg < 990 and rng_mm.number_bits(2) == 0
+        ):
+            weather.sky = SkyState.RAINING
+        elif weather.mmhg > 1030 and rng_mm.number_bits(2) == 0:
+            weather.sky = SkyState.CLOUDLESS
+    elif weather.sky == SkyState.RAINING:
+        if weather.mmhg < 970 and rng_mm.number_bits(2) == 0:
+            weather.sky = SkyState.LIGHTNING
+        elif weather.mmhg > 1030 or (
+            weather.mmhg > 1010 and rng_mm.number_bits(2) == 0
+        ):
+            weather.sky = SkyState.CLOUDY
+    elif weather.sky == SkyState.LIGHTNING:
+        if weather.mmhg > 1010 or (
+            weather.mmhg > 990 and rng_mm.number_bits(2) == 0
+        ):
+            weather.sky = SkyState.RAINING
+    else:
+        weather.sky = SkyState.CLOUDLESS
 
 
 def time_tick() -> None:

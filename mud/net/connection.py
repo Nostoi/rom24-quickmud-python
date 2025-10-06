@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from collections import deque
 from collections.abc import Iterable
+from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
 from mud.account import (
@@ -88,9 +89,8 @@ def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
     if not getattr(char, "name", None):
         return
 
-    message = f"{char.name} has left real life behind."
     wiznet(
-        message,
+        "$N has left real life behind.",
         char,
         None,
         WiznetFlag.WIZ_LOGINS,
@@ -120,15 +120,58 @@ def announce_wiznet_logout(char: "Character") -> None:
     if not getattr(char, "name", None):
         return
 
-    message = f"{char.name} rejoins the real world."
     wiznet(
-        message,
+        "$N rejoins the real world.",
         char,
         None,
         WiznetFlag.WIZ_LOGINS,
         None,
         _effective_trust(char),
     )
+
+
+def announce_wiznet_new_player(
+    name: str,
+    host: str | None = None,
+    *,
+    trust_level: int = 1,
+    sex: Sex | int | None = None,
+) -> None:
+    """Broadcast WIZ_NEWBIE and WIZ_SITES notices for a freshly created player.
+
+    Mirrors ROM's ``nanny.c`` flow by alerting immortals that a new character
+    has just completed creation, including the originating host when available.
+    """
+
+    normalized = name.strip()
+    if not normalized:
+        return
+
+    placeholder = SimpleNamespace(name=normalized, sex=sex)
+
+    wiznet(
+        "Newbie alert!  $N sighted.",
+        placeholder,
+        None,
+        WiznetFlag.WIZ_NEWBIE,
+        None,
+        0,
+    )
+
+    sanitized_host = _sanitize_host(host)
+    if not sanitized_host:
+        return
+
+    site_message = f"{normalized}@{sanitized_host} new player."
+    wiznet(
+        site_message,
+        None,
+        None,
+        WiznetFlag.WIZ_SITES,
+        None,
+        max(trust_level, 0),
+    )
+    print(f"[NEWBIE] {site_message}")
 
 
 def _broadcast_reconnect_notifications(char: "Character") -> None:
@@ -160,6 +203,7 @@ class TelnetStream:
         self._echo_enabled = True
         self._pushback: deque[int] = deque()
         self.ansi_enabled = True
+        self.peer_host: str | None = None
 
     def set_ansi(self, enabled: bool) -> None:
         self.ansi_enabled = bool(enabled)
@@ -786,6 +830,12 @@ async def _run_character_creation_flow(
         await _send_line(conn, "Unable to create that character. Please choose another name.")
         return False
 
+    announce_wiznet_new_player(
+        display,
+        conn.peer_host,
+        trust_level=1,
+        sex=sex,
+    )
     await _send_line(conn, "Character created!")
     return True
 
@@ -833,6 +883,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     account: PlayerAccount | None = None
     username = ""
     conn = TelnetStream(reader, writer)
+    conn.peer_host = host_for_ban
 
     try:
         if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
