@@ -8,6 +8,8 @@ from __future__ import annotations
 from enum import IntFlag
 from typing import TYPE_CHECKING, Any
 
+from mud.utils.act import act_format
+
 
 class WiznetFlag(IntFlag):
     """Wiznet flags mirroring ROM bit values."""
@@ -140,14 +142,23 @@ def wiznet(
         if _get_trust(ch) < min_level:
             continue
 
-        # Format message - only use colors if WIZ_PREFIX is set
-        if hasattr(ch, "messages"):
-            if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
-                formatted_msg = f"{{Z--> {message}{{x"
-            else:
-                # For backward compatibility, send plain message if no PREFIX
-                formatted_msg = message
-            ch.messages.append(formatted_msg)
+        if not hasattr(ch, "messages"):
+            continue
+
+        expanded = act_format(
+            message,
+            recipient=ch,
+            actor=ch,
+            arg1=obj,
+            arg2=sender_ch,
+        )
+
+        if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
+            formatted_msg = f"{{Z--> {expanded}{{x"
+        else:
+            formatted_msg = f"{{Z{expanded}{{x"
+
+        ch.messages.append(formatted_msg)
 
 
 def cmd_wiznet(char: Any, args: str) -> str:

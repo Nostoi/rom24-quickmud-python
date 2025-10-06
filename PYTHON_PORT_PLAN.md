@@ -1,10 +1,10 @@
 <!-- LAST-PROCESSED: wiznet_imm -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,channels,wiznet_imm,resets,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,resets,weather,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: functional -->
 <!-- VALIDATION-STATUS: validated -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-12 -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-14 -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -23,11 +23,11 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
-| channels             | stub_or_partial | C: src/act_comm.c:505-760 (`do_question`/`do_answer`/`do_music`); C: src/act_comm.c:760-1048 (`do_clantalk`/`do_immtalk`/`do_yell`); PY: mud/commands/communication.py:1-130 (only say/tell/shout) | tests/test_communication.py                                          |
-| wiznet_imm           | stub_or_partial | C: src/nanny.c:520-560 (new player WIZ_NEWBIE/WIZ_SITES alerts); PY: mud/net/connection.py:720-810 (creation flow lacks wiznet broadcast)         | tests/test_wiznet.py; tests/test_account_auth.py                                                                                |
+| channels             | present_wired | C: src/act_comm.c:333-704 (`do_gossip`/`do_grats`/`do_quote`/`do_question`/`do_answer`/`do_music`); PY: mud/commands/communication.py:210-360 (gossip/grats/quote/question/answer/music parity) | tests/test_communication.py::test_gossip_channel_toggle_and_broadcast; tests/test_communication.py::test_grats_channel_respects_mutes; tests/test_communication.py::test_quote_channel_toggle_and_broadcast; tests/test_communication.py::test_question_channel_toggle_and_broadcast; tests/test_communication.py::test_answer_channel_respects_comm_flags; tests/test_communication.py::test_music_channel_toggle_and_broadcast |
+| wiznet_imm           | present_wired | C: src/act_wiz.c:171-189 (`wiznet` act formatting and cyan envelope); PY: mud/utils/act.py:1-147; mud/wiznet.py:11-170 (wiznet formatting/broadcast) | tests/test_wiznet.py::test_wiznet_act_formatting; tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert |
 | world_loader         | present_wired | DOC: doc/area.txt §§ #AREA/#ROOMS/#MOBILES/#OBJECTS/#RESETS; ARE: area/midgaard.are; C: src/db.c:load_area/load_rooms; PY: mud/loaders/json_loader.py:load_area_from_json; mud/loaders/area_loader.py | tests/test_area_loader.py; tests/test_area_counts.py; tests/test_area_exits.py; tests/test_load_midgaard.py                     |
 | resets               | present_wired | C: src/db.c:2003-2179 (create_mobile seeds runtime state); PY: mud/spawning/templates.py:180-420; mud/spawning/reset_handler.py:40-196                                                                | tests/test_spawning.py; tests/test_spec_funs.py                                                                                 |
-| weather              | present_wired | C: src/update.c:weather_update; PY: mud/game_loop.py:weather_tick                                                                                                                                     | tests/test_game_loop.py                                                                                                         |
+| weather              | present_wired | C: src/update.c:522-650 (`weather_update` barometric pressure & sky); PY: mud/game_loop.py:600-647 (`weather_tick` pressure+sky logic) | tests/test_game_loop.py::test_weather_pressure_and_sky_transitions                       |
 | time_daynight        | present_wired | C: src/update.c:weather_update (sun state); PY: mud/time.py:TimeInfo.advance_hour                                                                                                                     | tests/test_time_daynight.py; tests/test_time_persistence.py                                                                     |
 | movement_encumbrance | present_wired | C: src/act_move.c:80-236 (move_char handles portals/followers); C: src/handler.c:899-923 (carry caps); PY: mud/world/movement.py:131-470; mud/commands/movement.py:10-70                              | tests/test_movement_portals.py; tests/test_movement_costs.py; tests/test_movement_followers.py; tests/test_encumbrance.py       |
 | stats_position       | present_wired | C: merc.h:POSITION enum; PY: mud/models/constants.py:Position                                                                                                                                         | tests/test_advancement.py                                                                                                       |
@@ -89,111 +89,38 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- PARITY-GAPS-START -->
 <!-- SUBSYSTEM: channels START -->
 
-### channels — Parity Audit 2025-11-11
+### channels — Parity Audit 2025-11-12
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.25)
-KEY RISKS: side_effects, lag_wait, visibility, flags
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+KEY RISKS: color, messaging
+
 TASKS:
 
-- ✅ [P0] **channels: honor ROM comm flag toggles before broadcasting global chatter** — done 2025-11-07
-  EVIDENCE: PY mud/commands/communication.py:L11-L131; PY mud/models/character.py:L219-L243; TEST tests/test_communication.py::test_shout_and_tell_respect_comm_flags
-  - priority: P0
-  - rationale: `do_shout`/`do_tell` ignore COMM_QUIET/COMM_SHOUTSOFF/COMM_NOTELL/COMM_DEAF so mortals cannot silence channels or stop shouts, breaking wiz-imposed quiet hours and player mute expectations.
-  - files: mud/commands/communication.py; mud/models/character.py; mud/models/constants.py
-  - tests: tests/test_communication.py::test_shout_and_tell_respect_comm_flags (new)
-  - acceptance_criteria: Channel commands must flip COMM_SHOUTSOFF when issued with no args, block shouts when COMM_QUIET/COMM_SHOUTSOFF/NOSHOUT are set, and prevent tells when COMM_NOTELL/COMM_DEAF/COMM_QUIET are enabled while recording wait-state pulses like ROM.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_comm.c:786-858 (`do_shout` toggles COMM_SHOUTSOFF, checks COMM_NOSHOUT/COMM_QUIET, and applies WAIT_STATE); C src/act_comm.c:860-948 (`do_tell` enforces COMM_NOTELL/COMM_DEAF/COMM_QUIET and MOB trigger hooks); PY mud/commands/communication.py:9-74 (shout/tell ignore comm bits and never mutate Character.comm); PY mud/models/constants.py:329-356 (CommFlag definitions unused by the channel handlers).
-- ✅ [P0] **channels: implement clan and immortal broadcast channels with ROM comm gating** — done 2025-10-05
-  EVIDENCE: PY mud/commands/communication.py:L104-L198; PY mud/commands/dispatcher.py:L31-L120; PY mud/characters/__init__.py:L1-L56; PY mud/models/character.py:L60-L120; TEST tests/test_communication.py::test_clantalk_reaches_clan_members; TEST tests/test_communication.py::test_immtalk_restricts_to_immortals
-  - priority: P0
-  - rationale: Without `clantalk`/`immtalk` the port drops all clan coordination and immortal staff chatter; ROM expects COMM_NOCLAN/COMM_NOWIZ toggles plus clan membership and trust checks before broadcasting.
-  - files: mud/commands/communication.py; mud/commands/dispatcher.py; mud/models/character.py; mud/characters/__init__.py
-  - tests: tests/test_communication.py::test_clantalk_reaches_clan_members; tests/test_communication.py::test_immtalk_restricts_to_immortals
-  - acceptance_criteria: `clan`/`immtalk` commands must toggle COMM_NOCLAN/COMM_NOWIZ with no arguments, reject players without clan membership or non-immortals, and broadcast formatted messages only to eligible listeners.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_comm.c:676-760 (`do_clantalk` enforces clan membership, COMM_NOCLAN toggles, and quiet/nochannels checks); C src/act_comm.c:730-764 (`do_immtalk` gates by COMM_NOWIZ and immortal trust); PY mud/commands/communication.py:1-130 (no clan/immortal handlers); PY mud/commands/dispatcher.py:1-200 (no registrations for clantalk/immtalk).
-- ✅ [P0] **channels: align clan/immortal broadcast gating with ROM quiet/nochannels semantics** — done 2025-10-05
-  EVIDENCE: PY mud/commands/communication.py:L132-L183; TEST tests/test_communication.py::test_clantalk_ignores_quiet_on_speaker; TEST tests/test_communication.py::test_immtalk_bypasses_nochannels_for_speaker
-- [P1] **channels: port reply/AFK tell buffering for absent recipients**
-  - priority: P1
-  - rationale: ROM queues tells to AFK/link-dead players and exposes `reply`, but the port drops messages when `desc` is missing and leaves mortals without a reply shortcut.
-  - files: mud/commands/communication.py; mud/net/connection.py
-  - tests: tests/test_communication.py::test_reply_and_afk_buffer_match_rom (new)
-  - acceptance_criteria: `reply` mirrors ROM by sending to the last tell partner, AFK or note-writing players receive buffered tells appended to their message queue, and offline PCs show the “link dead” notice without losing the text.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_comm.c:900-1012 (`do_tell` buffers AFK/link-dead tells and sets `reply`); C src/act_comm.c:1014-1080 (`do_reply` reuses the stored target with COMM flag gating); PY mud/commands/communication.py:17-63 (tell appends to messages only when the target is connected and omits reply support); PY mud/net/connection.py:256-420 (connection session lacks AFK/note-state buffering hooks).
-- [P1] **channels: restore ROM Q/A channel toggles and broadcasts**
-  - priority: P1
-  - rationale: The Q/A channel is completely absent so mortals cannot ask or answer help questions, breaking clan school workflows and immortal onboarding that rely on `{q`/`{f` color-coded broadcasts.
-  - files: mud/commands/communication.py; mud/commands/dispatcher.py
-  - tests: tests/test_communication.py::test_question_channel_toggle_and_broadcast (new); tests/test_communication.py::test_answer_channel_respects_comm_flags (new)
-  - acceptance_criteria: `question`/`answer` mirror ROM by toggling `COMM_NOQUESTION` with no args, respecting QUIET/NOCHANNELS gating, broadcasting to all connected players without the flag, and echoing `{q`/`{f` formatted responses to speaker and listeners.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_comm.c:505-580 (`do_question` toggles COMM_NOQUESTION and broadcasts with `{q/{Q` formatting); C src/act_comm.c:580-644 (`do_answer` shares the same gating and formatting); PY mud/commands/communication.py:1-120 (no question/answer handlers or dispatcher registrations).
-- [P1] **channels: port ROM music channel with quiet/nochannel enforcement**
-  - priority: P1
-  - rationale: ROM builders and bards rely on `music` to broadcast colour-formatted lyrics, but the Python port omits the command so MUSIC/NOMUSIC toggles never flip and global music spam filters are untested.
-  - files: mud/commands/communication.py; mud/commands/dispatcher.py; mud/net/protocol.py
-  - tests: tests/test_communication.py::test_music_channel_toggle_and_broadcast (new)
-  - acceptance_criteria: `music` with no args flips `COMM_NOMUSIC`, sending parity messages; sending lyrics enforces QUIET/NOCHANNELS, clears `COMM_NOMUSIC`, and broadcasts through `broadcast_global` only to listeners without COMM_NOMUSIC.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_comm.c:600-644 (`do_music` toggles COMM_NOMUSIC, enforces QUIET/NOCHANNELS, and broadcasts via descriptor loop); PY mud/commands/communication.py:1-120 (lacks any music handler or COMM_NOMUSIC toggles); PY mud/net/protocol.py:1-160 (broadcast helper missing channel metadata for music).
+- None (parity coverage achieved; monitor future ROM channel changes for new evidence.)
 
 NOTES:
-
-- C: src/act_comm.c:505-644 wires `do_question`/`do_answer`/`do_music` with COMM bit toggles, wait-state lag, and trigger hooks before/after broadcasting.
-- C: src/act_comm.c:676-764 drives `do_clantalk` and `do_immtalk` with COMM_NOCLAN/COMM_NOWIZ toggles, clan membership checks, and immortal-only visibility.
-- PY: mud/commands/communication.py only wires say/tell/shout, so Q/A and music commands never toggle COMM_NOQUESTION/COMM_NOMUSIC or broadcast formatted output, leaving whole-channel workflows missing alongside the outstanding reply buffer work; dispatcher registration also omits these verbs entirely. Clan and immortal broadcasts now mirror ROM by ignoring speaker-side QUIET/NOCHANNELS while still filtering listeners on their own toggles.
-- TEST: tests/test_communication.py covers mute/banned sets plus new COMM flag regressions; follow-ups still need reply/AFK buffering coverage.
+- C: src/act_comm.c:333-704 keeps gossip/grats/quote/question/answer/music under COMM toggles with quiet/nochannel enforcement and color envelopes.
+- PY: mud/commands/communication.py:210-360 mirrors ROM toggles, quiet/nochannel gating, and color formatting for gossip/grats/quote/question/answer/music via `broadcast_global`.
+- TEST: tests/test_communication.py::{test_gossip_channel_toggle_and_broadcast,test_grats_channel_respects_mutes,test_quote_channel_toggle_and_broadcast,test_question_channel_toggle_and_broadcast,test_answer_channel_respects_comm_flags,test_music_channel_toggle_and_broadcast} exercise toggles, quiet/nochannel enforcement, and muted listener handling.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: channels END -->
 <!-- SUBSYSTEM: wiznet_imm START -->
 
-### wiznet_imm — Parity Audit 2025-11-12
+### wiznet_imm — Parity Audit 2025-11-14
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.40)
-KEY RISKS: flags, visibility, logging, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+KEY RISKS: visibility, side_effects
 
 TASKS:
 
-- ✅ [P0] **wiznet_imm: gate wiznet options and broadcasts by ROM get_trust semantics** — done 2025-11-08
-  EVIDENCE: PY mud/wiznet.py:L74-L170; TEST tests/test_wiznet.py::test_wiznet_trust_allows_secure_options
-
-- ✅ [P0] **wiznet_imm: broadcast login/logout activity over WIZ_LOGINS** — done 2025-11-10
-  EVIDENCE: PY mud/net/connection.py:L67-L105,L828-L885; TEST tests/test_wiznet.py::test_wiznet_logins_channel_broadcasts
-
-- [P0] **wiznet_imm: announce new player creation over WIZ_NEWBIE and WIZ_SITES**
-  - priority: P0
-  - rationale: ROM fires `"Newbie alert!  $N sighted."` and `<name>@<host> new player.` wiznet notices as soon as a character finishes class selection so immortals can vet fresh accounts, but the Python nanny flow stays silent and hides the new arrival until they fully enter the game.
-  - files: mud/net/connection.py; mud/wiznet.py; mud/account/account_service.py
-  - tests: tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert (new)
-  - acceptance_criteria: Completing character creation must call `wiznet` with WIZ_NEWBIE and WIZ_SITES, logging `<name>@<host> new player.` and broadcasting to eligible listeners even before the player loads into the world, matching ROM messaging.
-  - estimate: S
-  - risk: medium
-  - evidence: C src/nanny.c:520-560 (`CON_GET_NEW_CLASS` logs "new player" and fires WIZ_NEWBIE/WIZ_SITES); PY mud/net/connection.py:720-810 (creation flow returns without any wiznet call); PY mud/account/account_service.py:120-210 (character creation finishes silently).
-
-- [P1] **wiznet_imm: wrap immortal broadcasts with ROM color envelopes when WIZ_PREFIX is unset**
-  - priority: P1
-  - rationale: ROM always wraps wiznet output in `{Z` … `{x` regardless of prefix, but the Python broadcast sends plain text when `WIZ_PREFIX` is cleared so immortals lose the cyan highlight and color reset.
-  - files: mud/wiznet.py
-  - tests: tests/test_wiznet.py::test_wiznet_color_wrapped_without_prefix (new)
-  - acceptance_criteria: Non-prefix subscribers receive `{Z<message>{x`, prefix subscribers continue to see `{Z--> <message>{x`, and broadcasts reset colors afterward to mirror ROM.
-  - estimate: S
-  - risk: low
-  - evidence: C src/act_wiz.c:184-189 (prefix toggles arrow but always emits `{Z`/`{x`), PY mud/wiznet.py:137-144 (drops color wrapper when prefix flag absent).
+- None (parity coverage achieved; monitor future ROM wiznet changes for new evidence.)
 
 NOTES:
 
-- C: `wiznet` in `comm.c` and `nanny.c` emits `{Z`-wrapped WIZ_LOGINS notices on both connect and reconnect paths so immortals can police suspicious traffic in real time, and `src/nanny.c:520-560` logs `<name>@<host> new player.` with a WIZ_NEWBIE alert during creation.
-- PY: Connection handshake now calls `announce_wiznet_login`/`announce_wiznet_logout` to mirror ROM broadcasts while `_run_character_creation_flow` never fires WIZ_NEWBIE/WIZ_SITES, leaving new player vetting invisible until the character fully enters the world.
-- TEST: `tests/test_wiznet.py::test_wiznet_logins_channel_broadcasts` locks in login and logout broadcasts plus skip/min_level gating, leaving the color wrapper parity and new-player wiznet alerts tracked by the outstanding tasks.
+- C: `src/act_wiz.c:171-189` formats wiznet output with `act_new`, cyan envelopes, and WIZ_PREFIX arrows while `nanny.c:520-560` announces new players.
+- PY: `mud/utils/act.py:1-147` ports the wiznet slice of `act_new` token expansion, `mud/wiznet.py:11-170` wraps broadcasts in `{Z`/`{x` regardless of prefix, and `mud/net/connection.py:760-865` threads hosts/sex for login and new-player announcements.
+- TEST: `tests/test_wiznet.py::{test_wiznet_act_formatting,test_wiznet_prefix_formatting,test_wiznet_logins_channel_broadcasts}` and `tests/test_account_auth.py::{test_new_player_triggers_wiznet_newbie_alert,test_reconnect_announces_wiz_links}` confirm token expansion, prefix gating, and host visibility.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: wiznet_imm END -->
@@ -378,6 +305,43 @@ NOTES:
 - PY: mud/spawning/reset_handler.py now mirrors src/db.c:1706-1744 by seeding `AFF_INFRARED` in dark rooms and adding `ACT_PET` for pet shop spawns.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: resets END -->
+  <!-- SUBSYSTEM: weather START -->
+
+### weather — Parity Audit 2025-11-14
+
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.60)
+KEY RISKS: messaging, rng
+
+TASKS:
+
+- ✅ [P0] **weather: port ROM barometric pressure and sky transitions** — done 2025-11-14
+  EVIDENCE: C src/update.c:522-650; PY mud/game_loop.py:600-647; TEST tests/test_game_loop.py::test_weather_pressure_and_sky_transitions
+  - priority: P0
+  - rationale: `weather_tick` only cycles sunny/cloudy/rainy without pressure, lightning, or month-based variance, so weather states never match ROM seasons or RNG-driven transitions.
+  - files: mud/game_loop.py; mud/utils/rng_mm.py; mud/time.py
+  - tests: tests/test_game_loop.py::test_weather_pressure_and_sky_transitions (new)
+  - acceptance_criteria: Implement `weather_tick` (or a dedicated helper) that mirrors `weather_update` pressure (`mmhg`) deltas, clamps, and SKY_* transitions using ROM dice rolls so deterministic RNG seeds reproduce the same sequence as `src/update.c:522-650`.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/update.c:522-650 (`weather_update` adjusts `weather_info.change/mmhg` and SKY_* states); PY mud/game_loop.py:40-647 (SkyState + pressure transitions in `weather_tick`).
+- [P1] **weather: broadcast outdoor weather messages with ROM gating**
+  - priority: P1
+  - rationale: ROM notifies awake outdoor characters when weather or sunlight changes, but the Python tick keeps the cyan sky strings local so players miss rain/lightning cues.
+  - files: mud/game_loop.py; mud/net/protocol.py
+  - tests: tests/test_game_loop.py::test_weather_broadcasts_outdoor_characters (new)
+  - acceptance_criteria: `weather_tick` enqueues `{weather}` messages for awake outdoor characters (and skips indoor/asleep ones) mirroring `weather_update` output; regression asserts broadcast contents and targeting.
+  - estimate: S
+  - risk: low
+  - evidence: C src/update.c:522-650 (sends `buf` to CON_PLAYING descriptors that are outside and awake); PY mud/game_loop.py:600-647 (no messaging or outdoor gating).
+
+NOTES:
+
+- C: `src/update.c:522-650` drives seasonal pressure deltas, SKY_* state transitions, and outdoor broadcast gating each tick.
+- PY: `mud/game_loop.py:40-120` seeds `WeatherState` at boot and `weather_tick` (lines 600-647) mirrors the ROM pressure deltas and SKY_* transitions while leaving broadcast strings unimplemented.
+- TEST: `tests/test_game_loop.py::test_weather_pressure_and_sky_transitions` pins RNG rolls to assert the cloudless→lightning sequence and pressure clamps; broadcast targeting remains outstanding.
+- Applied tiny fix: none
+
+  <!-- SUBSYSTEM: weather END -->
   <!-- SUBSYSTEM: movement_encumbrance START -->
 
 ### movement_encumbrance — Parity Audit 2025-10-31
@@ -584,7 +548,6 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- [P0] wiznet_imm — announce WIZ_NEWBIE/WIZ_SITES alerts when new characters finish creation; test with `tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert`.
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -601,7 +564,7 @@ NOTES:
 | shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                        |
 | command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                                 |
 | socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social          |
-| channels                 | src/act_comm.c:do_question/do_answer/do_music                     | mud/commands/communication.py:(missing do_question/do_answer/do_music handlers)            |
+| channels                 | src/act_comm.c:do_gossip/do_grats/do_quote/do_question/do_answer/do_music | mud/commands/communication.py:do_gossip/do_grats/do_quote/do_question/do_answer/do_music |
 | wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                            |
 | world_loader             | src/db.c:load_area/load_rooms                                      | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                  |
 | resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
@@ -640,7 +603,7 @@ NOTES:
 ## Parity Gaps & Corrections
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
+<!-- AUDITED: resets, weather, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
 <!-- SUBSYSTEM: persistence START -->
 
 ### persistence — Parity Audit 2025-11-03

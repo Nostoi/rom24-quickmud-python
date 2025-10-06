@@ -28,7 +28,20 @@ from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_unalias
 from .build import cmd_redit, handle_redit_command
 from .combat import do_kick, do_kill, do_rescue
-from .communication import do_clantalk, do_immtalk, do_say, do_shout, do_tell
+from .communication import (
+    do_answer,
+    do_clantalk,
+    do_gossip,
+    do_grats,
+    do_immtalk,
+    do_music,
+    do_question,
+    do_quote,
+    do_reply,
+    do_say,
+    do_shout,
+    do_tell,
+)
 from .healer import do_heal
 from .help import do_help
 from .imc import do_imc
@@ -115,7 +128,14 @@ COMMANDS: list[Command] = [
     # Communication
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
+    Command("reply", do_reply, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
+    Command("gossip", do_gossip, min_position=Position.RESTING),
+    Command("grats", do_grats, min_position=Position.RESTING),
+    Command("quote", do_quote, min_position=Position.RESTING),
+    Command("question", do_question, min_position=Position.RESTING),
+    Command("answer", do_answer, min_position=Position.RESTING),
+    Command("music", do_music, min_position=Position.RESTING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
     Command("immtalk", do_immtalk, aliases=(":",), min_position=Position.DEAD),
     # Combat

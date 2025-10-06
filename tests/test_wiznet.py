@@ -1,6 +1,7 @@
 import mud.persistence as persistence
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
+from mud.models.constants import Sex
 from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
 
@@ -47,8 +48,8 @@ def test_wiznet_broadcast_filtering():
 
     wiznet("Test message", WiznetFlag.WIZ_ON)
 
-    assert "Test message" in imm.messages
-    assert "Test message" not in mortal.messages
+    assert "{ZTest message{x" in imm.messages
+    assert mortal.messages == []
 
 
 def test_wiznet_command_toggles_flag():
@@ -81,12 +82,12 @@ def test_wiznet_requires_specific_flag():
     imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
     character_registry.append(imm)
     wiznet("tick", WiznetFlag.WIZ_TICKS)
-    assert "tick" not in imm.messages
+    assert all("tick" not in msg for msg in imm.messages)
 
     # After subscribing to WIZ_TICKS, should receive.
     imm.wiznet |= int(WiznetFlag.WIZ_TICKS)
     wiznet("tick2", WiznetFlag.WIZ_TICKS)
-    assert "tick2" in imm.messages
+    assert any(msg == "{Ztick2{x" for msg in imm.messages)
 
 
 def test_wiznet_secure_flag_gating():
@@ -94,12 +95,12 @@ def test_wiznet_secure_flag_gating():
     imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
     character_registry.append(imm)
     wiznet("secure", WiznetFlag.WIZ_SECURE)
-    assert "secure" not in imm.messages
+    assert all("secure" not in msg for msg in imm.messages)
 
     # After subscribing to WIZ_SECURE, message should be delivered
     imm.wiznet |= int(WiznetFlag.WIZ_SECURE)
     wiznet("secure2", WiznetFlag.WIZ_SECURE)
-    assert "secure2" in imm.messages
+    assert any(msg == "{Zsecure2{x" for msg in imm.messages)
 
 
 def test_wiznet_status_command():
@@ -166,10 +167,53 @@ def test_wiznet_prefix_formatting():
     wiznet("Test prefix", WiznetFlag.WIZ_ON)
 
     # Check that prefix character gets formatted message
-    assert any("{Z-->" in msg for msg in imm_with_prefix.messages)
-    # Check that non-prefix character gets plain message
-    assert "Test prefix" in imm_without_prefix.messages
-    assert not any("{Z-->" in msg for msg in imm_without_prefix.messages)
+    assert imm_with_prefix.messages == ["{Z--> Test prefix{x"]
+    # Check that non-prefix character gets color-wrapped message without arrow
+    assert imm_without_prefix.messages == ["{ZTest prefix{x"]
+
+
+def test_wiznet_act_formatting():
+    sender = Character(name="Kestrel", sex=Sex.FEMALE)
+    prefix_listener = Character(
+        name="ImmPrefix",
+        is_admin=True,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS | WiznetFlag.WIZ_PREFIX),
+    )
+    plain_listener = Character(
+        name="ImmPlain",
+        is_admin=True,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
+    )
+    character_registry.extend([prefix_listener, plain_listener])
+
+    try:
+        wiznet(
+            "$N groks the fullness of $S link.",
+            sender,
+            None,
+            WiznetFlag.WIZ_LINKS,
+            None,
+            0,
+        )
+        wiznet(
+            "$N answers '$t'",
+            sender,
+            "Ready",
+            WiznetFlag.WIZ_LINKS,
+            None,
+            0,
+        )
+    finally:
+        character_registry.clear()
+
+    assert prefix_listener.messages == [
+        "{Z--> Kestrel groks the fullness of her link.{x",
+        "{Z--> Kestrel answers 'Ready'{x",
+    ]
+    assert plain_listener.messages == [
+        "{ZKestrel groks the fullness of her link.{x",
+        "{ZKestrel answers 'Ready'{x",
+    ]
 
 
 def test_wiznet_trust_allows_secure_options():
@@ -198,7 +242,7 @@ def test_wiznet_trust_allows_secure_options():
 
     trusted.messages.clear()
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
-    assert "secure notice" in trusted.messages
+    assert trusted.messages == ["{Zsecure notice{x"]
 
     # Base level without additional trust should not see or toggle secure.
     show_low = process_command(low_trust, "wiznet show")
@@ -207,7 +251,7 @@ def test_wiznet_trust_allows_secure_options():
     toggle_low = process_command(low_trust, "wiznet secure")
     assert toggle_low == "No such option."
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
-    assert "secure notice" not in low_trust.messages
+    assert all("secure notice" not in msg for msg in low_trust.messages)
 
 
 def test_wiznet_logins_channel_broadcasts():
@@ -299,10 +343,7 @@ def test_wiz_sites_announces_successful_login(capsys):
     out = capsys.readouterr().out
     assert "Lyra@academy.example has connected." in out
 
-    assert any(
-        "Lyra@academy.example has connected." in msg
-        for msg in plain_listener.messages
-    )
+    assert plain_listener.messages == ["{ZLyra@academy.example has connected.{x"]
     assert any(
         "{Z--> Lyra@academy.example has connected.{x" in msg
         for msg in prefix_listener.messages

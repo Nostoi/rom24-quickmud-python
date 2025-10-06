@@ -3,7 +3,10 @@ import json
 from contextlib import suppress
 from pathlib import Path
 from socket import socket as Socket
+from types import SimpleNamespace
 from typing import Sequence, cast
+
+import pytest
 
 from mud.account import load_character as load_player_character
 from mud.account.account_service import (
@@ -735,6 +738,174 @@ def test_account_create_and_login():
     assert "Hero" in chars
 
 
+def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
+    import mud.net.connection as net_connection
+
+    previous_registry = list(character_registry)
+    character_registry.clear()
+    try:
+        async def run_test():
+            newbie_listener = RuntimeCharacter(
+                name="ImmNewbie",
+                is_admin=True,
+                level=60,
+                trust=60,
+                wiznet=int(
+                    WiznetFlag.WIZ_ON
+                    | WiznetFlag.WIZ_NEWBIE
+                    | WiznetFlag.WIZ_PREFIX
+                ),
+            )
+            site_listener = RuntimeCharacter(
+                name="SiteWatcher",
+                is_admin=True,
+                level=60,
+                trust=60,
+                wiznet=int(
+                    WiznetFlag.WIZ_ON
+                    | WiznetFlag.WIZ_SITES
+                    | WiznetFlag.WIZ_PREFIX
+                ),
+            )
+            plain_listener = RuntimeCharacter(
+                name="PlainSite",
+                is_admin=True,
+                level=60,
+                trust=60,
+                wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
+            )
+            low_trust_listener = RuntimeCharacter(
+                name="LowTrust",
+                is_admin=True,
+                level=50,
+                trust=40,
+                wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
+            )
+            character_registry.extend(
+                [
+                    newbie_listener,
+                    site_listener,
+                    plain_listener,
+                    low_trust_listener,
+                ]
+            )
+
+            recorded_calls: list[tuple[str, str | None, int]] = []
+            real_announce = net_connection.announce_wiznet_new_player
+
+            def tracking_announce(
+                name: str, host: str | None = None, *, trust_level: int = 1
+            ) -> None:
+                recorded_calls.append((name, host, trust_level))
+                real_announce(name, host, trust_level=trust_level)
+
+            monkeypatch.setattr(
+                net_connection, "announce_wiznet_new_player", tracking_announce
+            )
+
+            created_names: list[str] = []
+
+            def fake_create_character(account, name, **kwargs):
+                created_names.append(name)
+                return True
+
+            monkeypatch.setattr(
+                net_connection, "create_character", fake_create_character
+            )
+
+            async def fake_prompt_yes_no(conn, prompt):
+                return True
+
+            async def fake_prompt_for_race(conn):
+                return get_creation_races()[0]
+
+            async def fake_prompt_for_sex(conn):
+                return Sex.FEMALE
+
+            async def fake_prompt_for_class(conn):
+                return get_creation_classes()[0]
+
+            async def fake_prompt_for_alignment(conn):
+                return 750
+
+            async def fake_prompt_customization_choice(conn):
+                return False
+
+            async def fake_prompt_for_stats(conn, race):
+                return [13, 13, 13, 13, 13]
+
+            async def fake_prompt_for_hometown(conn):
+                return ROOM_VNUM_SCHOOL
+
+            async def fake_prompt_for_weapon(conn, class_type):
+                return OBJ_VNUM_SCHOOL_DAGGER
+
+            async def fake_send_line(conn, message):
+                return None
+
+            monkeypatch.setattr(
+                net_connection, "_prompt_yes_no", fake_prompt_yes_no
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_race", fake_prompt_for_race
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_sex", fake_prompt_for_sex
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_class", fake_prompt_for_class
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_alignment", fake_prompt_for_alignment
+            )
+            monkeypatch.setattr(
+                net_connection,
+                "_prompt_customization_choice",
+                fake_prompt_customization_choice,
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_stats", fake_prompt_for_stats
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_hometown", fake_prompt_for_hometown
+            )
+            monkeypatch.setattr(
+                net_connection, "_prompt_for_weapon", fake_prompt_for_weapon
+            )
+            monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+
+            dummy_conn = SimpleNamespace(peer_host="academy.example")
+            dummy_account = SimpleNamespace(id=1)
+
+            result = await net_connection._run_character_creation_flow(
+                dummy_conn, dummy_account, "Nova"
+            )
+
+            assert result is True
+            assert created_names == ["Nova"]
+            assert recorded_calls == [("Nova", "academy.example", 1)]
+            assert any(
+                "{Z--> Newbie alert!  Nova sighted.{x" in msg
+                for msg in newbie_listener.messages
+            )
+            assert any(
+                "{Z--> Nova@academy.example new player.{x" in msg
+                for msg in site_listener.messages
+            )
+            assert any(
+                msg == "{ZNova@academy.example new player.{x"
+                for msg in plain_listener.messages
+            )
+            assert any(
+                msg == "{ZNova@academy.example new player.{x"
+                for msg in low_trust_listener.messages
+            )
+
+        asyncio.run(run_test())
+    finally:
+        character_registry.clear()
+        character_registry.extend(previous_registry)
+
 def test_banned_account_cannot_login():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -1070,7 +1241,13 @@ def test_reconnect_announces_wiz_links():
     character_registry.clear()
 
     room = Room(vnum=42, name="Limbo")
-    reconnecting = RuntimeCharacter(name="Hero", is_npc=False, trust=60, level=50)
+    reconnecting = RuntimeCharacter(
+        name="Hero",
+        is_npc=False,
+        trust=60,
+        level=50,
+        sex=Sex.MALE,
+    )
     room.add_character(reconnecting)
 
     watcher = RuntimeCharacter(name="Watcher", is_npc=False)
@@ -1105,8 +1282,8 @@ def test_reconnect_announces_wiz_links():
         character_registry.clear()
 
     assert any("Hero has reconnected." in msg for msg in watcher.messages)
-    assert any("groks the fullness" in msg for msg in imm_receives.messages)
-    assert all("groks" not in msg for msg in imm_blocked.messages)
+    assert imm_receives.messages == ["{ZHero groks the fullness of his link.{x"]
+    assert imm_blocked.messages == []
     assert all("groks" not in msg for msg in imm_plain.messages)
     assert RECONNECT_MESSAGE == "Reconnecting. Type replay to see missed tells."
 

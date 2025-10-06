@@ -120,6 +120,7 @@ class Character:
     cooldowns: dict[str, int] = field(default_factory=dict)
     connection: object | None = None
     desc: object | None = None
+    reply: Character | None = None
     is_admin: bool = False
     # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
     imc_permission: str = "Mort"

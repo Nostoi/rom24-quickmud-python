@@ -19,18 +19,24 @@ def setup_function(function):
     initialize_world("area/area.lst")
 
 
+def make_player(name: str, room_vnum: int):
+    char = create_test_character(name, room_vnum)
+    char.desc = object()
+    return char
+
+
 def test_tell_command():
-    alice = create_test_character("Alice", 3001)
-    bob = create_test_character("Bob", 3001)
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
     out = process_command(alice, "tell Bob hello")
     assert out == "You tell Bob, 'hello'"
     assert "Alice tells you, 'hello'" in bob.messages
 
 
 def test_shout_respects_mute_and_ban():
-    alice = create_test_character("Alice", 3001)
-    bob = create_test_character("Bob", 3001)
-    cara = create_test_character("Cara", 3001)
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
+    cara = make_player("Cara", 3001)
     bob.muted_channels.add("shout")
     out = process_command(alice, "shout hello")
     assert out == "You shout, 'hello'"
@@ -43,8 +49,8 @@ def test_shout_respects_mute_and_ban():
 
 
 def test_tell_respects_mute_and_ban():
-    alice = create_test_character("Alice", 3001)
-    bob = create_test_character("Bob", 3001)
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
     bob.muted_channels.add("tell")
     out = process_command(alice, "tell Bob hi")
     assert out == "They aren't listening."
@@ -55,8 +61,8 @@ def test_tell_respects_mute_and_ban():
 
 
 def test_shout_and_tell_respect_comm_flags():
-    alice = create_test_character("Alice", 3001)
-    bob = create_test_character("Bob", 3001)
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
 
     out = process_command(alice, "shout")
     assert out == "You will no longer hear shouts."
@@ -100,10 +106,197 @@ def test_shout_and_tell_respect_comm_flags():
     assert not bob.messages
 
 
+def test_question_channel_toggle_and_broadcast():
+    asker = make_player("Asker", 3001)
+    listener = make_player("Listener", 3001)
+    muted = make_player("Muted", 3001)
+    quiet = make_player("Quiet", 3001)
+
+    muted.muted_channels.add("question")
+    quiet.set_comm_flag(CommFlag.QUIET)
+
+    out = process_command(asker, "question Where are the guildmasters?")
+    assert out == "{qYou question '{QWhere are the guildmasters?{q'{x"
+    assert "{qAsker questions '{QWhere are the guildmasters?{q'{x" in listener.messages
+    assert all("guildmasters" not in msg for msg in muted.messages)
+    assert all("guildmasters" not in msg for msg in quiet.messages)
+
+    toggle_off = process_command(asker, "question")
+    assert toggle_off == "Q/A channel is now OFF."
+    assert asker.has_comm_flag(CommFlag.NOQUESTION)
+    toggle_on = process_command(asker, "question")
+    assert toggle_on == "Q/A channel is now ON."
+    assert not asker.has_comm_flag(CommFlag.NOQUESTION)
+
+
+def test_answer_channel_respects_comm_flags():
+    responder = make_player("Responder", 3001)
+    listener = make_player("Listener", 3001)
+    blocked = make_player("Blocked", 3001)
+
+    blocked.set_comm_flag(CommFlag.NOQUESTION)
+
+    responder.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(responder, "answer I'm here.")
+    assert quiet_msg == "You must turn off quiet mode first."
+    responder.clear_comm_flag(CommFlag.QUIET)
+
+    responder.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(responder, "answer Check the quad.")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    responder.clear_comm_flag(CommFlag.NOCHANNELS)
+
+    out = process_command(responder, "answer Ask the guard to help.")
+    assert out == "{fYou answer '{FAsk the guard to help.{f'{x"
+    assert "{fResponder answers '{FAsk the guard to help.{f'{x" in listener.messages
+    assert all("guard" not in msg for msg in blocked.messages)
+
+
+def test_music_channel_toggle_and_broadcast():
+    bard = make_player("Bard", 3001)
+    fan = make_player("Fan", 3001)
+    muted = make_player("Muted", 3001)
+    critic = make_player("Critic", 3001)
+
+    muted.muted_channels.add("music")
+    critic.set_comm_flag(CommFlag.NOMUSIC)
+
+    out = process_command(bard, "music A hymn to Midgaard")
+    assert out == "{eYou MUSIC: '{EA hymn to Midgaard{e'{x"
+    assert "{eBard MUSIC: '{EA hymn to Midgaard{e'{x" in fan.messages
+    assert all("Midgaard" not in msg for msg in muted.messages)
+    assert all("Midgaard" not in msg for msg in critic.messages)
+
+    toggle_off = process_command(bard, "music")
+    assert toggle_off == "Music channel is now OFF."
+    assert bard.has_comm_flag(CommFlag.NOMUSIC)
+    toggle_on = process_command(bard, "music")
+    assert toggle_on == "Music channel is now ON."
+    assert not bard.has_comm_flag(CommFlag.NOMUSIC)
+
+    bard.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(bard, "music Quiet ballad")
+    assert quiet_msg == "You must turn off quiet mode first."
+    bard.clear_comm_flag(CommFlag.QUIET)
+
+    bard.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(bard, "music Loud ballad")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    bard.clear_comm_flag(CommFlag.NOCHANNELS)
+
+
+def test_gossip_channel_toggle_and_broadcast():
+    gossiper = make_player("Gossiper", 3001)
+    listener = make_player("Listener", 3001)
+    muted = make_player("Muted", 3001)
+    quiet = make_player("Quiet", 3001)
+    nogossip = make_player("NoGossip", 3001)
+
+    muted.muted_channels.add("gossip")
+    quiet.set_comm_flag(CommFlag.QUIET)
+    nogossip.set_comm_flag(CommFlag.NOGOSSIP)
+
+    out = process_command(gossiper, "gossip Have you heard?")
+    assert out == "{dYou gossip '{tHave you heard?{d'{x"
+    assert "{dGossiper gossips '{tHave you heard?{d'{x" in listener.messages
+    assert all("heard" not in msg for msg in muted.messages)
+    assert all("heard" not in msg for msg in quiet.messages)
+    assert all("heard" not in msg for msg in nogossip.messages)
+
+    toggle_off = process_command(gossiper, "gossip")
+    assert toggle_off == "Gossip channel is now OFF."
+    assert gossiper.has_comm_flag(CommFlag.NOGOSSIP)
+    toggle_on = process_command(gossiper, "gossip")
+    assert toggle_on == "Gossip channel is now ON."
+    assert not gossiper.has_comm_flag(CommFlag.NOGOSSIP)
+
+    gossiper.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(gossiper, "gossip hush")
+    assert quiet_msg == "You must turn off quiet mode first."
+    gossiper.clear_comm_flag(CommFlag.QUIET)
+
+    gossiper.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(gossiper, "gossip hush")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    gossiper.clear_comm_flag(CommFlag.NOCHANNELS)
+
+
+def test_grats_channel_respects_mutes():
+    celebrant = make_player("Celebrant", 3001)
+    listener = make_player("Listener", 3001)
+    muted = make_player("Muted", 3001)
+    quiet = make_player("Quiet", 3001)
+    nograts = make_player("NoGrats", 3001)
+
+    muted.muted_channels.add("grats")
+    quiet.set_comm_flag(CommFlag.QUIET)
+    nograts.set_comm_flag(CommFlag.NOGRATS)
+
+    out = process_command(celebrant, "grats Great victory!")
+    assert out == "{tYou grats 'Great victory!'{x"
+    assert "{tCelebrant grats 'Great victory!'{x" in listener.messages
+    assert all("victory" not in msg for msg in muted.messages)
+    assert all("victory" not in msg for msg in quiet.messages)
+    assert all("victory" not in msg for msg in nograts.messages)
+
+    toggle_off = process_command(celebrant, "grats")
+    assert toggle_off == "Grats channel is now OFF."
+    assert celebrant.has_comm_flag(CommFlag.NOGRATS)
+    toggle_on = process_command(celebrant, "grats")
+    assert toggle_on == "Grats channel is now ON."
+    assert not celebrant.has_comm_flag(CommFlag.NOGRATS)
+
+    celebrant.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(celebrant, "grats hush")
+    assert quiet_msg == "You must turn off quiet mode first."
+    celebrant.clear_comm_flag(CommFlag.QUIET)
+
+    celebrant.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(celebrant, "grats hush")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    celebrant.clear_comm_flag(CommFlag.NOCHANNELS)
+
+
+def test_quote_channel_toggle_and_broadcast():
+    quoter = make_player("Quoter", 3001)
+    listener = make_player("Listener", 3001)
+    muted = make_player("Muted", 3001)
+    quiet = make_player("Quiet", 3001)
+    noquote = make_player("NoQuote", 3001)
+
+    muted.muted_channels.add("quote")
+    quiet.set_comm_flag(CommFlag.QUIET)
+    noquote.set_comm_flag(CommFlag.NOQUOTE)
+
+    out = process_command(quoter, "quote Knowledge is power")
+    assert out == "{hYou quote '{HKnowledge is power{h'{x"
+    assert "{hQuoter quotes '{HKnowledge is power{h'{x" in listener.messages
+    assert all("power" not in msg for msg in muted.messages)
+    assert all("power" not in msg for msg in quiet.messages)
+    assert all("power" not in msg for msg in noquote.messages)
+
+    toggle_off = process_command(quoter, "quote")
+    assert toggle_off == "{hQuote channel is now OFF.{x"
+    assert quoter.has_comm_flag(CommFlag.NOQUOTE)
+    toggle_on = process_command(quoter, "quote")
+    assert toggle_on == "{hQuote channel is now ON.{x"
+    assert not quoter.has_comm_flag(CommFlag.NOQUOTE)
+
+    quoter.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(quoter, "quote hush")
+    assert quiet_msg == "You must turn off quiet mode first."
+    quoter.clear_comm_flag(CommFlag.QUIET)
+
+    quoter.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(quoter, "quote hush")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    quoter.clear_comm_flag(CommFlag.NOCHANNELS)
+
+
 def test_clantalk_reaches_clan_members():
-    leader = create_test_character("Leader", 3001)
-    ally = create_test_character("Ally", 3001)
-    outsider = create_test_character("Outsider", 3001)
+    leader = make_player("Leader", 3001)
+    ally = make_player("Ally", 3001)
+    outsider = make_player("Outsider", 3001)
 
     leader.clan = 1
     ally.clan = 1
@@ -133,9 +326,9 @@ def test_clantalk_reaches_clan_members():
 
 
 def test_clantalk_ignores_quiet_on_speaker():
-    leader = create_test_character("Leader", 3001)
-    ally = create_test_character("Ally", 3001)
-    outsider = create_test_character("Outsider", 3001)
+    leader = make_player("Leader", 3001)
+    ally = make_player("Ally", 3001)
+    outsider = make_player("Outsider", 3001)
 
     leader.clan = 1
     ally.clan = 1
@@ -149,9 +342,9 @@ def test_clantalk_ignores_quiet_on_speaker():
 
 
 def test_immtalk_restricts_to_immortals():
-    mortal = create_test_character("Mortal", 3001)
-    immortal = create_test_character("Immortal", 3001)
-    watcher = create_test_character("Watcher", 3001)
+    mortal = make_player("Mortal", 3001)
+    immortal = make_player("Immortal", 3001)
+    watcher = make_player("Watcher", 3001)
 
     immortal.level = LEVEL_IMMORTAL
     watcher.trust = LEVEL_IMMORTAL
@@ -193,9 +386,9 @@ def test_immtalk_restricts_to_immortals():
 
 
 def test_immtalk_bypasses_nochannels_for_speaker():
-    mortal = create_test_character("Mortal", 3001)
-    immortal = create_test_character("Immortal", 3001)
-    watcher = create_test_character("Watcher", 3001)
+    mortal = make_player("Mortal", 3001)
+    immortal = make_player("Immortal", 3001)
+    watcher = make_player("Watcher", 3001)
 
     immortal.level = LEVEL_IMMORTAL
     watcher.trust = LEVEL_IMMORTAL
@@ -207,3 +400,29 @@ def test_immtalk_bypasses_nochannels_for_speaker():
     assert out == "[Immortal]: hush"
     assert "[Immortal]: hush" in watcher.messages
     assert all("hush" not in msg for msg in mortal.messages)
+
+
+def test_reply_and_afk_buffer_match_rom():
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
+
+    bob.messages.clear()
+    bob.set_comm_flag(CommFlag.AFK)
+    response = process_command(alice, "tell Bob hello there")
+    assert response == "Bob is AFK, but your tell will go through when they return."
+    assert bob.messages[-1] == "Alice tells you, 'hello there'"
+    assert bob.reply is alice
+
+    bob.messages.clear()
+    bob.clear_comm_flag(CommFlag.AFK)
+    bob.desc = None
+    offline = process_command(alice, "tell Bob you around?")
+    assert offline == "Bob seems to have misplaced their link...try again later."
+    assert bob.messages[-1] == "Alice tells you, 'you around?'"
+    assert bob.reply is alice
+
+    bob.desc = object()
+    alice.messages.clear()
+    returned = process_command(bob, "reply Hey!")
+    assert returned == "You tell Alice, 'Hey!'"
+    assert alice.messages[-1] == "Bob tells you, 'Hey!'"
