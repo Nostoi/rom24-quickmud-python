@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 
 from mud import mobprog
+from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
@@ -129,3 +130,62 @@ def do_shout(char: Character, args: str) -> str:
         )
     broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)
     return f"You shout, '{cleaned}'"
+
+
+def do_clantalk(char: Character, args: str) -> str:
+    if "clan" in char.banned_channels:
+        return "You are banned from clan."
+    if not is_clan_member(char):
+        return "You aren't in a clan."
+
+    cleaned = args.strip()
+    if not cleaned:
+        if _has_comm_flag(char, CommFlag.NOCLAN):
+            _clear_comm_flag(char, CommFlag.NOCLAN)
+            return "Clan channel is now ON."
+        _set_comm_flag(char, CommFlag.NOCLAN)
+        return "Clan channel is now OFF."
+
+    if _has_comm_flag(char, CommFlag.NOCHANNELS):
+        return "The gods have revoked your channel privileges."
+
+    _clear_comm_flag(char, CommFlag.NOCLAN)
+
+    def _should_receive(target: Character) -> bool:
+        if not is_same_clan(char, target):
+            return False
+        if _has_comm_flag(target, CommFlag.NOCLAN) or _has_comm_flag(target, CommFlag.QUIET):
+            return False
+        return True
+
+    message = f"{char.name} clans, '{cleaned}'"
+    broadcast_global(message, channel="clan", exclude=char, should_send=_should_receive)
+    return f"You clan '{cleaned}'"
+
+
+def do_immtalk(char: Character, args: str) -> str:
+    if not char.is_immortal():
+        return "You aren't an immortal."
+    if "immtalk" in char.banned_channels:
+        return "You are banned from immtalk."
+
+    cleaned = args.strip()
+    if not cleaned:
+        if _has_comm_flag(char, CommFlag.NOWIZ):
+            _clear_comm_flag(char, CommFlag.NOWIZ)
+            return "Immortal channel is now ON."
+        _set_comm_flag(char, CommFlag.NOWIZ)
+        return "Immortal channel is now OFF."
+
+    _clear_comm_flag(char, CommFlag.NOWIZ)
+
+    def _should_receive(target: Character) -> bool:
+        if not target.is_immortal():
+            return False
+        if _has_comm_flag(target, CommFlag.NOWIZ):
+            return False
+        return True
+
+    message = f"[{char.name}]: {cleaned}"
+    broadcast_global(message, channel="immtalk", exclude=char, should_send=_should_receive)
+    return message

@@ -41,12 +41,16 @@ from mud.models.constants import (
     Stat,
     VulnFlag,
 )
+from mud.models.character import Character as RuntimeCharacter, character_registry
+from mud.models.room import Room
+from mud.net.connection import RECONNECT_MESSAGE, _broadcast_reconnect_notifications
 from mud.net.session import SESSIONS
 from mud.net.telnet_server import create_server
 from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
+from mud.wiznet import WiznetFlag
 
 TELNET_IAC = 255
 TELNET_WILL = 251
@@ -1054,10 +1058,57 @@ def test_duplicate_login_requires_reconnect_consent():
     blocked = login_with_host("dup", "pw", None)
     assert blocked.account is None
     assert blocked.failure is LoginFailureReason.DUPLICATE_SESSION
+    assert blocked.was_reconnect is False
 
-    reconnect = login_with_host("dup", "pw", None, allow_reconnect=True).account
-    assert reconnect is not None
+    reconnect = login_with_host("dup", "pw", None, allow_reconnect=True)
+    assert reconnect.account is not None
+    assert reconnect.was_reconnect is True
     release_account("dup")
+
+
+def test_reconnect_announces_wiz_links():
+    character_registry.clear()
+
+    room = Room(vnum=42, name="Limbo")
+    reconnecting = RuntimeCharacter(name="Hero", is_npc=False, trust=60, level=50)
+    room.add_character(reconnecting)
+
+    watcher = RuntimeCharacter(name="Watcher", is_npc=False)
+    room.add_character(watcher)
+
+    imm_receives = RuntimeCharacter(
+        name="ImmHigh",
+        is_admin=True,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
+    )
+    imm_blocked = RuntimeCharacter(
+        name="ImmLow",
+        is_admin=True,
+        trust=50,
+        level=50,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
+    )
+    imm_plain = RuntimeCharacter(
+        name="ImmPlain",
+        is_admin=True,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    character_registry.extend([imm_receives, imm_blocked, imm_plain])
+
+    try:
+        _broadcast_reconnect_notifications(reconnecting)
+    finally:
+        character_registry.clear()
+
+    assert any("Hero has reconnected." in msg for msg in watcher.messages)
+    assert any("groks the fullness" in msg for msg in imm_receives.messages)
+    assert all("groks" not in msg for msg in imm_blocked.messages)
+    assert all("groks" not in msg for msg in imm_plain.messages)
+    assert RECONNECT_MESSAGE == "Reconnecting. Type replay to see missed tells."
 
 
 def test_newbie_permit_enforcement():
