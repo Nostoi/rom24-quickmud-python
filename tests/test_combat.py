@@ -11,6 +11,7 @@ from mud.models.constants import (
     AC_EXOTIC,
     AC_PIERCE,
     AC_SLASH,
+    WEAPON_POISON,
     AffectFlag,
     DamageType,
     ImmFlag,
@@ -582,3 +583,81 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert "15 damage" in out
     assert victim.hit == 85
+
+
+def test_sharp_weapon_doubles_damage_on_proc(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker, victim = setup_combat()
+    attacker.level = 30
+    attacker.damroll = 0
+    attacker.hitroll = 100
+    attacker.has_shield_equipped = True
+    attacker.enhanced_damage_skill = 0
+    attacker.skills["sword"] = 100
+    victim.position = Position.FIGHTING
+
+    weapon = SimpleNamespace(
+        item_type="weapon",
+        new_format=True,
+        value=[int(WeaponType.SWORD), 2, 4, 0],
+        weapon_stats=set(),
+        weapon_flags=0,
+        level=30,
+        name="razorblade",
+    )
+    attacker.equipment["wield"] = weapon
+
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: number * size)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
+
+    base_damage = combat_engine.calculate_weapon_damage(
+        attacker,
+        victim,
+        int(DamageType.SLASH),
+        wield=weapon,
+        skill=120,
+    )
+
+    weapon.weapon_stats = {"sharp"}
+
+    sharp_damage = combat_engine.calculate_weapon_damage(
+        attacker,
+        victim,
+        int(DamageType.SLASH),
+        wield=weapon,
+        skill=120,
+    )
+
+    expected_bonus = (base_damage * 2 * 10) // 100
+    assert sharp_damage == base_damage * 2 + expected_bonus
+
+
+def test_poison_weapon_applies_affect(monkeypatch: pytest.MonkeyPatch) -> None:
+    attacker, victim = setup_combat()
+    attacker.hitroll = 100
+    attacker.damroll = 0
+    attacker.enhanced_damage_skill = 0
+    victim.hit = 100
+    victim.max_hit = 100
+    victim.armor = [0, 0, 0, 0]
+
+    weapon = SimpleNamespace(
+        item_type="weapon",
+        new_format=True,
+        value=[int(WeaponType.SWORD), 2, 4, 0],
+        weapon_stats=set(),
+        weapon_flags=int(WEAPON_POISON),
+        level=20,
+        name="Viperblade",
+    )
+    attacker.equipment["wield"] = weapon
+    victim.messages.clear()
+
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: number * size)
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: low)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(combat_engine, "saves_spell", lambda *args, **kwargs: False)
+
+    combat_engine.attack_round(attacker, victim)
+
+    assert victim.has_affect(AffectFlag.POISON)
+    assert any("poison" in msg.lower() for msg in victim.messages)

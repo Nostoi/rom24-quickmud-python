@@ -8,7 +8,7 @@ import pytest
 
 import mud.game_loop as game_loop
 from mud.commands import process_command
-from mud.imc import get_state, imc_enabled, maybe_open_socket, reset_state
+from mud.imc import get_state, imc_enabled, maybe_open_socket, pump_idle, reset_state
 from mud.imc.commands import IMCPacket
 from mud.imc.protocol import Frame, parse_frame, serialize_frame
 from mud.world import create_test_character, initialize_world
@@ -172,7 +172,7 @@ def _install_fake_imc_connection(monkeypatch: pytest.MonkeyPatch) -> None:
             handshake_complete=True,
         )
 
-    monkeypatch.setattr("mud.imc.network.connect_and_handshake", fake_connect)
+    monkeypatch.setattr("mud.imc.connect_and_handshake", fake_connect)
 
 
 def test_imc_disabled_by_default(monkeypatch):
@@ -380,6 +380,199 @@ def test_idle_pump_runs_when_enabled(monkeypatch, tmp_path):
     assert after == before + 1
 
 
+class _FakeSocket:
+    def __init__(self, chunks: list[bytes], block_on_empty: bool = False):
+        self._chunks = list(chunks)
+        self._block_on_empty = block_on_empty
+        self.sent: list[bytes] = []
+        self.closed = False
+        self._fd = id(self) & 0xFFFF
+
+    def recv(self, _size: int) -> bytes:
+        if self._chunks:
+            return self._chunks.pop(0)
+        if self._block_on_empty:
+            raise BlockingIOError
+        return b""
+
+    def sendall(self, payload: bytes) -> None:
+        self.sent.append(payload)
+
+    def close(self) -> None:
+        self.closed = True
+        self._fd = -1
+
+    def fileno(self) -> int:
+        return self._fd
+
+
+def test_pump_idle_processes_pending_packets(monkeypatch, tmp_path):
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+
+    fake_socket = _FakeSocket([b"who QuickMUD *@* :payload\n"], block_on_empty=True)
+
+    def fake_select(read_list, _write_list, _error_list, _timeout):
+        return list(read_list), [], []
+
+    monkeypatch.setattr("mud.imc.select.select", fake_select)
+
+    import mud.imc.network as network
+
+    connect_calls: list[Mapping[str, str]] = []
+
+    def fake_connect(config: Mapping[str, str]) -> network.IMCConnection:
+        connect_calls.append(config)
+        frame = network.build_handshake_frame(config)
+        port_raw = config.get("ServerPort", "0")
+        try:
+            port = int(port_raw) if port_raw else 0
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            port = 0
+        return network.IMCConnection(
+            socket=fake_socket,
+            address=(config.get("ServerAddr", ""), port),
+            handshake_frame=frame,
+            handshake_complete=True,
+        )
+
+    monkeypatch.setattr("mud.imc.connect_and_handshake", fake_connect)
+
+    reset_state()
+    maybe_open_socket(force_reload=True)
+    state = get_state()
+    assert state is not None
+    assert connect_calls, "connect_and_handshake should be invoked"
+    assert state.connected is True
+    assert state.connection is not None
+
+    handled: list[str] = []
+
+    def recorder(packet: IMCPacket) -> None:
+        handled.append(packet.payload["raw"])  # type: ignore[index]
+
+    state.packet_handlers["who"] = recorder
+
+    pump_idle()
+
+    assert handled == ["who QuickMUD *@* :payload"]
+    assert fake_socket.closed is False
+
+
+def test_pump_idle_flushes_outgoing_queue(monkeypatch, tmp_path):
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+
+    fake_socket = _FakeSocket([], block_on_empty=True)
+
+    def fake_select(read_list, write_list, _error_list, _timeout):
+        return [], list(write_list), []
+
+    monkeypatch.setattr("mud.imc.select.select", fake_select)
+
+    import mud.imc.network as network
+
+    def fake_connect(config: Mapping[str, str]) -> network.IMCConnection:
+        frame = network.build_handshake_frame(config)
+        port_raw = config.get("ServerPort", "0")
+        try:
+            port = int(port_raw) if port_raw else 0
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            port = 0
+        return network.IMCConnection(
+            socket=fake_socket,
+            address=(config.get("ServerAddr", ""), port),
+            handshake_frame=frame,
+            handshake_complete=True,
+        )
+
+    monkeypatch.setattr("mud.imc.connect_and_handshake", fake_connect)
+
+    reset_state()
+    maybe_open_socket(force_reload=True)
+    state = get_state()
+    assert state is not None
+    assert state.connection is not None
+
+    state.outgoing_queue.extend(
+        [
+            "chat QuickMUD *@* :Hello there",
+            "who QuickMUD *@* :payload",
+        ]
+    )
+
+    pump_idle()
+
+    assert fake_socket.sent == [
+        b"chat QuickMUD *@* :Hello there\n",
+        b"who QuickMUD *@* :payload\n",
+    ]
+    assert state.outgoing_queue == []
+    assert fake_socket.closed is False
+
+
+def test_pump_idle_handles_socket_disconnect(monkeypatch, tmp_path):
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+
+    disconnecting_socket = _FakeSocket([b""], block_on_empty=False)
+    replacement_socket = _FakeSocket([], block_on_empty=True)
+
+    def fake_select(read_list, _write_list, _error_list, _timeout):
+        return list(read_list), [], []
+
+    monkeypatch.setattr("mud.imc.select.select", fake_select)
+
+    import mud.imc.network as network
+    from mud.imc import _KEEPALIVE_INTERVAL
+
+    sockets = [disconnecting_socket, replacement_socket]
+
+    connect_calls: list[Mapping[str, str]] = []
+
+    def fake_connect(config: Mapping[str, str]) -> network.IMCConnection:
+        connect_calls.append(config)
+        frame = network.build_handshake_frame(config)
+        port_raw = config.get("ServerPort", "0")
+        try:
+            port = int(port_raw) if port_raw else 0
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            port = 0
+        sock = sockets.pop(0)
+        return network.IMCConnection(
+            socket=sock,
+            address=(config.get("ServerAddr", ""), port),
+            handshake_frame=frame,
+            handshake_complete=True,
+        )
+
+    monkeypatch.setattr("mud.imc.connect_and_handshake", fake_connect)
+
+    reset_state()
+    maybe_open_socket(force_reload=True)
+    state = get_state()
+    assert state is not None
+    assert connect_calls, "connect_and_handshake should be invoked"
+
+    state.idle_pulses = _KEEPALIVE_INTERVAL - 1
+    state.last_keepalive_pulse = 0
+
+    pump_idle()
+
+    assert disconnecting_socket.closed is True
+    assert state.connection is not None
+    assert state.connection.socket is replacement_socket
+    assert replacement_socket.sent, "keepalive frame should be sent after reconnect"
+    assert b"keepalive-request" in replacement_socket.sent[0]
 @pytest.fixture
 def imc_default_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     root = _default_imc_dir()

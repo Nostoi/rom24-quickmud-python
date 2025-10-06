@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import os
+import select
 
 from .commands import (
     IMCCommand,
@@ -102,10 +103,13 @@ class IMCState:
     user_cache: Dict[str, IMCUserCacheEntry]
     channel_history: Dict[str, List[str]]
     connection: Optional[IMCConnection]
+    outgoing_queue: List[str]
     idle_pulses: int = 0
     ucache_refresh_deadline: int = 0
     color_path: Path | None = None
     who_path: Path | None = None
+    incoming_buffer: str = ""
+    last_keepalive_pulse: int = 0
 
     def dispatch_packet(self, packet: IMCPacket) -> None:
         handler = self.packet_handlers.get(packet.type)
@@ -122,6 +126,9 @@ _REQUIRED_CONFIG_FIELDS = {
     "ClientPwd",
     "ServerPwd",
 }
+
+_MAX_READ_BYTES = 4096
+_KEEPALIVE_INTERVAL = 60
 
 
 def _repo_root() -> Path:
@@ -579,8 +586,187 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
         ucache_refresh_deadline=ucache_refresh_deadline,
         color_path=color_path,
         who_path=who_path,
+        outgoing_queue=list(previous_state.outgoing_queue) if previous_state else [],
     )
     return _state
+
+
+def _handle_disconnect(state: IMCState) -> None:
+    """Close the current socket and try to re-establish the connection."""
+
+    connection = state.connection
+    if connection:
+        connection.close()
+    state.connection = None
+    state.connected = False
+    state.incoming_buffer = ""
+
+    if not autoconnect_enabled(state.config):
+        return
+
+    try:
+        new_connection = connect_and_handshake(state.config)
+    except IMCConnectionError:
+        return
+
+    state.connection = new_connection
+    state.connected = new_connection.handshake_complete
+    state.last_keepalive_pulse = max(0, state.idle_pulses - _KEEPALIVE_INTERVAL)
+
+
+def _dispatch_buffered_packets(state: IMCState, chunk: str) -> None:
+    """Split router frames on newlines and hand them to registered handlers."""
+
+    buffer = state.incoming_buffer + chunk
+    lines = buffer.split("\n")
+    if buffer.endswith("\n"):
+        state.incoming_buffer = ""
+    else:
+        state.incoming_buffer = lines.pop()
+
+    for raw_line in lines:
+        line = raw_line.rstrip("\r").strip()
+        if not line:
+            continue
+        packet_type = line.split(maxsplit=1)[0].lower()
+        packet = IMCPacket(type=packet_type, payload={"raw": line})
+        state.dispatch_packet(packet)
+
+
+def _poll_router_socket(state: IMCState) -> None:
+    """Read any queued bytes from the router and dispatch resulting packets."""
+
+    connection = state.connection
+    if not connection:
+        return
+
+    sock = getattr(connection, "socket", None)
+    if sock is None:
+        _handle_disconnect(state)
+        return
+
+    fileno_method = getattr(sock, "fileno", None)
+    if fileno_method is None or not callable(fileno_method):
+        # Test doubles without file descriptors cannot be polled.
+        return
+
+    try:
+        if fileno_method() < 0:
+            _handle_disconnect(state)
+            return
+    except (OSError, ValueError):
+        _handle_disconnect(state)
+        return
+
+    try:
+        readable, _, _ = select.select([sock], [], [], 0)
+    except (OSError, ValueError):
+        _handle_disconnect(state)
+        return
+
+    if not readable:
+        return
+
+    try:
+        payload = sock.recv(_MAX_READ_BYTES)
+    except BlockingIOError:
+        return
+    except OSError:
+        _handle_disconnect(state)
+        return
+
+    if not payload:
+        _handle_disconnect(state)
+        return
+
+    chunk = payload.decode("latin-1", errors="ignore")
+    _dispatch_buffered_packets(state, chunk)
+
+
+def _flush_outgoing_queue(state: IMCState) -> None:
+    """Write queued frames to the router socket when it is writable."""
+
+    if not state.outgoing_queue:
+        return
+
+    connection = state.connection
+    if not connection:
+        return
+
+    sock = getattr(connection, "socket", None)
+    if sock is None:
+        _handle_disconnect(state)
+        return
+
+    fileno_method = getattr(sock, "fileno", None)
+    if fileno_method is None or not callable(fileno_method):
+        # Without a file descriptor we cannot poll writability; leave queue intact.
+        return
+
+    try:
+        if fileno_method() < 0:
+            _handle_disconnect(state)
+            return
+    except (OSError, ValueError):
+        _handle_disconnect(state)
+        return
+
+    try:
+        _, writable, _ = select.select([], [sock], [], 0)
+    except (OSError, ValueError):
+        _handle_disconnect(state)
+        return
+
+    if sock not in writable:
+        return
+
+    while state.outgoing_queue:
+        frame = state.outgoing_queue[0]
+        payload = frame if frame.endswith("\n") else f"{frame}\n"
+        try:
+            sock.sendall(payload.encode("latin-1"))
+        except BlockingIOError:
+            return
+        except OSError:
+            _handle_disconnect(state)
+            return
+
+        state.outgoing_queue.pop(0)
+
+        if not state.outgoing_queue:
+            break
+
+        try:
+            _, writable, _ = select.select([], [sock], [], 0)
+        except (OSError, ValueError):
+            _handle_disconnect(state)
+            return
+
+        if sock not in writable:
+            return
+
+
+def _send_keepalive(state: IMCState) -> None:
+    """Emit a lightweight keepalive packet to mirror ROM's idle loop."""
+
+    connection = state.connection
+    if not connection:
+        return
+
+    sock = getattr(connection, "socket", None)
+    if sock is None:
+        _handle_disconnect(state)
+        return
+
+    local = state.config.get("LocalName", "*")
+    frame = f"keepalive-request {local} *@* :ping"
+    try:
+        sock.sendall((frame + "\n").encode("latin-1"))
+    except OSError:
+        _handle_disconnect(state)
+        return
+
+    state.last_keepalive_pulse = state.idle_pulses
 
 
 def pump_idle() -> None:
@@ -593,3 +779,21 @@ def pump_idle() -> None:
     if not state:
         return
     state.idle_pulses += 1
+
+    if not state.connected or not state.connection:
+        if autoconnect_enabled(state.config):
+            _handle_disconnect(state)
+        return
+
+    if not state.connection.handshake_complete:
+        return
+
+    _poll_router_socket(state)
+    _flush_outgoing_queue(state)
+
+    if (
+        state.connected
+        and state.connection
+        and state.idle_pulses - state.last_keepalive_pulse >= _KEEPALIVE_INTERVAL
+    ):
+        _send_keepalive(state)

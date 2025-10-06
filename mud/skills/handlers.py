@@ -11,6 +11,8 @@ from mud.combat.engine import (
     stop_fighting,
     update_pos,
 )
+from mud.game_loop import SkyState, weather
+from mud.characters.follow import add_follower, stop_follower
 from mud.magic.effects import (
     SpellTarget,
     acid_effect,
@@ -21,8 +23,34 @@ from mud.magic.effects import (
 )
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag, DamageType, Position
+from mud.models.constants import AffectFlag, DamageType, ImmFlag, Position, RoomFlag
 from mud.utils import rng_mm
+
+
+def _send_to_char(character: Character, message: str) -> None:
+    """Append a message to the character similar to ROM send_to_char."""
+
+    if hasattr(character, "send_to_char"):
+        try:
+            character.send_to_char(message)
+            return
+        except Exception:  # pragma: no cover - defensive parity guard
+            pass
+    if hasattr(character, "messages"):
+        character.messages.append(message)
+
+
+def _is_outside(character: Character) -> bool:
+    """Return True when the character is in a room without ROOM_INDOORS."""
+
+    room = getattr(character, "room", None)
+    if room is None:
+        return False
+    try:
+        flags = int(getattr(room, "room_flags", 0) or 0)
+    except (TypeError, ValueError):  # pragma: no cover - invalid flags fall back
+        flags = 0
+    return not bool(flags & int(RoomFlag.ROOM_INDOORS))
 
 
 def _breath_damage(
@@ -215,11 +243,47 @@ def bless(caster: Character, target: Character | None = None) -> bool:
     return target.apply_spell_effect(effect)
 
 
-def blindness(caster, target=None):
-    """Stub implementation for blindness.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def blindness(caster: Character, target: Character | None = None) -> bool:
+    """Apply ROM ``spell_blindness`` affect and messaging."""
+
+    if caster is None or target is None:
+        raise ValueError("blindness requires a target")
+
+    if target.has_affect(AffectFlag.BLIND) or target.has_spell_effect("blindness"):
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    if saves_spell(level, target, int(DamageType.OTHER)):
+        return False
+
+    effect = SpellEffect(
+        name="blindness",
+        duration=1 + level,
+        level=level,
+        hitroll_mod=-4,
+        affect_flag=AffectFlag.BLIND,
+        wear_off_message="You can see again.",
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    if hasattr(target, "messages"):
+        target.messages.append("You are blinded!")
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        if target.name:
+            room_message = f"{target.name} appears to be blinded."
+        else:
+            room_message = "Someone appears to be blinded."
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is target:
+                continue
+            if hasattr(occupant, "messages"):
+                occupant.messages.append(room_message)
+
+    return True
 
 
 def burning_hands(caster: Character, target: Character | None = None) -> int:
@@ -301,9 +365,28 @@ def call_lightning(caster: Character, target: Character | None = None) -> int:
     if target is None:
         raise ValueError("call_lightning requires a target")
 
+    if not _is_outside(caster):
+        _send_to_char(caster, "You must be out of doors.")
+        return 0
+
+    if weather.sky < SkyState.RAINING:
+        _send_to_char(caster, "You need bad weather.")
+        return 0
+
+    caster_room = getattr(caster, "room", None)
+    target_room = getattr(target, "room", None)
+    if caster_room is None or target_room is None or caster_room is not target_room:
+        return 0
+
     level = max(getattr(caster, "level", 0), 0)
     dice_level = max(0, c_div(level, 2))
     damage = rng_mm.dice(dice_level, 8)
+
+    if damage <= 0:
+        return 0
+
+    _send_to_char(caster, "Mota's lightning strikes your foes!")
+    caster_room.broadcast("$n calls Mota's lightning to strike $s foes!", exclude=caster)
 
     if saves_spell(level, target, DamageType.LIGHTNING):
         damage = c_div(damage, 2)
@@ -355,11 +438,78 @@ def change_sex(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def charm_person(caster, target=None):
-    """Stub implementation for charm_person.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def charm_person(caster: Character, target: Character | None = None) -> bool:
+    """Apply ROM ``spell_charm_person`` safeguards and charm affect."""
+
+    if caster is None or target is None:
+        raise ValueError("charm_person requires a target")
+
+    if target is caster:
+        if hasattr(caster, "messages") and isinstance(caster.messages, list):
+            caster.messages.append("You like yourself even better!")
+        return False
+
+    if target.has_affect(AffectFlag.CHARM) or target.has_spell_effect("charm person"):
+        return False
+
+    if caster.has_affect(AffectFlag.CHARM):
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    victim_level = max(int(getattr(target, "level", 0) or 0), 0)
+    if level < victim_level:
+        return False
+
+    imm_flags = int(getattr(target, "imm_flags", 0) or 0)
+    if imm_flags & int(ImmFlag.CHARM):
+        return False
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        flags = int(getattr(room, "room_flags", 0) or 0)
+        if flags & int(RoomFlag.ROOM_LAW):
+            if hasattr(caster, "messages") and isinstance(caster.messages, list):
+                caster.messages.append(
+                    "The mayor does not allow charming in the city limits."
+                )
+            return False
+
+    if saves_spell(level, target, DamageType.CHARM):
+        return False
+
+    if getattr(target, "master", None) is not None:
+        stop_follower(target)
+
+    add_follower(target, caster)
+    target.leader = caster
+
+    base_duration = max(1, c_div(level, 4))
+    duration = rng_mm.number_fuzzy(base_duration)
+
+    effect = SpellEffect(
+        name="charm person",
+        duration=duration,
+        level=level,
+        affect_flag=AffectFlag.CHARM,
+        wear_off_message="You feel more self-confident.",
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        stop_follower(target)
+        return False
+
+    actor_name = getattr(caster, "name", None) or "Someone"
+    target_messages = getattr(target, "messages", None)
+    if isinstance(target_messages, list):
+        target_messages.append(f"Isn't {actor_name} just so nice?")
+
+    if caster is not target:
+        target_name = getattr(target, "name", None) or "Someone"
+        caster_messages = getattr(caster, "messages", None)
+        if isinstance(caster_messages, list):
+            caster_messages.append(f"{target_name} looks at you with adoring eyes.")
+
+    return True
 
 
 def chill_touch(caster, target=None):

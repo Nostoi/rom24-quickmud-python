@@ -4,7 +4,7 @@ from pathlib import Path
 
 from mud.game_loop import violence_tick
 from mud.models.character import Character, character_registry
-from mud.skills import SkillRegistry
+from mud.skills import SkillRegistry, SkillUseResult
 from mud.utils import rng_mm
 
 
@@ -24,7 +24,9 @@ def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     # Force roll=75
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 75)
     result = reg.use(caster, "fireball", target)
-    assert result == 42
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 42
 
     # Cooldown applied; tick twice to reuse and drain wait via violence pulses
     character_registry.append(caster)
@@ -39,4 +41,5 @@ def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     # Force roll=76 → fail
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 76)
     result2 = reg.use(caster, "fireball", target)
-    assert result2 is False
+    assert isinstance(result2, SkillUseResult)
+    assert result2.success is False
