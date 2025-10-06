@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 from random import Random
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from mud.advancement import gain_exp
 from mud.math.c_compat import c_div
@@ -17,6 +18,20 @@ from mud.utils import rng_mm
 
 if TYPE_CHECKING:
     from mud.models.character import Character
+
+
+@dataclass
+class SkillUseResult:
+    """Outcome container for `SkillRegistry.use` invocations."""
+
+    success: bool
+    message: str = ""
+    payload: Any | None = None
+    cooldown: int = 0
+    lag: int = 0
+
+    def __bool__(self) -> bool:  # pragma: no cover - convenience shim
+        return self.success
 
 
 class SkillRegistry:
@@ -139,7 +154,7 @@ class SkillRegistry:
 
         return first_match
 
-    def use(self, caster, name: str, target=None):
+    def use(self, caster, name: str, target=None) -> SkillUseResult:
         """Execute a skill and handle ROM-style success, lag, and advancement."""
 
         skill = self.get(name)
@@ -174,15 +189,95 @@ class SkillRegistry:
             failure_threshold = int(round(skill.failure_rate * 100))
             success = roll > failure_threshold
 
-        result = False
         if success:
-            result = self.handlers[name](caster, target)
+            handler_result = self.handlers[name](caster, target)
+            result = self._normalize_success_result(skill, handler_result, lag)
+        else:
+            failure_message = self._failure_message(skill)
+            if hasattr(caster, "messages") and isinstance(caster.messages, list):
+                caster.messages.append(failure_message)
+            result = SkillUseResult(
+                success=False,
+                message=failure_message,
+                payload=None,
+                cooldown=skill.cooldown,
+                lag=lag,
+            )
 
         cooldowns[name] = skill.cooldown
         caster.cooldowns = cooldowns
 
         self._check_improve(caster, skill, name, success)
         return result
+
+    def _normalize_success_result(
+        self,
+        skill: Skill,
+        handler_result: object,
+        lag: int,
+    ) -> SkillUseResult:
+        """Wrap handler returns into a `SkillUseResult` with sensible defaults."""
+
+        if isinstance(handler_result, SkillUseResult):
+            cooldown = handler_result.cooldown or skill.cooldown
+            wait_state = handler_result.lag or lag
+            return SkillUseResult(
+                success=handler_result.success,
+                message=handler_result.message,
+                payload=handler_result.payload,
+                cooldown=cooldown,
+                lag=wait_state,
+            )
+
+        message = ""
+        payload = handler_result
+
+        if isinstance(handler_result, tuple) and len(handler_result) == 2:
+            payload, possible_message = handler_result
+            if isinstance(possible_message, str):
+                message = possible_message
+        elif isinstance(handler_result, str):
+            message = handler_result
+
+        if not message:
+            message = self._default_success_message(skill)
+
+        return SkillUseResult(
+            success=True,
+            message=message,
+            payload=payload,
+            cooldown=skill.cooldown,
+            lag=lag,
+        )
+
+    def _failure_message(self, skill: Skill) -> str:
+        """Return the ROM-aligned failure message for a skill or spell."""
+
+        messages = getattr(skill, "messages", {}) or {}
+        if isinstance(messages, dict):
+            failure = messages.get("failure")
+            if isinstance(failure, str) and failure:
+                return failure
+
+        if getattr(skill, "type", "").lower() == "spell":
+            return "You lost your concentration."
+        return f"You fail to {skill.name}."
+
+    def _default_success_message(self, skill: Skill) -> str:
+        """Provide a fallback success string when handlers don't emit one."""
+
+        messages = getattr(skill, "messages", {}) or {}
+        if isinstance(messages, dict):
+            success = messages.get("success")
+            if isinstance(success, str) and success:
+                return success
+
+        skill_type = getattr(skill, "type", "").lower()
+        if skill_type == "spell":
+            return f"You cast {skill.name}."
+        if skill_type == "skill":
+            return f"You use {skill.name}."
+        return skill.name
 
     def _compute_skill_lag(self, caster, skill: Skill) -> int:
         """Return the ROM wait-state (pulses) for a skill, adjusted by affects."""

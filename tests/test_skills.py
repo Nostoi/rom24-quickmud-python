@@ -7,12 +7,12 @@ import mud.magic.effects as magic_effects
 import mud.skills.handlers as skill_handlers
 from mud.commands.combat import do_backstab, do_bash, do_berserk, do_rescue
 from mud.config import get_pulse_violence
-from mud.game_loop import violence_tick
+from mud.game_loop import SkyState, violence_tick, weather
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
-from mud.models.constants import AffectFlag, Position, WeaponType
+from mud.models.constants import AffectFlag, ImmFlag, Position, RoomFlag, WeaponType
 from mud.models.room import Room
-from mud.skills import SkillRegistry, load_skills, skill_registry
+from mud.skills import SkillRegistry, SkillUseResult, load_skills, skill_registry
 from mud.utils import rng_mm
 
 
@@ -39,17 +39,23 @@ def test_casting_uses_min_mana_and_beats() -> None:
     assert skill.slot == 26
 
     result = reg.use(caster, "fireball", target)
-    assert result == 42
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 42
+    assert result.cooldown == skill.cooldown
     assert caster.mana == 20  # 35 - min_mana 15
     expected_wait = max(1, skill.lag)
     assert caster.wait == expected_wait
     assert caster.cooldowns["fireball"] == 0  # Fireball has no cooldown in skills.json
+    assert result.lag == expected_wait
+    assert result.message == "You cast fireball."
 
     # Simulate wait recovery before a second cast
     caster.wait = 0
     caster.mana = 15
-    reg.use(caster, "fireball", target)
+    second = reg.use(caster, "fireball", target)
     assert caster.mana == 0
+    assert isinstance(second, SkillUseResult)
 
 
 def test_cast_fireball_failure() -> None:
@@ -68,9 +74,45 @@ def test_cast_fireball_failure() -> None:
     caster = Character(mana=20)
     target = Character()
     result = reg.use(caster, "fireball", target)
-    assert result is False
+    assert isinstance(result, SkillUseResult)
+    assert result.success is False
+    assert result.payload is None
+    assert "concentration" in result.message
+    assert result.cooldown == skill.cooldown
+    assert result.lag == max(1, skill.lag)
+    assert caster.messages[-1] == result.message
     assert caster.mana == 5  # 20 - 15 mana cost = 5 (mana consumed even on failure)
     assert called == []
+
+
+def test_skill_use_reports_result(monkeypatch: pytest.MonkeyPatch) -> None:
+    reg = load_registry()
+    skill = reg.get("fireball")
+    caster = Character(
+        mana=skill.min_mana * 2,
+        is_npc=False,
+        skills={"fireball": 75},
+    )
+    target = Character()
+
+    rolls = iter([50, 90])
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: next(rolls))
+
+    success = reg.use(caster, "fireball", target)
+    assert isinstance(success, SkillUseResult)
+    assert success.success is True
+    assert success.message == "You cast fireball."
+    assert success.payload == 42
+
+    caster.wait = 0
+
+    failure = reg.use(caster, "fireball", target)
+    assert isinstance(failure, SkillUseResult)
+    assert failure.success is False
+    assert failure.payload is None
+    assert "concentration" in failure.message
+    assert caster.messages[-1] == failure.message
 
 
 def test_skill_use_advances_learned_percent(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -96,7 +138,9 @@ def test_skill_use_advances_learned_percent(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))
 
     result = reg.use(caster, "fireball", target)
-    assert result == 42
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 42
     assert caster.skills["fireball"] == 51
     assert caster.exp == 8
     assert any("become better" in msg for msg in caster.messages)
@@ -125,7 +169,8 @@ def test_skill_failure_grants_learning_xp(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))
 
     result = reg.use(caster, "fireball", target)
-    assert result is False
+    assert isinstance(result, SkillUseResult)
+    assert result.success is False
     assert caster.skills["fireball"] == 52
     assert caster.exp == 8
     assert any("learn from your mistakes" in msg for msg in caster.messages)
@@ -144,18 +189,82 @@ def test_skill_use_sets_wait_state_and_blocks_until_ready(
     caster.level = 30
     target = Character()
 
-    result = reg.use(caster, "acid blast", target)
-    assert result == 60
     expected_wait = max(1, skill.lag)
+    result = reg.use(caster, "acid blast", target)
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 60
+    assert result.lag == expected_wait
     assert caster.wait == expected_wait
     assert caster.mana == 20
     assert caster.cooldowns.get("acid blast", 0) == skill.cooldown
+    assert result.cooldown == skill.cooldown
 
     with pytest.raises(ValueError) as excinfo:
         reg.use(caster, "acid blast", target)
     assert "recover" in str(excinfo.value)
     assert caster.messages[-1] == "You are still recovering."
     assert caster.mana == 20
+
+
+def test_burning_hands_damage_and_save(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(level=10)
+    target = Character(hit=100, max_hit=100)
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: high)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    damage = skill_handlers.burning_hands(caster, target)
+    assert damage == 58
+    assert target.hit == 42
+
+    target.hit = 100
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: True)
+
+    halved = skill_handlers.burning_hands(caster, target)
+    assert halved == 29
+    assert target.hit == 71
+
+
+def test_call_lightning_weather_gating(monkeypatch: pytest.MonkeyPatch) -> None:
+    original_sky = weather.sky
+    caster_room = Room(vnum=100, room_flags=0)
+    target_room = caster_room
+
+    caster = Character(level=18, room=caster_room, is_npc=False)
+    target = Character(hit=120, max_hit=120, room=target_room, is_npc=True)
+    caster_room.people.extend([caster, target])
+
+    weather.sky = SkyState.CLOUDLESS
+    target.hit = 120
+    caster.messages.clear()
+
+    blocked_weather = skill_handlers.call_lightning(caster, target)
+    assert blocked_weather == 0
+    assert caster.messages[-1] == "You need bad weather."
+    assert target.hit == 120
+
+    caster_room.room_flags = int(RoomFlag.ROOM_INDOORS)
+    weather.sky = SkyState.LIGHTNING
+    caster.messages.clear()
+
+    blocked_indoor = skill_handlers.call_lightning(caster, target)
+    assert blocked_indoor == 0
+    assert caster.messages[-1] == "You must be out of doors."
+    assert target.hit == 120
+
+    caster_room.room_flags = 0
+    weather.sky = SkyState.RAINING
+    caster.messages.clear()
+    monkeypatch.setattr(rng_mm, "dice", lambda number, size: 40)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    dealt = skill_handlers.call_lightning(caster, target)
+    assert dealt == 40
+    assert target.hit == 80
+    assert "Mota's lightning strikes your foes!" in caster.messages
+
+    weather.sky = original_sky
 
 
 def test_skill_tick_only_reduces_cooldowns() -> None:
@@ -255,6 +364,108 @@ def test_sanctuary_applies_affect_and_messages() -> None:
     assert target.messages[-1] == "You are surrounded by a white aura."
     assert "Tank is surrounded by a white aura." in observer.messages
     assert "Tank is surrounded by a white aura." in caster.messages
+
+
+def test_blindness_applies_affect_and_messages(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Mage", level=18, is_npc=False)
+    target = Character(name="Orc", hitroll=0)
+    watcher = Character(name="Watcher", is_npc=False)
+
+    room = Room(vnum=3001)
+    for ch in (caster, target, watcher):
+        room.add_character(ch)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    result = skill_handlers.blindness(caster, target)
+
+    assert result is True
+    assert target.has_affect(AffectFlag.BLIND)
+    assert target.hitroll == -4
+    effect = target.spell_effects["blindness"]
+    assert effect.duration == 1 + caster.level
+    assert effect.affect_flag == AffectFlag.BLIND
+    assert effect.hitroll_mod == -4
+    assert effect.wear_off_message == "You can see again."
+    assert target.messages[-1] == "You are blinded!"
+    assert "Orc appears to be blinded." in caster.messages
+    assert "Orc appears to be blinded." in watcher.messages
+
+
+def test_blindness_save_blocks_affect(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Mage", level=18, is_npc=False)
+    target = Character(name="Orc")
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: True)
+
+    before_messages = list(target.messages)
+    result = skill_handlers.blindness(caster, target)
+
+    assert result is False
+    assert not target.has_affect(AffectFlag.BLIND)
+    assert target.spell_effects == {}
+    assert target.hitroll == 0
+    assert target.messages == before_messages
+
+
+def test_charm_person_sets_affect_and_follower(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Enchanter", level=20, is_npc=False)
+    target = Character(name="Guard", level=10, is_npc=True)
+    observer = Character(name="Onlooker", is_npc=False)
+
+    room = Room(vnum=3400)
+    for ch in (caster, target, observer):
+        room.add_character(ch)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+    monkeypatch.setattr(rng_mm, "number_fuzzy", lambda base: base)
+
+    result = skill_handlers.charm_person(caster, target)
+
+    assert result is True
+    assert target.master is caster
+    assert target.leader is caster
+    assert target.has_affect(AffectFlag.CHARM)
+
+    effect = target.spell_effects["charm person"]
+    assert effect.level == caster.level
+    assert effect.duration == max(1, c_div(caster.level, 4))
+    assert effect.affect_flag == AffectFlag.CHARM
+    assert effect.wear_off_message == "You feel more self-confident."
+
+    assert any(message.startswith("You now follow") for message in target.messages)
+    assert "Isn't Enchanter just so nice?" in target.messages
+    assert "Guard looks at you with adoring eyes." in caster.messages
+
+
+def test_charm_person_requires_save_and_room_rules(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Magistrate", level=18, is_npc=False)
+    target = Character(name="Citizen", level=15, is_npc=False)
+
+    room = Room(vnum=3450, room_flags=int(RoomFlag.ROOM_LAW))
+    room.add_character(caster)
+    room.add_character(target)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    result = skill_handlers.charm_person(caster, target)
+
+    assert result is False
+    assert target.master is None
+    assert "charm person" not in target.spell_effects
+    assert "The mayor does not allow charming in the city limits." in caster.messages
+
+    caster.messages.clear()
+    room.room_flags = 0
+    target.imm_flags = int(ImmFlag.CHARM)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: True)
+
+    result = skill_handlers.charm_person(caster, target)
+
+    assert result is False
+    assert target.master is None
+    assert target.spell_effects == {}
+    assert caster.messages == []
 
 
 def test_shield_applies_ac_bonus_and_duration() -> None:
@@ -519,11 +730,15 @@ def test_acid_breath_applies_acid_effect(monkeypatch: pytest.MonkeyPatch) -> Non
 
     result = reg.use(caster, "acid breath", target)
 
-    assert result == 202
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 202
     assert target.hit == 118
     assert caster.wait == max(1, skill.lag)
     assert caster.mana == 25
     assert caster.cooldowns.get("acid breath", None) == 0
+    assert result.cooldown == skill.cooldown
+    assert result.lag == max(1, skill.lag)
 
     effects = getattr(target, "last_spell_effects", [])
     assert effects
@@ -568,12 +783,16 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = reg.use(caster, "fire breath", target)
 
-    assert result == 202
+    assert isinstance(result, SkillUseResult)
+    assert result.success is True
+    assert result.payload == 202
     assert target.hit == 158
     assert bystander.hit == 130
     assert caster.wait == max(1, skill.lag)
     assert caster.mana == skill.mana_cost + 50 - skill.mana_cost
     assert caster.cooldowns.get("fire breath", None) == 0
+    assert result.cooldown == skill.cooldown
+    assert result.lag == max(1, skill.lag)
 
     room_effects = getattr(room, "last_spell_effects", [])
     assert {"effect": "fire", "level": 40, "damage": 101, "target": magic_effects.SpellTarget.ROOM} in room_effects

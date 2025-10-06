@@ -1,4 +1,5 @@
 import mud.game_loop as gl
+from mud.ai import mobile_update
 from mud.config import get_pulse_tick
 from mud.game_loop import (
     SkyState,
@@ -18,6 +19,7 @@ from mud.models.room import Room
 from mud.models.room import room_registry
 from mud.utils import rng_mm
 from mud.time import time_info
+import mud.mobprog as mobprog
 
 
 def setup_function(_):
@@ -143,6 +145,88 @@ def test_aggressive_mobile_attacks_player(monkeypatch):
 
     assert brute.fighting is hero
     assert hero.fighting is brute
+
+
+def test_mobile_update_runs_random_trigger(monkeypatch):
+    area = Area(name="Shrine")
+    room = Room(vnum=200, area=area)
+    room_registry[room.vnum] = room
+
+    oracle = Character(
+        name="Oracle",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    room.add_character(oracle)
+    character_registry.append(oracle)
+
+    calls: list[Character] = []
+
+    monkeypatch.setattr(mobprog, "mp_delay_trigger", lambda mob: False)
+
+    def fake_random(mob: Character) -> bool:
+        calls.append(mob)
+        return True
+
+    monkeypatch.setattr(mobprog, "mp_random_trigger", fake_random)
+
+    mobile_update()
+
+    assert calls == [oracle]
+    assert oracle.room is room
+
+
+def test_mobile_update_scavenges_room_loot(monkeypatch):
+    area = Area(name="Dump")
+    room = Room(vnum=201, area=area)
+    room_registry[room.vnum] = room
+
+    scavenger = Character(
+        name="Picker",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+        act=int(ActFlag.SCAVENGER),
+        carry_number=0,
+        carry_weight=0,
+    )
+    room.add_character(scavenger)
+    character_registry.append(scavenger)
+
+    cheap = ObjectData(
+        item_type=int(ItemType.TRASH),
+        wear_flags=int(WearFlag.TAKE),
+        cost=5,
+        short_descr="tin can",
+    )
+    pricey = ObjectData(
+        item_type=int(ItemType.TRASH),
+        wear_flags=int(WearFlag.TAKE),
+        cost=25,
+        short_descr="bright gem",
+    )
+    room.add_object(cheap)
+    room.add_object(pricey)
+
+    def fake_number_bits(width: int) -> int:
+        if width == 6:
+            return 0
+        if width == 3:
+            return 1
+        if width == 5:
+            return 6
+        return 0
+
+    monkeypatch.setattr(rng_mm, "number_bits", fake_number_bits)
+
+    mobile_update()
+
+    assert pricey in getattr(scavenger, "inventory", [])
+    assert pricey.carried_by is scavenger
+    assert cheap in getattr(room, "contents", [])
+    assert pricey not in getattr(room, "contents", [])
+    assert scavenger.carry_number == 1
 
 
 def test_char_update_applies_conditions(monkeypatch):

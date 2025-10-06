@@ -23,6 +23,7 @@ from mud.models.constants import (
     WeaponType,
     attack_damage_type,
 )
+from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.utils import rng_mm
 from mud.skills import check_improve
 
@@ -1009,65 +1010,85 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     # Get weapon flags - support both extra_flags (for ObjIndex) and weapon_flags attribute
     weapon_flags = 0
     if hasattr(wield, "weapon_flags"):
-        weapon_flags = wield.weapon_flags
+        weapon_flags = int(getattr(wield, "weapon_flags"))
     elif hasattr(wield, "extra_flags"):
-        weapon_flags = wield.extra_flags
+        weapon_flags = int(getattr(wield, "extra_flags"))
 
     weapon_level = _weapon_level(wield) or 1
+    weapon_name = (
+        getattr(wield, "name", None)
+        or getattr(wield, "short_descr", None)
+        or "the weapon"
+    )
+    room = getattr(victim, "room", None)
 
     # WEAPON_POISON - ROM src/fight.c L600-634
     if weapon_flags & WEAPON_POISON:
-        level = weapon_level
+        level = max(1, weapon_level)
 
         if not saves_spell(level // 2, victim, DamageType.POISON):
-            messages.append("You feel poison coursing through your veins.")
-            # TODO: Apply poison affect when affect system is implemented
-            # af.where = TO_AFFECTS; af.type = gsn_poison; af.level = level * 3 / 4
-            # af.duration = level / 2; af.location = APPLY_STR; af.modifier = -1
-            # af.bitvector = AFF_POISON; affect_join(victim, &af)
+            _push_message(victim, "You feel poison coursing through your veins.")
+            if room is not None and hasattr(room, "broadcast"):
+                room.broadcast(
+                    f"{victim.name} is poisoned by the venom on {weapon_name}.",
+                    exclude=victim,
+                )
+            if hasattr(victim, "add_affect"):
+                victim.add_affect(AffectFlag.POISON)
+            messages.append(f"The venom on {weapon_name} takes hold.")
 
     # WEAPON_VAMPIRIC - ROM src/fight.c L640-649
     if weapon_flags & WEAPON_VAMPIRIC:
         dam = rng_mm.number_range(1, weapon_level // 5 + 1)
-        messages.append(f"You feel {getattr(wield, 'name', 'the weapon')} drawing your life away.")
+        _push_message(victim, f"You feel {weapon_name} drawing your life away.")
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(f"{weapon_name} draws life from {victim.name}.", exclude=victim)
 
-        # Apply vampiric damage (additional negative damage)
-        apply_damage(attacker, victim, dam, DamageType.NEGATIVE)
+        # Apply vampiric damage (additional negative damage) without extra messages
+        apply_damage(attacker, victim, dam, DamageType.NEGATIVE, show=False)
 
         # Heal attacker by half the damage
         attacker.hit += dam // 2
-        if hasattr(attacker, "max_hit"):
+        if hasattr(attacker, "max_hit") and getattr(attacker, "max_hit", 0):
             attacker.hit = min(attacker.hit, attacker.max_hit)
 
         # Shift alignment toward evil (ROM: ch->alignment = UMAX(-1000, ch->alignment - 1))
         if hasattr(attacker, "alignment"):
             attacker.alignment = max(-1000, attacker.alignment - 1)
 
+        messages.append(f"{weapon_name} drains life.")
+
     # WEAPON_FLAMING - ROM src/fight.c L651-659
     if weapon_flags & WEAPON_FLAMING:
         dam = rng_mm.number_range(1, weapon_level // 4 + 1)
-        messages.append(f"{getattr(wield, 'name', 'The weapon')} sears your flesh.")
-
-        # Apply fire damage
-        apply_damage(attacker, victim, dam, DamageType.FIRE)
-        # TODO: fire_effect((void *) victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        _push_message(victim, f"{weapon_name} sears your flesh.")
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(f"{victim.name} is burned by {weapon_name}.", exclude=victim)
+        fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
+        messages.append(f"{weapon_name} scorches {victim.name}.")
 
     # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
         dam = rng_mm.number_range(1, weapon_level // 6 + 2)
-        messages.append("The cold touch surrounds you with ice.")
-
-        # Apply cold damage
-        apply_damage(attacker, victim, dam, DamageType.COLD)
-        # TODO: cold_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        _push_message(victim, "The cold touch surrounds you with ice.")
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(f"{victim.name} is frozen by {weapon_name}.", exclude=victim)
+        cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
+        messages.append(f"{weapon_name} chills {victim.name}.")
 
     # WEAPON_SHOCKING - ROM src/fight.c L672-681
     if weapon_flags & WEAPON_SHOCKING:
         dam = rng_mm.number_range(1, weapon_level // 5 + 2)
-        messages.append("You are shocked by the weapon.")
-
-        # Apply lightning damage
-        apply_damage(attacker, victim, dam, DamageType.LIGHTNING)
-        # TODO: shock_effect(victim, wield->level / 2, dam, TARGET_CHAR) when effects exist
+        _push_message(victim, "You are shocked by the weapon.")
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(
+                f"{victim.name} is struck by lightning from {weapon_name}.",
+                exclude=victim,
+            )
+        shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        apply_damage(attacker, victim, dam, DamageType.LIGHTNING, show=False)
+        messages.append(f"{weapon_name} shocks {victim.name}.")
 
     return messages

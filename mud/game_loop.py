@@ -4,9 +4,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum
 
-from mud import mobprog
 from mud.affects.engine import tick_spell_effects
-from mud.ai import aggressive_update
+from mud.ai import aggressive_update, mobile_update
 from mud.characters.conditions import gain_condition
 from mud.combat.engine import update_pos
 from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick, get_pulse_violence
@@ -687,20 +686,6 @@ def violence_tick() -> None:
                 ch.daze = max(0, daze)
 
 
-def _mobprog_idle_tick() -> None:
-    """Run mob program random/delay triggers for idle NPCs."""
-
-    for ch in list(character_registry):
-        if not getattr(ch, "is_npc", False):
-            continue
-        default_pos = getattr(ch, "default_pos", getattr(ch, "position", Position.STANDING))
-        if getattr(ch, "position", default_pos) != default_pos:
-            continue
-        if mobprog.mp_delay_trigger(ch):
-            continue
-        mobprog.mp_random_trigger(ch)
-
-
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
     global _pulse_counter, _point_counter, _violence_counter, _area_counter, _music_counter
@@ -734,7 +719,7 @@ def game_tick() -> None:
         _music_counter = get_pulse_music()
         song_update()
     event_tick()
-    _mobprog_idle_tick()
+    mobile_update()
     aggressive_update()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()

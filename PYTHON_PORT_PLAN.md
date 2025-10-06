@@ -1,10 +1,10 @@
-<!-- LAST-PROCESSED: wiznet_imm -->
+<!-- LAST-PROCESSED: affects_saves -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,resets,weather,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,affects_saves,resets,weather,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny,game_update_loop -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: functional -->
 <!-- VALIDATION-STATUS: validated -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-14 -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-19 -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -19,7 +19,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem            | status        | evidence                                                                                                                                                                                              | tests                                                                                                                           |
 | -------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
-| skills_spells        | stub_or_partial | C: src/fight.c:3032-3094 (`do_rescue`); C: src/magic.c:4274-4320 (`spell_sanctuary`/`spell_shield`); PY: mud/skills/handlers.py:106-1367 (skill stubs); mud/commands/combat.py (missing rescue) | tests/test_skills.py; tests/test_advancement.py (add rescue/sanctuary regressions)                                             |
+| skills_spells        | stub_or_partial | C: src/magic.c:870-1900 (blindness/charm/damage tables); PY: mud/skills/handlers.py:200-920 (blindness/charm/burning hands/call lightning wired; chill touch/colour spray/curse remain stubs) | tests/test_skills.py; tests/test_skills_learned.py                                                                     |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
@@ -44,7 +44,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | logging_admin        | present_wired | C: src/act_wiz.c:2927-2982 (do_log); PY: mud/commands/admin_commands.py:cmd_log; mud/admin_logging/admin.py:9-120                                                                                     | tests/test_logging_admin.py; tests/test_logging_rotation.py                                                                     |
 | olc_builders         | present_wired | C: src/olc_act.c; PY: mud/commands/build.py:cmd_redit                                                                                                                                                 | tests/test_building.py                                                                                                          |
 | area_format_loader   | present_wired | C: src/db.c:441-520 (load_area); PY: mud/loaders/area_loader.py; mud/scripts/convert_are_to_json.py                                                                                                   | tests/test_area_loader.py; tests/test_are_conversion.py                                                                         |
-| imc_chat             | present_wired | C: src/imc.c:5392-5476; C: src/comm.c:453-859; PY: mud/imc/**init**.py:24-214; mud/game_loop.py:1-144                                                                                                 | tests/test_imc.py::test_startup_reads_config_and_connects; tests/test_imc.py::test_idle_pump_runs_when_enabled                  |
+| imc_chat             | present_wired | C: src/imc.c:3387-3545 (`imc_loop` poll/select/keepalive cadence); PY: mud/imc/__init__.py:520-724 (`pump_idle`/`_poll_router_socket`/`_send_keepalive`) | tests/test_imc.py::test_pump_idle_processes_pending_packets; tests/test_imc.py::test_pump_idle_handles_socket_disconnect |
 | player_save_format   | present_wired | C: src/save.c:save_char_obj; PY: mud/persistence.py:PlayerSave                                                                                                                                        | tests/test_player_save_format.py; tests/test_persistence.py                                                                     |
 
 <!-- COVERAGE-END -->
@@ -136,15 +136,8 @@ TASKS:
   EVIDENCE: C src/fight.c:386-520; PY mud/combat/engine.py:90-220,380-470; TEST tests/test_combat.py::test_one_hit_uses_equipped_weapon; TEST tests/test_combat_thac0_engine.py::test_weapon_skill_influences_thac0
 - ✅ [P0] **combat: restore parry/dodge/shield defensive rolls with skill improvement** — done 2025-10-20
   EVIDENCE: C src/fight.c:541-720; PY mud/combat/engine.py:700-840; PY mud/skills/registry.py:200-320; TEST tests/test_combat.py::test_parry_blocks_when_skill_learned; TEST tests/test_combat.py::test_shield_block_requires_shield; TEST tests/test_combat_defenses_prob.py::test_shield_block_triggers_before_parry_and_dodge
-- [P1] **combat: apply weapon proc effects and enhanced damage scaling**
-  - priority: P1
-  - rationale: Poison/sharpness/vampiric procs and enhanced damage bonuses are skipped so special weapons lose their ROM effects.
-  - files: mud/combat/engine.py; mud/affects/effects.py
-  - tests: tests/test_combat.py::test_sharp_weapon_doubles_damage_on_proc (new); tests/test_combat.py::test_poison_weapon_applies_affect (new)
-  - acceptance_criteria: Weapon procs trigger with ROM odds, apply affects, and enhanced damage multiplies base damage when learned.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/fight.c:640-828 (enhanced_damage, weapon procs); PY mud/combat/engine.py:470-620 (TODO placeholders returning early).
+- ✅ [P1] **combat: apply weapon proc effects and enhanced damage scaling** — done 2025-11-14
+  EVIDENCE: PY mud/combat/engine.py:L988-L1092; TEST tests/test_combat.py::test_sharp_weapon_doubles_damage_on_proc; TEST tests/test_combat.py::test_poison_weapon_applies_affect
 - ✅ [P0] **combat: port ROM dam_message severity messaging** — done 2025-10-31
   - priority: P0
   - rationale: `apply_damage` emits generic strings while ROM's `dam_message` scales verbs by damage percent, picks attack nouns, and broadcasts to attacker/victim/bystanders, erasing parity and color codes.
@@ -176,10 +169,10 @@ NOTES:
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-11-09
+### skills_spells — Parity Audit 2025-11-15
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.25)
-KEY RISKS: affects, damage, rng
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
+KEY RISKS: affects, damage, messaging, crowd_control
 TASKS:
 
 - ✅ [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)** — done 2025-10-20
@@ -195,40 +188,88 @@ TASKS:
 - ✅ [P0] **skills_spells: implement sanctuary and shield defensive spells with ROM affects** — done 2025-11-10
   EVIDENCE: PY mud/skills/handlers.py:L1100-L1400; PY mud/models/character.py:L240-L340
   EVIDENCE: TEST tests/test_skills.py::test_sanctuary_applies_affect_and_messages; TEST tests/test_skills.py::test_shield_applies_ac_bonus_and_duration
-- [P1] **skills_spells: wire skill improvement and cooldown feedback**
+- ✅ [P1] **skills_spells: wire skill improvement and cooldown feedback** — done 2025-10-06
+  EVIDENCE: PY mud/skills/registry.py:180-265; PY mud/skills/__init__.py:1-12; TEST tests/test_skills.py::test_skill_use_reports_result; TEST tests/test_skills_learned.py::test_learned_percent_gates_success_boundary
+
+- ✅ [P0] **skills_spells: port blindness spell affect and messaging parity** — done 2025-11-14
+  EVIDENCE: C src/magic.c:870-889 (`spell_blindness` affect_to_char sequence); PY mud/skills/handlers.py:218-258; TEST tests/test_skills.py::test_blindness_applies_affect_and_messages; TEST tests/test_skills.py::test_blindness_save_blocks_affect
+
+- ✅ [P1] **skills_spells: restore burning hands and call lightning damage gates** — done 2025-11-18
+  EVIDENCE: PY mud/skills/handlers.py:L30-L90; PY mud/skills/handlers.py:L363-L396; TEST tests/test_skills.py::test_burning_hands_damage_and_save; TEST tests/test_skills.py::test_call_lightning_weather_gating
+- ✅ [P0] **skills_spells: port charm person charm-break, follow, and save logic** — done 2025-11-15
+  EVIDENCE: PY mud/skills/handlers.py:360-460; PY mud/characters/follow.py:1-78
+  EVIDENCE: TEST tests/test_skills.py::test_charm_person_sets_affect_and_follower; TEST tests/test_skills.py::test_charm_person_requires_save_and_room_rules
+- [P1] **skills_spells: implement chill touch damage and strength debuff**
   - priority: P1
-  - rationale: `SkillRegistry.use` records cooldowns but stubs never return success/failure strings, so players miss ROM feedback and skill practice hooks for stubs.
-  - files: mud/skills/handlers.py; mud/skills/registry.py; mud/commands/advancement.py
-  - tests: tests/test_skills.py::test_skill_use_reports_result (new)
-  - acceptance_criteria: Handlers return ROM messages, set failure flags, and trigger `check_improve`/cooldown updates consistent with `Skill.use`.
+  - rationale: `spell_chill_touch` should roll level-scaled cold damage and apply a -1 strength affect on failed saves; the Python stub returns 42 without applying affects, so caster debuffs never land.
+  - files: mud/skills/handlers.py; mud/affects/apply.py
+  - tests: tests/test_skills.py::test_chill_touch_damage_and_strength_debuff (new)
+  - acceptance_criteria: Chill touch uses ROM `dam_each` table, applies cold saves, broadcasts the shiver messaging, and attaches a 6-tick `APPLY_STR -1` affect when the victim fails the save.
   - estimate: M
   - risk: medium
-  - evidence: C src/skills.c:53-210 (check_improve messaging); PY mud/skills/handlers.py:15-200 (many TODO stubs lacking messages or improvement paths).
+  - evidence: C src/magic.c:1399-1449 (`spell_chill_touch`); PY mud/skills/handlers.py:400-440 (TODO stub)
+
+- [P1] **skills_spells: implement colour spray damage and blindness proc**
+  - priority: P1
+  - rationale: ROM `spell_colour_spray` rolls level-scaled light damage and blinds unsaved targets, but the port returns a placeholder so casters never inflict blindness or correct damage.
+  - files: mud/skills/handlers.py; mud/skills/__init__.py
+  - tests: tests/test_skills.py::test_colour_spray_blinds_and_rolls_damage (new)
+  - acceptance_criteria: Colour spray samples the ROM `dam_each` table, halves damage on successful saves, invokes blindness on failed saves, and emits the tri-colour messaging for attacker/victim/room.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/magic.c:1437-1465 (`spell_colour_spray` damage table and blindness call); PY mud/skills/handlers.py:522-530 (stub returning placeholder)
+
+- [P0] **skills_spells: port curse object and character effects**
+  - priority: P0
+  - rationale: `spell_curse` should flag objects as evil, strip bless, and apply hitroll/save penalties plus recall prevention, but the stub returns a constant so curses never impact combat or equipment parity.
+  - files: mud/skills/handlers.py; mud/affects/apply.py; mud/models/object.py
+  - tests: tests/test_skills.py::test_curse_flags_object_and_penalizes_victim (new)
+  - acceptance_criteria: Casting curse on objects sets ITEM_EVIL, removes ITEM_BLESS when saves fail, and on characters applies AFF_CURSE with hitroll/save modifiers, blocks recall (per PlayerFlag.CURSE), and produces ROM messages.
+  - estimate: M
+  - risk: high
+  - evidence: C src/magic.c:1725-1810 (`spell_curse` object/character branches); PY mud/skills/handlers.py:625-633 (stub with placeholder return)
 
 NOTES:
 
-- C: src/fight.c:2270-2998 and src/magic.c:4625-4856 define martial skills and dragon breaths with wait states, lag, and elemental side effects.
-- C: src/magic.c:4274-4320 applies sanctuary/shield affects with ROM durations, reinforcing that defensive buffs must update Affect flags and AC modifiers while broadcasting color-coded messaging.
-- PY: mud/skills/handlers.py now ports rescue plus sanctuary/shield, but numerous spell stubs remain without ROM lag, saves, or messaging so SkillRegistry feedback is still incomplete.
-- TEST: Latest regressions cover bash/backstab/berserk flows along with the rescue tank swap and sanctuary/shield affect application; additional coverage is needed for remaining spell handlers and failure messaging.
+- C: src/fight.c:2270-2998 and src/magic.c:870-1900 cover martial, charm, and elemental spells with specific damage tables, save gates, and affect application still missing in Python.
+- PY: mud/skills/handlers.py now wires blindness, charm person, and breath parity while chill touch, colour spray, and curse continue to return placeholders pending damage tables and affect wiring.
+- TEST: tests/test_skills.py exercises existing martial/defensive spells; new regressions must drive damage rolls, crowd-control safeguards, and followership state transitions.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
 
-### affects_saves — Parity Audit 2025-10-27
+### affects_saves — Parity Audit 2025-11-19
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
-KEY RISKS: dispel, flags, side_effects
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
+KEY RISKS: stat_modifiers, stacking, dispel
 TASKS:
 
 - ✅ [P0] **affects_saves: port ROM saves_dispel/check_dispel routines** — done 2025-10-27
   EVIDENCE: PY mud/affects/saves.py:101-149; PY mud/skills/handlers.py:93-151; TEST tests/test_affects.py::test_saves_dispel_matches_rom; TEST tests/test_affects.py::test_check_dispel_strips_affect
+- [P0] **affects_saves: implement affect_to_char APPLY_* stat modifiers and wear-off parity**
+  - priority: P0
+  - rationale: ROM `affect_to_char`/`affect_modify` apply strength, dexterity, hitroll, damroll, saves, AC, and flag bitvectors, while Python `Character.add_affect` only toggles flags and hit/dam/save deltas, leaving APPLY_STR/APPLY_SAVES spells (e.g., curse, weaken, chill touch) impossible to port.
+  - files: mud/models/character.py; mud/affects/engine.py
+  - tests: tests/test_affects.py::test_affect_to_char_applies_stat_modifiers (new)
+  - acceptance_criteria: Applying an affect with APPLY_STR/APPLY_SAVES updates `Character` stats/flags using ROM semantics, persists stacked modifiers for later removal, and emits wear-off adjustments when `remove_spell_effect` or dispel clears the affect.
+  - estimate: M
+  - risk: high
+  - evidence: C src/handler.c:1266-1458 (`affect_to_char`/`affect_modify` handle APPLY_* locations and bitvectors); PY mud/models/character.py:266-338 (affect helpers ignore stat locations beyond hitroll/damroll/saves).
+- [P1] **affects_saves: support affect_join stacking and duration refresh semantics**
+  - priority: P1
+  - rationale: ROM merges duplicate affects by averaging levels, extending durations, and accumulating modifiers so spells like sanctuary or plague can be refreshed; Python `Character.apply_spell_effect` rejects duplicate names outright, causing recasts to fail and durations to expire early.
+  - files: mud/models/character.py; mud/affects/engine.py
+  - tests: tests/test_affects.py::test_affect_join_refreshes_duration (new)
+  - acceptance_criteria: Recasting an active spell updates duration/level/modifier per ROM `affect_join`, keeps affects keyed by spell name, and regression proves sanctuary recasts extend runtime duration without double-applying stats.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/handler.c:1464-1483 (`affect_join` stacks affects by type); PY mud/models/character.py:313-324 (`apply_spell_effect` returns False when effect name already active, preventing refresh).
 
 NOTES:
 
-- C: src/magic.c:240-310 shares dispel calculations across spells and decrements affect level on successful saves to prevent repeated strip attempts.
-- PY: mud/affects/saves.py now provides saves_dispel/check_dispel and dispel_magic iterates active SpellEffect entries, lowering levels on successful saves and firing wear-off messaging on removal.
-- TEST: tests/test_affects.py covers timed vs. permanent dispels and asserts sanctuary wear-off messaging mirrors ROM.
+- C: src/handler.c:1266-1483 drives affect application/removal, updating stats, flags, and timers as spells stack or wear off.
+- PY: mud/models/character.py:266-338 only toggles affect flags and simple stat deltas, lacks APPLY_* handling, and rejects duplicate effects so re-casts fail to refresh duration.
+- TEST: tests/test_affects.py currently exercises dispel logic; new regressions must cover APPLY_STR/APPLY_SAVES adjustments and affect_join refresh parity.
 - Applied tiny fix: saves_spell now skips the fMana reduction for NPCs, matching ROM's `!IS_NPC(victim)` guard.
 
 <!-- SUBSYSTEM: affects_saves END -->
@@ -418,32 +459,57 @@ TASKS:
   <!-- SUBSYSTEM: area_format_loader END -->
   <!-- SUBSYSTEM: imc_chat START -->
 
-### imc_chat — Parity Audit 2025-11-01
+### imc_chat — Parity Audit 2025-11-17
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.32)
-KEY RISKS: networking, file_formats, output
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.55)
+KEY RISKS: networking, keepalive, ucache, packet_loss, auth
+
 TASKS:
 
 - ✅ [P0] **imc_chat: load IMC color table into runtime state** — done 2025-10-04
-  EVIDENCE: C src/imc.c:4221-4270; DATA imc/imc.color; PY mud/imc/**init**.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_color_table
+  EVIDENCE: C src/imc.c:4221-4270; DATA imc/imc.color; PY mud/imc/__init__.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_color_table
 - ✅ [P0] **imc_chat: load IMC who template for IMCWHO responses** — done 2025-10-04
-  EVIDENCE: C src/imc.c:4964-5048; DATA imc/imc.who; PY mud/imc/**init**.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_who_template
+  EVIDENCE: C src/imc.c:4964-5048; DATA imc/imc.who; PY mud/imc/__init__.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_who_template
 - ✅ [P0] **imc_chat: load IMC command table and register default packet handlers** — done 2025-10-22
   EVIDENCE: PY mud/imc/commands.py:1-145
-  EVIDENCE: PY mud/imc/**init**.py:1-140
+  EVIDENCE: PY mud/imc/__init__.py:1-140
   EVIDENCE: TEST tests/test_imc.py::test_maybe_open_socket_loads_commands
   EVIDENCE: TEST tests/test_imc.py::test_maybe_open_socket_registers_packet_handlers
 - ✅ [P0] **imc_chat: load router bans and cache metadata during startup** — done 2025-10-27
-  EVIDENCE: C src/imc.c:3884-4158; C src/imc.c:4614-4670; PY mud/imc/**init**.py:39-414; TEST tests/test_imc.py::test_maybe_open_socket_loads_bans
+  EVIDENCE: C src/imc.c:3884-4158; C src/imc.c:4614-4670; PY mud/imc/__init__.py:39-414; TEST tests/test_imc.py::test_maybe_open_socket_loads_bans
 - ✅ [P0] **imc_chat: establish router connection and handshake during maybe_open_socket** — done 2025-10-05
-  EVIDENCE: PY mud/imc/network.py:1-80; PY mud/imc/**init**.py:469-581; TEST tests/test_imc.py::test_maybe_open_socket_opens_connection
+  EVIDENCE: PY mud/imc/network.py:1-120; PY mud/imc/__init__.py:469-612; TEST tests/test_imc.py::test_maybe_open_socket_opens_connection
+- ✅ [P0] **imc_chat: implement idle pump to process router traffic and keepalive timers** — done 2025-11-15
+  EVIDENCE: C src/imc.c:3387-3545 (`imc_loop` select/poll/keepalive); PY mud/imc/__init__.py:612-724 (`_poll_router_socket`, `_dispatch_buffered_packets`, `_send_keepalive`, `pump_idle`); TEST tests/test_imc.py::{test_pump_idle_processes_pending_packets,test_pump_idle_handles_socket_disconnect}
+- ✅ [P0] **imc_chat: flush outbound packet queue during idle pump** — done 2025-11-17
+  EVIDENCE: C src/imc.c:3478-3520 (`imc_loop` write-ready branch calling `imc_write_socket`); PY mud/imc/__init__.py:84-118,612-740 (`IMCState` outgoing queue, `_flush_outgoing_queue`, `pump_idle`)
+  EVIDENCE: TEST tests/test_imc.py::test_pump_idle_flushes_outgoing_queue
+- [P1] **imc_chat: refresh and persist IMC user cache on idle pulses**
+  - priority: P1
+  - rationale: ROM schedules `imc_prune_ucache`/`imc_save_ucache` inside `imc_loop`, aging out 30-day entries and writing gender updates; the Python state never refreshes `IMCState.user_cache`, so remote who data rots after startup.
+  - files: mud/imc/__init__.py
+  - tests: tests/test_imc.py::test_pump_idle_refreshes_user_cache (new)
+  - acceptance_criteria: `pump_idle` advances a `ucache_refresh_deadline`, prunes stale cache entries, and persists changes daily to disk replicating `imc_prune_ucache` cadence.
+  - estimate: S
+  - risk: low
+  - evidence: C src/imc.c:3424-3439 (`imc_prune_ucache` scheduling); C src/imc.c:2857-2899 (`imc_ucache_update`/`imc_save_ucache`); PY mud/imc/__init__.py:539-724 (idle pulses tracked with unused `ucache_refresh_deadline` field)
+- [P1] **imc_chat: mirror ROM reconnect fallback between SHA-256 and legacy auth**
+  - priority: P1
+  - rationale: ROM toggles `sha256pass` and persists config after three failed reconnects, retrying the alternate authentication flow; the Python `_handle_disconnect` path simply retries the current credentials, so routers that demand the opposite auth mode never reconnect.
+  - files: mud/imc/__init__.py; imc/imc.config
+  - tests: tests/test_imc.py::test_disconnect_fallback_switches_auth_mode (new)
+  - acceptance_criteria: Idle pump reconnection tracks attempt counters, flips between SHA-256 and legacy credentials like `imc_loop`, persists the updated config, and tests prove the fallback occurs after repeated failures.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/imc.c:3394-3433 (`imc_loop` reconnect attempts toggling `sha256pass` and saving config); PY mud/imc/__init__.py:560-604 (reconnect helper retries without auth fallback or persistence)
 
 NOTES:
 
-- C: `imc_startup` invokes `imc_load_color_table` and `imc_load_templates` so color tags and IMCWHO formatting are available before the network connects. (src/imc.c:4221-4270; src/imc.c:4964-5048)
-- PY: `maybe_open_socket` now mirrors ROM by caching color mappings and the who template alongside router bans, helps, and commands so outbound frames retain formatting metadata. (mud/imc/**init**.py:120-420)
-- DATA: `imc/imc.color` enumerates `Name/IMCtag/Mudtag` triplets; `imc/imc.who` defines the head/tail/line templates ROM exports.
-- TEST: Extend `tests/test_imc.py` with regressions asserting color tables and who templates load alongside commands/bans so parity stays enforced once packet handling consumes them.
+- C: src/imc.c:3387-3545 details the select loop that reads, writes, and prunes the user cache to keep IMC links healthy during idle pulses.
+- PY: mud/imc/__init__.py:520-740 now polls the router socket, flushes queued frames, emits keepalives, and still lacks user-cache maintenance even though `IMCState.ucache_refresh_deadline` is tracked.
+- DATA: imc/imc.ucache stores gender/last-seen tuples that ROM prunes daily; the Python runtime only loads them at startup so entries never age out.
+- TEST: tests/test_imc.py exercises handshake and idle read paths; new regressions must assert queued frames flush and cache maintenance triggers after configured pulses.
+- CONFIG: src/imc.c:3394-3433 flips `sha256pass` after repeated reconnect failures, whereas mud/imc/__init__.py:560-604 keeps retrying the same credentials without persisting fallback state.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: imc_chat END -->
   <!-- SUBSYSTEM: player_save_format START -->
@@ -548,6 +614,8 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
+- [P0] affects_saves — port affect_to_char stacking for APPLY_* modifiers (C src/handler.c:1266-1480; PY mud/models/character.py:266-338)
+- [P0] skills_spells — port curse object and character effects (C src/magic.c:1725-1810; PY mud/skills/handlers.py:625-633)
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map
@@ -606,10 +674,10 @@ NOTES:
 <!-- AUDITED: resets, weather, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
 <!-- SUBSYSTEM: persistence START -->
 
-### persistence — Parity Audit 2025-11-03
+### persistence — Parity Audit 2025-11-18
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.64)
-KEY RISKS: file_formats, progression
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.60)
+KEY RISKS: file_formats, progression, customization
 TASKS:
 
 - ✅ [P0] **persistence: persist learned skill percentages and group knowledge** — done 2025-11-04
@@ -628,12 +696,30 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/save.c:216-320 (`fwrite_char` writes prompt/title/played/logon/board); PY mud/persistence.py:32-190 (PlayerSave omits those fields and resets board metadata each login).
+- [P1] **persistence: persist immortal bamfin/bamfout strings for wiznet parity**
+  - priority: P1
+  - rationale: ROM saves `Bamfin/Bamfout` strings so immortals keep customised arrival/departure messages; the Python snapshot never records them, so reconnecting staff revert to defaults and wiznet broadcasts lose flavour text.
+  - files: mud/persistence.py; mud/models/character.py
+  - tests: tests/test_persistence.py::test_bamfin_bamfout_round_trip (new)
+  - acceptance_criteria: Saving a character after updating `pcdata.bamfin`/`pcdata.bamfout` persists those strings and `load_character` restores them for wiznet announcements.
+  - estimate: S
+  - risk: low
+  - evidence: C src/save.c:248-260 (`Bin`/`Bout` entries serialize bamfin/bamfout); PY mud/models/character.py:19-33 (PCData tracks `bamfin`/`bamfout` but persistence snapshot never emits them); PY mud/persistence.py:400-570 (no fields for bamfin/bamfout when encoding/decoding `PlayerSave`).
+- [P1] **persistence: serialize pcdata colour tables for channel customisation**
+  - priority: P1
+  - rationale: ROM writes the `Coloura`-`Colourg` blocks covering per-channel RGB triples so players keep ANSI theming; the port ignores these arrays, causing customised colours to reset every reboot and violating ROM client contracts.
+  - files: mud/persistence.py; mud/models/character.py
+  - tests: tests/test_persistence.py::test_colour_tables_round_trip (new)
+  - acceptance_criteria: `save_character` captures the full `pcdata` colour matrix and `load_character` restores it so ANSI renderers honour custom palette selections across sessions.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/save.c:274-335 (`Coloura`-`Colourg` blocks persist per-channel colour triplets); PY mud/models/character.py:19-39 (PCData lacks colour arrays entirely); PY mud/persistence.py:400-580 (no serialisation of colour configuration or restore logic).
 
 NOTES:
 
-- C: src/save.c:216-356 persists prompts, playtime counters, learned skill percentages, and group tables so characters retain training across reboots.
-- PY: mud/persistence.py:L34-L566 now serializes `Character.skills` entries and `pcdata.group_known`, but prompt/title/played/logon metadata remain outstanding under the P1 follow-up.
-- TEST: tests/test_persistence.py::{test_inventory_round_trip_preserves_object_state,test_skill_progress_persists,test_group_knowledge_persists} lock inventory, skill, and group persistence behavior.
+- C: src/save.c:216-356 persists prompts, playtime counters, immortal bamfin/out strings, and the colour configuration tables so player customisations survive reboots.
+- PY: mud/persistence.py:L34-L580 saves skills, inventory, and conditions but still drops prompt/title/played/logon metadata, bamfin/out strings, and colour arrays, keeping the outstanding P1 tasks relevant.
+- TEST: tests/test_persistence.py::{test_inventory_round_trip_preserves_object_state,test_skill_progress_persists,test_group_knowledge_persists} cover the implemented flows; new regressions are required for bamfin/out and colour round-tripping before closing the P1 items.
   <!-- SUBSYSTEM: persistence END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
 
@@ -1057,10 +1143,23 @@ TASKS:
 - ✅ [P1] Schedule weather/time/resets in ROM order with separate pulse counters — done 2025-09-13
   - evidence: C src/update.c:1161-1189; PY mud/game_loop.py:57-112; PY mud/config.py:1-80; TEST tests/test_game_loop_order.py::test_weather_time_reset_order_on_point_pulse
 
+- ✅ [P0] **game_update_loop: implement mobile_update scavenging, wandering, and mobprog triggers** — done 2025-11-16
+  EVIDENCE: C src/update.c:408-515; PY mud/ai/__init__.py:1-260; PY mud/game_loop.py:689-725; TEST tests/test_game_loop.py::{test_mobile_update_runs_random_trigger,test_mobile_update_scavenges_room_loot}
+
+- [P1] **game_update_loop: replenish shopkeeper coin floats during mobile pulses**
+  - priority: P1
+  - rationale: ROM vendors top off gold/silver each `mobile_update` to maintain `pIndexData->wealth` baselines; the port leaves shopkeepers at reset-time coin totals so prolonged trading drains inventories permanently.
+  - files: mud/game_loop.py; mud/shops/shop_logic.py (new); mud/models/mob.py
+  - tests: tests/test_game_loop.py::test_mobile_update_refreshes_shopkeeper_wealth (new)
+  - acceptance_criteria: Each mobile pulse recalculates shopkeeper wealth using `pIndexData->wealth` and random rolls, ensuring coin totals drift toward ROM targets without exceeding them; regression seeds deterministic RNG to assert coin replenishment after repeated ticks.
+  - estimate: S
+  - risk: low
+  - evidence: C src/update.c:424-441 (shopkeeper wealth adjustment inside `mobile_update`); PY mud/game_loop.py:704-740 (no wealth refresh).
+
 NOTES:
 
 - C: src/update.c:661-1112 applies regeneration, hunger, idle voiding, and object decay messaging that the port now mirrors through shared helpers.
-- PY: mud/game_loop.py threads char/object updates through `hit_gain`/`mana_gain` parity functions, condition helpers, and decay spill logic; mud/characters/conditions.py and mud/affects/engine.py provide reusable pieces for future skills.
+- PY: mud/game_loop.py threads char/object updates through `hit_gain`/`mana_gain` parity functions, condition helpers, and decay spill logic while still lacking the ROM `mobile_update` scavenger/wander loop and vendor wealth refresh.
 - TEST: tests/test_game_loop.py locks condition decay, idle limbo transfers, corpse dusting, and floating container spills so future changes retain ROM semantics.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: game_update_loop END -->
