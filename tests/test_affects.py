@@ -1,8 +1,10 @@
 # START affects_saves
 import mud.persistence as persistence
+from mud.affects.engine import tick_spell_effects
 from mud.affects.saves import check_dispel, saves_dispel, saves_spell
+from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag, DamageType, DefenseBit
+from mud.models.constants import AffectFlag, DamageType, DefenseBit, Stat
 from mud.utils import rng_mm
 
 
@@ -41,19 +43,92 @@ def test_apply_and_remove_affects_updates_stats():
     assert ch.saving_throw == 0
 
 
+# new parity test for affect_to_char stat modifiers and wear-off handling
+def test_affect_to_char_applies_stat_modifiers():
+    ch = Character(perm_stat=[15, 10, 10, 10, 10], mod_stat=[0, 0, 0, 0, 0])
+    effect = SpellEffect(
+        name="weaken",
+        duration=1,
+        level=20,
+        stat_modifiers={Stat.STR: -2},
+        wear_off_message="You feel stronger.",
+    )
+    assert ch.apply_spell_effect(effect) is True
+    assert ch.get_curr_stat(Stat.STR) == 13
+
+    messages = tick_spell_effects(ch)
+    assert messages == ["You feel stronger."]
+    assert ch.get_curr_stat(Stat.STR) == 15
+    assert Stat.STR.value < len(ch.mod_stat)
+    assert ch.mod_stat[Stat.STR.value] == 0
+
+
+def test_affect_join_refreshes_duration():
+    ch = Character(
+        level=30,
+        perm_stat=[15, 12, 12, 12, 12],
+        mod_stat=[0, 0, 0, 0, 0],
+    )
+
+    sanctuary = SpellEffect(
+        name="sanctuary",
+        duration=3,
+        level=24,
+        affect_flag=AffectFlag.SANCTUARY,
+    )
+    assert ch.apply_spell_effect(sanctuary) is True
+
+    refreshed = SpellEffect(
+        name="sanctuary",
+        duration=4,
+        level=18,
+        affect_flag=AffectFlag.SANCTUARY,
+    )
+    assert ch.apply_spell_effect(refreshed) is True
+
+    stacked = ch.spell_effects["sanctuary"]
+    assert stacked.duration == 7
+    assert stacked.level == c_div(24 + 18, 2)
+    assert stacked.affect_flag == AffectFlag.SANCTUARY
+    assert len(ch.spell_effects) == 1
+    assert ch.has_affect(AffectFlag.SANCTUARY)
+
+    weaken = SpellEffect(
+        name="weaken",
+        duration=2,
+        level=20,
+        stat_modifiers={Stat.STR: -1},
+    )
+    assert ch.apply_spell_effect(weaken) is True
+
+    weaken_refresh = SpellEffect(
+        name="weaken",
+        duration=3,
+        level=16,
+        stat_modifiers={Stat.STR: -2},
+    )
+    assert ch.apply_spell_effect(weaken_refresh) is True
+
+    weaken_effect = ch.spell_effects["weaken"]
+    assert weaken_effect.duration == 5
+    assert weaken_effect.level == c_div(20 + 16, 2)
+    assert weaken_effect.stat_modifiers[Stat.STR] == -3
+    assert ch.get_curr_stat(Stat.STR) == 12
+
+
 # END affects_saves
 
 
 # START affects_saves_saves_spell
 def test_saves_spell_uses_level_and_saving_throw(monkeypatch):
-    # Force deterministic RNG: number_percent returns 50
-    monkeypatch.setattr(rng_mm, "number_percent", lambda: 50)
+    # Force deterministic RNG: number_percent returns 60
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 60)
     victim = Character(level=10, ch_class=0, saving_throw=0)
     # caster level lower than victim → higher save chance
-    assert saves_spell(5, victim, dam_type=0) is True  # 50 < save
+    assert saves_spell(5, victim, dam_type=0) is True  # 60 < save (75)
     # worse saving_throw should reduce chance; at +10 saving_throw → -20 to save
     victim_bad = Character(level=10, ch_class=0, saving_throw=10)
-    assert saves_spell(5, victim_bad, dam_type=0) is False  # 50 !< save
+    assert saves_spell(5, victim_bad, dam_type=0) is False  # 60 !< save (55)
 
 
 def test_saves_spell_fmana_reduction(monkeypatch):

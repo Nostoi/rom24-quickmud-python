@@ -18,7 +18,19 @@ class Direction(IntEnum):
 
 # Canonical room/object vnums (merc.h)
 ROOM_VNUM_LIMBO = 2
+ROOM_VNUM_ALTAR = 3054
 ROOM_VNUM_SCHOOL = 3700
+# Utility conjuration targets
+OBJ_VNUM_CORPSE_NPC = 10
+OBJ_VNUM_CORPSE_PC = 11
+OBJ_VNUM_SEVERED_HEAD = 12
+OBJ_VNUM_TORN_HEART = 13
+OBJ_VNUM_SLICED_ARM = 14
+OBJ_VNUM_SLICED_LEG = 15
+OBJ_VNUM_GUTS = 16
+OBJ_VNUM_BRAINS = 17
+OBJ_VNUM_MUSHROOM = 20
+OBJ_VNUM_SPRING = 22
 
 # School equipment (OBJ_VNUM_SCHOOL_*) used during character creation (merc.h)
 OBJ_VNUM_SCHOOL_MACE = 3700
@@ -275,6 +287,9 @@ class ItemType(IntEnum):
     JUKEBOX = 34
 
 
+LIQ_WATER = 0
+
+
 class ActFlag(IntFlag):
     """NPC act flags from ROM merc.h (letters A..Z, aa..dd)."""
 
@@ -419,7 +434,7 @@ class AffectFlag(IntFlag):
     FAERIE_FIRE = 1 << 7
     INFRARED = 1 << 8
     CURSE = 1 << 9
-    UNUSED1 = 1 << 10
+    DETECT_GOOD = 1 << 10
     POISON = 1 << 11
     PROTECT_EVIL = 1 << 12
     PROTECT_GOOD = 1 << 13

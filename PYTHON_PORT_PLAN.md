@@ -1,10 +1,12 @@
-<!-- LAST-PROCESSED: affects_saves -->
+<!-- LAST-PROCESSED: skills_spells -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,affects_saves,resets,weather,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny,game_update_loop -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
-<!-- TEST-INFRASTRUCTURE: functional -->
-<!-- VALIDATION-STATUS: validated -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-19 -->
+<!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
+<!-- VALIDATION-STATUS: green (collection succeeded) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-07 (pytest --collect-only -q; 545 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-10-07 (pytest --collect-only -q; 545 tests collected, 0 errors) -->
+<!-- TEST-PASS-RATE: N/A (collection only; no tests executed) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -19,7 +21,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem            | status        | evidence                                                                                                                                                                                              | tests                                                                                                                           |
 | -------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
-| skills_spells        | stub_or_partial | C: src/magic.c:870-1900 (blindness/charm/damage tables); PY: mud/skills/handlers.py:200-920 (blindness/charm/burning hands/call lightning wired; chill touch/colour spray/curse remain stubs) | tests/test_skills.py; tests/test_skills_learned.py                                                                     |
+| skills_spells        | stub_or_partial | C: src/magic.c:2911-3098 (frenzy/holy word); PY: mud/skills/handlers.py:1718-2200 (frenzy/flying/transport stubs remain while detection/dispel/demonfire now ported) | tests/test_skills.py; tests/test_skills_learned.py; tests/test_skills_conjuration.py; tests/test_skills_healing.py; tests/test_skills_detection.py; tests/test_skills_damage.py |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
@@ -159,20 +161,51 @@ TASKS:
   - evidence: C src/fight.c:228-241 (second/third attack `check_improve`); C src/fight.c:555-572 (enhanced damage `check_improve`); PY mud/combat/engine.py:255-284/677-684 (TODO comments leaving improvements unimplemented).
     EVIDENCE: PY mud/combat/engine.py:288-316; PY mud/combat/engine.py:727-734
     EVIDENCE: TEST tests/test_combat_skills.py::test_second_attack_trains_on_success; TEST tests/test_combat_skills.py::test_enhanced_damage_checks_improve
+- ✅ [P0] **combat: port ROM raw_kill pipeline for corpses, XP, and auto-loot toggles** — done 2025-11-22
+  EVIDENCE: PY mud/combat/engine.py:655-831; PY mud/combat/death.py:20-138; PY mud/groups/xp.py:1-205
+  EVIDENCE: TEST tests/test_combat_death.py::test_raw_kill_awards_group_xp_and_creates_corpse; TEST tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs; TEST tests/test_combat_death.py::test_player_kill_clears_pk_flags
+- [P1] **combat: implement stop_fighting both-sided cleanup with global char list traversal**
+  - priority: P1
+  - rationale: `stop_fighting(..., both=True)` is a stub that never clears other combatants still targeting the victim, so fleeing players remain stuck in combat and NPC assists never disengage, diverging from ROM's char_list walk.
+  - files: mud/combat/engine.py; mud/world/state.py (for char list access)
+  - tests: tests/test_combat_state.py::test_stop_fighting_clears_both_sides (new)
+  - acceptance_criteria: Calling `stop_fighting` with `both=True` iterates the global character list, clears mutual `fighting` pointers, and restores default positions for NPCs exactly like ROM's implementation.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/fight.c:1438-1450 (`stop_fighting` walks `char_list` and resets positions); PY mud/combat/engine.py:558-574 (`stop_fighting` ends with a `pass` placeholder).
+- ✅ [P0] **combat: restore raw_kill cleanup for player deaths** — done 2025-11-22
+  EVIDENCE: PY mud/combat/death.py:L117-L188; PY mud/models/clans.py:L1-L48; TEST tests/test_combat_death.py::test_player_kill_resets_state
+- ✅ [P0] **combat: implement ROM death_cry gore spawns and neighboring room broadcast** — done 2025-11-22
+  EVIDENCE: PY mud/combat/death.py:L41-L273; TEST tests/test_combat_death.py::test_death_cry_spawns_gore_and_notifies_neighbors
+- ✅ [P0] **combat: drop anti-alignment gear after group XP alignment shifts** — done 2025-11-22
+  EVIDENCE: PY mud/groups/xp.py:L45-L121; TEST tests/test_combat_death.py::test_group_gain_zaps_anti_alignment_items
+- [P1] **combat: track NPC kill counters for prototypes and kill_table**
+  - priority: P1
+  - rationale: ROM increments both `victim->pIndexData->killed` and `kill_table[level].killed` inside `raw_kill`, but the Python port skips these counters so area kill statistics and mob population balancing never update after deaths.
+  - files: mud/combat/death.py; mud/models/mob.py; mud/models/world.py (kill table home) or new module
+  - tests: tests/test_combat_death.py::test_raw_kill_updates_kill_counters (new)
+  - acceptance_criteria: Calling `raw_kill` on an NPC bumps its prototype `killed` counter and the global `kill_table` slot for that level, persisting state so repeated deaths mirror ROM statistics.
+  - estimate: S
+  - risk: low
+  - evidence: C src/fight.c:1704-1710 (`raw_kill` increments prototype and kill_table counters); C src/db.c:93 (`KILL_DATA kill_table[MAX_LEVEL]`); PY mud/combat/death.py:98-140 (NPC path omits counter updates); PY mud/models/mob.py:48-70 (`MobIndex.killed` never mutated).
 
 NOTES:
 
 - C: src/fight.c:386-828 plus src/fight.c:2035-2208 cover weapon selection, proc effects, and `dam_message` tiers that still need parity in the Python engine.
 - PY: mud/combat/messages.py and mud/combat/engine.py now broadcast ROM dam_message outputs and wire `check_improve` for multi_hit and enhanced damage; remaining gaps include proc side effects and additional messaging polish.
-- TEST: New combat regressions cover damage tiers, immunity handling, and skill training so future changes stay aligned with ROM severity verbs and advancement hooks.
+- TEST: New combat regressions cover damage tiers, immunity handling, skill training, and death handling so future changes stay aligned with ROM severity verbs, advancement hooks, and raw_kill side effects.
+- Regression: tests/test_combat_death.py locks in group XP sharing, wiznet announcements, auto-loot/autosac toggles, and PK flag cleanup when characters die.
+- C: src/fight.c:1695-1721 and src/handler.c:2103-2139 reset affects, armor, and clan hall placement when characters die; the Python path leaves players with lingering spell effects and no respawn room assignment.
+- PY: mud/combat/death.py:114-138 only clamps vitals and clears timers, so we must purge `spell_effects`, restore race default flags, and move PCs into their death halls to mirror ROM.
+- C: src/fight.c:1575-1689 spawns gore objects and broadcasts death cries into adjacent rooms; mud/combat/death.py now mirrors the gore table and exit messaging while mud/groups/xp.py zaps anti-alignment gear after XP awards.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-11-15
+### skills_spells — Parity Audit 2025-10-07
 
 STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
-KEY RISKS: affects, damage, messaging, crowd_control
+KEY RISKS: affects, alignment, messaging, transport, conjuration
 TASKS:
 
 - ✅ [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)** — done 2025-10-20
@@ -199,78 +232,95 @@ TASKS:
 - ✅ [P0] **skills_spells: port charm person charm-break, follow, and save logic** — done 2025-11-15
   EVIDENCE: PY mud/skills/handlers.py:360-460; PY mud/characters/follow.py:1-78
   EVIDENCE: TEST tests/test_skills.py::test_charm_person_sets_affect_and_follower; TEST tests/test_skills.py::test_charm_person_requires_save_and_room_rules
-- [P1] **skills_spells: implement chill touch damage and strength debuff**
+- ✅ [P1] **skills_spells: implement chill touch damage and strength debuff** — done 2025-11-19
+  EVIDENCE: PY mud/skills/handlers.py:524-614; TEST tests/test_skills.py::test_chill_touch_damage_and_strength_debuff
+
+- ✅ [P1] **skills_spells: implement colour spray damage and blindness proc** — done 2025-11-19
+  EVIDENCE: PY mud/skills/handlers.py:617-706; TEST tests/test_skills.py::test_colour_spray_blinds_and_rolls_damage
+
+- ✅ [P0] **skills_spells: port curse object and character effects** — done 2025-10-06
+  EVIDENCE: C src/magic.c:1725-1810; PY mud/skills/handlers.py:626-692; TEST tests/test_skills.py::test_curse_flags_object_and_penalizes_victim
+
+- ✅ [P0] **skills_spells: port ROM cure and detoxification spells with dice-based healing** — done 2025-11-20
+  EVIDENCE: PY mud/skills/handlers.py:765-948; PY mud/skills/handlers.py:1466-1484; TEST tests/test_skills_healing.py::test_cure_light_heals_using_rom_dice; TEST tests/test_skills_healing.py::test_cure_disease_and_poison_remove_affects
+
+- ✅ [P0] **skills_spells: implement create food/water/spring conjuration parity** — done 2025-11-21
+  EVIDENCE: C src/magic.c:1510-1585; PY mud/skills/handlers.py:L730-L820; TEST tests/test_skills_conjuration.py::test_create_food_conjures_mushroom_with_level_values; TEST tests/test_skills_conjuration.py::test_create_water_fills_drink_container_respecting_capacity
+
+- ✅ [P0] **skills_spells: port detect alignment/hidden/invis/magic awareness spells** — done 2025-11-21
+  EVIDENCE: PY mud/skills/handlers.py:1234-1414; TEST tests/test_skills_detection.py::test_detect_invis_applies_affect_and_blocks_duplicates; TEST tests/test_skills_detection.py::test_detect_poison_reports_food_status
+
+- ✅ [P0] **skills_spells: implement dispel_good/evil and demonfire alignment damage parity** — done 2025-11-21
+  EVIDENCE: PY mud/skills/handlers.py:1170-1514; TEST tests/test_skills_damage.py::test_dispel_evil_damages_evil_targets; TEST tests/test_skills_damage.py::test_demonfire_applies_curse_and_fire_damage
+
+- [P1] **skills_spells: port frenzy holy-wrath buff with alignment gating**
   - priority: P1
-  - rationale: `spell_chill_touch` should roll level-scaled cold damage and apply a -1 strength affect on failed saves; the Python stub returns 42 without applying affects, so caster debuffs never land.
-  - files: mud/skills/handlers.py; mud/affects/apply.py
-  - tests: tests/test_skills.py::test_chill_touch_damage_and_strength_debuff (new)
-  - acceptance_criteria: Chill touch uses ROM `dam_each` table, applies cold saves, broadcasts the shiver messaging, and attaches a 6-tick `APPLY_STR -1` affect when the victim fails the save.
+  - rationale: Frenzy remains stubbed so paladin/cleric tanks cannot gain ROM hitroll/damroll spikes or AC penalties, and alignment mismatches are unenforced, weakening group support parity.
+  - files: mud/skills/handlers.py
+  - tests: tests/test_skills_buffs.py::test_frenzy_applies_hit_dam_ac_modifiers (new)
+  - acceptance_criteria: Frenzy respects duplicate/calm blocks, alignment restrictions, and applies the ROM trio of hitroll/damroll bonuses plus AC penalty with appropriate messaging and duration scaling.
   - estimate: M
   - risk: medium
-  - evidence: C src/magic.c:1399-1449 (`spell_chill_touch`); PY mud/skills/handlers.py:400-440 (TODO stub)
+  - evidence: C src/magic.c:2911-2960 (`spell_frenzy` alignment gate and affect stack); PY mud/skills/handlers.py:1408-1436 (`frenzy` stub returning placeholder)
 
-- [P1] **skills_spells: implement colour spray damage and blindness proc**
-  - priority: P1
-  - rationale: ROM `spell_colour_spray` rolls level-scaled light damage and blinds unsaved targets, but the port returns a placeholder so casters never inflict blindness or correct damage.
-  - files: mud/skills/handlers.py; mud/skills/__init__.py
-  - tests: tests/test_skills.py::test_colour_spray_blinds_and_rolls_damage (new)
-  - acceptance_criteria: Colour spray samples the ROM `dam_each` table, halves damage on successful saves, invokes blindness on failed saves, and emits the tri-colour messaging for attacker/victim/room.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/magic.c:1437-1465 (`spell_colour_spray` damage table and blindness call); PY mud/skills/handlers.py:522-530 (stub returning placeholder)
-
-- [P0] **skills_spells: port curse object and character effects**
+- [P0] **skills_spells: restore fly affect application and duplicate handling**
   - priority: P0
-  - rationale: `spell_curse` should flag objects as evil, strip bless, and apply hitroll/save penalties plus recall prevention, but the stub returns a constant so curses never impact combat or equipment parity.
-  - files: mud/skills/handlers.py; mud/affects/apply.py; mud/models/object.py
-  - tests: tests/test_skills.py::test_curse_flags_object_and_penalizes_victim (new)
-  - acceptance_criteria: Casting curse on objects sets ITEM_EVIL, removes ITEM_BLESS when saves fail, and on characters applies AFF_CURSE with hitroll/save modifiers, blocks recall (per PlayerFlag.CURSE), and produces ROM messages.
+  - rationale: Fly currently returns a placeholder so characters never gain AFF_FLYING, breaking ROM room/terrain gating and movement costs for casters and allies.
+  - files: mud/skills/handlers.py
+  - tests: tests/test_skills_buffs.py::test_fly_applies_affect_and_messages (new)
+  - acceptance_criteria: Casting fly on self or allies mirrors ROM messaging, refuses duplicate casts, and applies AFF_FLYING with level-based duration using `affect_to_char`.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/magic.c:2882-2910 (`spell_fly` apply_affect sequence); PY mud/skills/handlers.py:1696-1720 (`fly` stub returning placeholder)
+
+- [P0] **skills_spells: implement gate transport targeting with clan/safety checks**
+  - priority: P0
+  - rationale: Gate is stubbed so clerics cannot summon to party members; the port skips ROOM_SAFE/PRIVATE/SOLITARY/NO_RECALL guards, clan restrictions, pet following, and the wiznet arrival messaging that ROM enforces.
+  - files: mud/skills/handlers.py; mud/world/movement.py
+  - tests: tests/test_skills_transport.py::test_gate_moves_caster_and_pet_with_room_checks (new)
+  - acceptance_criteria: Gate looks up the victim globally, validates room and clan safety rules, moves the caster (and pet when present), fires arrival/departure messaging, and triggers auto-look mirroring ROM.
   - estimate: M
   - risk: high
-  - evidence: C src/magic.c:1725-1810 (`spell_curse` object/character branches); PY mud/skills/handlers.py:625-633 (stub with placeholder return)
+  - evidence: C src/magic.c:2963-3035 (`spell_gate` room restrictions and pet handling); PY mud/skills/handlers.py:1722-1748 (`gate` stub returning placeholder)
+
+- [P0] **skills_spells: conjure floating_disc gear with capacity timers**
+  - priority: P0
+  - rationale: Floating disc is a stub so utility casters cannot summon the OBJ_VNUM_DISC container, leaving inventory parity gaps for encumbrance-sensitive runs.
+  - files: mud/skills/handlers.py; mud/models/constants.py; mud/world/objects.py
+  - tests: tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity (new)
+  - acceptance_criteria: Casting floating disc creates the ROM disc object with level-scaled capacity/timer, equips it to WEAR_FLOAT (respecting ITEM_NOREMOVE blockers), and emits ROM messaging.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/magic.c:2857-2881 (`spell_floating_disc` object creation and wear flow); PY mud/skills/handlers.py:1686-1694 (`floating_disc` stub returning placeholder)
 
 NOTES:
 
-- C: src/fight.c:2270-2998 and src/magic.c:870-1900 cover martial, charm, and elemental spells with specific damage tables, save gates, and affect application still missing in Python.
-- PY: mud/skills/handlers.py now wires blindness, charm person, and breath parity while chill touch, colour spray, and curse continue to return placeholders pending damage tables and affect wiring.
-- TEST: tests/test_skills.py exercises existing martial/defensive spells; new regressions must drive damage rolls, crowd-control safeguards, and followership state transitions.
+- C: src/magic.c:2857-3035 covers `spell_floating_disc`, `spell_fly`, and `spell_gate`, each enforcing ITEM_NOREMOVE guards, affect durations, safety checks, and pet travel that the Python port still lacks.
+- PY: mud/skills/handlers.py:1686-1760 leaves floating_disc, fly, and gate returning placeholders so players cannot conjure containers, gain AFF_FLYING, or transport to allies.
+- TEST: Existing detection/damage regressions cover recent ports; new buff/transport suites must assert fly duplicates, gate room safety, and floating disc capacity to lock parity once implemented.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
 
-### affects_saves — Parity Audit 2025-11-19
+### affects_saves — Parity Audit 2025-10-06
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
-KEY RISKS: stat_modifiers, stacking, dispel
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.55)
+KEY RISKS: stat_modifiers, dispel
 TASKS:
 
 - ✅ [P0] **affects_saves: port ROM saves_dispel/check_dispel routines** — done 2025-10-27
   EVIDENCE: PY mud/affects/saves.py:101-149; PY mud/skills/handlers.py:93-151; TEST tests/test_affects.py::test_saves_dispel_matches_rom; TEST tests/test_affects.py::test_check_dispel_strips_affect
-- [P0] **affects_saves: implement affect_to_char APPLY_* stat modifiers and wear-off parity**
-  - priority: P0
-  - rationale: ROM `affect_to_char`/`affect_modify` apply strength, dexterity, hitroll, damroll, saves, AC, and flag bitvectors, while Python `Character.add_affect` only toggles flags and hit/dam/save deltas, leaving APPLY_STR/APPLY_SAVES spells (e.g., curse, weaken, chill touch) impossible to port.
-  - files: mud/models/character.py; mud/affects/engine.py
-  - tests: tests/test_affects.py::test_affect_to_char_applies_stat_modifiers (new)
-  - acceptance_criteria: Applying an affect with APPLY_STR/APPLY_SAVES updates `Character` stats/flags using ROM semantics, persists stacked modifiers for later removal, and emits wear-off adjustments when `remove_spell_effect` or dispel clears the affect.
-  - estimate: M
-  - risk: high
-  - evidence: C src/handler.c:1266-1458 (`affect_to_char`/`affect_modify` handle APPLY_* locations and bitvectors); PY mud/models/character.py:266-338 (affect helpers ignore stat locations beyond hitroll/damroll/saves).
-- [P1] **affects_saves: support affect_join stacking and duration refresh semantics**
-  - priority: P1
-  - rationale: ROM merges duplicate affects by averaging levels, extending durations, and accumulating modifiers so spells like sanctuary or plague can be refreshed; Python `Character.apply_spell_effect` rejects duplicate names outright, causing recasts to fail and durations to expire early.
-  - files: mud/models/character.py; mud/affects/engine.py
-  - tests: tests/test_affects.py::test_affect_join_refreshes_duration (new)
-  - acceptance_criteria: Recasting an active spell updates duration/level/modifier per ROM `affect_join`, keeps affects keyed by spell name, and regression proves sanctuary recasts extend runtime duration without double-applying stats.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/handler.c:1464-1483 (`affect_join` stacks affects by type); PY mud/models/character.py:313-324 (`apply_spell_effect` returns False when effect name already active, preventing refresh).
+- ✅ [P0] **affects_saves: implement affect_to_char APPLY_* stat modifiers and wear-off parity** — done 2025-10-06
+  EVIDENCE: C src/handler.c:1266-1458; PY mud/models/character.py:272-364; TEST tests/test_affects.py::test_affect_to_char_applies_stat_modifiers
+- ✅ [P1] **affects_saves: support affect_join stacking and duration refresh semantics** — done 2025-11-19
+  EVIDENCE: PY mud/models/character.py:340-390; TEST tests/test_affects.py::test_affect_join_refreshes_duration
 
 NOTES:
 
-- C: src/handler.c:1266-1483 drives affect application/removal, updating stats, flags, and timers as spells stack or wear off.
-- PY: mud/models/character.py:266-338 only toggles affect flags and simple stat deltas, lacks APPLY_* handling, and rejects duplicate effects so re-casts fail to refresh duration.
-- TEST: tests/test_affects.py currently exercises dispel logic; new regressions must cover APPLY_STR/APPLY_SAVES adjustments and affect_join refresh parity.
-- Applied tiny fix: saves_spell now skips the fMana reduction for NPCs, matching ROM's `!IS_NPC(victim)` guard.
+- C: src/handler.c:1266-1483 drives affect application/removal, updating stats, flags, and timers as spells stack or wear off; src/magic.c:215-236 applies the 50 + level delta - 2*save formula without extra penalties.
+- PY: mud/models/character.py merges duplicate spell effects via affect_join parity while maintaining APPLY_* stat deltas and flag state.
+- TEST: tests/test_affects.py exercises dispel logic alongside refresh stacking to guard APPLY_* adjustments.
+- Applied tiny fix: saves_spell now follows src/magic.c's save formula (no extra positive saving_throw penalty) and preserves the ROM `!IS_NPC(victim)` fMana guard.
 
 <!-- SUBSYSTEM: affects_saves END -->
 <!-- SUBSYSTEM: resets START -->
@@ -614,8 +664,9 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- [P0] affects_saves — port affect_to_char stacking for APPLY_* modifiers (C src/handler.c:1266-1480; PY mud/models/character.py:266-338)
-- [P0] skills_spells — port curse object and character effects (C src/magic.c:1725-1810; PY mud/skills/handlers.py:625-633)
+- [P0] skills_spells — restore fly affect application and duplicate handling (tests/test_skills_buffs.py::test_fly_applies_affect_and_messages)
+- [P0] skills_spells — implement gate transport targeting with clan/safety checks (tests/test_skills_transport.py::test_gate_moves_caster_and_pet_with_room_checks)
+- [P0] skills_spells — conjure floating_disc gear with capacity timers (tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity)
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map

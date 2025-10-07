@@ -3,8 +3,11 @@ from __future__ import annotations
 from mud import mobprog
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
+from mud.characters import is_same_clan
+from mud.combat.death import raw_kill
 from mud.combat.messages import DamageMessages, dam_message
 from mud.config import COMBAT_USE_THAC0
+from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
 from mud.models.constants import (
@@ -12,6 +15,8 @@ from mud.models.constants import (
     AC_EXOTIC,
     AC_PIERCE,
     AC_SLASH,
+    ItemType,
+    PlayerFlag,
     WEAPON_FLAMING,
     WEAPON_FROST,
     WEAPON_POISON,
@@ -26,6 +31,7 @@ from mud.models.constants import (
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.utils import rng_mm
 from mud.skills import check_improve
+from mud.wiznet import WiznetFlag, wiznet
 
 
 HAND_TO_HAND_SKILL = "hand to hand"
@@ -646,19 +652,183 @@ def _handle_miss_fighting_state(attacker: Character, victim: Character) -> None:
                 set_fighting(attacker, victim)
 
 
+def _player_has_flag(character: Character | None, flag: PlayerFlag) -> bool:
+    """Return True when *character* is a PC with *flag* set."""
+
+    if character is None or getattr(character, "is_npc", False):
+        return False
+    try:
+        return bool(int(getattr(character, "act", 0) or 0) & int(flag))
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        return False
+
+
+def _corpse_is_npc(corpse) -> bool:
+    try:
+        return int(getattr(corpse, "item_type", 0)) == int(ItemType.CORPSE_NPC)
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        return False
+
+
+def _transfer_corpse_coins(attacker: Character, corpse) -> bool:
+    """Move coins from *corpse* to *attacker*, returning True when any moved."""
+
+    try:
+        gold = int(getattr(corpse, "gold", 0) or 0)
+    except (TypeError, ValueError):
+        gold = 0
+    try:
+        silver = int(getattr(corpse, "silver", 0) or 0)
+    except (TypeError, ValueError):
+        silver = 0
+
+    if gold == 0 and silver == 0:
+        return False
+
+    attacker.gold = int(getattr(attacker, "gold", 0) or 0) + gold
+    attacker.silver = int(getattr(attacker, "silver", 0) or 0) + silver
+    corpse.gold = 0
+    corpse.silver = 0
+    values = list(getattr(corpse, "value", []) or [])
+    if len(values) < 2:
+        values.extend([0] * (2 - len(values)))
+    values[0] = 0
+    values[1] = 0
+    corpse.value = values
+    return True
+
+
+def _auto_collect_loot(attacker: Character, corpse) -> bool:
+    """Auto-loot NPC corpses when the attacker has PLR_AUTOLOOT enabled."""
+
+    if not _player_has_flag(attacker, PlayerFlag.AUTOLOOT):
+        return False
+    if not _corpse_is_npc(corpse):
+        return False
+
+    moved = False
+    contained = list(getattr(corpse, "contained_items", []) or [])
+    for obj in contained:
+        try:
+            corpse.contained_items.remove(obj)
+        except (AttributeError, ValueError):  # pragma: no cover - defensive guard
+            continue
+        attacker.add_object(obj)
+        if hasattr(obj, "location"):
+            obj.location = attacker
+        moved = True
+
+    if _transfer_corpse_coins(attacker, corpse):
+        moved = True
+
+    if moved:
+        attacker.send_to_char("You quickly gather the loot from the corpse.")
+    return moved
+
+
+def _auto_collect_coins(attacker: Character, corpse) -> bool:
+    """Auto-gather corpse coins when only AUTOGOLD is toggled."""
+
+    if not _player_has_flag(attacker, PlayerFlag.AUTOGOLD):
+        return False
+    if _player_has_flag(attacker, PlayerFlag.AUTOLOOT):
+        return False
+    if not _corpse_is_npc(corpse):
+        return False
+    if not _transfer_corpse_coins(attacker, corpse):
+        return False
+
+    attacker.send_to_char("You quickly gather the loot from the corpse.")
+    return True
+
+
+def _auto_sacrifice(attacker: Character, corpse) -> None:
+    """Stub autosac handling that mirrors ROM's gating semantics."""
+
+    if not _player_has_flag(attacker, PlayerFlag.AUTOSAC):
+        return
+    if not _corpse_is_npc(corpse):
+        return
+    if _player_has_flag(attacker, PlayerFlag.AUTOLOOT) and getattr(corpse, "contained_items", []):
+        return
+
+    attacker.send_to_char("You offer the corpse to the gods.")
+    # TODO: invoke do_sacrifice once the command is ported.
+
+
+def _handle_auto_actions(attacker: Character, corpse) -> None:
+    if attacker is None or corpse is None:
+        return
+    if getattr(attacker, "is_npc", False):
+        return
+    if not _corpse_is_npc(corpse):
+        return
+
+    message_sent = _auto_collect_loot(attacker, corpse)
+    if not message_sent:
+        _auto_collect_coins(attacker, corpse)
+    _auto_sacrifice(attacker, corpse)
+
+
+def _clear_pk_flags(attacker: Character, victim: Character) -> None:
+    if attacker is victim or attacker is None:
+        return
+    if getattr(attacker, "is_npc", False):
+        return
+    if is_same_clan(attacker, victim):
+        return
+
+    try:
+        act_value = int(getattr(victim, "act", 0) or 0)
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        return
+
+    if act_value & int(PlayerFlag.KILLER):
+        victim.act = act_value & ~int(PlayerFlag.KILLER)
+    elif act_value & int(PlayerFlag.THIEF):
+        victim.act = act_value & ~int(PlayerFlag.THIEF)
+
+
+def _send_wiznet_death(attacker: Character, victim: Character) -> None:
+    victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "Someone")
+    if attacker is not None:
+        attacker_name = (
+            getattr(attacker, "short_descr", None)
+            if getattr(attacker, "is_npc", False)
+            else getattr(attacker, "name", None)
+        )
+    else:
+        attacker_name = None
+    if not attacker_name:
+        attacker_name = "Someone"
+
+    room = getattr(attacker, "room", None) if attacker is not None else None
+    if room is None:
+        room = getattr(victim, "room", None)
+    room_name = getattr(room, "name", "somewhere")
+    room_vnum = getattr(room, "vnum", 0)
+
+    message = f"{victim_name} got toasted by {attacker_name} at {room_name} [room {room_vnum}]"
+    flag = WiznetFlag.WIZ_MOBDEATHS if getattr(victim, "is_npc", False) else WiznetFlag.WIZ_DEATHS
+    wiznet(message, attacker, victim, flag, None, 0)
+
+
 def _handle_death(attacker: Character, victim: Character) -> str:
     """Handle character death following ROM logic."""
-    # Clear fighting state
     attacker.fighting = None
     victim.fighting = None
     attacker.position = Position.STANDING
 
-    # Broadcast death message
-    if hasattr(victim, "room") and victim.room is not None:
-        victim.room.broadcast(f"{victim.name} is DEAD!!!", exclude=victim)
-        victim.room.remove_character(victim)
+    group_gain(attacker, victim)
+    _send_wiznet_death(attacker, victim)
 
-    return f"You kill {victim.name}."
+    corpse = raw_kill(victim)
+
+    _clear_pk_flags(attacker, victim)
+    _handle_auto_actions(attacker, corpse)
+
+    victim_name = getattr(victim, "name", None) or getattr(victim, "short_descr", "them")
+    return f"You kill {victim_name}."
 
 
 def calculate_weapon_damage(

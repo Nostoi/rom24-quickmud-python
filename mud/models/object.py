@@ -31,6 +31,8 @@ class Object:
     enchanted: bool = False
     item_type: str | None = None
     affected: list[Affect] = field(default_factory=list)
+    _short_descr_override: str | None = field(default=None, repr=False)
+    _description_override: str | None = field(default=None, repr=False)
 
     @property
     def name(self) -> str | None:
@@ -38,4 +40,20 @@ class Object:
 
     @property
     def short_descr(self) -> str | None:
+        if self._short_descr_override is not None:
+            return self._short_descr_override
         return getattr(self.prototype, "short_descr", None)
+
+    @short_descr.setter
+    def short_descr(self, value: str | None) -> None:
+        self._short_descr_override = value
+
+    @property
+    def description(self) -> str | None:
+        if self._description_override is not None:
+            return self._description_override
+        return getattr(self.prototype, "description", None)
+
+    @description.setter
+    def description(self, value: str | None) -> None:
+        self._description_override = value
