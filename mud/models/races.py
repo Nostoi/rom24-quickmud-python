@@ -503,6 +503,18 @@ _RACES_BY_NAME: Final[dict[str, RaceType]] = {race.name: race for race in RACE_T
 _PC_RACES_BY_NAME: Final[dict[str, PcRaceType]] = {race.name: race for race in PC_RACE_TABLE}
 
 
+def get_race_by_index(index: int) -> RaceType | None:
+    """Return race metadata by numeric index mirroring ROM ``race_table``."""
+
+    try:
+        resolved = int(index)
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        return None
+    if resolved < 0 or resolved >= len(RACE_TABLE):
+        return None
+    return RACE_TABLE[resolved]
+
+
 def get_race(name: str) -> RaceType | None:
     """Return base race metadata by lowercase name."""
 

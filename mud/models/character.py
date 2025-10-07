@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
+from mud.math.c_compat import c_div
 from mud.models.constants import AffectFlag, CommFlag, PlayerFlag, Position, Stat
 
 if TYPE_CHECKING:
@@ -51,6 +52,7 @@ class SpellEffect:
     saving_throw_mod: int = 0
     affect_flag: AffectFlag | None = None
     wear_off_message: str | None = None
+    stat_modifiers: dict[Stat, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -269,6 +271,35 @@ class Character:
         self.carry_weight -= getattr(obj.prototype, "weight", 0)
 
     # START affects_saves
+    def _ensure_mod_stat_capacity(self) -> None:
+        """Ensure mod_stat can store modifiers for all primary stats."""
+
+        required = len(list(Stat))
+        if not isinstance(self.mod_stat, list):
+            self.mod_stat = list(self.mod_stat or [])
+        current_len = len(self.mod_stat)
+        if current_len < required:
+            self.mod_stat.extend([0] * (required - current_len))
+
+    def _apply_stat_modifier(self, stat: Stat | int, delta: int) -> None:
+        """Apply a modifier to the character's temporary stat list."""
+
+        try:
+            idx = int(stat)
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            return
+        if delta == 0:
+            return
+        self._ensure_mod_stat_capacity()
+        if idx < 0 or idx >= len(self.mod_stat):
+            return
+        current_val = self.mod_stat[idx]
+        try:
+            current = int(current_val or 0)
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            current = 0
+        self.mod_stat[idx] = current + delta
+
     def add_affect(
         self,
         flag: AffectFlag,
@@ -311,22 +342,41 @@ class Character:
         return name in self.spell_effects
 
     def apply_spell_effect(self, effect: SpellEffect) -> bool:
-        """Apply a spell effect while preventing duplicate stacking."""
-        if self.has_spell_effect(effect.name):
-            return False
+        """Apply or merge a spell effect following ROM ``affect_join`` semantics."""
 
-        if effect.ac_mod:
-            self.armor = [ac + effect.ac_mod for ac in self.armor]
-        if effect.hitroll_mod:
-            self.hitroll += effect.hitroll_mod
-        if effect.damroll_mod:
-            self.damroll += effect.damroll_mod
-        if effect.saving_throw_mod:
-            self.saving_throw += effect.saving_throw_mod
-        if effect.affect_flag is not None:
-            self.add_affect(effect.affect_flag)
+        existing = self.spell_effects.get(effect.name)
+        combined = replace(effect)
+        combined.stat_modifiers = dict(combined.stat_modifiers or {})
 
-        self.spell_effects[effect.name] = effect
+        if existing is not None:
+            combined.level = c_div(combined.level + existing.level, 2)
+            combined.duration += existing.duration
+            combined.ac_mod += existing.ac_mod
+            combined.hitroll_mod += existing.hitroll_mod
+            combined.damroll_mod += existing.damroll_mod
+            combined.saving_throw_mod += existing.saving_throw_mod
+            if combined.affect_flag is None:
+                combined.affect_flag = existing.affect_flag
+            if not combined.wear_off_message:
+                combined.wear_off_message = existing.wear_off_message
+            for stat, delta in getattr(existing, "stat_modifiers", {}).items():
+                combined.stat_modifiers[stat] = combined.stat_modifiers.get(stat, 0) + int(delta)
+            self.remove_spell_effect(effect.name)
+
+        if combined.ac_mod:
+            self.armor = [ac + combined.ac_mod for ac in self.armor]
+        if combined.hitroll_mod:
+            self.hitroll += combined.hitroll_mod
+        if combined.damroll_mod:
+            self.damroll += combined.damroll_mod
+        if combined.saving_throw_mod:
+            self.saving_throw += combined.saving_throw_mod
+        if combined.affect_flag is not None:
+            self.add_affect(combined.affect_flag)
+        for stat, delta in combined.stat_modifiers.items():
+            self._apply_stat_modifier(stat, int(delta))
+
+        self.spell_effects[combined.name] = combined
         return True
 
     def remove_spell_effect(self, name: str) -> SpellEffect | None:
@@ -345,6 +395,10 @@ class Character:
             self.saving_throw -= effect.saving_throw_mod
         if effect.affect_flag is not None:
             self.remove_affect(effect.affect_flag)
+        stat_mods = getattr(effect, "stat_modifiers", None)
+        if isinstance(stat_mods, dict):
+            for stat, delta in stat_mods.items():
+                self._apply_stat_modifier(stat, -int(delta))
 
         return effect
 

@@ -10,8 +10,17 @@ from mud.config import get_pulse_violence
 from mud.game_loop import SkyState, violence_tick, weather
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
-from mud.models.constants import AffectFlag, ImmFlag, Position, RoomFlag, WeaponType
+from mud.models.constants import (
+    AffectFlag,
+    ExtraFlag,
+    ImmFlag,
+    Position,
+    RoomFlag,
+    Stat,
+    WeaponType,
+)
 from mud.models.room import Room
+from mud.models.object import Object, ObjIndex
 from mud.skills import SkillRegistry, SkillUseResult, load_skills, skill_registry
 from mud.utils import rng_mm
 
@@ -406,6 +415,116 @@ def test_blindness_save_blocks_affect(monkeypatch: pytest.MonkeyPatch) -> None:
     assert target.spell_effects == {}
     assert target.hitroll == 0
     assert target.messages == before_messages
+
+
+def test_chill_touch_damage_and_strength_debuff(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Thera", level=20, is_npc=False)
+    target = Character(
+        name="Orc",
+        hit=100,
+        perm_stat=[15, 12, 12, 12, 12],
+        mod_stat=[0, 0, 0, 0, 0],
+    )
+    watcher = Character(name="Watcher")
+
+    room = Room(vnum=3001)
+    for ch in (caster, target, watcher):
+        room.add_character(ch)
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: high)
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dtype: False)
+
+    damage = skill_handlers.chill_touch(caster, target)
+
+    assert damage == 54
+    assert target.hit == 46
+    assert target.has_spell_effect("chill touch")
+    effect = target.spell_effects["chill touch"]
+    assert effect.duration == 6
+    assert effect.level == 20
+    assert effect.stat_modifiers[Stat.STR] == -1
+    assert target.get_curr_stat(Stat.STR) == 14
+    assert "Orc turns blue and shivers." in watcher.messages
+    assert "Orc turns blue and shivers." in caster.messages
+
+
+def test_colour_spray_blinds_and_rolls_damage(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Thera", level=24, is_npc=False)
+    target = Character(name="Bandit", hit=120)
+    observer = Character(name="Watcher")
+
+    room = Room(vnum=3001)
+    for ch in (caster, target, observer):
+        room.add_character(ch)
+
+    damage_rolls = iter([80, 80])
+
+    def fake_range(low: int, high: int) -> int:
+        return next(damage_rolls)
+
+    save_results = iter([False, False, True])
+
+    def fake_save(level: int, victim: Character, dtype: int) -> bool:
+        return next(save_results)
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_range)
+    monkeypatch.setattr(skill_handlers, "saves_spell", fake_save)
+
+    damage = skill_handlers.colour_spray(caster, target)
+
+    assert damage == 80
+    assert target.hit == 40
+    assert target.has_affect(AffectFlag.BLIND)
+    blind_effect = target.spell_effects["blindness"]
+    expected_level = c_div(24, 2)
+    assert blind_effect.level == expected_level
+    assert blind_effect.duration == 1 + expected_level
+    assert any("red" in message and "blue" in message and "yellow" in message for message in caster.messages)
+    assert any("red" in message and "blue" in message and "yellow" in message for message in target.messages)
+    assert any("red" in message and "blue" in message and "yellow" in message for message in observer.messages)
+
+    new_target = Character(name="Scout", hit=120)
+    new_room = Room(vnum=3002)
+    for ch in (caster, new_target):
+        new_room.add_character(ch)
+
+    damage_halved = skill_handlers.colour_spray(caster, new_target)
+    assert damage_halved == c_div(80, 2)
+    assert new_target.hit == 120 - damage_halved
+    assert "blindness" not in new_target.spell_effects
+
+
+def test_curse_flags_object_and_penalizes_victim(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    caster = Character(name="Thera", level=24, is_npc=False)
+    victim = Character(name="Aria", level=18, is_npc=False)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, dtype: False)
+
+    applied = skill_handlers.curse(caster, victim)
+    assert applied is True
+    assert victim.has_affect(AffectFlag.CURSE)
+    effect = victim.spell_effects.get("curse")
+    assert effect is not None
+    expected_mod = c_div(caster.level, 8)
+    assert victim.hitroll == -expected_mod
+    assert victim.saving_throw == expected_mod
+    assert any("You feel unclean." in msg for msg in victim.messages)
+    assert any("looks very uncomfortable" in msg for msg in caster.messages)
+
+    caster.messages.clear()
+    proto = ObjIndex(vnum=1000, short_descr="a silver dagger")
+    obj = Object(instance_id=1, prototype=proto, level=10, extra_flags=int(ExtraFlag.BLESS))
+
+    monkeypatch.setattr(skill_handlers, "saves_dispel", lambda level, spell_level, duration: False)
+
+    cursed = skill_handlers.curse(caster, obj)
+    assert cursed is True
+    assert obj.extra_flags & int(ExtraFlag.EVIL)
+    assert not (obj.extra_flags & int(ExtraFlag.BLESS))
+    assert any("red aura" in msg for msg in caster.messages)
+    assert any("malevolent aura" in msg for msg in caster.messages)
 
 
 def test_charm_person_sets_affect_and_follower(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -2,11 +2,14 @@ from __future__ import annotations
 
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
-from mud.affects.saves import check_dispel, saves_spell
+from mud.affects.saves import check_dispel, saves_dispel, saves_spell
 from mud.combat.engine import (
     apply_damage,
     attack_round,
     get_wielded_weapon,
+    is_evil,
+    is_good,
+    is_neutral,
     set_fighting,
     stop_fighting,
     update_pos,
@@ -23,7 +26,21 @@ from mud.magic.effects import (
 )
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag, DamageType, ImmFlag, Position, RoomFlag
+from mud.models.constants import (
+    AffectFlag,
+    DamageType,
+    ExtraFlag,
+    ImmFlag,
+    ItemType,
+    Position,
+    RoomFlag,
+    Stat,
+    LIQ_WATER,
+    OBJ_VNUM_MUSHROOM,
+    OBJ_VNUM_SPRING,
+)
+from mud.models.object import Object
+from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
 
 
@@ -51,6 +68,67 @@ def _is_outside(character: Character) -> bool:
     except (TypeError, ValueError):  # pragma: no cover - invalid flags fall back
         flags = 0
     return not bool(flags & int(RoomFlag.ROOM_INDOORS))
+
+
+def _normalize_value_list(obj: Object, *, minimum: int = 3) -> list[int]:
+    """Return a mutable copy of an object's value list with at least ``minimum`` slots."""
+
+    raw_values = getattr(obj, "value", None)
+    if isinstance(raw_values, list):
+        values = list(raw_values)
+    else:
+        values = []
+    if len(values) < minimum:
+        values.extend([0] * (minimum - len(values)))
+    return values
+
+
+def _coerce_int(value: object) -> int:
+    """Best-effort conversion mirroring ROM's permissive int coercion."""
+
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _resolve_item_type(value: object) -> ItemType | None:
+    """Translate assorted item type representations to ``ItemType``."""
+
+    if isinstance(value, ItemType):
+        return value
+    if isinstance(value, int):
+        try:
+            return ItemType(value)
+        except ValueError:
+            return None
+    if isinstance(value, str):
+        normalized = value.strip().replace(" ", "_").replace("-", "_").upper()
+        if not normalized:
+            return None
+        aliases = {
+            "DRINK": ItemType.DRINK_CON,
+            "DRINKCON": ItemType.DRINK_CON,
+            "DRINK_CONTAINER": ItemType.DRINK_CON,
+            "DRINK_CON": ItemType.DRINK_CON,
+        }
+        item = aliases.get(normalized)
+        if item is not None:
+            return item
+        try:
+            return ItemType[normalized]
+        except KeyError:
+            return None
+    return None
+
+
+def _object_short_descr(obj: Object) -> str:
+    """Return a user-facing short description for messaging."""
+
+    short_descr = getattr(getattr(obj, "prototype", None), "short_descr", None)
+    if isinstance(short_descr, str) and short_descr.strip():
+        return short_descr.strip()
+    return "Something"
 
 
 def _breath_damage(
@@ -512,18 +590,203 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
     return True
 
 
-def chill_touch(caster, target=None):
-    """Stub implementation for chill_touch.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def chill_touch(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_chill_touch`` cold damage plus strength debuff."""
+
+    if caster is None or target is None:
+        raise ValueError("chill_touch requires a target")
+
+    dam_each = [
+        0,
+        0,
+        0,
+        6,
+        7,
+        8,
+        9,
+        12,
+        13,
+        13,
+        13,
+        14,
+        14,
+        14,
+        15,
+        15,
+        15,
+        16,
+        16,
+        16,
+        17,
+        17,
+        17,
+        18,
+        18,
+        18,
+        19,
+        19,
+        19,
+        20,
+        20,
+        20,
+        21,
+        21,
+        21,
+        22,
+        22,
+        22,
+        23,
+        23,
+        23,
+        24,
+        24,
+        24,
+        25,
+        25,
+        25,
+        26,
+        26,
+        26,
+        27,
+    ]
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    capped = max(0, min(level, len(dam_each) - 1))
+    base = dam_each[capped]
+    low = c_div(base, 2)
+    high = base * 2
+    damage = rng_mm.number_range(low, high)
+
+    if saves_spell(capped, target, DamageType.COLD):
+        damage = c_div(damage, 2)
+    else:
+        room = getattr(target, "room", None)
+        if room is not None:
+            target_name = getattr(target, "name", None) or "Someone"
+            message = f"{target_name} turns blue and shivers."
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is target:
+                    continue
+                if hasattr(occupant, "messages"):
+                    occupant.messages.append(message)
+
+        effect = SpellEffect(
+            name="chill touch",
+            duration=6,
+            level=capped,
+            stat_modifiers={Stat.STR: -1},
+        )
+        target.apply_spell_effect(effect)
+
+    target.hit -= damage
+    update_pos(target)
+    return damage
 
 
-def colour_spray(caster, target=None):
-    """Stub implementation for colour_spray.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def colour_spray(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_colour_spray`` damage with blindness on failed save."""
+
+    if caster is None or target is None:
+        raise ValueError("colour_spray requires a target")
+
+    dam_each = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        55,
+        55,
+        56,
+        57,
+        58,
+        58,
+        59,
+        60,
+        61,
+        61,
+        62,
+        63,
+        64,
+        64,
+        65,
+        66,
+        67,
+        67,
+        68,
+        69,
+        70,
+        70,
+        71,
+        72,
+        73,
+        73,
+        74,
+        75,
+        76,
+        76,
+        77,
+        78,
+        79,
+        79,
+    ]
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    capped = max(0, min(level, len(dam_each) - 1))
+    base = dam_each[capped]
+    damage = rng_mm.number_range(c_div(base, 2), base * 2)
+
+    caster_name = getattr(caster, "name", None) or "Someone"
+    target_name = getattr(target, "name", None) or "Someone"
+    caster_msg = (
+        f"{{3You spray {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
+    )
+    target_msg = (
+        f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light across your vision!{{x"
+    )
+    room_msg = (
+        f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
+    )
+
+    if hasattr(caster, "messages"):
+        caster.messages.append(caster_msg)
+    if hasattr(target, "messages"):
+        target.messages.append(target_msg)
+
+    room = getattr(caster, "room", None)
+    if room is not None:
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is caster or occupant is target:
+                continue
+            if hasattr(occupant, "messages"):
+                occupant.messages.append(room_msg)
+
+    if saves_spell(capped, target, DamageType.LIGHT):
+        damage = c_div(damage, 2)
+    else:
+        blind_level = c_div(capped, 2)
+        original_level = getattr(caster, "level", 0)
+        setattr(caster, "level", blind_level)
+        try:
+            blindness(caster, target)
+        finally:
+            setattr(caster, "level", original_level)
+
+    target.hit -= damage
+    update_pos(target)
+    return damage
 
 
 def continual_light(caster, target=None):
@@ -540,11 +803,31 @@ def control_weather(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def create_food(caster, target=None):
-    """Stub implementation for create_food.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def create_food(caster: Character, target: Object | None = None) -> Object | None:
+    """ROM ``spell_create_food`` conjures a mushroom object in the room."""
+
+    if caster is None:
+        raise ValueError("create_food requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        return None
+
+    mushroom = spawn_object(OBJ_VNUM_MUSHROOM)
+    if mushroom is None:
+        return None
+
+    level = max(_coerce_int(getattr(caster, "level", 0)), 0)
+    values = _normalize_value_list(mushroom, minimum=2)
+    values[0] = c_div(level, 2)
+    values[1] = level
+    mushroom.value = values
+
+    room.add_object(mushroom)
+    message = f"{_object_short_descr(mushroom)} suddenly appears."
+    room.broadcast(message, exclude=caster)
+    _send_to_char(caster, message)
+    return mushroom
 
 
 def create_rose(caster, target=None):
@@ -554,39 +837,173 @@ def create_rose(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def create_spring(caster, target=None):
-    """Stub implementation for create_spring.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def create_spring(caster: Character, target: Object | None = None) -> Object | None:
+    """ROM ``spell_create_spring`` conjures a spring with a level-based timer."""
+
+    if caster is None:
+        raise ValueError("create_spring requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        return None
+
+    spring = spawn_object(OBJ_VNUM_SPRING)
+    if spring is None:
+        return None
+
+    spring.timer = max(_coerce_int(getattr(caster, "level", 0)), 0)
+    room.add_object(spring)
+
+    message = f"{_object_short_descr(spring)} flows from the ground."
+    room.broadcast(message, exclude=caster)
+    _send_to_char(caster, message)
+    return spring
 
 
-def create_water(caster, target=None):
-    """Stub implementation for create_water.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def create_water(caster: Character, target: Object | None = None) -> bool:
+    """ROM ``spell_create_water`` fills drink containers with water."""
+
+    if caster is None or target is None:
+        raise ValueError("create_water requires a drink container target")
+
+    raw_item_type = getattr(target, "item_type", None)
+    if raw_item_type is None:
+        raw_item_type = getattr(getattr(target, "prototype", None), "item_type", None)
+
+    item_type = _resolve_item_type(raw_item_type)
+    if item_type is not ItemType.DRINK_CON:
+        _send_to_char(caster, "It is unable to hold water.")
+        return False
+
+    values = _normalize_value_list(target, minimum=3)
+    capacity = max(_coerce_int(values[0]), 0)
+    current = max(_coerce_int(values[1]), 0)
+    liquid_type = _coerce_int(values[2])
+
+    if liquid_type not in (LIQ_WATER, 0) and current != 0:
+        _send_to_char(caster, "It contains some other liquid.")
+        return False
+
+    level = max(_coerce_int(getattr(caster, "level", 0)), 0)
+    multiplier = 4 if int(weather.sky) >= int(SkyState.RAINING) else 2
+    space_remaining = max(0, capacity - current)
+    water = min(level * multiplier, space_remaining)
+
+    if water <= 0:
+        _send_to_char(caster, "It is already full of water.")
+        return False
+
+    values[2] = LIQ_WATER
+    values[1] = current + water
+    target.value = values
+
+    message = f"{_object_short_descr(target)} is filled."
+    _send_to_char(caster, message)
+    room = getattr(caster, "room", None)
+    if room is not None:
+        room.broadcast(message, exclude=caster)
+    return True
 
 
-def cure_blindness(caster, target=None):
-    """Stub implementation for cure_blindness.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_blindness(
+    caster: Character, target: Character | None = None
+) -> bool:
+    """Dispel ROM blindness affect with success/failure messaging."""
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("cure_blindness requires a target")
+
+    if not (
+        victim.has_affect(AffectFlag.BLIND)
+        or victim.has_spell_effect("blindness")
+    ):
+        if victim is caster:
+            _send_to_char(victim, "You aren't blind.")
+        else:
+            name = getattr(victim, "name", None) or "Someone"
+            _send_to_char(caster, f"{name} doesn't appear to be blinded.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    if check_dispel(level, victim, "blindness"):
+        _send_to_char(victim, "Your vision returns!")
+        room = getattr(victim, "room", None)
+        if room is not None:
+            name = getattr(victim, "name", None) or "Someone"
+            message = f"{name} is no longer blinded."
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is victim:
+                    continue
+                if hasattr(occupant, "messages"):
+                    occupant.messages.append(message)
+        return True
+
+    _send_to_char(caster, "Spell failed.")
+    return False
 
 
-def cure_critical(caster, target=None):
-    """Stub implementation for cure_critical.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_critical(
+    caster: Character, target: Character | None = None
+) -> int:
+    """ROM ``spell_cure_critical`` healing dice and messaging."""
+
+    target = target or caster
+    if target is None:
+        raise ValueError("cure_critical requires a target")
+
+    level = int(getattr(caster, "level", 0) or 0)
+    heal = rng_mm.dice(3, 8) + level - 6
+
+    max_hit = getattr(target, "max_hit", 0)
+    if max_hit > 0:
+        target.hit = min(target.hit + heal, max_hit)
+    else:
+        target.hit += heal
+
+    update_pos(target)
+    _send_to_char(target, "You feel better!")
+    if caster is not target:
+        _send_to_char(caster, "Ok.")
+    return heal
 
 
-def cure_disease(caster, target=None):
-    """Stub implementation for cure_disease.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_disease(
+    caster: Character, target: Character | None = None
+) -> bool:
+    """Dispel ROM plague affect with messaging for success/failure."""
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("cure_disease requires a target")
+
+    if not (
+        victim.has_affect(AffectFlag.PLAGUE)
+        or victim.has_spell_effect("plague")
+    ):
+        if victim is caster:
+            _send_to_char(victim, "You aren't ill.")
+        else:
+            name = getattr(victim, "name", None) or "Someone"
+            _send_to_char(caster, f"{name} doesn't appear to be diseased.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    if check_dispel(level, victim, "plague"):
+        _send_to_char(victim, "Your sores vanish.")
+        room = getattr(victim, "room", None)
+        if room is not None:
+            name = getattr(victim, "name", None) or "Someone"
+            message = f"{name} looks relieved as their sores vanish."
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is victim:
+                    continue
+                if hasattr(occupant, "messages"):
+                    occupant.messages.append(message)
+        return True
+
+    _send_to_char(caster, "Spell failed.")
+    return False
 
 
 def cure_light(caster: Character, target: Character | None = None) -> int:
@@ -595,7 +1012,7 @@ def cure_light(caster: Character, target: Character | None = None) -> int:
     if target is None:
         raise ValueError("cure_light requires a target")
 
-    level = max(getattr(caster, "level", 0), 0)
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
     heal = rng_mm.dice(1, 8) + c_div(level, 3)
 
     max_hit = getattr(target, "max_hit", 0)
@@ -605,28 +1022,142 @@ def cure_light(caster: Character, target: Character | None = None) -> int:
         target.hit += heal
 
     update_pos(target)
+    _send_to_char(target, "You feel better!")
+    if caster is not target:
+        _send_to_char(caster, "Ok.")
     return heal
 
 
-def cure_poison(caster, target=None):
-    """Stub implementation for cure_poison.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_poison(
+    caster: Character, target: Character | None = None
+) -> bool:
+    """Dispel ROM poison affect with messaging on outcome."""
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("cure_poison requires a target")
+
+    if not (
+        victim.has_affect(AffectFlag.POISON)
+        or victim.has_spell_effect("poison")
+    ):
+        if victim is caster:
+            _send_to_char(victim, "You aren't poisoned.")
+        else:
+            name = getattr(victim, "name", None) or "Someone"
+            _send_to_char(caster, f"{name} doesn't appear to be poisoned.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    if check_dispel(level, victim, "poison"):
+        _send_to_char(victim, "A warm feeling runs through your body.")
+        room = getattr(victim, "room", None)
+        if room is not None:
+            name = getattr(victim, "name", None) or "Someone"
+            message = f"{name} looks much better."
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is victim:
+                    continue
+                if hasattr(occupant, "messages"):
+                    occupant.messages.append(message)
+        return True
+
+    _send_to_char(caster, "Spell failed.")
+    return False
 
 
-def cure_serious(caster, target=None):
-    """Stub implementation for cure_serious.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def cure_serious(
+    caster: Character, target: Character | None = None
+) -> int:
+    """ROM ``spell_cure_serious`` healing dice and messaging."""
+
+    target = target or caster
+    if target is None:
+        raise ValueError("cure_serious requires a target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    heal = rng_mm.dice(2, 8) + c_div(level, 2)
+
+    max_hit = getattr(target, "max_hit", 0)
+    if max_hit > 0:
+        target.hit = min(target.hit + heal, max_hit)
+    else:
+        target.hit += heal
+
+    update_pos(target)
+    _send_to_char(target, "You feel better!")
+    if caster is not target:
+        _send_to_char(caster, "Ok.")
+    return heal
 
 
 def curse(caster, target=None):
-    """Stub implementation for curse.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    """Port of ROM ``spell_curse`` for characters and objects."""
+
+    if caster is None:
+        raise ValueError("curse requires a caster")
+
+    if target is None:
+        target = caster
+
+    # Object curse branch mirrors src/magic.c:1725-1778
+    if isinstance(target, Object):
+        obj = target
+        extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
+        if extra_flags & int(ExtraFlag.NOUNCURSE):
+            return False
+        if extra_flags & int(ExtraFlag.EVIL):
+            _send_to_char(caster, f"{obj.short_descr or 'It'} is already filled with evil.")
+            return False
+
+        level = int(getattr(caster, "level", 0) or 0)
+        if extra_flags & int(ExtraFlag.BLESS):
+            obj_level = int(getattr(obj, "level", getattr(obj.prototype, "level", 0)) or 0)
+            if saves_dispel(level, obj_level, duration=0):
+                _send_to_char(
+                    caster,
+                    f"The holy aura of {obj.short_descr or 'it'} is too powerful for you to overcome.",
+                )
+                return False
+            obj.extra_flags = extra_flags & ~int(ExtraFlag.BLESS)
+            _send_to_char(caster, f"{obj.short_descr or 'It'} glows with a red aura.")
+            extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
+
+        obj.extra_flags = extra_flags | int(ExtraFlag.EVIL)
+        _send_to_char(caster, f"{obj.short_descr or 'It'} glows with a malevolent aura.")
+        return True
+
+    if not isinstance(target, Character):
+        raise TypeError("curse target must be Character or Object")
+
+    victim = target
+    if victim.has_affect(AffectFlag.CURSE) or victim.has_spell_effect("curse"):
+        return False
+
+    level = int(getattr(caster, "level", 0) or 0)
+    if saves_spell(level, victim, DamageType.NEGATIVE):
+        return False
+
+    modifier = c_div(level, 8)
+    duration = 2 * level
+    effect = SpellEffect(
+        name="curse",
+        duration=duration,
+        level=level,
+        hitroll_mod=-modifier,
+        saving_throw_mod=modifier,
+        affect_flag=AffectFlag.CURSE,
+        wear_off_message="The curse wears off.",
+    )
+    applied = victim.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(victim, "You feel unclean.")
+    if victim is not caster:
+        victim_name = getattr(victim, "name", None) or "Someone"
+        _send_to_char(caster, f"{victim_name} looks very uncomfortable.")
+    return True
 
 
 def dagger(caster, target=None):
@@ -636,53 +1167,251 @@ def dagger(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def demonfire(caster, target=None):
-    """Stub implementation for demonfire.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def demonfire(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_demonfire`` negative damage plus curse side effects."""
+
+    if caster is None:
+        raise ValueError("demonfire requires a caster")
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("demonfire requires a target")
+
+    if not getattr(caster, "is_npc", True) and not is_evil(caster):
+        victim = caster
+        _send_to_char(caster, "The demons turn upon you!")
+
+    caster.alignment = max(-1000, int(getattr(caster, "alignment", 0) or 0) - 50)
+
+    if victim is not caster:
+        room = getattr(caster, "room", None)
+        caster_name = getattr(caster, "name", None) or "Someone"
+        victim_name = getattr(victim, "name", None) or "Someone"
+        if room is not None:
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is caster:
+                    continue
+                message = f"{caster_name} calls forth the demons of Hell upon {victim_name}!"
+                _send_to_char(occupant, message)
+        _send_to_char(victim, f"{caster_name} has assailed you with the demons of Hell!")
+        _send_to_char(caster, "You conjure forth the demons of hell!")
+
+    level = max(1, int(getattr(caster, "level", 0) or 0))
+    damage = rng_mm.dice(level, 10)
+    if saves_spell(level, victim, DamageType.NEGATIVE):
+        damage = c_div(damage, 2)
+
+    victim.hit -= damage
+    update_pos(victim)
+
+    curse_level = max(0, c_div(3 * level, 4))
+    if (
+        curse_level > 0
+        and not victim.has_affect(AffectFlag.CURSE)
+        and not victim.has_spell_effect("curse")
+        and not saves_spell(curse_level, victim, DamageType.NEGATIVE)
+    ):
+        modifier = c_div(curse_level, 8)
+        duration = 2 * curse_level
+        effect = SpellEffect(
+            name="curse",
+            duration=duration,
+            level=curse_level,
+            hitroll_mod=-modifier,
+            saving_throw_mod=modifier,
+            affect_flag=AffectFlag.CURSE,
+            wear_off_message="The curse wears off.",
+        )
+        if victim.apply_spell_effect(effect):
+            _send_to_char(victim, "You feel unclean.")
+            if victim is not caster:
+                victim_name = getattr(victim, "name", None) or "Someone"
+                _send_to_char(caster, f"{victim_name} looks very uncomfortable.")
+
+    return damage
 
 
-def detect_evil(caster, target=None):
-    """Stub implementation for detect_evil.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_evil(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_detect_evil`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("detect_evil requires a target")
+
+    if target.has_affect(AffectFlag.DETECT_EVIL) or target.has_spell_effect("detect evil"):
+        if target is caster:
+            _send_to_char(caster, "You can already sense evil.")
+        else:
+            target_name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{target_name} can already detect evil.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="detect evil",
+        duration=level,
+        level=level,
+        affect_flag=AffectFlag.DETECT_EVIL,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your eyes tingle.")
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def detect_good(caster, target=None):
-    """Stub implementation for detect_good.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_good(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_detect_good`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("detect_good requires a target")
+
+    if target.has_affect(AffectFlag.DETECT_GOOD) or target.has_spell_effect("detect good"):
+        if target is caster:
+            _send_to_char(caster, "You can already sense good.")
+        else:
+            target_name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{target_name} can already detect good.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="detect good",
+        duration=level,
+        level=level,
+        affect_flag=AffectFlag.DETECT_GOOD,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your eyes tingle.")
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def detect_hidden(caster, target=None):
-    """Stub implementation for detect_hidden.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_hidden(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_detect_hidden`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("detect_hidden requires a target")
+
+    if target.has_affect(AffectFlag.DETECT_HIDDEN) or target.has_spell_effect("detect hidden"):
+        if target is caster:
+            _send_to_char(caster, "You are already as alert as you can be.")
+        else:
+            target_name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{target_name} can already sense hidden lifeforms.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="detect hidden",
+        duration=level,
+        level=level,
+        affect_flag=AffectFlag.DETECT_HIDDEN,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your awareness improves.")
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def detect_invis(caster, target=None):
-    """Stub implementation for detect_invis.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_invis(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_detect_invis`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("detect_invis requires a target")
+
+    if target.has_affect(AffectFlag.DETECT_INVIS) or target.has_spell_effect("detect invis"):
+        if target is caster:
+            _send_to_char(caster, "You can already see invisible.")
+        else:
+            target_name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{target_name} can already see invisible things.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="detect invis",
+        duration=level,
+        level=level,
+        affect_flag=AffectFlag.DETECT_INVIS,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your eyes tingle.")
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def detect_magic(caster, target=None):
-    """Stub implementation for detect_magic.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_magic(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_detect_magic`` affect application."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("detect_magic requires a target")
+
+    if target.has_affect(AffectFlag.DETECT_MAGIC) or target.has_spell_effect("detect magic"):
+        if target is caster:
+            _send_to_char(caster, "You can already sense magical auras.")
+        else:
+            target_name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{target_name} can already detect magic.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="detect magic",
+        duration=level,
+        level=level,
+        affect_flag=AffectFlag.DETECT_MAGIC,
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your eyes tingle.")
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def detect_poison(caster, target=None):
-    """Stub implementation for detect_poison.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def detect_poison(caster: Character, target: Object | None = None) -> bool:
+    """ROM ``spell_detect_poison`` inspection messaging."""
+
+    if caster is None:
+        raise ValueError("detect_poison requires a caster")
+    if target is None:
+        raise ValueError("detect_poison requires an object target")
+
+    item_type = _resolve_item_type(getattr(target, "item_type", None))
+    if item_type is None and hasattr(target, "prototype"):
+        item_type = _resolve_item_type(getattr(target.prototype, "item_type", None))
+
+    if item_type in (ItemType.DRINK_CON, ItemType.FOOD):
+        values = _normalize_value_list(target, minimum=4)
+        if values[3]:
+            _send_to_char(caster, "You smell poisonous fumes.")
+        else:
+            _send_to_char(caster, "It looks delicious.")
+    else:
+        _send_to_char(caster, "It doesn't look poisoned.")
+    return True
 
 
 def dirt_kicking(caster, target=None):
@@ -699,18 +1428,90 @@ def disarm(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def dispel_evil(caster, target=None):
-    """Stub implementation for dispel_evil.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def dispel_evil(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_dispel_evil`` holy damage with alignment gating."""
+
+    if caster is None:
+        raise ValueError("dispel_evil requires a caster")
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("dispel_evil requires a target")
+
+    if not getattr(caster, "is_npc", True) and is_evil(caster):
+        victim = caster
+
+    if is_good(victim):
+        victim_name = getattr(victim, "name", None) or "Someone"
+        room = getattr(caster, "room", None)
+        if room is not None:
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is caster:
+                    continue
+                _send_to_char(occupant, f"Mota protects {victim_name}.")
+        _send_to_char(caster, f"Mota protects {victim_name}.")
+        return 0
+
+    if is_neutral(victim):
+        victim_name = getattr(victim, "name", None) or "Someone"
+        _send_to_char(caster, f"{victim_name} does not seem to be affected.")
+        return 0
+
+    level = max(1, int(getattr(caster, "level", 0) or 0))
+    victim_hit = max(0, int(getattr(victim, "hit", 0) or 0))
+    if victim_hit > level * 4:
+        damage = rng_mm.dice(level, 4)
+    else:
+        damage = max(victim_hit, rng_mm.dice(level, 4))
+    if saves_spell(level, victim, DamageType.HOLY):
+        damage = c_div(damage, 2)
+
+    victim.hit -= damage
+    update_pos(victim)
+    return damage
 
 
-def dispel_good(caster, target=None):
-    """Stub implementation for dispel_good.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def dispel_good(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_dispel_good`` negative damage with alignment gating."""
+
+    if caster is None:
+        raise ValueError("dispel_good requires a caster")
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("dispel_good requires a target")
+
+    if not getattr(caster, "is_npc", True) and is_good(caster):
+        victim = caster
+
+    if is_evil(victim):
+        victim_name = getattr(victim, "name", None) or "Someone"
+        room = getattr(caster, "room", None)
+        if room is not None:
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is caster:
+                    continue
+                _send_to_char(occupant, f"{victim_name} is protected by {victim_name}'s evil.")
+        _send_to_char(caster, f"{victim_name} is protected by {victim_name}'s evil.")
+        return 0
+
+    if is_neutral(victim):
+        victim_name = getattr(victim, "name", None) or "Someone"
+        _send_to_char(caster, f"{victim_name} does not seem to be affected.")
+        return 0
+
+    level = max(1, int(getattr(caster, "level", 0) or 0))
+    victim_hit = max(0, int(getattr(victim, "hit", 0) or 0))
+    if victim_hit > level * 4:
+        damage = rng_mm.dice(level, 4)
+    else:
+        damage = max(victim_hit, rng_mm.dice(level, 4))
+    if saves_spell(level, victim, DamageType.NEGATIVE):
+        damage = c_div(damage, 2)
+
+    victim.hit -= damage
+    update_pos(victim)
+    return damage
 
 
 def dispel_magic(caster: Character, target: Character | None = None) -> bool:
@@ -1075,11 +1876,25 @@ def haste(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def heal(caster, target=None):
-    """Stub implementation for heal.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def heal(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_heal`` fixed healing with warm feeling messaging."""
+
+    target = target or caster
+    if target is None:
+        raise ValueError("heal requires a target")
+
+    heal_amount = 100
+    max_hit = getattr(target, "max_hit", 0)
+    if max_hit > 0:
+        target.hit = min(target.hit + heal_amount, max_hit)
+    else:
+        target.hit += heal_amount
+
+    update_pos(target)
+    _send_to_char(target, "A warm feeling fills your body.")
+    if caster is not target:
+        _send_to_char(caster, "Ok.")
+    return heal_amount
 
 
 def heat_metal(caster, target=None):
