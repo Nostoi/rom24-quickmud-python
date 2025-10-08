@@ -15,7 +15,7 @@ from mud.combat.engine import (
     update_pos,
 )
 from mud.game_loop import SkyState, weather
-from mud.characters import is_clan_member, is_same_clan
+from mud.characters import is_clan_member, is_same_clan, is_same_group
 from mud.characters.follow import add_follower, stop_follower
 from mud.magic.effects import (
     SpellTarget,
@@ -29,26 +29,35 @@ from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import (
     AffectFlag,
+    ActFlag,
     DamageType,
     ExtraFlag,
     ImmFlag,
     ItemType,
+    PlayerFlag,
     Position,
     RoomFlag,
     Stat,
     WearLocation,
     LEVEL_HERO,
+    LEVEL_IMMORTAL,
     LIQ_WATER,
     OBJ_VNUM_DISC,
     OBJ_VNUM_MUSHROOM,
     OBJ_VNUM_SPRING,
 )
 from mud.models.object import Object
+from mud.models.obj import Affect, ObjectData
 from mud.net.protocol import broadcast_room
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
 from mud.world.look import look
 from mud.world.vision import can_see_room
+
+
+_TO_OBJECT = 1
+_APPLY_NONE = 0
+_OBJECT_INVIS_WEAR_OFF = "$p fades into view."
 
 
 def _send_to_char(character: Character, message: str) -> None:
@@ -129,9 +138,12 @@ def _resolve_item_type(value: object) -> ItemType | None:
     return None
 
 
-def _object_short_descr(obj: Object) -> str:
+def _object_short_descr(obj: Object | ObjectData) -> str:
     """Return a user-facing short description for messaging."""
 
+    short_descr = getattr(obj, "short_descr", None)
+    if isinstance(short_descr, str) and short_descr.strip():
+        return short_descr.strip()
     short_descr = getattr(getattr(obj, "prototype", None), "short_descr", None)
     if isinstance(short_descr, str) and short_descr.strip():
         return short_descr.strip()
@@ -150,6 +162,141 @@ def _character_name(character: Character | None) -> str:
     if isinstance(short_descr, str) and short_descr.strip():
         return short_descr.strip()
     return "Someone"
+
+
+def _get_room_flags(room) -> int:
+    try:
+        return int(getattr(room, "room_flags", 0) or 0)
+    except (TypeError, ValueError):  # pragma: no cover - defensive fallback
+        return 0
+
+
+def _get_act_flags(character: Character | object) -> ActFlag:
+    """Best-effort conversion of runtime act flags for NPC safety checks."""
+
+    flags = 0
+    for source in (
+        getattr(character, "act", 0),
+        getattr(character, "act_flags", 0),
+        getattr(getattr(character, "prototype", None), "act", 0),
+        getattr(getattr(character, "prototype", None), "act_flags", 0),
+        getattr(getattr(character, "pIndexData", None), "act", 0),
+        getattr(getattr(character, "pIndexData", None), "act_flags", 0),
+    ):
+        if source is None:
+            continue
+        if isinstance(source, ActFlag):
+            flags |= int(source)
+            continue
+        try:
+            flags |= int(source)
+        except (TypeError, ValueError):  # pragma: no cover - defensive fallback
+            continue
+    try:
+        return ActFlag(flags)
+    except ValueError:  # pragma: no cover - invalid bits default to 0
+        return ActFlag(0)
+
+
+def _get_player_flags(character: Character) -> PlayerFlag:
+    if getattr(character, "is_npc", True):
+        return PlayerFlag(0)
+    try:
+        return PlayerFlag(int(getattr(character, "act", 0) or 0))
+    except (TypeError, ValueError):  # pragma: no cover - defensive fallback
+        return PlayerFlag(0)
+
+
+def _has_shop(character: Character) -> bool:
+    for source in (
+        getattr(character, "pShop", None),
+        getattr(getattr(character, "prototype", None), "pShop", None),
+        getattr(getattr(character, "pIndexData", None), "pShop", None),
+        getattr(character, "shop", None),
+    ):
+        if source is not None:
+            return True
+    return False
+
+
+def _is_charmed(character: Character) -> bool:
+    return character.has_affect(AffectFlag.CHARM) if hasattr(character, "has_affect") else False
+
+
+def _is_safe_spell(caster: Character, victim: Character, *, area: bool) -> bool:
+    """Mirror ROM ``is_safe_spell`` safeguards for area spells."""
+
+    if caster is None or victim is None:
+        return True
+
+    victim_room = getattr(victim, "room", None)
+    caster_room = getattr(caster, "room", None)
+    if victim_room is None or caster_room is None:
+        return True
+
+    if area and victim is caster:
+        return True
+
+    if getattr(victim, "fighting", None) is caster or victim is caster:
+        return False
+
+    if hasattr(caster, "is_immortal") and caster.is_immortal() and getattr(caster, "level", 0) > LEVEL_IMMORTAL and not area:
+        return False
+
+    victim_is_npc = bool(getattr(victim, "is_npc", True))
+    caster_is_npc = bool(getattr(caster, "is_npc", True))
+
+    if victim_is_npc:
+        if _get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
+            return True
+        if _has_shop(victim):
+            return True
+
+        act_flags = _get_act_flags(victim)
+        if act_flags & (ActFlag.TRAIN | ActFlag.PRACTICE | ActFlag.IS_HEALER | ActFlag.IS_CHANGER):
+            return True
+
+        if not caster_is_npc:
+            if act_flags & ActFlag.PET:
+                return True
+            if _is_charmed(victim) and (area or getattr(victim, "master", None) is not caster):
+                return True
+            victim_fighting = getattr(victim, "fighting", None)
+            if victim_fighting is not None and not is_same_group(caster, victim_fighting):
+                return True
+        else:
+            if area:
+                caster_fighting = getattr(caster, "fighting", None)
+                if not is_same_group(victim, caster_fighting):
+                    return True
+    else:
+        if area and hasattr(victim, "is_immortal") and victim.is_immortal() and getattr(victim, "level", 0) > LEVEL_IMMORTAL:
+            return True
+
+        if caster_is_npc:
+            if _is_charmed(caster):
+                master = getattr(caster, "master", None)
+                if master is not None and getattr(master, "fighting", None) is not victim:
+                    return True
+            if _get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
+                return True
+            caster_fighting = getattr(caster, "fighting", None)
+            if caster_fighting is not None and not is_same_group(caster_fighting, victim):
+                return True
+        else:
+            if not is_clan_member(caster):
+                return True
+            player_flags = _get_player_flags(victim)
+            if player_flags & (PlayerFlag.KILLER | PlayerFlag.THIEF):
+                return False
+            if not is_clan_member(victim):
+                return True
+            caster_level = _coerce_int(getattr(caster, "level", 0))
+            victim_level = _coerce_int(getattr(victim, "level", 0))
+            if caster_level > victim_level + 8:
+                return True
+
+    return False
 
 
 def _breath_damage(
@@ -273,7 +420,7 @@ def bash(
 
     bash_type = int(DamageType.BASH)
     if not success:
-        return apply_damage(caster, target, 0, bash_type)
+        return apply_damage(caster, target, 0, bash_type, dt="bash")
 
     chance = int(chance or 0)
     size = max(0, int(getattr(caster, "size", 0) or 0))
@@ -285,7 +432,7 @@ def bash(
 
     victim_daze = 3 * get_pulse_violence()
     target.daze = max(int(getattr(target, "daze", 0) or 0), victim_daze)
-    result = apply_damage(caster, target, damage, bash_type)
+    result = apply_damage(caster, target, damage, bash_type, dt="bash")
     target.position = Position.RESTING
     return result
 
@@ -1112,7 +1259,7 @@ def cure_serious(
     return heal
 
 
-def curse(caster, target=None):
+def curse(caster, target=None, *, override_level: int | None = None):
     """Port of ROM ``spell_curse`` for characters and objects."""
 
     if caster is None:
@@ -1155,7 +1302,7 @@ def curse(caster, target=None):
     if victim.has_affect(AffectFlag.CURSE) or victim.has_spell_effect("curse"):
         return False
 
-    level = int(getattr(caster, "level", 0) or 0)
+    level = override_level if override_level is not None else int(getattr(caster, "level", 0) or 0)
     if saves_spell(level, victim, DamageType.NEGATIVE):
         return False
 
@@ -1607,18 +1754,100 @@ def envenom(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def faerie_fire(caster, target=None):
-    """Stub implementation for faerie_fire.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def faerie_fire(caster: Character, target: Character | None = None) -> bool:
+    """Apply ROM ``spell_faerie_fire`` glow with AC penalty and messaging."""
+
+    if caster is None or target is None:
+        raise ValueError("faerie_fire requires a target")
+
+    if target.has_affect(AffectFlag.FAERIE_FIRE) or target.has_spell_effect("faerie fire"):
+        if target is caster:
+            _send_to_char(caster, "You are already surrounded by a pink outline.")
+        else:
+            name = _character_name(target)
+            _send_to_char(caster, f"{name} is already surrounded by a pink outline.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    duration = level
+    ac_penalty = 2 * level
+
+    effect = SpellEffect(
+        name="faerie fire",
+        duration=duration,
+        level=level,
+        ac_mod=ac_penalty,
+        affect_flag=AffectFlag.FAERIE_FIRE,
+        wear_off_message="The pink aura around you fades away.",
+    )
+
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "You are surrounded by a pink outline.")
+    room = getattr(target, "room", None)
+    if room is not None:
+        broadcast_room(
+            room,
+            f"{_character_name(target)} is surrounded by a pink outline.",
+            exclude=target,
+        )
+
+    return True
 
 
-def faerie_fog(caster, target=None):
-    """Stub implementation for faerie_fog.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def faerie_fog(caster: Character, target: Character | None = None) -> bool:
+    """Reveal hidden characters per ROM ``spell_faerie_fog`` semantics."""
+
+    if caster is None:
+        raise ValueError("faerie_fog requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        _send_to_char(caster, "You conjure a cloud of purple smoke.")
+        return False
+
+    broadcast_room(
+        room,
+        f"{_character_name(caster)} conjures a cloud of purple smoke.",
+        exclude=caster,
+    )
+    _send_to_char(caster, "You conjure a cloud of purple smoke.")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    revealed_any = False
+
+    occupants = list(getattr(room, "people", []) or [])
+    for occupant in occupants:
+        if occupant is None:
+            continue
+        if getattr(occupant, "invis_level", 0) > 0:
+            continue
+        if occupant is caster:
+            continue
+        if saves_spell(level, occupant, DamageType.OTHER):
+            continue
+
+        if hasattr(occupant, "remove_spell_effect"):
+            occupant.remove_spell_effect("invis")
+            occupant.remove_spell_effect("mass invis")
+            occupant.remove_spell_effect("sneak")
+
+        if hasattr(occupant, "remove_affect"):
+            occupant.remove_affect(AffectFlag.HIDE)
+            occupant.remove_affect(AffectFlag.INVISIBLE)
+            occupant.remove_affect(AffectFlag.SNEAK)
+
+        broadcast_room(
+            room,
+            f"{_character_name(occupant)} is revealed!",
+            exclude=occupant,
+        )
+        _send_to_char(occupant, "You are revealed!")
+        revealed_any = True
+
+    return revealed_any
 
 
 def farsight(caster, target=None):
@@ -2194,11 +2423,79 @@ def high_explosive(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def holy_word(caster, target=None):
-    """Stub implementation for holy_word.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signature
+    """Mass alignment spell mirroring ROM ``spell_holy_word``."""
+
+    if caster is None:
+        raise ValueError("holy_word requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        return False
+
+    caster_good = is_good(caster)
+    caster_evil = is_evil(caster)
+    caster_neutral = is_neutral(caster)
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+
+    caster_name = _character_name(caster)
+    broadcast_room(room, f"{caster_name} utters a word of divine power!", exclude=caster)
+    _send_to_char(caster, "You utter a word of divine power.")
+
+    any_effect = False
+
+    occupants = list(getattr(room, "people", []) or [])
+    energy_damage_type = DamageType.ENERGY
+
+    for victim in occupants:
+        if victim is None:
+            continue
+
+        victim_good = is_good(victim)
+        victim_evil = is_evil(victim)
+        victim_neutral = is_neutral(victim)
+
+        if (caster_good and victim_good) or (caster_evil and victim_evil) or (caster_neutral and victim_neutral):
+            _send_to_char(victim, "You feel full more powerful.")
+            frenzy(caster, victim)
+            bless(caster, victim)
+            any_effect = True
+            continue
+
+        if (caster_good and victim_evil) or (caster_evil and victim_good):
+            if not _is_safe_spell(caster, victim, area=True):
+                curse(caster, victim)
+                _send_to_char(victim, "You are struck down!")
+                damage = rng_mm.dice(level, 6)
+                apply_damage(
+                    caster,
+                    victim,
+                    damage,
+                    energy_damage_type,
+                    dt="holy word",
+                )
+                any_effect = True
+            continue
+
+        if caster_neutral and not victim_neutral:
+            if not _is_safe_spell(caster, victim, area=True):
+                half_level = max(0, c_div(level, 2))
+                curse(caster, victim, override_level=half_level)
+                _send_to_char(victim, "You are struck down!")
+                damage = rng_mm.dice(level, 4)
+                apply_damage(
+                    caster,
+                    victim,
+                    damage,
+                    energy_damage_type,
+                    dt="holy word",
+                )
+                any_effect = True
+
+    _send_to_char(caster, "You feel drained.")
+    caster.move = 0
+    caster.hit = c_div(int(getattr(caster, "hit", 0) or 0), 2)
+    return any_effect
 
 
 def identify(caster, target=None):
@@ -2208,18 +2505,120 @@ def identify(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def infravision(caster, target=None):
-    """Stub implementation for infravision.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def infravision(caster: Character, target: Character | None = None) -> bool:
+    """Grant infravision affect mirroring ROM ``spell_infravision``."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("infravision requires a target")
+
+    already_active = False
+    if hasattr(target, "has_affect") and target.has_affect(AffectFlag.INFRARED):
+        already_active = True
+    if getattr(target, "has_spell_effect", None) and target.has_spell_effect("infravision"):
+        already_active = True
+
+    if already_active:
+        if target is caster:
+            _send_to_char(caster, "You can already see in the dark.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} already has infravision.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    duration = 2 * level
+    effect = SpellEffect(
+        name="infravision",
+        duration=duration,
+        level=level,
+        affect_flag=AffectFlag.INFRARED,
+    )
+
+    applied = target.apply_spell_effect(effect) if hasattr(target, "apply_spell_effect") else False
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your eyes glow red.")
+    room = getattr(target, "room", None)
+    if room is not None:
+        broadcast_room(room, f"{_character_name(target)}'s eyes glow red.", exclude=target)
+
+    return True
 
 
-def invis(caster, target=None):
-    """Stub implementation for invis.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def invis(caster: Character, target: Character | Object | None = None) -> bool:
+    """Apply invisibility to objects or characters per ROM ``spell_invis``."""
+
+    if caster is None:
+        raise ValueError("invis requires a caster")
+
+    target = target or caster
+
+    if isinstance(target, ObjectData):
+        obj = target
+    elif isinstance(target, Object):
+        obj = target
+    else:
+        obj = None
+
+    if obj is not None:
+        extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+        if extra_flags & int(ExtraFlag.INVIS):
+            _send_to_char(caster, f"{_object_short_descr(obj)} is already invisible.")
+            return False
+
+        level = max(int(getattr(caster, "level", 0) or 0), 0)
+        affect = Affect(
+            where=_TO_OBJECT,
+            type=0,
+            level=level,
+            duration=level + 12,
+            location=_APPLY_NONE,
+            modifier=0,
+            bitvector=int(ExtraFlag.INVIS),
+        )
+        setattr(affect, "spell_name", "invisibility")
+        setattr(affect, "wear_off_message", _OBJECT_INVIS_WEAR_OFF)
+
+        affects = getattr(obj, "affected", None)
+        if isinstance(affects, list):
+            affects.append(affect)
+        else:
+            setattr(obj, "affected", [affect])
+
+        obj.extra_flags = extra_flags | int(ExtraFlag.INVIS)
+        message = f"{_object_short_descr(obj)} fades out of sight."
+        _send_to_char(caster, message)
+
+        caster_room = getattr(caster, "room", None)
+        if caster_room is not None:
+            broadcast_room(caster_room, message, exclude=caster)
+        return True
+
+    if not isinstance(target, Character):
+        raise TypeError("invis target must be Character or Object")
+
+    if target.has_affect(AffectFlag.INVISIBLE) or target.has_spell_effect("invis"):
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="invis",
+        duration=level + 12,
+        level=level,
+        affect_flag=AffectFlag.INVISIBLE,
+        wear_off_message="You fade back into existence.",
+    )
+
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "You fade out of existence.")
+    room = getattr(target, "room", None)
+    if room is not None:
+        broadcast_room(room, f"{_character_name(target)} fades out of existence.", exclude=target)
+    return True
 
 
 def kick(
@@ -2255,7 +2654,7 @@ def kick(
     else:
         damage = 0
 
-    return apply_damage(caster, opponent, damage, DamageType.BASH)
+    return apply_damage(caster, opponent, damage, DamageType.BASH, dt="kick")
 
 
 def know_alignment(caster, target=None):
@@ -2335,11 +2734,47 @@ def mass_healing(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def mass_invis(caster, target=None):
-    """Stub implementation for mass_invis.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def mass_invis(caster: Character, target: Character | None = None) -> bool:
+    """Port ROM ``spell_mass_invis`` group invisibility."""
+
+    if caster is None:
+        raise ValueError("mass invis requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        _send_to_char(caster, "Ok.")
+        return False
+
+    applied = False
+    caster_level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect_level = c_div(caster_level, 2)
+
+    for member in list(getattr(room, "people", []) or []):
+        if not is_same_group(member, caster):
+            continue
+        if member.has_affect(AffectFlag.INVISIBLE) or member.has_spell_effect("mass invis"):
+            continue
+
+        broadcast_room(
+            room,
+            f"{_character_name(member)} slowly fades out of existence.",
+            exclude=member,
+        )
+        _send_to_char(member, "You slowly fade out of existence.")
+
+        effect = SpellEffect(
+            name="mass invis",
+            duration=24,
+            level=effect_level,
+            affect_flag=AffectFlag.INVISIBLE,
+            wear_off_message="You are no longer invisible.",
+        )
+
+        if member.apply_spell_effect(effect):
+            applied = True
+
+    _send_to_char(caster, "Ok.")
+    return applied
 
 
 def meditation(caster, target=None):

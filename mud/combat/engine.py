@@ -5,7 +5,7 @@ from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
 from mud.characters import is_same_clan
 from mud.combat.death import raw_kill
-from mud.combat.messages import DamageMessages, dam_message
+from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
@@ -255,6 +255,17 @@ def _normalize_dt(dt: str | int | None) -> str | None:
         return None
 
 
+def _should_check_weapon_defenses(dt: str | int | None) -> bool:
+    """Return True when ROM weapon defenses should be consulted for this attack."""
+
+    if isinstance(dt, int):
+        return dt >= TYPE_HIT
+    if isinstance(dt, str):
+        return False
+    # ``dt`` defaults to ``None`` for basic weapon attacks in the port.
+    return True
+
+
 def multi_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
     """Perform multiple attacks following ROM multi_hit mechanics.
 
@@ -470,7 +481,7 @@ def apply_damage(
     # Check for parry, dodge, and shield block following C src/fight.c:damage() order
     # These are checked AFTER hit determination but BEFORE damage application
     # Order is critical: shield_block → parry → dodge (per ROM C src/fight.c:one_hit)
-    if dam_type is not None and attacker != victim:
+    if dam_type is not None and attacker != victim and _should_check_weapon_defenses(dt):
         if check_shield_block(attacker, victim):
             return f"{victim.name} blocks your attack with a shield."
         if check_parry(attacker, victim):

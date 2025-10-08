@@ -4,7 +4,7 @@
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-08 (pytest --collect-only -q; 547 tests collected) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-08 (pytest --collect-only -q; 563 tests collected) -->
 <!-- LAST-TEST-RUN: 2025-10-08 (python -m pytest tests/test_skills_buffs.py -q; 2 passed) -->
 <!-- TEST-PASS-RATE: 100% (2 passed / 2 total; tests/test_skills_buffs.py) -->
 
@@ -21,7 +21,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem            | status        | evidence                                                                                                                                                                                              | tests                                                                                                                           |
 | -------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
-| skills_spells        | stub_or_partial | C: src/magic.c:2911-3098 (frenzy/holy word); PY: mud/skills/handlers.py:1718-2200 (frenzy/flying/transport stubs remain while detection/dispel/demonfire now ported) | tests/test_skills.py; tests/test_skills_learned.py; tests/test_skills_conjuration.py; tests/test_skills_healing.py; tests/test_skills_detection.py; tests/test_skills_damage.py |
+| skills_spells        | stub_or_partial | C: src/magic.c:2805-3404 (faerie fire/fog/identify); PY: mud/skills/handlers.py:1757-2440 (faerie fire/fog/identify stubs remain while invisibility/holy word parity recently landed) | tests/test_skills.py; tests/test_skills_learned.py; tests/test_skills_conjuration.py; tests/test_skills_healing.py; tests/test_skills_detection.py; tests/test_skills_damage.py |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
@@ -164,6 +164,27 @@ TASKS:
 - ✅ [P0] **combat: port ROM raw_kill pipeline for corpses, XP, and auto-loot toggles** — done 2025-11-22
   EVIDENCE: PY mud/combat/engine.py:655-831; PY mud/combat/death.py:20-138; PY mud/groups/xp.py:1-205
   EVIDENCE: TEST tests/test_combat_death.py::test_raw_kill_awards_group_xp_and_creates_corpse; TEST tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs; TEST tests/test_combat_death.py::test_player_kill_clears_pk_flags
+- ✅ [P0] **combat: skip parry/dodge/shield checks for spell damage** — done 2025-11-24
+  - priority: P0
+  - rationale: The Python `apply_damage` helper keys defense rolls off the damage type, so area spells such as holy word now trigger shield blocks and parries even though ROM only runs those checks when `dt >= TYPE_HIT`, letting enemies negate mass-alignment blasts.
+  - files: mud/combat/engine.py
+  - tests: tests/test_skills_mass.py::test_holy_word_bypasses_weapon_defenses (new)
+  - acceptance_criteria: `apply_damage` consults the attack `dt` and only runs parry/dodge/shield logic for weapon-style attacks (`dt >= TYPE_HIT`), with regression coverage showing holy word damage cannot be blocked by shields or parries.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/fight.c:793-801 (defense checks gated on `dt >= TYPE_HIT`); PY mud/combat/engine.py:470-479 (`apply_damage` checks defenses whenever a damage type is provided).
+  EVIDENCE: PY mud/combat/engine.py:L243-L266; PY mud/combat/engine.py:L484-L490; TEST tests/test_skills_mass.py::test_holy_word_bypasses_weapon_defenses
+
+- ✅ [P0] **combat: bypass weapon defenses for skill-based melee maneuvers** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L400-L427; PY mud/skills/handlers.py:L2507-L2540; TEST tests/test_skills_combat.py::test_kick_bypasses_weapon_defenses; TEST tests/test_skills_combat.py::test_bash_bypasses_weapon_defenses
+  - priority: P0
+  - rationale: ROM calls `damage(ch, victim, dam, gsn_*, DAM_*, FALSE)` for kick/bash-style attacks, so `dt` stays below `TYPE_HIT` and parry/dodge/shield never trigger once the maneuver check succeeds, but the Python port passes `None` for `dt`, letting `_should_check_weapon_defenses` run and block kicks and bashes that should land.
+  - files: mud/skills/handlers.py; mud/combat/engine.py
+  - tests: tests/test_skills_combat.py::test_kick_bypasses_weapon_defenses (new); tests/test_skills_combat.py::test_bash_bypasses_weapon_defenses (new)
+  - acceptance_criteria: Kick, bash, and similar skill handlers supply a `dt` token so `_should_check_weapon_defenses` skips parry/dodge/shield for successful maneuvers, matching ROM's guaranteed land-on-hit behavior and keeping existing act() messaging intact.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/fight.c:3119-3132 (`do_kick` invokes `damage(..., gsn_kick, DAM_BASH, TRUE)`); C src/fight.c:2468-2486 (`do_bash` uses `damage(..., gsn_bash, DAM_BASH, FALSE)`); PY mud/skills/handlers.py:409-426,2489-2568 (call `apply_damage` without a `dt`, so `_should_check_weapon_defenses` treats them as weapon swings).
 - [P1] **combat: implement stop_fighting both-sided cleanup with global char list traversal**
   - priority: P1
   - rationale: `stop_fighting(..., both=True)` is a stub that never clears other combatants still targeting the victim, so fleeing players remain stuck in combat and NPC assists never disengage, diverging from ROM's char_list walk.
@@ -202,10 +223,10 @@ NOTES:
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-10-07
+### skills_spells — Parity Audit 2025-10-08
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
-KEY RISKS: affects, alignment, messaging, transport, conjuration
+STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.35)
+KEY RISKS: affects, alignment, messaging, mass_effects, visibility, identification
 TASKS:
 
 - ✅ [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)** — done 2025-10-20
@@ -265,11 +286,44 @@ TASKS:
 - ✅ [P0] **skills_spells: conjure floating_disc gear with capacity timers** — done 2025-11-24
   EVIDENCE: PY mud/skills/handlers.py:1725-1775; PY mud/models/constants.py:24-34; TEST tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity
 
+- ✅ [P0] **skills_spells: implement holy word alignment mass-effect parity** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L217-L2395; TEST tests/test_skills_mass.py::test_holy_word_buffs_allies_and_curses_enemies
+
+- ✅ [P0] **skills_spells: route holy word damage through apply_damage pipeline** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L2358-L2403; TEST tests/test_skills_mass.py::test_holy_word_triggers_death_pipeline
+
+- ✅ [P0] **skills_spells: implement object invisibility duration and wear-off** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L2467-L2514; PY mud/game_loop.py:L574-L635; TEST tests/test_skills_buffs.py::test_invis_object_wears_off
+
+- ✅ [P0] **skills_spells: implement mass invisibility group affect** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L2655-L2695; TEST tests/test_skills_buffs.py::test_mass_invis_fades_group
+
+- ✅ [P0] **skills_spells: port faerie fire glow debuff and AC penalty** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L1757-L1792; TEST tests/test_skills_detection.py::test_faerie_fire_applies_glow_and_ac_penalty; TEST tests/test_skills_detection.py::test_faerie_fire_rejects_duplicates
+
+- ✅ [P0] **skills_spells: port faerie fog room reveal and invis strip** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L1795-L1839; TEST tests/test_skills_mass.py::test_faerie_fog_reveals_hidden_targets; TEST tests/test_skills_mass.py::test_faerie_fog_respects_saves
+
+- [P1] **skills_spells: port identify object inspection messaging**
+  - priority: P1
+  - rationale: The identify spell stub never inspects item type flags, spell lists, or weapon stats, so players lose ROM appraisal data required for shop valuation and scroll selection.
+  - files: mud/skills/handlers.py; mud/utils/formatting.py (helper for tables); mud/models/object.py
+  - tests: tests/test_skills_identify.py::test_identify_reports_scroll_spells (new); tests/test_skills_identify.py::test_identify_formats_weapon_stats (new)
+  - acceptance_criteria: Identify reports type, flags, weights, charges, contained spells, and affect modifiers mirroring ROM output for scrolls, wands, containers, and weapons.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/magic.c:3337-3404 (`spell_identify` case table); PY mud/skills/handlers.py:2204-2208 (stub).
+
+- ✅ [P0] **skills_spells: restore infravision/invis affects for characters and objects** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L2405-L2492; TEST tests/test_skills_buffs.py::test_infravision_applies_affect_and_messages; TEST tests/test_skills_buffs.py::test_invis_handles_objects_and_characters
+
 NOTES:
 
-- C: src/magic.c:2857-3035 covers `spell_floating_disc`, `spell_fly`, and `spell_gate`, each enforcing ITEM_NOREMOVE guards, affect durations, safety checks, and pet travel that the Python port still lacks.
-- PY: mud/skills/handlers.py:1686-1760 leaves floating_disc, fly, and gate returning placeholders so players cannot conjure containers, gain AFF_FLYING, or transport to allies.
-- TEST: Existing detection/damage regressions cover recent ports; new buff/transport suites must assert fly duplicates, gate room safety, and floating disc capacity to lock parity once implemented.
+- C: src/magic.c:3280-3334 and 3583-3660 guided the holy word mass loop plus infravision/invis affect handling now mirrored in mud/skills/handlers.py.
+- PY: mud/skills/handlers.py now implements holy_word alignment effects with `is_safe_spell` parity, restores infravision/invis affects, ports faerie fire/fog reveals, and keeps identify queued while the combat spell-defense regression stays tracked under combat.
+- GAP: Identify still needs ROM object inspection output so players can appraise scrolls and gear.
+- TEST: tests/test_skills_mass.py::test_holy_word_buffs_allies_and_curses_enemies, tests/test_skills_buffs.py::{test_infravision_applies_affect_and_messages,test_invis_handles_objects_and_characters,test_invis_object_wears_off,test_mass_invis_fades_group}, tests/test_skills_detection.py::{test_faerie_fire_applies_glow_and_ac_penalty,test_faerie_fire_rejects_duplicates}, and tests/test_skills_mass.py::{test_faerie_fog_reveals_hidden_targets,test_faerie_fog_respects_saves} lock the new behavior.
+- TEST: tests/test_skills_mass.py::test_holy_word_buffs_allies_and_curses_enemies and tests/test_skills_buffs.py::{test_infravision_applies_affect_and_messages,test_invis_handles_objects_and_characters,test_invis_object_wears_off,test_mass_invis_fades_group} lock the new behavior.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->

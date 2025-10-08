@@ -73,3 +73,40 @@ def test_detect_poison_reports_food_status() -> None:
 
     assert skill_handlers.detect_poison(caster, weapon) is True
     assert caster.messages[-1] == "It doesn't look poisoned."
+
+
+def test_faerie_fire_applies_glow_and_ac_penalty() -> None:
+    caster = Character(name="Illusionist", level=18, is_npc=False)
+    target = Character(name="Rogue", level=16, is_npc=False)
+    room = _make_room(3003)
+    room.add_character(caster)
+    room.add_character(target)
+
+    starting_ac = list(target.armor)
+
+    assert skill_handlers.faerie_fire(caster, target) is True
+
+    penalty = 2 * caster.level
+    assert target.has_affect(AffectFlag.FAERIE_FIRE)
+    assert target.has_spell_effect("faerie fire")
+    assert target.armor == [ac + penalty for ac in starting_ac]
+    assert target.messages[-1] == "You are surrounded by a pink outline."
+    assert caster.messages[-1] == "Rogue is surrounded by a pink outline."
+
+
+def test_faerie_fire_rejects_duplicates() -> None:
+    caster = Character(name="Illusionist", level=18, is_npc=False)
+    target = Character(name="Rogue", level=16, is_npc=False)
+    room = _make_room(3004)
+    room.add_character(caster)
+    room.add_character(target)
+
+    assert skill_handlers.faerie_fire(caster, target) is True
+
+    caster.messages.clear()
+    target.messages.clear()
+    previous_armor = list(target.armor)
+
+    assert skill_handlers.faerie_fire(caster, target) is False
+    assert target.armor == previous_armor
+    assert caster.messages[-1] == "Rogue is already surrounded by a pink outline."
