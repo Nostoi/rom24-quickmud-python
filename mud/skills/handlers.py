@@ -15,6 +15,7 @@ from mud.combat.engine import (
     update_pos,
 )
 from mud.game_loop import SkyState, weather
+from mud.characters import is_clan_member, is_same_clan
 from mud.characters.follow import add_follower, stop_follower
 from mud.magic.effects import (
     SpellTarget,
@@ -35,13 +36,19 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     Stat,
+    WearLocation,
+    LEVEL_HERO,
     LIQ_WATER,
+    OBJ_VNUM_DISC,
     OBJ_VNUM_MUSHROOM,
     OBJ_VNUM_SPRING,
 )
 from mud.models.object import Object
+from mud.net.protocol import broadcast_room
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
+from mud.world.look import look
+from mud.world.vision import can_see_room
 
 
 def _send_to_char(character: Character, message: str) -> None:
@@ -129,6 +136,20 @@ def _object_short_descr(obj: Object) -> str:
     if isinstance(short_descr, str) and short_descr.strip():
         return short_descr.strip()
     return "Something"
+
+
+def _character_name(character: Character | None) -> str:
+    """Return the character's display name or a fallback placeholder."""
+
+    if character is None:
+        return "Someone"
+    name = getattr(character, "name", None)
+    if isinstance(name, str) and name.strip():
+        return name.strip()
+    short_descr = getattr(character, "short_descr", None)
+    if isinstance(short_descr, str) and short_descr.strip():
+        return short_descr.strip()
+    return "Someone"
 
 
 def _breath_damage(
@@ -1701,25 +1722,192 @@ def flamestrike(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def floating_disc(caster, target=None):
-    """Stub implementation for floating_disc.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def floating_disc(caster: Character, target=None):  # noqa: ARG001 - parity signature
+    """Create and equip the ROM floating disc container."""
+
+    if caster is None:
+        raise ValueError("floating_disc requires a caster")
+
+    equipment = getattr(caster, "equipment", {}) or {}
+    floating_item = None
+    if isinstance(equipment, dict):
+        floating_item = equipment.get("float") or equipment.get("floating")
+
+    if floating_item is not None:
+        flags = int(getattr(floating_item, "extra_flags", 0) or 0)
+        if not flags and hasattr(floating_item, "prototype"):
+            try:
+                flags = int(getattr(floating_item.prototype, "extra_flags", 0) or 0)
+            except (TypeError, ValueError):
+                flags = 0
+        if flags & int(ExtraFlag.NOREMOVE):
+            _send_to_char(caster, f"You can't remove {_object_short_descr(floating_item)}.")
+            return False
+        if isinstance(equipment, dict):
+            equipment.pop("float", None)
+            equipment.pop("floating", None)
+        floating_item.wear_loc = int(WearLocation.NONE)
+        if hasattr(caster, "add_object"):
+            caster.add_object(floating_item)
+
+    disc = spawn_object(OBJ_VNUM_DISC)
+    if disc is None:
+        raise ValueError("floating_disc requires OBJ_VNUM_DISC prototype")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    values = _normalize_value_list(disc, minimum=4)
+    values[0] = level * 10
+    values[3] = level * 5
+    disc.value = values
+
+    timer_reduction = rng_mm.number_range(0, c_div(level, 2))
+    disc.timer = max(level * 2 - timer_reduction, 0)
+    disc.wear_loc = int(WearLocation.FLOAT)
+
+    caster.add_object(disc)
+    caster.equip_object(disc, "float")
+
+    room = getattr(caster, "room", None)
+    if room is not None:
+        broadcast_room(room, f"{_character_name(caster)} has created a floating black disc.", exclude=caster)
+    _send_to_char(caster, "You create a floating disc.")
+
+    return disc
 
 
 def fly(caster, target=None):
-    """Stub implementation for fly.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    """ROM ``spell_fly`` affect application with duplicate handling."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("fly requires a target")
+
+    already_airborne = False
+    if hasattr(target, "has_affect") and target.has_affect(AffectFlag.FLYING):
+        already_airborne = True
+    if getattr(target, "has_spell_effect", None):
+        if target.has_spell_effect("fly"):
+            already_airborne = True
+
+    if already_airborne:
+        if target is caster:
+            _send_to_char(caster, "You are already airborne.")
+        else:
+            name = getattr(target, "name", None) or "Someone"
+            _send_to_char(caster, f"{name} doesn't need your help to fly.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="fly",
+        duration=level + 3,
+        level=level,
+        affect_flag=AffectFlag.FLYING,
+        wear_off_message="You slowly float to the ground.",
+    )
+
+    applied = target.apply_spell_effect(effect) if hasattr(target, "apply_spell_effect") else False
+    if not applied:
+        return False
+
+    _send_to_char(target, "Your feet rise off the ground.")
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        message = (
+            f"{target.name}'s feet rise off the ground."
+            if getattr(target, "name", None)
+            else "Someone's feet rise off the ground."
+        )
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is target:
+                continue
+            _send_to_char(occupant, message)
+
+    return True
 
 
-def frenzy(caster, target=None):
-    """Stub implementation for frenzy.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def frenzy(caster: Character, target: Character | None = None) -> bool:  # noqa: ARG001 - parity signature
+    """Clerical frenzy buff mirroring ROM ``spell_frenzy``."""
+
+    target = target or caster
+    if caster is None or target is None:
+        raise ValueError("frenzy requires a target")
+
+    already_frenzied = False
+    if getattr(target, "has_spell_effect", None):
+        if target.has_spell_effect("frenzy"):
+            already_frenzied = True
+    if hasattr(target, "has_affect") and target.has_affect(AffectFlag.BERSERK):
+        already_frenzied = True
+
+    if already_frenzied:
+        if target is caster:
+            _send_to_char(caster, "You are already in a frenzy.")
+        else:
+            name = _character_name(target)
+            _send_to_char(caster, f"{name} is already in a frenzy.")
+        return False
+
+    if getattr(target, "has_spell_effect", None) and target.has_spell_effect("calm"):
+        if target is caster:
+            _send_to_char(caster, "Why don't you just relax for a while?")
+        else:
+            name = _character_name(target)
+            _send_to_char(caster, f"{name} doesn't look like they want to fight anymore.")
+        return False
+
+    if hasattr(target, "has_affect") and target.has_affect(AffectFlag.CALM):
+        if target is caster:
+            _send_to_char(caster, "Why don't you just relax for a while?")
+        else:
+            name = _character_name(target)
+            _send_to_char(caster, f"{name} doesn't look like they want to fight anymore.")
+        return False
+
+    caster_good = is_good(caster)
+    caster_neutral = is_neutral(caster)
+    caster_evil = is_evil(caster)
+    target_good = is_good(target)
+    target_neutral = is_neutral(target)
+    target_evil = is_evil(target)
+
+    if (caster_good and not target_good) or (caster_neutral and not target_neutral) or (caster_evil and not target_evil):
+        name = _character_name(target)
+        _send_to_char(caster, f"Your god doesn't seem to like {name}")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    duration = c_div(level, 3)
+    hit_dam_mod = c_div(level, 6)
+    ac_penalty = 10 * c_div(level, 12)
+
+    effect = SpellEffect(
+        name="frenzy",
+        duration=duration,
+        level=level,
+        hitroll_mod=hit_dam_mod,
+        damroll_mod=hit_dam_mod,
+        ac_mod=ac_penalty,
+        wear_off_message="Your rage ebbs.",
+    )
+
+    applied = target.apply_spell_effect(effect) if hasattr(target, "apply_spell_effect") else False
+    if not applied:
+        return False
+
+    _send_to_char(target, "You are filled with holy wrath!")
+
+    room = getattr(target, "room", None)
+    if room is not None:
+        name = _character_name(target)
+        message = f"{name} gets a wild look in their eyes!"
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is target:
+                continue
+            _send_to_char(occupant, message)
+
+    return True
 
 
 def frost_breath(caster: Character, target: Character | None = None) -> int:
@@ -1834,11 +2022,99 @@ def gas_breath(caster: Character, target: Character | None = None) -> int:
     return primary_damage
 
 
-def gate(caster, target=None):
-    """Stub implementation for gate.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def _gate_fail(caster: Character | None) -> bool:
+    if caster is not None:
+        _send_to_char(caster, "You failed.")
+    return False
+
+
+def gate(caster: Character, target: Character | None = None):
+    """Teleport the caster (and pet) to the target's room per ROM ``spell_gate``."""
+
+    if caster is None or target is None:
+        raise ValueError("gate requires a target")
+
+    current_room = getattr(caster, "room", None)
+    target_room = getattr(target, "room", None)
+    if current_room is None or target_room is None or caster is target:
+        return _gate_fail(caster)
+
+    if not can_see_room(caster, target_room):
+        return _gate_fail(caster)
+
+    def _room_flags(room) -> int:
+        try:
+            return int(getattr(room, "room_flags", 0) or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    target_flags = _room_flags(target_room)
+    current_flags = _room_flags(current_room)
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    try:
+        target_level = int(getattr(target, "level", 0) or 0)
+    except (TypeError, ValueError):
+        target_level = 0
+
+    if target_flags & int(RoomFlag.ROOM_SAFE):
+        return _gate_fail(caster)
+    if target_flags & int(RoomFlag.ROOM_PRIVATE):
+        return _gate_fail(caster)
+    if target_flags & int(RoomFlag.ROOM_SOLITARY):
+        return _gate_fail(caster)
+    if target_flags & int(RoomFlag.ROOM_NO_RECALL):
+        return _gate_fail(caster)
+    if current_flags & int(RoomFlag.ROOM_NO_RECALL):
+        return _gate_fail(caster)
+    if target_level >= level + 3:
+        return _gate_fail(caster)
+    if is_clan_member(target) and not is_same_clan(caster, target):
+        return _gate_fail(caster)
+
+    is_target_npc = bool(getattr(target, "is_npc", True))
+    if not is_target_npc and target_level >= LEVEL_HERO:
+        return _gate_fail(caster)
+
+    if is_target_npc:
+        try:
+            imm_flags = int(getattr(target, "imm_flags", 0) or 0)
+        except (TypeError, ValueError):
+            imm_flags = 0
+        if imm_flags & int(ImmFlag.SUMMON):
+            return _gate_fail(caster)
+        if saves_spell(level, target, DamageType.OTHER):
+            return _gate_fail(caster)
+
+    caster_name = _character_name(caster)
+    broadcast_room(current_room, f"{caster_name} steps through a gate and vanishes.", exclude=caster)
+    _send_to_char(caster, "You step through a gate and vanish.")
+
+    caster.was_in_room = current_room
+    current_room.remove_character(caster)
+    target_room.add_character(caster)
+
+    broadcast_room(target_room, f"{caster_name} has arrived through a gate.", exclude=caster)
+    view = look(caster)
+    if view:
+        _send_to_char(caster, view)
+
+    pet = getattr(caster, "pet", None)
+    if isinstance(pet, Character) and getattr(pet, "room", None) is current_room:
+        pet_name = _character_name(pet)
+        broadcast_room(current_room, f"{pet_name} steps through a gate and vanishes.", exclude=pet)
+        _send_to_char(pet, "You step through a gate and vanish.")
+
+        pet.was_in_room = current_room
+        current_room.remove_character(pet)
+        target_room.add_character(pet)
+
+        broadcast_room(target_room, f"{pet_name} has arrived through a gate.", exclude=pet)
+        pet_view = look(pet)
+        if pet_view:
+            _send_to_char(pet, pet_view)
+
+    return True
 
 
 def general_purpose(caster, target=None):

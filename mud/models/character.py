@@ -88,6 +88,7 @@ class Character:
     room: Room | None = None
     master: Character | None = None
     leader: Character | None = None
+    pet: "Character | None" = None
     practice: int = 0
     train: int = 0
     skills: dict[str, int] = field(default_factory=dict)

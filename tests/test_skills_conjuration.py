@@ -3,10 +3,14 @@ from __future__ import annotations
 from mud.game_loop import SkyState, weather
 from mud.models.character import Character
 from mud.models.constants import (
+    ExtraFlag,
     ItemType,
     LIQ_WATER,
+    OBJ_VNUM_DISC,
     OBJ_VNUM_MUSHROOM,
     OBJ_VNUM_SPRING,
+    WearFlag,
+    WearLocation,
 )
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -98,3 +102,73 @@ def test_create_water_fills_drink_container_respecting_capacity():
         assert caster.messages[-1] == "a waterskin is filled."
     finally:
         weather.sky = original_sky
+
+
+def _register_disc() -> ObjIndex:
+    proto = ObjIndex(
+        vnum=OBJ_VNUM_DISC,
+        short_descr="a floating disc",
+        wear_flags=int(WearFlag.WEAR_FLOAT),
+        value=[0, 0, 0, 0, 0],
+        weight=1,
+    )
+    obj_registry[OBJ_VNUM_DISC] = proto
+    return proto
+
+
+def test_floating_disc_creates_disc_with_capacity() -> None:
+    original = obj_registry.get(OBJ_VNUM_DISC)
+    try:
+        _register_disc()
+        caster = Character(name="Invoker", level=12, is_npc=False)
+        witness = Character(name="Watcher", level=10, is_npc=False)
+        room = Room(vnum=3000, name="Summoning Hall", description="Glowing sigils cover the floor.")
+        room.add_character(caster)
+        room.add_character(witness)
+        witness.messages.clear()
+
+        rng_mm.seed_mm(1234)
+        disc = skill_handlers.floating_disc(caster)
+
+        assert disc is not None
+        assert caster.equipment["float"] is disc
+        assert disc.value[0] == caster.level * 10
+        assert disc.value[3] == caster.level * 5
+        assert caster.messages[-1] == "You create a floating disc."
+        assert witness.messages[-1] == "Invoker has created a floating black disc."
+
+        # Timer should be between level * 2 - level // 2 and level * 2 per ROM formula.
+        min_timer = caster.level * 2 - caster.level // 2
+        assert min_timer <= disc.timer <= caster.level * 2
+        assert disc.wear_loc == int(WearLocation.FLOAT)
+    finally:
+        if original is None:
+            obj_registry.pop(OBJ_VNUM_DISC, None)
+        else:
+            obj_registry[OBJ_VNUM_DISC] = original
+
+
+def test_floating_disc_respects_noremove_items() -> None:
+    original = obj_registry.get(OBJ_VNUM_DISC)
+    try:
+        _register_disc()
+        caster = Character(name="Invoker", level=20, is_npc=False)
+        room = Room(vnum=3001, name="Arcane Loft")
+        room.add_character(caster)
+
+        prototype = ObjIndex(vnum=9000, short_descr="an amulet", wear_flags=int(WearFlag.WEAR_FLOAT))
+        existing = Object(instance_id=None, prototype=prototype)
+        existing.extra_flags = int(ExtraFlag.NOREMOVE)
+        existing.wear_loc = int(WearLocation.FLOAT)
+        caster.equipment["float"] = existing
+
+        result = skill_handlers.floating_disc(caster)
+
+        assert result is False
+        assert caster.equipment["float"] is existing
+        assert caster.messages[-1] == "You can't remove an amulet."
+    finally:
+        if original is None:
+            obj_registry.pop(OBJ_VNUM_DISC, None)
+        else:
+            obj_registry[OBJ_VNUM_DISC] = original
