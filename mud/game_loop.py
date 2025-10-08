@@ -77,6 +77,9 @@ def _seed_weather_state() -> WeatherState:
 
 weather = _seed_weather_state()
 
+_TO_OBJECT = 1
+_TO_WEAPON = 2
+
 
 @dataclass
 class TimedEvent:
@@ -413,7 +416,12 @@ def char_update() -> None:
 
 
 def _render_obj_message(obj: ObjectData, template: str) -> str:
-    short_descr = getattr(obj, "short_descr", None) or getattr(obj, "name", None) or "object"
+    short_descr = (
+        getattr(obj, "short_descr", None)
+        or getattr(obj, "name", None)
+        or getattr(getattr(obj, "prototype", None), "short_descr", None)
+        or "object"
+    )
     return template.replace("$p", str(short_descr))
 
 
@@ -556,16 +564,75 @@ def _spill_contents(obj: ObjectData) -> None:
             _extract_obj(item)
 
 
+def _resolve_object_room(obj: ObjectData) -> object | None:
+    room = getattr(obj, "in_room", None)
+    if room is not None:
+        return room
+    return getattr(obj, "location", None)
+
+
+def _clear_object_affect(obj: ObjectData, affect) -> None:
+    affects = getattr(obj, "affected", None)
+    if isinstance(affects, list) and affect in affects:
+        affects.remove(affect)
+
+    where = int(getattr(affect, "where", 0) or 0)
+    bitvector = int(getattr(affect, "bitvector", 0) or 0)
+    if bitvector:
+        if where == _TO_OBJECT:
+            flags = int(getattr(obj, "extra_flags", 0) or 0)
+            setattr(obj, "extra_flags", flags & ~bitvector)
+        elif where == _TO_WEAPON:
+            values = getattr(obj, "value", None)
+            if isinstance(values, list) and len(values) > 4:
+                values[4] = int(values[4]) & ~bitvector
+
+
+def _broadcast_object_wear_off(obj: ObjectData, affect) -> None:
+    message: str | None = getattr(affect, "wear_off_message", None)
+    if not message:
+        spell_name = getattr(affect, "spell_name", None)
+        try:
+            skill = skill_registry.get(spell_name) if spell_name else None
+        except KeyError:
+            skill = None
+        if skill is not None:
+            messages = getattr(skill, "messages", {}) or {}
+            message = messages.get("object")
+    if not message:
+        return
+
+    rendered = _render_obj_message(obj, message)
+
+    carrier = getattr(obj, "carried_by", None)
+    if carrier is not None:
+        _send_to_char(carrier, rendered)
+        _message_room(getattr(carrier, "room", None), rendered, exclude=carrier)
+        return
+
+    room = _resolve_object_room(obj)
+    _message_room(room, rendered)
+
+
 def _tick_object_affects(obj: ObjectData) -> None:
     affects = getattr(obj, "affected", None)
     if not affects:
         return
+
     for affect in list(affects):
         duration = int(getattr(affect, "duration", 0) or 0)
         if duration > 0:
             affect.duration = duration - 1
-        elif duration == 0:
-            affects.remove(affect)
+            level = int(getattr(affect, "level", 0) or 0)
+            if level > 0 and rng_mm.number_range(0, 4) == 0:
+                affect.level = level - 1
+            continue
+
+        if duration < 0:
+            continue
+
+        _clear_object_affect(obj, affect)
+        _broadcast_object_wear_off(obj, affect)
 
 
 def obj_update() -> None:
