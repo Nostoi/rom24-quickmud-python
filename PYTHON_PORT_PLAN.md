@@ -4,9 +4,9 @@
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-07 (pytest --collect-only -q; 545 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-10-07 (pytest --collect-only -q; 545 tests collected, 0 errors) -->
-<!-- TEST-PASS-RATE: N/A (collection only; no tests executed) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-08 (pytest --collect-only -q; 547 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-10-08 (python -m pytest tests/test_skills_buffs.py -q; 2 passed) -->
+<!-- TEST-PASS-RATE: 100% (2 passed / 2 total; tests/test_skills_buffs.py) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -253,45 +253,17 @@ TASKS:
 - ✅ [P0] **skills_spells: implement dispel_good/evil and demonfire alignment damage parity** — done 2025-11-21
   EVIDENCE: PY mud/skills/handlers.py:1170-1514; TEST tests/test_skills_damage.py::test_dispel_evil_damages_evil_targets; TEST tests/test_skills_damage.py::test_demonfire_applies_curse_and_fire_damage
 
-- [P1] **skills_spells: port frenzy holy-wrath buff with alignment gating**
-  - priority: P1
-  - rationale: Frenzy remains stubbed so paladin/cleric tanks cannot gain ROM hitroll/damroll spikes or AC penalties, and alignment mismatches are unenforced, weakening group support parity.
-  - files: mud/skills/handlers.py
-  - tests: tests/test_skills_buffs.py::test_frenzy_applies_hit_dam_ac_modifiers (new)
-  - acceptance_criteria: Frenzy respects duplicate/calm blocks, alignment restrictions, and applies the ROM trio of hitroll/damroll bonuses plus AC penalty with appropriate messaging and duration scaling.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/magic.c:2911-2960 (`spell_frenzy` alignment gate and affect stack); PY mud/skills/handlers.py:1408-1436 (`frenzy` stub returning placeholder)
+- ✅ [P1] **skills_spells: port frenzy holy-wrath buff with alignment gating** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L1835-L1893; TEST tests/test_skills_buffs.py::test_frenzy_applies_bonuses_and_messages; TEST tests/test_skills_buffs.py::test_frenzy_blocks_calm_and_alignment_mismatch
 
-- [P0] **skills_spells: restore fly affect application and duplicate handling**
-  - priority: P0
-  - rationale: Fly currently returns a placeholder so characters never gain AFF_FLYING, breaking ROM room/terrain gating and movement costs for casters and allies.
-  - files: mud/skills/handlers.py
-  - tests: tests/test_skills_buffs.py::test_fly_applies_affect_and_messages (new)
-  - acceptance_criteria: Casting fly on self or allies mirrors ROM messaging, refuses duplicate casts, and applies AFF_FLYING with level-based duration using `affect_to_char`.
-  - estimate: S
-  - risk: medium
-  - evidence: C src/magic.c:2882-2910 (`spell_fly` apply_affect sequence); PY mud/skills/handlers.py:1696-1720 (`fly` stub returning placeholder)
+  - ✅ [P0] **skills_spells: restore fly affect application and duplicate handling** — done 2025-10-07
+    EVIDENCE: C src/magic.c:2882-2904; PY mud/skills/handlers.py:1711-1754; TEST tests/test_skills_buffs.py::test_fly_applies_affect_and_messages; TEST tests/test_skills_buffs.py::test_fly_reports_duplicates_for_other_targets
 
-- [P0] **skills_spells: implement gate transport targeting with clan/safety checks**
-  - priority: P0
-  - rationale: Gate is stubbed so clerics cannot summon to party members; the port skips ROOM_SAFE/PRIVATE/SOLITARY/NO_RECALL guards, clan restrictions, pet following, and the wiznet arrival messaging that ROM enforces.
-  - files: mud/skills/handlers.py; mud/world/movement.py
-  - tests: tests/test_skills_transport.py::test_gate_moves_caster_and_pet_with_room_checks (new)
-  - acceptance_criteria: Gate looks up the victim globally, validates room and clan safety rules, moves the caster (and pet when present), fires arrival/departure messaging, and triggers auto-look mirroring ROM.
-  - estimate: M
-  - risk: high
-  - evidence: C src/magic.c:2963-3035 (`spell_gate` room restrictions and pet handling); PY mud/skills/handlers.py:1722-1748 (`gate` stub returning placeholder)
+- ✅ [P0] **skills_spells: implement gate transport targeting with clan/safety checks** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:1949-2041; PY mud/models/character.py:62-121; TEST tests/test_skills_transport.py::test_gate_moves_caster_and_pet_with_room_checks
 
-- [P0] **skills_spells: conjure floating_disc gear with capacity timers**
-  - priority: P0
-  - rationale: Floating disc is a stub so utility casters cannot summon the OBJ_VNUM_DISC container, leaving inventory parity gaps for encumbrance-sensitive runs.
-  - files: mud/skills/handlers.py; mud/models/constants.py; mud/world/objects.py
-  - tests: tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity (new)
-  - acceptance_criteria: Casting floating disc creates the ROM disc object with level-scaled capacity/timer, equips it to WEAR_FLOAT (respecting ITEM_NOREMOVE blockers), and emits ROM messaging.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/magic.c:2857-2881 (`spell_floating_disc` object creation and wear flow); PY mud/skills/handlers.py:1686-1694 (`floating_disc` stub returning placeholder)
+- ✅ [P0] **skills_spells: conjure floating_disc gear with capacity timers** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:1725-1775; PY mud/models/constants.py:24-34; TEST tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity
 
 NOTES:
 
@@ -664,9 +636,6 @@ NOTES:
 ## Next Actions (Aggregated P0s)
 
 <!-- NEXT-ACTIONS-START -->
-- [P0] skills_spells — restore fly affect application and duplicate handling (tests/test_skills_buffs.py::test_fly_applies_affect_and_messages)
-- [P0] skills_spells — implement gate transport targeting with clan/safety checks (tests/test_skills_transport.py::test_gate_moves_caster_and_pet_with_room_checks)
-- [P0] skills_spells — conjure floating_disc gear with capacity timers (tests/test_skills_conjuration.py::test_floating_disc_creates_disc_with_capacity)
 <!-- NEXT-ACTIONS-END -->
 
 ## C ↔ Python Parity Map

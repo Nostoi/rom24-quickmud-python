@@ -31,6 +31,7 @@ OBJ_VNUM_GUTS = 16
 OBJ_VNUM_BRAINS = 17
 OBJ_VNUM_MUSHROOM = 20
 OBJ_VNUM_SPRING = 22
+OBJ_VNUM_DISC = 23
 
 # School equipment (OBJ_VNUM_SCHOOL_*) used during character creation (merc.h)
 OBJ_VNUM_SCHOOL_MACE = 3700
