@@ -9,7 +9,7 @@ from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
-from mud.models.character import Character
+from mud.models.character import Character, character_registry
 from mud.models.constants import (
     AC_BASH,
     AC_EXOTIC,
@@ -573,22 +573,27 @@ def set_fighting(ch: Character, victim: Character) -> None:
 
 
 def stop_fighting(ch: Character, both: bool = True) -> None:
-    """Stop fighting following C src/fight.c:stop_fighting logic.
+    """Stop fighting following C src/fight.c:stop_fighting logic."""
 
-    Args:
-        ch: Character to stop fighting
-        both: If True, also stop anyone fighting ch
-    """
-    # Stop ch from fighting
-    ch.fighting = None
-    ch.position = getattr(ch, "default_pos", Position.STANDING) if getattr(ch, "is_npc", False) else Position.STANDING
-    update_pos(ch)
+    def _default_position(target: Character) -> Position:
+        default = getattr(target, "default_pos", Position.STANDING)
+        try:
+            return Position(default)
+        except (TypeError, ValueError):
+            return Position.STANDING
 
-    # Stop others from fighting ch if both=True
-    if both:
-        # In a full implementation, this would iterate char_list
-        # For now, we'll handle the basic case
-        pass
+    candidates = list(character_registry)
+    if ch not in candidates:
+        candidates.append(ch)
+
+    for fighter in candidates:
+        if fighter is ch or (both and getattr(fighter, "fighting", None) is ch):
+            fighter.fighting = None
+            if getattr(fighter, "is_npc", False):
+                fighter.position = _default_position(fighter)
+            else:
+                fighter.position = Position.STANDING
+            update_pos(fighter)
 
 
 def update_pos(victim: Character) -> None:

@@ -94,6 +94,38 @@ def test_areadata_parsing(tmp_path):
     area_registry.clear()
 
 
+def test_new_areadata_header_populates_metadata(tmp_path):
+    area_registry.clear()
+    content = (
+        "#AREADATA\n"
+        "Name New Midgaard~\n"
+        "Credits City Credits~\n"
+        "Builders BuilderX~\n"
+        "Security 7\n"
+        "VNUMs 3000 3099\n"
+        "End\n"
+        "#AREA\n"
+        "midgaard.are~\n"
+        "Old Midgaard~\n"
+        "Old Credits~\n"
+        "3100 3199\n"
+        "#$\n"
+    )
+    path = tmp_path / "new_midgaard.are"
+    path.write_text(content, encoding="latin-1")
+
+    area = load_area_file(str(path))
+
+    assert area.name == "New Midgaard"
+    assert area.credits == "City Credits"
+    assert area.builders == "BuilderX"
+    assert area.security == 7
+    assert area.min_vnum == 3000
+    assert area.max_vnum == 3099
+
+    area_registry.clear()
+
+
 def test_area_loader_seeds_rom_defaults(tmp_path):
     area_registry.clear()
     content = (

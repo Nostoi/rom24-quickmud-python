@@ -8,6 +8,8 @@ from typing import Sequence, cast
 
 import pytest
 
+import mud.net.connection as net_connection
+
 from mud.account import load_character as load_player_character
 from mud.account.account_service import (
     LoginFailureReason,
@@ -736,6 +738,53 @@ def test_account_create_and_login():
     account = login("alice", "secret")
     chars = list_characters(account)
     assert "Hero" in chars
+
+
+def test_password_echo_suppressed():
+    class DummyWriter:
+        def __init__(self) -> None:
+            self.writes: list[bytes] = []
+            self.closed = False
+
+        def write(self, data: bytes) -> None:
+            self.writes.append(bytes(data))
+
+        async def drain(self) -> None:  # pragma: no cover - behavioural stub
+            return None
+
+        def close(self) -> None:  # pragma: no cover - behavioural stub
+            self.closed = True
+
+        async def wait_closed(self) -> None:  # pragma: no cover - behavioural stub
+            return None
+
+    async def run() -> None:
+        reader = asyncio.StreamReader()
+        writer = DummyWriter()
+        conn = net_connection.TelnetStream(reader, writer)
+
+        reader.feed_data(b"secret\r\n")
+        reader.feed_eof()
+
+        result = await net_connection._prompt(conn, "Password: ", hide_input=True)
+
+        assert result == "secret"
+        assert bytes(
+            [
+                net_connection.TELNET_IAC,
+                net_connection.TELNET_WILL,
+                net_connection.TELNET_TELOPT_ECHO,
+            ]
+        ) in writer.writes
+        assert bytes(
+            [
+                net_connection.TELNET_IAC,
+                net_connection.TELNET_WONT,
+                net_connection.TELNET_TELOPT_ECHO,
+            ]
+        ) in writer.writes
+
+    asyncio.run(run())
 
 
 def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):

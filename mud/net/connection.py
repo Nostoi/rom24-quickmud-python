@@ -444,6 +444,66 @@ async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
         await _send_line(conn, "Please answer Y or N.")
 
 
+async def _disconnect_session(session: Session) -> "Character" | None:
+    """Disconnect an existing session so a new descriptor can take over."""
+
+    old_conn = getattr(session, "connection", None)
+    old_char = getattr(session, "character", None)
+    setattr(session, "_forced_disconnect", True)
+
+    if old_conn is not None:
+        try:
+            await old_conn.send_line("Your link has been taken over.")
+        except Exception:
+            pass
+        try:
+            await old_conn.close()
+        except Exception:
+            pass
+
+    if old_char is not None:
+        name = getattr(old_char, "name", "") or "Someone"
+        room = getattr(old_char, "room", None)
+        if room is not None:
+            try:
+                room.broadcast(f"{name} has lost the link.", exclude=old_char)
+            except Exception:
+                pass
+        try:
+            old_char.connection = None
+        except Exception:
+            pass
+        try:
+            old_char.desc = None
+        except Exception:
+            pass
+        try:
+            wiznet(
+                "Net death has claimed $N.",
+                old_char,
+                None,
+                WiznetFlag.WIZ_LINKS,
+                None,
+                _effective_trust(old_char),
+            )
+        except Exception:
+            pass
+
+    if session.name in SESSIONS:
+        SESSIONS.pop(session.name, None)
+
+    try:
+        session.connection = None
+    except Exception:
+        pass
+    try:
+        session.character = None
+    except Exception:
+        pass
+
+    return old_char
+
+
 async def _prompt_new_password(conn: TelnetStream) -> str | None:
     while True:
         password = await _prompt(conn, "New password: ", hide_input=True)
@@ -844,7 +904,7 @@ async def _select_character(
     conn: TelnetStream,
     account: PlayerAccount,
     username: str,
-) -> "Character" | None:
+) -> tuple["Character", bool] | None:
     while True:
         characters = list_characters(account)
         if characters:
@@ -864,9 +924,31 @@ async def _select_character(
                 continue
             chosen_name = sanitize_account_name(candidate).capitalize()
 
+        existing_session = SESSIONS.get(chosen_name)
+        if existing_session:
+            active_connection = getattr(existing_session, "connection", None)
+            if active_connection is not None:
+                decision = await _prompt_yes_no(
+                    conn,
+                    f"That character is already playing. Reconnect? (Y/N) ",
+                )
+                if decision is None:
+                    return None
+                if not decision:
+                    await _send_line(conn, "Ok, please choose another character.")
+                    continue
+
+            transferred_char = await _disconnect_session(existing_session)
+            if transferred_char is not None:
+                return transferred_char, True
+
+            if active_connection is not None:
+                await _send_line(conn, "Reconnect attempt failed.")
+                continue
+
         char = load_character(username, chosen_name)
         if char:
-            return char
+            return char, False
         await _send_line(conn, "Failed to load that character. Please try again.")
 
 
@@ -903,11 +985,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             return
         account, username, was_reconnect = login_result
 
-        char = await _select_character(conn, account, username)
-        if char is None:
+        selection = await _select_character(conn, account, username)
+        if selection is None:
             return
 
-        reconnecting = bool(was_reconnect)
+        char, forced_reconnect = selection
+        reconnecting = bool(was_reconnect or forced_reconnect)
 
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
         desired_colour = ansi_preference if ansi_explicit else saved_colour
@@ -993,37 +1076,39 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     except Exception as exc:
         print(f"[ERROR] Connection handler error for {addr}: {exc}")
     finally:
+        forced_disconnect = bool(session and getattr(session, "_forced_disconnect", False))
         try:
-            if char:
+            if char and not forced_disconnect:
                 announce_wiznet_logout(char)
         except Exception as exc:
             print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
 
         try:
-            if char:
+            if char and not forced_disconnect:
                 save_character(char)
         except Exception as exc:
             print(f"[ERROR] Failed to save character: {exc}")
 
         try:
-            if char and char.room:
+            if char and char.room and not forced_disconnect:
                 char.room.remove_character(char)
         except Exception as exc:
             print(f"[ERROR] Failed to remove character from room: {exc}")
 
-        if session and session.name in SESSIONS:
+        if session and not forced_disconnect and session.name in SESSIONS:
             SESSIONS.pop(session.name, None)
 
         if char:
-            char.desc = None
-            try:
-                char.account_name = ""
-            except Exception:
-                pass
-            if getattr(char, "connection", None) is conn:
-                char.connection = None
+            if not forced_disconnect:
+                char.desc = None
+                try:
+                    char.account_name = ""
+                except Exception:
+                    pass
+                if getattr(char, "connection", None) is conn:
+                    char.connection = None
 
-        if username:
+        if username and not forced_disconnect:
             release_account(username)
 
         try:

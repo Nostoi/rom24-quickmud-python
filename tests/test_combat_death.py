@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from mud.combat.death import death_cry
+from mud.combat.death import death_cry, raw_kill
 from mud.combat.engine import attack_round
+from mud.combat.kill_table import get_kill_data, reset_kill_table
 from mud.groups import xp as xp_module
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
@@ -14,11 +15,13 @@ from mud.models.constants import (
     PartFlag,
     PlayerFlag,
     Position,
+    MAX_LEVEL,
     ROOM_VNUM_ALTAR,
     Stat,
     WearLocation,
     OBJ_VNUM_GUTS,
 )
+from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.utils import rng_mm
@@ -31,6 +34,13 @@ def reset_characters() -> None:
     character_registry.clear()
     yield
     character_registry.clear()
+
+
+@pytest.fixture(autouse=True)
+def reset_kill_stats() -> None:
+    reset_kill_table()
+    yield
+    reset_kill_table()
 
 
 def _ensure_world() -> None:
@@ -187,6 +197,38 @@ def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> 
 
     assert any("got toasted by Attacker" in message for message in immortal.messages)
     assert any("quickly gather" in message for message in attacker.messages)
+
+
+def test_raw_kill_updates_kill_counters() -> None:
+    _ensure_world()
+    hunter = create_test_character("Hunter", 3001)
+    room = hunter.room
+    assert room is not None
+
+    prototype = MobIndex(vnum=99991, short_descr="prototype foe", level=12)
+    prototype.killed = 0
+
+    victim = Character(name="Prototype Foe", is_npc=True, level=12)
+    victim.prototype = prototype
+    room.add_character(victim)
+
+    corpse = raw_kill(victim)
+
+    assert corpse is not None
+    assert prototype.killed == 1
+    assert get_kill_data(12).killed == 1
+    assert victim not in room.people
+
+    second = Character(name="Prototype Foe", is_npc=True, level=MAX_LEVEL + 7)
+    second.prototype = prototype
+    room.add_character(second)
+
+    raw_kill(second)
+
+    assert prototype.killed == 2
+    assert get_kill_data(12).killed == 1
+    assert get_kill_data(MAX_LEVEL - 1).killed == 1
+    assert second not in room.people
 
 
 def test_group_gain_zaps_anti_alignment_items(monkeypatch: pytest.MonkeyPatch) -> None:

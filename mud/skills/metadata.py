@@ -1,5 +1,10 @@
 """ROM skill_table metadata extracted from const.c."""
 
+from pathlib import Path
+
+from mud.scripts.convert_skills_to_json import parse_skill_table
+
+
 ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "acid blast": {"levels": [28, 53, 35, 32], "ratings": [1, 1, 2, 2], "slot": 70, "min_mana": 20, "beats": 12},
     "acid breath": {"levels": [31, 32, 33, 34], "ratings": [1, 1, 2, 2], "slot": 200, "min_mana": 100, "beats": 24},
@@ -140,3 +145,16 @@ ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "whip": {"levels": [1, 1, 1, 1], "ratings": [6, 5, 5, 4], "slot": 0, "min_mana": 0, "beats": 0},
     "word of recall": {"levels": [32, 28, 40, 30], "ratings": [1, 1, 2, 2], "slot": 42, "min_mana": 5, "beats": 12},
 }
+
+
+def _load_skill_names() -> tuple[str, ...]:
+    """Return ROM skill_table names indexed by skill number (including reserved slot)."""
+
+    const_path = Path(__file__).resolve().parents[2] / "src" / "const.c"
+    entries = parse_skill_table(const_path)
+    names = ["reserved"]
+    names.extend(entry["name"] for entry in entries)
+    return tuple(names)
+
+
+ROM_SKILL_NAMES_BY_INDEX = _load_skill_names()

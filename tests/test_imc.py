@@ -8,7 +8,15 @@ import pytest
 
 import mud.game_loop as game_loop
 from mud.commands import process_command
-from mud.imc import get_state, imc_enabled, maybe_open_socket, pump_idle, reset_state
+from mud.imc import (
+    _UCACHE_REFRESH_INTERVAL,
+    _handle_disconnect,
+    get_state,
+    imc_enabled,
+    maybe_open_socket,
+    pump_idle,
+    reset_state,
+)
 from mud.imc.commands import IMCPacket
 from mud.imc.protocol import Frame, parse_frame, serialize_frame
 from mud.world import create_test_character, initialize_world
@@ -517,6 +525,74 @@ def test_pump_idle_flushes_outgoing_queue(monkeypatch, tmp_path):
     assert fake_socket.closed is False
 
 
+def test_pump_idle_refreshes_user_cache(monkeypatch, tmp_path):
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    ignores = tmp_path / "imc.ignores"
+    ignores.write_text("#IGNORES\n#END\n", encoding="latin-1")
+
+    ucache = tmp_path / "imc.ucache"
+    now = 1_700_000_000
+    stale_seconds = 60 * 60 * 24 * 30
+    fresh_time = now - 60
+    stale_time = now - stale_seconds - 1
+    ucache.write_text(
+        "\n".join(
+            [
+                "#UCACHE",
+                "Name Fresh@Mud",
+                "Sex  2",
+                f"Time {fresh_time}",
+                "End",
+                "",
+                "#UCACHE",
+                "Name Old@Mud",
+                "Sex  1",
+                f"Time {stale_time}",
+                "End",
+                "",
+                "#END",
+            ]
+        )
+        + "\n",
+        encoding="latin-1",
+    )
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_IGNORES_PATH", str(ignores))
+    monkeypatch.setenv("IMC_UCACHE_PATH", str(ucache))
+    _install_fake_imc_connection(monkeypatch)
+
+    monkeypatch.setattr("mud.imc.select.select", lambda *_: ([], [], []))
+    monkeypatch.setattr("mud.imc.time.time", lambda: now)
+
+    reset_state()
+    maybe_open_socket(force_reload=True)
+    state = get_state()
+    assert state is not None
+
+    # Force refresh on next idle pulse
+    state.ucache_refresh_deadline = state.idle_pulses + 1
+
+    pump_idle()
+
+    refreshed = get_state()
+    assert refreshed is not None
+    assert "fresh@mud" in refreshed.user_cache
+    assert refreshed.user_cache["fresh@mud"].last_seen == fresh_time
+    assert "old@mud" not in refreshed.user_cache
+
+    expected_deadline = refreshed.idle_pulses + _UCACHE_REFRESH_INTERVAL
+    assert refreshed.ucache_refresh_deadline == expected_deadline
+
+    contents = ucache.read_text(encoding="latin-1")
+    assert "Fresh@Mud" in contents
+    assert "Old@Mud" not in contents
+    assert contents.strip().endswith("#END")
+
+
 def test_pump_idle_handles_socket_disconnect(monkeypatch, tmp_path):
     config, channels, helps = _write_imc_fixture(tmp_path)
     monkeypatch.setenv("IMC_ENABLED", "true")
@@ -783,3 +859,70 @@ def test_maybe_open_socket_opens_connection(
     assert state.connection.handshake_frame == handshake_line
 
     reset_state()
+
+
+def test_disconnect_fallback_switches_auth_mode(monkeypatch, tmp_path):
+    import mud.imc.network as network
+
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    ignores, ucache = _write_ban_and_ucache(tmp_path)
+
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
+    monkeypatch.setenv("IMC_IGNORES_PATH", str(ignores))
+    monkeypatch.setenv("IMC_UCACHE_PATH", str(ucache))
+    monkeypatch.setenv("IMC_HISTORY_DIR", str(tmp_path))
+    monkeypatch.setenv("IMC_COLOR_PATH", str(_default_imc_dir() / "imc.color"))
+    monkeypatch.setenv("IMC_WHO_PATH", str(_default_imc_dir() / "imc.who"))
+
+    class DummySocket:
+        def close(self) -> None:
+            pass
+
+    attempts: list[str] = []
+
+    def conditional_connect(cfg: dict[str, str]) -> network.IMCConnection:
+        attempts.append(cfg.get("SHA256", ""))
+        if cfg.get("SHA256") != "0":
+            raise network.IMCConnectionError("router refused SHA-256 handshake")
+        port_raw = cfg.get("ServerPort", "0")
+        try:
+            port = int(port_raw) if port_raw else 0
+        except ValueError:
+            port = 0
+        return network.IMCConnection(
+            socket=DummySocket(),
+            address=(cfg.get("ServerAddr", ""), port),
+            handshake_frame="PW",
+            handshake_complete=True,
+        )
+
+    monkeypatch.setattr("mud.imc.connect_and_handshake", conditional_connect)
+
+    reset_state()
+    try:
+        state = maybe_open_socket(force_reload=True)
+        assert state is not None
+        assert state.connected is False
+        assert state.config.get("SHA256") == "1"
+
+        for _ in range(4):
+            _handle_disconnect(state)
+
+        assert state.config.get("SHA256") == "0"
+        assert "SHA256         0" in config.read_text()
+        assert state.reconnect_attempts == 0
+        assert state.reconnect_abandoned is False
+
+        _handle_disconnect(state)
+
+        assert state.connected is True
+        assert state.connection is not None
+        assert state.reconnect_attempts == 0
+        assert attempts.count("1") >= 4
+        assert attempts[-1] == "0"
+    finally:
+        reset_state()

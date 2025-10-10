@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from mud.models.character import Character, PCData, character_registry
+from mud.models.character import Character, PCData, PCDATA_COLOUR_FIELDS, character_registry
 from mud.models.constants import PlayerFlag, WearLocation
 from mud.models.json_io import dataclass_from_dict, dump_dataclass, load_dataclass
 from mud.models.obj import Affect
@@ -83,6 +84,42 @@ def _serialize_groups(raw_groups: Any) -> list[str]:
         seen.add(name)
         ordered.append(name)
     return ordered
+
+
+def _normalize_colour_entry(values: Any) -> list[int]:
+    """Return a sanitized colour triplet drawn from ``values``."""
+
+    iterable: Iterable[int] | None
+    if isinstance(values, dict):
+        try:
+            iterable = list(values.values())
+        except Exception:
+            iterable = None
+    elif isinstance(values, Iterable) and not isinstance(values, (str, bytes)):
+        iterable = values
+    else:
+        iterable = None
+    return _normalize_int_list(iterable, 3)
+
+
+def _serialize_colour_table(pcdata: PCData) -> dict[str, list[int]]:
+    """Capture the player's colour configuration arrays."""
+
+    table: dict[str, list[int]] = {}
+    for field_name in PCDATA_COLOUR_FIELDS:
+        values = getattr(pcdata, field_name, None)
+        table[field_name] = _normalize_colour_entry(values)
+    return table
+
+
+def _apply_colour_table(pcdata: PCData, table: Any) -> None:
+    """Restore colour configuration arrays onto ``pcdata``."""
+
+    if not isinstance(table, dict):
+        return
+    for field_name in PCDATA_COLOUR_FIELDS:
+        values = table.get(field_name)
+        setattr(pcdata, field_name, _normalize_colour_entry(values))
 
 
 def _deserialize_skill_map(raw_skills: Any) -> dict[str, int]:
@@ -197,6 +234,13 @@ class PlayerSave:
     exp: int = 0
     practice: int = 0
     train: int = 0
+    played: int = 0
+    lines: int = 0
+    logon: int = 0
+    prompt: str | None = None
+    title: str | None = None
+    bamfin: str | None = None
+    bamfout: str | None = None
     saving_throw: int = 0
     alignment: int = 0
     hitroll: int = 0
@@ -224,6 +268,7 @@ class PlayerSave:
     groups: list[str] = field(default_factory=list)
     board: str = DEFAULT_BOARD_NAME
     last_notes: dict[str, float] = field(default_factory=dict)
+    colours: dict[str, list[int]] = field(default_factory=dict)
 
 
 _SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
@@ -392,6 +437,15 @@ def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
                 }
         upgraded["equipment"] = new_equipment
 
+    colours = upgraded.get("colours")
+    if isinstance(colours, dict):
+        normalized_colours: dict[str, list[int]] = {}
+        for field_name in PCDATA_COLOUR_FIELDS:
+            normalized_colours[field_name] = _normalize_colour_entry(colours.get(field_name))
+        upgraded["colours"] = normalized_colours
+    else:
+        upgraded["colours"] = {}
+
     return upgraded
 
 
@@ -416,6 +470,7 @@ def save_character(char: Character) -> None:
     groups_snapshot = _serialize_groups(getattr(pcdata, "group_known", ()))
     pcdata.learned = dict(skills_snapshot)
     pcdata.group_known = tuple(groups_snapshot)
+    colour_table = _serialize_colour_table(pcdata)
     ansi_enabled = bool(getattr(char, "ansi_enabled", True))
     act_flags = int(getattr(char, "act", 0))
     colour_bit = int(PlayerFlag.COLOUR)
@@ -429,6 +484,31 @@ def save_character(char: Character) -> None:
     room = getattr(char, "room", None)
     room_vnum = room.vnum if room is not None else None
     char_name = char.name or ""
+    now = int(time.time())
+    try:
+        logon_value = int(getattr(char, "logon", 0) or 0)
+    except (TypeError, ValueError):
+        logon_value = 0
+    try:
+        base_played = int(getattr(char, "played", 0) or 0)
+    except (TypeError, ValueError):
+        base_played = 0
+    session_played = 0
+    if logon_value:
+        session_played = max(0, now - logon_value)
+    total_played = max(0, base_played + session_played)
+    prompt_value = getattr(char, "prompt", None)
+    title_value = getattr(pcdata, "title", None)
+    bamfin_value = getattr(pcdata, "bamfin", None)
+    if bamfin_value is not None:
+        bamfin_value = str(bamfin_value)
+    bamfout_value = getattr(pcdata, "bamfout", None)
+    if bamfout_value is not None:
+        bamfout_value = str(bamfout_value)
+    try:
+        lines_value = int(getattr(char, "lines", 0) or 0)
+    except (TypeError, ValueError):
+        lines_value = 0
 
     data = PlayerSave(
         name=char.name or "",
@@ -452,32 +532,40 @@ def save_character(char: Character) -> None:
         exp=char.exp,
         practice=int(getattr(char, "practice", 0)),
         train=int(getattr(char, "train", 0)),
+        played=total_played,
+        lines=lines_value,
+        logon=logon_value,
+        prompt=prompt_value,
+        title=title_value,
+        bamfin=bamfin_value,
+        bamfout=bamfout_value,
         saving_throw=int(getattr(char, "saving_throw", 0)),
         alignment=int(getattr(char, "alignment", 0)),
         hitroll=int(getattr(char, "hitroll", 0)),
         damroll=int(getattr(char, "damroll", 0)),
         wimpy=int(getattr(char, "wimpy", 0)),
         points=int(getattr(pcdata, "points", 0)),
-            true_sex=int(getattr(pcdata, "true_sex", 0)),
-            last_level=int(getattr(pcdata, "last_level", 0)),
-            position=char.position,
-            armor=armor,
-            perm_stat=perm_stat,
-            mod_stat=mod_stat,
-            conditions=conditions,
-            act=act_flags,
-            affected_by=getattr(char, "affected_by", 0),
-            comm=getattr(char, "comm", 0),
-            wiznet=getattr(char, "wiznet", 0),
-            log_commands=bool(getattr(char, "log_commands", False)),
-            room_vnum=room_vnum,
-            inventory=[_serialize_object(obj) for obj in char.inventory],
-            equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
-            aliases=dict(getattr(char, "aliases", {})),
-            skills=skills_snapshot,
-            groups=groups_snapshot,
-            board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
+        true_sex=int(getattr(pcdata, "true_sex", 0)),
+        last_level=int(getattr(pcdata, "last_level", 0)),
+        position=char.position,
+        armor=armor,
+        perm_stat=perm_stat,
+        mod_stat=mod_stat,
+        conditions=conditions,
+        act=act_flags,
+        affected_by=getattr(char, "affected_by", 0),
+        comm=getattr(char, "comm", 0),
+        wiznet=getattr(char, "wiznet", 0),
+        log_commands=bool(getattr(char, "log_commands", False)),
+        room_vnum=room_vnum,
+        inventory=[_serialize_object(obj) for obj in char.inventory],
+        equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
+        aliases=dict(getattr(char, "aliases", {})),
+        skills=skills_snapshot,
+        groups=groups_snapshot,
+        board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
+        colours=colour_table,
     )
     path = PLAYERS_DIR / f"{char_name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -508,6 +596,7 @@ def load_character(name: str) -> Character | None:
         ch_class=int(getattr(data, "ch_class", 0)),
         sex=int(getattr(data, "sex", 0)),
         trust=int(getattr(data, "trust", 0)),
+        prompt=getattr(data, "prompt", None),
         hit=data.hit,
         max_hit=data.max_hit,
         mana=data.mana,
@@ -525,6 +614,9 @@ def load_character(name: str) -> Character | None:
         hitroll=int(getattr(data, "hitroll", 0)),
         damroll=int(getattr(data, "damroll", 0)),
         wimpy=int(getattr(data, "wimpy", 0)),
+        lines=int(getattr(data, "lines", 0)),
+        played=int(getattr(data, "played", 0)),
+        logon=int(getattr(data, "logon", 0)),
         comm=int(getattr(data, "comm", 0)),
         position=data.position,
         armor=armor,
@@ -575,9 +667,19 @@ def load_character(name: str) -> Character | None:
     pcdata.perm_mana = int(getattr(data, "perm_mana", 0))
     pcdata.perm_move = int(getattr(data, "perm_move", 0))
     pcdata.board_name = board.storage_key()
+    title_value = getattr(data, "title", None)
+    if title_value is not None:
+        pcdata.title = title_value
+    bamfin_value = getattr(data, "bamfin", None)
+    if bamfin_value is not None:
+        pcdata.bamfin = str(bamfin_value)
+    bamfout_value = getattr(data, "bamfout", None)
+    if bamfout_value is not None:
+        pcdata.bamfout = str(bamfout_value)
     pcdata.last_notes.update(getattr(data, "last_notes", {}) or {})
     pcdata.learned = dict(skills_map)
     pcdata.group_known = groups_tuple
+    _apply_colour_table(pcdata, getattr(data, "colours", {}))
     char.pcdata = pcdata
     char.log_commands = bool(getattr(data, "log_commands", False))
     character_registry.append(char)

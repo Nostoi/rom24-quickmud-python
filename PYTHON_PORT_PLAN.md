@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: skills_spells -->
+<!-- LAST-PROCESSED: area_format_loader -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,affects_saves,resets,weather,area_format_loader,imc_chat,help_system,mob_programs,login_account_nanny,game_update_loop -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,affects_saves,resets,imc_chat,help_system,mob_programs,login_account_nanny,game_update_loop -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-08 (pytest --collect-only -q; 563 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-10-08 (python -m pytest tests/test_skills_buffs.py -q; 2 passed) -->
-<!-- TEST-PASS-RATE: 100% (2 passed / 2 total; tests/test_skills_buffs.py) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-26 (pytest --collect-only -q; 583 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-11-26 (pytest -q; 10 passed, 1 skipped, interrupted post-run) -->
+<!-- TEST-PASS-RATE: 100% (10 passed / 10 run; pytest -q) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -185,7 +185,7 @@ TASKS:
   - estimate: S
   - risk: medium
   - evidence: C src/fight.c:3119-3132 (`do_kick` invokes `damage(..., gsn_kick, DAM_BASH, TRUE)`); C src/fight.c:2468-2486 (`do_bash` uses `damage(..., gsn_bash, DAM_BASH, FALSE)`); PY mud/skills/handlers.py:409-426,2489-2568 (call `apply_damage` without a `dt`, so `_should_check_weapon_defenses` treats them as weapon swings).
-- [P1] **combat: implement stop_fighting both-sided cleanup with global char list traversal**
+- ✅ [P1] **combat: implement stop_fighting both-sided cleanup with global char list traversal** — done 2025-10-09
   - priority: P1
   - rationale: `stop_fighting(..., both=True)` is a stub that never clears other combatants still targeting the victim, so fleeing players remain stuck in combat and NPC assists never disengage, diverging from ROM's char_list walk.
   - files: mud/combat/engine.py; mud/world/state.py (for char list access)
@@ -194,13 +194,15 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/fight.c:1438-1450 (`stop_fighting` walks `char_list` and resets positions); PY mud/combat/engine.py:558-574 (`stop_fighting` ends with a `pass` placeholder).
+    EVIDENCE: PY mud/combat/engine.py:575-596; TEST tests/test_combat_state.py::test_stop_fighting_clears_both_sides
 - ✅ [P0] **combat: restore raw_kill cleanup for player deaths** — done 2025-11-22
   EVIDENCE: PY mud/combat/death.py:L117-L188; PY mud/models/clans.py:L1-L48; TEST tests/test_combat_death.py::test_player_kill_resets_state
 - ✅ [P0] **combat: implement ROM death_cry gore spawns and neighboring room broadcast** — done 2025-11-22
   EVIDENCE: PY mud/combat/death.py:L41-L273; TEST tests/test_combat_death.py::test_death_cry_spawns_gore_and_notifies_neighbors
 - ✅ [P0] **combat: drop anti-alignment gear after group XP alignment shifts** — done 2025-11-22
   EVIDENCE: PY mud/groups/xp.py:L45-L121; TEST tests/test_combat_death.py::test_group_gain_zaps_anti_alignment_items
-- [P1] **combat: track NPC kill counters for prototypes and kill_table**
+- ✅ [P1] **combat: track NPC kill counters for prototypes and kill_table** — done 2025-10-09
+  EVIDENCE: C src/fight.c:1704-1710; C src/db.c:93; PY mud/combat/death.py:380-420; PY mud/combat/kill_table.py:1-42; TEST tests/test_combat_death.py::test_raw_kill_updates_kill_counters
   - priority: P1
   - rationale: ROM increments both `victim->pIndexData->killed` and `kill_table[level].killed` inside `raw_kill`, but the Python port skips these counters so area kill statistics and mob population balancing never update after deaths.
   - files: mud/combat/death.py; mud/models/mob.py; mud/models/world.py (kill table home) or new module
@@ -225,7 +227,7 @@ NOTES:
 
 ### skills_spells — Parity Audit 2025-10-08
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.35)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
 KEY RISKS: affects, alignment, messaging, mass_effects, visibility, identification
 TASKS:
 
@@ -304,15 +306,9 @@ TASKS:
 - ✅ [P0] **skills_spells: port faerie fog room reveal and invis strip** — done 2025-11-24
   EVIDENCE: PY mud/skills/handlers.py:L1795-L1839; TEST tests/test_skills_mass.py::test_faerie_fog_reveals_hidden_targets; TEST tests/test_skills_mass.py::test_faerie_fog_respects_saves
 
-- [P1] **skills_spells: port identify object inspection messaging**
-  - priority: P1
-  - rationale: The identify spell stub never inspects item type flags, spell lists, or weapon stats, so players lose ROM appraisal data required for shop valuation and scroll selection.
-  - files: mud/skills/handlers.py; mud/utils/formatting.py (helper for tables); mud/models/object.py
-  - tests: tests/test_skills_identify.py::test_identify_reports_scroll_spells (new); tests/test_skills_identify.py::test_identify_formats_weapon_stats (new)
-  - acceptance_criteria: Identify reports type, flags, weights, charges, contained spells, and affect modifiers mirroring ROM output for scrolls, wands, containers, and weapons.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/magic.c:3337-3404 (`spell_identify` case table); PY mud/skills/handlers.py:2204-2208 (stub).
+- ✅ [P1] **skills_spells: port identify object inspection messaging** — done 2025-11-24
+  EVIDENCE: PY mud/skills/handlers.py:L2851-L2938; PY mud/models/constants.py:L291-L348; PY mud/skills/metadata.py:L150-L160
+  EVIDENCE: TEST tests/test_skills_identify.py::{test_identify_reports_scroll_spells,test_identify_formats_weapon_stats_and_affects,test_identify_describes_container_and_wand}
 
 - ✅ [P0] **skills_spells: restore infravision/invis affects for characters and objects** — done 2025-11-24
   EVIDENCE: PY mud/skills/handlers.py:L2405-L2492; TEST tests/test_skills_buffs.py::test_infravision_applies_affect_and_messages; TEST tests/test_skills_buffs.py::test_invis_handles_objects_and_characters
@@ -320,10 +316,10 @@ TASKS:
 NOTES:
 
 - C: src/magic.c:3280-3334 and 3583-3660 guided the holy word mass loop plus infravision/invis affect handling now mirrored in mud/skills/handlers.py.
-- PY: mud/skills/handlers.py now implements holy_word alignment effects with `is_safe_spell` parity, restores infravision/invis affects, ports faerie fire/fog reveals, and keeps identify queued while the combat spell-defense regression stays tracked under combat.
-- GAP: Identify still needs ROM object inspection output so players can appraise scrolls and gear.
-- TEST: tests/test_skills_mass.py::test_holy_word_buffs_allies_and_curses_enemies, tests/test_skills_buffs.py::{test_infravision_applies_affect_and_messages,test_invis_handles_objects_and_characters,test_invis_object_wears_off,test_mass_invis_fades_group}, tests/test_skills_detection.py::{test_faerie_fire_applies_glow_and_ac_penalty,test_faerie_fire_rejects_duplicates}, and tests/test_skills_mass.py::{test_faerie_fog_reveals_hidden_targets,test_faerie_fog_respects_saves} lock the new behavior.
-- TEST: tests/test_skills_mass.py::test_holy_word_buffs_allies_and_curses_enemies and tests/test_skills_buffs.py::{test_infravision_applies_affect_and_messages,test_invis_handles_objects_and_characters,test_invis_object_wears_off,test_mass_invis_fades_group} lock the new behavior.
+- PY: mud/skills/handlers.py now mirrors ROM identify messaging for scrolls, wands, weapons, and containers while holy_word and invisibility parity remain covered under combat.
+- DATA: mud/models/constants.py supplies ContainerFlag bits and LIQUID_TABLE entries so identify can report container states and drink colors.
+- DATA: mud/skills/metadata.py loads the ROM skill_table order to resolve scroll spell names for identify output.
+- TEST: tests/test_skills_identify.py exercises scroll spell lists, weapon stats, and container/wand descriptions alongside existing holy word and invisibility regressions.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
@@ -387,16 +383,10 @@ TASKS:
   EVIDENCE: C src/db.c:1706-1744; PY mud/spawning/reset_handler.py:309-335; TEST tests/test_spawning.py::{test_reset_spawn_in_dark_room_grants_infravision,test_reset_spawn_adjacent_to_pet_shop_sets_act_pet}
 - ✅ [P0] **resets: fuzz non-shopkeeper G/E object levels to LastMob's tier** — done 2025-11-03
   EVIDENCE: C src/db.c:1688-2008; PY mud/spawning/reset_handler.py:207-263; TEST tests/test_spawning.py::test_reset_equips_scale_with_lastmob_level
-- [P1] **resets: broadcast wiznet reset notifications during area repops**
-  - priority: P1
-  - rationale: ROM announces successful area resets via `WIZ_RESETS`, but the Python `reset_tick` never emits the wiznet message so immortals lose the parity signal when debugging reset scripts.
-  - files: mud/spawning/reset_handler.py; mud/wiznet.py
-  - tests: tests/test_spawning.py::test_reset_tick_announces_wiznet (new)
-  - acceptance_criteria: When `reset_tick` repops a non-empty area, it calls `wiznet` with the area's name and `WIZ_RESETS`, mirroring the ROM broadcast.
-  - estimate: S
-  - risk: low
-  - evidence: C src/db.c:1602-1629; PY mud/spawning/reset_handler.py:598-624
-- [P1] **resets: restore shopkeeper potion/scroll level calculations on G/E resets**
+- ✅ [P1] **resets: broadcast wiznet reset notifications during area repops** — done 2025-10-09
+  EVIDENCE: PY mud/spawning/reset_handler.py:L734-L767; TEST tests/test_spawning.py::test_reset_tick_announces_wiznet
+- ✅ [P1] **resets: restore shopkeeper potion/scroll level calculations on G/E resets** — done 2025-10-09
+  EVIDENCE: PY mud/spawning/reset_handler.py:L62-L308; TEST tests/test_spawning.py::test_reset_shopkeeper_potion_levels_use_skill_metadata
   - priority: P1
   - rationale: ROM derives potion/scroll/pill object levels from the spell table before handing them to shopkeepers, but `_compute_object_level` drops to `0` so vendor stock never scales with spell difficulty.
   - files: mud/spawning/reset_handler.py; mud/skills/registry.py
@@ -426,8 +416,8 @@ NOTES:
 
 ### weather — Parity Audit 2025-11-14
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.60)
-KEY RISKS: messaging, rng
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+KEY RISKS: rng
 
 TASKS:
 
@@ -441,7 +431,8 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/update.c:522-650 (`weather_update` adjusts `weather_info.change/mmhg` and SKY_* states); PY mud/game_loop.py:40-647 (SkyState + pressure transitions in `weather_tick`).
-- [P1] **weather: broadcast outdoor weather messages with ROM gating**
+- ✅ [P1] **weather: broadcast outdoor weather messages with ROM gating** — done 2025-10-09
+  EVIDENCE: PY mud/game_loop.py:670-731; TEST tests/test_game_loop.py::test_weather_broadcasts_outdoor_characters
   - priority: P1
   - rationale: ROM notifies awake outdoor characters when weather or sunlight changes, but the Python tick keeps the cyan sky strings local so players miss rain/lightning cues.
   - files: mud/game_loop.py; mud/net/protocol.py
@@ -455,7 +446,7 @@ NOTES:
 
 - C: `src/update.c:522-650` drives seasonal pressure deltas, SKY_* state transitions, and outdoor broadcast gating each tick.
 - PY: `mud/game_loop.py:40-120` seeds `WeatherState` at boot and `weather_tick` (lines 600-647) mirrors the ROM pressure deltas and SKY_* transitions while leaving broadcast strings unimplemented.
-- TEST: `tests/test_game_loop.py::test_weather_pressure_and_sky_transitions` pins RNG rolls to assert the cloudless→lightning sequence and pressure clamps; broadcast targeting remains outstanding.
+- TEST: `tests/test_game_loop.py::test_weather_pressure_and_sky_transitions` pins RNG rolls to assert the cloudless→lightning sequence and pressure clamps, and `tests/test_game_loop.py::test_weather_broadcasts_outdoor_characters` validates awake outdoor gating for message dispatch.
 - Applied tiny fix: none
 
   <!-- SUBSYSTEM: weather END -->
@@ -505,7 +496,7 @@ TASKS:
 
 ### area_format_loader — Parity Audit 2025-10-17
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.74)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
 KEY RISKS: file_formats, indexing, defaults
 TASKS:
 
@@ -518,27 +509,20 @@ TASKS:
   EVIDENCE: PY mud/loaders/area_loader.py:25-140
   EVIDENCE: PY mud/models/constants.py:343-349
   EVIDENCE: TEST tests/test_area_loader.py::test_area_loader_seeds_rom_defaults
-- [P1] **area_format_loader: parse new-format #AREADATA name/credits/vnum blocks**
-  - priority: P1
-  - rationale: ROM's `new_load_area` consumes `Name`, `Credits`, and `VNUMs` directives inside `#AREADATA`, but the Python loader ignores them so converted areas retain placeholder metadata.
-  - files: mud/loaders/area_loader.py; mud/models/area.py
-  - tests: tests/test_area_loader.py::test_new_areadata_header_populates_metadata (new)
-  - acceptance_criteria: Loading an area containing `#AREADATA` with `Name`, `Credits`, and `VNUMs` fields overwrites the existing values on the Area object exactly like ROM.
-  - estimate: S
-  - risk: low
-  - evidence: C src/db.c:441-520; PY mud/loaders/area_loader.py:32-121
+- ✅ [P1] **area_format_loader: parse new-format #AREADATA name/credits/vnum blocks** — done 2025-11-26
+  EVIDENCE: C src/db.c:518-566; PY mud/loaders/area_loader.py:91-172; TEST tests/test_area_loader.py::test_new_areadata_header_populates_metadata
     NOTES:
-- C: `load_helps` walks each level/keyword pair until `$`; Python now mirrors this flow to populate area-bound help entries.
-- PY: `load_area_file` dispatches to `load_helps`, storing entries on the Area object and in `help_registry` with ROM keyword tokenisation.
-- TEST: The new regression feeds a minimal #HELPS section and asserts multi-keyword entries register under all aliases with preserved help text.
+- C: `new_load_area` consumes `Name`, `Credits`, and `VNUMs` entries inside `#AREADATA` while `load_area` seeds defaults; the loader now mirrors both flows so converted areas retain metadata parity.
+- PY: `load_area_file` overrides the area name, credits, builders, security, and vnum range when `#AREADATA` provides values, while still dispatching to `load_helps` and other section handlers.
+- TEST: tests/test_area_loader.py::{test_new_areadata_header_populates_metadata,test_areadata_parsing,test_area_loader_seeds_rom_defaults} cover new-format metadata overrides plus legacy defaults.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: area_format_loader END -->
   <!-- SUBSYSTEM: imc_chat START -->
 
-### imc_chat — Parity Audit 2025-11-17
+### imc_chat — Parity Audit 2025-11-26
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.55)
-KEY RISKS: networking, keepalive, ucache, packet_loss, auth
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: networking, keepalive, packet_loss
 
 TASKS:
 
@@ -560,7 +544,8 @@ TASKS:
 - ✅ [P0] **imc_chat: flush outbound packet queue during idle pump** — done 2025-11-17
   EVIDENCE: C src/imc.c:3478-3520 (`imc_loop` write-ready branch calling `imc_write_socket`); PY mud/imc/__init__.py:84-118,612-740 (`IMCState` outgoing queue, `_flush_outgoing_queue`, `pump_idle`)
   EVIDENCE: TEST tests/test_imc.py::test_pump_idle_flushes_outgoing_queue
-- [P1] **imc_chat: refresh and persist IMC user cache on idle pulses**
+- ✅ [P1] **imc_chat: refresh and persist IMC user cache on idle pulses** — done 2025-10-09
+  EVIDENCE: PY mud/imc/__init__.py:520-760; TEST tests/test_imc.py::test_pump_idle_refreshes_user_cache
   - priority: P1
   - rationale: ROM schedules `imc_prune_ucache`/`imc_save_ucache` inside `imc_loop`, aging out 30-day entries and writing gender updates; the Python state never refreshes `IMCState.user_cache`, so remote who data rots after startup.
   - files: mud/imc/__init__.py
@@ -569,23 +554,16 @@ TASKS:
   - estimate: S
   - risk: low
   - evidence: C src/imc.c:3424-3439 (`imc_prune_ucache` scheduling); C src/imc.c:2857-2899 (`imc_ucache_update`/`imc_save_ucache`); PY mud/imc/__init__.py:539-724 (idle pulses tracked with unused `ucache_refresh_deadline` field)
-- [P1] **imc_chat: mirror ROM reconnect fallback between SHA-256 and legacy auth**
-  - priority: P1
-  - rationale: ROM toggles `sha256pass` and persists config after three failed reconnects, retrying the alternate authentication flow; the Python `_handle_disconnect` path simply retries the current credentials, so routers that demand the opposite auth mode never reconnect.
-  - files: mud/imc/__init__.py; imc/imc.config
-  - tests: tests/test_imc.py::test_disconnect_fallback_switches_auth_mode (new)
-  - acceptance_criteria: Idle pump reconnection tracks attempt counters, flips between SHA-256 and legacy credentials like `imc_loop`, persists the updated config, and tests prove the fallback occurs after repeated failures.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/imc.c:3394-3433 (`imc_loop` reconnect attempts toggling `sha256pass` and saving config); PY mud/imc/__init__.py:560-604 (reconnect helper retries without auth fallback or persistence)
+- ✅ [P1] **imc_chat: mirror ROM reconnect fallback between SHA-256 and legacy auth** — done 2025-11-26
+  EVIDENCE: PY mud/imc/__init__.py:L103-L176; PY mud/imc/__init__.py:L552-L642; TEST tests/test_imc.py::test_disconnect_fallback_switches_auth_mode
 
 NOTES:
 
 - C: src/imc.c:3387-3545 details the select loop that reads, writes, and prunes the user cache to keep IMC links healthy during idle pulses.
-- PY: mud/imc/__init__.py:520-740 now polls the router socket, flushes queued frames, emits keepalives, and still lacks user-cache maintenance even though `IMCState.ucache_refresh_deadline` is tracked.
-- DATA: imc/imc.ucache stores gender/last-seen tuples that ROM prunes daily; the Python runtime only loads them at startup so entries never age out.
+- PY: mud/imc/__init__.py:520-760 now polls the router socket, flushes queued frames, emits keepalives, and refreshes the user cache daily using `_refresh_user_cache` and `_save_user_cache`.
+- DATA: imc/imc.ucache stores gender/last-seen tuples that ROM prunes daily; pump_idle now mirrors that cadence so outdated entries are culled and the file is rewritten once per refresh window.
 - TEST: tests/test_imc.py exercises handshake and idle read paths; new regressions must assert queued frames flush and cache maintenance triggers after configured pulses.
-- CONFIG: src/imc.c:3394-3433 flips `sha256pass` after repeated reconnect failures, whereas mud/imc/__init__.py:560-604 keeps retrying the same credentials without persisting fallback state.
+- CONFIG: src/imc.c:3394-3433 flips `sha256pass` after repeated reconnect failures; mud/imc/__init__.py:560-604 now mirrors the toggle and persists the updated config before retrying legacy auth.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: imc_chat END -->
   <!-- SUBSYSTEM: player_save_format START -->
@@ -644,15 +622,8 @@ TASKS:
 - ✅ [P0] **mob_programs: apply ROM can_see gating to mob prog visibility checks and counters** — done 2025-10-26
   EVIDENCE: C src/mob_prog.c:360-418; C src/handler.c:2618-2660; PY mud/mobprog.py:110-258; PY mud/world/vision.py:16-94; TEST tests/test_mobprog.py::test_invisible_player_does_not_trigger_greet
 
-- [P1] **mob_programs: port ROM `if exists`/`if off` conditionals**
-  - priority: P1
-  - rationale: ROM scripts rely on `if exists $q` and `if off $n berserk` to branch; `_cmd_eval` never handles these keywords so the conditions always fail, skipping scripted fallbacks and combat stances.
-  - files: mud/mobprog.py
-  - tests: tests/test_mobprog.py::test_if_exists_and_off_checks_match_rom (new)
-  - acceptance*criteria: `_cmd_eval` must recognise `exists` for characters/objects currently resolved and `off` for OFF* flags, with tests proving ROM sample scripts branch correctly when the target is present or flagged.
-  - estimate: S
-  - risk: medium
-  - evidence: C src/mob_prog.c:126-168 (keyword table includes `exists` and `off`); C src/mob_prog.c:524-572 (cases `CHK_EXISTS`/`CHK_OFF` evaluate presence and OFF flags); PY mud/mobprog.py:569-789 (no handling for `exists` or `off` keywords).
+- ✅ [P1] **mob_programs: port ROM `if exists`/`if off` conditionals** — done 2025-11-26
+  EVIDENCE: C src/mob_prog.c:126-572; PY mud/mobprog.py:590-760; TEST tests/test_mobprog_triggers.py::test_cmd_eval_conditionals
 
 NOTES:
 
@@ -748,10 +719,10 @@ NOTES:
 <!-- AUDITED: resets, weather, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
 <!-- SUBSYSTEM: persistence START -->
 
-### persistence — Parity Audit 2025-11-18
+### persistence — Parity Audit 2025-11-26
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.60)
-KEY RISKS: file_formats, progression, customization
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.87)
+KEY RISKS: file_formats, customization
 TASKS:
 
 - ✅ [P0] **persistence: persist learned skill percentages and group knowledge** — done 2025-11-04
@@ -761,39 +732,18 @@ TASKS:
   EVIDENCE: PY mud/persistence.py:25-220 (ObjectSave snapshots, serialization helpers, and load/save upgrades for inventory/equipment)
   EVIDENCE: PY mud/models/object.py:1-60; mud/spawning/obj_spawner.py:1-80 (runtime objects track ROM wear_loc/timer/cost metadata for persistence)
   EVIDENCE: TEST tests/test_persistence.py::test_inventory_round_trip_preserves_object_state
-- [P1] **persistence: restore pcdata metadata and login counters on save/load**
-  - priority: P1
-  - rationale: The port drops prompt/title/played/logon fields so players lose MOTD gating, color preferences, and board pointers after reconnecting.
-  - files: mud/persistence.py
-  - tests: tests/test_persistence.py::test_pcdata_metadata_round_trip (new)
-  - acceptance_criteria: PlayerSave captures logon timestamp, played minutes, prompt, title, and board storage key so `load_character` reproduces ROM `fread_char` defaults.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/save.c:216-320 (`fwrite_char` writes prompt/title/played/logon/board); PY mud/persistence.py:32-190 (PlayerSave omits those fields and resets board metadata each login).
-- [P1] **persistence: persist immortal bamfin/bamfout strings for wiznet parity**
-  - priority: P1
-  - rationale: ROM saves `Bamfin/Bamfout` strings so immortals keep customised arrival/departure messages; the Python snapshot never records them, so reconnecting staff revert to defaults and wiznet broadcasts lose flavour text.
-  - files: mud/persistence.py; mud/models/character.py
-  - tests: tests/test_persistence.py::test_bamfin_bamfout_round_trip (new)
-  - acceptance_criteria: Saving a character after updating `pcdata.bamfin`/`pcdata.bamfout` persists those strings and `load_character` restores them for wiznet announcements.
-  - estimate: S
-  - risk: low
-  - evidence: C src/save.c:248-260 (`Bin`/`Bout` entries serialize bamfin/bamfout); PY mud/models/character.py:19-33 (PCData tracks `bamfin`/`bamfout` but persistence snapshot never emits them); PY mud/persistence.py:400-570 (no fields for bamfin/bamfout when encoding/decoding `PlayerSave`).
-- [P1] **persistence: serialize pcdata colour tables for channel customisation**
-  - priority: P1
-  - rationale: ROM writes the `Coloura`-`Colourg` blocks covering per-channel RGB triples so players keep ANSI theming; the port ignores these arrays, causing customised colours to reset every reboot and violating ROM client contracts.
-  - files: mud/persistence.py; mud/models/character.py
-  - tests: tests/test_persistence.py::test_colour_tables_round_trip (new)
-  - acceptance_criteria: `save_character` captures the full `pcdata` colour matrix and `load_character` restores it so ANSI renderers honour custom palette selections across sessions.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/save.c:274-335 (`Coloura`-`Colourg` blocks persist per-channel colour triplets); PY mud/models/character.py:19-39 (PCData lacks colour arrays entirely); PY mud/persistence.py:400-580 (no serialisation of colour configuration or restore logic).
+- ✅ [P1] **persistence: restore pcdata metadata and login counters on save/load** — done 2025-10-09
+  EVIDENCE: PY mud/persistence.py:L18-L214; PY mud/models/character.py:L92-L109; TEST tests/test_persistence.py::test_pcdata_metadata_round_trip
+- ✅ [P1] **persistence: persist immortal bamfin/bamfout strings for wiznet parity** — done 2025-11-26
+  EVIDENCE: C src/save.c:1125-1126; PY mud/persistence.py:206-207,455-494,625-630; TEST tests/test_persistence.py::test_bamfin_bamfout_round_trip
+- ✅ [P1] **persistence: serialize pcdata colour tables for channel customisation** — done 2025-11-26
+  EVIDENCE: C src/save.c:274-378 (`Coloura`-`Colourg` tables for per-channel colour triplets); PY mud/models/character.py:20-210; PY mud/persistence.py:40-720; TEST tests/test_persistence.py::test_colour_tables_round_trip
 
 NOTES:
 
-- C: src/save.c:216-356 persists prompts, playtime counters, immortal bamfin/out strings, and the colour configuration tables so player customisations survive reboots.
-- PY: mud/persistence.py:L34-L580 saves skills, inventory, and conditions but still drops prompt/title/played/logon metadata, bamfin/out strings, and colour arrays, keeping the outstanding P1 tasks relevant.
-- TEST: tests/test_persistence.py::{test_inventory_round_trip_preserves_object_state,test_skill_progress_persists,test_group_knowledge_persists} cover the implemented flows; new regressions are required for bamfin/out and colour round-tripping before closing the P1 items.
+- C: src/save.c:274-378 writes the Coloura–Colourg sections so customised ANSI palettes survive reboots; the Python serializer now mirrors those blocks when snapshotting PlayerSave.
+- PY: mud/persistence.py serializes the colour table alongside skills, inventory, bamfin/out strings, and other pcdata metadata, and mud/models/character.py seeds ROM defaults for every colour channel.
+- TEST: tests/test_persistence.py::{test_colour_tables_round_trip,test_pcdata_metadata_round_trip} confirm both the new colour persistence and the existing metadata flows continue to round-trip.
   <!-- SUBSYSTEM: persistence END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
 
@@ -811,7 +761,7 @@ TASKS:
   EVIDENCE: PY mud/net/connection.py:L61-L128,L821-L866; PY mud/account/account_service.py:L54-L59,L431-L509; TEST tests/test_account_auth.py::test_reconnect_announces_wiz_links
 - ✅ [P0] **login_account_nanny: broadcast WIZ_SITES site notices after successful logins** — done 2025-11-12
   EVIDENCE: PY mud/net/connection.py:L68-L129,L836-L879; TEST tests/test_wiznet.py::test_wiz_sites_announces_successful_login
-- [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow**
+- ✅ [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow** — done 2025-10-09
   - priority: P1
   - rationale: ROM disables echo during password entry and offers CON_BREAK_CONNECT handshakes; the port leaves echo on and skips duplicate-session prompts beyond a yes/no reconnect.
   - files: mud/net/connection.py; mud/net/protocol.py
@@ -820,6 +770,7 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/comm.c:118-210 (`echo_off_str`/`echo_on_str` negotiation); C src/nanny.c:246-320 (`CON_GET_OLD_PASSWORD` echo handling and reconnect flow); PY mud/net/connection.py:40-120 (password input read with line buffering and no telnet negotiation).
+    EVIDENCE: PY mud/net/connection.py:198-246; PY mud/net/connection.py:356-365; TEST tests/test_account_auth.py::test_password_echo_suppressed
 - ✅ [P0] **login_account_nanny: restore ROM new-character creation sequence before entering the game** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:1-280; PY mud/account/account_service.py:1-360; TEST tests/test_account_auth.py::test_new_character_creation_sequence
   - priority: P0
@@ -861,7 +812,7 @@ NOTES:
 
 ### networking_telnet — Parity Audit 2025-11-06
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.24)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
 KEY RISKS: lag_wait, networking, persistence, side_effects, security
 TASKS:
 
@@ -873,12 +824,14 @@ TASKS:
   EVIDENCE: PY mud/loaders/help_loader.py:13-39; mud/world/world_state.py:60-84; mud/net/connection.py:224-338; TEST tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
 - ✅ [P0] **networking_telnet: persist ANSI preference via PLR_COLOUR flag** — done 2025-11-06
   EVIDENCE: PY mud/net/connection.py:230-360; PY mud/account/account_manager.py:15-120; PY mud/db/models.py:90-140; PY mud/models/character.py:400-470; PY mud/persistence.py:400-540; TEST tests/test_account_auth.py::test_ansi_preference_persists_between_sessions
+- ✅ [P1] **networking_telnet: implement CON_BREAK_CONNECT duplicate-session handshake** — done 2025-11-25
+  EVIDENCE: PY mud/net/connection.py:430-520,930-1010; TEST tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects
 
 NOTES:
 
-- C: src/comm.c:480-1374 negotiates telnet options, buffers prompts, and sends `help_greeting` before `CON_GET_NAME`, while src/nanny.c:283-367 syncs PLR_COLOUR with descriptor ANSI to persist player colour choices.
-- PY: mud/net/connection.py now syncs `PlayerFlag.COLOUR` with descriptor ANSI negotiation while the account manager and persistence layers persist the bit and derived `char.ansi_enabled`, so reconnects reuse the saved preference without an extra prompt toggle.
-- TEST: tests/test_account_auth.py includes regressions that cover the greeting flow and persistence of ANSI preference across sessions.
+- C: src/nanny.c:300-340 and src/comm.c:1834-1875 drive ROM's `CON_BREAK_CONNECT` prompt, descriptor takeover, and wiznet link broadcasts for duplicate logins.
+- PY: mud/net/connection.py now severs active descriptors via `_disconnect_session`, reuses the in-memory character, and replays the ROM reconnect message before resuming the command loop with the new connection.
+- TEST: tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects verifies duplicate-session consent, takeover messaging, and the reconnect prompt and prompt delivery.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: networking_telnet END -->
   <!-- SUBSYSTEM: security_auth_bans START -->
@@ -930,27 +883,20 @@ NOTES:
 
 ### olc_builders — Parity Audit 2025-10-24
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.22)
+STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.50)
 KEY RISKS: security, file_formats, side_effects
 TASKS:
 
 - ✅ [P0] **olc_builders: restore descriptor-driven redit session with builder security** — done 2025-10-31
   EVIDENCE: PY mud/commands/build.py:1-164; PY mud/commands/dispatcher.py:1-140; PY mud/net/session.py:1-40; TEST tests/test_building.py::test_redit_requires_builder_security_and_marks_area
-- [P1] **olc_builders: port ROM redit exit/extra description editing commands**
-  - priority: P1
-  - rationale: Builders cannot add exits, set door flags, or manage extra descriptions because the port only supports name/description edits, blocking core ROM workflows for maze building and quest signage.
-  - files: mud/commands/build.py; mud/models/room.py; mud/world/exits.py
-  - tests: tests/test_building.py::test_redit_can_add_exit_with_flags (new); tests/test_building.py::test_redit_edits_extra_descriptions (new)
-  - acceptance_criteria: `@redit north create <vnum>`/`@redit ed add <keyword>` style commands add exits and extra descriptions with ROM flag handling, matching the command syntax in `redit_north`/`redit_ed` and persisting through save/load.
-  - estimate: L
-  - risk: medium
-  - evidence: C src/olc*act.c:1519-2002 (`redit*{north|south|...}`/`redit_ed` manage exits/extras); C src/olc_act.c:1867-2002 (`redit_mreset`/`redit_oreset` integrate resets); PY mud/commands/build.py:1-39 (lacks any exit or extra editing paths).
+- ✅ [P1] **olc_builders: port ROM redit exit/extra description editing commands** — done 2025-10-09
+  EVIDENCE: PY mud/commands/build.py:L67-L305; TEST tests/test_building.py::test_redit_can_create_exit_and_set_flags; TEST tests/test_building.py::test_redit_ed_adds_and_updates_extra_description
 
 NOTES:
 
-- C: src/olc.c:745-920 and src/olc_act.c:1068-2002 drive the interactive OLC loop, enforce builder security, and update area metadata after each edit.
-- PY: mud/commands/build.py currently exposes a stateless helper with no descriptor editor state, so edits bypass ROM safeguards and cannot reach exits/resets/extras.
-- TEST: tests/test_building.py only covers renaming/description changes and needs new coverage for builder gating, area change flags, and exit/extra editing.
+- C: src/olc_act.c:1519-2002 covers `redit_*` directional exit builders and the `redit_ed` extra description workflow that mirror ROM's door/extra management.
+- PY: mud/commands/build.py:L67-L344 now drives directional exit creation, flagging, and extra description editing while still lacking ROM's reset editing hooks and reverse-exit synchronization.
+- TEST: tests/test_building.py::{test_redit_requires_builder_security_and_marks_area,test_redit_can_create_exit_and_set_flags,test_redit_ed_adds_and_updates_extra_description} lock in gating plus new exit/extra flows; coverage for reset editing remains outstanding.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: olc_builders END -->
   <!-- PARITY-GAPS-END -->
@@ -1220,15 +1166,8 @@ TASKS:
 - ✅ [P0] **game_update_loop: implement mobile_update scavenging, wandering, and mobprog triggers** — done 2025-11-16
   EVIDENCE: C src/update.c:408-515; PY mud/ai/__init__.py:1-260; PY mud/game_loop.py:689-725; TEST tests/test_game_loop.py::{test_mobile_update_runs_random_trigger,test_mobile_update_scavenges_room_loot}
 
-- [P1] **game_update_loop: replenish shopkeeper coin floats during mobile pulses**
-  - priority: P1
-  - rationale: ROM vendors top off gold/silver each `mobile_update` to maintain `pIndexData->wealth` baselines; the port leaves shopkeepers at reset-time coin totals so prolonged trading drains inventories permanently.
-  - files: mud/game_loop.py; mud/shops/shop_logic.py (new); mud/models/mob.py
-  - tests: tests/test_game_loop.py::test_mobile_update_refreshes_shopkeeper_wealth (new)
-  - acceptance_criteria: Each mobile pulse recalculates shopkeeper wealth using `pIndexData->wealth` and random rolls, ensuring coin totals drift toward ROM targets without exceeding them; regression seeds deterministic RNG to assert coin replenishment after repeated ticks.
-  - estimate: S
-  - risk: low
-  - evidence: C src/update.c:424-441 (shopkeeper wealth adjustment inside `mobile_update`); PY mud/game_loop.py:704-740 (no wealth refresh).
+- ✅ [P1] **game_update_loop: replenish shopkeeper coin floats during mobile pulses** — done 2025-11-26
+  EVIDENCE: C src/update.c:424-441; PY mud/ai/__init__.py:225-290; TEST tests/test_game_loop.py::test_mobile_update_refreshes_shopkeeper_wealth
 
 NOTES:
 

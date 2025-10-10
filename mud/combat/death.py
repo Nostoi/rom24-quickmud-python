@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from mud.characters import is_clan_member
+from mud.combat.kill_table import increment_killed
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     FormFlag,
@@ -144,6 +145,18 @@ def _spawn_gore(
             gore.item_type = int(ItemType.TRASH)
 
     room.add_object(gore)
+
+
+def _increment_kill_counters(victim: Character) -> None:
+    proto = getattr(victim, "prototype", None) or getattr(victim, "mob_index", None)
+    if proto is not None:
+        try:
+            current = int(getattr(proto, "killed", 0) or 0)
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            current = 0
+        setattr(proto, "killed", current + 1)
+
+    increment_killed(getattr(victim, "level", 0))
 
 
 def _broadcast_neighbor_cry(victim: Character) -> None:
@@ -401,6 +414,7 @@ def raw_kill(victim: Character) -> Object | None:
         room.remove_character(victim)
 
     if getattr(victim, "is_npc", False):
+        _increment_kill_counters(victim)
         victim.fighting = None
         try:
             character_registry.remove(victim)

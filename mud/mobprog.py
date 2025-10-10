@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from enum import IntFlag
 from typing import TYPE_CHECKING
 
-from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, Position
+from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, OffFlag, Position
 from mud.world.vision import can_see_character
 from mud.utils import rng_mm
 
@@ -594,6 +594,12 @@ def _cmd_eval(
     tokens = arguments.split()
     check = check.lower()
 
+    if getattr(mob, "mprog_target", None) is None and ch is not None:
+        try:
+            setattr(mob, "mprog_target", ch)
+        except Exception:
+            pass
+
     if check == "rand":
         if not tokens:
             return False
@@ -683,8 +689,12 @@ def _cmd_eval(
     code = token[1] if token.startswith("$") and len(token) > 1 else token[:1]
     target_char = _resolve_character_token(token, mob, ch, arg1, arg2, rch)
     target_obj = _resolve_object_token(token, arg1, arg2)
+    has_target = target_char is not None or target_obj is not None
 
-    if target_char is None and target_obj is None:
+    if check == "exists":
+        return has_target
+
+    if not has_target:
         return False
 
     # Case 3: boolean checks on actors/objects
@@ -762,6 +772,23 @@ def _cmd_eval(
             if source is None:
                 continue
             raw = getattr(source, "act", 0)
+            try:
+                combined |= int(raw)
+            except (TypeError, ValueError):
+                continue
+        return bool(combined & int(flag))
+    if check == "off":
+        if target_char is None:
+            return False
+        try:
+            flag = OffFlag[value_token.upper()]
+        except KeyError:
+            return False
+        combined = 0
+        for source in (target_char, getattr(target_char, "prototype", None), getattr(target_char, "mob_index", None)):
+            if source is None:
+                continue
+            raw = getattr(source, "off_flags", 0)
             try:
                 combined |= int(raw)
             except (TypeError, ValueError):

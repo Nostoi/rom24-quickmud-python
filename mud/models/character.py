@@ -37,6 +37,41 @@ class PCData:
     in_progress: NoteDraft | None = None
     learned: dict[str, int] = field(default_factory=dict)
     group_known: tuple[str, ...] = field(default_factory=tuple)
+    text: list[int] = field(default_factory=lambda: _default_colour_triplet("text"))
+    auction: list[int] = field(default_factory=lambda: _default_colour_triplet("auction"))
+    auction_text: list[int] = field(default_factory=lambda: _default_colour_triplet("auction_text"))
+    gossip: list[int] = field(default_factory=lambda: _default_colour_triplet("gossip"))
+    gossip_text: list[int] = field(default_factory=lambda: _default_colour_triplet("gossip_text"))
+    music: list[int] = field(default_factory=lambda: _default_colour_triplet("music"))
+    music_text: list[int] = field(default_factory=lambda: _default_colour_triplet("music_text"))
+    question: list[int] = field(default_factory=lambda: _default_colour_triplet("question"))
+    question_text: list[int] = field(default_factory=lambda: _default_colour_triplet("question_text"))
+    answer: list[int] = field(default_factory=lambda: _default_colour_triplet("answer"))
+    answer_text: list[int] = field(default_factory=lambda: _default_colour_triplet("answer_text"))
+    quote: list[int] = field(default_factory=lambda: _default_colour_triplet("quote"))
+    quote_text: list[int] = field(default_factory=lambda: _default_colour_triplet("quote_text"))
+    immtalk_text: list[int] = field(default_factory=lambda: _default_colour_triplet("immtalk_text"))
+    immtalk_type: list[int] = field(default_factory=lambda: _default_colour_triplet("immtalk_type"))
+    info: list[int] = field(default_factory=lambda: _default_colour_triplet("info"))
+    tell: list[int] = field(default_factory=lambda: _default_colour_triplet("tell"))
+    tell_text: list[int] = field(default_factory=lambda: _default_colour_triplet("tell_text"))
+    reply: list[int] = field(default_factory=lambda: _default_colour_triplet("reply"))
+    reply_text: list[int] = field(default_factory=lambda: _default_colour_triplet("reply_text"))
+    gtell_text: list[int] = field(default_factory=lambda: _default_colour_triplet("gtell_text"))
+    gtell_type: list[int] = field(default_factory=lambda: _default_colour_triplet("gtell_type"))
+    say: list[int] = field(default_factory=lambda: _default_colour_triplet("say"))
+    say_text: list[int] = field(default_factory=lambda: _default_colour_triplet("say_text"))
+    wiznet: list[int] = field(default_factory=lambda: _default_colour_triplet("wiznet"))
+    room_title: list[int] = field(default_factory=lambda: _default_colour_triplet("room_title"))
+    room_text: list[int] = field(default_factory=lambda: _default_colour_triplet("room_text"))
+    room_exits: list[int] = field(default_factory=lambda: _default_colour_triplet("room_exits"))
+    room_things: list[int] = field(default_factory=lambda: _default_colour_triplet("room_things"))
+    prompt: list[int] = field(default_factory=lambda: _default_colour_triplet("prompt"))
+    fight_death: list[int] = field(default_factory=lambda: _default_colour_triplet("fight_death"))
+    fight_yhit: list[int] = field(default_factory=lambda: _default_colour_triplet("fight_yhit"))
+    fight_ohit: list[int] = field(default_factory=lambda: _default_colour_triplet("fight_ohit"))
+    fight_thit: list[int] = field(default_factory=lambda: _default_colour_triplet("fight_thit"))
+    fight_skill: list[int] = field(default_factory=lambda: _default_colour_triplet("fight_skill"))
 
 
 @dataclass
@@ -99,6 +134,9 @@ class Character:
     hitroll: int = 0
     damroll: int = 0
     wimpy: int = 0
+    lines: int = 0
+    played: int = 0
+    logon: int = 0
     perm_stat: list[int] = field(default_factory=list)
     mod_stat: list[int] = field(default_factory=list)
     form: int = 0
@@ -583,3 +621,96 @@ _CLASS_SKILL_ADEPT: dict[int, int] = {
 }
 
 _CLASS_SKILL_ADEPT_DEFAULT = 75
+_COLOUR_NORMAL = 0
+_COLOUR_BRIGHT = 1
+_COLOUR_BLACK = 0
+_COLOUR_RED = 1
+_COLOUR_GREEN = 2
+_COLOUR_YELLOW = 3
+_COLOUR_BLUE = 4
+_COLOUR_MAGENTA = 5
+_COLOUR_CYAN = 6
+_COLOUR_WHITE = 7
+
+_DEFAULT_PC_COLOUR_TABLE: dict[str, tuple[int, int, int]] = {
+    "text": (_COLOUR_NORMAL, _COLOUR_WHITE, 0),
+    "auction": (_COLOUR_BRIGHT, _COLOUR_YELLOW, 0),
+    "auction_text": (_COLOUR_BRIGHT, _COLOUR_WHITE, 0),
+    "gossip": (_COLOUR_NORMAL, _COLOUR_MAGENTA, 0),
+    "gossip_text": (_COLOUR_BRIGHT, _COLOUR_MAGENTA, 0),
+    "music": (_COLOUR_NORMAL, _COLOUR_RED, 0),
+    "music_text": (_COLOUR_BRIGHT, _COLOUR_RED, 0),
+    "question": (_COLOUR_BRIGHT, _COLOUR_YELLOW, 0),
+    "question_text": (_COLOUR_BRIGHT, _COLOUR_WHITE, 0),
+    "answer": (_COLOUR_BRIGHT, _COLOUR_YELLOW, 0),
+    "answer_text": (_COLOUR_BRIGHT, _COLOUR_WHITE, 0),
+    "quote": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "quote_text": (_COLOUR_BRIGHT, _COLOUR_GREEN, 0),
+    "immtalk_text": (_COLOUR_NORMAL, _COLOUR_CYAN, 0),
+    "immtalk_type": (_COLOUR_NORMAL, _COLOUR_YELLOW, 0),
+    "info": (_COLOUR_NORMAL, _COLOUR_YELLOW, 1),
+    "tell": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "tell_text": (_COLOUR_BRIGHT, _COLOUR_GREEN, 0),
+    "reply": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "reply_text": (_COLOUR_BRIGHT, _COLOUR_GREEN, 0),
+    "gtell_text": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "gtell_type": (_COLOUR_NORMAL, _COLOUR_RED, 0),
+    "say": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "say_text": (_COLOUR_BRIGHT, _COLOUR_GREEN, 0),
+    "wiznet": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "room_title": (_COLOUR_NORMAL, _COLOUR_CYAN, 0),
+    "room_text": (_COLOUR_NORMAL, _COLOUR_WHITE, 0),
+    "room_exits": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "room_things": (_COLOUR_NORMAL, _COLOUR_CYAN, 0),
+    "prompt": (_COLOUR_NORMAL, _COLOUR_CYAN, 0),
+    "fight_death": (_COLOUR_NORMAL, _COLOUR_RED, 0),
+    "fight_yhit": (_COLOUR_NORMAL, _COLOUR_GREEN, 0),
+    "fight_ohit": (_COLOUR_NORMAL, _COLOUR_YELLOW, 0),
+    "fight_thit": (_COLOUR_NORMAL, _COLOUR_RED, 0),
+    "fight_skill": (_COLOUR_NORMAL, _COLOUR_WHITE, 0),
+}
+
+PCDATA_COLOUR_FIELDS: tuple[str, ...] = (
+    "text",
+    "auction",
+    "auction_text",
+    "gossip",
+    "gossip_text",
+    "music",
+    "music_text",
+    "question",
+    "question_text",
+    "answer",
+    "answer_text",
+    "quote",
+    "quote_text",
+    "immtalk_text",
+    "immtalk_type",
+    "info",
+    "tell",
+    "tell_text",
+    "reply",
+    "reply_text",
+    "gtell_text",
+    "gtell_type",
+    "say",
+    "say_text",
+    "wiznet",
+    "room_title",
+    "room_text",
+    "room_exits",
+    "room_things",
+    "prompt",
+    "fight_death",
+    "fight_yhit",
+    "fight_ohit",
+    "fight_thit",
+    "fight_skill",
+)
+
+
+def _default_colour_triplet(name: str) -> list[int]:
+    base = _DEFAULT_PC_COLOUR_TABLE.get(name)
+    if base is None:
+        base = (_COLOUR_NORMAL, _COLOUR_WHITE, 0)
+    return [base[0], base[1], base[2]]

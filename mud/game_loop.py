@@ -18,6 +18,7 @@ from mud.models.constants import (
     Condition,
     ItemType,
     Position,
+    RoomFlag,
     Size,
     Stat,
     WearFlag,
@@ -670,6 +671,22 @@ def obj_update() -> None:
         _extract_obj(obj)
 
 
+def _is_outside(character: Character) -> bool:
+    room = getattr(character, "room", None)
+    if room is None:
+        return False
+    flags = int(getattr(room, "room_flags", 0) or 0)
+    return not bool(flags & int(RoomFlag.ROOM_INDOORS))
+
+
+def _should_receive_weather(character: Character) -> bool:
+    if not hasattr(character, "is_awake"):
+        return False
+    if not character.is_awake():
+        return False
+    return _is_outside(character)
+
+
 def weather_tick() -> None:
     """Update barometric pressure and sky state like ROM weather_update."""
 
@@ -686,32 +703,42 @@ def weather_tick() -> None:
     weather.mmhg += weather.change
     weather.mmhg = max(960, min(weather.mmhg, 1040))
 
+    messages: list[str] = []
     if weather.sky == SkyState.CLOUDLESS:
         if weather.mmhg < 990 or (
             weather.mmhg < 1010 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.CLOUDY
+            messages.append("The sky is getting cloudy.")
     elif weather.sky == SkyState.CLOUDY:
         if weather.mmhg < 970 or (
             weather.mmhg < 990 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.RAINING
+            messages.append("It starts to rain.")
         elif weather.mmhg > 1030 and rng_mm.number_bits(2) == 0:
             weather.sky = SkyState.CLOUDLESS
+            messages.append("The clouds disappear.")
     elif weather.sky == SkyState.RAINING:
         if weather.mmhg < 970 and rng_mm.number_bits(2) == 0:
             weather.sky = SkyState.LIGHTNING
+            messages.append("Lightning flashes in the sky.")
         elif weather.mmhg > 1030 or (
             weather.mmhg > 1010 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.CLOUDY
+            messages.append("The rain stopped.")
     elif weather.sky == SkyState.LIGHTNING:
         if weather.mmhg > 1010 or (
             weather.mmhg > 990 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.RAINING
+            messages.append("The lightning has stopped.")
     else:
         weather.sky = SkyState.CLOUDLESS
+
+    for message in messages:
+        broadcast_global(message, channel="weather", should_send=_should_receive_weather)
 
 
 def time_tick() -> None:

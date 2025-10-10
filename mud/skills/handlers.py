@@ -2,6 +2,8 @@ from __future__ import annotations
 
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
+from types import SimpleNamespace
+
 from mud.affects.saves import check_dispel, saves_dispel, saves_spell
 from mud.combat.engine import (
     apply_damage,
@@ -30,15 +32,21 @@ from mud.models.character import Character, SpellEffect
 from mud.models.constants import (
     AffectFlag,
     ActFlag,
+    ContainerFlag,
     DamageType,
     ExtraFlag,
     ImmFlag,
     ItemType,
+    LIQUID_TABLE,
     PlayerFlag,
     Position,
+    ResFlag,
     RoomFlag,
     Stat,
+    VulnFlag,
     WearLocation,
+    WeaponFlag,
+    WeaponType,
     LEVEL_HERO,
     LEVEL_IMMORTAL,
     LIQ_WATER,
@@ -54,10 +62,352 @@ from mud.utils import rng_mm
 from mud.world.look import look
 from mud.world.vision import can_see_room
 
+from mud.skills.metadata import ROM_SKILL_NAMES_BY_INDEX
 
+
+_TO_AFFECTS = 0
 _TO_OBJECT = 1
+_TO_IMMUNE = 2
+_TO_RESIST = 3
+_TO_VULN = 4
+_TO_WEAPON = 5
 _APPLY_NONE = 0
 _OBJECT_INVIS_WEAR_OFF = "$p fades into view."
+
+
+def _flag_names(value: int, mapping: tuple[tuple[int, str], ...]) -> str:
+    names: list[str] = []
+    for bit, label in mapping:
+        if value & bit:
+            names.append(label)
+    return " ".join(names) if names else "none"
+
+
+def _item_type_name(raw_type: object) -> str:
+    item_type = _resolve_item_type(raw_type)
+    if item_type is None:
+        return "unknown"
+    return _ITEM_TYPE_NAMES.get(item_type, item_type.name.lower())
+
+
+def _weapon_type_name(raw_type: int) -> str:
+    try:
+        weapon_type = WeaponType(int(raw_type))
+    except (TypeError, ValueError):
+        return "unknown"
+    return _WEAPON_TYPE_NAMES.get(weapon_type, "exotic")
+
+
+def _extra_bit_name(flags: int) -> str:
+    return _flag_names(flags, _EXTRA_FLAG_LABELS)
+
+
+def _container_flag_name(flags: int) -> str:
+    return _flag_names(flags, _CONTAINER_FLAG_LABELS)
+
+
+def _affect_loc_name(location: int) -> str:
+    return _AFFECT_LOCATION_NAMES.get(location, "(unknown)")
+
+
+def _affect_bit_name(bitvector: int) -> str:
+    return _flag_names(bitvector, _AFFECT_FLAG_LABELS)
+
+
+def _imm_bit_name(bitvector: int) -> str:
+    return _flag_names(bitvector, _IMMUNITY_LABELS)
+
+
+def _weapon_bit_name(bitvector: int) -> str:
+    return _flag_names(bitvector, _WEAPON_FLAG_LABELS)
+
+
+def _skill_name_from_value(raw_value: int) -> str | None:
+    if raw_value < 0:
+        return None
+    if raw_value >= len(ROM_SKILL_NAMES_BY_INDEX):
+        return None
+    return ROM_SKILL_NAMES_BY_INDEX[raw_value]
+
+
+def _lookup_liquid(index: int):
+    if 0 <= index < len(LIQUID_TABLE):
+        return LIQUID_TABLE[index]
+    return LIQUID_TABLE[LIQ_WATER]
+
+
+def _resolve_weight(obj: Object | ObjectData | object) -> int:
+    raw_weight = getattr(obj, "weight", 0)
+    if not raw_weight:
+        proto = getattr(obj, "prototype", None)
+        raw_weight = getattr(proto, "weight", 0)
+    return c_div(_coerce_int(raw_weight), 10)
+
+
+def _resolve_cost(obj: Object | ObjectData | object) -> int:
+    cost = getattr(obj, "cost", None)
+    if cost is None or (isinstance(cost, int) and cost == 0):
+        proto = getattr(obj, "prototype", None)
+        cost = getattr(proto, "cost", 0) if proto is not None else 0
+    return _coerce_int(cost)
+
+
+def _resolve_level(obj: Object | ObjectData | object) -> int:
+    level = getattr(obj, "level", None)
+    if level is None or (isinstance(level, int) and level == 0):
+        proto = getattr(obj, "prototype", None)
+        level = getattr(proto, "level", 0) if proto is not None else 0
+    return _coerce_int(level)
+
+
+def _iter_prototype_affects(obj: Object | ObjectData | object):
+    prototype = getattr(obj, "prototype", None)
+    if prototype is None:
+        return
+    if getattr(obj, "enchanted", False):
+        return
+    for entry in getattr(prototype, "affected", []) or []:
+        yield entry
+    for entry in getattr(prototype, "affects", []) or []:
+        yield entry
+
+
+def _coerce_affect(entry: object) -> SimpleNamespace | Affect:
+    if isinstance(entry, Affect):
+        return entry
+    if isinstance(entry, dict):
+        return SimpleNamespace(
+            where=_coerce_int(entry.get("where", _TO_OBJECT)),
+            level=_coerce_int(entry.get("level", 0)),
+            duration=_coerce_int(entry.get("duration", -1)),
+            location=_coerce_int(entry.get("location", _APPLY_NONE)),
+            modifier=_coerce_int(entry.get("modifier", 0)),
+            bitvector=_coerce_int(entry.get("bitvector", 0)),
+        )
+    return SimpleNamespace(
+        where=_coerce_int(getattr(entry, "where", _TO_OBJECT)),
+        level=_coerce_int(getattr(entry, "level", 0)),
+        duration=_coerce_int(getattr(entry, "duration", -1)),
+        location=_coerce_int(getattr(entry, "location", _APPLY_NONE)),
+        modifier=_coerce_int(getattr(entry, "modifier", 0)),
+        bitvector=_coerce_int(getattr(entry, "bitvector", 0)),
+    )
+
+
+def _iter_all_affects(obj: Object | ObjectData | object):
+    for entry in _iter_prototype_affects(obj) or []:
+        yield _coerce_affect(entry)
+    for entry in getattr(obj, "affected", []) or []:
+        yield _coerce_affect(entry)
+
+
+def _emit_affect_descriptions(caster: Character, obj: Object | ObjectData | object) -> None:
+    for affect in _iter_all_affects(obj):
+        location_name = _affect_loc_name(int(getattr(affect, "location", _APPLY_NONE)))
+        modifier = _coerce_int(getattr(affect, "modifier", 0))
+        duration = _coerce_int(getattr(affect, "duration", -1))
+        base = f"Affects {location_name} by {modifier}"
+        if duration > -1:
+            base = f"{base}, {duration} hours."
+        else:
+            base = f"{base}."
+        _send_to_char(caster, base)
+
+        bitvector = _coerce_int(getattr(affect, "bitvector", 0))
+        if not bitvector:
+            continue
+        where = _coerce_int(getattr(affect, "where", _TO_OBJECT))
+        if where == _TO_AFFECTS:
+            descriptor = _affect_bit_name(bitvector)
+            if descriptor:
+                _send_to_char(caster, f"Adds {descriptor} affect.")
+        elif where == _TO_OBJECT:
+            descriptor = _extra_bit_name(bitvector)
+            if descriptor:
+                _send_to_char(caster, f"Adds {descriptor} object flag.")
+        elif where == _TO_IMMUNE:
+            descriptor = _imm_bit_name(bitvector)
+            _send_to_char(caster, f"Adds immunity to {descriptor}.")
+        elif where == _TO_RESIST:
+            descriptor = _imm_bit_name(bitvector)
+            _send_to_char(caster, f"Adds resistance to {descriptor}.")
+        elif where == _TO_VULN:
+            descriptor = _imm_bit_name(bitvector)
+            _send_to_char(caster, f"Adds vulnerability to {descriptor}.")
+        elif where == _TO_WEAPON:
+            descriptor = _weapon_bit_name(bitvector)
+            _send_to_char(caster, f"Adds {descriptor} weapon flags.")
+        else:
+            _send_to_char(caster, f"Unknown bit {where}: {bitvector}")
+
+_ITEM_TYPE_NAMES: dict[ItemType, str] = {
+    ItemType.SCROLL: "scroll",
+    ItemType.WAND: "wand",
+    ItemType.STAFF: "staff",
+    ItemType.WEAPON: "weapon",
+    ItemType.TREASURE: "treasure",
+    ItemType.ARMOR: "armor",
+    ItemType.POTION: "potion",
+    ItemType.CLOTHING: "clothing",
+    ItemType.FURNITURE: "furniture",
+    ItemType.TRASH: "trash",
+    ItemType.CONTAINER: "container",
+    ItemType.DRINK_CON: "drink",
+    ItemType.KEY: "key",
+    ItemType.FOOD: "food",
+    ItemType.MONEY: "money",
+    ItemType.BOAT: "boat",
+    ItemType.CORPSE_NPC: "npc_corpse",
+    ItemType.CORPSE_PC: "pc_corpse",
+    ItemType.FOUNTAIN: "fountain",
+    ItemType.PILL: "pill",
+    ItemType.PROTECT: "protect",
+    ItemType.MAP: "map",
+    ItemType.PORTAL: "portal",
+    ItemType.WARP_STONE: "warp_stone",
+    ItemType.ROOM_KEY: "room_key",
+    ItemType.GEM: "gem",
+    ItemType.JEWELRY: "jewelry",
+    ItemType.JUKEBOX: "jukebox",
+}
+
+_WEAPON_TYPE_NAMES: dict[WeaponType, str] = {
+    WeaponType.EXOTIC: "exotic",
+    WeaponType.SWORD: "sword",
+    WeaponType.DAGGER: "dagger",
+    WeaponType.SPEAR: "spear/staff",
+    WeaponType.MACE: "mace/club",
+    WeaponType.AXE: "axe",
+    WeaponType.FLAIL: "flail",
+    WeaponType.WHIP: "whip",
+    WeaponType.POLEARM: "polearm",
+}
+
+_EXTRA_FLAG_LABELS: tuple[tuple[int, str], ...] = (
+    (int(ExtraFlag.GLOW), "glow"),
+    (int(ExtraFlag.HUM), "hum"),
+    (int(ExtraFlag.DARK), "dark"),
+    (int(ExtraFlag.LOCK), "lock"),
+    (int(ExtraFlag.EVIL), "evil"),
+    (int(ExtraFlag.INVIS), "invis"),
+    (int(ExtraFlag.MAGIC), "magic"),
+    (int(ExtraFlag.NODROP), "nodrop"),
+    (int(ExtraFlag.BLESS), "bless"),
+    (int(ExtraFlag.ANTI_GOOD), "anti-good"),
+    (int(ExtraFlag.ANTI_EVIL), "anti-evil"),
+    (int(ExtraFlag.ANTI_NEUTRAL), "anti-neutral"),
+    (int(ExtraFlag.NOREMOVE), "noremove"),
+    (int(ExtraFlag.INVENTORY), "inventory"),
+    (int(ExtraFlag.NOPURGE), "nopurge"),
+    (int(ExtraFlag.VIS_DEATH), "vis_death"),
+    (int(ExtraFlag.ROT_DEATH), "rot_death"),
+    (int(ExtraFlag.NOLOCATE), "no_locate"),
+    (int(ExtraFlag.SELL_EXTRACT), "sell_extract"),
+    (int(ExtraFlag.BURN_PROOF), "burn_proof"),
+    (int(ExtraFlag.NOUNCURSE), "no_uncurse"),
+)
+
+_CONTAINER_FLAG_LABELS: tuple[tuple[int, str], ...] = (
+    (int(ContainerFlag.CLOSEABLE), "closable"),
+    (int(ContainerFlag.PICKPROOF), "pickproof"),
+    (int(ContainerFlag.CLOSED), "closed"),
+    (int(ContainerFlag.LOCKED), "locked"),
+    (int(ContainerFlag.PUT_ON), "put_on"),
+)
+
+_AFFECT_LOCATION_NAMES: dict[int, str] = {
+    0: "none",
+    1: "strength",
+    2: "dexterity",
+    3: "intelligence",
+    4: "wisdom",
+    5: "constitution",
+    6: "sex",
+    7: "class",
+    8: "level",
+    9: "age",
+    10: "height",
+    11: "weight",
+    12: "mana",
+    13: "hp",
+    14: "moves",
+    15: "gold",
+    16: "experience",
+    17: "armor class",
+    18: "hit roll",
+    19: "damage roll",
+    20: "saves",
+    21: "save vs rod",
+    22: "save vs petrification",
+    23: "save vs breath",
+    24: "save vs spell",
+    25: "none",
+}
+
+_AFFECT_FLAG_LABELS: tuple[tuple[int, str], ...] = (
+    (int(AffectFlag.BLIND), "blind"),
+    (int(AffectFlag.INVISIBLE), "invisible"),
+    (int(AffectFlag.DETECT_EVIL), "detect_evil"),
+    (int(AffectFlag.DETECT_GOOD), "detect_good"),
+    (int(AffectFlag.DETECT_INVIS), "detect_invis"),
+    (int(AffectFlag.DETECT_MAGIC), "detect_magic"),
+    (int(AffectFlag.DETECT_HIDDEN), "detect_hidden"),
+    (int(AffectFlag.SANCTUARY), "sanctuary"),
+    (int(AffectFlag.FAERIE_FIRE), "faerie_fire"),
+    (int(AffectFlag.INFRARED), "infrared"),
+    (int(AffectFlag.CURSE), "curse"),
+    (int(AffectFlag.POISON), "poison"),
+    (int(AffectFlag.PROTECT_EVIL), "prot_evil"),
+    (int(AffectFlag.PROTECT_GOOD), "prot_good"),
+    (int(AffectFlag.SLEEP), "sleep"),
+    (int(AffectFlag.SNEAK), "sneak"),
+    (int(AffectFlag.HIDE), "hide"),
+    (int(AffectFlag.CHARM), "charm"),
+    (int(AffectFlag.FLYING), "flying"),
+    (int(AffectFlag.PASS_DOOR), "pass_door"),
+    (int(AffectFlag.BERSERK), "berserk"),
+    (int(AffectFlag.CALM), "calm"),
+    (int(AffectFlag.HASTE), "haste"),
+    (int(AffectFlag.SLOW), "slow"),
+    (int(AffectFlag.PLAGUE), "plague"),
+    (int(AffectFlag.DARK_VISION), "dark_vision"),
+)
+
+_IMMUNITY_LABELS: tuple[tuple[int, str], ...] = (
+    (int(ImmFlag.SUMMON), "summon"),
+    (int(ImmFlag.CHARM), "charm"),
+    (int(ImmFlag.MAGIC), "magic"),
+    (int(ImmFlag.WEAPON), "weapon"),
+    (int(ImmFlag.BASH), "blunt"),
+    (int(ImmFlag.PIERCE), "piercing"),
+    (int(ImmFlag.SLASH), "slashing"),
+    (int(ImmFlag.FIRE), "fire"),
+    (int(ImmFlag.COLD), "cold"),
+    (int(ImmFlag.LIGHTNING), "lightning"),
+    (int(ImmFlag.ACID), "acid"),
+    (int(ImmFlag.POISON), "poison"),
+    (int(ImmFlag.NEGATIVE), "negative"),
+    (int(ImmFlag.HOLY), "holy"),
+    (int(ImmFlag.ENERGY), "energy"),
+    (int(ImmFlag.MENTAL), "mental"),
+    (int(ImmFlag.DISEASE), "disease"),
+    (int(ImmFlag.DROWNING), "drowning"),
+    (int(ImmFlag.LIGHT), "light"),
+    (int(VulnFlag.IRON), "iron"),
+    (int(VulnFlag.WOOD), "wood"),
+    (int(VulnFlag.SILVER), "silver"),
+)
+
+_WEAPON_FLAG_LABELS: tuple[tuple[int, str], ...] = (
+    (int(WeaponFlag.FLAMING), "flaming"),
+    (int(WeaponFlag.FROST), "frost"),
+    (int(WeaponFlag.VAMPIRIC), "vampiric"),
+    (int(WeaponFlag.SHARP), "sharp"),
+    (int(WeaponFlag.VORPAL), "vorpal"),
+    (int(WeaponFlag.TWO_HANDS), "two-handed"),
+    (int(WeaponFlag.SHOCKING), "shocking"),
+    (int(WeaponFlag.POISON), "poison"),
+)
 
 
 def _send_to_char(character: Character, message: str) -> None:
@@ -2498,11 +2848,98 @@ def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signatur
     return any_effect
 
 
-def identify(caster, target=None):
-    """Stub implementation for identify.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def identify(caster: Character, target: Object | ObjectData | None = None) -> bool:
+    """Appraise an object mirroring ROM ``spell_identify`` output."""
+
+    if caster is None:
+        raise ValueError("identify requires a caster")
+    if target is None:
+        raise ValueError("identify requires an object target")
+
+    obj = target
+    proto = getattr(obj, "prototype", None)
+
+    name = getattr(obj, "name", None)
+    if not name and proto is not None:
+        name = getattr(proto, "name", None)
+    short_descr = getattr(obj, "short_descr", None)
+    if not name:
+        name = short_descr or getattr(proto, "short_descr", None) or "object"
+
+    item_type = _resolve_item_type(getattr(obj, "item_type", None) or getattr(proto, "item_type", None))
+    type_name = _item_type_name(item_type)
+
+    extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+    if not extra_flags and proto is not None:
+        extra_flags = _coerce_int(getattr(proto, "extra_flags", 0))
+
+    _send_to_char(caster, f"Object '{name}' is type {type_name}, extra flags {_extra_bit_name(extra_flags)}.")
+    _send_to_char(
+        caster,
+        f"Weight is {_resolve_weight(obj)}, value is {_resolve_cost(obj)}, level is {_resolve_level(obj)}.",
+    )
+
+    values = _normalize_value_list(obj, minimum=5)
+    resolved_type = item_type
+
+    if resolved_type in (ItemType.SCROLL, ItemType.POTION, ItemType.PILL):
+        level = _coerce_int(values[0])
+        spell_chunks: list[str] = []
+        for raw_index in values[1:5]:
+            skill_name = _skill_name_from_value(_coerce_int(raw_index))
+            if skill_name:
+                spell_chunks.append(f" '{skill_name}'")
+        line = f"Level {level} spells of:"
+        if spell_chunks:
+            line += "".join(spell_chunks)
+        line += "."
+        _send_to_char(caster, line)
+    elif resolved_type in (ItemType.WAND, ItemType.STAFF):
+        charges = _coerce_int(values[2])
+        level = _coerce_int(values[0])
+        spell_name = _skill_name_from_value(_coerce_int(values[3]))
+        line = f"Has {charges} charges of level {level}"
+        if spell_name:
+            line += f" '{spell_name}'"
+        line += "."
+        _send_to_char(caster, line)
+    elif resolved_type == ItemType.DRINK_CON:
+        liquid = _lookup_liquid(_coerce_int(values[2]))
+        _send_to_char(caster, f"It holds {liquid.color}-colored {liquid.name}.")
+    elif resolved_type == ItemType.CONTAINER:
+        capacity = _coerce_int(values[0])
+        max_weight = _coerce_int(values[3])
+        flags = _container_flag_name(_coerce_int(values[1]))
+        _send_to_char(caster, f"Capacity: {capacity}#  Maximum weight: {max_weight}#  flags: {flags}")
+        weight_multiplier = _coerce_int(values[4])
+        if weight_multiplier != 100:
+            _send_to_char(caster, f"Weight multiplier: {weight_multiplier}%")
+    elif resolved_type == ItemType.WEAPON:
+        _send_to_char(caster, f"Weapon type is {_weapon_type_name(_coerce_int(values[0]))}.")
+        dice_count = _coerce_int(values[1])
+        dice_size = _coerce_int(values[2])
+        new_format = bool(getattr(obj, "new_format", False) or (proto and getattr(proto, "new_format", False)))
+        if new_format:
+            average = c_div((1 + dice_size) * dice_count, 2)
+            _send_to_char(caster, f"Damage is {dice_count}d{dice_size} (average {average}).")
+        else:
+            average = c_div(dice_count + dice_size, 2)
+            _send_to_char(caster, f"Damage is {dice_count} to {dice_size} (average {average}).")
+        weapon_flags = _weapon_bit_name(_coerce_int(values[4]))
+        if weapon_flags != "none":
+            _send_to_char(caster, f"Weapons flags: {weapon_flags}")
+    elif resolved_type == ItemType.ARMOR:
+        pierce = _coerce_int(values[0])
+        bash = _coerce_int(values[1])
+        slash = _coerce_int(values[2])
+        magic = _coerce_int(values[3])
+        _send_to_char(
+            caster,
+            f"Armor class is {pierce} pierce, {bash} bash, {slash} slash, and {magic} vs. magic.",
+        )
+
+    _emit_affect_descriptions(caster, obj)
+    return True
 
 
 def infravision(caster: Character, target: Character | None = None) -> bool:
