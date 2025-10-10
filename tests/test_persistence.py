@@ -139,3 +139,69 @@ def test_group_knowledge_persists(tmp_path):
     loaded = persistence.load_character("Scholar")
     assert loaded is not None
     assert loaded.pcdata.group_known == ("rom basics", "mage default")
+
+
+def test_pcdata_metadata_round_trip(tmp_path, monkeypatch):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Metadata", 3001)
+    char.prompt = "{c<%hhp %mm %vmv>{x "
+    char.pcdata.title = "the Bold"
+    char.lines = 18
+    char.played = 3600
+    base_logon = 1_700_000_000
+    char.logon = base_logon
+    monkeypatch.setattr(persistence.time, "time", lambda: base_logon + 120)
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Metadata")
+    assert loaded is not None
+    assert loaded.prompt == char.prompt
+    assert loaded.pcdata.title == char.pcdata.title
+    assert loaded.lines == char.lines
+    assert loaded.logon == char.logon
+    assert loaded.played == char.played + 120
+
+
+def test_bamfin_bamfout_round_trip(tmp_path):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Bamfer", 3001)
+    char.pcdata.bamfin = "{W$N {Cbreezes in.{x"
+    char.pcdata.bamfout = "{W$N {Cfades into the ether.{x"
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Bamfer")
+    assert loaded is not None
+    assert loaded.pcdata is not None
+    assert loaded.pcdata.bamfin == char.pcdata.bamfin
+    assert loaded.pcdata.bamfout == char.pcdata.bamfout
+
+
+def test_colour_tables_round_trip(tmp_path):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    char = create_test_character("Palette", 3001)
+    assert char.pcdata is not None
+    char.pcdata.say_text = [1, 2, 1]
+    char.pcdata.room_exits = [0, 5, 1]
+    char.pcdata.info = [1, 3, 0]
+    char.pcdata.fight_skill = [1, 6, 1]
+
+    persistence.save_character(char)
+
+    loaded = persistence.load_character("Palette")
+    assert loaded is not None
+    assert loaded.pcdata is not None
+    assert loaded.pcdata.say_text == [1, 2, 1]
+    assert loaded.pcdata.room_exits == [0, 5, 1]
+    assert loaded.pcdata.info == [1, 3, 0]
+    assert loaded.pcdata.fight_skill == [1, 6, 1]

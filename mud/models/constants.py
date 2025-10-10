@@ -288,7 +288,64 @@ class ItemType(IntEnum):
     JUKEBOX = 34
 
 
+class ContainerFlag(IntFlag):
+    """Container flags stored in value[1] for ITEM_CONTAINER."""
+
+    CLOSEABLE = 1 << 0
+    PICKPROOF = 1 << 1
+    CLOSED = 1 << 2
+    LOCKED = 1 << 3
+    PUT_ON = 1 << 4
+
+
 LIQ_WATER = 0
+
+
+class Liquid(NamedTuple):
+    """Entry from ROM's ``liq_table`` containing name and color."""
+
+    name: str
+    color: str
+
+
+LIQUID_TABLE: tuple[Liquid, ...] = (
+    Liquid("water", "clear"),
+    Liquid("beer", "amber"),
+    Liquid("red wine", "burgundy"),
+    Liquid("ale", "brown"),
+    Liquid("dark ale", "dark"),
+    Liquid("whisky", "golden"),
+    Liquid("lemonade", "pink"),
+    Liquid("firebreather", "boiling"),
+    Liquid("local specialty", "clear"),
+    Liquid("slime mold juice", "green"),
+    Liquid("milk", "white"),
+    Liquid("tea", "tan"),
+    Liquid("coffee", "black"),
+    Liquid("blood", "red"),
+    Liquid("salt water", "clear"),
+    Liquid("coke", "brown"),
+    Liquid("root beer", "brown"),
+    Liquid("elvish wine", "green"),
+    Liquid("white wine", "golden"),
+    Liquid("champagne", "golden"),
+    Liquid("mead", "honey-colored"),
+    Liquid("rose wine", "pink"),
+    Liquid("benedictine wine", "burgundy"),
+    Liquid("vodka", "clear"),
+    Liquid("cranberry juice", "red"),
+    Liquid("orange juice", "orange"),
+    Liquid("absinthe", "green"),
+    Liquid("brandy", "golden"),
+    Liquid("aquavit", "clear"),
+    Liquid("schnapps", "clear"),
+    Liquid("icewine", "purple"),
+    Liquid("amontillado", "burgundy"),
+    Liquid("sherry", "red"),
+    Liquid("framboise", "red"),
+    Liquid("rum", "amber"),
+    Liquid("cordial", "clear"),
+)
 
 
 class ActFlag(IntFlag):

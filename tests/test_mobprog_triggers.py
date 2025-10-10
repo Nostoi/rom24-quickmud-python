@@ -6,7 +6,7 @@ from mud.commands.combat import do_surrender
 from mud.commands.communication import do_say, do_tell
 from mud.game_loop import game_tick
 from mud.models.character import Character, character_registry
-from mud.models.constants import Direction, ItemType, Position
+from mud.models.constants import Direction, ItemType, OffFlag, Position
 from mud.models.mob import MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -327,6 +327,12 @@ def test_cmd_eval_conditionals(monkeypatch) -> None:
 if isnpc $n
     mob echo Should not see this.
 endif
+if exists $n
+    mob echo $n exists.
+endif
+if exists $q
+    mob echo Target stored.
+endif
 if isgood $n
     mob echo $n passes goodness.
 endif
@@ -345,10 +351,14 @@ endif
 if uses $n weapon
     mob echo $n uses weapon.
 endif
+if off $i berserk
+    mob echo Berserk stance ready.
+endif
 """,
     )
 
     mob.mob_programs = [program]
+    mob.off_flags = int(OffFlag.BERSERK)
 
     monkeypatch.setattr("mud.commands.dispatcher.process_command", lambda *_: "")
 
@@ -362,12 +372,15 @@ endif
     echo_arguments = [res.argument for res in results if res.command == "mob echo"]
 
     assert echo_arguments == [
+        "Hero exists.",
+        "Target stored.",
         "Hero passes goodness.",
         "Hero is visible.",
         "Hero carries vnum.",
         "Hero wears helm.",
         "Hero has weapon.",
         "Hero uses weapon.",
+        "Berserk stance ready.",
     ]
 
 

@@ -21,8 +21,8 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
+from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.utils import rng_mm
-from mud.world.vision import room_is_dark
 
 from .mob_spawner import spawn_mob
 from .obj_spawner import spawn_object
@@ -39,6 +39,59 @@ _REVERSE_DIR = {
     Direction.UP.value: Direction.DOWN.value,
     Direction.DOWN.value: Direction.UP.value,
 }
+
+
+def _resolve_item_type_code(raw: object) -> int:
+    """Normalize item type strings/enum/int values to ROM numeric codes."""
+
+    if isinstance(raw, ItemType):
+        return int(raw)
+    if isinstance(raw, int):
+        return raw
+    if isinstance(raw, str):
+        key = raw.strip().upper().replace(" ", "_")
+        if not key:
+            return 0
+        try:
+            return int(ItemType[key])
+        except KeyError:
+            return 0
+    return 0
+
+
+_SHOP_CONSUMABLE_TYPES = {
+    int(ItemType.PILL),
+    int(ItemType.POTION),
+    int(ItemType.SCROLL),
+}
+
+
+def _build_skill_levels_by_slot() -> dict[int, tuple[int, ...]]:
+    mapping: dict[int, tuple[int, ...]] = {}
+    for meta in ROM_SKILL_METADATA.values():
+        slot = meta.get("slot")
+        levels = meta.get("levels")
+        try:
+            slot_int = int(slot)
+        except (TypeError, ValueError):
+            continue
+        if slot_int <= 0:
+            continue
+        if not isinstance(levels, list | tuple):
+            continue
+        normalized: list[int] = []
+        for entry in levels:
+            try:
+                normalized.append(int(entry))
+            except (TypeError, ValueError):
+                continue
+        if not normalized:
+            continue
+        mapping[slot_int] = tuple(normalized)
+    return mapping
+
+
+_SKILL_LEVELS_BY_SLOT = _build_skill_levels_by_slot()
 
 
 def _count_existing_mobs() -> dict[int, int]:
@@ -222,10 +275,7 @@ def _compute_object_level(obj: object, mob: object) -> int:
     proto = getattr(obj, "prototype", None)
     mob_proto = getattr(mob, "prototype", None)
 
-    try:
-        item_type = int(getattr(proto, "item_type", 0) or 0)
-    except Exception:
-        item_type = 0
+    item_type = _resolve_item_type_code(getattr(proto, "item_type", 0))
 
     is_shopkeeper = False
     if mob_proto is not None:
@@ -235,6 +285,27 @@ def _compute_object_level(obj: object, mob: object) -> int:
     if is_shopkeeper:
         if getattr(proto, "new_format", False):
             return 0
+        if item_type in _SHOP_CONSUMABLE_TYPES:
+            olevel = 53
+            values = getattr(obj, "value", None)
+            if isinstance(values, list | tuple):
+                for raw_slot in list(values[1:5]):
+                    try:
+                        slot = int(raw_slot)
+                    except (TypeError, ValueError):
+                        continue
+                    if slot <= 0:
+                        continue
+                    class_levels = _SKILL_LEVELS_BY_SLOT.get(slot)
+                    if not class_levels:
+                        continue
+                    for class_level in class_levels:
+                        try:
+                            level_val = int(class_level)
+                        except (TypeError, ValueError):
+                            continue
+                        olevel = min(olevel, level_val)
+            return max(0, (olevel * 3 // 4) - 2)
         if item_type == int(ItemType.WAND):
             return rng_mm.number_range(10, 20)
         if item_type == int(ItemType.STAFF):
@@ -286,6 +357,8 @@ def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:
 
 def apply_resets(area: Area) -> None:
     """Populate rooms based on ROM reset data semantics."""
+
+    from mud.world.vision import room_is_dark
 
     last_mob: MobInstance | None = None
     last_obj: object | None = None
@@ -661,6 +734,9 @@ def reset_area(area: Area) -> None:
 def reset_tick() -> None:
     """Advance area ages and run ROM-style area_update scheduling."""
 
+    # Deferred import to avoid circular import with mud.world.world_state.
+    from mud.wiznet import WiznetFlag, wiznet
+
     for area in area_registry.values():
         nplayer = int(getattr(area, "nplayer", 0) or 0)
         if nplayer > 0:
@@ -678,6 +754,10 @@ def reset_tick() -> None:
             continue
 
         reset_area(area)
+        area_name = getattr(area, "name", None)
+        if not isinstance(area_name, str) or not area_name.strip():
+            area_name = f"Area {getattr(area, 'vnum', 0)}"
+        wiznet(f"{area_name} has just been reset.", WiznetFlag.WIZ_RESETS)
         area.age = rng_mm.number_range(0, 3)
 
         school_room = room_registry.get(ROOM_VNUM_SCHOOL)

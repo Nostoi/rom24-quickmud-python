@@ -57,6 +57,35 @@ def _is_charmed(mob: object) -> bool:
         return False
 
 
+def _resolve_shop_info(mob: object) -> tuple[object | None, int]:
+    """Return the active shop pointer and wealth value for a character."""
+
+    shop_sources = (
+        getattr(mob, "pShop", None),
+        getattr(getattr(mob, "prototype", None), "pShop", None),
+        getattr(getattr(mob, "mob_index", None), "pShop", None),
+        getattr(getattr(mob, "pIndexData", None), "pShop", None),
+    )
+    shop = next((candidate for candidate in shop_sources if candidate is not None), None)
+
+    wealth = 0
+    wealth_sources = (
+        getattr(mob, "wealth", None),
+        getattr(getattr(mob, "prototype", None), "wealth", None),
+        getattr(getattr(mob, "mob_index", None), "wealth", None),
+        getattr(getattr(mob, "pIndexData", None), "wealth", None),
+    )
+    for source in wealth_sources:
+        try:
+            value = int(source)
+        except (TypeError, ValueError):
+            continue
+        if value:
+            wealth = value
+            break
+    return shop, wealth
+
+
 def _normalize_name(name: object | None) -> str:
     if not name:
         return ""
@@ -238,6 +267,22 @@ def mobile_update() -> None:
         if area is not None and getattr(area, "empty", False):
             if not _mob_has_act_flag(mob, ActFlag.UPDATE_ALWAYS):
                 continue
+
+        shop, wealth = _resolve_shop_info(mob)
+        if shop is not None and wealth > 0:
+            try:
+                gold = int(getattr(mob, "gold", 0))
+            except (TypeError, ValueError):
+                gold = 0
+            try:
+                silver = int(getattr(mob, "silver", 0))
+            except (TypeError, ValueError):
+                silver = 0
+            if gold * 100 + silver < wealth:
+                gold += wealth * rng_mm.number_range(1, 20) // 5_000_000
+                silver += wealth * rng_mm.number_range(1, 20) // 50_000
+                setattr(mob, "gold", gold)
+                setattr(mob, "silver", silver)
 
         default_pos_raw = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
         try:

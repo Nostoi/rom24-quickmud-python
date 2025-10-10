@@ -4,8 +4,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from mud.db.models import Base
-from mud.db.session import engine
+from mud.account import clear_active_accounts, create_character, login
+from mud.db.models import Base, PlayerAccount
+from mud.db.session import SessionLocal, engine
+from mud.security.hash_utils import hash_password
 from mud.net.connection import SPAM_REPEAT_THRESHOLD, TelnetStream, _read_player_command
 from mud.net.session import Session
 from mud.net.telnet_server import create_server
@@ -16,6 +18,20 @@ TELNET_WONT = 252
 TELNET_DO = 253
 TELNET_TELOPT_ECHO = 1
 TELNET_TELOPT_SUPPRESS_GA = 3
+
+
+async def negotiate_ansi_prompt(
+    reader: asyncio.StreamReader, writer: asyncio.StreamWriter, reply: bytes = b""
+) -> tuple[bytes, bytes]:
+    prompt = await asyncio.wait_for(
+        reader.readuntil(b"Do you want ANSI? (Y/n) "),
+        timeout=5,
+    )
+    payload = reply.strip() if reply else b""
+    writer.write(payload + b"\r\n")
+    await writer.drain()
+    greeting = await asyncio.wait_for(reader.readuntil(b"Account: "), timeout=5)
+    return prompt, greeting
 
 
 def setup_module(module):
@@ -184,6 +200,90 @@ def test_telnet_server_handles_multiple_connections():
 
             w1.close()
             await w1.wait_closed()
+            w2.close()
+            await w2.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
+@pytest.mark.telnet
+@pytest.mark.timeout(30)
+def test_telnet_break_connect_prompts_and_reconnects():
+    async def run():
+        clear_active_accounts()
+        session = SessionLocal()
+        session.add(
+            PlayerAccount(
+                username="Breaker",
+                email="",
+                password_hash=hash_password("pw"),
+            )
+        )
+        session.commit()
+        session.close()
+
+        account = login("Breaker", "pw")
+        assert account is not None
+        create_character(account, "Breaker")
+
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = server.sockets[0].getsockname()
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            r1, w1 = await asyncio.open_connection(host, port)
+            await negotiate_ansi_prompt(r1, w1)
+            w1.write(b"Breaker\n")
+            await w1.drain()
+            await asyncio.wait_for(r1.readuntil(b"Password: "), timeout=5)
+            w1.write(b"pw\n")
+            await w1.drain()
+            await asyncio.wait_for(r1.readuntil(b"Character: "), timeout=5)
+            w1.write(b"Breaker\n")
+            await w1.drain()
+            await asyncio.wait_for(r1.readuntil(b"> "), timeout=5)
+
+            r2, w2 = await asyncio.open_connection(host, port)
+            await negotiate_ansi_prompt(r2, w2)
+            w2.write(b"Breaker\n")
+            await w2.drain()
+            account_reconnect = await asyncio.wait_for(
+                r2.readuntil(b"Reconnect? (Y/N) "),
+                timeout=5,
+            )
+            assert b"already playing" in account_reconnect
+            w2.write(b"y\n")
+            await w2.drain()
+            await asyncio.wait_for(r2.readuntil(b"Password: "), timeout=5)
+            w2.write(b"pw\n")
+            await w2.drain()
+            await asyncio.wait_for(r2.readuntil(b"Character: "), timeout=5)
+            w2.write(b"Breaker\n")
+            await w2.drain()
+
+            reconnect_prompt = await asyncio.wait_for(r2.readuntil(b"? "), timeout=5)
+            assert b"Reconnect" in reconnect_prompt
+
+            w2.write(b"y\n")
+            await w2.drain()
+
+            takeover_notice = await asyncio.wait_for(r1.readline(), timeout=5)
+            assert b"taken over" in takeover_notice.lower()
+
+            reconnect_line = await asyncio.wait_for(r2.readline(), timeout=5)
+            assert b"Reconnecting" in reconnect_line
+            look_chunk = await asyncio.wait_for(r2.readuntil(b"> "), timeout=5)
+            assert look_chunk.endswith(b"> ")
+
+            w2.write(b"look\n")
+            await w2.drain()
+            await asyncio.wait_for(r2.readuntil(b"> "), timeout=5)
+
             w2.close()
             await w2.wait_closed()
         finally:

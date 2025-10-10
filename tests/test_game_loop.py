@@ -13,8 +13,20 @@ from mud.game_loop import (
 )
 from mud.models.area import Area
 from mud.models.character import Character, PCData, SpellEffect, character_registry
-from mud.models.constants import ActFlag, Condition, ItemType, Position, Size, WearFlag, WearLocation, ROOM_VNUM_LIMBO
+from mud.models.mob import MobIndex
+from mud.models.constants import (
+    ActFlag,
+    Condition,
+    ItemType,
+    Position,
+    RoomFlag,
+    Size,
+    WearFlag,
+    WearLocation,
+    ROOM_VNUM_LIMBO,
+)
 from mud.models.obj import ObjIndex, ObjectData, object_registry
+from mud.models.shop import Shop
 from mud.models.room import Room
 from mud.models.room import room_registry
 from mud.utils import rng_mm
@@ -99,6 +111,40 @@ def test_weather_pressure_and_sky_transitions(monkeypatch):
     weather_tick()
     assert weather.sky == SkyState.LIGHTNING
     assert weather.mmhg == 960
+
+
+def test_weather_broadcasts_outdoor_characters(monkeypatch):
+    area = Area(name="Field")
+    outside = Room(vnum=101, area=area, room_flags=0)
+    inside = Room(vnum=102, area=area, room_flags=int(RoomFlag.ROOM_INDOORS))
+    sleepy_room = Room(vnum=103, area=area, room_flags=0)
+    room_registry[outside.vnum] = outside
+    room_registry[inside.vnum] = inside
+    room_registry[sleepy_room.vnum] = sleepy_room
+
+    awake_outdoor = Character(name="Scout", is_npc=False, position=int(Position.STANDING))
+    awake_indoor = Character(name="Hermit", is_npc=False, position=int(Position.STANDING))
+    asleep_outdoor = Character(name="Sleeper", is_npc=False, position=int(Position.SLEEPING))
+
+    outside.add_character(awake_outdoor)
+    inside.add_character(awake_indoor)
+    sleepy_room.add_character(asleep_outdoor)
+
+    character_registry.extend([awake_outdoor, awake_indoor, asleep_outdoor])
+
+    time_info.month = 0
+    weather.sky = SkyState.CLOUDLESS
+    weather.mmhg = 980
+    weather.change = 0
+
+    monkeypatch.setattr(rng_mm, "dice", lambda *_: 0)
+    monkeypatch.setattr(rng_mm, "number_bits", lambda *_: 1)
+
+    weather_tick()
+
+    assert "The sky is getting cloudy." in awake_outdoor.messages
+    assert not awake_indoor.messages
+    assert not asleep_outdoor.messages
 
 
 def test_timed_event_fires_after_delay():
@@ -227,6 +273,38 @@ def test_mobile_update_scavenges_room_loot(monkeypatch):
     assert cheap in getattr(room, "contents", [])
     assert pricey not in getattr(room, "contents", [])
     assert scavenger.carry_number == 1
+
+
+def test_mobile_update_refreshes_shopkeeper_wealth(monkeypatch):
+    area = Area(name="Market")
+    room = Room(vnum=305, area=area)
+    room_registry[room.vnum] = room
+
+    shop_proto = MobIndex(vnum=5000, wealth=6000)
+    shop_proto.pShop = Shop(keeper=shop_proto.vnum)
+
+    keeper = Character(
+        name="Clerk",
+        is_npc=True,
+        gold=0,
+        silver=50,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    keeper.prototype = shop_proto
+    room.add_character(keeper)
+    character_registry.append(keeper)
+
+    rolls = iter([20, 20, 10, 10])
+    monkeypatch.setattr(rng_mm, "number_range", lambda *_: next(rolls))
+
+    mobile_update()
+    assert keeper.gold == 0
+    assert keeper.silver == 52
+
+    mobile_update()
+    assert keeper.gold == 0
+    assert keeper.silver == 53
 
 
 def test_char_update_applies_conditions(monkeypatch):

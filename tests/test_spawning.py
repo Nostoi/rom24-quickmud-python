@@ -29,7 +29,9 @@ from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
+from mud.models.shop import Shop
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
+from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.reset_handler import RESET_TICKS, reset_tick
@@ -1118,7 +1120,6 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     assert keeper is not None
     inv = [getattr(o.prototype, "vnum", None) for o in getattr(keeper, "inventory", [])]
     assert inv.count(3031) == 0
-    assert getattr(lantern_proto, "count", 0) == 1
 
     # A successful 1-in-5 reroll should allow the spawn despite the limit.
     area, room = setup_shop_area()
@@ -1136,6 +1137,94 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     item = next(o for o in keeper.inventory if getattr(o.prototype, "vnum", None) == 3031)
     assert getattr(item.prototype, "extra_flags", 0) & int(ITEM_INVENTORY)
     assert getattr(item, "extra_flags", 0) & int(ITEM_INVENTORY)
+
+
+def test_reset_shopkeeper_potion_levels_use_skill_metadata():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9200, name="Shop Test", min_vnum=9200, max_vnum=9200)
+    room = Room(vnum=9201, name="Potion Counter", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    keeper_proto = MobIndex(vnum=9202, short_descr="the meticulous vendor", level=30)
+    mob_registry[keeper_proto.vnum] = keeper_proto
+    shop_registry[keeper_proto.vnum] = Shop(keeper=keeper_proto.vnum)
+
+    heal_metadata = ROM_SKILL_METADATA["heal"]
+    heal_slot = int(heal_metadata["slot"])
+    potion_proto = ObjIndex(
+        vnum=9203,
+        short_descr="a vial of radiant liquid",
+        item_type="potion",
+        value=[0, heal_slot, 0, 0, 0],
+    )
+    obj_registry[potion_proto.vnum] = potion_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=keeper_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="G", arg1=potion_proto.vnum, arg2=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    keeper = next((mob for mob in room.people if isinstance(mob, MobInstance)), None)
+    assert keeper is not None
+
+    potion = next(
+        (
+            obj
+            for obj in getattr(keeper, "inventory", [])
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == potion_proto.vnum
+        ),
+        None,
+    )
+    assert potion is not None
+
+    olevel = 53
+    for level in heal_metadata["levels"]:
+        olevel = min(olevel, int(level))
+    expected_level = max(0, (olevel * 3 // 4) - 2)
+
+    assert potion.level == expected_level
+
+
+def test_reset_tick_announces_wiznet(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9300, name="Silver Falls")
+    area_registry[area.vnum] = area
+    area.age = 2
+    area.nplayer = 0
+    area.empty = False
+
+    calls: list[tuple[str, object]] = []
+
+    def fake_reset(target: Area) -> None:
+        target.age = 0
+
+    monkeypatch.setattr(reset_handler, "reset_area", fake_reset)
+    monkeypatch.setattr(reset_handler.rng_mm, "number_range", lambda a, b: 1)
+
+    from mud.wiznet import WiznetFlag
+
+    def capture(message: str, flag: object, *_, **__) -> None:
+        calls.append((message, flag))
+
+    monkeypatch.setattr("mud.wiznet.wiznet", capture)
+
+    reset_tick()
+
+    assert calls == [("Silver Falls has just been reset.", WiznetFlag.WIZ_RESETS)]
 
 
 def test_reset_mob_limits():

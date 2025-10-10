@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 
 import os
 import select
+import time
 
 from .commands import (
     IMCCommand,
@@ -110,6 +111,8 @@ class IMCState:
     who_path: Path | None = None
     incoming_buffer: str = ""
     last_keepalive_pulse: int = 0
+    reconnect_attempts: int = 0
+    reconnect_abandoned: bool = False
 
     def dispatch_packet(self, packet: IMCPacket) -> None:
         handler = self.packet_handlers.get(packet.type)
@@ -129,6 +132,8 @@ _REQUIRED_CONFIG_FIELDS = {
 
 _MAX_READ_BYTES = 4096
 _KEEPALIVE_INTERVAL = 60
+_UCACHE_REFRESH_INTERVAL = 60 * 24  # Once per 24 in-game hours (pump runs once per tick minute)
+_UCACHE_STALE_SECONDS = 60 * 60 * 24 * 30  # 30 days
 
 
 def _repo_root() -> Path:
@@ -172,6 +177,50 @@ def _parse_config(path: Path) -> Dict[str, str]:
         raise ValueError(f"IMC configuration missing required fields: {', '.join(missing)}")
 
     return config
+
+
+def _config_truthy(config: Dict[str, str], key: str) -> bool:
+    value = config.get(key)
+    if value is None:
+        return False
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _persist_config_value(path: Path, key: str, value: str) -> None:
+    if not path.exists():
+        return
+
+    try:
+        with path.open(encoding="latin-1") as handle:
+            lines = handle.readlines()
+    except OSError:
+        return
+
+    updated = False
+    new_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#") and not stripped.startswith("$"):
+            parts = stripped.split(maxsplit=1)
+            if parts and parts[0] == key:
+                new_lines.append(f"{key}         {value}\n")
+                updated = True
+                continue
+        new_lines.append(line)
+
+    if not updated:
+        for index, line in enumerate(new_lines):
+            if line.strip() == "End":
+                new_lines.insert(index, f"{key}         {value}\n")
+                updated = True
+                break
+        if not updated:
+            new_lines.append(f"{key}         {value}\n")
+
+    tmp_path = path.with_suffix(".tmp")
+    with tmp_path.open("w", encoding="latin-1") as handle:
+        handle.writelines(new_lines)
+    os.replace(tmp_path, path)
 
 
 def _parse_channels(path: Path) -> List[IMCChannel]:
@@ -533,9 +582,10 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
     channel_history = _load_channel_history(channels, history_dir)
 
     idle_pulses = previous_state.idle_pulses if previous_state else 0
-    ucache_refresh_deadline = (
-        previous_state.ucache_refresh_deadline if previous_state else 0
-    )
+    if previous_state and not force_reload:
+        ucache_refresh_deadline = previous_state.ucache_refresh_deadline
+    else:
+        ucache_refresh_deadline = idle_pulses + _UCACHE_REFRESH_INTERVAL
     autoconnect = autoconnect_enabled(config)
     connection: Optional[IMCConnection] = None
     connected = False
@@ -587,6 +637,8 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
         color_path=color_path,
         who_path=who_path,
         outgoing_queue=list(previous_state.outgoing_queue) if previous_state else [],
+        reconnect_attempts=previous_state.reconnect_attempts if previous_state else 0,
+        reconnect_abandoned=previous_state.reconnect_abandoned if previous_state else False,
     )
     return _state
 
@@ -601,17 +653,26 @@ def _handle_disconnect(state: IMCState) -> None:
     state.connected = False
     state.incoming_buffer = ""
 
-    if not autoconnect_enabled(state.config):
+    if not autoconnect_enabled(state.config) or state.reconnect_abandoned:
         return
 
     try:
         new_connection = connect_and_handshake(state.config)
     except IMCConnectionError:
+        state.reconnect_attempts += 1
+        if state.reconnect_attempts > 3:
+            if _config_truthy(state.config, "SHA256"):
+                state.config["SHA256"] = "0"
+                _persist_config_value(state.config_path, "SHA256", "0")
+                state.reconnect_attempts = 0
+            else:
+                state.reconnect_abandoned = True
         return
 
     state.connection = new_connection
     state.connected = new_connection.handshake_complete
     state.last_keepalive_pulse = max(0, state.idle_pulses - _KEEPALIVE_INTERVAL)
+    state.reconnect_attempts = 0
 
 
 def _dispatch_buffered_packets(state: IMCState, chunk: str) -> None:
@@ -746,6 +807,56 @@ def _flush_outgoing_queue(state: IMCState) -> None:
             return
 
 
+def _save_user_cache(state: IMCState) -> None:
+    """Persist the current IMC user cache to disk like ROM's imc_save_ucache."""
+
+    path = state.ucache_path
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    lines: list[str] = []
+    for entry in sorted(
+        state.user_cache.values(), key=lambda item: (item.name or "").lower()
+    ):
+        entry_name = entry.name or ""
+        try:
+            gender = int(entry.gender) if entry.gender is not None else -1
+        except (TypeError, ValueError):
+            gender = -1
+        try:
+            last_seen = int(entry.last_seen)
+        except (TypeError, ValueError):
+            last_seen = 0
+        lines.extend(
+            [
+                "#UCACHE",
+                f"Name {entry_name}",
+                f"Sex  {gender}",
+                f"Time {last_seen}",
+                "End",
+                "",
+            ]
+        )
+    lines.append("#END")
+    path.write_text("\n".join(lines) + "\n", encoding="latin-1")
+
+
+def _refresh_user_cache(state: IMCState) -> None:
+    """Prune stale IMC user cache entries and reschedule the next refresh."""
+
+    now = int(time.time())
+    retained: Dict[str, IMCUserCacheEntry] = {}
+    for key, entry in state.user_cache.items():
+        try:
+            last_seen = int(entry.last_seen)
+        except (TypeError, ValueError):
+            last_seen = 0
+        if last_seen > 0 and now - last_seen < _UCACHE_STALE_SECONDS:
+            retained[key] = entry
+    state.user_cache = retained
+    _save_user_cache(state)
+    state.ucache_refresh_deadline = state.idle_pulses + _UCACHE_REFRESH_INTERVAL
+
+
 def _send_keepalive(state: IMCState) -> None:
     """Emit a lightweight keepalive packet to mirror ROM's idle loop."""
 
@@ -787,6 +898,12 @@ def pump_idle() -> None:
 
     if not state.connection.handshake_complete:
         return
+
+    if (
+        state.ucache_refresh_deadline
+        and state.idle_pulses >= state.ucache_refresh_deadline
+    ):
+        _refresh_user_cache(state)
 
     _poll_router_socket(state)
     _flush_outgoing_queue(state)
