@@ -14,11 +14,9 @@ from mud.models.constants import (
     ActFlag,
     AffectFlag,
     Direction,
-    ExtraFlag,
     ItemType,
     Position,
     RoomFlag,
-    convert_flags_from_letters,
 )
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
 from mud.skills.metadata import ROM_SKILL_METADATA
@@ -261,18 +259,22 @@ def _resolve_reset_limit(raw: int | None) -> int:
     return raw
 
 
-def _compute_object_level(obj: object, mob: object) -> int:
-    """Derive object level for G/E resets using ROM parity rules.
+def _compute_object_level(obj: object, mob: object) -> int | None:
+    """Return the runtime level override for G/E resets, if any.
 
-    Shopkeepers keep the simplified random ranges from ROM for
-    vendor stock, while regular mobs receive gear scaled from the
-    last mob's level with `number_fuzzy` clamping below `LEVEL_HERO`.
+    ROM `create_object` keeps prototype levels for new-format items and only
+    applies fuzzy scaling to legacy prototypes. Mirror that by returning
+    ``None`` when the spawned object should retain its existing level. When a
+    numeric level is returned the caller overwrites ``obj.level``.
     """
 
     if mob is None:
         return 0
 
     proto = getattr(obj, "prototype", None)
+    if proto is not None and getattr(proto, "new_format", False):
+        return None
+
     mob_proto = getattr(mob, "prototype", None)
 
     item_type = _resolve_item_type_code(getattr(proto, "item_type", 0))
@@ -283,8 +285,6 @@ def _compute_object_level(obj: object, mob: object) -> int:
         is_shopkeeper = keeper_vnum in shop_registry
 
     if is_shopkeeper:
-        if getattr(proto, "new_format", False):
-            return 0
         if item_type in _SHOP_CONSUMABLE_TYPES:
             olevel = 53
             values = getattr(obj, "value", None)
@@ -347,12 +347,13 @@ def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:
     if item_proto is None or not hasattr(item_proto, "extra_flags"):
         return
 
-    extra_flags = getattr(item_proto, "extra_flags", 0)
-    if isinstance(extra_flags, str):
-        extra_flags = convert_flags_from_letters(extra_flags, ExtraFlag)
+    current_flags = getattr(obj, "extra_flags", 0)
+    try:
+        obj_flags = int(current_flags)
+    except (TypeError, ValueError):
+        obj_flags = 0
 
-    item_proto.extra_flags = int(extra_flags) | int(ITEM_INVENTORY)
-    obj.extra_flags = int(item_proto.extra_flags)
+    obj.extra_flags = obj_flags | int(ITEM_INVENTORY)
 
 
 def apply_resets(area: Area) -> None:
@@ -363,6 +364,7 @@ def apply_resets(area: Area) -> None:
     last_mob: MobInstance | None = None
     last_obj: object | None = None
     last_mob_level = 0
+    last_reset_succeeded = False
     object_counts, existing_objects = _gather_object_state()
     spawned_objects: dict[int, list[object]] = {vnum: list(instances) for vnum, instances in existing_objects.items()}
     mob_counts = _count_existing_mobs()
@@ -373,6 +375,7 @@ def apply_resets(area: Area) -> None:
     for reset in area.resets:
         cmd = (reset.command or "").upper()
         if cmd == "M":
+            last_reset_succeeded = False
             mob_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, mob_registry)
             if used_fallback:
                 global_limit = reset.arg3 or 0
@@ -390,16 +393,19 @@ def apply_resets(area: Area) -> None:
                 logging.warning("Invalid M reset %s -> %s", mob_vnum, room_vnum)
                 last_mob = None
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             if global_limit > 0 and mob_counts.get(mob_vnum, 0) >= global_limit:
                 last_mob = None
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             if room_limit <= 0:
                 last_mob = None
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             existing_in_room = sum(
@@ -410,6 +416,7 @@ def apply_resets(area: Area) -> None:
             if existing_in_room >= room_limit:
                 last_mob = None
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             mob = spawn_mob(mob_vnum)
@@ -417,6 +424,7 @@ def apply_resets(area: Area) -> None:
                 logging.warning("Invalid M reset %s (missing prototype)", mob_vnum)
                 last_mob = None
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             mob.is_npc = True
@@ -456,7 +464,9 @@ def apply_resets(area: Area) -> None:
             last_mob_level = base_level
             last_mob = mob
             last_obj = None
+            last_reset_succeeded = True
         elif cmd == "O":
+            last_reset_succeeded = False
             obj_vnum = reset.arg1 or 0
             limit = _resolve_reset_limit(reset.arg2)
             room_vnum = reset.arg3 or 0
@@ -464,9 +474,11 @@ def apply_resets(area: Area) -> None:
             if obj_vnum <= 0 or room is None:
                 logging.warning("Invalid O reset %s -> %s", obj_vnum, room_vnum)
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             if getattr(area, "nplayer", 0) > 0:
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             existing_in_room = [
                 obj
@@ -475,6 +487,7 @@ def apply_resets(area: Area) -> None:
             ]
             if len(existing_in_room) >= limit:
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             obj = spawn_object(obj_vnum)
             if obj:
@@ -493,9 +506,11 @@ def apply_resets(area: Area) -> None:
                 _sync_object_count(obj_vnum, object_counts)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
+                last_reset_succeeded = True
             else:
                 logging.warning("Invalid O reset %s -> %s", obj_vnum, room_vnum)
                 last_obj = None
+                last_reset_succeeded = False
         elif cmd == "D":
             room_vnum = reset.arg1 or 0
             door = reset.arg2 or 0
@@ -538,38 +553,47 @@ def apply_resets(area: Area) -> None:
                         rev_exit.rs_flags = base_flags
                         rev_exit.exit_info = base_flags
         elif cmd == "G":
+            if not last_reset_succeeded:
+                continue
             obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             limit_raw = reset.arg2
             if used_fallback:
                 limit_raw = reset.arg3
             limit = _resolve_reset_limit(limit_raw)
-            proto_count = object_counts.get(obj_vnum, 0)
             if not last_mob:
                 logging.warning("Invalid G reset %s (no LastMob)", obj_vnum)
+                last_reset_succeeded = False
                 continue
             existing = [
                 o
                 for o in getattr(last_mob, "inventory", [])
                 if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
             ]
-            if len(existing) >= limit:
-                continue
-            proto_count = object_counts.get(obj_vnum, 0)
             is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
-            if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
-                continue
+            if not is_shopkeeper:
+                if len(existing) >= limit:
+                    continue
+                proto_count = object_counts.get(obj_vnum, 0)
+                if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
+                    continue
             obj = spawn_object(obj_vnum)
             if obj:
-                obj.level = _compute_object_level(obj, last_mob)
+                override_level = _compute_object_level(obj, last_mob)
+                if override_level is not None:
+                    obj.level = override_level
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
                 _sync_object_count(obj_vnum, object_counts)
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
+                last_reset_succeeded = True
             else:
                 logging.warning("Invalid G reset %s", obj_vnum)
+                last_reset_succeeded = False
         elif cmd == "E":
+            if not last_reset_succeeded:
+                continue
             obj_vnum, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             limit_raw = reset.arg2
             slot = reset.arg3 or 0
@@ -577,33 +601,39 @@ def apply_resets(area: Area) -> None:
                 limit_raw = reset.arg3
                 slot = reset.arg4 or slot
             limit = _resolve_reset_limit(limit_raw)
-            proto_count = object_counts.get(obj_vnum, 0)
             if not last_mob:
                 logging.warning("Invalid E reset %s (no LastMob)", obj_vnum)
+                last_reset_succeeded = False
                 continue
             existing = [
                 o
                 for o in getattr(last_mob, "inventory", [])
                 if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
             ]
-            if len(existing) >= limit:
-                continue
-            proto_count = object_counts.get(obj_vnum, 0)
             is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
-            if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
-                continue
+            if not is_shopkeeper:
+                if len(existing) >= limit:
+                    continue
+                proto_count = object_counts.get(obj_vnum, 0)
+                if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
+                    continue
             obj = spawn_object(obj_vnum)
             if obj:
-                obj.level = _compute_object_level(obj, last_mob)
+                override_level = _compute_object_level(obj, last_mob)
+                if override_level is not None:
+                    obj.level = override_level
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
                 _sync_object_count(obj_vnum, object_counts)
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
+                last_reset_succeeded = True
             else:
                 logging.warning("Invalid E reset %s", obj_vnum)
+                last_reset_succeeded = False
         elif cmd == "P":
+            last_reset_succeeded = False
             obj_vnum, _ = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             container_vnum = reset.arg3 or 0
             target_count = max(1, int(reset.arg4 or 1))
@@ -612,19 +642,23 @@ def apply_resets(area: Area) -> None:
             if obj_vnum <= 0 or container_vnum <= 0:
                 logging.warning("Invalid P reset %s -> %s", obj_vnum, container_vnum)
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             if getattr(area, "nplayer", 0) > 0:
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             obj_proto = obj_registry.get(obj_vnum)
             container_proto = obj_registry.get(container_vnum)
             if obj_proto is None or container_proto is None:
                 logging.warning("Invalid P reset %s -> %s (missing prototype)", obj_vnum, container_vnum)
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             remaining_global = max(0, limit - object_counts.get(obj_vnum, 0))
             if remaining_global <= 0:
                 last_obj = None
+                last_reset_succeeded = False
                 continue
             container_obj: object | None = None
             if last_obj and getattr(getattr(last_obj, "prototype", None), "vnum", None) == container_vnum:
@@ -652,16 +686,19 @@ def apply_resets(area: Area) -> None:
             if not container_obj:
                 logging.warning("Invalid P reset %s -> %s (no container instance)", obj_vnum, container_vnum)
                 last_obj = None
+                last_reset_succeeded = False
                 continue
 
             if getattr(area, "nplayer", 0) > 0:
                 last_obj = container_obj
+                last_reset_succeeded = False
                 continue
 
             effective_limit = limit if limit > 0 else 999
             current_total = object_counts.get(obj_vnum, 0)
             if effective_limit != 999 and current_total >= effective_limit:
                 last_obj = container_obj
+                last_reset_succeeded = False
                 continue
 
             existing = [
@@ -671,6 +708,7 @@ def apply_resets(area: Area) -> None:
             ]
             if len(existing) >= target_count:
                 last_obj = container_obj
+                last_reset_succeeded = False
                 continue
             to_make = min(target_count - len(existing), remaining_global)
             made = 0
@@ -680,6 +718,7 @@ def apply_resets(area: Area) -> None:
                 obj = spawn_object(obj_vnum)
                 if not obj:
                     logging.warning("Invalid P reset %s", obj_vnum)
+                    last_reset_succeeded = False
                     break
 
                 try:
@@ -708,6 +747,8 @@ def apply_resets(area: Area) -> None:
             except Exception:
                 pass
             last_obj = container_obj
+            if made > 0:
+                last_reset_succeeded = True
         elif cmd == "R":
             room_vnum = reset.arg1 or 0
             max_dirs = int(reset.arg2 or 0)

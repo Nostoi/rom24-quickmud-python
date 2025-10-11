@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from mud import mob_cmds
@@ -10,6 +12,9 @@ from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Exit, Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.skills import handlers as skill_handlers
+from mud.skills.registry import load_skills
+from mud.utils import rng_mm
 
 
 @pytest.fixture(autouse=True)
@@ -134,6 +139,201 @@ def test_spawn_move_and_force_commands_use_rom_semantics(monkeypatch):
     assert forced == [("Hero", "say hello")]
 
 
+def test_mpremember_sets_target():
+    _, room, _ = _setup_area()
+
+    mob = Character(name="Oracle", is_npc=True)
+    room.add_character(mob)
+    character_registry.append(mob)
+
+    hero = Character(name="Hero", is_npc=False)
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    mob_cmds.mob_interpret(mob, "remember Hero")
+
+    assert mob.mprog_target is hero
+
+
+def test_mpforget_clears_target():
+    _, room, _ = _setup_area()
+
+    mob = Character(name="Oracle", is_npc=True)
+    room.add_character(mob)
+    character_registry.append(mob)
+
+    hero = Character(name="Hero", is_npc=False)
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    mob_cmds.mob_interpret(mob, "remember Hero")
+    assert mob.mprog_target is hero
+
+    mob_cmds.mob_interpret(mob, "forget")
+
+    assert mob.mprog_target is None
+
+
+def test_mpcast_offensive_spell_hits_target(monkeypatch):
+    load_skills(Path("data/skills.json"))
+    _, room, _ = _setup_area()
+
+    caster = Character(name="Invoker", is_npc=True, level=45)
+    victim = Character(name="Adventurer", is_npc=False, hit=120)
+
+    for char in (caster, victim):
+        room.add_character(char)
+        character_registry.append(char)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, damage_type: False)
+    monkeypatch.setattr(rng_mm, "dice", lambda level, size: 30)
+
+    mob_cmds.mob_interpret(caster, "cast 'acid blast' Adventurer")
+
+    assert victim.hit == 90
+
+
+def test_mpcast_defensive_defaults_to_self():
+    load_skills(Path("data/skills.json"))
+    _, room, _ = _setup_area()
+
+    cleric = Character(name="Cleric", is_npc=True, level=30)
+    room.add_character(cleric)
+    character_registry.append(cleric)
+
+    assert not cleric.has_spell_effect("armor")
+
+    mob_cmds.mob_interpret(cleric, "cast 'armor'")
+
+    assert cleric.has_spell_effect("armor")
+
+
+def test_mpgforce_forces_room_members(monkeypatch):
+    _, room, _ = _setup_area()
+
+    controller = Character(name="Controller", is_npc=True)
+    room.add_character(controller)
+    character_registry.append(controller)
+
+    leader = Character(name="Leader", is_npc=False)
+    follower = Character(name="Ally", is_npc=False)
+    outsider = Character(name="Outsider", is_npc=False)
+
+    leader.leader = leader
+    follower.leader = leader
+
+    for occupant in (leader, follower, outsider):
+        room.add_character(occupant)
+        character_registry.append(occupant)
+
+    forced: list[tuple[str, str]] = []
+
+    def fake_process(char: Character, command: str) -> str:
+        forced.append((char.name or "", command))
+        return ""
+
+    monkeypatch.setattr("mud.commands.dispatcher.process_command", fake_process)
+
+    mob_cmds.mob_interpret(controller, "gforce Leader say rally")
+
+    assert ("Leader", "say rally") in forced
+    assert ("Ally", "say rally") in forced
+    assert all(entry[0] != "Outsider" for entry in forced)
+    assert all(entry[0] != "Controller" for entry in forced)
+
+
+def test_mpvforce_forces_matching_mobs(monkeypatch):
+    _, room, _ = _setup_area()
+
+    controller = Character(name="Controller", is_npc=True)
+    room.add_character(controller)
+    character_registry.append(controller)
+
+    enforcer_proto = MobIndex(vnum=7100, short_descr="an enforcer")
+    mob_registry[enforcer_proto.vnum] = enforcer_proto
+
+    idle_a = Character(name="EnforcerA", is_npc=True)
+    idle_a.prototype = enforcer_proto
+    idle_b = Character(name="EnforcerB", is_npc=True)
+    idle_b.prototype = enforcer_proto
+    busy = Character(name="EnforcerBusy", is_npc=True)
+    busy.prototype = enforcer_proto
+    busy.fighting = controller
+    other_proto = MobIndex(vnum=7200, short_descr="a watcher")
+    mob_registry[other_proto.vnum] = other_proto
+    other = Character(name="Watcher", is_npc=True)
+    other.prototype = other_proto
+
+    for occupant in (idle_a, idle_b, busy, other):
+        room.add_character(occupant)
+        character_registry.append(occupant)
+
+    forced: list[tuple[str, str]] = []
+
+    def fake_process(char: Character, command: str) -> str:
+        forced.append((char.name or "", command))
+        return ""
+
+    monkeypatch.setattr("mud.commands.dispatcher.process_command", fake_process)
+
+    mob_cmds.mob_interpret(controller, "vforce 7100 say obey")
+
+    assert ("EnforcerA", "say obey") in forced
+    assert ("EnforcerB", "say obey") in forced
+    assert all(entry[0] != "EnforcerBusy" for entry in forced)
+    assert all(entry[0] != "Watcher" for entry in forced)
+
+
+def test_mpotransfer_moves_room_and_inventory_objects():
+    _, origin, destination = _setup_area()
+
+    controller = Character(name="Controller", is_npc=True)
+    origin.add_character(controller)
+    character_registry.append(controller)
+
+    room_proto = ObjIndex(vnum=7300, short_descr="a silver coin", name="coin")
+    room_obj = Object(instance_id=None, prototype=room_proto)
+    origin.add_object(room_obj)
+
+    inv_proto = ObjIndex(vnum=7301, short_descr="a bronze charm", name="charm")
+    inv_obj = Object(instance_id=None, prototype=inv_proto)
+    controller.inventory = [inv_obj]
+    controller.carry_number = 1
+
+    mob_cmds.mob_interpret(controller, f"otransfer coin {destination.vnum}")
+    assert room_obj in destination.contents
+    assert room_obj not in origin.contents
+
+    mob_cmds.mob_interpret(controller, f"otransfer charm {destination.vnum}")
+    assert inv_obj in destination.contents
+    assert inv_obj not in controller.inventory
+    assert controller.carry_number == 0
+
+
+def test_mpgtransfer_moves_group_members():
+    _, origin, destination = _setup_area()
+
+    caller = Character(name="Caller", is_npc=True)
+    origin.add_character(caller)
+    character_registry.append(caller)
+
+    leader = Character(name="Leader", is_npc=False)
+    follower = Character(name="Ally", is_npc=False)
+    follower.leader = leader
+    outsider = Character(name="Stranger", is_npc=False)
+
+    origin.add_character(leader)
+    origin.add_character(follower)
+    origin.add_character(outsider)
+    character_registry.extend([leader, follower, outsider])
+
+    mob_cmds.mob_interpret(caller, f"gtransfer Leader {destination.vnum}")
+
+    assert leader.room is destination
+    assert follower.room is destination
+    assert outsider.room is origin
+
+
 def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch):
     _, start, escape = _setup_area()
 
@@ -198,3 +398,101 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
 
     mob_cmds.mob_interpret(mob, "flee")
     assert mob.room is escape
+
+
+def test_mpat_runs_command_in_target_room(monkeypatch):
+    _, origin, destination = _setup_area()
+
+    caster = Character(name="Caster", is_npc=True)
+    origin.add_character(caster)
+    character_registry.append(caster)
+
+    observed: list[tuple[int | None, str]] = []
+
+    def fake_process(char: Character, command: str) -> str:
+        observed.append((getattr(char.room, "vnum", None), command))
+        return ""
+
+    monkeypatch.setattr("mud.commands.dispatcher.process_command", fake_process)
+
+    mob_cmds.mob_interpret(caster, f"at {destination.vnum} say Greetings")
+
+    assert observed == [(destination.vnum, "say Greetings")]
+    assert caster.room is origin
+
+
+def test_mppurge_removes_target(monkeypatch):
+    _, room, _ = _setup_area()
+
+    controller = Character(name="Controller", is_npc=True)
+    room.add_character(controller)
+    character_registry.append(controller)
+
+    minion_proto = MobIndex(vnum=7000, short_descr="a minion")
+    minion = Character(name="Minion", is_npc=True)
+    minion.prototype = minion_proto
+    room.add_character(minion)
+    character_registry.append(minion)
+
+    hero = Character(name="Hero", is_npc=False)
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    token_proto = ObjIndex(vnum=7100, short_descr="a dusty token", name="token")
+    carried = Object(instance_id=None, prototype=token_proto)
+    controller.inventory = [carried]
+
+    dropped_proto = ObjIndex(vnum=7101, short_descr="a broken shard", name="shard")
+    dropped = Object(instance_id=None, prototype=dropped_proto)
+    room.add_object(dropped)
+
+    mob_cmds.mob_interpret(controller, "purge Minion")
+
+    assert minion not in room.people
+    assert hero in room.people
+    assert controller in room.people
+    assert minion not in character_registry
+
+    mob_cmds.mob_interpret(controller, "purge token")
+
+    assert carried not in getattr(controller, "inventory", [])
+
+    mob_cmds.mob_interpret(controller, "purge shard")
+
+    assert dropped not in room.contents
+
+
+def test_mppurge_all_cleans_room(monkeypatch):
+    _, room, _ = _setup_area()
+
+    controller = Character(name="Controller", is_npc=True)
+    room.add_character(controller)
+    character_registry.append(controller)
+
+    ally = Character(name="Ally", is_npc=True)
+    room.add_character(ally)
+    character_registry.append(ally)
+
+    extra = Character(name="Extra", is_npc=True)
+    room.add_character(extra)
+    character_registry.append(extra)
+
+    hero = Character(name="Hero", is_npc=False)
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    junk_proto = ObjIndex(vnum=7200, short_descr="a rusted nail", name="nail")
+    junk_room = Object(instance_id=None, prototype=junk_proto)
+    room.add_object(junk_room)
+
+    junk_inv = Object(instance_id=None, prototype=ObjIndex(vnum=7201, short_descr="a bronze coin", name="coin"))
+    controller.inventory = [junk_inv]
+
+    mob_cmds.mob_interpret(controller, "purge all")
+
+    assert controller in room.people
+    assert hero in room.people  # players are preserved
+    assert ally not in room.people and ally not in character_registry
+    assert extra not in room.people and extra not in character_registry
+    assert not room.contents
+    assert getattr(controller, "inventory", []) == [junk_inv]

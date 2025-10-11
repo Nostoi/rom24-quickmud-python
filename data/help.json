@@ -7,6 +7,20 @@
     "text": ".{WTHIS IS A MUD BASED ON.....{x\n\n{C                                ROM Version 2.4 beta{x\n\n               Original DikuMUD by Hans Staerfeldt, Katja Nyboe,\n               Tom Madsen, Michael Seifert, and Sebastian Hammer\n               Based on MERC 2.1 code by Hatchet, Furey, and Kahn\n               ROM 2.4 copyright (c) 1993-1998 Russ Taylor\n\nBy what name do you wish to be known?"
   },
   {
+    "level": -1,
+    "keywords": [
+      "MOTD"
+    ],
+    "text": "You are responsible for knowing the rules (type 'rules').  Ignorance of\n  the rules is no excuse.\n* Important commands: help, commands, news, notes\n* Use the delete command to erase unwanted characters"
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "IMOTD"
+    ],
+    "text": "Welcome Immortal!\n\nYou are responsible for following the laws of immortal behavior. These can\nbe found by typing 'help laws' or 'help commandments'.\n\n* Excessive loading is not allowed, and is grounds for deletion.\n* Asking for promotion is grounds for instant deletion.\n* Type 'help jobs' to get some idea of what you should be doing."
+  },
+  {
     "level": 0,
     "keywords": [
       "QMCONFIG"

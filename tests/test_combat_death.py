@@ -5,6 +5,7 @@ import pytest
 from mud.combat.death import death_cry, raw_kill
 from mud.combat.engine import attack_round
 from mud.combat.kill_table import get_kill_data, reset_kill_table
+from mud.characters.follow import add_follower
 from mud.groups import xp as xp_module
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
@@ -219,6 +220,112 @@ def test_raw_kill_updates_kill_counters() -> None:
     assert get_kill_data(12).killed == 1
     assert victim not in room.people
 
+
+def test_make_corpse_sets_consumable_timers(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    anchor = create_test_character("Anchor", 3001)
+    room = anchor.room
+    assert room is not None
+
+    victim = _make_victim("Victim", room, hit_points=1)
+
+    potion_proto = ObjIndex(vnum=7100, short_descr="a shimmering potion", description="A shimmering potion lies here.")
+    potion = Object(instance_id=None, prototype=potion_proto)
+    potion.item_type = int(ItemType.POTION)
+    potion.extra_flags = int(ExtraFlag.VIS_DEATH)
+    victim.add_object(potion)
+
+    scroll_proto = ObjIndex(vnum=7101, short_descr="an ancient scroll", description="An ancient scroll rests here.")
+    scroll = Object(instance_id=None, prototype=scroll_proto)
+    scroll.item_type = int(ItemType.SCROLL)
+    scroll.extra_flags = int(ExtraFlag.VIS_DEATH)
+    victim.add_object(scroll)
+
+    def fake_number_range(low: int, high: int) -> int:
+        if (low, high) == (3, 6):
+            return 6
+        if (low, high) == (25, 40):
+            return 40
+        if (low, high) == (500, 1000):
+            return 600
+        if (low, high) == (1000, 2500):
+            return 1200
+        return high
+
+    monkeypatch.setattr(rng_mm, "number_bits", lambda bits: 0)
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    corpse = raw_kill(victim)
+
+    assert corpse is not None
+    assert corpse.short_descr is not None and "Victim" in corpse.short_descr
+
+    potion_in_corpse = next(obj for obj in corpse.contained_items if obj is potion)
+    scroll_in_corpse = next(obj for obj in corpse.contained_items if obj is scroll)
+
+    assert potion_in_corpse.timer == 600
+    assert scroll_in_corpse.timer == 1200
+    assert int(potion_in_corpse.extra_flags) & int(ExtraFlag.VIS_DEATH) == 0
+    assert int(scroll_in_corpse.extra_flags) & int(ExtraFlag.VIS_DEATH) == 0
+
+
+def test_make_corpse_strips_rot_death_and_drops_floating(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    anchor = create_test_character("Anchor", 3001)
+    room = anchor.room
+    assert room is not None
+
+    prototype = MobIndex(vnum=99991, short_descr="prototype foe", level=12)
+    prototype.killed = 0
+
+    victim = _make_victim("Victim", room, hit_points=1)
+    victim.prototype = prototype
+    victim.level = 12
+
+    floating_proto = ObjIndex(vnum=7200, short_descr="a drifting relic", description="A drifting relic hums here.")
+    floating = Object(instance_id=None, prototype=floating_proto)
+    floating.item_type = int(ItemType.CONTAINER)
+    floating.extra_flags = int(ExtraFlag.ROT_DEATH | ExtraFlag.VIS_DEATH)
+    floating.wear_loc = int(WearLocation.FLOAT)
+
+    gem_proto = ObjIndex(vnum=7201, short_descr="a gleaming gem", description="A gleaming gem sparkles here.")
+    gem = Object(instance_id=None, prototype=gem_proto)
+    gem.item_type = int(ItemType.GEM)
+    gem.location = floating
+    floating.contained_items.append(gem)
+
+    victim.equip_object(floating, "floating")
+
+    ground_proto = ObjIndex(vnum=7202, short_descr="a cursed idol", description="A cursed idol rests here.")
+    ground_item = Object(instance_id=None, prototype=ground_proto)
+    ground_item.item_type = int(ItemType.TREASURE)
+    ground_item.extra_flags = int(ExtraFlag.ROT_DEATH | ExtraFlag.VIS_DEATH)
+    victim.add_object(ground_item)
+
+    def fake_number_range(low: int, high: int) -> int:
+        if (low, high) == (3, 6):
+            return 6
+        if (low, high) == (5, 10):
+            return 7
+        return high
+
+    monkeypatch.setattr(rng_mm, "number_bits", lambda bits: 0)
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    corpse = raw_kill(victim)
+
+    assert corpse is not None
+
+    assert ground_item in corpse.contained_items
+    assert ground_item.timer == 7
+    assert int(ground_item.extra_flags) & int(ExtraFlag.ROT_DEATH) == 0
+    assert int(ground_item.extra_flags) & int(ExtraFlag.VIS_DEATH) == 0
+
+    assert floating not in corpse.contained_items
+    assert floating not in room.contents
+    assert gem in room.contents
+    assert getattr(gem, "location", None) is room
+
     second = Character(name="Prototype Foe", is_npc=True, level=MAX_LEVEL + 7)
     second.prototype = prototype
     room.add_character(second)
@@ -287,6 +394,47 @@ def test_player_kill_clears_pk_flags(monkeypatch: pytest.MonkeyPatch) -> None:
     assert victim.hit >= 1
     assert victim.room is not None
     assert victim.room.vnum == ROOM_VNUM_ALTAR
+
+
+def test_player_death_dismisses_pet(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    victim = create_test_character("Victim", 3001)
+    observer = create_test_character("Observer", 3001)
+    room = attacker.room
+    assert room is not None
+
+    attacker.hitroll = 100
+    attacker.damroll = 10
+    victim.hit = 1
+    victim.max_hit = 1
+
+    pet = Character(name="Loyal Pet", is_npc=True)
+    pet.messages = []
+    room.add_character(pet)
+    character_registry.append(pet)
+    add_follower(pet, victim)
+    victim.pet = pet
+
+    observer.messages = []
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    assert victim.pet is None
+    assert pet.master is None
+    assert pet not in room.people
+    assert getattr(pet, "room", None) is None
+    assert pet not in character_registry
+    assert any("slowly fades away" in message.lower() for message in observer.messages)
 
 
 def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:

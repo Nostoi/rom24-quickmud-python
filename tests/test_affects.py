@@ -1,7 +1,7 @@
 # START affects_saves
 import mud.persistence as persistence
 from mud.affects.engine import tick_spell_effects
-from mud.affects.saves import check_dispel, saves_dispel, saves_spell
+from mud.affects.saves import _check_immune, check_dispel, saves_dispel, saves_spell
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import AffectFlag, DamageType, DefenseBit, Stat
@@ -164,6 +164,25 @@ def test_saves_spell_npc_skips_fmana_reduction(monkeypatch):
 
 
 # END affects_saves_saves_spell
+
+
+def test_check_immune_handles_unknown_damage_type():
+    victim = Character()
+    assert _check_immune(victim, 999) == 0
+
+    victim.imm_flags = DefenseBit.MAGIC
+    assert _check_immune(victim, 999) == 1
+
+    assert _check_immune(victim, None) == -1
+
+
+def test_saves_spell_handles_unknown_damage_type(monkeypatch):
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 0)
+    victim = Character(level=10)
+    victim.imm_flags = DefenseBit.MAGIC
+
+    assert saves_spell(10, victim, 999) is True
+    assert saves_spell(10, victim, None) is True
 
 
 def test_saves_dispel_matches_rom(monkeypatch):
