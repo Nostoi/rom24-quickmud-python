@@ -400,6 +400,7 @@ def create_account(username: str, raw_password: str) -> bool:
         return False
     account = PlayerAccount(
         username=username,
+        email="",
         password_hash=hash_password(raw_password),
     )
     session.add(account)

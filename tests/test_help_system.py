@@ -1,12 +1,15 @@
 from pathlib import Path
 from pathlib import Path
 
+from types import SimpleNamespace
+
 from mud.commands.dispatcher import process_command
 from mud.loaders.help_loader import load_help_file
 from mud.models.character import Character
 from mud.models.constants import OHELPS_FILE
 from mud.models.help import HelpEntry, help_registry, register_help
 from mud.models.room import Room
+from mud.net.connection import _resolve_help_text
 
 
 def setup_function(_):
@@ -129,3 +132,35 @@ def test_help_missing_topic_suggests_commands():
     result = process_command(ch, "help unknown")
     assert "Try:" in result
     assert "unban" in result or "unalias" in result
+
+
+def test_help_handles_quoted_topics():
+    entry = HelpEntry(keywords=["ARMOR CLASS"], text="Armor class overview")
+    register_help(entry)
+
+    ch = Character(name="Tester")
+    unquoted = process_command(ch, "help armor class")
+    single_quoted = process_command(ch, "help 'armor class'")
+    double_quoted = process_command(ch, 'help "armor class"')
+
+    assert unquoted == single_quoted == double_quoted
+
+
+def test_help_creation_flow_limits_to_first_entry():
+    mortal_entry = HelpEntry(keywords=["RACE"], text="Base race overview.")
+    immortal_entry = HelpEntry(keywords=["RACE IMMORTAL"], text="Immortal race lore.")
+    register_help(mortal_entry)
+    register_help(immortal_entry)
+
+    helper = SimpleNamespace(name="Preview", trust=0, level=0, is_npc=False, room=None)
+    creation_text = _resolve_help_text(helper, "race", limit_first=True)
+
+    assert creation_text is not None
+    assert "Base race overview." in creation_text
+    assert "Immortal race lore." not in creation_text
+
+    live_player = Character(name="Explorer")
+    combined = process_command(live_player, "help race")
+
+    assert "Base race overview." in combined
+    assert "Immortal race lore." in combined

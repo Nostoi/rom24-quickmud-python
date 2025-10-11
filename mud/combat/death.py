@@ -11,6 +11,10 @@ from mud.models.constants import (
     PartFlag,
     PlayerFlag,
     Position,
+    WearLocation,
+    ITEM_INVENTORY,
+    ITEM_ROT_DEATH,
+    ITEM_VIS_DEATH,
     OBJ_VNUM_BRAINS,
     OBJ_VNUM_CORPSE_NPC,
     OBJ_VNUM_CORPSE_PC,
@@ -20,6 +24,7 @@ from mud.models.constants import (
     OBJ_VNUM_SLICED_LEG,
     OBJ_VNUM_TORN_HEART,
 )
+from mud.characters.follow import stop_follower
 from mud.models.clans import get_clan_hall_vnum
 from mud.models.races import get_race_by_index
 from mud.models.obj import ObjIndex
@@ -99,6 +104,52 @@ def _normalize_item_type(value: object, default: ItemType) -> int:
         return int(value)
     except (TypeError, ValueError):  # pragma: no cover - defensive guard
         return int(default)
+
+
+def _get_extra_flags(obj: Object) -> int:
+    try:
+        return int(getattr(obj, "extra_flags", 0) or 0)
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        return 0
+
+
+def _clear_extra_flags(obj: Object, flags: int) -> None:
+    obj.extra_flags = _get_extra_flags(obj) & ~int(flags)
+
+
+def _has_extra_flag(obj: Object, flag: int) -> bool:
+    return bool(_get_extra_flags(obj) & int(flag))
+
+
+def _spill_contents_to_room(obj: Object, room) -> None:
+    contents = list(getattr(obj, "contained_items", []) or [])
+    for contained in contents:
+        try:
+            obj.contained_items.remove(contained)
+        except (AttributeError, ValueError):  # pragma: no cover - defensive guard
+            pass
+        if hasattr(contained, "location") and getattr(contained, "location", None) is obj:
+            contained.location = None
+        room.add_object(contained)
+
+
+def _is_floating_slot(slot: str | None, obj: Object) -> bool:
+    if slot is not None and slot.lower() in {"float", "floating"}:
+        return True
+    try:
+        wear_loc = int(getattr(obj, "wear_loc", int(WearLocation.NONE)))
+    except (TypeError, ValueError):  # pragma: no cover - defensive guard
+        wear_loc = int(WearLocation.NONE)
+    return wear_loc == int(WearLocation.FLOAT)
+
+
+def _format_corpse_labels(corpse: Object, name: str) -> None:
+    short_template = getattr(corpse.prototype, "short_descr", None) or getattr(corpse, "short_descr", "the corpse of %s")
+    desc_template = getattr(corpse.prototype, "description", None) or getattr(
+        corpse, "description", "The corpse of %s is lying here."
+    )
+    corpse.short_descr = short_template.replace("%s", name)
+    corpse.description = desc_template.replace("%s", name)
 
 
 def _spawn_gore(
@@ -296,18 +347,23 @@ def _fallback_corpse(vnum: int, *, item_type: ItemType) -> Object:
     return corpse
 
 
-def _strip_inventory(victim: Character) -> list:
-    """Remove and return all carried and equipped objects from *victim*."""
+def _strip_inventory(victim: Character) -> list[tuple[Object, bool]]:
+    """Remove carried/equipped objects returning ``(obj, was_floating)`` tuples."""
 
-    items: list = []
+    items: list[tuple[Object, bool]] = []
     inventory: Iterable = list(getattr(victim, "inventory", []) or [])
     for obj in inventory:
         victim.remove_object(obj)
-        items.append(obj)
+        obj.location = None
+        obj.wear_loc = int(WearLocation.NONE)
+        items.append((obj, False))
     equipment = getattr(victim, "equipment", {}) or {}
-    for obj in list(equipment.values()):
+    for slot, obj in list(equipment.items()):
+        was_floating = _is_floating_slot(slot, obj)
         victim.remove_object(obj)
-        items.append(obj)
+        obj.location = None
+        obj.wear_loc = int(WearLocation.NONE)
+        items.append((obj, was_floating))
     return items
 
 
@@ -322,6 +378,46 @@ def _set_corpse_coins(corpse: Object, gold: int, silver: int) -> None:
     values[0] = gold
     values[1] = silver
     corpse.value = values
+
+
+def _handle_corpse_item(
+    corpse: Object,
+    room,
+    obj: Object,
+    *,
+    was_floating: bool,
+) -> None:
+    """Apply ROM corpse-handling semantics for *obj*."""
+
+    if obj is None or room is None:
+        return
+
+    item_type = _normalize_item_type(getattr(obj, "item_type", None), ItemType.TRASH)
+    if item_type == int(ItemType.POTION):
+        obj.timer = rng_mm.number_range(500, 1000)
+    elif item_type == int(ItemType.SCROLL):
+        obj.timer = rng_mm.number_range(1000, 2500)
+
+    had_rot_death = _has_extra_flag(obj, ITEM_ROT_DEATH)
+    if had_rot_death and not was_floating:
+        obj.timer = rng_mm.number_range(5, 10)
+        _clear_extra_flags(obj, ITEM_ROT_DEATH)
+
+    _clear_extra_flags(obj, ITEM_VIS_DEATH)
+
+    if _has_extra_flag(obj, ITEM_INVENTORY):
+        return
+
+    if was_floating:
+        if had_rot_death:
+            _spill_contents_to_room(obj, room)
+            return
+        room.add_object(obj)
+        return
+
+    corpse.contained_items.append(obj)
+    if hasattr(obj, "location"):
+        obj.location = corpse
 
 
 def make_corpse(victim: Character) -> Object | None:
@@ -352,10 +448,15 @@ def make_corpse(victim: Character) -> Object | None:
         if not is_clan_member(victim):
             corpse.owner = getattr(victim, "name", None)
 
-    for obj in _strip_inventory(victim):
-        corpse.contained_items.append(obj)
-        if hasattr(obj, "location"):
-            obj.location = corpse
+    if is_npc:
+        name = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")
+    else:
+        name = getattr(victim, "name", "someone")
+    if isinstance(name, str):
+        _format_corpse_labels(corpse, name)
+
+    for obj, was_floating in _strip_inventory(victim):
+        _handle_corpse_item(corpse, room, obj, was_floating=was_floating)
 
     room.add_object(corpse)
     return corpse
@@ -391,6 +492,52 @@ def _reset_player_armor(victim: Character) -> None:
     victim.armor = [100, 100, 100, 100]
 
 
+def _nuke_pets(victim: Character, room) -> None:
+    """Dismiss charmed pets when their owner is extracted."""
+
+    pet = getattr(victim, "pet", None)
+    if pet is None:
+        return
+
+    try:
+        stop_follower(pet)
+    except Exception:  # pragma: no cover - defensive guard
+        pet.master = None
+        pet.leader = None
+
+    victim.pet = None
+
+    pet_room = getattr(pet, "room", None) or room
+    if pet_room is not None:
+        message = expand_placeholders("$N slowly fades away.", victim, pet)
+        pet_room.broadcast(message, exclude=pet)
+        pet_room.remove_character(pet)
+
+    for obj in list(getattr(pet, "inventory", []) or []):
+        try:
+            pet.remove_object(obj)
+        except Exception:  # pragma: no cover - defensive guard
+            try:
+                pet.inventory.remove(obj)
+            except (AttributeError, ValueError):
+                pass
+        if hasattr(obj, "location") and getattr(obj, "location", None) is pet:
+            obj.location = None
+
+    for _, equipped in list(getattr(pet, "equipment", {}).items()):
+        try:
+            pet.remove_object(equipped)
+        except Exception:  # pragma: no cover - defensive guard
+            pass
+        if hasattr(equipped, "location") and getattr(equipped, "location", None) is pet:
+            equipped.location = None
+
+    try:
+        character_registry.remove(pet)
+    except ValueError:
+        pass
+
+
 def _move_player_to_death_room(victim: Character) -> None:
     """Place the player in their clan hall or the global death room."""
 
@@ -410,6 +557,7 @@ def raw_kill(victim: Character) -> Object | None:
     corpse = make_corpse(victim)
 
     room = getattr(victim, "room", None)
+    _nuke_pets(victim, room)
     if room is not None:
         room.remove_character(victim)
 

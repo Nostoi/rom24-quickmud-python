@@ -32,9 +32,10 @@ from mud.account import (
 )
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
+from mud.commands.help import do_help
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
-from mud.models.constants import PlayerFlag, Sex
+from mud.models.constants import PlayerFlag, Sex, ROOM_VNUM_LIMBO
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
@@ -193,6 +194,52 @@ def _broadcast_reconnect_notifications(char: "Character") -> None:
         None,
         _effective_trust(char),
     )
+
+
+def _stop_idling(char: "Character") -> None:
+    """Mirror ROM's ``stop_idling`` to pull players out of limbo on input."""
+
+    if char is None:
+        return
+
+    previous_room = getattr(char, "was_in_room", None)
+    if previous_room is None:
+        return
+
+    current_room = getattr(char, "room", None)
+    current_vnum = getattr(current_room, "vnum", None)
+    if current_vnum != ROOM_VNUM_LIMBO:
+        return
+
+    destination = previous_room
+    try:
+        if current_room is not None:
+            current_room.remove_character(char)
+    except Exception:
+        pass
+
+    try:
+        destination.add_character(char)
+    except Exception:
+        # If re-entry fails, leave the character parked in limbo and retain state.
+        try:
+            if current_room is not None:
+                current_room.add_character(char)
+        except Exception:
+            pass
+        return
+
+    char.was_in_room = None
+    try:
+        char.timer = 0
+    except Exception:
+        pass
+
+    name = getattr(char, "name", None) or "Someone"
+    try:
+        destination.broadcast(f"{name} has returned from the void.", exclude=char)
+    except Exception:
+        pass
 
 
 class TelnetStream:
@@ -396,6 +443,13 @@ def _apply_colour_preference(char: Character, enabled: bool) -> None:
     char.ansi_enabled = bool(enabled)
 
 
+def _has_permit_flag(char: "Character") -> bool:
+    """Return ``True`` when *char* has the ROM PLR_PERMIT bit set."""
+
+    act_flags = int(getattr(char, "act", 0) or 0)
+    return bool(act_flags & int(PlayerFlag.PERMIT))
+
+
 async def _send_help_greeting(conn: TelnetStream) -> None:
     if not help_greeting:
         return
@@ -403,6 +457,49 @@ async def _send_help_greeting(conn: TelnetStream) -> None:
     if not text:
         return
     await conn.send_text(text, newline=True)
+
+
+def _resolve_help_text(char: "Character", topic: str, *, limit_first: bool = False) -> str | None:
+    try:
+        text = do_help(char, topic, limit_results=limit_first)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        print(f"[ERROR] Failed to load help topic '{topic}': {exc}")
+        return None
+    if not text:
+        return None
+    stripped = text.strip()
+    if not stripped or stripped == "No help on that word.":
+        return None
+    return text
+
+
+async def _send_login_motd(char: "Character") -> None:
+    topics: list[str] = ["motd"]
+    is_immortal_attr = getattr(char, "is_immortal", False)
+    immortal = False
+    if callable(is_immortal_attr):
+        try:
+            immortal = bool(is_immortal_attr())
+        except Exception:  # pragma: no cover - defensive guard
+            immortal = False
+    else:
+        immortal = bool(is_immortal_attr)
+
+    if immortal:
+        topics.insert(0, "imotd")
+
+    for topic in topics:
+        text = _resolve_help_text(char, topic)
+        if not text:
+            continue
+        page = text.rstrip("\r\n")
+        if page:
+            page += "\r\n"
+        page += "[Hit Return to continue]"
+        try:
+            await send_to_char(char, page)
+        except Exception as exc:  # pragma: no cover - defensive guard
+            print(f"[ERROR] Failed to send help topic '{topic}' to {getattr(char, 'name', '?')}: {exc}")
 
 
 async def _read_player_command(conn: TelnetStream, session: Session) -> str | None:
@@ -623,18 +720,35 @@ async def _run_account_login(
         return None
 
 
-async def _prompt_for_race(conn: TelnetStream) -> "PcRaceType" | None:
+async def _prompt_for_race(
+    conn: TelnetStream, help_character: object | None = None
+) -> "PcRaceType" | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
+    await _send_line(conn, "What is your race? (help for more information)")
+    helper = help_character or SimpleNamespace(name="", trust=0, level=0, is_npc=False, room=None)
     while True:
         response = await _prompt(conn, "Choose your race: ")
         if response is None:
             return None
-        race = lookup_creation_race(response)
+        stripped = response.strip()
+        if not stripped:
+            continue
+        parts = stripped.split(None, 1)
+        command = parts[0].lower()
+        if command == "help":
+            topic = parts[1].strip() if len(parts) > 1 else "race help"
+            text = _resolve_help_text(helper, topic, limit_first=True)
+            if text:
+                page = text.rstrip("\r\n")
+                await _send(conn, page + "\r\n")
+            else:
+                await _send_line(conn, "No help on that word.")
+            continue
+        race = lookup_creation_race(stripped)
         if race is not None:
             return race
-        await _send_line(conn, "That is not a valid race.")
-
+        await _send_line(conn, "That's not a valid race.")
 
 async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
     while True:
@@ -822,13 +936,26 @@ async def _run_character_creation_flow(
     conn: TelnetStream,
     account: PlayerAccount,
     name: str,
+    *,
+    permit_banned: bool = False,
 ) -> bool:
     sanitized = sanitize_account_name(name)
     if not is_valid_account_name(sanitized):
         await _send_line(conn, "Illegal character name, try another.")
         return False
 
+    if permit_banned:
+        await _send_line(conn, "Your site has been banned from this mud.")
+        return False
+
     display = sanitized.capitalize()
+    preview_character = SimpleNamespace(
+        name=display,
+        trust=0,
+        level=0,
+        is_npc=False,
+        room=None,
+    )
     await _send_line(conn, f"Creating new character '{display}'.")
     confirm = await _prompt_yes_no(conn, f"Is '{display}' correct? (Y/N) ")
     if confirm is None:
@@ -836,7 +963,7 @@ async def _run_character_creation_flow(
     if not confirm:
         return False
 
-    race = await _prompt_for_race(conn)
+    race = await _prompt_for_race(conn, preview_character)
     if race is None:
         return False
     sex = await _prompt_for_sex(conn)
@@ -904,6 +1031,8 @@ async def _select_character(
     conn: TelnetStream,
     account: PlayerAccount,
     username: str,
+    *,
+    permit_banned: bool = False,
 ) -> tuple["Character", bool] | None:
     while True:
         characters = list_characters(account)
@@ -919,7 +1048,12 @@ async def _select_character(
         lookup = {entry.lower(): entry for entry in characters}
         chosen_name = lookup.get(candidate.lower())
         if chosen_name is None:
-            created = await _run_character_creation_flow(conn, account, candidate)
+            created = await _run_character_creation_flow(
+                conn,
+                account,
+                candidate,
+                permit_banned=permit_banned,
+            )
             if not created:
                 continue
             chosen_name = sanitize_account_name(candidate).capitalize()
@@ -940,6 +1074,9 @@ async def _select_character(
 
             transferred_char = await _disconnect_session(existing_session)
             if transferred_char is not None:
+                if permit_banned and not _has_permit_flag(transferred_char):
+                    await _send_line(conn, "Your site has been banned from this mud.")
+                    return None
                 return transferred_char, True
 
             if active_connection is not None:
@@ -948,6 +1085,9 @@ async def _select_character(
 
         char = load_character(username, chosen_name)
         if char:
+            if permit_banned and not _has_permit_flag(char):
+                await _send_line(conn, "Your site has been banned from this mud.")
+                return None
             return char, False
         await _send_line(conn, "Failed to load that character. Please try again.")
 
@@ -966,6 +1106,9 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
+    permit_banned = bool(
+        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT)
+    )
 
     try:
         if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
@@ -985,7 +1128,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             return
         account, username, was_reconnect = login_result
 
-        selection = await _select_character(conn, account, username)
+        selection = await _select_character(
+            conn,
+            account,
+            username,
+            permit_banned=permit_banned,
+        )
         if selection is None:
             return
 
@@ -1023,6 +1171,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
+            if not reconnecting:
+                await _send_login_motd(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
+
+        try:
             if reconnecting:
                 await send_to_char(char, RECONNECT_MESSAGE)
                 _broadcast_reconnect_notifications(char)
@@ -1046,6 +1200,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 command = await _read_player_command(conn, session)
                 if command is None:
                     break
+                _stop_idling(char)
                 if not command.strip():
                     continue
 

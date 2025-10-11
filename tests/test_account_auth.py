@@ -83,6 +83,24 @@ def setup_module(module):
     reset_lockdowns()
 
 
+def test_create_account_defaults_blank_email():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("rookie", "secret")
+
+    session = SessionLocal()
+    try:
+        record = session.query(PlayerAccount).filter_by(username="rookie").first()
+        assert record is not None
+        assert record.email == ""
+    finally:
+        session.close()
+
+
 def test_creation_tables_expose_rom_metadata():
     races = get_creation_races()
     assert [race.name for race in races] == ["human", "elf", "dwarf", "giant"]
@@ -309,6 +327,236 @@ def test_new_character_creation_sequence():
         assert created.train == 3
     finally:
         session.close()
+
+
+def test_new_player_receives_motd():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = _server_address(server)
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+
+            _, greeting = await negotiate_ansi(reader, writer)
+            assert b"\x1b[" in greeting
+
+            writer.write(b"rookie\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"(Y/N) "), timeout=5)
+            writer.write(b"y\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"New password: "), timeout=5)
+            writer.write(b"secret\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"Confirm password: "), timeout=5)
+            writer.write(b"secret\r\n")
+            await writer.drain()
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Account created.\r\n"
+
+            await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
+            writer.write(b"Nova\r\n")
+            await writer.drain()
+
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Creating new character 'Nova'.\r\n"
+            await asyncio.wait_for(reader.readuntil(b"(Y/N) "), timeout=5)
+            writer.write(b"y\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Choose your race: "), timeout=5)
+            writer.write(b"human\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"Sex (M/F): "), timeout=5)
+            writer.write(b"M\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Choose your class: "), timeout=5)
+            writer.write(b"warrior\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Which alignment (G/N/E)? "), timeout=5)
+            writer.write(b"n\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Customize (Y/N)? "), timeout=5)
+            writer.write(b"n\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"(K to keep, R to reroll): "), timeout=5)
+            writer.write(b"k\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"(Y/N) "), timeout=5)
+            writer.write(b"y\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Choose your starting weapon: "), timeout=5)
+            writer.write(b"sword\r\n")
+            await writer.drain()
+
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Character created!\r\n"
+
+            motd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"You are responsible for knowing the rules" in motd_blob
+
+            look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
+def test_immortal_receives_imotd():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("archon", "secret")
+    account = login("archon", "secret")
+    assert account is not None
+    assert create_character(account, "Zeus")
+
+    session = SessionLocal()
+    try:
+        db_char = session.query(PlayerAccount).filter_by(username="archon").first()
+        assert db_char is not None and db_char.characters
+        record = db_char.characters[0]
+        record.level = 60
+        record.trust = 60
+        session.commit()
+    finally:
+        session.close()
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = _server_address(server)
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+
+            _, greeting = await negotiate_ansi(reader, writer)
+            assert b"\x1b[" in greeting
+
+            writer.write(b"archon\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"Password: "), timeout=5)
+            writer.write(b"secret\r\n")
+            await writer.drain()
+
+            selection_prompt = await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
+            assert b"Zeus" in selection_prompt
+            writer.write(b"Zeus\r\n")
+            await writer.drain()
+
+            imotd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"Welcome Immortal!" in imotd_blob
+
+            motd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"You are responsible for knowing the rules" in motd_blob
+
+            look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
+def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
+    prompts: list[str] = []
+    sent_lines: list[str] = []
+    sent_pages: list[str] = []
+    help_calls: list[tuple[object, str]] = []
+
+    responses = iter(["help", "help human", "human"])
+
+    async def fake_prompt(conn, prompt, *, hide_input=False):
+        del hide_input
+        prompts.append(prompt)
+        try:
+            return next(responses)
+        except StopIteration:
+            return None
+
+    async def fake_send_line(conn, message):
+        sent_lines.append(message)
+
+    async def fake_send(conn, message):
+        sent_pages.append(message)
+
+    def fake_do_help(char, topic):
+        help_calls.append((char, topic))
+        mapping = {
+            "race help": "Race overview text",
+            "human": "Human details",
+        }
+        return mapping.get(topic, "")
+
+    helper = SimpleNamespace(name="Lyra", trust=0, level=0, is_npc=False, room=None)
+
+    monkeypatch.setattr(net_connection, "_prompt", fake_prompt)
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "_send", fake_send)
+    monkeypatch.setattr(net_connection, "do_help", fake_do_help)
+
+    async def run() -> None:
+        race = await net_connection._prompt_for_race(object(), helper)
+        assert race is not None
+        assert race.name == "human"
+
+    asyncio.run(run())
+
+    assert prompts == ["Choose your race: ", "Choose your race: ", "Choose your race: "]
+    assert sent_lines[:2] == [
+        "Available races: " + ", ".join(r.name.title() for r in get_creation_races()),
+        "What is your race? (help for more information)",
+    ]
+    assert sent_pages == ["Race overview text\r\n", "Human details\r\n"]
+    assert help_calls == [(helper, "race help"), (helper, "human")]
 
 
 def test_creation_prompts_include_alignment_and_groups():
@@ -865,7 +1113,7 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
             async def fake_prompt_yes_no(conn, prompt):
                 return True
 
-            async def fake_prompt_for_race(conn):
+            async def fake_prompt_for_race(conn, *_args):
                 return get_creation_races()[0]
 
             async def fake_prompt_for_sex(conn):

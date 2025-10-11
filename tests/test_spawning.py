@@ -14,9 +14,11 @@ from mud.models.constants import (
     DamageType,
     Direction,
     ImmFlag,
+    ItemType,
     LEVEL_HERO,
     OffFlag,
     Position,
+    ExtraFlag,
     ResFlag,
     RoomFlag,
     Sex,
@@ -930,6 +932,149 @@ def test_reset_equips_scale_with_lastmob_level(monkeypatch):
     assert fuzzy_returns == []
 
 
+def test_reset_equips_preserves_new_format_level(monkeypatch):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+
+    area = Area(vnum=9400, name="New Format Area", min_vnum=9400, max_vnum=9401)
+    room_mob = Room(vnum=9400, name="Equipper", area=area)
+    room_shop = Room(vnum=9401, name="Shop", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room_mob.vnum] = room_mob
+    room_registry[room_shop.vnum] = room_shop
+
+    mob_proto = MobIndex(vnum=9400, short_descr="a seasoned warrior", level=45)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    keeper_proto = MobIndex(vnum=9401, short_descr="a meticulous shopkeeper", level=30)
+    keeper_proto.pShop = Shop(keeper=keeper_proto.vnum)
+    mob_registry[keeper_proto.vnum] = keeper_proto
+    shop_registry[keeper_proto.vnum] = keeper_proto.pShop
+
+    old_format_proto = ObjIndex(vnum=9402, short_descr="a battered blade", item_type=int(ItemType.WEAPON))
+    obj_registry[old_format_proto.vnum] = old_format_proto
+
+    new_format_proto = ObjIndex(
+        vnum=9403,
+        short_descr="a gleaming relic",
+        item_type=int(ItemType.WEAPON),
+        level=45,
+        new_format=True,
+    )
+    obj_registry[new_format_proto.vnum] = new_format_proto
+
+    shop_item_proto = ObjIndex(
+        vnum=9404,
+        short_descr="a jewelled circlet",
+        item_type=int(ItemType.TREASURE),
+        level=30,
+        new_format=True,
+    )
+    obj_registry[shop_item_proto.vnum] = shop_item_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room_mob.vnum, arg4=1),
+        ResetJson(command="G", arg1=new_format_proto.vnum, arg2=1),
+        ResetJson(command="G", arg1=old_format_proto.vnum, arg2=1),
+        ResetJson(command="M", arg1=keeper_proto.vnum, arg2=1, arg3=room_shop.vnum, arg4=1),
+        ResetJson(command="G", arg1=shop_item_proto.vnum, arg2=1),
+    ]
+
+    fuzzy_calls: list[int] = []
+
+    def fake_number_fuzzy(value: int) -> int:
+        fuzzy_calls.append(value)
+        return 18
+
+    monkeypatch.setattr(rng_mm, "number_fuzzy", fake_number_fuzzy)
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 0 if (low, high) == (0, 4) else low)
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room_mob.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+
+    inventory = {
+        getattr(getattr(item, "prototype", None), "vnum", None): item for item in getattr(mob, "inventory", [])
+    }
+    assert inventory[new_format_proto.vnum].level == new_format_proto.level
+    assert inventory[old_format_proto.vnum].level == 18
+
+    keeper = next((m for m in room_shop.people if isinstance(m, MobInstance)), None)
+    assert keeper is not None
+    shop_inventory = [
+        item for item in getattr(keeper, "inventory", []) if getattr(getattr(item, "prototype", None), "vnum", None) == shop_item_proto.vnum
+    ]
+    assert shop_inventory, "shopkeeper should receive new-format stock"
+    assert shop_inventory[0].level == shop_item_proto.level
+
+    assert fuzzy_calls == [max(0, mob_proto.level - 2)]
+
+
+def test_reset_equips_limit_overflow_probability(monkeypatch):
+    original_number_range = rng_mm.number_range
+
+    monkeypatch.setattr(rng_mm, "number_fuzzy", lambda value: value)
+
+    def build_world():
+        room_registry.clear()
+        area_registry.clear()
+        mob_registry.clear()
+        obj_registry.clear()
+        shop_registry.clear()
+        character_registry.clear()
+
+        area = Area(vnum=9450, name="Overflow Area", min_vnum=9450, max_vnum=9451)
+        room = Room(vnum=9450, name="Overflow Room", area=area)
+        area_registry[area.vnum] = area
+        room_registry[room.vnum] = room
+
+        mob_proto = MobIndex(vnum=9450, short_descr="an overflow mob", level=30)
+        mob_registry[mob_proto.vnum] = mob_proto
+
+        obj_proto = ObjIndex(vnum=9451, short_descr="an overflow trinket")
+        obj_registry[obj_proto.vnum] = obj_proto
+
+        area.resets = [
+            ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+            ResetJson(command="G", arg1=obj_proto.vnum, arg2=1),
+        ]
+
+        existing_obj = spawn_object(obj_proto.vnum)
+        room.add_object(existing_obj)
+
+        return area, room, obj_proto.vnum
+
+    def run_with_roll(roll_value: int) -> list:
+        area, room, obj_vnum = build_world()
+
+        def fake_number_range(low: int, high: int) -> int:
+            if low == 0 and high == 4:
+                return roll_value
+            return original_number_range(low, high)
+
+        monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+        reset_handler.apply_resets(area)
+        monkeypatch.setattr(rng_mm, "number_range", original_number_range)
+
+        mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+        assert mob is not None
+        return [
+            obj
+            for obj in getattr(mob, "inventory", [])
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_vnum
+        ]
+
+    denied_inventory = run_with_roll(roll_value=3)
+    assert denied_inventory == []
+
+    overflow_inventory = run_with_roll(roll_value=0)
+    assert len(overflow_inventory) == 1
+
+
 def test_reset_P_skips_when_players_present():
     room_registry.clear()
     area_registry.clear()
@@ -1084,7 +1229,7 @@ def test_reset_does_not_refill_player_container():
     assert getattr(loot_proto, "count", 0) == 1
 
 
-def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
+def test_shopkeeper_inventory_ignores_limit(monkeypatch):
     from mud.spawning.reset_handler import apply_resets
     from mud.utils import rng_mm
 
@@ -1107,10 +1252,10 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
         area.resets.append(ResetJson(command="G", arg1=3031, arg2=1))
         return area, room
 
-    # When the global prototype count hits the limit, reroll failure skips the spawn.
     area, room = setup_shop_area()
     lantern_proto = obj_registry.get(3031)
     assert lantern_proto is not None
+    original_proto_flags = int(getattr(lantern_proto, "extra_flags", 0) or 0)
     existing = spawn_object(3031)
     assert existing is not None
     room.contents.append(existing)
@@ -1119,24 +1264,92 @@ def test_reset_GE_limits_and_shopkeeper_inventory_flag(monkeypatch):
     keeper = next((p for p in room.people if getattr(getattr(p, "prototype", None), "vnum", None) == 3000), None)
     assert keeper is not None
     inv = [getattr(o.prototype, "vnum", None) for o in getattr(keeper, "inventory", [])]
-    assert inv.count(3031) == 0
-
-    # A successful 1-in-5 reroll should allow the spawn despite the limit.
-    area, room = setup_shop_area()
-    lantern_proto = obj_registry.get(3031)
-    assert lantern_proto is not None
-    existing = spawn_object(3031)
-    assert existing is not None
-    room.contents.append(existing)
-    monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 0)
-    apply_resets(area)
-    keeper = next((p for p in room.people if getattr(getattr(p, "prototype", None), "vnum", None) == 3000), None)
-    assert keeper is not None
-    inv = [getattr(o.prototype, "vnum", None) for o in getattr(keeper, "inventory", [])]
-    assert inv.count(3031) == 1
+    assert inv.count(3031) >= 1
     item = next(o for o in keeper.inventory if getattr(o.prototype, "vnum", None) == 3031)
-    assert getattr(item.prototype, "extra_flags", 0) & int(ITEM_INVENTORY)
     assert getattr(item, "extra_flags", 0) & int(ITEM_INVENTORY)
+    assert int(getattr(item.prototype, "extra_flags", 0) or 0) == original_proto_flags
+    assert getattr(lantern_proto, "count", 0) >= 2
+
+    # A second reset should keep restocking even though the keeper already holds a copy.
+    apply_resets(area)
+    inv = [getattr(o.prototype, "vnum", None) for o in getattr(keeper, "inventory", [])]
+    assert inv.count(3031) >= 2
+
+
+def test_reset_shopkeeper_inventory_does_not_mutate_prototype():
+    from mud.spawning.reset_handler import apply_resets
+
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9100, name="Shop Sanity", min_vnum=9100, max_vnum=9100)
+    area_registry[area.vnum] = area
+    room = Room(vnum=9100, name="Shop Room", area=area)
+    room_registry[room.vnum] = room
+
+    trinket_proto = ObjIndex(vnum=9101, short_descr="a shop trinket", level=1, extra_flags=0)
+    obj_registry[trinket_proto.vnum] = trinket_proto
+
+    keeper_proto = MobIndex(vnum=9102, short_descr="a diligent shopkeeper", level=30, act_flags=int(ActFlag.IS_NPC))
+    keeper_proto.hit = (0, 0, 0)
+    keeper_proto.mana = (0, 0, 0)
+    keeper_proto.damage = (0, 0, 0)
+    keeper_proto.pShop = Shop(keeper=keeper_proto.vnum)
+    mob_registry[keeper_proto.vnum] = keeper_proto
+    shop_registry[keeper_proto.vnum] = keeper_proto.pShop
+
+    guard_proto = MobIndex(vnum=9103, short_descr="a city guard", level=20, act_flags=int(ActFlag.IS_NPC))
+    guard_proto.hit = (0, 0, 0)
+    guard_proto.mana = (0, 0, 0)
+    guard_proto.damage = (0, 0, 0)
+    mob_registry[guard_proto.vnum] = guard_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=keeper_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="G", arg1=trinket_proto.vnum, arg2=1),
+        ResetJson(command="M", arg1=guard_proto.vnum, arg2=1, arg3=room.vnum, arg4=2),
+        ResetJson(command="G", arg1=trinket_proto.vnum, arg2=1),
+    ]
+
+    apply_resets(area)
+
+    keeper = next(
+        (p for p in room.people if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == keeper_proto.vnum),
+        None,
+    )
+    guard = next(
+        (p for p in room.people if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == guard_proto.vnum),
+        None,
+    )
+
+    assert keeper is not None and guard is not None
+
+    keeper_item = next(o for o in keeper.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum)
+    guard_item = next(o for o in guard.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum)
+
+    proto_flags = int(getattr(trinket_proto, "extra_flags", 0) or 0)
+    assert keeper_item.extra_flags & int(ITEM_INVENTORY)
+    assert not (guard_item.extra_flags & int(ITEM_INVENTORY))
+    assert int(getattr(keeper_item.prototype, "extra_flags", 0) or 0) == proto_flags
+    assert int(getattr(guard_item.prototype, "extra_flags", 0) or 0) == proto_flags
+
+
+def test_spawn_object_preserves_extra_flags_from_letters():
+    obj_registry.clear()
+
+    proto = ObjIndex(vnum=9205, short_descr="a glowing relic", extra_flags="AG")
+    obj_registry[proto.vnum] = proto
+
+    inst = spawn_object(proto.vnum)
+
+    assert inst is not None
+    expected_flags = int(convert_flags_from_letters("AG", ExtraFlag))
+    assert inst.extra_flags == expected_flags
+    assert getattr(proto, "extra_flags") == "AG"
 
 
 def test_reset_shopkeeper_potion_levels_use_skill_metadata():
@@ -1192,6 +1405,49 @@ def test_reset_shopkeeper_potion_levels_use_skill_metadata():
     expected_level = max(0, (olevel * 3 // 4) - 2)
 
     assert potion.level == expected_level
+
+
+def test_equipment_reset_skips_after_failed_room_reset():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9400, name="Last Flag Test", min_vnum=9400, max_vnum=9400)
+    room = Room(vnum=9401, name="Crowded Hall", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=9402, short_descr="the hall guard", level=20)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    ground_proto = ObjIndex(vnum=9403, short_descr="a banner stand")
+    obj_registry[ground_proto.vnum] = ground_proto
+
+    sword_proto = ObjIndex(vnum=9404, short_descr="a parade blade", item_type="weapon")
+    obj_registry[sword_proto.vnum] = sword_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="O", arg1=ground_proto.vnum, arg2=1, arg3=room.vnum),
+        ResetJson(command="G", arg1=sword_proto.vnum, arg2=1),
+    ]
+
+    area.nplayer = 1
+
+    reset_handler.apply_resets(area)
+
+    guard = next((mob for mob in room.people if isinstance(mob, MobInstance)), None)
+    assert guard is not None
+
+    equipped = [
+        obj
+        for obj in getattr(guard, "inventory", [])
+        if getattr(getattr(obj, "prototype", None), "vnum", None) == sword_proto.vnum
+    ]
+
+    assert not equipped
 
 
 def test_reset_tick_announces_wiznet(monkeypatch):

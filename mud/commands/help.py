@@ -13,6 +13,45 @@ _logger = logging.getLogger(__name__)
 ROM_HELP_SEPARATOR = "\n============================================================\n\n"
 
 
+def _normalize_topic(raw: str) -> str:
+    """Mirror ROM ``one_argument`` handling for quoted phrases."""
+
+    tokens: list[str] = []
+    length = len(raw)
+    index = 0
+    while index < length:
+        while index < length and raw[index].isspace():
+            index += 1
+        if index >= length:
+            break
+        char = raw[index]
+        if char in {'"', "'", '%'}:
+            terminator = char
+            index += 1
+        elif char == "(":
+            terminator = ")"
+            index += 1
+        else:
+            terminator = None
+        token_chars: list[str] = []
+        while index < length:
+            current = raw[index]
+            if terminator:
+                if current == terminator:
+                    index += 1
+                    break
+            else:
+                if current.isspace():
+                    break
+            token_chars.append(current)
+            index += 1
+        if token_chars:
+            tokens.append("".join(token_chars))
+        while index < length and raw[index].isspace():
+            index += 1
+    return " ".join(tokens)
+
+
 def _get_trust(ch: Character) -> int:
     return ch.trust if ch.trust > 0 else ch.level
 
@@ -113,8 +152,8 @@ def _suggest_command_topics(term: str) -> list[str]:
     return ordered[:5]
 
 
-def do_help(ch: Character, args: str) -> str:
-    topic = " ".join(args.strip().split())
+def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
+    topic = _normalize_topic(args)
     if not topic:
         topic = "summary"
 
@@ -151,6 +190,8 @@ def do_help(ch: Character, args: str) -> str:
         _add_entry(candidate)
 
     if matches:
+        if limit_results:
+            matches = matches[:1]
         chunks: list[str] = []
         for candidate in matches:
             sections: list[str] = []

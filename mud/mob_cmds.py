@@ -4,6 +4,8 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from mud.characters import is_same_group
+from mud.skills.registry import skill_registry
 from mud.utils import rng_mm
 
 if TYPE_CHECKING:
@@ -63,6 +65,62 @@ def _find_char_world(name: str) -> Character | None:
     return None
 
 
+def _match_obj_name(obj: Object | None, token: str) -> bool:
+    if obj is None or not token:
+        return False
+    name = getattr(obj, "name", None)
+    if not name:
+        prototype = getattr(obj, "prototype", None)
+        name = getattr(prototype, "name", None)
+    if not name:
+        return False
+    return name.lower().startswith(token.lower())
+
+
+def _find_obj_here(ch: Character, token: str) -> Object | None:
+    if not token:
+        return None
+    room = getattr(ch, "room", None)
+    if room is not None:
+        for obj in list(getattr(room, "contents", []) or []):
+            if _match_obj_name(obj, token):
+                return obj
+    for obj in list(getattr(ch, "inventory", []) or []):
+        if _match_obj_name(obj, token):
+            return obj
+    equipment = getattr(ch, "equipment", {}) or {}
+    for obj in equipment.values():
+        if _match_obj_name(obj, token):
+            return obj
+    return None
+
+
+def _extract_character(victim: Character) -> None:
+    """Remove a character from the world, mirroring ROM extract_char."""
+
+    from mud.models.character import character_registry
+
+    room = getattr(victim, "room", None)
+    if room is not None:
+        remover = getattr(room, "remove_character", None)
+        if callable(remover):
+            remover(victim)
+        else:
+            people = getattr(room, "people", None)
+            if people and victim in people:
+                people.remove(victim)
+            area = getattr(room, "area", None)
+            if area is not None and not getattr(victim, "is_npc", True):
+                current = int(getattr(area, "nplayer", 0))
+                area.nplayer = max(0, current - 1)
+            if getattr(victim, "room", None) is room:
+                victim.room = None
+    try:
+        character_registry.remove(victim)
+    except ValueError:
+        pass
+
+
 def _get_room_by_vnum(vnum: int) -> Room | None:
     from mud.registry import room_registry
 
@@ -102,6 +160,31 @@ def _append_message(target: Character, message: str) -> None:
     if not hasattr(target, "messages"):
         return
     target.messages.append(message)
+
+
+def do_mpat(ch: Character, argument: str) -> None:
+    location_token, _, command = argument.partition(" ")
+    if not location_token or not command.strip():
+        return
+    destination = _find_location(ch, location_token)
+    if destination is None:
+        return
+    original_room = getattr(ch, "room", None)
+    original_on = getattr(ch, "on", None)
+    if destination is original_room:
+        from mud.commands.dispatcher import process_command
+
+        process_command(ch, command.strip())
+        return
+    _move_to_room(ch, destination)
+    from mud.commands.dispatcher import process_command
+    process_command(ch, command.strip())
+    from mud.models.character import character_registry
+
+    if ch in character_registry:
+        if original_room is not None:
+            _move_to_room(ch, original_room)
+        ch.on = original_on
 
 
 def _broadcast(
@@ -230,6 +313,76 @@ def do_mpcancel(ch: Character, argument: str) -> None:
     ch.mprog_delay = 0
 
 
+def _split_spell_argument(argument: str) -> tuple[str, str]:
+    raw = argument.strip()
+    if not raw:
+        return "", ""
+    if raw[0] in {"'", '"'}:
+        terminator = raw[0]
+        end_index = raw.find(terminator, 1)
+        if end_index == -1:
+            spell = raw[1:].strip()
+            return spell, ""
+        spell = raw[1:end_index].strip()
+        rest = raw[end_index + 1 :].strip()
+        return spell, rest
+    spell, _, rest = raw.partition(" ")
+    return spell, rest.strip()
+
+
+def do_mpcast(ch: Character, argument: str) -> None:
+    spell_name, rest = _split_spell_argument(argument)
+    if not spell_name:
+        return
+    spell = skill_registry.find_spell(ch, spell_name)
+    if spell is None:
+        return
+    handler = skill_registry.handlers.get(spell.name)
+    if handler is None:
+        return
+
+    target_token = rest.strip()
+    target_kind = (getattr(spell, "target", "victim") or "victim").lower()
+
+    if target_kind == "ignore":
+        target: Character | Object | None = None
+    elif target_kind == "victim":
+        victim = _find_char_in_room(ch, target_token)
+        if victim is None or victim is ch:
+            return
+        target = victim
+    elif target_kind == "friendly":
+        if target_token:
+            victim = _find_char_in_room(ch, target_token)
+            if victim is None:
+                return
+            target = victim
+        else:
+            target = ch
+    elif target_kind == "self":
+        target = ch
+    elif target_kind == "object":
+        obj = _find_obj_here(ch, target_token)
+        if obj is None:
+            return
+        target = obj
+    elif target_kind == "character_or_object":
+        if not target_token:
+            return
+        victim = _find_char_in_room(ch, target_token)
+        if victim is not None:
+            target = victim
+        else:
+            obj = _find_obj_here(ch, target_token)
+            if obj is None:
+                return
+            target = obj
+    else:
+        return
+
+    handler(ch, target)
+
+
 def do_mpmload(ch: Character, argument: str) -> None:
     parts = argument.split()
     if not parts:
@@ -317,6 +470,79 @@ def _transfer_character(ch: Character, victim: Character, dest: Room) -> None:
         victim.room = dest
 
 
+def _find_object_for_transfer(
+    ch: Character, token: str
+) -> tuple[Object | None, str | tuple[str, str] | None]:
+    room = getattr(ch, "room", None)
+    for obj in list(getattr(room, "contents", []) or []):
+        if _match_object(obj, token):
+            return obj, "room"
+    for obj in list(getattr(ch, "inventory", []) or []):
+        if _match_object(obj, token):
+            return obj, "inventory"
+    equipment = getattr(ch, "equipment", None)
+    if isinstance(equipment, dict):
+        for slot, equipped in equipment.items():
+            if equipped is not None and _match_object(equipped, token):
+                return equipped, ("equipment", str(slot))
+    return None, None
+
+
+def _remove_object_from_source(
+    ch: Character, obj: Object, source: str | tuple[str, str] | None
+) -> None:
+    if source == "room":
+        room = getattr(ch, "room", None)
+        contents = getattr(room, "contents", None)
+        if contents and obj in contents:
+            contents.remove(obj)
+        if getattr(obj, "location", None) is room:
+            obj.location = None
+        return
+    remover = getattr(ch, "remove_object", None)
+    if callable(remover):
+        remover(obj)
+        return
+    if source == "inventory":
+        inventory = getattr(ch, "inventory", None)
+        if inventory and obj in inventory:
+            inventory.remove(obj)
+        return
+    if isinstance(source, tuple) and source and source[0] == "equipment":
+        equipment = getattr(ch, "equipment", None)
+        if isinstance(equipment, dict):
+            slot_key = source[1]
+            if equipment.get(slot_key) is obj:
+                equipment.pop(slot_key, None)
+
+
+def do_mpotransfer(ch: Character, argument: str) -> None:
+    token, _, rest = argument.partition(" ")
+    obj_token = token.strip()
+    location_token = rest.strip()
+    if not obj_token or not location_token:
+        return
+    destination = _resolve_transfer_location(ch, location_token)
+    if destination is None:
+        return
+    obj, source = _find_object_for_transfer(ch, obj_token)
+    if obj is None:
+        return
+    _remove_object_from_source(ch, obj, source)
+    adder = getattr(destination, "add_object", None)
+    if callable(adder):
+        adder(obj)
+    else:
+        contents = getattr(destination, "contents", None)
+        if contents is None:
+            contents = []
+            destination.contents = contents  # type: ignore[attr-defined]
+        if obj not in contents:
+            contents.append(obj)
+        if hasattr(obj, "location"):
+            obj.location = destination
+
+
 def do_mpgoto(ch: Character, argument: str) -> None:
     destination = _find_location(ch, argument.strip())
     if destination is None:
@@ -324,6 +550,68 @@ def do_mpgoto(ch: Character, argument: str) -> None:
     if getattr(ch, "fighting", None) is not None:
         ch.fighting = None
     _move_to_room(ch, destination)
+
+
+def _purge_object(ch: Character, obj: Object) -> None:
+    room = getattr(ch, "room", None)
+    if room is not None:
+        contents = getattr(room, "contents", None)
+        if contents and obj in contents:
+            contents.remove(obj)
+        if getattr(obj, "location", None) is room:
+            obj.location = None
+    inventory = getattr(ch, "inventory", None)
+    if inventory and obj in inventory:
+        inventory.remove(obj)
+    equipment = getattr(ch, "equipment", None)
+    if isinstance(equipment, dict):
+        for slot, equipped in list(equipment.items()):
+            if equipped is obj:
+                equipment.pop(slot, None)
+
+
+def do_mppurge(ch: Character, argument: str) -> None:
+    token = argument.strip()
+    room = getattr(ch, "room", None)
+    if room is None:
+        return
+
+    if not token or token.lower() == "all":
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is ch:
+                continue
+            if not getattr(occupant, "is_npc", False):
+                continue
+            _extract_character(occupant)
+        for obj in list(getattr(room, "contents", []) or []):
+            _purge_object(ch, obj)
+        return
+
+    victim = _find_char_in_room(ch, token)
+    if victim is not None:
+        if not getattr(victim, "is_npc", False):
+            return
+        _extract_character(victim)
+        return
+
+    target_obj: Object | None = None
+    for obj in list(getattr(room, "contents", []) or []):
+        if _match_object(obj, token):
+            target_obj = obj
+            break
+    if target_obj is None:
+        for obj in list(getattr(ch, "inventory", []) or []):
+            if _match_object(obj, token):
+                target_obj = obj
+                break
+    if target_obj is None:
+        for equipped in list(getattr(ch, "equipment", {}).values()):
+            if equipped is not None and _match_object(equipped, token):
+                target_obj = equipped
+                break
+    if target_obj is None:
+        return
+    _purge_object(ch, target_obj)
 
 
 def do_mptransfer(ch: Character, argument: str) -> None:
@@ -347,6 +635,28 @@ def do_mptransfer(ch: Character, argument: str) -> None:
     _transfer_character(ch, victim, destination)
 
 
+def do_mpgtransfer(ch: Character, argument: str) -> None:
+    leader_token, _, rest = argument.partition(" ")
+    leader_name = leader_token.strip()
+    destination_token = rest.strip()
+    if not leader_name:
+        return
+    leader = _find_char_in_room(ch, leader_name)
+    if leader is None:
+        return
+    room = getattr(ch, "room", None)
+    if room is None:
+        return
+    for occupant in list(_iter_room_people(room)):
+        if not is_same_group(leader, occupant):
+            continue
+        target_name = getattr(occupant, "name", "") or ""
+        if not target_name:
+            continue
+        command = target_name if not destination_token else f"{target_name} {destination_token}"
+        do_mptransfer(ch, command)
+
+
 def do_mpforce(ch: Character, argument: str) -> None:
     target_name, _, command = argument.partition(" ")
     if not target_name or not command.strip():
@@ -363,6 +673,51 @@ def do_mpforce(ch: Character, argument: str) -> None:
     if victim is None or victim is ch:
         return
     process_command(victim, command)
+
+
+def do_mpgforce(ch: Character, argument: str) -> None:
+    target_name, _, command = argument.partition(" ")
+    command = command.strip()
+    if not target_name or not command:
+        return
+    victim = _find_char_in_room(ch, target_name)
+    if victim is None or victim is ch:
+        return
+    from mud.commands.dispatcher import process_command
+
+    room = getattr(victim, "room", None)
+    for occupant in _iter_room_people(room):
+        if not is_same_group(victim, occupant):
+            continue
+        if occupant is ch:
+            continue
+        process_command(occupant, command)
+
+
+def do_mpvforce(ch: Character, argument: str) -> None:
+    vnum_token, _, command = argument.partition(" ")
+    command = command.strip()
+    if not vnum_token or not command:
+        return
+    try:
+        target_vnum = int(vnum_token)
+    except ValueError:
+        return
+    from mud.commands.dispatcher import process_command
+    from mud.models.character import character_registry
+
+    for candidate in list(character_registry):
+        if candidate is ch:
+            continue
+        if not getattr(candidate, "is_npc", False):
+            continue
+        prototype = getattr(candidate, "prototype", None)
+        proto_vnum = getattr(prototype, "vnum", None)
+        if proto_vnum != target_vnum:
+            continue
+        if getattr(candidate, "fighting", None) is not None:
+            continue
+        process_command(candidate, command)
 
 
 def do_mpkill(ch: Character, argument: str) -> None:
@@ -472,6 +827,20 @@ def do_mpdamage(ch: Character, argument: str) -> None:
     _apply_damage(victim)
 
 
+def do_mpremember(ch: Character, argument: str) -> None:
+    target_name = argument.strip()
+    if not target_name:
+        return
+    target = _find_char_world(target_name)
+    if target is None:
+        return
+    ch.mprog_target = target
+
+
+def do_mpforget(ch: Character, argument: str) -> None:
+    ch.mprog_target = None
+
+
 def do_mpremove(ch: Character, argument: str) -> None:
     target_name, _, obj_token = argument.partition(" ")
     if not target_name or not obj_token.strip():
@@ -528,12 +897,21 @@ _COMMANDS: list[MobCommand] = [
     MobCommand("mload", do_mpmload),
     MobCommand("oload", do_mpoload),
     MobCommand("goto", do_mpgoto),
+    MobCommand("at", do_mpat),
+    MobCommand("purge", do_mppurge),
     MobCommand("transfer", do_mptransfer),
+    MobCommand("gtransfer", do_mpgtransfer),
+    MobCommand("otransfer", do_mpotransfer),
+    MobCommand("cast", do_mpcast),
+    MobCommand("gforce", do_mpgforce),
+    MobCommand("vforce", do_mpvforce),
     MobCommand("force", do_mpforce),
     MobCommand("kill", do_mpkill),
     MobCommand("assist", do_mpassist),
     MobCommand("junk", do_mpjunk),
     MobCommand("damage", do_mpdamage),
+    MobCommand("remember", do_mpremember),
+    MobCommand("forget", do_mpforget),
     MobCommand("remove", do_mpremove),
     MobCommand("flee", do_mpflee),
     MobCommand("call", do_mpcall),

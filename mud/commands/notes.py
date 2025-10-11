@@ -127,14 +127,27 @@ def _next_readable_board(current_board, trust: int):
     return None
 
 
+def _format_note(note, number: int) -> str:
+    sender = note.sender or ""
+    subject = note.subject or ""
+    to_field = note.to or ""
+    date_str = time.ctime(note.timestamp)
+    header = f"{{W[{number:4d}{{x] {{Y{sender}{{x: {{g{subject}{{x}}"
+    date_line = f"{{YDate{{x:  {date_str}"
+    to_line = f"{{YTo{{x:    {to_field}"
+    separator = "{g==========================================================================={x"
+    body = note.text or ""
+    return "\n".join([header, date_line, to_line, separator, body])
+
+
 def _read_next_unread_note(char: Character, pcdata: PCData, board, trust: int) -> str:
     last_read = _board_last_read(pcdata, board)
-    for note in board.notes:
+    for position, note in enumerate(board.notes, start=1):
         if not _is_note_visible_to(char, note):
             continue
         if note.timestamp > last_read:
             _set_last_read(pcdata, board, note.timestamp)
-            return f"{note.subject}\n{note.text}"
+            return _format_note(note, position)
 
     message_lines = ["No new notes in this board."]
     next_board = _next_readable_board(board, trust)
@@ -186,21 +199,24 @@ def do_board(char: Character, args: str) -> str:
     args = args.strip()
     if not args:
         lines = [
-            "Num  Name         Unread Description",
-            "==== ============ ====== =============================",
+            "{RNum          Name Unread Description{x",
+            "{R==== ============ ====== ============================={x",
         ]
         for idx, board in available:
             last_read = _board_last_read(pcdata, board)
             unread = board.unread_count(last_read)
-            lines.append(f"({idx:2d}) {board.name:<12} [{unread:>3}] {board.description}")
+            unread_color = "{G" if unread else "{g"
+            lines.append(
+                f"({{W{idx:2d}{{x) {{g{board.name:<12}{{x [{unread_color}{unread:4}{{x] {{y{board.description}{{x"
+            )
         lines.append("")
-        lines.append(f"Current board: {current_board.name}.")
+        lines.append(f"You current board is {{W{current_board.name}{{x.")
         if not current_board.can_read(trust):
-            lines.append("You cannot read or write on this board.")
+            lines.append("You cannot read nor write notes on this board.")
         elif trust < current_board.write_level:
-            lines.append("You can only read on this board.")
+            lines.append("You can only read notes from this board.")
         else:
-            lines.append("You can read and write on this board.")
+            lines.append("You can both read and write on this board.")
         return "\n".join(lines)
 
     if pcdata.in_progress:
@@ -263,14 +279,50 @@ def do_note(char: Character, args: str) -> str:
         return "Note posted."
 
     if subcmd == "list":
-        if not board.notes:
-            return "No notes."
+        show_count: int | None = None
+        arg = rest_str.strip()
+        if arg:
+            try:
+                parsed = int(arg)
+            except ValueError:
+                parsed = 0
+            if parsed > 0:
+                show_count = parsed
         last_read = _board_last_read(pcdata, board)
-        lines = []
-        for i, note in enumerate(board.notes, start=1):
+        visible_total = sum(1 for note in board.notes if _is_note_visible_to(char, note))
+        if visible_total == 0:
+            return "No notes."
+        header = ["{WNotes on this board:{x", "{rNum> Author        Subject{x"]
+        lines: list[str] = []
+        shown_visible = 0
+        for index, note in enumerate(board.notes, start=1):
+            if not _is_note_visible_to(char, note):
+                continue
+            shown_visible += 1
+            if show_count is not None and visible_total - show_count >= shown_visible:
+                continue
             marker = "*" if note.timestamp > last_read else " "
-            lines.append(f"{i:2d}{marker}: {note.subject} ({note.sender})")
-        return "\n".join(lines)
+            sender = (note.sender or "")[:13]
+            subject = note.subject or ""
+            formatted_sender = f"{sender:<13}"
+            line = (
+                "{W"
+                + f"{index:3d}"
+                + "{x>"
+                + "{B"
+                + marker
+                + "{x"
+                + "{Y"
+                + formatted_sender
+                + "{x"
+                + "{y"
+                + subject
+                + "{x"
+            )
+            lines.append(line)
+        if not lines:
+            return "No notes."
+        return "\n".join(header + lines)
 
     if subcmd == "read":
         if not rest_str.strip():
@@ -284,7 +336,7 @@ def do_note(char: Character, args: str) -> str:
             return "No such note."
         note = board.notes[index]
         _set_last_read(pcdata, board, note.timestamp)
-        return f"{note.subject}\n{note.text}"
+        return _format_note(note, index + 1)
 
     if subcmd == "write":
         if not board.can_write(trust):

@@ -49,6 +49,76 @@ def test_note_persistence(tmp_path):
         _teardown_boards(orig_dir)
 
 
+def test_note_list_filters_visible_range(tmp_path):
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        board.notes.clear()
+        board.post("Builder", "First", "Welcome to the board")
+        board.post("Builder", "Second", "Remember to roleplay")
+        board.post("Builder", "Third", "Have fun")
+        notes.save_board(board)
+
+        char = create_test_character("Reader", 3001)
+        char.level = 5
+
+        full_list = process_command(char, "note list")
+        full_lines = full_list.splitlines()
+        assert full_lines[0] == "{WNotes on this board:{x"
+        assert full_lines[1] == "{rNum> Author        Subject{x"
+        assert len(full_lines) == 5
+        assert any("First" in line for line in full_lines)
+
+        filtered = process_command(char, "note list 2")
+        lines = filtered.splitlines()
+        assert lines[0] == "{WNotes on this board:{x"
+        assert lines[1] == "{rNum> Author        Subject{x"
+        assert len(lines) == 4
+        assert any("Second" in line for line in lines)
+        assert any("Third" in line for line in lines)
+        assert not any("First" in line for line in lines)
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_list_hides_private_notes(tmp_path):
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        board.notes.clear()
+        board.post("Immortal", "Staff", "Private planning", to="immortals")
+        board.post("Builder", "Public", "News for everyone", to="all")
+        notes.save_board(board)
+
+        char = create_test_character("Reader", 3001)
+        char.level = 5
+
+        output = process_command(char, "note list")
+        lines = output.splitlines()
+        assert lines[0] == "{WNotes on this board:{x"
+        assert lines[1] == "{rNum> Author        Subject{x"
+        assert any("Public" in line for line in lines)
+        assert not any("Staff" in line for line in lines)
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
 def test_initialize_world_loads_boards_from_disk(tmp_path):
     boards_dir = tmp_path / "boards"
     orig_dir = _setup_boards(boards_dir)
@@ -75,7 +145,7 @@ def test_initialize_world_loads_boards_from_disk(tmp_path):
         char.level = 5
         board_output = process_command(char, "board")
         assert "general" in board_output.lower()
-        assert "[  1]" in board_output
+        assert "[{G   1{x]" in board_output
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
@@ -111,8 +181,8 @@ def test_board_switching_and_unread_counts(tmp_path):
         char.level = 10
         board_output = process_command(char, "board")
         assert "general" in board_output.lower()
-        assert "[  1]" in board_output
-        assert "[  0]" in board_output
+        assert "[{G   1{x]" in board_output
+        assert "[{g   0{x]" in board_output
         change_output = process_command(char, "board 2")
         assert "ideas" in change_output.lower()
         assert char.pcdata.board_name == ideas.storage_key()
@@ -123,6 +193,48 @@ def test_board_switching_and_unread_counts(tmp_path):
         allow_output = process_command(char, "board personal")
         assert "personal" in allow_output.lower()
         assert char.pcdata.board_name == personal.storage_key()
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_board_listing_uses_rom_colors(tmp_path):
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        general = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        ideas = notes.get_board(
+            "Ideas",
+            description="Suggestions",
+            read_level=0,
+            write_level=0,
+        )
+        general.notes.clear()
+        ideas.notes.clear()
+        general.post("Immortal", "Welcome", "Read the rules")
+
+        char = create_test_character("Reader", 3001)
+        char.level = 5
+
+        output = process_command(char, "board")
+        lines = output.splitlines()
+        assert lines[0] == "{RNum          Name Unread Description{x"
+        assert lines[1] == "{R==== ============ ====== ============================={x"
+        general_line = next(line for line in lines if "General" in line)
+        ideas_line = next(line for line in lines if "Ideas" in line)
+        assert general_line.startswith("({W 1{x)")
+        assert "{gGeneral" in general_line
+        assert "[{G   1{x]" in general_line
+        assert ideas_line.startswith("({W 2{x)")
+        assert "{gIdeas" in ideas_line
+        assert "[{g   0{x]" in ideas_line
+        assert lines[-1] == "You can both read and write on this board."
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
@@ -174,7 +286,7 @@ def test_board_switching_persists_last_note(tmp_path):
         assert loaded.pcdata.board_name == ideas.storage_key()
         board_listing = process_command(loaded, "board")
         assert "ideas" in board_listing.lower()
-        assert "[  1]" in board_listing
+        assert "[{G   1{x]" in board_listing
     finally:
         character_registry.clear()
         _teardown_boards(orig_board_dir)
@@ -400,6 +512,51 @@ def test_note_read_respects_visibility(tmp_path):
         explicit_output = process_command(mortal, "note read 2")
         assert "News" in explicit_output
         assert mortal.pcdata.last_notes[board.storage_key()] == visible.timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_read_includes_header_metadata(tmp_path):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+        )
+        fixed_timestamp = 1_600_000_000
+        note = board.post(
+            "Immortal",
+            "Welcome",
+            "Greetings, adventurers!",
+            to="all",
+            timestamp=fixed_timestamp,
+        )
+        notes.save_board(board)
+
+        reader = create_test_character("Archivist", 3001)
+        reader.level = 60
+        reader.trust = 60
+
+        explicit = process_command(reader, "note read 1")
+        assert "{W[   1{x] {YImmortal{x: {gWelcome{x}" in explicit
+        assert f"{{YDate{{x:  {time.ctime(fixed_timestamp)}" in explicit
+        assert "{YTo{x:    all" in explicit
+        assert "{g==========================================================================={x" in explicit
+        assert "Greetings, adventurers!" in explicit
+
+        auto_reader = create_test_character("Historian", 3001)
+        auto_reader.level = 60
+        auto_reader.trust = 60
+
+        auto_output = process_command(auto_reader, "note")
+        assert "{W[   1{x] {YImmortal{x: {gWelcome{x}" in auto_output
+        assert auto_reader.pcdata.last_notes[board.storage_key()] == note.timestamp
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)

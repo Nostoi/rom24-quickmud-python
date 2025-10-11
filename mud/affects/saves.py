@@ -25,11 +25,16 @@ def _check_immune(victim: Character, dam_type: int) -> int:
     IS_RESISTANT = 2
     IS_VULNERABLE = 3
 
-    if dam_type == DamageType.NONE:
+    try:
+        dam_value = int(dam_type)
+    except (TypeError, ValueError):
+        dam_value = int(DamageType.NONE)
+
+    if dam_value == int(DamageType.NONE):
         return -1
 
     # Default from global WEAPON/MAGIC flags
-    if dam_type <= DamageType.SLASH:
+    if dam_value <= int(DamageType.SLASH):
         if victim.imm_flags & DefenseBit.WEAPON:
             default = IS_IMMUNE
         elif victim.res_flags & DefenseBit.WEAPON:
@@ -50,7 +55,10 @@ def _check_immune(victim: Character, dam_type: int) -> int:
 
     # Map dam_type to specific IMM_* bit
     bit = None
-    dt = DamageType(dam_type)
+    try:
+        dt = DamageType(dam_value)
+    except ValueError:
+        return default
     mapping = {
         DamageType.BASH: DefenseBit.BASH,
         DamageType.PIERCE: DefenseBit.PIERCE,
@@ -96,7 +104,7 @@ def saves_spell(level: int, victim: Character, dam_type: int) -> bool:
     Mirrors src/magic.c:saves_spell() logic:
     - base: 50 + (victim.level - level) * 5 - victim.saving_throw * 2
     - berserk: + victim.level/2 (C integer division)
-    - immunity/resistance/vulnerability adjustments (stubbed to normal for now)
+    - immunity/resistance/vulnerability adjustments via ``check_immune`` fallback
     - player classes with fMana: save = 9*save/10 (C division)
     - clamp 5..95, succeed if number_percent() < save
     """
