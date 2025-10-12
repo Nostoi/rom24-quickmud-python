@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: shops_economy -->
+<!-- LAST-PROCESSED: skills_spells -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-12-09 (pytest --collect-only -q; 686 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-12-09 (pytest --collect-only -q) -->
-<!-- TEST-PASS-RATE: 100% (collection only) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-12 (pytest --collect-only -q; 732 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-12-12 (PYTHONPATH=. pytest tests/test_skills_damage.py::test_earthquake_damages_grounded_targets tests/test_skills_damage.py::test_earthquake_sends_area_messages -q; 2 passed) -->
+<!-- TEST-PASS-RATE: 100% (2 passed / 2 total) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -241,11 +241,112 @@ NOTES:
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-10-08
+### skills_spells — Parity Audit 2025-12-11
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
-KEY RISKS: affects, alignment, messaging, mass_effects, visibility, identification
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: RNG, lag_wait, side_effects, area_effects
 TASKS:
+
+- ✅ [P0] **skills_spells: port continual light glow/object conjuration spell** — done 2025-12-12
+  EVIDENCE: C src/magic.c:1466-1496; PY mud/skills/handlers.py:1601-1643; PY mud/models/constants.py:20-29; TEST tests/test_skills_conjuration.py::{test_continual_light_glows_object_in_inventory,test_continual_light_conjures_light_ball_in_room}
+- ✅ [P0] **skills_spells: port create rose conjuration spell** — done 2025-12-12
+  EVIDENCE: C src/magic.c:1518-1538; PY mud/skills/handlers.py:1645-1677; TEST tests/test_skills_conjuration.py::test_create_rose_conjures_rose_into_caster_inventory
+- ✅ [P0] **skills_spells: port earthquake area bash damage spell** — done 2025-12-12
+  EVIDENCE: C src/magic.c:2256-2284; PY mud/skills/handlers.py:2571-2610; TEST tests/test_skills_damage.py::{test_earthquake_damages_grounded_targets,test_earthquake_sends_area_messages}
+- ✅ [P0] **skills_spells: port poison object/character spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:3950-4052; PY mud/skills/handlers.py:4115-4246; TEST tests/test_skills_debuffs.py::{test_poison_envenoms_weapon_and_messages,test_poison_taints_food_and_messages,test_poison_afflicts_character_and_messages}
+
+- ✅ [P0] **skills_spells: port plague disease spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:3890-3952; PY mud/skills/handlers.py:4072-4112; TEST tests/test_skills_debuffs.py::{test_plague_applies_affect_and_messages,test_plague_respects_saves_and_undead}
+
+- ✅ [P0] **skills_spells: port pass door intangible movement spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:3864-3889; PY mud/skills/handlers.py:4005-4034; TEST tests/test_skills_buffs.py::{test_pass_door_applies_affect_and_messages,test_pass_door_rejects_duplicates}
+
+- ✅ [P0] **skills_spells: let slow honor override casting level for scrolls and wands** — done 2025-12-11
+  EVIDENCE: PY mud/skills/handlers.py:4098-4187; TEST tests/test_skills_debuffs.py::{test_slow_applies_affect_and_messages,test_slow_uses_override_item_level,test_slow_dispels_haste_or_handles_saves}
+
+- ✅ [P0] **skills_spells: port chain lightning bouncing damage spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:1234-1310; PY mud/skills/handlers.py:1172-1268; TEST tests/test_skills_damage.py::{test_chain_lightning_arcs_room_targets,test_chain_lightning_can_backfire_on_caster}
+
+- ✅ [P1] **skills_spells: port change sex temporary affect spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:1310-1342; PY mud/skills/handlers.py:1287-1329; PY mud/models/character.py:141-538; TEST tests/test_skills_buffs.py::{test_change_sex_applies_affect_and_messages,test_change_sex_respects_duplicates_and_saves}
+
+- ✅ [P1] **skills_spells: port control weather better/worse adjustments** — done 2025-12-11
+  EVIDENCE: C src/magic.c:1501-1516; PY mud/skills/handlers.py:1612-1633; TEST tests/test_skills_misc.py::{test_control_weather_makes_weather_better,test_control_weather_makes_weather_worse}
+
+- ✅ [P0] **skills_spells: let haste honor override casting level for scrolls and wands** — done 2025-12-11
+  EVIDENCE: PY mud/skills/handlers.py:3225-3308; TEST tests/test_skills_buffs.py::{test_haste_applies_affect_and_messages,test_haste_uses_override_item_level,test_haste_dispels_slow_or_blocks_duplicates}
+
+- ✅ [P0] **skills_spells: let giant strength honor override casting level for scrolls and wands** — done 2025-12-11
+  EVIDENCE: PY mud/skills/handlers.py:3171-3220; TEST tests/test_skills_buffs.py::{test_giant_strength_applies_strength_bonus,test_giant_strength_uses_override_item_level,test_giant_strength_rejects_duplicates}
+
+- ✅ [P0] **skills_spells: port giant strength strength buff spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:3016-3036 (`spell_giant_strength` affect fields); PY mud/skills/handlers.py:3168-3212; TEST tests/test_skills_buffs.py::{test_giant_strength_applies_strength_bonus,test_giant_strength_rejects_duplicates}
+
+- ✅ [P0] **skills_spells: port haste dexterity buff and AFF_HASTE affect** — done 2025-12-11
+  EVIDENCE: C src/magic.c:3050-3099 (`spell_haste` duration, modifiers, slow dispel); PY mud/skills/handlers.py:3185-3253; TEST tests/test_skills_buffs.py::{test_haste_applies_affect_and_messages,test_haste_dispels_slow_or_blocks_duplicates}
+
+- ✅ [P0] **skills_spells: port slow dexterity debuff and AFF_SLOW affect** — done 2025-12-11
+  EVIDENCE: C src/magic.c:4386-4424 (`spell_slow` checks and affect fields); PY mud/skills/handlers.py:3955-4012; TEST tests/test_skills_debuffs.py::{test_slow_applies_affect_and_messages,test_slow_dispels_haste_or_handles_saves}
+
+- ✅ [P0] **skills_spells: port fireball explosive damage spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:2740-2782 (`spell_fireball` dam table); PY mud/skills/handlers.py:2621-2691; TEST tests/test_skills_damage.py::{test_fireball_uses_rom_damage_table,test_fireball_save_halves_damage}
+
+- ✅ [P0] **skills_spells: port flamestrike holy fire bolt** — done 2025-12-11
+  EVIDENCE: C src/magic.c:2790-2806 (`spell_flamestrike` dice formula); PY mud/skills/handlers.py:2708-2722; TEST tests/test_skills_damage.py::{test_flamestrike_rolls_rom_dice,test_flamestrike_save_halves_damage}
+
+- ✅ [P0] **skills_spells: port fireproof object protection spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:2757-2784 (`spell_fireproof` affect_to_obj); PY mud/skills/handlers.py:2695-2742; TEST tests/test_skills_buffs.py::{test_fireproof_applies_burn_proof_and_messages,test_fireproof_rejects_already_protected}
+
+- ✅ [P0] **skills_spells: port stone skin AC buff spell** — done 2025-12-11
+  EVIDENCE: C src/magic.c:4441-4466; PY mud/skills/handlers.py:3891-3925; TEST tests/test_skills_buffs.py::{test_stone_skin_applies_ac_and_messages,test_stone_skin_rejects_duplicates}
+
+- ✅ [P0] **skills_spells: port ventriloquate thrown-voice messaging** — done 2025-12-11
+  EVIDENCE: C src/magic.c:4538-4562; PY mud/skills/handlers.py:4175-4206; TEST tests/test_skills_misc.py::{test_ventriloquate_broadcasts_fake_voice,test_ventriloquate_reveals_spoof_on_save}
+
+- ✅ [P0] **skills_spells: port sneak stealth skill** — done 2025-12-11
+  EVIDENCE: C src/act_move.c:1496-1518; PY mud/skills/handlers.py:3738-3770; TEST tests/test_skills_buffs.py::{test_sneak_sets_affect_on_success,test_sneak_failure_trains_skill}
+
+- ✅ [P0] **skills_spells: port summon caller spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:4472-4506; PY mud/skills/handlers.py:3897-3982; TEST tests/test_skills_transport.py::{test_summon_moves_target_to_caster,test_summon_respects_room_flags_and_level}
+
+- ✅ [P0] **skills_spells: port teleport destination spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:4508-4550; PY mud/skills/handlers.py:3993-4052; TEST tests/test_skills_transport.py::{test_teleport_sends_victim_to_random_room,test_teleport_respects_immunity_and_combat}
+
+- ✅ [P0] **skills_spells: port trip combat skill** — done 2025-10-12
+  EVIDENCE: C src/fight.c:2641-2731; PY mud/skills/handlers.py:3923-4012; TEST tests/test_skills_combat.py::{test_trip_knocks_target_and_triggers_wait_state,test_trip_checks_flying_and_self_trip}
+
+- ✅ [P0] **skills_spells: port weaken strength debuff spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:4564-4580; PY mud/skills/handlers.py:4050-4088; PY mud/models/constants.py:495-507; TEST tests/test_skills_debuffs.py::{test_weaken_applies_strength_penalty_and_affect,test_weaken_respects_save_and_duplicates}
+
+- ✅ [P0] **skills_spells: port word of recall teleport spell** — done 2025-10-12
+  EVIDENCE: C src/magic.c:4585-4623; PY mud/skills/handlers.py:4100-4152; TEST tests/test_skills_transport.py::{test_word_of_recall_moves_player_to_temple,test_word_of_recall_blocked_by_curse_and_no_recall}
+
+- ✅ [P0] **skills_spells: port dirt kicking combat skill** — done 2025-12-10
+  EVIDENCE: C src/fight.c:2489-2692 (`do_dirt` chance, terrain modifiers, blindness affect)
+  EVIDENCE: PY mud/skills/handlers.py:2004-2081 (dirt_kicking chance calculation, blindness affect, wait-state)
+  EVIDENCE: TEST tests/test_skills_combat.py::test_dirt_kicking_blinds_and_sets_wait_state
+
+- ✅ [P0] **skills_spells: port disarm combat maneuver** — done 2025-12-10
+  EVIDENCE: C src/fight.c:3145-3230 (`do_disarm` chance modifiers, weapon removal, messaging)
+  EVIDENCE: PY mud/skills/handlers.py:2083-2247 (disarm chance calculation, wait-state, weapon drop handling)
+  EVIDENCE: TEST tests/test_skills_combat.py::test_disarm_strips_weapon_and_trains_skill
+
+- ✅ [P0] **skills_spells: port calm mass pacification spell** — done 2025-12-10
+  EVIDENCE: C src/magic.c:968-1031 (spell_calm fight-stop chance, immunity guards, and hit/dam penalties)
+  EVIDENCE: PY mud/skills/handlers.py:970-1043 (calm implementation mirrors ROM chance, immunity checks, and affect application)
+  EVIDENCE: TEST tests/test_skills_mass.py::{test_calm_stops_fights_and_applies_affect,test_calm_respects_undead_and_immunity}
+
+- ✅ [P0] **skills_spells: let calm honor override casting level for scrolls/wands** — done 2025-12-10
+  EVIDENCE: C src/magic.c:968-1004 (spell_calm chance/duration use spell level); PY mud/skills/handlers.py:980-1055; TEST tests/test_skills_mass.py::test_calm_uses_override_level_for_scrolls
+
+- ✅ [P0] **skills_spells: port cause light/serious/critical damage spells** — done 2025-12-10
+  EVIDENCE: C src/magic.c:1206-1234 (cause light/serious/critical dice formulas)
+  EVIDENCE: PY mud/skills/handlers.py:1007-1037 (cause_* implementations call apply_damage with ROM dice)
+  EVIDENCE: TEST tests/test_skills_damage.py::{test_cause_light_deals_level_scaled_damage,test_cause_serious_adds_half_level,test_cause_critical_clamps_low_level_damage}
+
+- ✅ [P0] **skills_spells: align cause harm spell nouns with ROM skill table** — done 2025-12-10
+  EVIDENCE: C src/const.c:1208-1222 (cause harm spells use "spell" noun_damage); PY mud/skills/handlers.py:1035-1108; TEST tests/test_skills_damage.py::test_cause_serious_adds_half_level
 
 - ✅ [P0] **skills_spells: port martial skill handlers (bash/backstab/berserk)** — done 2025-10-20
   EVIDENCE: C src/fight.c:2270-2998; src/fight.c:2359-2580 (berserk/bash/backstab parity logic)
@@ -332,10 +433,13 @@ TASKS:
 NOTES:
 
 - C: src/magic.c:3280-3334 and 3583-3660 guided the holy word mass loop plus infravision/invis affect handling now mirrored in mud/skills/handlers.py.
-- PY: mud/skills/handlers.py now mirrors ROM identify messaging for scrolls, wands, weapons, and containers while holy_word and invisibility parity remain covered under combat.
+- C: src/magic.c:4441-4562 and src/act_move.c:1496-1518 outline the remaining stone skin, ventriloquate, and sneak parity gaps captured above.
+- PY: mud/skills/handlers.py mirrors ROM identify messaging for scrolls, wands, weapons, and containers while holy_word and invisibility parity remain covered under combat.
 - DATA: mud/models/constants.py supplies ContainerFlag bits and LIQUID_TABLE entries so identify can report container states and drink colors.
 - DATA: mud/skills/metadata.py loads the ROM skill_table order to resolve scroll spell names for identify output.
-- TEST: tests/test_skills_identify.py exercises scroll spell lists, weapon stats, and container/wand descriptions alongside existing holy word and invisibility regressions.
+- TEST: tests/test_skills_identify.py exercises scroll spell lists, weapon stats, and container/wand descriptions alongside existing holy word and invisibility regressions; new tests in tests/test_skills_buffs.py and tests/test_skills_misc.py lock down stone skin, ventriloquate, and sneak parity.
+- PY: mud/skills/handlers.py:4115-4246 now mirrors ROM poison for weapons, food/drink, and characters with affect_join semantics and wear-off messaging.
+ - C: src/magic.c:1466-1538 and 2256-2284 guided the continual light/create rose/earthquake ports now mirrored in mud/skills/handlers.py with glow toggles, rose conjuration, and tremor messaging parity.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
