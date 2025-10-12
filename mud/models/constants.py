@@ -31,8 +31,10 @@ OBJ_VNUM_SLICED_LEG = 15
 OBJ_VNUM_GUTS = 16
 OBJ_VNUM_BRAINS = 17
 OBJ_VNUM_MUSHROOM = 20
+OBJ_VNUM_LIGHT_BALL = 21
 OBJ_VNUM_SPRING = 22
 OBJ_VNUM_DISC = 23
+OBJ_VNUM_ROSE = 1001
 
 # School equipment (OBJ_VNUM_SCHOOL_*) used during character creation (merc.h)
 OBJ_VNUM_SCHOOL_MACE = 3700
@@ -503,18 +505,18 @@ class AffectFlag(IntFlag):
     CHARM = 1 << 17
     FLYING = 1 << 18
     PASS_DOOR = 1 << 19
-    UNUSED2 = 1 << 20
+    WEAKEN = 1 << 20
     BERSERK = 1 << 21
     CALM = 1 << 22
     HASTE = 1 << 23
     SLOW = 1 << 24
     PLAGUE = 1 << 25
     DARK_VISION = 1 << 26
-    UNUSED3 = 1 << 27
-    SWIM = 1 << 28
-    REGENERATION = 1 << 29
-    UNUSED4 = 1 << 30
-    UNUSED5 = 1 << 31
+    SWIM = 1 << 27
+    REGENERATION = 1 << 28
+    UNUSED4 = 1 << 29
+    UNUSED5 = 1 << 30
+    UNUSED6 = 1 << 31
 
 
 # END affects_saves

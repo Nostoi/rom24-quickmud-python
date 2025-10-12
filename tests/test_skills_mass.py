@@ -1,13 +1,122 @@
 from mud.math.c_compat import c_div
 from mud.combat import engine as combat_engine
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import ActFlag, AffectFlag, DamageType, Position
+from mud.models.constants import ActFlag, AffectFlag, DamageType, ImmFlag, Position
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 
 
 def _make_room(vnum: int = 3100) -> Room:
     return Room(vnum=vnum, name=f"Room {vnum}")
+
+
+def test_calm_stops_fights_and_applies_affect(monkeypatch) -> None:
+    monkeypatch.setattr(skill_handlers.rng_mm, "number_range", lambda *_: 999)
+
+    caster = Character(name="Cleric", level=40, is_npc=False, hit=200, max_hit=200)
+    enemy = Character(
+        name="Warrior",
+        level=30,
+        is_npc=True,
+        hit=180,
+        max_hit=180,
+        default_pos=int(Position.STANDING),
+    )
+    observer = Character(name="Witness", level=25, is_npc=False)
+
+    room = _make_room()
+    for character in (caster, enemy, observer):
+        room.add_character(character)
+        character.messages.clear()
+
+    caster.position = int(Position.FIGHTING)
+    enemy.position = int(Position.FIGHTING)
+    caster.fighting = enemy
+    enemy.fighting = caster
+
+    assert skill_handlers.calm(caster) is True
+
+    assert caster.fighting is None
+    assert enemy.fighting is None
+    assert Position(caster.position) == Position.STANDING
+    assert Position(enemy.position) == Position.STANDING
+
+    assert caster.has_affect(AffectFlag.CALM)
+    assert enemy.has_affect(AffectFlag.CALM)
+    assert observer.has_affect(AffectFlag.CALM)
+
+    assert caster.hitroll == -5
+    assert caster.damroll == -5
+    assert enemy.hitroll == -2
+    assert enemy.damroll == -2
+
+    assert caster.messages[-1] == "A wave of calm passes over you."
+    assert enemy.messages[-1] == "A wave of calm passes over you."
+    assert observer.messages[-1] == "A wave of calm passes over you."
+
+
+def test_calm_respects_undead_and_immunity(monkeypatch) -> None:
+    monkeypatch.setattr(skill_handlers.rng_mm, "number_range", lambda *_: 999)
+
+    caster = Character(name="Cleric", level=40, is_npc=False)
+    foe = Character(name="Raider", level=30, is_npc=True)
+    undead = Character(
+        name="Ghoul",
+        level=28,
+        is_npc=True,
+        imm_flags=int(ImmFlag.MAGIC),
+        act=int(ActFlag.UNDEAD),
+    )
+
+    room = _make_room(3105)
+    for character in (caster, foe, undead):
+        room.add_character(character)
+        character.messages.clear()
+
+    caster.position = int(Position.FIGHTING)
+    foe.position = int(Position.FIGHTING)
+    undead.position = int(Position.FIGHTING)
+
+    caster.fighting = foe
+    foe.fighting = caster
+
+    assert skill_handlers.calm(caster) is False
+
+    for character in (caster, foe, undead):
+        assert not character.has_affect(AffectFlag.CALM)
+        assert character.messages == []
+
+    assert caster.fighting is foe
+    assert foe.fighting is caster
+
+
+def test_calm_uses_override_level_for_scrolls(monkeypatch) -> None:
+    monkeypatch.setattr(skill_handlers.rng_mm, "number_range", lambda low, high: high)
+
+    caster = Character(name="Novice", level=5, is_npc=False)
+    foe = Character(name="Enforcer", level=30, is_npc=True)
+
+    room = _make_room(3106)
+    for character in (caster, foe):
+        room.add_character(character)
+        character.messages.clear()
+
+    caster.position = int(Position.FIGHTING)
+    foe.position = int(Position.FIGHTING)
+    caster.fighting = foe
+    foe.fighting = caster
+
+    assert skill_handlers.calm(caster) is False
+    assert not caster.has_affect(AffectFlag.CALM)
+    assert not foe.has_affect(AffectFlag.CALM)
+    assert caster.fighting is foe
+    assert foe.fighting is caster
+
+    assert skill_handlers.calm(caster, override_level=50) is True
+    assert caster.fighting is None
+    assert foe.fighting is None
+    assert caster.has_affect(AffectFlag.CALM)
+    assert foe.has_affect(AffectFlag.CALM)
 
 
 def test_holy_word_buffs_allies_and_curses_enemies(monkeypatch) -> None:

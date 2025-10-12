@@ -6,7 +6,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
 from mud.math.c_compat import c_div
-from mud.models.constants import AffectFlag, CommFlag, ItemType, PlayerFlag, Position, Stat
+from mud.models.constants import AffectFlag, CommFlag, ItemType, PlayerFlag, Position, Sex, Stat
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -148,6 +148,7 @@ class SpellEffect:
     affect_flag: AffectFlag | None = None
     wear_off_message: str | None = None
     stat_modifiers: dict[Stat, int] = field(default_factory=dict)
+    sex_delta: int = 0
 
 
 @dataclass
@@ -456,6 +457,7 @@ class Character:
         existing = self.spell_effects.get(effect.name)
         combined = replace(effect)
         combined.stat_modifiers = dict(combined.stat_modifiers or {})
+        combined.sex_delta = int(getattr(combined, "sex_delta", 0) or 0)
 
         if existing is not None:
             combined.level = c_div(combined.level + existing.level, 2)
@@ -470,6 +472,7 @@ class Character:
                 combined.wear_off_message = existing.wear_off_message
             for stat, delta in getattr(existing, "stat_modifiers", {}).items():
                 combined.stat_modifiers[stat] = combined.stat_modifiers.get(stat, 0) + int(delta)
+            combined.sex_delta += int(getattr(existing, "sex_delta", 0) or 0)
             self.remove_spell_effect(effect.name)
 
         if combined.ac_mod:
@@ -484,6 +487,17 @@ class Character:
             self.add_affect(combined.affect_flag)
         for stat, delta in combined.stat_modifiers.items():
             self._apply_stat_modifier(stat, int(delta))
+
+        if combined.sex_delta:
+            try:
+                current_sex = int(getattr(self, "sex", 0) or 0)
+            except (TypeError, ValueError):
+                current_sex = 0
+            new_sex = current_sex + combined.sex_delta
+            try:
+                self.sex = int(Sex(new_sex))
+            except (ValueError, TypeError):
+                self.sex = max(0, min(new_sex, int(Sex.EITHER)))
 
         self.spell_effects[combined.name] = combined
         return True
@@ -508,6 +522,18 @@ class Character:
         if isinstance(stat_mods, dict):
             for stat, delta in stat_mods.items():
                 self._apply_stat_modifier(stat, -int(delta))
+
+        sex_delta = int(getattr(effect, "sex_delta", 0) or 0)
+        if sex_delta:
+            try:
+                current_sex = int(getattr(self, "sex", 0) or 0)
+            except (TypeError, ValueError):
+                current_sex = 0
+            new_sex = current_sex - sex_delta
+            try:
+                self.sex = int(Sex(new_sex))
+            except (ValueError, TypeError):
+                self.sex = max(0, min(new_sex, int(Sex.EITHER)))
 
         return effect
 
