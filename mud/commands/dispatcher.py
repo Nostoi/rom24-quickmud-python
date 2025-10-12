@@ -17,15 +17,19 @@ from .admin_commands import (
     cmd_ban,
     cmd_banlist,
     cmd_deny,
+    cmd_holylight,
+    cmd_incognito,
     cmd_log,
+    cmd_newlock,
     cmd_permban,
     cmd_spawn,
     cmd_teleport,
     cmd_unban,
     cmd_who,
+    cmd_wizlock,
 )
 from .advancement import do_practice, do_train
-from .alias_cmds import do_alias, do_unalias
+from .alias_cmds import do_alias, do_prefi, do_prefix, do_unalias
 from .build import cmd_redit, handle_redit_command
 from .combat import do_kick, do_kill, do_rescue
 from .communication import (
@@ -49,7 +53,7 @@ from .inspection import do_exits, do_look, do_scan
 from .inventory import do_drop, do_equipment, do_get, do_inventory
 from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
 from .notes import do_board, do_note
-from .shop import do_buy, do_list, do_sell
+from .shop import do_buy, do_list, do_sell, do_value
 from .socials import perform_social
 
 CommandFunc = Callable[[Character, str], str]
@@ -148,6 +152,7 @@ COMMANDS: list[Command] = [
     Command("list", do_list, min_position=Position.RESTING),
     Command("buy", do_buy, min_position=Position.RESTING),
     Command("sell", do_sell, min_position=Position.RESTING),
+    Command("value", do_value, min_position=Position.RESTING),
     Command("heal", do_heal, min_position=Position.RESTING),
     # Advancement
     Command("practice", do_practice, min_position=Position.SLEEPING),
@@ -160,6 +165,8 @@ COMMANDS: list[Command] = [
     Command("imc", do_imc, min_position=Position.DEAD),
     Command("alias", do_alias, min_position=Position.DEAD),
     Command("unalias", do_unalias, min_position=Position.DEAD),
+    Command("prefix", do_prefix, min_position=Position.DEAD),
+    Command("prefi", do_prefi, min_position=Position.DEAD),
     # Admin (leave position as DEAD; admin-only gating applies separately)
     Command("@who", cmd_who, admin_only=True),
     Command("@teleport", cmd_teleport, admin_only=True, log_level=LogLevel.ALWAYS),
@@ -171,7 +178,11 @@ COMMANDS: list[Command] = [
     Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("banlist", cmd_banlist, admin_only=True),
     Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("incognito", cmd_incognito, admin_only=True),
+    Command("holylight", cmd_holylight, admin_only=True),
     Command("@redit", cmd_redit, admin_only=True),
+    Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS),
+    Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS),
     Command("wiznet", cmd_wiznet, admin_only=True),
 ]
 
@@ -267,12 +278,33 @@ def process_command(char: Character, input_str: str) -> str:
     trimmed = input_str.lstrip()
     core = trimmed.rstrip()
     trailing_ws = trimmed[len(core) :]
+    prefix_text = (getattr(char, "prefix", "") or "").strip()
+    prefixed_applied = False
+    if prefix_text:
+        head, _ = _split_command_and_args(core)
+        lowered = head.lower()
+        blocked_prefixes = ("alias", "una", "pref")
+        if lowered and not any(lowered.startswith(block) for block in blocked_prefixes):
+            core = f"{prefix_text} {core}" if core else prefix_text
+            prefixed_applied = True
+    if core:
+        raw_parts = core.split(None, 1)
+        raw_head = raw_parts[0]
+        raw_tail = raw_parts[1] if len(raw_parts) > 1 else ""
+    else:
+        raw_head = ""
+        raw_tail = ""
     expanded, alias_used = _expand_aliases(char, core)
     cmd_name, arg_str = _split_command_and_args(expanded)
     if not cmd_name:
         return "What?"
     command = resolve_command(cmd_name)
-    log_line = trimmed if not alias_used else expanded + trailing_ws
+    if alias_used:
+        log_line = expanded + trailing_ws
+    elif prefixed_applied:
+        log_line = core + trailing_ws
+    else:
+        log_line = trimmed
     log_all_enabled = is_log_all_enabled()
     log_allowed = True
     should_log = False
@@ -322,7 +354,10 @@ def process_command(char: Character, input_str: str) -> str:
             return "No way!  You are still fighting!"
         # Fallback (should not happen)
         return "You can't do that right now."
-    return command.func(char, arg_str)
+    command_args = arg_str
+    if command.name == "prefix":
+        command_args = raw_tail
+    return command.func(char, command_args)
 
 
 def run_test_session() -> list[str]:

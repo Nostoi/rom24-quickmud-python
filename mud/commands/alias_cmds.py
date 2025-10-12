@@ -39,3 +39,26 @@ def do_unalias(char: Character, args: str = "") -> str:
         del char.aliases[name]
         return f"Removed alias: {name}"
     return "No such alias."
+
+
+def do_prefi(char: Character, args: str = "") -> str:
+    """ROM compatibility helper to forbid prefix abbreviations."""
+
+    return "You cannot abbreviate the prefix command."
+
+
+def do_prefix(char: Character, args: str = "") -> str:
+    """Set, change, or clear the per-character command prefix."""
+
+    existing = (char.prefix or "").strip()
+    text = args.strip()
+    if not text:
+        if not existing:
+            return "You have no prefix to clear."
+        char.prefix = ""
+        return "Prefix removed."
+
+    char.prefix = text
+    if existing:
+        return f"Prefix changed to {text}."
+    return f"Prefix set to {text}."

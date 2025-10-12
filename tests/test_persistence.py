@@ -1,8 +1,9 @@
 import mud.persistence as persistence
-from mud.models.character import character_registry
+from mud.models.character import Character, character_registry
 from mud.models.constants import WearLocation
 from mud.models.obj import Affect
 from mud.world import create_test_character, initialize_world
+from mud.registry import room_registry
 
 
 def test_character_json_persistence(tmp_path, inventory_object_factory):
@@ -48,6 +49,25 @@ def test_save_and_load_world(tmp_path):
     names = {c.name for c in loaded}
     assert names == {"One", "Two"}
     assert all(c.room.vnum == 3001 for c in loaded)
+
+
+def test_save_world_skips_npcs(tmp_path):
+    persistence.PLAYERS_DIR = tmp_path
+    character_registry.clear()
+    initialize_world("area/area.lst")
+
+    create_test_character("PlayerOne", 3001)
+    npc = Character(name="Trainer")
+    npc.is_npc = True
+    room = room_registry.get(3001)
+    if room is not None:
+        room.add_character(npc)
+    character_registry.append(npc)
+
+    persistence.save_world()
+
+    saved_files = sorted(path.name for path in tmp_path.iterdir())
+    assert saved_files == ["playerone.json"]
 
 
 def test_inventory_round_trip_preserves_object_state(

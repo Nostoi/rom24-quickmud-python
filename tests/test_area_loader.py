@@ -287,3 +287,16 @@ def test_midgaard_reset_validation():
     area = load_area_file("area/midgaard.are")
     errors = validate_resets(area)
     assert errors == []
+
+
+def test_json_loader_populates_room_resets():
+    clear_registries()
+    area = load_area_from_json("data/areas/midgaard.json")
+    room = room_registry[3001]
+    assert room.resets, "Expected JSON load to attach resets to the owning room"
+    guardian_reset = next(
+        (reset for reset in area.resets if reset.command == "M" and reset.arg3 == 3001),
+        None,
+    )
+    assert guardian_reset is not None
+    assert guardian_reset in room.resets

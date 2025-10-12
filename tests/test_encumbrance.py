@@ -1,5 +1,5 @@
 from mud.models.character import Character
-from mud.models.constants import ActFlag, Direction, LEVEL_IMMORTAL
+from mud.models.constants import ActFlag, Direction, ItemType, LEVEL_IMMORTAL
 from mud.models.room import Exit, Room
 from mud.world.movement import can_carry_n, can_carry_w, move_character
 
@@ -25,6 +25,25 @@ def test_carry_weight_updates_on_pickup_equip_drop(object_factory):
     ch.remove_object(obj)
     assert ch.carry_number == 0
     assert ch.carry_weight == 0
+
+
+def test_container_contents_contribute_to_carry_weight(object_factory):
+    ch = Character(name="Carrier")
+    container = object_factory(
+        {
+            "vnum": 2,
+            "weight": 5,
+            "item_type": int(ItemType.CONTAINER),
+            "value": [0, 0, 0, 0, 100],
+        }
+    )
+    nested = object_factory({"vnum": 3, "weight": 3})
+    container.contained_items.append(nested)
+
+    ch.add_object(container)
+
+    assert ch.carry_number == 1
+    assert ch.carry_weight == 8
 
 
 def test_stat_based_carry_caps_monotonic():

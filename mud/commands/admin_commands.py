@@ -3,13 +3,15 @@ import asyncio
 from mud.account import release_account
 from mud.admin_logging.admin import toggle_log_all
 from mud.models.character import Character, character_registry
-from mud.models.constants import PlayerFlag
+from mud.models.constants import PlayerFlag, Sex
 from mud.net.session import SESSIONS
 from mud.persistence import save_character as save_player_file
 from mud.registry import room_registry
 from mud.security import bans
 from mud.security.bans import BanFlag, BanPermissionError
 from mud.spawning.mob_spawner import spawn_mob
+from mud.world.world_state import toggle_newlock, toggle_wizlock
+from mud.wiznet import wiznet
 
 
 def cmd_who(char: Character, args: str) -> str:
@@ -43,10 +45,68 @@ def cmd_spawn(char: Character, args: str) -> str:
     return f"Spawned {mob.name}."
 
 
+def cmd_wizlock(char: Character, args: str) -> str:
+    enabled = toggle_wizlock()
+    if enabled:
+        wiznet("$N has wizlocked the game.", char)
+        return "Game wizlocked."
+    wiznet("$N removes wizlock.", char)
+    return "Game un-wizlocked."
+
+
+def cmd_newlock(char: Character, args: str) -> str:
+    enabled = toggle_newlock()
+    if enabled:
+        wiznet("$N locks out new characters.", char)
+        return "New characters have been locked out."
+    wiznet("$N allows new characters back in.", char)
+    return "Newlock removed."
+
+
 def _get_trust(char: Character) -> int:
     trust = int(getattr(char, "trust", 0) or 0)
     level = int(getattr(char, "level", 0) or 0)
     return trust if trust > 0 else level
+
+
+def _resolve_display_name(char: Character) -> str:
+    name = getattr(char, "name", None)
+    if name:
+        return str(name)
+    short_descr = getattr(char, "short_descr", None)
+    if short_descr:
+        return str(short_descr)
+    return "Someone"
+
+
+def _possessive_pronoun(char: Character) -> str:
+    sex_raw = getattr(char, "sex", None)
+    sex: Sex | None
+    if isinstance(sex_raw, Sex):
+        sex = sex_raw
+    else:
+        try:
+            sex = Sex(int(sex_raw))  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            sex = None
+    if sex == Sex.MALE:
+        return "his"
+    if sex == Sex.FEMALE:
+        return "her"
+    if sex == Sex.NONE:
+        return "its"
+    return "their"
+
+
+def _broadcast_incog_message(char: Character, template: str) -> None:
+    room = getattr(char, "room", None)
+    if room is None:
+        return
+    message = template.format(
+        name=_resolve_display_name(char),
+        poss=_possessive_pronoun(char),
+    )
+    room.broadcast(message, exclude=char)
 
 
 def _render_ban_listing() -> str:
@@ -175,6 +235,51 @@ def cmd_log(char: Character, args: str) -> str:
         return "Not on NPC's."
     target.log_commands = not getattr(target, "log_commands", False)
     return "LOG set." if target.log_commands else "LOG removed."
+
+
+def cmd_incognito(char: Character, args: str) -> str:
+    if getattr(char, "is_npc", False):
+        return "Huh?"
+
+    trust = _get_trust(char)
+    token = args.strip().split(maxsplit=1)[0] if args.strip() else ""
+
+    if not token:
+        if getattr(char, "incog_level", 0):
+            char.incog_level = 0
+            _broadcast_incog_message(char, "{name} is no longer cloaked.")
+            return "You are no longer cloaked."
+        char.incog_level = trust
+        _broadcast_incog_message(char, "{name} cloaks {poss} presence.")
+        return "You cloak your presence."
+
+    try:
+        level = int(token)
+    except ValueError:
+        level = 0
+
+    if level < 2 or level > trust:
+        return "Incog level must be between 2 and your level."
+
+    char.reply = None
+    char.incog_level = level
+    _broadcast_incog_message(char, "{name} cloaks {poss} presence.")
+    return "You cloak your presence."
+
+
+def cmd_holylight(char: Character, args: str) -> str:
+    if getattr(char, "is_npc", False):
+        return "Huh?"
+
+    current = int(getattr(char, "act", 0) or 0)
+    flag = int(PlayerFlag.HOLYLIGHT)
+
+    if current & flag:
+        char.act = current & ~flag
+        return "Holy light mode off."
+
+    char.act = current | flag
+    return "Holy light mode on."
 
 
 def list_hosts() -> list[str]:

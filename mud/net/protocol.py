@@ -6,9 +6,17 @@ from typing import TYPE_CHECKING
 
 from mud.models.character import Character, character_registry
 from mud.net.ansi import render_ansi
+from mud.net.session import Session
 
 if TYPE_CHECKING:
     from mud.net.connection import TelnetStream
+
+
+def _line_count(text: str) -> int:
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    if not normalized:
+        return 0
+    return normalized.count("\n") + (0 if normalized.endswith("\n") else 1)
 
 
 async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
@@ -17,10 +25,24 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
     if writer is None:
         return
 
-    if isinstance(message, list | tuple):
+    if isinstance(message, (list, tuple)):
+        text = "\r\n".join(str(m) for m in message)
+    elif isinstance(message, Iterable) and not isinstance(message, (str, bytes)):
         text = "\r\n".join(str(m) for m in message)
     else:
         text = str(message)
+
+    session = getattr(char, "desc", None)
+    lines_pref = int(getattr(char, "lines", 0) or 0)
+    if (
+        isinstance(session, Session)
+        and hasattr(writer, "send_text")
+        and lines_pref > 0
+        and _line_count(text) > lines_pref
+    ):
+        await session.start_paging(text, lines_pref)
+        return
+
     if hasattr(writer, "send_line"):
         telnet: TelnetStream = writer
         await telnet.send_line(text)

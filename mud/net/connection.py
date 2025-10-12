@@ -32,14 +32,15 @@ from mud.account import (
 )
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
+from mud.commands.help import do_help
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
-from mud.models.constants import PlayerFlag, Sex
+from mud.models.constants import PlayerFlag, Sex, ROOM_VNUM_LIMBO
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
 from mud.wiznet import WiznetFlag, wiznet
-from mud.skills.groups import list_groups
+from mud.skills.groups import get_group, list_groups
 from mud.security import bans
 from mud.security.bans import BanFlag
 
@@ -65,6 +66,24 @@ RECONNECT_MESSAGE = "Reconnecting. Type replay to see missed tells."
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.account.account_service import ClassType, PcRaceType
+
+
+def _format_three_column_table(entries: Iterable[tuple[str, str]]) -> list[str]:
+    cells = [f"{name:<18} {value:<5}" for name, value in entries]
+    lines: list[str] = []
+    for index in range(0, len(cells), 3):
+        segment = cells[index : index + 3]
+        lines.append(" ".join(segment).rstrip())
+    return lines
+
+
+def _format_name_columns(names: Iterable[str], *, width: int = 20) -> list[str]:
+    cells = [f"{name:<{width}}" for name in names]
+    lines: list[str] = []
+    for index in range(0, len(cells), 3):
+        segment = cells[index : index + 3]
+        lines.append(" ".join(segment).rstrip())
+    return lines
 
 
 def _effective_trust(char: "Character") -> int:
@@ -193,6 +212,52 @@ def _broadcast_reconnect_notifications(char: "Character") -> None:
         None,
         _effective_trust(char),
     )
+
+
+def _stop_idling(char: "Character") -> None:
+    """Mirror ROM's ``stop_idling`` to pull players out of limbo on input."""
+
+    if char is None:
+        return
+
+    previous_room = getattr(char, "was_in_room", None)
+    if previous_room is None:
+        return
+
+    current_room = getattr(char, "room", None)
+    current_vnum = getattr(current_room, "vnum", None)
+    if current_vnum != ROOM_VNUM_LIMBO:
+        return
+
+    destination = previous_room
+    try:
+        if current_room is not None:
+            current_room.remove_character(char)
+    except Exception:
+        pass
+
+    try:
+        destination.add_character(char)
+    except Exception:
+        # If re-entry fails, leave the character parked in limbo and retain state.
+        try:
+            if current_room is not None:
+                current_room.add_character(char)
+        except Exception:
+            pass
+        return
+
+    char.was_in_room = None
+    try:
+        char.timer = 0
+    except Exception:
+        pass
+
+    name = getattr(char, "name", None) or "Someone"
+    try:
+        destination.broadcast(f"{name} has returned from the void.", exclude=char)
+    except Exception:
+        pass
 
 
 class TelnetStream:
@@ -396,6 +461,13 @@ def _apply_colour_preference(char: Character, enabled: bool) -> None:
     char.ansi_enabled = bool(enabled)
 
 
+def _has_permit_flag(char: "Character") -> bool:
+    """Return ``True`` when *char* has the ROM PLR_PERMIT bit set."""
+
+    act_flags = int(getattr(char, "act", 0) or 0)
+    return bool(act_flags & int(PlayerFlag.PERMIT))
+
+
 async def _send_help_greeting(conn: TelnetStream) -> None:
     if not help_greeting:
         return
@@ -405,30 +477,109 @@ async def _send_help_greeting(conn: TelnetStream) -> None:
     await conn.send_text(text, newline=True)
 
 
-async def _read_player_command(conn: TelnetStream, session: Session) -> str | None:
-    line = await conn.readline()
-    if line is None:
+def _resolve_help_text(char: "Character", topic: str, *, limit_first: bool = False) -> str | None:
+    try:
+        text = do_help(char, topic, limit_results=limit_first)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        print(f"[ERROR] Failed to load help topic '{topic}': {exc}")
         return None
+    if not text:
+        return None
+    stripped = text.strip()
+    if not stripped or stripped == "No help on that word.":
+        return None
+    return text
 
-    command = line if line else " "
-    original = command
 
-    should_track = len(original) > 1 or (original and original[0] == "!")
-    if should_track:
-        if original != "!" and original != session.last_command:
-            session.repeat_count = 0
-        else:
-            session.repeat_count += 1
-            if session.repeat_count >= SPAM_REPEAT_THRESHOLD:
-                await conn.send_line("*** PUT A LID ON IT!!! ***")
+async def _send_login_motd(char: "Character") -> None:
+    topics: list[str] = ["motd"]
+    is_immortal_attr = getattr(char, "is_immortal", False)
+    immortal = False
+    if callable(is_immortal_attr):
+        try:
+            immortal = bool(is_immortal_attr())
+        except Exception:  # pragma: no cover - defensive guard
+            immortal = False
+    else:
+        immortal = bool(is_immortal_attr)
+
+    if immortal:
+        topics.insert(0, "imotd")
+
+    for topic in topics:
+        text = _resolve_help_text(char, topic)
+        if not text:
+            continue
+        try:
+            await send_to_char(char, text)
+        except Exception as exc:  # pragma: no cover - defensive guard
+            print(f"[ERROR] Failed to send help topic '{topic}' to {getattr(char, 'name', '?')}: {exc}")
+
+
+def _should_send_newbie_help(char: "Character") -> bool:
+    if getattr(char, "is_npc", True):
+        return False
+    try:
+        if int(getattr(char, "level", 0) or 0) > 1:
+            return False
+    except Exception:
+        return False
+    return not bool(getattr(char, "newbie_help_seen", False))
+
+
+async def _send_newbie_help(char: "Character") -> None:
+    text = _resolve_help_text(char, "newbie info")
+    if not text:
+        return
+    try:
+        await send_to_char(char, "")
+        await send_to_char(char, text)
+        await send_to_char(char, "")
+    finally:
+        setattr(char, "newbie_help_seen", True)
+        try:
+            save_character(char)
+        except Exception as exc:  # pragma: no cover - defensive guard
+            print(f"[ERROR] Failed to persist newbie help flag for {getattr(char, 'name', '?')}: {exc}")
+
+
+async def _read_player_command(conn: TelnetStream, session: Session) -> str | None:
+    while True:
+        line = await conn.readline()
+        if line is None:
+            return None
+
+        command = line if line else " "
+        original = command
+
+        if session.show_buffer:
+            stripped = original.strip().lower()
+            if stripped in ("", "c"):
+                has_more = await session.send_next_page()
+                if not has_more:
+                    return " "
+                continue
+            if stripped == "q":
+                session.clear_paging()
+                return " "
+            session.clear_paging()
+
+        should_track = len(original) > 1 or (original and original[0] == "!")
+        if should_track:
+            if original != "!" and original != session.last_command:
                 session.repeat_count = 0
+            else:
+                session.repeat_count += 1
+                if session.repeat_count >= SPAM_REPEAT_THRESHOLD:
+                    await conn.send_line("*** PUT A LID ON IT!!! ***")
+                    session.repeat_count = 0
 
-    if original == "!":
-        return session.last_command or ""
+        if original == "!":
+            return session.last_command or ""
 
-    if original.strip():
-        session.last_command = original
-    return command
+        if original.strip():
+            session.last_command = original
+        return command
 
 
 async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
@@ -623,18 +774,35 @@ async def _run_account_login(
         return None
 
 
-async def _prompt_for_race(conn: TelnetStream) -> "PcRaceType" | None:
+async def _prompt_for_race(
+    conn: TelnetStream, help_character: object | None = None
+) -> "PcRaceType" | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
+    await _send_line(conn, "What is your race? (help for more information)")
+    helper = help_character or SimpleNamespace(name="", trust=0, level=0, is_npc=False, room=None)
     while True:
         response = await _prompt(conn, "Choose your race: ")
         if response is None:
             return None
-        race = lookup_creation_race(response)
+        stripped = response.strip()
+        if not stripped:
+            continue
+        parts = stripped.split(None, 1)
+        command = parts[0].lower()
+        if command == "help":
+            topic = parts[1].strip() if len(parts) > 1 else "race help"
+            text = _resolve_help_text(helper, topic, limit_first=True)
+            if text:
+                page = text.rstrip("\r\n")
+                await _send(conn, page + "\r\n")
+            else:
+                await _send_line(conn, "No help on that word.")
+            continue
+        race = lookup_creation_race(stripped)
         if race is not None:
             return race
-        await _send_line(conn, "That is not a valid race.")
-
+        await _send_line(conn, "That's not a valid race.")
 
 async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
     while True:
@@ -689,15 +857,62 @@ async def _prompt_customization_choice(conn: TelnetStream) -> bool | None:
     return await _prompt_yes_no(conn, "Customize (Y/N)? ")
 
 
-async def _run_customization_menu(conn: TelnetStream, selection: CreationSelection) -> CreationSelection | None:
+async def _run_customization_menu(
+    conn: TelnetStream,
+    selection: CreationSelection,
+    helper_char: object | None = None,
+) -> CreationSelection | None:
+    async def _send_customization_costs() -> None:
+        group_entries = [(name, str(cost)) for name, cost in selection.available_groups()]
+        skill_entries = [(name, str(cost)) for name, cost in selection.available_skills()]
+
+        if group_entries:
+            for line in _format_three_column_table([("group", "cp")] * 3):
+                await _send_line(conn, line)
+            for line in _format_three_column_table(group_entries):
+                await _send_line(conn, line)
+        else:
+            await _send_line(conn, "No additional groups are available.")
+
+        if group_entries and skill_entries:
+            await _send_line(conn, "")
+
+        if skill_entries:
+            for line in _format_three_column_table([("skill", "cp")] * 3):
+                await _send_line(conn, line)
+            for line in _format_three_column_table(skill_entries):
+                await _send_line(conn, line)
+        else:
+            await _send_line(conn, "No additional skills are available.")
+
+        await _send_line(conn, f"Creation points: {selection.creation_points}")
+        await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
+
+    helper = helper_char or SimpleNamespace(name="", trust=0, level=0, is_npc=False, room=None)
+
+    menu_choice_help = _resolve_help_text(helper, "menu choice", limit_first=True)
+
+    async def _send_menu_choice_help(*, fallback: bool = False) -> None:
+        if menu_choice_help:
+            await _send(conn, menu_choice_help.rstrip("\r\n") + "\r\n")
+        elif fallback:
+            await _send_line(conn, "Choice (add,drop,list,help)?")
+
     await _send_line(conn, "")
+    header_text = _resolve_help_text(helper, "group header", limit_first=True)
+    if header_text:
+        await _send(conn, header_text.rstrip("\r\n") + "\r\n")
+    await _send_customization_costs()
+    await _send_line(conn, "")
+
     groups = selection.group_names()
     if groups:
         await _send_line(conn, "You already have the following groups: " + ", ".join(groups))
     await _send_line(
         conn,
-        "Type 'list' to see costs, 'add <group>' to learn a group, or 'done' when finished.",
+        "Type 'list', 'learned', 'add <group>', 'drop <group>', 'info <group>', 'premise', or 'done'.",
     )
+    await _send_menu_choice_help(fallback=True)
 
     while True:
         response = await _prompt(conn, "Customization> ")
@@ -709,6 +924,8 @@ async def _run_customization_menu(conn: TelnetStream, selection: CreationSelecti
         parts = stripped.split(None, 1)
         command = parts[0].lower()
         argument = parts[1] if len(parts) > 1 else ""
+        if command == "learn" and argument.lower().startswith("ed"):
+            command = "learned"
 
         if command in {"done", "finish"}:
             minimum = selection.minimum_creation_points()
@@ -718,43 +935,191 @@ async def _run_customization_menu(conn: TelnetStream, selection: CreationSelecti
                     conn,
                     f"You must select at least {minimum} creation points (need {needed} more).",
                 )
+                await _send_menu_choice_help(fallback=True)
                 continue
             await _send_line(conn, f"Creation points: {selection.creation_points}")
+            await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
             return selection
 
         if command == "list":
-            await _send_line(conn, "Available groups:")
-            for group in list_groups():
-                cost = selection.cost_for_group(group.name)
-                if cost is None:
-                    continue
-                status = "known" if selection.has_group(group.name) else f"{cost} points"
-                await _send_line(conn, f"  {group.name} ({status})")
+            await _send_customization_costs()
+            await _send_menu_choice_help(fallback=True)
+            continue
+
+        if command == "learned":
+            learned_groups = selection.learned_groups()
+            learned_skills = selection.learned_skills()
+
+            if learned_groups:
+                for line in _format_three_column_table([("group", "cp")] * 3):
+                    await _send_line(conn, line)
+                for line in _format_three_column_table(
+                    [(name, str(cost)) for name, cost in learned_groups]
+                ):
+                    await _send_line(conn, line)
+            else:
+                await _send_line(conn, "You haven't purchased any groups yet.")
+
+            if learned_groups and learned_skills:
+                await _send_line(conn, "")
+
+            if learned_skills:
+                for line in _format_three_column_table([("skill", "cp")] * 3):
+                    await _send_line(conn, line)
+                for line in _format_three_column_table(
+                    [(name, str(cost)) for name, cost in learned_skills]
+                ):
+                    await _send_line(conn, line)
+            else:
+                await _send_line(conn, "You haven't purchased any skills yet.")
+
+            await _send_line(conn, f"Creation points: {selection.creation_points}")
+            await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
+            await _send_menu_choice_help(fallback=True)
             continue
 
         if command == "add":
             if not argument:
-                await _send_line(conn, "You must provide a group name to add.")
-                continue
-            if selection.add_group(argument, deduct=True):
-                await _send_line(conn, f"{argument.strip().title()} group added.")
-                await _send_line(conn, f"Creation points: {selection.creation_points}")
+                await _send_line(conn, "You must provide a skill or group name to add.")
+                await _send_menu_choice_help(fallback=True)
                 continue
             if selection.has_group(argument):
                 await _send_line(conn, "You already know that group.")
+                await _send_menu_choice_help(fallback=True)
                 continue
-            cost = selection.cost_for_group(argument)
-            if cost is None:
-                await _send_line(conn, "That group is not available to your class.")
-            else:
+            if selection.has_skill(argument):
+                await _send_line(conn, "You already know that skill.")
+                await _send_menu_choice_help(fallback=True)
+                continue
+
+            group_cost = selection.cost_for_group(argument)
+            if group_cost is not None:
+                if (
+                    group_cost > 0
+                    and selection.creation_points + group_cost
+                    > selection.maximum_creation_points()
+                ):
+                    await _send_line(conn, "You cannot take more than 300 creation points.")
+                    await _send_menu_choice_help(fallback=True)
+                    continue
+                if selection.add_group(argument, deduct=True):
+                    await _send_line(
+                        conn,
+                        f"{selection.display_group_name(argument)} group added.",
+                    )
+                    await _send_line(conn, f"Creation points: {selection.creation_points}")
+                    await _send_line(
+                        conn, f"Experience per level: {selection.experience_per_level()}"
+                    )
+                    await _send_menu_choice_help(fallback=True)
+                    continue
                 await _send_line(conn, "Unable to add that group.")
+                await _send_menu_choice_help(fallback=True)
+                continue
+
+            skill_cost = selection.cost_for_skill(argument)
+            if skill_cost is not None:
+                if (
+                    skill_cost > 0
+                    and selection.creation_points + skill_cost
+                    > selection.maximum_creation_points()
+                ):
+                    await _send_line(conn, "You cannot take more than 300 creation points.")
+                    await _send_menu_choice_help(fallback=True)
+                    continue
+                if selection.add_skill(argument):
+                    await _send_line(
+                        conn,
+                        f"{selection.display_skill_name(argument)} skill added.",
+                    )
+                    await _send_line(conn, f"Creation points: {selection.creation_points}")
+                    await _send_line(
+                        conn, f"Experience per level: {selection.experience_per_level()}"
+                    )
+                    await _send_menu_choice_help(fallback=True)
+                    continue
+                await _send_line(conn, "Unable to add that skill.")
+                await _send_menu_choice_help(fallback=True)
+                continue
+
+            await _send_line(conn, "No skills or groups by that name.")
+            await _send_menu_choice_help(fallback=True)
+            continue
+
+        if command == "drop":
+            if not argument:
+                await _send_line(conn, "You must provide a group name to drop.")
+                await _send_menu_choice_help(fallback=True)
+                continue
+            if selection.drop_group(argument):
+                await _send_line(conn, "Group dropped.")
+                await _send_line(conn, f"Creation points: {selection.creation_points}")
+                await _send_line(
+                    conn, f"Experience per level: {selection.experience_per_level()}"
+                )
+                await _send_menu_choice_help(fallback=True)
+                continue
+            if selection.drop_skill(argument):
+                await _send_line(conn, "Skill dropped.")
+                await _send_line(conn, f"Creation points: {selection.creation_points}")
+                await _send_line(
+                    conn, f"Experience per level: {selection.experience_per_level()}"
+                )
+                await _send_menu_choice_help(fallback=True)
+                continue
+            await _send_line(conn, "You haven't bought any such skill or group.")
+            await _send_menu_choice_help(fallback=True)
+            continue
+
+        if command == "info":
+            topic = argument.strip().lower()
+            if not topic:
+                await _send_line(conn, "Usage: info <group>")
+                await _send_menu_choice_help(fallback=True)
+                continue
+            if topic == "all":
+                for line in _format_name_columns(group.name for group in list_groups()):
+                    await _send_line(conn, line)
+                await _send_menu_choice_help(fallback=True)
+                continue
+            group = get_group(argument)
+            if group is None:
+                await _send_line(conn, "No group of that name exists.")
+                await _send_menu_choice_help(fallback=True)
+                continue
+            if group.skills:
+                await _send_line(conn, f"Group members for {group.name}:")
+                for line in _format_name_columns(group.skills):
+                    await _send_line(conn, line)
+            else:
+                await _send_line(conn, "That group has no additional skills.")
+            await _send_menu_choice_help(fallback=True)
+            continue
+
+        if command == "premise":
+            text = _resolve_help_text(helper, "premise", limit_first=True)
+            if text:
+                await _send(conn, text.rstrip("\r\n") + "\r\n")
+            else:
+                await _send_line(conn, "No help on that word.")
+            await _send_menu_choice_help(fallback=True)
             continue
 
         if command == "help":
-            await _send_line(conn, "Commands: list, add <group>, done.")
+            topic = argument.strip() or "group help"
+            text = _resolve_help_text(helper, topic, limit_first=True)
+            if text:
+                await _send(conn, text.rstrip("\r\n") + "\r\n")
+            else:
+                await _send_line(conn, "No help on that word.")
+            await _send_menu_choice_help(fallback=True)
             continue
 
-        await _send_line(conn, "Choices are: list, add <group>, help, and done.")
+        await _send_line(
+            conn,
+            "Choices are: list, learned, add <group>, drop <group>, info <group>, premise, help, and done.",
+        )
+        await _send_menu_choice_help(fallback=True)
 
 
 async def _prompt_for_stats(conn: TelnetStream, race: "PcRaceType") -> list[int] | None:
@@ -822,13 +1187,31 @@ async def _run_character_creation_flow(
     conn: TelnetStream,
     account: PlayerAccount,
     name: str,
+    *,
+    permit_banned: bool = False,
+    newbie_banned: bool = False,
 ) -> bool:
     sanitized = sanitize_account_name(name)
     if not is_valid_account_name(sanitized):
         await _send_line(conn, "Illegal character name, try another.")
         return False
 
+    if permit_banned:
+        await _send_line(conn, "Your site has been banned from this mud.")
+        return False
+
+    if newbie_banned:
+        await _send_line(conn, "New players are not allowed from your site.")
+        return False
+
     display = sanitized.capitalize()
+    preview_character = SimpleNamespace(
+        name=display,
+        trust=0,
+        level=0,
+        is_npc=False,
+        room=None,
+    )
     await _send_line(conn, f"Creating new character '{display}'.")
     confirm = await _prompt_yes_no(conn, f"Is '{display}' correct? (Y/N) ")
     if confirm is None:
@@ -836,7 +1219,7 @@ async def _run_character_creation_flow(
     if not confirm:
         return False
 
-    race = await _prompt_for_race(conn)
+    race = await _prompt_for_race(conn, preview_character)
     if race is None:
         return False
     sex = await _prompt_for_sex(conn)
@@ -854,7 +1237,7 @@ async def _run_character_creation_flow(
     if customize is None:
         return False
     if customize:
-        result = await _run_customization_menu(conn, selection)
+        result = await _run_customization_menu(conn, selection, preview_character)
         if result is None:
             return False
         selection = result
@@ -884,6 +1267,7 @@ async def _run_character_creation_flow(
         default_weapon_vnum=weapon_vnum,
         creation_points=selection.creation_points,
         creation_groups=selection.group_names(),
+        creation_skills=selection.skill_names(),
         train=selection.train_value(),
     )
     if not success:
@@ -904,9 +1288,23 @@ async def _select_character(
     conn: TelnetStream,
     account: PlayerAccount,
     username: str,
+    *,
+    permit_banned: bool = False,
+    newbie_banned: bool = False,
 ) -> tuple["Character", bool] | None:
+    permit_bit = int(PlayerFlag.PERMIT)
     while True:
-        characters = list_characters(account)
+        all_characters = list_characters(account)
+        characters = (
+            list_characters(account, require_act_flags=permit_bit)
+            if permit_banned
+            else all_characters
+        )
+
+        if permit_banned and not characters:
+            await _send_line(conn, "Your site has been banned from this mud.")
+            return None
+
         if characters:
             await _send_line(conn, "Characters: " + ", ".join(characters))
         response = await _prompt(conn, "Character: ")
@@ -918,8 +1316,20 @@ async def _select_character(
 
         lookup = {entry.lower(): entry for entry in characters}
         chosen_name = lookup.get(candidate.lower())
+        if permit_banned and chosen_name is None:
+            all_lookup = {entry.lower(): entry for entry in all_characters}
+            if candidate.lower() in all_lookup:
+                await _send_line(conn, "Your site has been banned from this mud.")
+                return None
+
         if chosen_name is None:
-            created = await _run_character_creation_flow(conn, account, candidate)
+            created = await _run_character_creation_flow(
+                conn,
+                account,
+                candidate,
+                permit_banned=permit_banned,
+                newbie_banned=newbie_banned,
+            )
             if not created:
                 continue
             chosen_name = sanitize_account_name(candidate).capitalize()
@@ -940,6 +1350,9 @@ async def _select_character(
 
             transferred_char = await _disconnect_session(existing_session)
             if transferred_char is not None:
+                if permit_banned and not _has_permit_flag(transferred_char):
+                    await _send_line(conn, "Your site has been banned from this mud.")
+                    return None
                 return transferred_char, True
 
             if active_connection is not None:
@@ -948,6 +1361,9 @@ async def _select_character(
 
         char = load_character(username, chosen_name)
         if char:
+            if permit_banned and not _has_permit_flag(char):
+                await _send_line(conn, "Your site has been banned from this mud.")
+                return None
             return char, False
         await _send_line(conn, "Failed to load that character. Please try again.")
 
@@ -966,6 +1382,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
+    permit_banned = bool(
+        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT)
+    )
+    newbie_banned = bool(
+        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES)
+    )
 
     try:
         if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
@@ -985,7 +1407,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             return
         account, username, was_reconnect = login_result
 
-        selection = await _select_character(conn, account, username)
+        selection = await _select_character(
+            conn,
+            account,
+            username,
+            permit_banned=permit_banned,
+            newbie_banned=newbie_banned,
+        )
         if selection is None:
             return
 
@@ -1023,6 +1451,14 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
+            if not reconnecting:
+                await _send_login_motd(char)
+                if _should_send_newbie_help(char):
+                    await _send_newbie_help(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
+
+        try:
             if reconnecting:
                 await send_to_char(char, RECONNECT_MESSAGE)
                 _broadcast_reconnect_notifications(char)
@@ -1046,6 +1482,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 command = await _read_player_command(conn, session)
                 if command is None:
                     break
+                _stop_idling(char)
                 if not command.strip():
                     continue
 

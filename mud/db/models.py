@@ -90,7 +90,7 @@ class PlayerAccount(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True)
-    email: Mapped[str] = mapped_column(String)
+    email: Mapped[str] = mapped_column(String, nullable=True, default="")
     password_hash: Mapped[str] = mapped_column(String)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -128,8 +128,10 @@ class Character(Base):
     practice: Mapped[int] = mapped_column(Integer, default=0)
     train: Mapped[int] = mapped_column(Integer, default=0)
     default_weapon_vnum: Mapped[int] = mapped_column(Integer, default=0)
+    newbie_help_seen: Mapped[bool] = mapped_column(Boolean, default=False)
     creation_points: Mapped[int] = mapped_column(Integer, default=40)
     creation_groups: Mapped[str] = mapped_column(String, default="")
+    creation_skills: Mapped[str] = mapped_column(String, default="")
 
     player_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("player_accounts.id"), nullable=True)
     player: Mapped[PlayerAccount | None] = relationship("PlayerAccount", back_populates="characters")

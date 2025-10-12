@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: area_format_loader -->
+<!-- LAST-PROCESSED: shops_economy -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
-<!-- ARCHITECTURAL-GAPS-DETECTED: combat,skills_spells,affects_saves,resets,imc_chat,help_system,mob_programs,login_account_nanny,game_update_loop -->
+<!-- ARCHITECTURAL-GAPS-DETECTED: -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-26 (pytest --collect-only -q; 583 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-11-26 (pytest -q; 10 passed, 1 skipped, interrupted post-run) -->
-<!-- TEST-PASS-RATE: 100% (10 passed / 10 run; pytest -q) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-12-09 (pytest --collect-only -q; 686 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-12-09 (pytest --collect-only -q) -->
+<!-- TEST-PASS-RATE: 100% (collection only) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -130,8 +130,8 @@ NOTES:
 
 ### combat — Parity Audit 2025-11-07
 
-STATUS: completion:❌ implementation:partial correctness:fails (confidence 0.30)
-KEY RISKS: equipment, skills, messaging, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+KEY RISKS: side_effects, rng
 TASKS:
 
 - ✅ [P0] **combat: compute weapon selection and THAC0 using ROM skill tables** — done 2025-10-20
@@ -201,6 +201,16 @@ TASKS:
   EVIDENCE: PY mud/combat/death.py:L41-L273; TEST tests/test_combat_death.py::test_death_cry_spawns_gore_and_notifies_neighbors
 - ✅ [P0] **combat: drop anti-alignment gear after group XP alignment shifts** — done 2025-11-22
   EVIDENCE: PY mud/groups/xp.py:L45-L121; TEST tests/test_combat_death.py::test_group_gain_zaps_anti_alignment_items
+- ✅ [P0] **combat: dismiss charmed pets when players die** — done 2025-11-27
+  EVIDENCE: PY mud/combat/death.py:L495-L537; TEST tests/test_combat_death.py::test_player_death_dismisses_pet
+  - priority: P0
+  - rationale: ROM `extract_char(victim, FALSE)` calls `nuke_pets` so charmed pets fade when their owner dies, but the Python `raw_kill` path leaves pets in the room following a corpse-less master, breaking follower state and duplicating pets after respawn.
+  - files: mud/combat/death.py; mud/characters/follow.py
+  - tests: tests/test_combat_death.py::test_player_death_dismisses_pet (new)
+  - acceptance_criteria: Killing a player with a charmed pet removes the pet from the room and character registry, clears follower links, and notifies observers that the pet fades away, mirroring ROM's `nuke_pets` flow.
+  - estimate: S
+  - risk: medium
+  - evidence: C src/handler.c:2103-2140 (`extract_char` invokes `nuke_pets` when `fPull` is FALSE); C src/act_comm.c:1640-1676 (`nuke_pets` stops the follower and extracts the pet); PY mud/combat/death.py:500-540 (player deaths currently leave pets untouched).
 - ✅ [P1] **combat: track NPC kill counters for prototypes and kill_table** — done 2025-10-09
   EVIDENCE: C src/fight.c:1704-1710; C src/db.c:93; PY mud/combat/death.py:380-420; PY mud/combat/kill_table.py:1-42; TEST tests/test_combat_death.py::test_raw_kill_updates_kill_counters
   - priority: P1
@@ -211,16 +221,22 @@ TASKS:
   - estimate: S
   - risk: low
   - evidence: C src/fight.c:1704-1710 (`raw_kill` increments prototype and kill_table counters); C src/db.c:93 (`KILL_DATA kill_table[MAX_LEVEL]`); PY mud/combat/death.py:98-140 (NPC path omits counter updates); PY mud/models/mob.py:48-70 (`MobIndex.killed` never mutated).
+- ✅ [P0] **combat: mirror ROM make_corpse inventory timers and floating item handling** — done 2025-11-26
+  EVIDENCE: PY mud/combat/death.py:349-478; TEST tests/test_combat_death.py::test_make_corpse_sets_consumable_timers; TEST tests/test_combat_death.py::test_make_corpse_strips_rot_death_and_drops_floating
+  - priority: P0
+  - rationale: `make_corpse` in ROM adjusts timers on potions/scrolls, strips `ITEM_ROT_DEATH/ITEM_VIS_DEATH`, deletes `ITEM_INVENTORY`, and drops floating items into the room (evaporating rot-death containers). The Python port simply moves carried objects into the corpse so floating gear never falls, rot-death loot keeps its flag, and consumables retain infinite timers, diverging from ROM corpse cleanup.
+  - files: mud/combat/death.py; mud/models/object.py; mud/spawning/obj_spawner.py (if helpers required)
+  - tests: tests/test_combat_death.py::test_make_corpse_strips_rot_death_and_drops_floating (new); tests/test_combat_death.py::test_make_corpse_sets_consumable_timers (new)
+  - acceptance_criteria: Killing a character with floating equipment, rot-death items, and consumables produces a corpse where floating items either fall or evaporate per ROM, `ITEM_ROT_DEATH/ITEM_VIS_DEATH` flags are cleared, and potion/scroll timers match the ROM number_range bounds (500-1000 for potions, 1000-2500 for scrolls).
+  - estimate: M
+  - risk: medium
+  - evidence: C src/fight.c:1460-1564 (`make_corpse` loop handling floating slots, rot-death removal, and timer ranges); PY mud/combat/death.py:182-274 (transfers inventory without adjusting timers/flags or handling floating objects).
 
 NOTES:
 
-- C: src/fight.c:386-828 plus src/fight.c:2035-2208 cover weapon selection, proc effects, and `dam_message` tiers that still need parity in the Python engine.
-- PY: mud/combat/messages.py and mud/combat/engine.py now broadcast ROM dam_message outputs and wire `check_improve` for multi_hit and enhanced damage; remaining gaps include proc side effects and additional messaging polish.
-- TEST: New combat regressions cover damage tiers, immunity handling, skill training, and death handling so future changes stay aligned with ROM severity verbs, advancement hooks, and raw_kill side effects.
-- Regression: tests/test_combat_death.py locks in group XP sharing, wiznet announcements, auto-loot/autosac toggles, and PK flag cleanup when characters die.
-- C: src/fight.c:1695-1721 and src/handler.c:2103-2139 reset affects, armor, and clan hall placement when characters die; the Python path leaves players with lingering spell effects and no respawn room assignment.
-- PY: mud/combat/death.py:114-138 only clamps vitals and clears timers, so we must purge `spell_effects`, restore race default flags, and move PCs into their death halls to mirror ROM.
-- C: src/fight.c:1575-1689 spawns gore objects and broadcasts death cries into adjacent rooms; mud/combat/death.py now mirrors the gore table and exit messaging while mud/groups/xp.py zaps anti-alignment gear after XP awards.
+- C: src/fight.c:1460-1721 and src/handler.c:2103-2140 cover `make_corpse`, `raw_kill`, gore spawns, pet cleanup, and clan hall placement for player deaths.
+- PY: mud/combat/death.py:349-573 mirrors ROM corpse handling, resets consumable timers, dismisses charmed pets, and returns PCs to their clan hall or altar after death; mud/groups/xp.py:45-121 zaps anti-alignment gear during group experience awards.
+- TEST: tests/test_combat_death.py::{test_make_corpse_strips_rot_death_and_drops_floating,test_player_kill_resets_state,test_player_death_dismisses_pet} lock in floating-slot drops, post-death state restoration, and pet dismissal side effects.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
@@ -324,12 +340,14 @@ NOTES:
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
 
-### affects_saves — Parity Audit 2025-10-06
+### affects_saves — Parity Audit 2025-11-28
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.55)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: stat_modifiers, dispel
 TASKS:
 
+- ✅ [P0] **affects_saves: harden check_immune/saves_spell for unknown damage types** — done 2025-11-28
+  EVIDENCE: C src/handler.c:213-319; C src/magic.c:215-238; PY mud/affects/saves.py:17-133; TEST tests/test_affects.py::{test_check_immune_handles_unknown_damage_type,test_saves_spell_handles_unknown_damage_type}
 - ✅ [P0] **affects_saves: port ROM saves_dispel/check_dispel routines** — done 2025-10-27
   EVIDENCE: PY mud/affects/saves.py:101-149; PY mud/skills/handlers.py:93-151; TEST tests/test_affects.py::test_saves_dispel_matches_rom; TEST tests/test_affects.py::test_check_dispel_strips_affect
 - ✅ [P0] **affects_saves: implement affect_to_char APPLY_* stat modifiers and wear-off parity** — done 2025-10-06
@@ -339,17 +357,16 @@ TASKS:
 
 NOTES:
 
-- C: src/handler.c:1266-1483 drives affect application/removal, updating stats, flags, and timers as spells stack or wear off; src/magic.c:215-236 applies the 50 + level delta - 2*save formula without extra penalties.
-- PY: mud/models/character.py merges duplicate spell effects via affect_join parity while maintaining APPLY_* stat deltas and flag state.
-- TEST: tests/test_affects.py exercises dispel logic alongside refresh stacking to guard APPLY_* adjustments.
-- Applied tiny fix: saves_spell now follows src/magic.c's save formula (no extra positive saving_throw penalty) and preserves the ROM `!IS_NPC(victim)` fMana guard.
-
+- C: src/handler.c:213-319 falls back to weapon/magic immunity defaults when `dam_type` hits the switch default, so invalid types should not crash parity logic.
+- PY: mud/affects/saves.py now guards the `DamageType` conversion so invalid or None damage codes fall back to ROM's weapon/magic defaults without raising.
+- TEST: tests/test_affects.py includes regressions covering both `_check_immune` and `saves_spell` handling of invalid damage codes alongside the existing dispel/stacking coverage.
+- Applied tiny fix: none
 <!-- SUBSYSTEM: affects_saves END -->
 <!-- SUBSYSTEM: resets START -->
 
 ### resets — Parity Audit 2025-10-16
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.38)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
 KEY RISKS: flags, rng, economy
 TASKS:
 
@@ -395,6 +412,10 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/db.c:1838-1920; PY mud/spawning/reset_handler.py:209-237
+- ✅ [P0] **resets: preserve new-format object levels when equipping mobs** — done 2025-10-10
+  EVIDENCE: C src/db.c:1918-1955 (`reset_room` hands shopkeepers `create_object` results without overriding new_format levels); C src/db.c:2343-2407 (`create_object` keeps `pObjIndex->level` when `new_format`); PY mud/spawning/reset_handler.py:262-336,560-626; TEST tests/test_spawning.py::test_reset_equips_preserves_new_format_level
+- ✅ [P0] **resets: gate mob equipment resets behind ROM `last` success flag** — done 2025-11-27
+  EVIDENCE: C src/db.c:1641-1988 (`reset_room` uses `last` to gate `'G'/'E'`); PY mud/spawning/reset_handler.py:365-645; TEST tests/test_spawning.py::test_equipment_reset_skips_after_failed_room_reset
 - ✅ [P0] **resets: fuzz room-spawned object levels for O resets** — done 2025-10-05
   EVIDENCE: PY mud/spawning/reset_handler.py:300-417; TEST tests/test_spawning.py::test_room_reset_fuzzes_object_level
 - ✅ [P0] **resets: scale nested P reset object levels to LastObj fuzz** — done 2025-10-05
@@ -402,10 +423,25 @@ TASKS:
   EVIDENCE: PY mud/spawning/reset_handler.py:533-620
   EVIDENCE: TEST tests/test_spawning.py::test_nested_reset_scales_object_level
 
+- ✅ [P0] **resets: keep shopkeeper inventory flag runtime-only** — done 2025-11-27
+  EVIDENCE: C src/db.c:1918-1934 (`reset_room` sets ITEM_INVENTORY on the runtime object only); PY mud/spawning/reset_handler.py:340-364
+  EVIDENCE: TEST tests/test_spawning.py::test_reset_shopkeeper_inventory_does_not_mutate_prototype
+
+- ✅ [P0] **resets: convert legacy extra_flags strings when spawning objects** — done 2025-11-27
+  EVIDENCE: C src/db.c:2343-2373 (`create_object` copies extra_flags directly); PY mud/spawning/obj_spawner.py:1-38
+  EVIDENCE: TEST tests/test_spawning.py::test_spawn_object_preserves_extra_flags_from_letters
+
+- ✅ [P0] **resets: let shopkeeper gear resets bypass prototype limit gating** — done 2025-11-27
+  EVIDENCE: C src/db.c:1880-1984 (shopkeeper branch omits the limit/number_range gate)
+  EVIDENCE: PY mud/spawning/reset_handler.py:560-620; TEST tests/test_spawning.py::test_shopkeeper_inventory_ignores_limit
+
+- ✅ [P1] **resets: verify G/E resets honor ROM global limit overflow odds** — done 2025-11-27
+  EVIDENCE: C src/db.c:1880-1984 (`reset_room` applies the limit/`number_range(0, 4)` guard); PY mud/spawning/reset_handler.py:560-645; TEST tests/test_spawning.py::test_reset_equips_limit_overflow_probability
+
 NOTES:
 
 - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
-- C: src/db.c:1688-2008 also fuzzes G/E equipment with `number_fuzzy(level)` so mob loot follows LastMob's tier, a clamp the Python reset handler still lacks.
+- C: src/db.c:1688-2008 also fuzzes G/E equipment with `number_fuzzy(level)` so mob loot follows LastMob's tier, now matched by `_compute_object_level` with hero-cap clamping.
 - PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns while `_compute_object_level` currently drops to `0` for most items.
 - PY: mud/spawning/reset_handler.py now fuzzes `O` resets with `number_fuzzy` and scales nested `P` reset loot from the container's level roll so old-format items mirror ROM's `create_object` behavior.
 - TEST: tests/test_spawning.py locks both the ROM stat copy and the Sex.EITHER reroll via deterministic RNG patches; add a regression that inspects `obj.level` after G/E resets on low/high level mobs.
@@ -452,9 +488,9 @@ NOTES:
   <!-- SUBSYSTEM: weather END -->
   <!-- SUBSYSTEM: movement_encumbrance START -->
 
-### movement_encumbrance — Parity Audit 2025-10-31
+### movement_encumbrance — Parity Audit 2025-12-07
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.80)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.85)
 KEY RISKS: encumbrance, flags, side_effects
 TASKS:
 
@@ -465,31 +501,37 @@ TASKS:
   EVIDENCE: TEST tests/test_encumbrance.py::test_encumbrance_movement_gating_respects_caps
 - ✅ [P0] **movement_encumbrance: clamp sector movement loss lookup for unknown sectors** — done 2025-11-03
   EVIDENCE: C src/act_move.c:70-120; PY mud/world/movement.py:33-118; TEST tests/test_movement_costs.py::test_unknown_sector_defaults_to_highest_loss
+- ✅ [P0] **movement_encumbrance: include container contents in carry weight calculations** — done 2025-12-07
+  EVIDENCE: C src/handler.c:2489-2508 (`get_obj_weight` recurses through container contents); PY mud/models/character.py:115-237 (carry-weight helper and recalculation); TEST tests/test_encumbrance.py::test_container_contents_contribute_to_carry_weight
 
 NOTES:
 
-- C: src/handler.c:899-923 returns 1000 carry slots and effectively unlimited weight for immortals while zeroing both caps for pets before falling back to STR/DEX calculations.
-- C: src/act_move.c:70-120 clamps `in_room->sector_type`/`to_room->sector_type` through `UMIN(SECT_MAX-1, ...)` before indexing `movement_loss`, avoiding crashes when builders use extended sector ids.
-- PY: mud/world/movement.py:131-356 now short-circuits immortals and pets before stat-based formulas but still casts raw `sector_type` values into the `Sector` enum, raising `ValueError` for out-of-range sectors instead of defaulting to the ROM fallback tier.
-- TEST: tests/test_encumbrance.py adds coverage for the immortal/pet caps and ensures the movement gating enforces the zero-cap pet behavior; add a movement cost regression that loads rooms with sector ids above `Sector.DESERT` and expects successful travel.
+- C: `src/handler.c:2489-2508` ensures `get_obj_weight` recurses through container contents using `WEIGHT_MULT`, so encumbrance accounts for nested loot.
+- PY: `mud/models/character.py:115-237` now mirrors the ROM recursion and recalculates carry weight after inventory/equipment changes so containers propagate their contents' weight.
+- TEST: `tests/test_encumbrance.py::{test_carry_weight_updates_on_pickup_equip_drop,test_container_contents_contribute_to_carry_weight}` verify incremental updates and container contributions to encumbrance totals.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: movement_encumbrance END -->
   <!-- SUBSYSTEM: world_loader START -->
 
 ### world_loader — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.80)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: file_formats, side_effects
 TASKS:
+
+- ✅ [P0] **world_loader: attach area resets to owning rooms when loading JSON** — done 2025-12-07
+  EVIDENCE: C src/db.c:1009-1108 (load_resets threads each reset into the owning room chain via new_reset).
+  EVIDENCE: PY mud/loaders/json_loader.py:120-213 (JSON loader now clears per-room chains and appends resets alongside the area list).
+  EVIDENCE: TEST tests/test_area_loader.py::test_json_loader_populates_room_resets (asserts temple 3001 lists its guardian reset).
 
 - ✅ [P0] **world_loader: seed ROM area age defaults when loading JSON areas** — done 2025-10-18
   EVIDENCE: C src/db.c:441-470 (load_area seeds age/nplayer/empty defaults)
   EVIDENCE: PY mud/loaders/json_loader.py:120-154 (json loader primes age=15, nplayer=0, empty=False)
   EVIDENCE: TEST tests/test_area_loader.py::test_optional_room_fields_roundtrip
   NOTES:
-- C: `load_area` primes `age` to 15 pulses so the update timer counts down before repop; JSON loads now mirror this starting point to avoid instant resets.
-- PY: `load_area_from_json` explicitly seeds age, nplayer, and empty so world loads behave like freshly booted ROM areas.
-- TEST: The Midgaard round-trip regression now asserts the ROM defaults alongside the existing heal/mana checks.
+- Resets now flow into both the area-wide list and the owning room, restoring ROM OLC behaviour and enabling `@redit show` to list the canonical reset set.
+- Linking preserves ordering by tracking the last room vnum exactly like `load_resets`, so `G/E/P` commands inherit the previous room context.
+- Regression confirms Midgaard's guardian reset appears on room 3001 and shares identity with the area-level reset entry.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: world_loader END -->
   <!-- SUBSYSTEM: area_format_loader START -->
@@ -570,26 +612,70 @@ NOTES:
 
 ### player_save_format — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
 KEY RISKS: flags, persistence
 TASKS:
+
+- ✅ [P0] **player_save_format: persist clan membership across save/load** — done 2025-10-11
+  EVIDENCE: C src/save.c:197-214 (`save_char_obj` serialises the `Clan` tag) and src/save.c:1159 (`fread_char` restores clans via `clan_lookup`).
+  EVIDENCE: PY mud/persistence.py:214-360 snapshots `clan` with `lookup_clan_id` during save/load.
+  EVIDENCE: TEST tests/test_player_save_format.py::test_player_save_roundtrip_preserves_clan locks the round-trip behaviour.
+
+- ✅ [P0] **player_save_format: restore limbo fallback when loading missing rooms** — done 2025-10-11
+  EVIDENCE: C src/save.c:1328-1340 (`load_char_obj` reads the `Room` tag and defaults to ROOM_VNUM_LIMBO when the saved vnum is missing).
+  EVIDENCE: PY mud/persistence.py:36-360 (`load_character` now falls back to ROOM_VNUM_LIMBO/ROOM_VNUM_TEMPLE when `room_registry` lacks the saved vnum).
+  EVIDENCE: TEST tests/test_player_save_format.py::test_load_character_defaults_to_limbo_when_room_missing.
+
+- ✅ [P0] **player_save_format: persist original room when saving limboed characters** — done 2025-10-11
+  EVIDENCE: C src/save.c:206-214 (`save_char_obj` writes `was_in_room->vnum` or ROOM_VNUM_TEMPLE when saving players parked in limbo).
+  EVIDENCE: PY mud/persistence.py:36-205 (save_character now falls back to `was_in_room` or ROOM_VNUM_TEMPLE to mirror ROM limbo handling).
+  EVIDENCE: TEST tests/test_player_save_format.py::test_save_character_uses_was_in_room_for_limbo; TEST tests/test_player_save_format.py::test_save_character_defaults_to_temple_when_room_missing.
+
+- ✅ [P0] **player_save_format: persist newbie_help_seen flag in PlayerSave snapshots** — done 2025-12-07
+  EVIDENCE: C src/nanny.c:760-808 (initial login pages newbie help only once when promoted to level 1); PY mud/persistence.py:213-360 (PlayerSave snapshots now store/load `newbie_help_seen` alongside other parity flags); PY mud/net/connection.py:519-552 (`_send_newbie_help` sets the flag before saving the character)
+  EVIDENCE: TEST tests/test_player_save_format.py::test_player_save_roundtrip_preserves_newbie_help_flag
 
 - ✅ [P0] **player_save_format: persist PLR/COMM bitvectors in PlayerSave snapshots** — done 2025-10-18
   EVIDENCE: C src/save.c:223-231 (fwrite_char serialises Act/AfBy/Comm/Wizn)
   EVIDENCE: PY mud/persistence.py:27-203 (PlayerSave now stores act/comm and save/load copies them)
   EVIDENCE: PY mud/models/character.py:94-130 (Character exposes comm bitvector alongside act)
   EVIDENCE: TEST tests/test_player_save_format.py::test_act_and_comm_flags_roundtrip
-  NOTES:
-- C: ROM emits Act and Comm before affects so player toggles survive reboots; JSON persistence now mirrors that order.
-- PY: PlayerSave snapshots capture act/comm bitfields and `load_character` restores them onto `Character` instances.
-- TEST: The new round-trip regression seeds non-zero act/comm bits and confirms both survive save/load alongside affected_by and wiznet flags.
-- Applied tiny fix: none
+
+- ✅ [P1] **player_save_format: persist invisibility level (`Invi`) in JSON saves** — done 2025-12-07
+  EVIDENCE: C src/save.c:231 (`fprintf(fp, "Invi %d")`); C src/save.c:1325-1327 (KEY("InvisLevel"/"Invi")); PY mud/persistence.py:210-360; TEST tests/test_player_save_format.py::test_player_save_roundtrip_preserves_invis_level
+
+- ✅ [P0] **player_save_format: persist ROM prefix macros across saves** — done 2025-12-07
+  EVIDENCE: C src/alias.c:51-78 (substitute_alias prepends `ch->prefix` before alias expansion); C src/comm.c:1420-1444 (bust_a_prompt inserts the prefix into prompts every tick); PY mud/persistence.py:213-360 (PlayerSave now snapshots/restores `prefix` alongside aliases); TEST tests/test_player_save_format.py::test_player_save_roundtrip_preserves_prefix
+
+- ✅ [P0] **player_save_format: ensure missing limbo fallback defaults to temple** — done 2025-12-07
+  EVIDENCE: PY mud/persistence.py:662-684; TEST tests/test_player_save_format.py::test_load_character_defaults_to_temple_when_limbo_missing
+
+- ✅ [P0] **player_save_format: guard limbo save fallback when `was_in_room` lacks a vnum** — done 2025-12-07
+  EVIDENCE: PY mud/persistence.py:492-511; TEST tests/test_player_save_format.py::test_save_character_defaults_to_temple_when_was_in_room_invalid
+
+- ✅ [P0] **player_save_format: persist incog level across save/load** — done 2025-12-07
+  EVIDENCE: C src/save.c:210-236 (`fprintf(fp, "Inco %d")` under `fwrite_char`); C src/save.c:1328-1340 (`KEY("Inco", ch->incog_level, fread_number(fp))`).
+  EVIDENCE: PY mud/persistence.py:213-360 (PlayerSave now snapshots/restores `incog_level` next to `invis_level`).
+  EVIDENCE: PY mud/models/character.py:112-140 introduces the `incog_level` attribute so immortals retain their mask at runtime.
+  EVIDENCE: TEST tests/test_player_save_format.py::test_player_save_roundtrip_preserves_incog_level locks the round-trip behaviour.
+
+NOTES:
+- C: src/save.c:197-214 writes the player's clan name during `save_char_obj`; the Python port now snapshots the clan id so recall halls and clan-restricted logic persist through saves.
+- PY: mud/persistence.save_character/load_character sanitize the clan id with `lookup_clan_id` to accept both numeric and legacy string encodings, restoring `Character.clan` on load.
+- TEST: tests/test_player_save_format.py::test_player_save_roundtrip_preserves_clan guards the new persistence path alongside the existing limbo regressions.
+- C: src/save.c:1328-1340 loads the `Room` tag and defaults unresolved rooms to ROOM_VNUM_LIMBO before reconnecting the character; the Python port now mirrors that limbo safety net.
+- PY: mud/persistence.load_character falls back to ROOM_VNUM_LIMBO (then ROOM_VNUM_TEMPLE) when the saved vnum is missing so resurrected mortals never spawn without a room.
+- TEST: tests/test_player_save_format.py::test_load_character_defaults_to_limbo_when_room_missing verifies the limbo fallback while the other PlayerSave regressions guard the save-side behaviour.
+- PY: mud/persistence.save_character uses the stored `was_in_room` pointer from mud/game_loop._idle_to_limbo and defaults to ROOM_VNUM_TEMPLE if both rooms are missing, matching ROM reconnect safety.
+- TEST: tests/test_player_save_format.py::test_save_character_uses_was_in_room_for_limbo + ::test_save_character_defaults_to_temple_when_room_missing guard the limbo and fallback branches.
+- PY: mud/game_loop.py:494-510 autosaves PCs via `mud.persistence.save_character`, so storing `newbie_help_seen` in PlayerSave keeps ROM onboarding parity across idle saves.
+- TEST: tests/test_player_save_format.py::test_player_save_roundtrip_preserves_newbie_help_flag guards against regressions that would replay the login help after autosaves.
   <!-- SUBSYSTEM: player_save_format END -->
   <!-- SUBSYSTEM: help_system START -->
 
 ### help_system — Parity Audit 2025-10-17
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.70)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
 KEY RISKS: side_effects, output, logging
 TASKS:
 
@@ -602,9 +688,16 @@ TASKS:
   PY mud/commands/help.py:177-192 (records unmet help requests via `log_orphan_help_request`);
   PY mud/admin_logging/admin.py:121-130 (`log_orphan_help_request` writes `[room] name: topic` entries);
   TEST tests/test_help_system.py::test_help_restricted_topic_logs_request
+  - ✅ [P0] **help_system: honor ROM `one_argument` quoting for multi-word topics** — done 2025-11-27
+    EVIDENCE: C src/act_info.c:1844-1890 (`do_help` reconstructs `argall` via `one_argument` to drop quotes); C src/string.c:459-520 (`first_arg` quote handling)
+    EVIDENCE: PY mud/commands/help.py:1-200; TEST tests/test_help_system.py::test_help_handles_quoted_topics
+
+  - ✅ [P0] **help_system: limit creation help output to the first matching entry** — done 2025-11-30
+    EVIDENCE: C src/act_info.c:1846-1888 (`do_help` breaks once `ch->desc->connected != CON_PLAYING`); PY mud/commands/help.py:151-190 (`do_help` accepts `limit_results` and truncates matches); PY mud/net/connection.py:407-414 (`_resolve_help_text` forwards `limit_first=True` for creation prompts)
+    EVIDENCE: TEST tests/test_help_system.py::test_help_creation_flow_limits_to_first_entry
   NOTES:
 - C: ROM emits separators and keyword headers when multiple help entries match; the Python command now mirrors that pagination flow.
-- PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output.
+- PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output; creation flows now request a single entry so onboarding mirrors ROM's `do_help` break condition.
 - TEST: The new regression seeds stacked keyword entries and verifies the aggregated response includes both texts separated by the ROM divider.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: help_system END -->
@@ -612,8 +705,8 @@ TASKS:
 
 ### mob_programs — Parity Audit 2025-10-26
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.62)
-KEY RISKS: visibility, randomness, scripting
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
+KEY RISKS: scripting, randomness
 TASKS:
 
 - ✅ [P0] **mob_programs: target random visible PCs using ROM get_random_char semantics** — done 2025-10-26
@@ -625,11 +718,34 @@ TASKS:
 - ✅ [P1] **mob_programs: port ROM `if exists`/`if off` conditionals** — done 2025-11-26
   EVIDENCE: C src/mob_prog.c:126-572; PY mud/mobprog.py:590-760; TEST tests/test_mobprog_triggers.py::test_cmd_eval_conditionals
 
+- ✅ [P0] **mob_programs: implement ROM `mppurge` command for NPC/object cleanup** — done 2025-11-27
+  EVIDENCE: C src/mob_prog.c:1820-1906 (`do_mppurge` removes characters/objects by keyword, handling self and "all" cases)
+  EVIDENCE: PY mud/mob_cmds.py:1-560; TEST tests/test_mobprog_commands.py::test_mppurge_removes_target; TEST tests/test_mobprog_commands.py::test_mppurge_all_cleans_room
+
+- ✅ [P0] **mob_programs: implement ROM `mpat` remote command execution** — done 2025-11-29
+  EVIDENCE: C src/mob_cmds.c:719-753 (`do_mpat` saves the room pointer, moves the mob, runs `interpret`, and restores the original location); PY mud/mob_cmds.py:80-210; TEST tests/test_mobprog_commands.py::test_mpat_runs_command_in_target_room
+- ✅ [P0] **mob_programs: implement ROM `mpgtransfer` for group relocation** — done 2025-10-11
+  EVIDENCE: C src/mob_cmds.c:848-886 (`do_mpgtransfer` cascades `do_mptransfer` across grouped players); PY mud/mob_cmds.py:443-484; TEST tests/test_mobprog_commands.py::test_mpgtransfer_moves_group_members
+
+- ✅ [P0] **mob_programs: implement ROM `mpgforce`/`mpvforce` mass force commands** — done 2025-11-30
+  EVIDENCE: C src/mob_cmds.c:936-1016 (`do_mpgforce`/`do_mpvforce` iterate rooms/areas forcing mobs and PCs via `do_mpforce`); PY mud/mob_cmds.py:504-546 mirrors group and vnum force dispatch.
+  EVIDENCE: TEST tests/test_mobprog_commands.py::test_mpgforce_forces_room_members; TEST tests/test_mobprog_commands.py::test_mpvforce_forces_matching_mobs
+
+- ✅ [P1] **mob_programs: implement ROM `mpotransfer` object transfer command** — done 2025-11-30
+  EVIDENCE: C src/mob_cmds.c:1295-1334 (`do_mpotransfer` moves carried and room objects to a target room using keyword/vnum filters); PY mud/mob_cmds.py:372-442 locates objects in room/inventory/equipment and delivers them to the resolved room destination.
+  EVIDENCE: TEST tests/test_mobprog_commands.py::test_mpotransfer_moves_room_and_inventory_objects confirms room and carried objects relocate to the specified room while updating inventory counters.
+
+- ✅ [P0] **mob_programs: implement ROM `mpremember`/`mpforget` target tracking** — done 2025-11-30
+  EVIDENCE: C src/mob_cmds.c:1155-1175 (`do_mpremember`/`do_mpforget` assign `mprog_target`); PY mud/mob_cmds.py:830-842 (`do_mpremember` and `do_mpforget` wire character lookups and resets); TEST tests/test_mobprog_commands.py::{test_mpremember_sets_target,test_mpforget_clears_target}
+
+- ✅ [P0] **mob_programs: implement ROM `mpcast` offensive/defensive spell dispatch** — done 2025-11-30
+  EVIDENCE: C src/mob_cmds.c:1017-1099 (`do_mpcast` performs spell lookup and target validation); PY mud/mob_cmds.py:316-383 (`do_mpcast` parses quotes, resolves spell metadata, and dispatches on target types); TEST tests/test_mobprog_commands.py::{test_mpcast_offensive_spell_hits_target,test_mpcast_defensive_defaults_to_self}
+
 NOTES:
 
-- C: ROM `get_random_char` and `count_people_room` both gate on `can_see`, so invisible mortals do not trip greet/random triggers unless scripts override visibility.
-- PY: `_get_random_char` now mirrors ROM's percent roll while `_can_see` and `_count_people_room` defer to the shared `can_see_character` helper in `mud/world/vision.py`.
-- TEST: New regressions cover `$r` selection favouring visible PCs and greet triggers remaining idle until invisible players reveal themselves.
+- C: ROM `do_mpcast` in src/mob_cmds.c:1017-1099 selects spell targets by TAR flags and updates `mprog_target` via `do_mpremember`; the Python handlers now mirror those control paths.
+- PY: `mud/mob_cmds.py` wires `_split_spell_argument`, `_find_obj_here`, and new command entries so scripted casters can fire spells, remember PCs, and later forget them.
+- TEST: tests/test_mobprog_commands.py extends coverage for remember/forget flows and both offensive and defensive `mob cast` scenarios using deterministic dice and save rolls.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: mob_programs END -->
@@ -721,9 +837,14 @@ NOTES:
 
 ### persistence — Parity Audit 2025-11-26
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.87)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: file_formats, customization
 TASKS:
+
+- ✅ [P0] **persistence: skip NPCs when saving world snapshots** — done 2025-10-11
+  EVIDENCE: C src/save.c:732-744 (`save_char_obj` exits early for NPCs); C src/save.c:706-728 (load/save paths operate on descriptors for PCs only).
+  EVIDENCE: PY mud/persistence.py:468-540 guards `save_character`/`save_world` with `is_npc` checks.
+  EVIDENCE: TEST tests/test_persistence.py::test_save_world_skips_npcs ensures NPCs never produce JSON files.
 
 - ✅ [P0] **persistence: persist learned skill percentages and group knowledge** — done 2025-11-04
   EVIDENCE: C src/save.c:296-356 (`Sk`/`Gr` entries persist learned skills and group membership); PY mud/persistence.py:L34-L140; PY mud/persistence.py:L402-L566; PY mud/models/character.py:L19-L39; TEST tests/test_persistence.py::test_skill_progress_persists; TEST tests/test_persistence.py::test_group_knowledge_persists
@@ -741,16 +862,18 @@ TASKS:
 
 NOTES:
 
+- C: src/save.c:732-744 returns immediately when `IS_NPC(ch)` so mobs never hit the player save path; the Python serializer now mirrors that guard so world saves stay PC-only.
+- PY: mud/persistence.save_character/save_world filter `is_npc` before snapshotting, preventing NPC JSON artifacts while keeping the existing colour/metadata flows intact.
+- TEST: tests/test_persistence.py::test_save_world_skips_npcs ensures only the PC file is written when a mob shares the room.
 - C: src/save.c:274-378 writes the Coloura–Colourg sections so customised ANSI palettes survive reboots; the Python serializer now mirrors those blocks when snapshotting PlayerSave.
 - PY: mud/persistence.py serializes the colour table alongside skills, inventory, bamfin/out strings, and other pcdata metadata, and mud/models/character.py seeds ROM defaults for every colour channel.
-- TEST: tests/test_persistence.py::{test_colour_tables_round_trip,test_pcdata_metadata_round_trip} confirm both the new colour persistence and the existing metadata flows continue to round-trip.
   <!-- SUBSYSTEM: persistence END -->
   <!-- SUBSYSTEM: login_account_nanny START -->
 
 ### login_account_nanny — Parity Audit 2025-11-12
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.35)
-KEY RISKS: security, lag_wait, side_effects, visibility, ansi
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.85)
+KEY RISKS: security, lag_wait
 TASKS:
 
 - ✅ [P0] **login_account_nanny: enforce ROM name and site gating before account auto-creation** — done 2025-10-21
@@ -798,24 +921,65 @@ TASKS:
 - ✅ [P0] **login_account_nanny: enforce BAN_PERMIT host gating with PlayerFlag.PERMIT checks** — done 2025-11-08
   EVIDENCE: PY mud/account/account_service.py:450-503
   EVIDENCE: TEST tests/test_account_auth.py::test_ban_permit_requires_permit_flag
+- ✅ [P0] **login_account_nanny: serve ROM MOTD/IMOTD help topics before entering the game** — done 2025-11-26
+  EVIDENCE: PY mud/net/connection.py:423-456; DATA data/help.json:1-36; TEST tests/test_connection_motd.py::test_send_login_motd_for_mortal; TEST tests/test_connection_motd.py::test_send_login_motd_for_immortal
+  - priority: P0
+  - rationale: ROM `nanny` executes `do_help("motd")` for mortals and `do_help("imotd")` for immortals before switching to `CON_READ_MOTD`, ensuring players read staff announcements prior to gameplay. The Python flow transitions straight into the session without emitting either help topic, so new characters and reconnecting immortals never see the mandated MOTD/IMOTD text.
+  - files: mud/net/connection.py; mud/commands/help.py; mud/loaders/help_loader.py
+  - tests: tests/test_account_auth.py::test_new_player_receives_motd (new); tests/test_account_auth.py::test_immortal_receives_imotd (new)
+  - acceptance_criteria: Successful logins and new-character completions deliver `motd` help text to mortals and `imotd` followed by `motd` to immortals before entering the game loop, mirroring ROM sequencing.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/nanny.c:293-304,655-717 (calls `do_help("imotd")`/`do_help("motd")` prior to `CON_READ_MOTD`); PY mud/net/connection.py:720-910 (no MOTD dispatch in `_enter_game`).
+- ✅ [P0] **login_account_nanny: expose race help lookups during creation prompts** — done 2025-11-27
+  EVIDENCE: PY mud/net/connection.py:L670-L708; TEST tests/test_account_auth.py::test_creation_race_help
+- ✅ [P0] **login_account_nanny: enforce ROM 40-point minimum before exiting customization** — done 2025-12-02
+  EVIDENCE: C src/nanny.c:608-669 (`CON_GEN_GROUPS` guard); PY mud/account/account_service.py:150-175; PY mud/net/connection.py:830-860; TEST tests/test_account_auth.py::test_customization_requires_forty_creation_points
+  - priority: P0
+  - rationale: ROM's race prompt accepts `help` and `help <race>` to display creation guidance, but the Python `_prompt_for_race` loop only validates race names, so new players cannot read the race help topics before choosing.
+  - files: mud/net/connection.py
+  - tests: tests/test_account_auth.py::test_creation_race_help (new)
+  - acceptance_criteria: At the race selection prompt, entering `help` shows the `race help` topic, `help <race>` shows that race's help entry, and the player is reprompted without exiting creation.
+  - estimate: S
+  - risk: low
+  - evidence: C src/nanny.c:436-452 (`CON_GET_NEW_RACE` handles help commands); PY mud/net/connection.py:670-688 (race prompt only accepts valid race names and rejects help input).
+- ✅ [P0] **login_account_nanny: restore ROM customization menu commands (`drop`, `learned`, `info`, `premise`, `help`)** — done 2025-12-03
+  EVIDENCE: C src/skills.c:675-840; PY mud/account/account_service.py:64-173; PY mud/net/connection.py:806-909; TEST tests/test_account_auth.py::test_customization_menu_supports_drop_and_info
+- ✅ [P0] **login_account_nanny: enforce ROM creation-point cap and experience summary during customization** — done 2025-12-03
+  EVIDENCE: C src/skills.c:711-732; C src/nanny.c:682-699; PY mud/advancement.py:14-64; PY mud/account/account_service.py:64-209; PY mud/net/connection.py:840-909; TEST tests/test_account_auth.py::test_customization_requires_forty_creation_points
+- ✅ [P0] **login_account_nanny: persist customization skill selections and ROM menu formatting** — done 2025-12-04
+  EVIDENCE: PY mud/account/account_service.py:189-520; PY mud/net/connection.py:760-1060; PY mud/db/models.py:120-160; PY mud/models/character.py:500-600
+  EVIDENCE: TEST tests/test_account_auth.py::test_creation_prompts_include_alignment_and_groups; TEST tests/test_account_auth.py::test_customization_menu_supports_drop_and_info; TEST tests/test_account_auth.py::test_create_character_persists_creation_skills; TEST tests/test_networking_telnet.py::test_format_three_column_table_groups_entries
+
+- ✅ [P0] **login_account_nanny: surface ROM group header help and cost tables before customization** — done 2025-12-04
+  EVIDENCE: PY mud/net/connection.py:820-910; PY data/help.json:420-437
+  EVIDENCE: TEST tests/test_account_auth.py::test_customization_menu_shows_group_header_and_costs
+
+- ✅ [P0] **login_account_nanny: replay ROM `menu choice` help after customization actions** — done 2025-12-06
+  EVIDENCE: C src/nanny.c:590-715; PY mud/net/connection.py:835-965; DATA data/help.json:430-445; TEST tests/test_account_auth.py::test_customization_menu_repeats_menu_choice_help
+
+- ✅ [P1] **login_account_nanny: replace slow creation-flow integration test with in-memory harness** — done 2025-12-05
+  EVIDENCE: TEST tests/test_account_auth.py::test_creation_prompts_include_alignment_and_groups
+  EVIDENCE: PY tests/test_account_auth.py:594-677
 
 NOTES:
 
-- C: src/comm.c:1836-1866 documents ROM's reconnect flow, including the "Reconnecting" self-message, room echo, log write, and WIZ_LINKS broadcast that staff rely on to spot suspicious link attempts.
-- PY: mud/net/connection.py now resets reconnect timers, delivers the replay prompt to the returning player, echoes the room message, and emits the WIZ_LINKS broadcast alongside the existing WIZ_LOGINS hook.
-- PY: mud/net/protocol.py:20-74 still leaves password echo negotiation and CON_BREAK_CONNECT prompts unimplemented, keeping the outstanding P1 task relevant.
-- PY: mud/net/connection.py now sanitizes descriptor hosts, logs `<name>@<host>` to stdout, and broadcasts WIZ_SITES notices with trust gating so immortals see new arrivals in real time, mirroring ROM `wiznet` semantics.
-- TEST: tests/test_account_auth.py exercises the nanny flow, including the new reconnect broadcast coverage, while the remaining P1 task tracks telnet echo parity.
+- C: src/nanny.c:188-717 and src/comm.c:118-320 drive name gating, password echo negotiation, CON_BREAK_CONNECT reconnects, creation prompts, and MOTD sequencing for new and returning players.
+- PY: mud/net/connection.py:200-909 and mud/account/account_service.py:38-520 now mirror ROM nanny states including customization menu commands, creation-point caps, MOTD/IMOTD delivery, and WIZ_LINKS/WIZ_SITES broadcasts while toggling telnet echo like `comm.c`.
+- DOC: doc/guide.txt §Character Creation documents the customization commands and experience summary players expect after finishing group selection.
+- TEST: tests/test_account_auth.py::{test_new_character_creation_sequence,test_creation_prompts_include_alignment_and_groups,test_creation_race_help,test_password_echo_suppressed} plus tests/test_connection_motd.py::{test_send_login_motd_for_mortal,test_send_login_motd_for_immortal} cover the full creation flow, password negotiation, and MOTD sequencing.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: login_account_nanny END -->
   <!-- SUBSYSTEM: networking_telnet START -->
 
-### networking_telnet — Parity Audit 2025-11-06
+### networking_telnet — Parity Audit 2025-12-02
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
-KEY RISKS: lag_wait, networking, persistence, side_effects, security
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: lag_wait, networking
 TASKS:
 
+- ✅ [P0] **networking_telnet: implement ROM show_string paging for long outputs** — done 2025-12-02
+  EVIDENCE: PY mud/net/session.py:20-110; PY mud/net/protocol.py:16-52; TEST tests/test_networking_telnet.py::{test_show_string_paginates_output,test_send_to_char_accepts_iterables}
 - ✅ [P0] **networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:1-380; PY mud/net/protocol.py:1-80; TEST tests/test_telnet_server.py::test_telnet_negotiates_iac_and_disables_echo; TEST tests/test_account_auth.py::test_password_prompt_hides_echo
 - ✅ [P0] **networking_telnet: implement ROM line editing, history recall, and spam throttling for descriptor input** — done 2025-10-30
@@ -826,19 +990,24 @@ TASKS:
   EVIDENCE: PY mud/net/connection.py:230-360; PY mud/account/account_manager.py:15-120; PY mud/db/models.py:90-140; PY mud/models/character.py:400-470; PY mud/persistence.py:400-540; TEST tests/test_account_auth.py::test_ansi_preference_persists_between_sessions
 - ✅ [P1] **networking_telnet: implement CON_BREAK_CONNECT duplicate-session handshake** — done 2025-11-25
   EVIDENCE: PY mud/net/connection.py:430-520,930-1010; TEST tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects
+- ✅ [P0] **networking_telnet: restore ROM `stop_idling` limbo return when players send input** — done 2025-12-01
+  EVIDENCE: PY mud/net/connection.py:200-241; TEST tests/test_networking_telnet.py::test_stop_idling_returns_character_to_previous_room
+
+- ✅ [P1] **networking_telnet: rely on session pagination for MOTD prompts** — done 2025-12-02
+  EVIDENCE: PY mud/net/connection.py:476-498; TEST tests/test_networking_telnet.py::test_motd_uses_session_paging; TEST tests/test_connection_motd.py::{test_send_login_motd_for_mortal,test_send_login_motd_for_immortal}
 
 NOTES:
 
-- C: src/nanny.c:300-340 and src/comm.c:1834-1875 drive ROM's `CON_BREAK_CONNECT` prompt, descriptor takeover, and wiznet link broadcasts for duplicate logins.
-- PY: mud/net/connection.py now severs active descriptors via `_disconnect_session`, reuses the in-memory character, and replays the ROM reconnect message before resuming the command loop with the new connection.
-- TEST: tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects verifies duplicate-session consent, takeover messaging, and the reconnect prompt and prompt delivery.
+- C: src/comm.c:1955-2175 drives ROM paging through `showstr_head/showstr_point`, duplicate-session prompts, and the `[Hit Return to continue]` handshake that resumes ordinary input when players enter other commands.
+- PY: mud/net/session.py:13-154 mirrors the ROM show-string buffer with `start_paging`/`send_next_page`, while mud/net/connection.py:420-620 routes descriptor input through `_read_player_command`, honoring blank/`c` continuations, `!` repeats, and pagination escape semantics before command dispatch.
+- TEST: tests/test_networking_telnet.py::{test_show_string_paginates_output,test_send_to_char_accepts_iterables,test_stop_idling_returns_character_to_previous_room} plus tests/test_account_auth.py::{test_newbie_banned_blocks_character_creation,test_select_character_blocks_newbie_creation_when_banned} and tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects validate paging, iterable delivery, limbo recovery, BAN_NEWBIES, and CON_BREAK_CONNECT.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: networking_telnet END -->
   <!-- SUBSYSTEM: security_auth_bans START -->
 
 ### security_auth_bans — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
 KEY RISKS: security
 TASKS:
 
@@ -851,21 +1020,50 @@ TASKS:
   EVIDENCE: PY mud/commands/admin_commands.py:1-168; PY mud/commands/dispatcher.py:1-160; PY mud/net/session.py:15-30; PY mud/net/connection.py:640-714; TEST tests/test_admin_commands.py::test_deny_sets_plr_deny_and_kicks; TEST tests/test_account_auth.py::test_denied_account_cannot_login
 - ✅ [P0] **security_auth_bans: persist account-level denies alongside host bans** — done 2025-10-27
   EVIDENCE: PY mud/security/bans.py:1-220; PY mud/models/constants.py:260-310; TEST tests/test_bans.py::test_account_denies_persist_across_restart; TEST tests/test_account_auth.py::test_denied_account_cannot_login
+- ✅ [P0] **security_auth_bans: enforce BAN_PERMIT gating on character selection and creation** — done 2025-12-01
+  EVIDENCE: PY mud/net/connection.py:446-1111; TEST tests/test_networking_telnet.py::{test_select_character_blocks_unpermitted_from_permit_host,test_select_character_allows_permit_from_permit_host}
+- ✅ [P0] **security_auth_bans: enforce BAN_NEWBIES restrictions on character creation** — done 2025-12-02
+  EVIDENCE: C src/nanny.c:236-305; PY mud/net/connection.py:940-1155; TEST tests/test_account_auth.py::{test_newbie_banned_blocks_character_creation,test_select_character_blocks_newbie_creation_when_banned}
+- ✅ [P0] **security_auth_bans: implement ROM wizlock/newlock toggles with wiznet notifications** — done 2025-12-02
+  EVIDENCE: C src/act_wiz.c:3150-3190 (`do_wizlock`/`do_newlock`); PY mud/commands/admin_commands.py:48-91; PY mud/commands/dispatcher.py:20-179; TEST tests/test_admin_commands.py::{test_wizlock_command_toggles_and_notifies,test_newlock_command_toggles_and_notifies}
 
 NOTES:
 
 - C: src/comm.c:1008-1034 drops BAN_ALL hosts before calling `help_greeting`, preventing banned sites from idling at the prompt, while src/ban.c:61-180 persists permanent bans across reboots.
 - PY: mud/net/connection.py:L732-L744 now checks `BanFlag.ALL` before ANSI negotiation and closes the descriptor after sending the ROM ban message.
 - TEST: tests/test_account_auth.py::test_banned_host_disconnects_before_greeting confirms banned hosts receive the ROM message, never hit the greeting prompts, and do not register a session.
+- UPDATE: mud/net/connection.py:L940-L1155 now mirrors `check_ban(..., BAN_NEWBIES)` by rejecting new-character creation attempts and preserving the ROM "New players are not allowed from your site." banner before any prompts.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: security_auth_bans END -->
   <!-- SUBSYSTEM: logging_admin START -->
 
-### logging_admin — Parity Audit 2025-10-27
+### logging_admin — Parity Audit 2025-12-07
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: logging, visibility, security
 TASKS:
+
+- ✅ [P0] **logging_admin: implement ROM `holylight` command toggling** — done 2025-12-07
+  EVIDENCE: PY mud/commands/admin_commands.py:270-282; PY mud/commands/dispatcher.py:169-183; PY mud/world/vision.py:41-145; TEST tests/test_admin_commands.py::test_holylight_command_toggles_flag
+  - priority: P0
+  - rationale: Immortals lacked the `holylight` toggle, leaving PLR_HOLYLIGHT unused and dark rooms opaque compared to ROM `do_holylight`.
+  - files: mud/commands/admin_commands.py; mud/commands/dispatcher.py; mud/world/vision.py
+  - tests: tests/test_admin_commands.py::test_holylight_command_toggles_flag
+  - acceptance_criteria: Add `holylight` command that flips `PlayerFlag.HOLYLIGHT` for PCs, returns ROM messages, and ensures vision helpers respect the flag.
+  - estimate: S
+  - risk: low
+  - evidence: C src/act_wiz.c:4422-4439 (`do_holylight` toggles PLR_HOLYLIGHT); C src/handler.c:2624-2636 (holylight bypasses visibility checks)
+
+- ✅ [P0] **logging_admin: implement ROM `incognito` command toggling** — done 2025-12-07
+  EVIDENCE: PY mud/commands/admin_commands.py:240-267; PY mud/commands/dispatcher.py:169-183; TEST tests/test_admin_commands.py::test_incognito_command_toggles_and_announces
+  - priority: P0
+  - rationale: Immortals cannot toggle incognito because the dispatcher lacks `incognito`; ROM `do_incognito` adjusts `incog_level`, bounds levels by trust, and emits room notifications.
+  - files: mud/commands/admin_commands.py; mud/commands/dispatcher.py
+  - tests: tests/test_admin_commands.py::test_incognito_command_toggles_and_announces
+  - acceptance_criteria: Admin-only command toggles `incog_level`, clamps level arguments to trust, emits third-person room messaging, and leaves visibility helpers in sync.
+  - estimate: M
+  - risk: medium
+  - evidence: C src/act_wiz.c:4375-4414 (`do_incognito`), C src/handler.c:2624-2636 (incog visibility guard)
 
 - ✅ [P0] **logging_admin: broadcast admin command logs to wiznet secure watchers** — done 2025-10-27
   EVIDENCE: PY mud/admin_logging/admin.py:1-140
@@ -874,30 +1072,52 @@ TASKS:
 
 NOTES:
 
-- C: src/interp.c:456-518 and src/act_wiz.c:2927-2984 drive `log all`/`PLR_LOG` handling plus secure wiznet mirroring with duplicated ROM color sentinels.
-- PY: mud/commands/admin_commands.py toggles per-character logging, while mud/commands/dispatcher.py+mud/admin_logging/admin.py sanitize command lines, duplicate `$`/`{`, and gate wiznet notifications by effective trust.
-- TEST: tests/test_logging_admin.py exercises log toggles, persistence, rotation, alias expansion, secure wiznet delivery, and command sanitization to keep parity regressions covered.
+- C: src/act_wiz.c:4375-4414 implements incognito toggling and src/act_wiz.c:4422-4439 handles holylight; handler.c visibility helpers honor both PLR flags.
+- PY: mud/commands/admin_commands.py now exposes `incognito`/`holylight`, and mud/world/vision.py consults PLR_HOLYLIGHT during darkness checks to mirror ROM behaviour.
+- TEST: tests/test_admin_commands.py exercises the admin toggles alongside existing log/wizlock coverage, ensuring both visibility flags persist and affect vision.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: logging_admin END -->
   <!-- SUBSYSTEM: olc_builders START -->
 
-### olc_builders — Parity Audit 2025-10-24
+### olc_builders — Parity Audit 2025-11-28
 
-STATUS: completion:❌ implementation:partial correctness:passes (confidence 0.50)
-KEY RISKS: security, file_formats, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: security, visibility
 TASKS:
 
+- ✅ [P0] **olc_builders: implement ROM heal/mana/clan room editor fields** — done 2025-11-28
+  EVIDENCE: C src/olc_act.c:1807-1850; PY mud/commands/build.py:362-390; PY mud/models/clans.py:1-60; TEST tests/test_building.py::{test_redit_sets_heal_and_mana_rates,test_redit_sets_clan}
 - ✅ [P0] **olc_builders: restore descriptor-driven redit session with builder security** — done 2025-10-31
   EVIDENCE: PY mud/commands/build.py:1-164; PY mud/commands/dispatcher.py:1-140; PY mud/net/session.py:1-40; TEST tests/test_building.py::test_redit_requires_builder_security_and_marks_area
 - ✅ [P1] **olc_builders: port ROM redit exit/extra description editing commands** — done 2025-10-09
   EVIDENCE: PY mud/commands/build.py:L67-L305; TEST tests/test_building.py::test_redit_can_create_exit_and_set_flags; TEST tests/test_building.py::test_redit_ed_adds_and_updates_extra_description
+- ✅ [P0] **olc_builders: mirror ROM change_exit linking/dig/delete semantics** — done 2025-11-29
+  EVIDENCE: C src/olc_act.c:1242-1404 (`change_exit` handles link/dig/delete and reverse synchronization); PY mud/commands/build.py:60-270; TEST tests/test_building.py::test_redit_link_creates_bidirectional_exit
+
+- ✅ [P0] **olc_builders: implement ROM `redit room` flag toggling** — done 2025-10-10
+  EVIDENCE: C src/olc_act.c:4972-4989; PY mud/commands/build.py:120-165,443-465; TEST tests/test_building.py::test_redit_room_flags_toggle
+
+- ✅ [P0] **olc_builders: implement ROM `redit sector` command** — done 2025-10-10
+  EVIDENCE: C src/olc_act.c:4990-5003; PY mud/commands/build.py:142-156,468-479; TEST tests/test_building.py::test_redit_sector_updates_type
+
+- ✅ [P1] **olc_builders: implement ROM `redit owner` command** — done 2025-10-10
+  EVIDENCE: C src/olc_act.c:4841-4860; PY mud/commands/build.py:482-494; TEST tests/test_building.py::test_redit_owner_sets_and_clears_name
 
 NOTES:
 
-- C: src/olc_act.c:1519-2002 covers `redit_*` directional exit builders and the `redit_ed` extra description workflow that mirror ROM's door/extra management.
-- PY: mud/commands/build.py:L67-L344 now drives directional exit creation, flagging, and extra description editing while still lacking ROM's reset editing hooks and reverse-exit synchronization.
-- TEST: tests/test_building.py::{test_redit_requires_builder_security_and_marks_area,test_redit_can_create_exit_and_set_flags,test_redit_ed_adds_and_updates_extra_description} lock in gating plus new exit/extra flows; coverage for reset editing remains outstanding.
+- C: src/olc_act.c:1068-1240 details `redit_show` metadata, occupant/object listings, and exit flag highlighting, while 1807-1906 and 4972-5003 cover regen fields, clan assignment, and room flag/sector editing for builders.
+- PY: mud/commands/build.py mirrors ROM heal/mana/clan editors plus room flag, owner, sector, reset tooling, and now renders the full `redit show` summary with uppercase exit differences.
+- TEST: tests/test_building.py exercises regen/clan commands, exit editing, and room flag toggles, and `test_redit_show_lists_rom_metadata` locks the ROM show output against regressions.
 - Applied tiny fix: none
+
+- ✅ [P0] **olc_builders: implement ROM `redit mreset` command for spawning mobs into rooms and adding resets** — done 2025-11-30
+  EVIDENCE: PY mud/commands/build.py:129-298,842-844; TEST tests/test_building.py::test_redit_mreset_adds_reset_and_spawns_mob
+- ✅ [P0] **olc_builders: implement ROM `redit oreset` command for room/container/mobile object resets** — done 2025-11-30
+  EVIDENCE: PY mud/commands/build.py:129-399,845-846; TEST tests/test_building.py::{test_redit_oreset_adds_room_and_container_resets,test_redit_oreset_equips_mob_and_records_reset}
+- ✅ [P0] **olc_builders: implement ROM `redit format` command for description reflow** — done 2025-10-11
+  EVIDENCE: C src/olc_act.c:1853-1864 (`redit_format`); C src/string.c:299-428 (`format_string` logic); PY mud/utils/text.py:6-115; PY mud/commands/build.py:795-852; TEST tests/test_building.py::test_redit_format_rewraps_description
+- ✅ [P1] **olc_builders: expand `redit show` output to ROM parity** — done 2025-12-01
+  EVIDENCE: C src/olc_act.c:1068-1240; PY mud/commands/build.py:L140-L289; TEST tests/test_building.py::test_redit_show_lists_rom_metadata
   <!-- SUBSYSTEM: olc_builders END -->
   <!-- PARITY-GAPS-END -->
 
@@ -993,75 +1213,68 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 
 <!-- SUBSYSTEM: shops_economy START -->
 
-### shops_economy — Parity Audit 2025-09-19
+### shops_economy — Parity Audit 2025-12-09
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.74)
-KEY RISKS: economy, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+KEY RISKS: economy, inventory, scripting, followers, messaging, currency, targeting, visibility, timers, command_coverage
+
 TASKS:
 
-- ✅ [P0] Port healer NPC shop logic (healer.c) — done 2025-09-09
-  RATIONALE: Minimal healer command wired; supports refresh/heal/mana with ROM-like pricing and denial message.
-  FILES: mud/commands/healer.py; mud/commands/dispatcher.py
-  TESTS: tests/test_healer.py::test_healer_lists_services_and_prices; tests/test_healer.py::test_healer_denies_when_insufficient_gold
-  REFERENCES: C src/healer.c:1-220; PY mud/commands/healer.py:8-90
-  PRIORITY: P0; ESTIMATE: M; RISK: medium
+- ✅ [P0] **shops_economy: restore `do_sell` reply target when player lacks the item** — done 2025-12-09
+  EVIDENCE: C src/act_obj.c:2883 (`ch->reply = keeper` after "You don't have that item."); PY mud/commands/shop.py:824-833 (assigns `char.reply = keeper` before returning the denial); TEST tests/test_shops.py::test_sell_sets_reply_after_missing_item
 
-- ✅ [P1] Mirror ROM get_cost() including profit_buy/sell and inventory discount — done 2025-09-12
-  RATIONALE: Shop prices use profit margins and adjust based on existing inventory (half/three-quarters).
-  FILES: mud/commands/shop.py
-  TESTS: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
-  REFERENCES: C src/act_obj.c:2468-2530; PY mud/commands/shop.py:40-115
-  PRIORITY: P1; ESTIMATE: M; RISK: medium
+- ✅ [P0] **shops_economy: implement ROM `do_value` appraisal command** — done 2025-12-09
+  EVIDENCE: C src/act_obj.c:2965-3016 (`do_value` quotes keeper offers after sight/drop gates); PY mud/commands/shop.py:900-961 (new `do_value` handler with reply wiring and numbered selectors); TEST tests/test_shops.py::{test_value_lists_offer,test_value_respects_drop_and_visibility_gates}
 
-- ✅ [P1] Adjust wand/staff prices by charges — done 2025-09-12
-  RATIONALE: ROM scales wand/staff prices based on remaining charges.
-  FILES: mud/commands/shop.py
-  TESTS: tests/test_shops.py::test_wand_staff_price_scales_with_charges_and_inventory_discount
-  REFERENCES: C src/act_obj.c:2516-2528; PY mud/commands/shop.py:64-100
-  PRIORITY: P1; ESTIMATE: M; RISK: medium
+- ✅ [P0] **shops_economy: restore ROM `do_sell` drop/visibility/extract semantics** — done 2025-12-09
+  EVIDENCE: C src/handler.c:2671-2690 (`can_see_obj`/`can_drop_obj` enforce nodrop and blind gating); C src/act_obj.c:2871-2946 (`do_sell` checks keeper sight, ITEM_SELL_EXTRACT, and timer resets); PY mud/commands/shop.py:202-259, mud/commands/shop.py:833-914 (drop/visibility guards, timer resets, and extraction handling); TEST tests/test_shops.py::{test_sell_respects_drop_and_visibility_gates,test_sell_extracts_and_resets_timer}
 
-- ✅ [P2] Preserve #SHOPS data in conversion and loader — done 2025-09-13
-  RATIONALE: Maintain ROM shop metadata during area conversion.
-  FILES: mud/loaders/shop_loader.py; mud/loaders/area_loader.py; mud/scripts/convert_shops_to_json.py
-  TESTS: tests/test_shop_conversion.py::{test_convert_shops_produces_grocer,test_shops_json_matches_legacy_counts}
-  REFERENCES: C src/db.c:1280-1320; DOC doc/area.txt:522-550; ARE area/midgaard.are:6420-6470
-  PRIORITY: P2; ESTIMATE: M; RISK: low
+- ✅ [P1] **shops_economy: implement ROM `do_sell` haggle bonus and room messaging** — done 2025-12-09
+  EVIDENCE: C src/act_obj.c:2891-2935 (`do_sell` haggle flow and `$n sells $p.` broadcast); PY mud/commands/shop.py:202-245, mud/commands/shop.py:833-914 (haggle roll, messaging, and wealth clamping); TEST tests/test_shops.py::test_sell_haggle_applies_discount
 
-- ✅ [P0] Enforce shop open/close hours during buy/list/sell — done 2025-09-19
-  RATIONALE: ROM `find_keeper` denies service outside configured shop hours.
-  FILES: mud/commands/shop.py; tests/test_shops.py
-  TESTS: tests/test_shops.py::test_shop_respects_open_hours
-  REFERENCES: C src/act_obj.c:2351-2390; DOC doc/area.txt §#SHOPS; ARE area/midgaard.are:6430-6460
-  PRIORITY: P0; ESTIMATE: S; RISK: low
+- ✅ [P0] **shops_economy: mirror ROM numbered selectors and keyword matching for `sell`** — done 2025-12-09
+  EVIDENCE: C src/handler.c:2295-2309; C src/act_obj.c:2871-2920; PY mud/commands/shop.py:630-750; TEST tests/test_shops.py::test_sell_numbered_selector
 
-- ✅ [P0] Honor `find_keeper` visibility checks before trading — done 2025-09-19
-  RATIONALE: ROM refuses invisible/hidden customers unless the keeper can see them via `can_see`.
-  FILES: mud/commands/shop.py; tests/test_shops.py
-  TESTS: tests/test_shops.py::test_shop_refuses_invisible_customers
-  REFERENCES: C src/act_obj.c:2395-2401; C src/handler.c:2618-2662; PY mud/commands/shop.py:9-54; PY tests/test_shops.py:172-213
-  PRIORITY: P0; ESTIMATE: S; RISK: low
+- ✅ [P0] **shops_economy: port ROM number_argument for targeted purchases** — done 2025-12-08
+  EVIDENCE: C src/interp.c:719-742 (`number_argument` splits indexed selectors); C src/act_obj.c:2448-2470 (`get_obj_keeper` uses `number_argument` to pick the Nth item); PY mud/commands/shop.py:612-726 (do_buy now parses numbered selectors and removes the targeted objects by identity); TEST tests/test_shops.py::test_buy_specific_stock_slot
+- ✅ [P0] **shops_economy: implement ROM buy quantity arguments and stacked purchases** — done 2025-10-12
+  EVIDENCE: C src/act_obj.c:2640-2768 (`do_buy` quantity handling); PY mud/commands/shop.py:256-653; TEST tests/test_shops.py::test_buy_multiple_items_from_inventory
 
-- ✅ [P0] Reinstate shopkeeper wealth caps before accepting player sales — done 2025-09-19
-  ACCEPTANCE: Selling an item whose cost exceeds `keeper.silver + 100 * keeper.gold` yields ROM's denial message and leaves both inventories unchanged.
-  RATIONALE: Without wealth checks, players can dump unlimited goods into impoverished shops for full price.
-  FILES: mud/commands/shop.py; mud/spawning/templates.py; tests/test_shops.py
-  TESTS: PYTHONPATH=. pytest -q tests/test_shops.py::test_shop_respects_keeper_wealth
-  REFERENCES: C src/act_obj.c:2917-2953; PY mud/commands/shop.py:118-171; PY mud/spawning/templates.py:49-78; TEST tests/test_shops.py::test_shop_respects_keeper_wealth
-  PRIORITY: P0; ESTIMATE: M; RISK: medium
+- ✅ [P0] **shops_economy: restore ROM sell receipts with silver/gold breakdown** — done 2025-10-12
+  EVIDENCE: C src/act_obj.c:2871-2920 (`do_sell` messaging); PY mud/commands/shop.py:656-679; TEST tests/test_shops.py::test_sell_reports_gold_and_silver
+
+- ✅ [P0] **shops_economy: restore silver-denominated buy/sell handling** — done 2025-12-08
+  EVIDENCE: C src/act_obj.c:2746-2768 (buy branch deducts silver cost and reports receipts in silver); C src/handler.c:2397-2419 (`deduct_cost` removes silver then converts gold when needed); PY mud/commands/shop.py:287-308 (introduces `_deduct_character_cost`), mud/commands/shop.py:445-507 (buy/sell paths now deduct/add silver and emit "silver" receipts); TEST tests/test_shops.py::test_buy_uses_gold_and_silver, tests/test_shops.py::test_sell_to_grocer, tests/test_shops.py::test_buy_handles_multiple_inventory_copies.
+
+- ✅ [P0] **shops_economy: restore ROM pet shop messaging for buyers and observers** — done 2025-12-07
+  EVIDENCE: C src/act_obj.c:2650-2662 (pet shop sends "Enjoy your pet." and broadcasts "$n bought $N as a pet."); PY mud/commands/shop.py:399-444 (buyer message appended and room broadcast mirrors ROM); TEST tests/test_shops.py::test_pet_shop_purchase_creates_charmed_pet, tests/test_shops.py::test_pet_shop_rejects_second_pet.
+
+- ✅ [P0] **shops_economy: call add_follower when awarding pet purchases** — done 2025-12-07
+  EVIDENCE: C src/act_obj.c:2638-2662 (pet purchases call `add_follower` to wire master/leader); PY mud/commands/shop.py:399-438 (pet shop handler now invokes `add_follower`, assigns leader, and relies on helper messaging); TEST tests/test_shops.py::test_pet_shop_purchase_creates_charmed_pet (asserts follower messaging and leader assignment), tests/test_shops.py::test_pet_shop_rejects_second_pet.
+
+- ✅ [P0] **shops_economy: implement ROM pet shop purchase flow** — done 2025-12-07
+  EVIDENCE: C src/act_obj.c:2531-2662 (pet shop branch of `do_buy` handles kennels, charm flags, and haggling); PY mud/commands/shop.py:28-435 (pet-shop helpers, kennel lookup, follower wiring, haggle message); TEST tests/test_shops.py::{test_pet_shop_purchase_creates_charmed_pet,test_pet_shop_rejects_second_pet}
+
+- ✅ [P0] **shops_economy: clone ITEM_INVENTORY stock during buy** — done 2025-12-07
+  EVIDENCE: C src/act_obj.c:2696-2764 (do_buy duplicates ITEM_INVENTORY stock via create_object and preserves timers).
+  EVIDENCE: PY mud/commands/shop.py:33-115;197-221 (ITEM_INVENTORY detection, cloning helper, and timer reset logic mirror ROM semantics).
+  EVIDENCE: TEST tests/test_shops.py::test_buy_preserves_infinite_stock (asserts keeper retains stock and buyer gets fresh copy).
 
 NOTES:
 
-- C: src/act_obj.c:2917-2953 caps player sales by keeper wealth and deducts coins before transferring the object.
-- PY: mud/commands/shop.py:\_keeper_total_wealth/do_sell/do_buy enforce the ROM wealth gate and update keeper coin totals.
-- PY: mud/spawning/templates.py:MobInstance.from_prototype rolls ROM wealth into gold/silver so shopkeepers start with parity coins.
-- TEST: tests/test_shops.py::test_shop_respects_keeper_wealth denies the sale until the keeper's coin pool is replenished.
-- Applied tiny fix: Seeded keeper wealth with the ROM random roll when spawning mobs to keep resets and direct spawns aligned.
-    <!-- SUBSYSTEM: shops_economy END -->
+- ROM `do_sell` now mirrors nodrop and invisibility guards plus trash/SELL_EXTRACT cleanup, with regressions exercising the rejection paths and ensuring resale timers refresh per src/act_obj.c:2871-2946.
+- Sale completions broadcast `$n sells $p.` and append resold goods via `add_object`, keeping keeper carry stats in sync with ROM flow.
+- Haggle skill gains now trigger on profitable rolls, emit ROM "You haggle with the shopkeeper." messaging, and clamp payouts to 95% of the buy price while respecting keeper wealth.
+- Legacy completed work (buy stack handling, pet shops, currency accounting) remains intact; no tiny fixes applied in this pass.
+- `value` now pages through the numbered keyword helper, reproduces ROM blind/nodrop gating, formats the keeper quote in silver/gold, and records the replying shopkeeper for follow-up `reply` commands.
+- `sell` now records the denying shopkeeper in `char.reply`, matching ROM's follow-up communication path when the player lacks the requested item.
+- Applied tiny fix: none
+<!-- SUBSYSTEM: shops_economy END -->
   <!-- SUBSYSTEM: boards_notes START -->
 
 ### boards_notes — Parity Audit 2025-10-20
 
-STATUS: completion:❌ implementation:partial correctness:suspect (confidence 0.40)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.83)
 KEY RISKS: file_formats, persistence, side_effects
 TASKS:
 
@@ -1078,19 +1291,30 @@ TASKS:
   - evidence: C src/board.c:563-605; C src/board.c:889-905; PY mud/commands/notes.py:33-150; TEST tests/test_boards.py::{test_note_read_defaults_to_next_unread,test_note_read_advances_to_next_board_when_exhausted}
 - ✅ [P0] Block board switching while a draft is active — done 2025-10-07
   - evidence: C src/board.c:728-780; PY mud/commands/notes.py:51-119; TEST tests/test_boards.py::test_board_change_blocked_during_note_draft
+- ✅ [P1] **boards_notes: support `note list <N>` filtering to last visible notes** — done 2025-11-27
+  EVIDENCE: C src/board.c:648-693 (`do_nlist` honors numeric arguments and unread markers); PY mud/commands/notes.py:244-276; TEST tests/test_boards.py::test_note_list_filters_visible_range
+
+- ✅ [P0] **boards_notes: mirror ROM note list visibility gating and header formatting** — done 2025-11-27
+  EVIDENCE: C src/board.c:648-693 (`do_nlist` filters with `is_note_to` and formats output)
+  EVIDENCE: PY mud/commands/notes.py:265-309; TEST tests/test_boards.py::{test_note_list_filters_visible_range,test_note_list_hides_private_notes}
+- ✅ [P0] **boards_notes: render note reads with ROM headers and metadata** — done 2025-10-10
+  EVIDENCE: C src/board.c:270-306 (`show_note_to_char` prints sender/date/to header and separator); C src/board.c:563-617 (`do_nread` delegates to `show_note_to_char` for numbered and next-unread flows); PY mud/commands/notes.py:120-185,292-366; TEST tests/test_boards.py::test_note_read_includes_header_metadata
+
+- ✅ [P0] **boards_notes: mirror ROM color-coded `board` listings** — done 2025-11-27
+  EVIDENCE: C src/board.c:740-820 (`do_board` prints `{RNum ...` header, colorized counts, and permission strings); PY mud/commands/notes.py:190-247; TEST tests/test_boards.py::test_board_listing_uses_rom_colors
 
 NOTES:
 
 - C: src/board.c:740-1128 documents the staged editor, forced recipients, and expiry stamping that the Python port now mirrors.
 - PY: mud/commands/notes.py:223-366; mud/models/board.py:83-114; mud/models/note.py:12-31 persist default recipients, expiry, and draft state in parity with ROM.
-- TEST: tests/test_boards.py::{test_note_write_pipeline_enforces_defaults,test_note_persistence} exercise forced recipients and expiry persistence alongside prior visibility regressions.
+- TEST: tests/test_boards.py::{test_note_write_pipeline_enforces_defaults,test_note_persistence,test_board_listing_uses_rom_colors} exercise forced recipients, expiry persistence, and board listing formatting alongside prior visibility regressions.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: boards_notes END -->
       <!-- SUBSYSTEM: command_interpreter START -->
 
 ### command_interpreter — Parity Audit 2025-09-18
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.78)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.84)
 KEY RISKS: side_effects, abbreviations
 TASKS:
 
@@ -1133,10 +1357,14 @@ TASKS:
   ACCEPTANCE_CRITERIA: `'hello` routes through `say` without raising a parsing error and echoes the same message as `say hello` when routed through `process_command`.
   ESTIMATE: S; RISK: medium
 
+- ✅ [P1] **command_interpreter: implement ROM prefix macros and command** — done 2025-12-07
+  EVIDENCE: C src/alias.c:36-82 (prefix concatenated prior to alias substitution); C src/act_wiz.c:4449-4479 (`do_prefix`/`do_prefi` messaging); PY mud/commands/alias_cmds.py:1-80; PY mud/commands/dispatcher.py:220-360; TEST tests/test_commands.py::{test_prefix_command_sets_changes_and_clears,test_prefi_rejects_abbreviation,test_prefix_macro_prepends_to_commands}
+
 NOTES:
 
 - C: src/interp.c:430-468 strips leading punctuation and dispatches `'` → say before argument tokenizing, while later lines 520-560 enforce position messages already ported.
 - PY: mud/commands/dispatcher.py:\_split_command_and_args now mirrors ROM punctuation handling before shlex tokenization so `'hello` reaches `do_say` and aliases resolve.
+- PY: mud/commands/dispatcher.py now prepends stored prefixes before alias expansion, and mud/commands/alias_cmds.py exposes `prefix`/`prefi` so players can configure ROM-style macros.
 - TEST: tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
 - Applied tiny fix: Added `_split_command_and_args` to guard punctuation commands ahead of shlex splitting.
     <!-- SUBSYSTEM: command_interpreter END -->
@@ -1144,9 +1372,21 @@ NOTES:
 
 ### game_update_loop — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.55)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: tick_cadence, side_effects, persistence
 TASKS:
+
+- ✅ [P0] **game_update_loop: implement ROM torch and lantern decay in char_update** — done 2025-12-02
+  EVIDENCE: C src/update.c:700-736; PY mud/game_loop.py:320-470; TEST tests/test_game_loop.py::test_light_decay_extinguishes_worn_torch
+
+- ✅ [P0] **game_update_loop: return wandering NPCs to their home rooms when out of zone** — done 2025-12-02
+  EVIDENCE: C src/update.c:661-707; PY mud/ai/__init__.py:120-220; PY mud/spawning/reset_handler.py:400-410; TEST tests/test_game_loop.py::test_mobile_update_returns_home_when_out_of_zone
+
+- ✅ [P0] **game_update_loop: autosave active descriptors on ROM timer rotation** — done 2025-12-02
+  EVIDENCE: PY mud/game_loop.py:478-603; TEST tests/test_game_loop.py::test_char_update_autosaves_on_rotation
+
+- ✅ [P0] **game_update_loop: auto-quit prolonged link-dead characters** — done 2025-12-02
+  EVIDENCE: PY mud/game_loop.py:478-603; TEST tests/test_game_loop.py::test_char_update_auto_quits_linkdead
 
 - ✅ [P0] **game_update_loop: port `char_update` regeneration and condition decay** — done 2025-10-21
   EVIDENCE: C src/update.c:661-902; PY mud/game_loop.py:20-260; PY mud/characters/conditions.py:1-64; PY mud/affects/engine.py:1-38; TEST tests/test_game_loop.py::{test_char_update_applies_conditions,test_char_update_idles_linkdead}
@@ -1171,16 +1411,16 @@ TASKS:
 
 NOTES:
 
-- C: src/update.c:661-1112 applies regeneration, hunger, idle voiding, and object decay messaging that the port now mirrors through shared helpers.
-- PY: mud/game_loop.py threads char/object updates through `hit_gain`/`mana_gain` parity functions, condition helpers, and decay spill logic while still lacking the ROM `mobile_update` scavenger/wander loop and vendor wealth refresh.
-- TEST: tests/test_game_loop.py locks condition decay, idle limbo transfers, corpse dusting, and floating container spills so future changes retain ROM semantics.
+- C: src/update.c:661-748 covers regeneration, idle voiding, autosave rotation, and link-dead cleanup that now mirror the ROM cadence.
+- PY: mud/game_loop.py threads char/object updates through regeneration helpers, autosave modulo tracking, limbo saves, and `_auto_quit_character` to extract prolonged link-dead players.
+- TEST: tests/test_game_loop.py locks regeneration, idle limbo transfers, autosave cadence, and auto-quit cleanup to guard future changes.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: game_update_loop END -->
     <!-- SUBSYSTEM: login_account_nanny START -->
 
 ### login_account_nanny — Parity Audit 2025-10-12
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.70)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.83)
 KEY RISKS: flags
 TASKS:
 
@@ -1188,6 +1428,13 @@ TASKS:
   EVIDENCE: PY mud/account/account_service.py:10-111; PY mud/world/world_state.py:12-63; TEST tests/test_account_auth.py::{test_wizlock_blocks_mortals,test_newlock_blocks_new_accounts}
 - ✅ [P0] Restore reconnect and duplicate-session guards (`check_reconnect`/`check_playing`) — done 2025-10-11
   EVIDENCE: PY mud/account/account_service.py:12-111; PY mud/net/connection.py:24-156; TEST tests/test_account_auth.py::test_duplicate_login_requires_reconnect_consent
+
+- ✅ [P0] **login_account_nanny: hide non-permit characters from BAN_PERMIT hosts** — done 2025-12-02
+
+  EVIDENCE: PY mud/net/connection.py:1030-1065; PY mud/account/account_service.py:513-544; TEST tests/test_account_auth.py::test_character_selection_filters_permit_hosts
+
+- ✅ [P0] **login_account_nanny: deliver ROM `newbie info` help after first login** — done 2025-12-07
+  EVIDENCE: C src/nanny.c:741-789; PY mud/net/connection.py:519-552; PY mud/db/models.py:129-136; TEST tests/test_connection_motd.py::{test_should_send_newbie_help_checks_state,test_send_newbie_help_sets_flag_and_persists}
 
 NOTES:
 

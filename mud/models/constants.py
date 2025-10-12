@@ -18,6 +18,7 @@ class Direction(IntEnum):
 
 # Canonical room/object vnums (merc.h)
 ROOM_VNUM_LIMBO = 2
+ROOM_VNUM_TEMPLE = 3001
 ROOM_VNUM_ALTAR = 3054
 ROOM_VNUM_SCHOOL = 3700
 # Utility conjuration targets

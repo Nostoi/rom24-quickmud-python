@@ -1,4 +1,5 @@
 import mud.game_loop as gl
+from types import SimpleNamespace
 from mud.ai import mobile_update
 from mud.config import get_pulse_tick
 from mud.game_loop import (
@@ -44,6 +45,7 @@ def setup_function(_):
     gl._point_counter = 0
     gl._violence_counter = 0
     gl._area_counter = 0
+    gl._AUTOSAVE_ROTATION = 0
     object_registry.clear()
     room_registry.clear()
 
@@ -395,6 +397,151 @@ def test_char_update_idles_linkdead():
     assert idle not in room.people
     assert idle.messages[-1] == "You disappear into the void."
     assert "Sleeper disappears into the void." in watcher.messages
+
+
+def test_char_update_autosaves_on_rotation(monkeypatch):
+    area = Area(name="Inn")
+    room = Room(vnum=501, area=area)
+    room_registry[room.vnum] = room
+
+    hero = Character(
+        name="Saver",
+        level=10,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    hero.desc = SimpleNamespace(descriptor_id=30)
+    room.add_character(hero)
+
+    bystander = Character(
+        name="Skipper",
+        level=10,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    bystander.desc = SimpleNamespace(descriptor_id=17)
+    room.add_character(bystander)
+
+    character_registry.extend([hero, bystander])
+
+    saved: list[Character] = []
+    monkeypatch.setattr(gl, "save_character", lambda ch: saved.append(ch))
+
+    gl._AUTOSAVE_ROTATION = gl._AUTOSAVE_WINDOW - 1
+    char_update()
+
+    assert saved == [hero]
+
+
+def test_char_update_auto_quits_linkdead(monkeypatch):
+    area = Area(name="LimboLand")
+    room = Room(vnum=200, area=area)
+    limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+    room_registry[room.vnum] = room
+    room_registry[limbo.vnum] = limbo
+
+    ghost = Character(
+        name="Ghost", level=10, is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48])
+    )
+    ghost.timer = 31
+    ghost.room = limbo
+    ghost.was_in_room = room
+    limbo.add_character(ghost)
+    character_registry.append(ghost)
+
+    saved: list[Character] = []
+    monkeypatch.setattr(gl, "save_character", lambda ch: saved.append(ch))
+
+    char_update()
+
+    assert saved == [ghost]
+    assert ghost not in character_registry
+    assert ghost.room is None
+
+
+def test_light_decay_extinguishes_worn_torch():
+    area = Area(name="Cavern")
+    room = Room(vnum=300, area=area, light=2)
+    room_registry[room.vnum] = room
+
+    hero = Character(
+        name="Torchbearer",
+        level=5,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    watcher = Character(
+        name="Watcher",
+        level=5,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    room.add_character(watcher)
+    character_registry.append(watcher)
+
+    torch = ObjectData(
+        item_type=int(ItemType.LIGHT),
+        value=[0, 0, 1],
+        short_descr="bronze torch",
+    )
+    torch.wear_loc = int(WearLocation.LIGHT)
+    torch.carried_by = hero
+    object_registry.append(torch)
+    hero.equipment["light"] = torch
+
+    char_update()
+
+    assert hero.equipment == {}
+    assert torch not in object_registry
+    assert room.light == 1
+    assert "bronze torch flickers and goes out." in hero.messages
+    assert "bronze torch goes out." in watcher.messages
+
+
+def test_mobile_update_returns_home_when_out_of_zone(monkeypatch):
+    area_home = Area(name="Town")
+    area_foreign = Area(name="Dungeon")
+    home_room = Room(vnum=400, area=area_home)
+    away_room = Room(vnum=401, area=area_foreign)
+    room_registry[home_room.vnum] = home_room
+    room_registry[away_room.vnum] = away_room
+
+    wanderer = Character(
+        name="Rover",
+        short_descr="Rover",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    wanderer.home_room_vnum = home_room.vnum
+    wanderer.home_area = area_home
+    away_room.add_character(wanderer)
+    character_registry.append(wanderer)
+
+    watcher = Character(
+        name="Watcher",
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    away_room.add_character(watcher)
+    character_registry.append(watcher)
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 0)
+
+    mobile_update()
+
+    assert wanderer.room is home_room
+    assert wanderer in home_room.people
+    assert wanderer not in away_room.people
+    assert "Rover wanders on home." in watcher.messages
 
 
 def test_obj_update_decays_corpse():

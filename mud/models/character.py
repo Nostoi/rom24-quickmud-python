@@ -6,7 +6,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
 from mud.math.c_compat import c_div
-from mud.models.constants import AffectFlag, CommFlag, PlayerFlag, Position, Stat
+from mud.models.constants import AffectFlag, CommFlag, ItemType, PlayerFlag, Position, Stat
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -14,6 +14,66 @@ if TYPE_CHECKING:
     from mud.models.mob import MobProgram
     from mud.models.object import Object
     from mud.models.room import Room
+
+
+def _resolve_item_type(raw) -> ItemType | None:
+    """Best-effort conversion of raw item type values into ItemType members."""
+
+    if isinstance(raw, ItemType):
+        return raw
+    if isinstance(raw, int):
+        try:
+            return ItemType(raw)
+        except ValueError:
+            return None
+    if isinstance(raw, str):
+        token = raw.strip()
+        if not token:
+            return None
+        if token.isdigit():
+            try:
+                return ItemType(int(token))
+            except ValueError:
+                return None
+        try:
+            return ItemType[token.upper()]
+        except KeyError:
+            return None
+    return None
+
+
+def _object_carry_weight(obj: "Object") -> int:
+    """Compute ROM-style carry weight for an object including nested contents."""
+
+    proto = getattr(obj, "prototype", None)
+    base_weight = getattr(obj, "weight", None)
+    if base_weight is None:
+        base_weight = getattr(proto, "weight", 0)
+    try:
+        weight = int(base_weight or 0)
+    except (TypeError, ValueError):
+        weight = 0
+
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None:
+        item_type = _resolve_item_type(getattr(proto, "item_type", None))
+
+    multiplier = 100
+    if item_type == ItemType.CONTAINER:
+        values = getattr(obj, "value", None)
+        needs_fallback = not values or len(values) < 5 or not values[4]
+        if needs_fallback and proto is not None:
+            values = getattr(proto, "value", None)
+        try:
+            multiplier = int((values or [0, 0, 0, 0, 100])[4] or 0)
+        except (TypeError, ValueError, IndexError):
+            multiplier = 100
+
+    contents = list(getattr(obj, "contained_items", []) or [])
+    for child in contents:
+        weight += _object_carry_weight(child) * multiplier // 100
+
+    return weight
 
 
 @dataclass
@@ -108,6 +168,7 @@ class Character:
     level: int = 0
     trust: int = 0
     invis_level: int = 0
+    incog_level: int = 0
     hit: int = 0
     max_hit: int = 0
     mana: int = 0
@@ -135,6 +196,7 @@ class Character:
     damroll: int = 0
     wimpy: int = 0
     lines: int = 0
+    newbie_help_seen: bool = False
     played: int = 0
     logon: int = 0
     perm_stat: list[int] = field(default_factory=list)
@@ -202,6 +264,7 @@ class Character:
     default_weapon_vnum: int = 0
     creation_points: int = 0
     creation_groups: tuple[str, ...] = field(default_factory=tuple)
+    creation_skills: tuple[str, ...] = field(default_factory=tuple)
     ansi_enabled: bool = True
 
     def __repr__(self) -> str:
@@ -285,18 +348,25 @@ class Character:
 
         self.comm = self._comm_value() & ~int(flag)
 
+    def _recalculate_carry_weight(self) -> None:
+        """Recompute carry weight from inventory and equipped objects."""
+
+        inventory_weight = sum(_object_carry_weight(obj) for obj in self.inventory)
+        equipment_weight = sum(_object_carry_weight(obj) for obj in self.equipment.values())
+        self.carry_weight = inventory_weight + equipment_weight
+
     def add_object(self, obj: Object) -> None:
         self.inventory.append(obj)
         self.carry_number += 1
-        self.carry_weight += getattr(obj.prototype, "weight", 0)
+        self._recalculate_carry_weight()
 
     def equip_object(self, obj: Object, slot: str) -> None:
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
             self.carry_number += 1
-            self.carry_weight += getattr(obj.prototype, "weight", 0)
         self.equipment[slot] = obj
+        self._recalculate_carry_weight()
 
     def remove_object(self, obj: Object) -> None:
         if obj in self.inventory:
@@ -307,7 +377,7 @@ class Character:
                     del self.equipment[slot]
                     break
         self.carry_number -= 1
-        self.carry_weight -= getattr(obj.prototype, "weight", 0)
+        self._recalculate_carry_weight()
 
     # START affects_saves
     def _ensure_mod_stat_capacity(self) -> None:
@@ -515,6 +585,14 @@ def _encode_creation_groups(groups: Iterable[str]) -> str:
     return json.dumps(ordered)
 
 
+def _decode_creation_skills(value: str | None) -> tuple[str, ...]:
+    return _decode_creation_groups(value)
+
+
+def _encode_creation_skills(skills: Iterable[str]) -> str:
+    return _encode_creation_groups(skills)
+
+
 def from_orm(db_char: DBCharacter) -> Character:
     from mud.models.constants import Position
     from mud.registry import room_registry
@@ -543,8 +621,10 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.vuln_flags = db_char.vuln_flags or 0
     char.hometown_vnum = db_char.hometown_vnum or 0
     char.default_weapon_vnum = db_char.default_weapon_vnum or 0
+    char.newbie_help_seen = bool(getattr(db_char, "newbie_help_seen", False))
     char.creation_points = getattr(db_char, "creation_points", 0) or 0
     char.creation_groups = _decode_creation_groups(getattr(db_char, "creation_groups", ""))
+    char.creation_skills = _decode_creation_skills(getattr(db_char, "creation_skills", ""))
     char.perm_stat = _decode_perm_stats(db_char.perm_stats)
     char.is_npc = False
     if db_char.player is not None:
@@ -578,6 +658,7 @@ def to_orm(character: Character, player_id: int) -> DBCharacter:
         default_weapon_vnum=int(character.default_weapon_vnum or 0),
         creation_points=int(getattr(character, "creation_points", 0) or 0),
         creation_groups=_encode_creation_groups(getattr(character, "creation_groups", ())),
+        creation_skills=_encode_creation_skills(getattr(character, "creation_skills", ())),
         player_id=player_id,
     )
 

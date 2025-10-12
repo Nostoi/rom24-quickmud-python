@@ -139,6 +139,48 @@ def test_alias_persists_in_save_load(tmp_path, monkeypatch):
     assert "Temple" in out
 
 
+def test_prefix_command_sets_changes_and_clears():
+    initialize_world("area/area.lst")
+    char = create_test_character("Prefixer", 3001)
+
+    out1 = process_command(char, "prefix say")
+    assert out1 == "Prefix set to say."
+    assert char.prefix == "say"
+
+    out2 = process_command(char, "prefix cast 'armor'")
+    assert out2 == "Prefix changed to cast 'armor'."
+    assert char.prefix == "cast 'armor'"
+
+    out3 = process_command(char, "prefix")
+    assert out3 == "Prefix removed."
+    assert char.prefix == ""
+
+    out4 = process_command(char, "prefix")
+    assert out4 == "You have no prefix to clear."
+
+
+def test_prefi_rejects_abbreviation():
+    initialize_world("area/area.lst")
+    char = create_test_character("Prefi", 3001)
+
+    out = process_command(char, "prefi anything")
+    assert out == "You cannot abbreviate the prefix command."
+
+
+def test_prefix_macro_prepends_to_commands():
+    initialize_world("area/area.lst")
+    speaker = create_test_character("Speaker", 3001)
+    listener = create_test_character("Listener", 3001)
+
+    process_command(speaker, "prefix say")
+    alias_output = process_command(speaker, "alias")
+    assert "No aliases" in alias_output
+
+    out = process_command(speaker, "hello there")
+    assert out == "You say, 'hello there'"
+    assert f"{speaker.name} says, 'hello there'" in listener.messages
+
+
 def test_position_gating_sleeping_blocks_look_allows_scan():
     initialize_world("area/area.lst")
     char = create_test_character("Sleeper", 3001)

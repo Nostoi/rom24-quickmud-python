@@ -48,4 +48,36 @@ def get_clan_hall_vnum(clan_id: int) -> int:
         return ROOM_VNUM_ALTAR
 
 
-__all__ = ["Clan", "CLAN_TABLE", "get_clan", "get_clan_hall_vnum"]
+def lookup_clan_id(name: str | int | None) -> int:
+    """Return the clan id matching *name* mirroring ROM's ``clan_lookup``."""
+
+    if name is None:
+        return 0
+    if isinstance(name, int):
+        return name if 0 <= name < len(CLAN_TABLE) else 0
+    text = str(name).strip()
+    if not text:
+        return 0
+    try:
+        numeric = int(text, 10)
+    except ValueError:
+        numeric = None
+    else:
+        if 0 <= numeric < len(CLAN_TABLE):
+            return numeric
+    lowered = text.lower()
+    if lowered in {"none", "0"}:
+        return 0
+    for idx, clan in enumerate(CLAN_TABLE):
+        if clan.name.lower() == lowered:
+            return idx
+    return 0
+
+
+__all__ = [
+    "Clan",
+    "CLAN_TABLE",
+    "get_clan",
+    "get_clan_hall_vnum",
+    "lookup_clan_id",
+]

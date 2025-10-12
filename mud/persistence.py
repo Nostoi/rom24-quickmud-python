@@ -9,7 +9,13 @@ from pathlib import Path
 from typing import Any
 
 from mud.models.character import Character, PCData, PCDATA_COLOUR_FIELDS, character_registry
-from mud.models.constants import PlayerFlag, WearLocation
+from mud.models.constants import (
+    PlayerFlag,
+    WearLocation,
+    ROOM_VNUM_LIMBO,
+    ROOM_VNUM_TEMPLE,
+)
+from mud.models.clans import lookup_clan_id
 from mud.models.json_io import dataclass_from_dict, dump_dataclass, load_dataclass
 from mud.models.obj import Affect
 from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
@@ -217,9 +223,12 @@ class PlayerSave:
     level: int
     race: int = 0
     ch_class: int = 0
+    clan: int = 0
     sex: int = 0
     trust: int = 0
     security: int = 0
+    invis_level: int = 0
+    incog_level: int = 0
     hit: int = 0
     max_hit: int = 0
     mana: int = 0
@@ -238,6 +247,7 @@ class PlayerSave:
     lines: int = 0
     logon: int = 0
     prompt: str | None = None
+    prefix: str | None = None
     title: str | None = None
     bamfin: str | None = None
     bamfout: str | None = None
@@ -260,6 +270,7 @@ class PlayerSave:
     comm: int = 0
     wiznet: int = 0
     log_commands: bool = False
+    newbie_help_seen: bool = False
     room_vnum: int | None = None
     inventory: list[ObjectSave] = field(default_factory=list)
     equipment: dict[str, ObjectSave] = field(default_factory=dict)
@@ -455,6 +466,8 @@ TIME_FILE = Path("data/time.json")
 
 def save_character(char: Character) -> None:
     """Persist ``char`` to ``PLAYERS_DIR`` as JSON."""
+    if getattr(char, "is_npc", False):
+        return
     PLAYERS_DIR.mkdir(parents=True, exist_ok=True)
     default_conditions = [0, 48, 48, 48]
     raw_conditions: list[int] = []
@@ -482,7 +495,25 @@ def save_character(char: Character) -> None:
     char.ansi_enabled = ansi_enabled
 
     room = getattr(char, "room", None)
-    room_vnum = room.vnum if room is not None else None
+    current_vnum = getattr(room, "vnum", None)
+    room_vnum: int
+    if current_vnum == ROOM_VNUM_LIMBO:
+        was_in_room = getattr(char, "was_in_room", None)
+        fallback_vnum = getattr(was_in_room, "vnum", None)
+        if fallback_vnum is not None:
+            try:
+                room_vnum = int(fallback_vnum)
+            except (TypeError, ValueError):
+                room_vnum = ROOM_VNUM_TEMPLE
+        else:
+            room_vnum = ROOM_VNUM_TEMPLE
+    elif current_vnum is None:
+        room_vnum = ROOM_VNUM_TEMPLE
+    else:
+        try:
+            room_vnum = int(current_vnum)
+        except (TypeError, ValueError):
+            room_vnum = ROOM_VNUM_TEMPLE
     char_name = char.name or ""
     now = int(time.time())
     try:
@@ -498,6 +529,9 @@ def save_character(char: Character) -> None:
         session_played = max(0, now - logon_value)
     total_played = max(0, base_played + session_played)
     prompt_value = getattr(char, "prompt", None)
+    prefix_value = getattr(char, "prefix", None)
+    if prefix_value is not None:
+        prefix_value = str(prefix_value)
     title_value = getattr(pcdata, "title", None)
     bamfin_value = getattr(pcdata, "bamfin", None)
     if bamfin_value is not None:
@@ -515,9 +549,12 @@ def save_character(char: Character) -> None:
         level=char.level,
         race=int(getattr(char, "race", 0)),
         ch_class=int(getattr(char, "ch_class", 0)),
+        clan=lookup_clan_id(getattr(char, "clan", 0)),
         sex=int(getattr(char, "sex", 0)),
         trust=int(getattr(char, "trust", 0)),
         security=int(getattr(pcdata, "security", 0)),
+        invis_level=int(getattr(char, "invis_level", 0)),
+        incog_level=int(getattr(char, "incog_level", 0)),
         hit=char.hit,
         max_hit=char.max_hit,
         mana=char.mana,
@@ -536,6 +573,7 @@ def save_character(char: Character) -> None:
         lines=lines_value,
         logon=logon_value,
         prompt=prompt_value,
+        prefix=prefix_value if prefix_value else None,
         title=title_value,
         bamfin=bamfin_value,
         bamfout=bamfout_value,
@@ -557,6 +595,7 @@ def save_character(char: Character) -> None:
         comm=getattr(char, "comm", 0),
         wiznet=getattr(char, "wiznet", 0),
         log_commands=bool(getattr(char, "log_commands", False)),
+        newbie_help_seen=bool(getattr(char, "newbie_help_seen", False)),
         room_vnum=room_vnum,
         inventory=[_serialize_object(obj) for obj in char.inventory],
         equipment={slot: _serialize_object(obj, wear_slot=slot) for slot, obj in char.equipment.items()},
@@ -594,8 +633,11 @@ def load_character(name: str) -> Character | None:
         level=data.level,
         race=int(getattr(data, "race", 0)),
         ch_class=int(getattr(data, "ch_class", 0)),
+        clan=lookup_clan_id(getattr(data, "clan", 0)),
         sex=int(getattr(data, "sex", 0)),
         trust=int(getattr(data, "trust", 0)),
+        invis_level=int(getattr(data, "invis_level", 0)),
+        incog_level=int(getattr(data, "incog_level", 0)),
         prompt=getattr(data, "prompt", None),
         hit=data.hit,
         max_hit=data.max_hit,
@@ -622,18 +664,31 @@ def load_character(name: str) -> Character | None:
         armor=armor,
         perm_stat=perm_stat,
         mod_stat=mod_stat,
+        newbie_help_seen=bool(getattr(data, "newbie_help_seen", False)),
     )
     char.is_npc = False
     act_flags = int(getattr(data, "act", 0))
     char.ansi_enabled = bool(act_flags & int(PlayerFlag.COLOUR))
+    prefix_value = getattr(data, "prefix", None)
+    char.prefix = str(prefix_value) if prefix_value is not None else ""
     char.skills = skills_map
     # restore bitfields
     char.affected_by = getattr(data, "affected_by", 0)
     char.wiznet = getattr(data, "wiznet", 0)
+    target_room = None
     if data.room_vnum is not None:
-        room = room_registry.get(data.room_vnum)
-        if room:
-            room.add_character(char)
+        try:
+            room_key = int(data.room_vnum)
+        except (TypeError, ValueError):
+            room_key = None
+        if room_key is not None:
+            target_room = room_registry.get(room_key)
+    if target_room is None:
+        target_room = room_registry.get(ROOM_VNUM_LIMBO)
+    if target_room is None:
+        target_room = room_registry.get(ROOM_VNUM_TEMPLE)
+    if target_room is not None:
+        target_room.add_character(char)
     for snapshot in data.inventory:
         obj = _deserialize_object(snapshot)
         if obj is not None:
@@ -690,8 +745,11 @@ def save_world() -> None:
     """Write all registered characters to disk."""
     save_time_info()
     for char in list(character_registry):
-        if char.name:
-            save_character(char)
+        if not getattr(char, "name", None):
+            continue
+        if getattr(char, "is_npc", False):
+            continue
+        save_character(char)
 
 
 def load_world() -> list[Character]:
