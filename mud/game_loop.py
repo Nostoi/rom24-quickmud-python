@@ -30,11 +30,16 @@ from mud.models.obj import ObjectData, object_registry
 from mud.models.room import room_registry
 from mud.net.protocol import broadcast_global
 from mud.music import song_update
+from mud.persistence import save_character
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
+
+
+_AUTOSAVE_ROTATION = 0
+_AUTOSAVE_WINDOW = 30
 
 
 class SkyState(IntEnum):
@@ -338,6 +343,122 @@ def _message_room(room, message: str, exclude: Character | None = None) -> None:
         _send_to_char(occupant, message)
 
 
+def _find_equipped_light(character: Character) -> tuple[object | None, object | None]:
+    """Locate the descriptor slot and object for a worn light."""
+
+    equipment = getattr(character, "equipment", None)
+    if not isinstance(equipment, dict) or not equipment:
+        return None, None
+
+    for slot, obj in equipment.items():
+        if isinstance(slot, str):
+            if slot.strip().lower() in {"light", WearLocation.LIGHT.name.lower()}:
+                return slot, obj
+        else:
+            try:
+                if int(slot) == int(WearLocation.LIGHT):
+                    return slot, obj
+            except (TypeError, ValueError):  # pragma: no cover - defensive guard
+                continue
+    return None, None
+
+
+def _is_light_object(obj: object) -> bool:
+    item_type = getattr(obj, "item_type", None)
+    if item_type is None:
+        return False
+    try:
+        return int(item_type) == int(ItemType.LIGHT)
+    except (TypeError, ValueError):
+        if isinstance(item_type, str):
+            return item_type.lower() == "light"
+        return False
+
+
+def _get_light_remaining(obj: object) -> int:
+    values = getattr(obj, "value", None)
+    if isinstance(values, list) and len(values) > 2:
+        try:
+            return int(values[2])
+        except (TypeError, ValueError):
+            return 0
+    if isinstance(values, tuple) and len(values) > 2:
+        try:
+            return int(values[2])
+        except (TypeError, ValueError):
+            return 0
+    return 0
+
+
+def _set_light_remaining(obj: object, remaining: int) -> None:
+    values = getattr(obj, "value", None)
+    if isinstance(values, list):
+        while len(values) <= 2:
+            values.append(0)
+        values[2] = remaining
+        return
+    if isinstance(values, tuple):
+        updated = list(values)
+        while len(updated) <= 2:
+            updated.append(0)
+        updated[2] = remaining
+        setattr(obj, "value", updated)
+
+
+def _destroy_light(character: Character, slot_key: object | None, obj: object) -> None:
+    equipment = getattr(character, "equipment", None)
+    if isinstance(equipment, dict):
+        for slot, equipped in list(equipment.items()):
+            if equipped is obj or slot == slot_key:
+                del equipment[slot]
+                break
+
+    if hasattr(obj, "pIndexData"):
+        _extract_obj(obj)  # type: ignore[arg-type]
+        return
+
+    try:
+        weight = getattr(getattr(obj, "prototype", None), "weight", 0) or getattr(obj, "weight", 0)
+        if weight:
+            current_weight = int(getattr(character, "carry_weight", 0) or 0)
+            character.carry_weight = max(0, current_weight - int(weight))
+    except Exception:  # pragma: no cover - defensive guard
+        pass
+
+    try:
+        current_number = int(getattr(character, "carry_number", 0) or 0)
+        if current_number > 0:
+            character.carry_number = current_number - 1
+    except Exception:  # pragma: no cover - defensive guard
+        pass
+
+
+def _decay_worn_light(character: Character) -> None:
+    slot_key, light = _find_equipped_light(character)
+    if light is None or not _is_light_object(light):
+        return
+
+    remaining = _get_light_remaining(light)
+    if remaining <= 0:
+        return
+
+    new_remaining = remaining - 1
+    _set_light_remaining(light, new_remaining)
+
+    room = getattr(character, "room", None)
+    if new_remaining <= 0:
+        if room is not None:
+            current_light = int(getattr(room, "light", 0) or 0)
+            room.light = max(0, current_light - 1)
+            _message_room(room, _render_obj_message(light, "$p goes out."), exclude=character)
+            _send_to_char(character, _render_obj_message(light, "$p flickers and goes out."))
+        else:
+            _send_to_char(character, _render_obj_message(light, "$p flickers and goes out."))
+        _destroy_light(character, slot_key, light)
+    elif new_remaining <= 5 and room is not None:
+        _send_to_char(character, _render_obj_message(light, "$p flickers."))
+
+
 def _apply_regeneration(character: Character) -> None:
     hit = hit_gain(character)
     if hit:
@@ -359,11 +480,20 @@ def _idle_to_limbo(character: Character) -> None:
     if room is None:
         return
 
+    if getattr(room, "vnum", None) == ROOM_VNUM_LIMBO:
+        return
+
     if getattr(character, "was_in_room", None) is None:
         character.was_in_room = room
 
     if getattr(character, "fighting", None) is not None:
         character.fighting = None
+
+    if int(getattr(character, "level", 0) or 0) > 1:
+        try:
+            save_character(character)
+        except Exception:  # pragma: no cover - defensive safeguard
+            pass
 
     name = getattr(character, "name", None) or "Someone"
     _message_room(room, f"{name} disappears into the void.", exclude=character)
@@ -375,8 +505,42 @@ def _idle_to_limbo(character: Character) -> None:
         limbo.add_character(character)
 
 
+def _auto_quit_character(character: Character) -> None:
+    try:
+        save_character(character)
+    except Exception:  # pragma: no cover - defensive safeguard
+        pass
+
+    room = getattr(character, "room", None)
+    if room is not None:
+        remover = getattr(room, "remove_character", None)
+        if callable(remover):
+            remover(character)
+        else:
+            occupants = getattr(room, "people", None)
+            if occupants and character in occupants:
+                occupants.remove(character)
+        character.room = None
+
+    try:
+        character_registry.remove(character)
+    except ValueError:
+        pass
+
+    try:
+        character.was_in_room = None
+    except Exception:
+        pass
+
+
 def char_update() -> None:
     """Port of ROM's char_update: regen, conditions, idle handling."""
+
+    global _AUTOSAVE_ROTATION
+    _AUTOSAVE_ROTATION = (_AUTOSAVE_ROTATION + 1) % _AUTOSAVE_WINDOW
+
+    autosave_candidates: list[Character] = []
+    autoquit_candidates: list[Character] = []
 
     for character in list(character_registry):
         position = Position(int(getattr(character, "position", Position.STANDING)))
@@ -393,6 +557,8 @@ def char_update() -> None:
             continue
 
         level = int(getattr(character, "level", 0) or 0)
+        if level < LEVEL_IMMORTAL:
+            _decay_worn_light(character)
         if level >= LEVEL_IMMORTAL:
             character.timer = 0
             continue
@@ -406,14 +572,34 @@ def char_update() -> None:
         gain_condition(character, Condition.THIRST, -1)
         gain_condition(character, Condition.HUNGER, hunger_delta)
 
-        descriptor = getattr(character, "desc", None) or getattr(character, "connection", None)
+        descriptor = getattr(character, "desc", None)
         if descriptor is not None:
             character.timer = 0
+            descriptor_id = getattr(descriptor, "descriptor_id", None)
+            if descriptor_id is None:
+                descriptor_id = id(descriptor)
+            if descriptor_id % _AUTOSAVE_WINDOW == _AUTOSAVE_ROTATION:
+                autosave_candidates.append(character)
             continue
 
         character.timer = int(getattr(character, "timer", 0) or 0) + 1
-        if character.timer >= 12:
+        if (
+            character.timer >= 12
+            and getattr(character, "was_in_room", None) is None
+            and getattr(character, "room", None) is not None
+        ):
             _idle_to_limbo(character)
+        if character.timer > 30:
+            autoquit_candidates.append(character)
+
+    for candidate in autosave_candidates:
+        try:
+            save_character(candidate)
+        except Exception:  # pragma: no cover - defensive safeguard
+            pass
+
+    for candidate in autoquit_candidates:
+        _auto_quit_character(candidate)
 
 
 def _render_obj_message(obj: ObjectData, template: str) -> str:

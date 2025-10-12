@@ -1,6 +1,10 @@
 import mud.persistence as persistence
-from mud.models.character import character_registry
+from mud.models.area import Area
+from mud.models.character import Character, PCData, character_registry
+from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.models.player_json import PlayerJson
+from mud.models.room import Room
+from mud.registry import room_registry
 from mud.scripts.convert_player_to_json import convert_player
 from mud.world import create_test_character, initialize_world
 
@@ -123,6 +127,327 @@ def test_convert_player_decodes_lowercase_flags(tmp_path):
     assert pj.affected_by == _lower_bit("d")
     assert pj.comm_flags == expected_comm
     assert pj.wiznet == (_lower_bit("e") | _lower_bit("f"))
+
+
+def test_player_save_roundtrip_preserves_invis_level(tmp_path, monkeypatch):
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    char = create_test_character("InviImm", 3001)
+    char.invis_level = 51
+
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+    persistence.save_character(char)
+
+    character_registry.clear()
+    loaded = persistence.load_character("InviImm")
+    assert loaded is not None
+    assert loaded.invis_level == 51
+
+
+def test_player_save_roundtrip_preserves_incog_level(tmp_path, monkeypatch):
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    char = create_test_character("IncogImm", 3001)
+    char.incog_level = 52
+
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+    persistence.save_character(char)
+
+    character_registry.clear()
+    loaded = persistence.load_character("IncogImm")
+    assert loaded is not None
+    assert loaded.incog_level == 52
+
+
+def test_player_save_roundtrip_preserves_prefix(tmp_path, monkeypatch):
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    char = create_test_character("PrefSaver", 3001)
+    char.prefix = "say"
+
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+    persistence.save_character(char)
+
+    character_registry.clear()
+    loaded = persistence.load_character("PrefSaver")
+    assert loaded is not None
+    assert loaded.prefix == "say"
+
+
+def test_player_save_roundtrip_preserves_clan(tmp_path, monkeypatch):
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    char = create_test_character("ClanKeeper", 3001)
+    char.clan = 2
+
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+    persistence.save_character(char)
+
+    character_registry.clear()
+    loaded = persistence.load_character("ClanKeeper")
+    assert loaded is not None
+    assert loaded.clan == 2
+
+
+def test_player_save_roundtrip_preserves_newbie_help_flag(tmp_path, monkeypatch):
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    char = create_test_character("NewbieSeen", 3001)
+    char.newbie_help_seen = True
+
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+    persistence.save_character(char)
+
+    character_registry.clear()
+    loaded = persistence.load_character("NewbieSeen")
+    assert loaded is not None
+    assert loaded.newbie_help_seen is True
+
+
+def test_save_character_uses_was_in_room_for_limbo(tmp_path, monkeypatch):
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+
+    original_rooms = dict(room_registry)
+    original_characters = list(character_registry)
+    room_registry.clear()
+    character_registry.clear()
+
+    try:
+        area = Area(name="Idle")
+        limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+        home = Room(vnum=ROOM_VNUM_TEMPLE + 42, area=area)
+        temple = Room(vnum=ROOM_VNUM_TEMPLE, area=area)
+        room_registry[limbo.vnum] = limbo
+        room_registry[home.vnum] = home
+        room_registry[temple.vnum] = temple
+
+        char = Character(
+            name="Voidling",
+            level=12,
+            hit=20,
+            max_hit=20,
+            mana=10,
+            max_mana=10,
+            move=10,
+            max_move=10,
+            is_npc=False,
+            pcdata=PCData(condition=[48, 48, 48, 48]),
+        )
+        limbo.add_character(char)
+        char.was_in_room = home
+        character_registry.append(char)
+
+        persistence.save_character(char)
+
+        limbo.remove_character(char)
+        character_registry.clear()
+
+        loaded = persistence.load_character("Voidling")
+        assert loaded is not None
+        assert loaded.room is home
+        assert loaded in home.people
+        assert limbo.people == []
+
+        character_registry.clear()
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+        character_registry.clear()
+        character_registry.extend(original_characters)
+
+
+def test_save_character_defaults_to_temple_when_room_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+
+    original_rooms = dict(room_registry)
+    original_characters = list(character_registry)
+    room_registry.clear()
+    character_registry.clear()
+
+    try:
+        area = Area(name="Recall")
+        limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+        temple = Room(vnum=ROOM_VNUM_TEMPLE, area=area)
+        room_registry[limbo.vnum] = limbo
+        room_registry[temple.vnum] = temple
+
+        char = Character(
+            name="Recall",
+            level=8,
+            hit=18,
+            max_hit=18,
+            mana=12,
+            max_mana=12,
+            move=14,
+            max_move=14,
+            is_npc=False,
+            pcdata=PCData(condition=[48, 48, 48, 48]),
+        )
+        limbo.add_character(char)
+        character_registry.append(char)
+
+        # Explicitly clear was_in_room to trigger the temple fallback.
+        char.was_in_room = None
+        persistence.save_character(char)
+
+        limbo.remove_character(char)
+        character_registry.clear()
+
+        loaded = persistence.load_character("Recall")
+        assert loaded is not None
+        assert loaded.room is temple
+
+        character_registry.clear()
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+        character_registry.clear()
+        character_registry.extend(original_characters)
+
+
+def test_load_character_defaults_to_limbo_when_room_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+
+    original_rooms = dict(room_registry)
+    original_characters = list(character_registry)
+    room_registry.clear()
+    character_registry.clear()
+
+    try:
+        area = Area(name="Crash")
+        limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+        lost = Room(vnum=ROOM_VNUM_TEMPLE + 99, area=area)
+        room_registry[limbo.vnum] = limbo
+        room_registry[lost.vnum] = lost
+
+        char = Character(
+            name="Crash",
+            level=12,
+            hit=24,
+            max_hit=24,
+            mana=18,
+            max_mana=18,
+            move=16,
+            max_move=16,
+            is_npc=False,
+            pcdata=PCData(condition=[48, 48, 48, 48]),
+        )
+        lost.add_character(char)
+        character_registry.append(char)
+
+        persistence.save_character(char)
+
+        lost.remove_character(char)
+        room_registry.pop(lost.vnum)
+        character_registry.clear()
+
+        loaded = persistence.load_character("Crash")
+        assert loaded is not None
+        assert loaded.room is limbo
+        assert loaded in limbo.people
+
+        character_registry.clear()
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+        character_registry.clear()
+        character_registry.extend(original_characters)
+
+
+def test_load_character_defaults_to_temple_when_limbo_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+
+    original_rooms = dict(room_registry)
+    original_characters = list(character_registry)
+    room_registry.clear()
+    character_registry.clear()
+
+    try:
+        area = Area(name="Fallback")
+        temple = Room(vnum=ROOM_VNUM_TEMPLE, area=area)
+        lost = Room(vnum=ROOM_VNUM_TEMPLE + 51, area=area)
+        room_registry[temple.vnum] = temple
+        room_registry[lost.vnum] = lost
+
+        char = Character(
+            name="NoLimbo",
+            level=18,
+            hit=30,
+            max_hit=30,
+            mana=20,
+            max_mana=20,
+            move=22,
+            max_move=22,
+            is_npc=False,
+            pcdata=PCData(condition=[48, 48, 48, 48]),
+        )
+        lost.add_character(char)
+        character_registry.append(char)
+
+        persistence.save_character(char)
+
+        lost.remove_character(char)
+        room_registry.pop(lost.vnum)
+        character_registry.clear()
+
+        loaded = persistence.load_character("NoLimbo")
+        assert loaded is not None
+        assert loaded.room is temple
+
+        character_registry.clear()
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+        character_registry.clear()
+        character_registry.extend(original_characters)
+
+
+def test_save_character_defaults_to_temple_when_was_in_room_invalid(tmp_path, monkeypatch):
+    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path)
+
+    original_rooms = dict(room_registry)
+    original_characters = list(character_registry)
+    room_registry.clear()
+    character_registry.clear()
+
+    try:
+        area = Area(name="Corrupt")
+        limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+        temple = Room(vnum=ROOM_VNUM_TEMPLE, area=area)
+        room_registry[limbo.vnum] = limbo
+        room_registry[temple.vnum] = temple
+
+        char = Character(
+            name="CorruptLimbo",
+            level=14,
+            hit=26,
+            max_hit=26,
+            mana=17,
+            max_mana=17,
+            move=15,
+            max_move=15,
+            is_npc=False,
+            pcdata=PCData(condition=[48, 48, 48, 48]),
+        )
+        limbo.add_character(char)
+        char.was_in_room = object()
+        character_registry.append(char)
+
+        persistence.save_character(char)
+
+        limbo.remove_character(char)
+        character_registry.clear()
+
+        loaded = persistence.load_character("CorruptLimbo")
+        assert loaded is not None
+        assert loaded.room is temple
+
+        character_registry.clear()
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+        character_registry.clear()
+        character_registry.extend(original_characters)
 
 
 def test_missing_header_footer_and_bad_hmv(tmp_path):

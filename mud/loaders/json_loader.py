@@ -109,6 +109,30 @@ def _coerce_reset_arg(value: Any) -> int:
 logger = logging.getLogger(__name__)
 
 
+def _resolve_room_target(command: str, reset: ResetJson, current_room: int | None) -> tuple[int | None, int | None]:
+    """Determine which room a reset applies to and the next baseline room."""
+
+    cmd = command.upper()
+    room_vnum: int | None = None
+    new_current = current_room
+
+    if cmd == "M":
+        room_vnum = int(reset.arg3 or 0) or None
+        new_current = room_vnum or current_room
+    elif cmd == "O":
+        room_vnum = int(reset.arg3 or 0) or None
+        new_current = room_vnum or current_room
+    elif cmd in {"P", "G", "E"}:
+        room_vnum = current_room
+    elif cmd in {"D", "R"}:
+        room_vnum = int(reset.arg1 or 0) or None
+        new_current = room_vnum or current_room
+    else:
+        room_vnum = current_room
+
+    return room_vnum, new_current
+
+
 def load_area_from_json(json_file_path: str) -> Area:
     """Load a complete area from JSON file with all ROM fields."""
 
@@ -174,10 +198,15 @@ def load_area_from_json(json_file_path: str) -> Area:
     # Load objects
     _load_objects_from_json(data.get(objects_key, []), area)
 
+    for room in list(room_registry.values()):
+        if getattr(room, "area", None) is area:
+            room.resets.clear()
+
     # Load area-level resets. Older conversions stored the `if_flag` in arg1 and
     # shifted the actual ROM arguments (arg1..arg4) to arg2..arg5. Normalise the
     # layout so reset handlers receive ROM-compatible fields regardless of the
     # input JSON version.
+    last_room_vnum: int | None = None
     for reset_data in data.get("resets", []):
         command = str(reset_data.get("command", "") or "").upper()
         raw_args = [_coerce_reset_arg(reset_data.get(f"arg{i}", 0)) for i in range(1, 6)]
@@ -206,6 +235,12 @@ def load_area_from_json(json_file_path: str) -> Area:
 
         reset = ResetJson(command=command, arg1=arg1, arg2=arg2, arg3=arg3, arg4=arg4)
         area.resets.append(reset)
+
+        room_vnum, last_room_vnum = _resolve_room_target(command, reset, last_room_vnum)
+        if room_vnum is not None:
+            room = room_registry.get(room_vnum)
+            if room is not None:
+                room.resets.append(reset)
 
     logger.info(
         f"Loaded area {area.name} from JSON with {len(data.get(rooms_key, []))} rooms, "

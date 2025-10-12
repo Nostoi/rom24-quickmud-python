@@ -13,6 +13,7 @@ import mud.net.connection as net_connection
 from mud.account import load_character as load_player_character
 from mud.account.account_service import (
     LoginFailureReason,
+    CreationSelection,
     clear_active_accounts,
     create_account,
     create_character,
@@ -29,6 +30,7 @@ from mud.account.account_service import (
 )
 from mud.db.models import Base, Character, PlayerAccount
 from mud.db.session import SessionLocal, engine
+from mud.skills.groups import get_group
 from mud.models.constants import (
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
@@ -46,7 +48,11 @@ from mud.models.constants import (
     Stat,
     VulnFlag,
 )
-from mud.models.character import Character as RuntimeCharacter, character_registry
+from mud.models.character import (
+    Character as RuntimeCharacter,
+    _decode_creation_skills,
+    character_registry,
+)
 from mud.models.room import Room
 from mud.net.connection import RECONNECT_MESSAGE, _broadcast_reconnect_notifications
 from mud.net.session import SESSIONS
@@ -75,12 +81,56 @@ async def negotiate_ansi(
     return prompt, greeting
 
 
+class _MemoryTransport(asyncio.Transport):
+    def __init__(self) -> None:
+        super().__init__()
+        self.buffer = bytearray()
+        self._closing = False
+
+    def write(self, data: bytes) -> None:
+        self.buffer.extend(data)
+
+    def is_closing(self) -> bool:
+        return self._closing
+
+    def close(self) -> None:
+        self._closing = True
+
+
+async def _make_telnet_stream() -> tuple[net_connection.TelnetStream, _MemoryTransport, asyncio.StreamReaderProtocol]:
+    loop = asyncio.get_running_loop()
+    reader = asyncio.StreamReader()
+    protocol = asyncio.StreamReaderProtocol(reader)
+    transport = _MemoryTransport()
+    protocol.connection_made(transport)
+    writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+    return net_connection.TelnetStream(reader, writer), transport, protocol
+
+
 def setup_module(module):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
     clear_active_accounts()
     reset_lockdowns()
+
+
+def test_create_account_defaults_blank_email():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("rookie", "secret")
+
+    session = SessionLocal()
+    try:
+        record = session.query(PlayerAccount).filter_by(username="rookie").first()
+        assert record is not None
+        assert record.email == ""
+    finally:
+        session.close()
 
 
 def test_creation_tables_expose_rom_metadata():
@@ -311,7 +361,7 @@ def test_new_character_creation_sequence():
         session.close()
 
 
-def test_creation_prompts_include_alignment_and_groups():
+def test_new_player_receives_motd():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
@@ -327,7 +377,8 @@ def test_creation_prompts_include_alignment_and_groups():
 
             _, greeting = await negotiate_ansi(reader, writer)
             assert b"\x1b[" in greeting
-            writer.write(b"scribe\r\n")
+
+            writer.write(b"rookie\r\n")
             await writer.drain()
 
             await asyncio.wait_for(reader.readuntil(b"(Y/N) "), timeout=5)
@@ -341,13 +392,13 @@ def test_creation_prompts_include_alignment_and_groups():
             await asyncio.wait_for(reader.readuntil(b"Confirm password: "), timeout=5)
             writer.write(b"secret\r\n")
             await writer.drain()
-            await reader.readline()
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Account created.\r\n"
 
             await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
-            writer.write(b"Lyra\r\n")
+            writer.write(b"Nova\r\n")
             await writer.drain()
 
-            await reader.readline()
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Creating new character 'Nova'.\r\n"
             await asyncio.wait_for(reader.readuntil(b"(Y/N) "), timeout=5)
             writer.write(b"y\r\n")
             await writer.drain()
@@ -363,42 +414,23 @@ def test_creation_prompts_include_alignment_and_groups():
 
             await asyncio.wait_for(reader.readline(), timeout=5)
             await asyncio.wait_for(reader.readuntil(b"Choose your class: "), timeout=5)
-            writer.write(b"mage\r\n")
+            writer.write(b"warrior\r\n")
             await writer.drain()
 
-            # Alignment selection (choose evil)
-            await reader.readline()
-            await reader.readline()
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
             await asyncio.wait_for(reader.readuntil(b"Which alignment (G/N/E)? "), timeout=5)
-            writer.write(b"e\r\n")
+            writer.write(b"n\r\n")
             await writer.drain()
 
-            # Opt into customization
-            await reader.readline()
-            await reader.readline()
-            await reader.readline()
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
+            await asyncio.wait_for(reader.readline(), timeout=5)
             await asyncio.wait_for(reader.readuntil(b"Customize (Y/N)? "), timeout=5)
-            writer.write(b"y\r\n")
+            writer.write(b"n\r\n")
             await writer.drain()
 
-            # Customization menu interactions
-            await reader.readline()
-            existing = await reader.readline()
-            assert b"rom basics" in existing and b"mage basics" in existing
-            await reader.readline()
-            await asyncio.wait_for(reader.readuntil(b"Customization> "), timeout=5)
-            writer.write(b"add mage default\r\n")
-            await writer.drain()
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Mage Default group added.\r\n"
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Creation points: 40\r\n"
-            await asyncio.wait_for(reader.readuntil(b"Customization> "), timeout=5)
-            writer.write(b"done\r\n")
-            await writer.drain()
-            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Creation points: 40\r\n"
-
-            # Continue with stats and character confirmation
-            stats_line = await asyncio.wait_for(reader.readline(), timeout=5)
-            assert stats_line.startswith(b"Rolled stats: ")
+            await asyncio.wait_for(reader.readline(), timeout=5)
             await asyncio.wait_for(reader.readuntil(b"(K to keep, R to reroll): "), timeout=5)
             writer.write(b"k\r\n")
             await writer.drain()
@@ -407,11 +439,20 @@ def test_creation_prompts_include_alignment_and_groups():
             writer.write(b"y\r\n")
             await writer.drain()
 
+            await asyncio.wait_for(reader.readline(), timeout=5)
             await asyncio.wait_for(reader.readuntil(b"Choose your starting weapon: "), timeout=5)
-            writer.write(b"dagger\r\n")
+            writer.write(b"sword\r\n")
             await writer.drain()
 
-            await reader.readline()
+            assert await asyncio.wait_for(reader.readline(), timeout=5) == b"Character created!\r\n"
+
+            motd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"You are responsible for knowing the rules" in motd_blob
+
+            look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
 
             writer.close()
             with suppress(Exception):
@@ -425,18 +466,559 @@ def test_creation_prompts_include_alignment_and_groups():
 
     asyncio.run(run())
 
+
+def test_immortal_receives_imotd():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("archon", "secret")
+    account = login("archon", "secret")
+    assert account is not None
+    assert create_character(account, "Zeus")
+
     session = SessionLocal()
     try:
-        account = session.query(PlayerAccount).filter_by(username="scribe").first()
-        assert account is not None and account.characters
-        created = account.characters[0]
-        assert created.alignment == -750
-        assert created.creation_points == 40
-        groups = json.loads(created.creation_groups)
-        assert "rom basics" in groups
-        assert "mage basics" in groups
-        assert "mage default" in groups
-        assert created.train == 3
+        db_char = session.query(PlayerAccount).filter_by(username="archon").first()
+        assert db_char is not None and db_char.characters
+        record = db_char.characters[0]
+        record.level = 60
+        record.trust = 60
+        session.commit()
+    finally:
+        session.close()
+
+    async def run() -> None:
+        server = await create_server(host="127.0.0.1", port=0)
+        host, port = _server_address(server)
+        server_task = asyncio.create_task(server.serve_forever())
+        try:
+            reader, writer = await asyncio.open_connection(host, port)
+
+            _, greeting = await negotiate_ansi(reader, writer)
+            assert b"\x1b[" in greeting
+
+            writer.write(b"archon\r\n")
+            await writer.drain()
+
+            await asyncio.wait_for(reader.readuntil(b"Password: "), timeout=5)
+            writer.write(b"secret\r\n")
+            await writer.drain()
+
+            selection_prompt = await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
+            assert b"Zeus" in selection_prompt
+            writer.write(b"Zeus\r\n")
+            await writer.drain()
+
+            imotd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"Welcome Immortal!" in imotd_blob
+
+            motd_blob = await asyncio.wait_for(
+                reader.readuntil(b"[Hit Return to continue]\r\n"), timeout=5
+            )
+            assert b"You are responsible for knowing the rules" in motd_blob
+
+            look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
+
+            writer.close()
+            with suppress(Exception):
+                await writer.wait_closed()
+        finally:
+            server.close()
+            await server.wait_closed()
+            server_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await server_task
+
+    asyncio.run(run())
+
+
+def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
+    prompts: list[str] = []
+    sent_lines: list[str] = []
+    sent_pages: list[str] = []
+    help_calls: list[tuple[object, str]] = []
+
+    responses = iter(["help", "help human", "human"])
+
+    async def fake_prompt(conn, prompt, *, hide_input=False):
+        del hide_input
+        prompts.append(prompt)
+        try:
+            return next(responses)
+        except StopIteration:
+            return None
+
+    async def fake_send_line(conn, message):
+        sent_lines.append(message)
+
+    async def fake_send(conn, message):
+        sent_pages.append(message)
+
+    def fake_do_help(char, topic):
+        help_calls.append((char, topic))
+        mapping = {
+            "race help": "Race overview text",
+            "human": "Human details",
+        }
+        return mapping.get(topic, "")
+
+    helper = SimpleNamespace(name="Lyra", trust=0, level=0, is_npc=False, room=None)
+
+    monkeypatch.setattr(net_connection, "_prompt", fake_prompt)
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "_send", fake_send)
+    monkeypatch.setattr(net_connection, "do_help", fake_do_help)
+
+    async def run() -> None:
+        race = await net_connection._prompt_for_race(object(), helper)
+        assert race is not None
+        assert race.name == "human"
+
+    asyncio.run(run())
+
+    assert prompts == ["Choose your race: ", "Choose your race: ", "Choose your race: "]
+    assert sent_lines[:2] == [
+        "Available races: " + ", ".join(r.name.title() for r in get_creation_races()),
+        "What is your race? (help for more information)",
+    ]
+    assert sent_pages == ["Race overview text\r\n", "Human details\r\n"]
+    assert help_calls == [(helper, "race help"), (helper, "human")]
+
+
+def test_creation_prompts_include_alignment_and_groups(monkeypatch: pytest.MonkeyPatch):
+    prompts: list[str] = []
+    yes_no_prompts: list[str] = []
+    sent_lines: list[str] = []
+    sent_pages: list[str] = []
+    selections: list[CreationSelection] = []
+
+    responses = iter(["e", "add weaponsmaster", "add shield block", "done"])
+
+    async def fake_prompt(conn, prompt, *, hide_input=False):
+        del conn, hide_input
+        prompts.append(prompt)
+        try:
+            return next(responses)
+        except StopIteration:
+            return "done"
+
+    async def fake_prompt_yes_no(conn, prompt):
+        del conn
+        yes_no_prompts.append(prompt)
+        return True
+
+    async def fake_send_line(conn, message):
+        del conn
+        sent_lines.append(message)
+
+    async def fake_send(conn, message):
+        del conn
+        sent_pages.append(message)
+
+    def fake_do_help(char, topic, *, limit_results=False):
+        del char, limit_results
+        if topic.lower() == "group header":
+            return "Group header text\r\n"
+        return ""
+
+    monkeypatch.setattr(net_connection, "_prompt", fake_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_yes_no", fake_prompt_yes_no)
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "_send", fake_send)
+    monkeypatch.setattr(net_connection, "do_help", fake_do_help)
+
+    async def run() -> None:
+        conn, transport, protocol = await _make_telnet_stream()
+        selection = CreationSelection(get_creation_races()[0], get_creation_classes()[0])
+        selections.append(selection)
+        try:
+            alignment = await net_connection._prompt_for_alignment(conn)
+            assert alignment == -750
+            customize = await net_connection._prompt_customization_choice(conn)
+            assert customize is True
+            result = await net_connection._run_customization_menu(conn, selection)
+            assert result is selection
+        finally:
+            transport.close()
+            protocol.connection_lost(None)
+
+    asyncio.run(run())
+
+    assert prompts[:4] == [
+        "Which alignment (G/N/E)? ",
+        "Customization> ",
+        "Customization> ",
+        "Customization> ",
+    ]
+    assert yes_no_prompts == ["Customize (Y/N)? "]
+
+    normalized_lines = [line for line in sent_lines if line]
+    assert "You may be good, neutral, or evil." in normalized_lines
+    assert any(line.startswith("Creation points: ") for line in normalized_lines)
+    assert "Creation points: 40" in normalized_lines
+    assert "Creation points: 46" in normalized_lines
+    assert "Experience per level: 1000" in normalized_lines
+    assert "Experience per level: 1300" in normalized_lines
+    assert any("Type 'list', 'learned', 'add <group>'" in line for line in normalized_lines)
+    assert any("You already have the following groups" in line for line in normalized_lines)
+
+    assert any("Group header text" in entry for entry in sent_pages)
+
+    assert selections, "selection should be captured"
+    final_selection = selections[0]
+    assert final_selection.creation_points == 46
+    assert final_selection.has_group("weaponsmaster")
+    assert final_selection.has_skill("shield block")
+
+
+
+def test_customization_menu_shows_group_header_and_costs(monkeypatch: pytest.MonkeyPatch):
+    async def run() -> None:
+        conn, transport, protocol = await _make_telnet_stream()
+        selection = CreationSelection(get_creation_races()[0], get_creation_classes()[0])
+
+        def fake_do_help(char, topic, *, limit_results=False):
+            del char, limit_results
+            if topic.lower() == "group header":
+                return "Group header text\r\n"
+            return ""
+
+        monkeypatch.setattr(net_connection, "do_help", fake_do_help)
+
+        try:
+            menu_task = asyncio.create_task(net_connection._run_customization_menu(conn, selection))
+            await asyncio.sleep(0)
+
+            initial = transport.buffer.decode(errors="ignore")
+            assert "Group header text" in initial
+            assert "group              cp" in initial.lower()
+            assert "skill              cp" in initial.lower()
+            assert "Creation points: 0" in initial
+            assert "Experience per level: 1000" in initial
+            assert "Type 'list', 'learned', 'add <group>', 'drop <group>'" in initial
+
+            menu_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await menu_task
+        finally:
+            transport.close()
+            protocol.connection_lost(None)
+
+    asyncio.run(run())
+
+
+def test_customization_menu_repeats_menu_choice_help(monkeypatch: pytest.MonkeyPatch):
+    async def run() -> None:
+        conn, transport, protocol = await _make_telnet_stream()
+        selection = CreationSelection(get_creation_races()[0], get_creation_classes()[0])
+
+        def fake_do_help(char, topic, *, limit_results: bool = False):
+            del char, limit_results
+            lowered = topic.lower()
+            if lowered == "group header":
+                return "Group header text\r\n"
+            if lowered == "menu choice":
+                return "Menu choice text\r\n"
+            return ""
+
+        monkeypatch.setattr(net_connection, "do_help", fake_do_help)
+
+        try:
+            menu_task = asyncio.create_task(
+                net_connection._run_customization_menu(conn, selection)
+            )
+            await asyncio.sleep(0)
+
+            initial = transport.buffer.decode(errors="ignore")
+            assert initial.count("Menu choice text") >= 1
+
+            transport.buffer.clear()
+            protocol.data_received(b"list\r\n")
+            await asyncio.sleep(0)
+            list_output = transport.buffer.decode(errors="ignore")
+            assert "Menu choice text" in list_output
+
+            transport.buffer.clear()
+            protocol.data_received(b"help\r\n")
+            await asyncio.sleep(0)
+            help_output = transport.buffer.decode(errors="ignore")
+            assert "Menu choice text" in help_output
+        finally:
+            menu_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await menu_task
+            transport.close()
+            protocol.connection_lost(None)
+
+    asyncio.run(run())
+
+
+def test_customization_requires_forty_creation_points():
+    class MemoryTransport(asyncio.Transport):
+        def __init__(self) -> None:
+            super().__init__()
+            self.buffer = bytearray()
+            self._closing = False
+
+        def write(self, data: bytes) -> None:
+            self.buffer.extend(data)
+
+        def is_closing(self) -> bool:
+            return self._closing
+
+        def close(self) -> None:
+            self._closing = True
+
+    async def make_telnet_stream() -> tuple[net_connection.TelnetStream, MemoryTransport, asyncio.StreamReaderProtocol]:
+        loop = asyncio.get_running_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+        transport = MemoryTransport()
+        protocol.connection_made(transport)
+        writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+        return net_connection.TelnetStream(reader, writer), transport, protocol
+
+    async def run() -> None:
+        conn, transport, protocol = await make_telnet_stream()
+        selection = CreationSelection(get_creation_races()[0], get_creation_classes()[0])
+
+        menu_task = asyncio.create_task(net_connection._run_customization_menu(conn, selection))
+        await asyncio.sleep(0)
+
+        initial_output = transport.buffer.decode(errors="ignore")
+        assert "Customization> " in initial_output
+
+        transport.buffer.clear()
+        protocol.data_received(b"done\r\n")
+        await asyncio.sleep(0)
+        insufficient = transport.buffer.decode(errors="ignore")
+        assert "You must select at least" in insufficient
+        assert "Customization> " in insufficient
+
+        transport.buffer.clear()
+        protocol.data_received(b"add creation\r\n")
+        await asyncio.sleep(0)
+        added_small = transport.buffer.decode(errors="ignore")
+        assert "creation group added." in added_small.lower()
+        assert "Creation points: 4" in added_small
+        assert "Experience per level: 1000" in added_small
+        assert "Customization> " in added_small
+
+        transport.buffer.clear()
+        protocol.data_received(b"done\r\n")
+        await asyncio.sleep(0)
+        still_short = transport.buffer.decode(errors="ignore")
+        assert "You must select at least" in still_short
+        assert "need 36 more" in still_short
+        assert "Customization> " in still_short
+
+        transport.buffer.clear()
+        protocol.data_received(b"add weaponsmaster\r\n")
+        await asyncio.sleep(0)
+        added_default = transport.buffer.decode(errors="ignore")
+        assert "weaponsmaster group added." in added_default.lower()
+        assert "Creation points: 44" in added_default
+        assert "Experience per level: 1200" in added_default
+        assert "Customization> " in added_default
+
+        transport.buffer.clear()
+        protocol.data_received(b"done\r\n")
+        result = await asyncio.wait_for(menu_task, timeout=1)
+        final_output = transport.buffer.decode(errors="ignore")
+        assert "Creation points: 44" in final_output
+        assert "Experience per level: 1200" in final_output
+        assert result is selection
+        assert result.creation_points == 44
+        assert result.minimum_creation_points() == 40
+
+        transport.close()
+        protocol.connection_lost(None)
+
+    asyncio.run(run())
+
+
+def test_customization_menu_supports_drop_and_info():
+    class MemoryTransport(asyncio.Transport):
+        def __init__(self) -> None:
+            super().__init__()
+            self.buffer = bytearray()
+            self._closing = False
+
+        def write(self, data: bytes) -> None:
+            self.buffer.extend(data)
+
+        def is_closing(self) -> bool:
+            return self._closing
+
+        def close(self) -> None:
+            self._closing = True
+
+    async def make_telnet_stream() -> tuple[net_connection.TelnetStream, MemoryTransport, asyncio.StreamReaderProtocol]:
+        loop = asyncio.get_running_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+        transport = MemoryTransport()
+        protocol.connection_made(transport)
+        writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+        return net_connection.TelnetStream(reader, writer), transport, protocol
+
+    async def run() -> None:
+        conn, transport, protocol = await make_telnet_stream()
+        selection = CreationSelection(get_creation_races()[0], get_creation_classes()[0])
+
+        skill_name, skill_cost = next(
+            (name, cost)
+            for name, cost in selection.available_skills()
+            if name.lower() == "shield block"
+        )
+        group_name, group_cost = next(
+            (name, cost)
+            for name, cost in selection.available_groups()
+            if name.lower() == "creation"
+        )
+        group_members = get_group(group_name).skills
+
+        menu_task = asyncio.create_task(net_connection._run_customization_menu(conn, selection))
+        await asyncio.sleep(0)
+
+        initial = transport.buffer.decode(errors="ignore")
+        assert (
+            "Type 'list', 'learned', 'add <group>', 'drop <group>', 'info <group>', 'premise', or 'done'."
+            in initial
+        )
+
+        transport.buffer.clear()
+        protocol.data_received(b"list\r\n")
+        await asyncio.sleep(0)
+        listing = transport.buffer.decode(errors="ignore")
+        assert "group              cp    group              cp    group              cp" in listing
+        assert "skill              cp    skill              cp    skill              cp" in listing
+        assert group_name.lower() in listing.lower()
+        assert skill_name.lower() in listing.lower()
+        assert "Creation points: 0" in listing
+        assert "Experience per level: 1000" in listing
+
+        transport.buffer.clear()
+        protocol.data_received(f"add {skill_name.title()}\r\n".encode())
+        await asyncio.sleep(0)
+        skill_added = transport.buffer.decode(errors="ignore")
+        skill_points = selection.creation_points
+        skill_xp = selection.experience_per_level()
+        assert skill_points == skill_cost
+        assert f"{skill_name.lower()} skill added." in skill_added.lower()
+        assert f"Creation points: {skill_points}" in skill_added
+        assert f"Experience per level: {skill_xp}" in skill_added
+
+        transport.buffer.clear()
+        protocol.data_received(f"add {group_name.lower()}\r\n".encode())
+        await asyncio.sleep(0)
+        group_added = transport.buffer.decode(errors="ignore")
+        group_points = selection.creation_points
+        group_xp = selection.experience_per_level()
+        assert group_points == skill_cost + group_cost
+        assert f"{group_name.lower()} group added." in group_added.lower()
+        assert f"Creation points: {group_points}" in group_added
+        assert f"Experience per level: {group_xp}" in group_added
+
+        transport.buffer.clear()
+        protocol.data_received(f"info {group_name}\r\n".encode())
+        await asyncio.sleep(0)
+        info_output = transport.buffer.decode(errors="ignore")
+        assert f"Group members for {group_name}" in info_output
+        assert group_members
+        assert group_members[0].split()[0].lower() in info_output.lower()
+
+        transport.buffer.clear()
+        protocol.data_received(b"learned\r\n")
+        await asyncio.sleep(0)
+        learned = transport.buffer.decode(errors="ignore")
+        assert "group              cp    group              cp    group              cp" in learned
+        assert group_name.lower() in learned.lower()
+        assert "skill              cp    skill              cp    skill              cp" in learned
+        assert skill_name.lower() in learned.lower()
+        assert f"Creation points: {group_points}" in learned
+        assert f"Experience per level: {group_xp}" in learned
+
+        transport.buffer.clear()
+        protocol.data_received(f"drop {skill_name.upper()}\r\n".encode())
+        await asyncio.sleep(0)
+        dropped_skill = transport.buffer.decode(errors="ignore")
+        skill_removed_points = selection.creation_points
+        skill_removed_xp = selection.experience_per_level()
+        assert "Skill dropped." in dropped_skill
+        assert f"Creation points: {skill_removed_points}" in dropped_skill
+        assert f"Experience per level: {skill_removed_xp}" in dropped_skill
+
+        transport.buffer.clear()
+        protocol.data_received(f"drop {group_name}\r\n".encode())
+        await asyncio.sleep(0)
+        dropped_group = transport.buffer.decode(errors="ignore")
+        assert "Group dropped." in dropped_group
+        assert "Creation points: 0" in dropped_group
+        assert "Experience per level: 1000" in dropped_group
+
+        transport.buffer.clear()
+        protocol.data_received(b"list\r\n")
+        await asyncio.sleep(0)
+        after_drop_listing = transport.buffer.decode(errors="ignore")
+        assert "group              cp    group              cp    group              cp" in after_drop_listing
+        assert group_name.lower() in after_drop_listing.lower()
+        assert skill_name.lower() in after_drop_listing.lower()
+
+        transport.buffer.clear()
+        protocol.data_received(b"premise\r\n")
+        await asyncio.sleep(0)
+        premise = transport.buffer.decode(errors="ignore")
+        assert "No help on that word." in premise
+
+        selection.creation_points = selection.maximum_creation_points()
+        transport.buffer.clear()
+        protocol.data_received(f"add {skill_name}\r\n".encode())
+        await asyncio.sleep(0)
+        capped = transport.buffer.decode(errors="ignore")
+        assert "You cannot take more than 300 creation points." in capped
+
+        menu_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await menu_task
+
+        transport.close()
+        protocol.connection_lost(None)
+
+    asyncio.run(run())
+
+
+def test_create_character_persists_creation_skills():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("artisan", "secret")
+    account = login("artisan", "secret")
+    assert account is not None
+
+    assert create_character(
+        account,
+        "Crafter",
+        creation_groups=("rom basics", "mage basics"),
+        creation_skills=("Shield Block", "  flail  ", "shield block"),
+    )
+
+    session = SessionLocal()
+    try:
+        record = session.query(Character).filter_by(name="Crafter").first()
+        assert record is not None
+        stored_skills = json.loads(record.creation_skills)
+        assert stored_skills == ["shield block", "flail"]
+        assert _decode_creation_skills(record.creation_skills) == ("shield block", "flail")
     finally:
         session.close()
 
@@ -865,7 +1447,7 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
             async def fake_prompt_yes_no(conn, prompt):
                 return True
 
-            async def fake_prompt_for_race(conn):
+            async def fake_prompt_for_race(conn, *_args):
                 return get_creation_races()[0]
 
             async def fake_prompt_for_sex(conn):
@@ -954,6 +1536,126 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
     finally:
         character_registry.clear()
         character_registry.extend(previous_registry)
+
+
+def test_newbie_banned_blocks_character_creation(monkeypatch):
+    messages: list[str] = []
+
+    async def fake_send_line(conn, message):  # noqa: ARG001 - testing hook
+        messages.append(message)
+
+    async def fail_async_prompt(*_args, **_kwargs):  # noqa: D401
+        raise AssertionError("async prompts should not run when newbie banned")
+
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "_prompt_yes_no", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_race", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_sex", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_class", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_alignment", fail_async_prompt)
+    monkeypatch.setattr(
+        net_connection, "_prompt_customization_choice", fail_async_prompt
+    )
+    monkeypatch.setattr(net_connection, "_prompt_for_stats", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_hometown", fail_async_prompt)
+    monkeypatch.setattr(net_connection, "_prompt_for_weapon", fail_async_prompt)
+
+    created: list[str] = []
+
+    def fake_create_character(account, name, **_kwargs):  # noqa: ARG001
+        created.append(name)
+        return SimpleNamespace(name=name)
+
+    monkeypatch.setattr(net_connection, "create_character", fake_create_character)
+
+    async def run_test() -> bool:
+        dummy_conn = SimpleNamespace(peer_host="blocked.example")
+        dummy_account = SimpleNamespace(id=1)
+        return await net_connection._run_character_creation_flow(
+            dummy_conn,
+            dummy_account,
+            "Nova",
+            newbie_banned=True,
+        )
+
+    result = asyncio.run(run_test())
+
+    assert result is False
+    assert created == []
+    assert messages == ["New players are not allowed from your site."]
+
+
+def test_select_character_blocks_newbie_creation_when_banned(monkeypatch):
+    responses = iter(["Newbie", "Guardian"])
+    prompts: list[str] = []
+    messages: list[str] = []
+    creation_calls: list[tuple[str, bool]] = []
+
+    async def fake_prompt(conn, prompt, *, hide_input: bool = False):  # noqa: ARG001
+        prompts.append(prompt)
+        try:
+            return next(responses)
+        except StopIteration:
+            raise AssertionError("No more responses queued")
+
+    async def fake_send_line(conn, message):  # noqa: ARG001 - testing hook
+        messages.append(message)
+
+    async def fake_creation_flow(
+        conn,  # noqa: ARG001 - signature compatibility
+        account,
+        name,
+        *,
+        permit_banned: bool = False,  # noqa: ARG001
+        newbie_banned: bool = False,
+    ) -> bool:
+        creation_calls.append((name, newbie_banned))
+        messages.append("New players are not allowed from your site.")
+        return False
+
+    def fake_list_characters(account, require_act_flags=None):  # noqa: ARG001
+        return ["Guardian"]
+
+    def fake_load_character(username, name):  # noqa: ARG001
+        if name == "Guardian":
+            return SimpleNamespace(name=name)
+        return None
+
+    async def fail_yes_no(*_args, **_kwargs):  # noqa: D401 - should not trigger
+        raise AssertionError("unexpected reconnect prompt during newbie ban test")
+
+    monkeypatch.setattr(net_connection, "_prompt", fake_prompt)
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(
+        net_connection,
+        "_run_character_creation_flow",
+        fake_creation_flow,
+    )
+    monkeypatch.setattr(net_connection, "list_characters", fake_list_characters)
+    monkeypatch.setattr(net_connection, "_prompt_yes_no", fail_yes_no)
+    monkeypatch.setattr(net_connection, "load_character", fake_load_character)
+
+    async def run_test():
+        net_connection.SESSIONS.clear()
+        dummy_conn = SimpleNamespace()
+        account = SimpleNamespace()
+        result = await net_connection._select_character(
+            dummy_conn,
+            account,
+            "warden",
+            permit_banned=False,
+            newbie_banned=True,
+        )
+        return result
+
+    character, forced = asyncio.run(run_test())
+
+    assert forced is False
+    assert character.name == "Guardian"
+    assert prompts.count("Character: ") == 2
+    assert creation_calls == [("Newbie", True)]
+    assert messages.count("New players are not allowed from your site.") == 1
+
 
 def test_banned_account_cannot_login():
     Base.metadata.drop_all(engine)
@@ -1401,6 +2103,108 @@ def test_ban_permit_requires_permit_flag():
     permitted = login_with_host("warden", "pw", "permit.example")
     assert permitted.account is not None
     release_account("warden")
+
+
+def test_character_selection_filters_permit_hosts():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("warden", "pw")
+
+    session = SessionLocal()
+    try:
+        account = session.query(PlayerAccount).filter_by(username="warden").first()
+        assert account is not None
+        assert create_character(account, "Guardian")
+        assert create_character(account, "Rogue")
+    finally:
+        session.close()
+
+    session = SessionLocal()
+    try:
+        guardian = session.query(Character).filter_by(name="Guardian").first()
+        rogue = session.query(Character).filter_by(name="Rogue").first()
+        assert guardian is not None and rogue is not None
+        guardian.act = int(PlayerFlag.PERMIT)
+        session.commit()
+    finally:
+        session.close()
+
+    bans.add_banned_host("127.0.0.1", flags=BanFlag.PERMIT)
+
+    class MemoryTransport(asyncio.Transport):
+        def __init__(self) -> None:
+            super().__init__()
+            self.buffer = bytearray()
+            self._closing = False
+
+        def write(self, data: bytes) -> None:
+            self.buffer.extend(data)
+
+        def is_closing(self) -> bool:
+            return self._closing
+
+        def close(self) -> None:
+            self._closing = True
+
+    async def make_telnet_stream() -> tuple[net_connection.TelnetStream, "MemoryTransport", asyncio.StreamReaderProtocol]:
+        loop = asyncio.get_running_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+        transport = MemoryTransport()
+        protocol.connection_made(transport)
+        writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+        return net_connection.TelnetStream(reader, writer), transport, protocol
+
+    async def run() -> None:
+        permit_login = login_with_host("warden", "pw", "127.0.0.1")
+        assert permit_login.account is not None
+        account = permit_login.account
+
+        conn, transport, protocol = await make_telnet_stream()
+        selection_task = asyncio.create_task(
+            net_connection._select_character(
+                conn,
+                account,
+                "warden",
+                permit_banned=True,
+            )
+        )
+        await asyncio.sleep(0)
+        listing_output = transport.buffer.decode(errors="ignore")
+        assert "Characters: Guardian" in listing_output
+        assert "Rogue" not in listing_output
+        transport.buffer.clear()
+
+        protocol.data_received(b"Guardian\r\n")
+        char, forced = await asyncio.wait_for(selection_task, timeout=1)
+        assert forced is False
+        assert char.name == "Guardian"
+
+        conn2, transport2, protocol2 = await make_telnet_stream()
+        denied_task = asyncio.create_task(
+            net_connection._select_character(
+                conn2,
+                account,
+                "warden",
+                permit_banned=True,
+            )
+        )
+        await asyncio.sleep(0)
+        transport2.buffer.clear()
+        protocol2.data_received(b"Rogue\r\n")
+        denied = await asyncio.wait_for(denied_task, timeout=1)
+        assert denied is None
+        ban_output = transport2.buffer.decode(errors="ignore")
+        assert "Your site has been banned from this mud." in ban_output
+
+    asyncio.run(run())
+
+    release_account("warden")
+    bans.clear_all_bans()
 def _server_address(server: asyncio.AbstractServer) -> tuple[str, int]:
     sockets = cast(Sequence[Socket], getattr(server, "sockets", ()))
     if not sockets:

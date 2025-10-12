@@ -4,6 +4,7 @@ from mud.models.character import Character
 from mud.models.constants import (
     MAX_LEVEL,
     AffectFlag,
+    PlayerFlag,
     RoomFlag,
     Sector,
 )
@@ -37,6 +38,24 @@ def _has_affect(char: Character, flag: AffectFlag) -> bool:
         return False
 
 
+def _has_holylight(char: Character | None) -> bool:
+    if char is None:
+        return False
+    if getattr(char, "is_npc", False):
+        immortal_checker = getattr(char, "is_immortal", None)
+        if callable(immortal_checker):
+            try:
+                return bool(immortal_checker())
+            except Exception:
+                return False
+        return False
+    try:
+        act_flags = int(getattr(char, "act", 0) or 0)
+    except Exception:
+        act_flags = 0
+    return bool(act_flags & int(PlayerFlag.HOLYLIGHT))
+
+
 def can_see_character(observer: Character, target: Character | None) -> bool:
     """Replicate ROM ``can_see`` for character-to-character checks."""
 
@@ -59,18 +78,18 @@ def can_see_character(observer: Character, target: Character | None) -> bool:
     if incog_level and observer_room is not target_room and trust < incog_level:
         return False
 
-    if getattr(observer, "is_admin", False):
-        return True
-
-    immortal_checker = getattr(observer, "is_immortal", None)
-    if callable(immortal_checker) and immortal_checker():
+    if _has_holylight(observer):
         return True
 
     if _has_affect(observer, AffectFlag.BLIND):
         return False
 
     if observer_room is target_room and room_is_dark(observer_room):
-        if not (_has_affect(observer, AffectFlag.INFRARED) or _has_affect(observer, AffectFlag.DARK_VISION)):
+        if not (
+            _has_holylight(observer)
+            or _has_affect(observer, AffectFlag.INFRARED)
+            or _has_affect(observer, AffectFlag.DARK_VISION)
+        ):
             return False
 
     if _has_affect(target, AffectFlag.INVISIBLE) and not _has_affect(observer, AffectFlag.DETECT_INVIS):
@@ -114,14 +133,15 @@ def room_is_dark(room: Room) -> bool:
 def can_see_room(char: Character, room: Room) -> bool:
     """Return True if `char` may enter or see `room` per ROM rules."""
 
-    if char.is_admin:
-        return True
-
     if char.has_affect(AffectFlag.BLIND):
         return False
 
     if room_is_dark(room):
-        if not (char.is_immortal() or bool(char.affected_by & _VISIBILITY_AFFECTS)):
+        if not (
+            _has_holylight(char)
+            or char.is_immortal()
+            or bool(char.affected_by & _VISIBILITY_AFFECTS)
+        ):
             return False
 
     flags = int(getattr(room, "room_flags", 0) or 0)

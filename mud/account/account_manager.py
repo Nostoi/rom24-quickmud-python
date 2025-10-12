@@ -64,6 +64,7 @@ def save_character(character: Character) -> None:
             db_char.default_weapon_vnum = int(character.default_weapon_vnum or 0)
             db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)
             db_char.creation_groups = json.dumps(list(getattr(character, "creation_groups", ())))
+            db_char.newbie_help_seen = bool(getattr(character, "newbie_help_seen", False))
             room = getattr(character, "room", None)
             db_char.room_vnum = int(getattr(room, "vnum", 0) or 0) if room is not None else None
             save_objects_for_character(session, character, db_char)

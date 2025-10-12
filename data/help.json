@@ -7,6 +7,28 @@
     "text": ".{WTHIS IS A MUD BASED ON.....{x\n\n{C                                ROM Version 2.4 beta{x\n\n               Original DikuMUD by Hans Staerfeldt, Katja Nyboe,\n               Tom Madsen, Michael Seifert, and Sebastian Hammer\n               Based on MERC 2.1 code by Hatchet, Furey, and Kahn\n               ROM 2.4 copyright (c) 1993-1998 Russ Taylor\n\nBy what name do you wish to be known?"
   },
   {
+    "level": -1,
+    "keywords": [
+      "MOTD"
+    ],
+    "text": "You are responsible for knowing the rules (type 'rules').  Ignorance of\n  the rules is no excuse.\n* Important commands: help, commands, news, notes\n* Use the delete command to erase unwanted characters"
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "IMOTD"
+    ],
+    "text": "Welcome Immortal!\n\nYou are responsible for following the laws of immortal behavior. These can\nbe found by typing 'help laws' or 'help commandments'.\n\n* Excessive loading is not allowed, and is grounds for deletion.\n* Asking for promotion is grounds for instant deletion.\n* Type 'help jobs' to get some idea of what you should be doing."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "NEWBIE INFO",
+      "NEWBIE"
+    ],
+    "text": "Ah! Another mortal, seeking adventure.  You should go through mudschool first,\nto gain experience to face the trials outside.  Be sure to practice a weapon\nin the guild room, or your stay with us shall be very short indeed.  Type\n'equipment' to see what your are wielding, 'spells' to see your spells,\n'skills' to see your skills, and 'commands' for a list of commands. Help is\navailable on most commands and abilities.\n\nPlease type 'help rules' to see the Rules of ROM."
+  },
+  {
     "level": 0,
     "keywords": [
       "QMCONFIG"
@@ -414,6 +436,22 @@
     ],
     "text": "Syntax: consider <character>\n\nCONSIDER tells you what your chances are of killing a character.\nOf course, it's only a rough estimate."
   },
+  {
+    "level": -1,
+    "keywords": [
+      "GROUP HEADER"
+    ],
+    "text": "The following skills and groups are available to your chacter:\n(this list may be seen again by typing list)"
+  },
+
+  {
+    "level": -1,
+    "keywords": [
+      "MENU CHOICE"
+    ],
+    "text": "Choice (add,drop,list,help)?"
+  },
+
   {
     "level": 0,
     "keywords": [
