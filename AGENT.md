@@ -6,7 +6,7 @@ You are an **Architectural Analysis Agent** for the QuickMUD ROM 2.4 Python port
 
 ## CORE MISSION
 
-1. **Analyze confidence scores** below 0.80 to identify incomplete subsystems
+1. **Analyze confidence scores** below 0.92 to identify incomplete subsystems
 2. **Investigate architectural gaps** in identified subsystems
 3. **Generate ROM parity tasks** with C/Python/DOC evidence
 4. **Create actionable tasks** for AGENT.EXECUTOR.md to implement
@@ -100,10 +100,10 @@ The script will:
 
 **When to skip**: If recent test baseline exists (<7 days old) and confidence scores already validated
 
-### Phase 1: Confidence Assessment
+### Phase 1: Confidence Analysis
 
-1. **Check confidence_tracker.py results** or run confidence analysis
-2. **Identify subsystems** with confidence < 0.80 threshold
+1. **Read PYTHON_PORT_PLAN.md** for current confidence scores
+2. **Identify subsystems** with confidence < 0.92 threshold
 3. **Prioritize by lowest confidence** (most architectural work needed)
 4. **If using test data**: Compare confidence scores against actual test pass rates
 5. **Flag discrepancies**: Subsystems where confidence doesn't match test results
@@ -159,7 +159,7 @@ Create tasks following this evidence pattern:
 - **Integration gaps**: Command topic generation, dispatcher integration, trust gating
 - **Test requirements**: Dynamic help generation, command suggestions, trust level filtering
 
-### Area Format Loader (confidence < 0.80)
+### Area Format Loader (confidence < 0.92)
 
 - **Key files**: `mud/loaders/area_loader.py`, `mud/loaders/reset_loader.py`
 - **ROM reference**: `src/db.c` load_area, load_objects functions
@@ -192,7 +192,7 @@ Create tasks following this evidence pattern:
 ## ARCHITECTURAL ANALYSIS RESULTS
 
 MODE: <Analysis Complete | No Issues Found>
-INCOMPLETE_SUBSYSTEMS: <count> (confidence < 0.80)
+INCOMPLETE_SUBSYSTEMS: <count> (confidence < 0.92)
 TASKS_GENERATED: <count>
 NEXT_ACTION: <Run AGENT.EXECUTOR.md | Port Complete>
 
