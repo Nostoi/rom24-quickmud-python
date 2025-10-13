@@ -76,6 +76,7 @@ include = ["mud*"]
 [tool.pytest.ini_options]
 markers = [
   "telnet: Telnet server tests that open sockets",
+  "timeout: Tests guarded by pytest-timeout to prevent hangs",
 ]
 
 [tool.ruff]

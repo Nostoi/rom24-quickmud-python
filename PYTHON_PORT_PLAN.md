@@ -1,11 +1,11 @@
-<!-- LAST-PROCESSED: skills_spells -->
+<!-- LAST-PROCESSED: networking_telnet -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-12 (pytest --collect-only -q; 732 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-12-12 (PYTHONPATH=. pytest tests/test_skills_damage.py::test_earthquake_damages_grounded_targets tests/test_skills_damage.py::test_earthquake_sends_area_messages -q; 2 passed) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-13 (pytest --collect-only -q; 761 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-10-13 (PYTHONPATH=. pytest tests/test_telnet_server.py::test_telnet_stream_normalizes_embedded_crlf tests/test_telnet_server.py::test_telnet_stream_preserves_rom_newline -q; 2 passed / 2 total) -->
 <!-- TEST-PASS-RATE: 100% (2 passed / 2 total) -->
 
 # Python Conversion Plan for QuickMUD
@@ -109,21 +109,22 @@ NOTES:
 <!-- SUBSYSTEM: channels END -->
 <!-- SUBSYSTEM: wiznet_imm START -->
 
-### wiznet_imm — Parity Audit 2025-11-14
+### wiznet_imm — Parity Audit 2025-12-14
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
-KEY RISKS: visibility, side_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: visibility, messaging
 
 TASKS:
 
-- None (parity coverage achieved; monitor future ROM wiznet changes for new evidence.)
+- ✅ [P1] **wiznet_imm: return ROM newline order for wiznet command messaging without duplicate bytes** — done 2025-12-14
+  EVIDENCE: PY mud/wiznet.py:14-241; PY mud/net/connection.py:315-333; TEST tests/test_wiznet.py::test_wiznet_command_trailing_newlines
 
 NOTES:
 
-- C: `src/act_wiz.c:171-189` formats wiznet output with `act_new`, cyan envelopes, and WIZ_PREFIX arrows while `nanny.c:520-560` announces new players.
-- PY: `mud/utils/act.py:1-147` ports the wiznet slice of `act_new` token expansion, `mud/wiznet.py:11-170` wraps broadcasts in `{Z`/`{x` regardless of prefix, and `mud/net/connection.py:760-865` threads hosts/sex for login and new-player announcements.
-- TEST: `tests/test_wiznet.py::{test_wiznet_act_formatting,test_wiznet_prefix_formatting,test_wiznet_logins_channel_broadcasts}` and `tests/test_account_auth.py::{test_new_player_triggers_wiznet_newbie_alert,test_reconnect_announces_wiz_links}` confirm token expansion, prefix gating, and host visibility.
-- Applied tiny fix: none
+- C: `src/act_wiz.c:67-150` formats wiznet command responses with ``"\n\r"`` suffixes.
+- PY: `mud/wiznet.py:185-241` now returns ROM newline ordering for toggles/status/show/errors while TelnetStream converts trailing ``"\n\r"`` to a single CRLF on the socket.
+- TEST: `tests/test_wiznet.py::{test_wiznet_command_trailing_newlines,test_wiznet_trust_allows_secure_options}` lock newline suffixes and secure-flag gating.
+- Applied tiny fix: Restored `ROM_NEWLINE` to ``"\n\r"`` and updated `TelnetStream.send_text` to normalize `\n\r` into CRLF without duplication.
 
 <!-- SUBSYSTEM: wiznet_imm END -->
 <!-- SUBSYSTEM: combat START -->
@@ -1076,37 +1077,66 @@ NOTES:
   <!-- SUBSYSTEM: login_account_nanny END -->
   <!-- SUBSYSTEM: networking_telnet START -->
 
-### networking_telnet — Parity Audit 2025-12-02
+### networking_telnet — Parity Audit 2025-12-15
 
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: lag_wait, networking
 TASKS:
 
+- ✅ [P0] **networking_telnet: treat ROM newline pairs as single lines during pagination** — done 2025-10-13
+  EVIDENCE: C src/comm.c:2123-2160; PY mud/net/session.py:83-119; TEST tests/test_telnet_server.py::test_telnet_pagination_handles_rom_newline_pairs
+
+- ✅ [P0] **networking_telnet: port telnetga command to toggle go-ahead flag** — done 2025-12-12
+  EVIDENCE: PY mud/commands/admin_commands.py:L1-L120; PY mud/net/connection.py:L300-L360; PY mud/net/session.py:L20-L60; TEST tests/test_telnet_server.py::test_telnetga_command_toggles_go_ahead
+
 - ✅ [P0] **networking_telnet: implement ROM show_string paging for long outputs** — done 2025-12-02
   EVIDENCE: PY mud/net/session.py:20-110; PY mud/net/protocol.py:16-52; TEST tests/test_networking_telnet.py::{test_show_string_paginates_output,test_send_to_char_accepts_iterables}
+
 - ✅ [P0] **networking_telnet: implement ROM telnet negotiation, password echo gating, and buffered prompts** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:1-380; PY mud/net/protocol.py:1-80; TEST tests/test_telnet_server.py::test_telnet_negotiates_iac_and_disables_echo; TEST tests/test_account_auth.py::test_password_prompt_hides_echo
+
 - ✅ [P0] **networking_telnet: implement ROM line editing, history recall, and spam throttling for descriptor input** — done 2025-10-30
   EVIDENCE: PY mud/net/connection.py:L1-L220; PY mud/net/session.py:L1-L40; TEST tests/test_telnet_server.py::test_backspace_editing_preserves_input; TEST tests/test_telnet_server.py::test_excessive_repeats_trigger_spam_warning
+
 - ✅ [P1] **networking_telnet: send ROM help_greeting and descriptor initialization on connect** — done 2025-11-05
   EVIDENCE: PY mud/loaders/help_loader.py:13-39; mud/world/world_state.py:60-84; mud/net/connection.py:224-338; TEST tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
+
 - ✅ [P0] **networking_telnet: persist ANSI preference via PLR_COLOUR flag** — done 2025-11-06
   EVIDENCE: PY mud/net/connection.py:230-360; PY mud/account/account_manager.py:15-120; PY mud/db/models.py:90-140; PY mud/models/character.py:400-470; PY mud/persistence.py:400-540; TEST tests/test_account_auth.py::test_ansi_preference_persists_between_sessions
+
 - ✅ [P1] **networking_telnet: implement CON_BREAK_CONNECT duplicate-session handshake** — done 2025-11-25
   EVIDENCE: PY mud/net/connection.py:430-520,930-1010; TEST tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects
+
 - ✅ [P0] **networking_telnet: restore ROM `stop_idling` limbo return when players send input** — done 2025-12-01
   EVIDENCE: PY mud/net/connection.py:200-241; TEST tests/test_networking_telnet.py::test_stop_idling_returns_character_to_previous_room
 
 - ✅ [P1] **networking_telnet: rely on session pagination for MOTD prompts** — done 2025-12-02
   EVIDENCE: PY mud/net/connection.py:476-498; TEST tests/test_networking_telnet.py::test_motd_uses_session_paging; TEST tests/test_connection_motd.py::{test_send_login_motd_for_mortal,test_send_login_motd_for_immortal}
 
+- ✅ [P0] **networking_telnet: bind telnet server to qmconfig IP defaults** — done 2025-12-12
+  EVIDENCE: C src/comm.c:436-519; PY mud/net/telnet_server.py:5-29; TEST tests/test_telnet_server.py::test_qmconfig_ip_address_controls_bind_host
+
+- ✅ [P0] **networking_telnet: preserve ROM newline ordering for TelnetStream outputs** — done 2025-12-15
+  EVIDENCE: C src/comm.c:1602-1642; PY mud/net/connection.py:318-347; TEST tests/test_telnet_server.py::test_telnet_stream_preserves_rom_newline
+
+- ✅ [P0] **networking_telnet: normalize show_string pagination output to ROM newline ordering** — done 2025-10-13
+  EVIDENCE: C src/comm.c:1319-1355 (`write_to_buffer` emits `[Hit Return to continue]\n\r` and all pagination replies with ROM order); C src/comm.c:2123-2160 (`show_string` counts newline pairs before writing);
+  EVIDENCE: PY mud/net/session.py:94-170 (pagination now normalizes CRLF sequences before buffering and when flushing fallback output);
+  EVIDENCE: TEST tests/test_telnet_server.py::{test_telnet_pagination_normalizes_crlf,test_telnet_pagination_handles_rom_newline_pairs}
+
+- ✅ [P0] **networking_telnet: convert TelnetStream send_text payloads to ROM newline ordering** — done 2025-10-13
+  EVIDENCE: C src/comm.c:1602-1660 (`write_to_buffer` seeds ROM-ordered newline pairs before flushing);
+  EVIDENCE: PY mud/net/connection.py:316-354 (send_text now rewrites CRLF sequences before encoding, preserving ROM order for all payloads);
+  EVIDENCE: TEST tests/test_telnet_server.py::{test_telnet_stream_normalizes_embedded_crlf,test_telnet_stream_preserves_rom_newline}
+
 NOTES:
 
-- C: src/comm.c:1955-2175 drives ROM paging through `showstr_head/showstr_point`, duplicate-session prompts, and the `[Hit Return to continue]` handshake that resumes ordinary input when players enter other commands.
-- PY: mud/net/session.py:13-154 mirrors the ROM show-string buffer with `start_paging`/`send_next_page`, while mud/net/connection.py:420-620 routes descriptor input through `_read_player_command`, honoring blank/`c` continuations, `!` repeats, and pagination escape semantics before command dispatch.
-- TEST: tests/test_networking_telnet.py::{test_show_string_paginates_output,test_send_to_char_accepts_iterables,test_stop_idling_returns_character_to_previous_room} plus tests/test_account_auth.py::{test_newbie_banned_blocks_character_creation,test_select_character_blocks_newbie_creation_when_banned} and tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects validate paging, iterable delivery, limbo recovery, BAN_NEWBIES, and CON_BREAK_CONNECT.
+- C: src/comm.c:2123-2160 increments the page counter only once per ``'\n'``/``'\r'`` pair, ensuring buffered pagination emits each newline once.
+- PY: mud/net/session.py:83-119 now treats ``"\n\r"`` pairs as a single segment so pagination counts the same lines that ROM's `show_string` would.
+- TEST: tests/test_telnet_server.py::{test_telnet_pagination_handles_rom_newline_pairs,test_telnet_stream_preserves_rom_newline} verify TelnetStream emits ROM ordering and pagination no longer injects stray carriage returns.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: networking_telnet END -->
+
   <!-- SUBSYSTEM: security_auth_bans START -->
 
 ### security_auth_bans — Parity Audit 2025-10-20
@@ -1141,45 +1171,21 @@ NOTES:
   <!-- SUBSYSTEM: security_auth_bans END -->
   <!-- SUBSYSTEM: logging_admin START -->
 
-### logging_admin — Parity Audit 2025-12-07
+### logging_admin — Parity Audit 2025-12-14
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
-KEY RISKS: logging, visibility, security
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+KEY RISKS: messaging, visibility, configuration
 TASKS:
 
-- ✅ [P0] **logging_admin: implement ROM `holylight` command toggling** — done 2025-12-07
-  EVIDENCE: PY mud/commands/admin_commands.py:270-282; PY mud/commands/dispatcher.py:169-183; PY mud/world/vision.py:41-145; TEST tests/test_admin_commands.py::test_holylight_command_toggles_flag
-  - priority: P0
-  - rationale: Immortals lacked the `holylight` toggle, leaving PLR_HOLYLIGHT unused and dark rooms opaque compared to ROM `do_holylight`.
-  - files: mud/commands/admin_commands.py; mud/commands/dispatcher.py; mud/world/vision.py
-  - tests: tests/test_admin_commands.py::test_holylight_command_toggles_flag
-  - acceptance_criteria: Add `holylight` command that flips `PlayerFlag.HOLYLIGHT` for PCs, returns ROM messages, and ensures vision helpers respect the flag.
-  - estimate: S
-  - risk: low
-  - evidence: C src/act_wiz.c:4422-4439 (`do_holylight` toggles PLR_HOLYLIGHT); C src/handler.c:2624-2636 (holylight bypasses visibility checks)
-
-- ✅ [P0] **logging_admin: implement ROM `incognito` command toggling** — done 2025-12-07
-  EVIDENCE: PY mud/commands/admin_commands.py:240-267; PY mud/commands/dispatcher.py:169-183; TEST tests/test_admin_commands.py::test_incognito_command_toggles_and_announces
-  - priority: P0
-  - rationale: Immortals cannot toggle incognito because the dispatcher lacks `incognito`; ROM `do_incognito` adjusts `incog_level`, bounds levels by trust, and emits room notifications.
-  - files: mud/commands/admin_commands.py; mud/commands/dispatcher.py
-  - tests: tests/test_admin_commands.py::test_incognito_command_toggles_and_announces
-  - acceptance_criteria: Admin-only command toggles `incog_level`, clamps level arguments to trust, emits third-person room messaging, and leaves visibility helpers in sync.
-  - estimate: M
-  - risk: medium
-  - evidence: C src/act_wiz.c:4375-4414 (`do_incognito`), C src/handler.c:2624-2636 (incog visibility guard)
-
-- ✅ [P0] **logging_admin: broadcast admin command logs to wiznet secure watchers** — done 2025-10-27
-  EVIDENCE: PY mud/admin_logging/admin.py:1-140
-  EVIDENCE: PY mud/commands/dispatcher.py:220-320
-  EVIDENCE: TEST tests/test_logging_admin.py::test_log_all_notifies_secure_wiznet
+- ✅ [P1] **logging_admin: restore ROM newline order for qmconfig replies without duplicate terminators** — done 2025-12-14
+  EVIDENCE: PY mud/commands/admin_commands.py:24-166; PY mud/net/connection.py:315-333; TEST tests/test_admin_commands.py::test_qmconfig_toggle_messages_include_newline
 
 NOTES:
 
-- C: src/act_wiz.c:4375-4414 implements incognito toggling and src/act_wiz.c:4422-4439 handles holylight; handler.c visibility helpers honor both PLR flags.
-- PY: mud/commands/admin_commands.py now exposes `incognito`/`holylight`, and mud/world/vision.py consults PLR_HOLYLIGHT during darkness checks to mirror ROM behaviour.
-- TEST: tests/test_admin_commands.py exercises the admin toggles alongside existing log/wizlock coverage, ensuring both visibility flags persist and affect vision.
-- Applied tiny fix: none
+- C: `src/act_wiz.c:4696-4778` terminates qmconfig help/show/toggle outputs with ``"\n\r"``.
+- PY: `mud/commands/admin_commands.py:24-166` now returns ROM newline ordering while TelnetStream preserves the ``"\n\r"`` terminator so wiznet/qmconfig replies land as single ROM newlines without duplication.
+- TEST: `tests/test_admin_commands.py::{test_qmconfig_toggle_messages_include_newline,test_qmconfig_abbreviations}` lock newline suffixes and option abbreviations.
+- Applied tiny fix: Restored `ROM_NEWLINE` to ``"\n\r"`` and taught `TelnetStream.send_text` to append exactly one ROM terminator without duplicating bytes when newline=True.
   <!-- SUBSYSTEM: logging_admin END -->
   <!-- SUBSYSTEM: olc_builders START -->
 

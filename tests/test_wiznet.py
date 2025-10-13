@@ -6,6 +6,9 @@ from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
 
 
+ROM_NEWLINE = "\n\r"
+
+
 def setup_function(_):
     character_registry.clear()
 
@@ -58,6 +61,26 @@ def test_wiznet_command_toggles_flag():
     result = process_command(imm, "wiznet")
     assert imm.wiznet & int(WiznetFlag.WIZ_ON)
     assert "welcome to wiznet" in result.lower()
+
+
+def test_wiznet_command_trailing_newlines():
+    imm = Character(name="Imm", is_admin=True, level=60)
+    character_registry.append(imm)
+
+    responses = [
+        process_command(imm, "wiznet"),
+        process_command(imm, "wiznet"),
+        process_command(imm, "wiznet on"),
+        process_command(imm, "wiznet off"),
+        process_command(imm, "wiznet status"),
+        process_command(imm, "wiznet show"),
+        process_command(imm, "wiznet ticks"),
+        process_command(imm, "wiznet ticks"),
+        process_command(imm, "wiznet mystery"),
+    ]
+
+    for response in responses:
+        assert response.endswith(ROM_NEWLINE)
 
 
 def test_wiznet_persistence(tmp_path):
@@ -249,7 +272,7 @@ def test_wiznet_trust_allows_secure_options():
     assert "secure" not in show_low
 
     toggle_low = process_command(low_trust, "wiznet secure")
-    assert toggle_low == "No such option."
+    assert toggle_low == "No such option." + ROM_NEWLINE
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
     assert all("secure notice" not in msg for msg in low_trust.messages)
 

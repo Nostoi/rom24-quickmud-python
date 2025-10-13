@@ -33,9 +33,10 @@ from mud.account import (
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
 from mud.commands.help import do_help
+from mud.config import get_qmconfig
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
-from mud.models.constants import PlayerFlag, Sex, ROOM_VNUM_LIMBO
+from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_LIMBO
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
@@ -269,6 +270,7 @@ class TelnetStream:
         self._pushback: deque[int] = deque()
         self.ansi_enabled = True
         self.peer_host: str | None = None
+        self._go_ahead_enabled = True
 
     def set_ansi(self, enabled: bool) -> None:
         self.ansi_enabled = bool(enabled)
@@ -312,19 +314,37 @@ class TelnetStream:
 
     async def send_text(self, message: str, *, newline: bool = False) -> None:
         rendered = self._render(message)
-        data = rendered.encode()
-        if newline and not data.endswith(b"\r\n"):
-            data += b"\r\n"
+        normalized = rendered.replace("\r\n", "\n\r")
+        data = normalized.encode()
+        if newline:
+            if data.endswith(b"\n\r"):
+                pass
+            elif data.endswith(b"\r\n"):
+                data = data[:-2] + b"\n\r"
+            elif data.endswith(b"\r"):
+                data = data[:-1] + b"\n\r"
+            elif data.endswith(b"\n"):
+                data = data[:-1] + b"\n\r"
+            else:
+                data += b"\n\r"
         self._queue(data)
         await self.flush()
 
     async def send_line(self, message: str) -> None:
         await self.send_text(message, newline=True)
 
-    async def send_prompt(self, prompt: str) -> None:
+    def set_go_ahead_enabled(self, enabled: bool) -> None:
+        self._go_ahead_enabled = bool(enabled)
+
+    async def send_prompt(self, prompt: str, *, go_ahead: bool | None = None) -> None:
         await self.flush()
         data = prompt.encode()
-        self.writer.write(data + bytes([TELNET_IAC, TELNET_GA]))
+        self.writer.write(data)
+        use_ga = self._go_ahead_enabled if go_ahead is None else bool(go_ahead)
+        if go_ahead is not None:
+            self._go_ahead_enabled = use_ga
+        if use_ga:
+            self.writer.write(bytes([TELNET_IAC, TELNET_GA]))
         await self.writer.drain()
 
     async def _read_byte(self) -> int | None:
@@ -418,11 +438,13 @@ async def _send_line(conn: TelnetStream, message: str) -> None:
     await conn.send_line(message)
 
 
-async def _prompt(conn: TelnetStream, prompt: str, *, hide_input: bool = False) -> str | None:
+async def _prompt(
+    conn: TelnetStream, prompt: str, *, hide_input: bool = False, go_ahead: bool | None = None
+) -> str | None:
     if hide_input:
         await conn.disable_echo()
     try:
-        await conn.send_prompt(prompt)
+        await conn.send_prompt(prompt, go_ahead=go_ahead)
         data = await conn.readline()
     finally:
         if hide_input:
@@ -459,6 +481,39 @@ def _apply_colour_preference(char: Character, enabled: bool) -> None:
         act_flags &= ~colour_bit
     char.act = act_flags
     char.ansi_enabled = bool(enabled)
+
+
+def _is_new_player(char: "Character") -> bool:
+    if getattr(char, "is_npc", False):
+        return False
+    try:
+        level = int(getattr(char, "level", 0) or 0)
+    except Exception:
+        level = 0
+    try:
+        played = int(getattr(char, "played", 0) or 0)
+    except Exception:
+        played = 0
+    return level <= 1 and played == 0
+
+
+def _apply_qmconfig_telnetga(
+    char: "Character",
+    session: Session,
+    connection: TelnetStream,
+    *,
+    default_enabled: bool,
+    is_new_player: bool,
+) -> None:
+    if is_new_player:
+        if default_enabled:
+            char.set_comm_flag(CommFlag.TELNET_GA)
+        else:
+            char.clear_comm_flag(CommFlag.TELNET_GA)
+
+    telnet_enabled = char.has_comm_flag(CommFlag.TELNET_GA)
+    connection.set_go_ahead_enabled(telnet_enabled)
+    session.go_ahead_enabled = telnet_enabled
 
 
 def _has_permit_flag(char: "Character") -> bool:
@@ -1388,6 +1443,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     newbie_banned = bool(
         host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES)
     )
+    qmconfig = get_qmconfig()
 
     try:
         if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
@@ -1395,10 +1451,14 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             return
 
         await conn.negotiate()
-        ansi_result = await _prompt_ansi_preference(conn)
-        if ansi_result is None:
-            return
-        ansi_preference, ansi_explicit = ansi_result
+        if qmconfig.ansiprompt:
+            ansi_result = await _prompt_ansi_preference(conn)
+            if ansi_result is None:
+                return
+            ansi_preference, ansi_explicit = ansi_result
+        else:
+            ansi_preference = qmconfig.ansicolor
+            ansi_explicit = False
         conn.set_ansi(ansi_preference)
         await _send_help_greeting(conn)
 
@@ -1420,8 +1480,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         char, forced_reconnect = selection
         reconnecting = bool(was_reconnect or forced_reconnect)
 
+        is_new_player = _is_new_player(char)
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
-        desired_colour = ansi_preference if ansi_explicit else saved_colour
+        desired_colour = (
+            ansi_preference
+            if ansi_explicit
+            else (qmconfig.ansicolor if is_new_player else saved_colour)
+        )
         _apply_colour_preference(char, desired_colour)
         conn.set_ansi(char.ansi_enabled)
 
@@ -1448,6 +1513,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         )
         SESSIONS[session.name] = session
         char.desc = session
+        _apply_qmconfig_telnetga(
+            char,
+            session,
+            conn,
+            default_enabled=qmconfig.telnetga,
+            is_new_player=is_new_player,
+        )
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
@@ -1478,7 +1550,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         while True:
             try:
-                await conn.send_prompt("> ")
+                await conn.send_prompt("> ", go_ahead=session.go_ahead_enabled)
                 command = await _read_player_command(conn, session)
                 if command is None:
                     break

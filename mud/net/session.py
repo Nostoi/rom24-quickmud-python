@@ -31,6 +31,7 @@ class Session:
     editor: str | None = None
     editor_state: dict[str, object] = field(default_factory=dict)
     ansi_enabled: bool = True
+    go_ahead_enabled: bool = True
     show_buffer: list[str] | None = None
     show_index: int = 0
     show_page_lines: int = 0
@@ -122,6 +123,7 @@ class Session:
         connection = getattr(self, "connection", None)
         if connection is None:
             return
+        text = _normalize_rom_newlines(text)
         if hasattr(connection, "send_text"):
             await connection.send_text(text, newline=False)
         elif hasattr(connection, "send_line"):
@@ -129,19 +131,25 @@ class Session:
 
 
 def _split_for_paging(text: str) -> list[str]:
+    normalized = _normalize_rom_newlines(text)
     segments: list[str] = []
     last_index = 0
-    for match in re.finditer(r"\r\n|\r|\n", text):
+    for match in re.finditer(r"\n\r|\r\n|\r|\n", normalized):
         end = match.end()
-        segments.append(text[last_index:end])
+        segments.append(normalized[last_index:end])
         last_index = end
-    if last_index < len(text):
-        segments.append(text[last_index:])
+    if last_index < len(normalized):
+        segments.append(normalized[last_index:])
     return segments
 
 
 def _segment_ends_line(segment: str) -> bool:
-    return segment.endswith("\r\n") or segment.endswith("\n") or segment.endswith("\r")
+    return (
+        segment.endswith("\n\r")
+        or segment.endswith("\r\n")
+        or segment.endswith("\n")
+        or segment.endswith("\r")
+    )
 
 
 SESSIONS: dict[str, Session] = {}
@@ -149,3 +157,9 @@ SESSIONS: dict[str, Session] = {}
 
 def get_online_players() -> list[Character]:
     return [sess.character for sess in SESSIONS.values()]
+
+
+def _normalize_rom_newlines(text: str) -> str:
+    if "\r\n" not in text:
+        return text
+    return text.replace("\r\n", "\n\r")
