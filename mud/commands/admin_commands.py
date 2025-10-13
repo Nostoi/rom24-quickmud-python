@@ -2,8 +2,15 @@ import asyncio
 
 from mud.account import release_account
 from mud.admin_logging.admin import toggle_log_all
+from mud.config import (
+    get_qmconfig,
+    load_qmconfig,
+    set_ansicolor,
+    set_ansiprompt,
+    set_telnetga,
+)
 from mud.models.character import Character, character_registry
-from mud.models.constants import PlayerFlag, Sex
+from mud.models.constants import CommFlag, PlayerFlag, Sex
 from mud.net.session import SESSIONS
 from mud.persistence import save_character as save_player_file
 from mud.registry import room_registry
@@ -12,6 +19,9 @@ from mud.security.bans import BanFlag, BanPermissionError
 from mud.spawning.mob_spawner import spawn_mob
 from mud.world.world_state import toggle_newlock, toggle_wizlock
 from mud.wiznet import wiznet
+
+
+ROM_NEWLINE = "\n\r"
 
 
 def cmd_who(char: Character, args: str) -> str:
@@ -63,10 +73,121 @@ def cmd_newlock(char: Character, args: str) -> str:
     return "Newlock removed."
 
 
+def cmd_telnetga(char: Character, args: str) -> str:
+    """Toggle whether prompts append the telnet Go-Ahead control code."""
+
+    if getattr(char, "is_npc", False):
+        return ""
+
+    if char.has_comm_flag(CommFlag.TELNET_GA):
+        char.clear_comm_flag(CommFlag.TELNET_GA)
+        _set_telnet_ga_state(char, False)
+        return "Telnet GA removed."
+
+    char.set_comm_flag(CommFlag.TELNET_GA)
+    _set_telnet_ga_state(char, True)
+    return "Telnet GA enabled."
+
+
+def cmd_qmconfig(char: Character, args: str) -> str:
+    if getattr(char, "is_npc", False):
+        return ""
+
+    stripped = args.strip()
+    if not stripped:
+        lines = [
+            "Valid qmconfig options are:",
+            "    show       (shows current status of toggles)",
+            "    ansiprompt [on|off]",
+            "    ansicolor  [on|off]",
+            "    telnetga   [on|off]",
+            "    read",
+        ]
+        return ROM_NEWLINE.join(lines) + ROM_NEWLINE
+
+    tokens = stripped.split()
+    option = tokens[0].lower()
+    value = tokens[1].lower() if len(tokens) > 1 else ""
+
+    def _matches_option(token: str, expected: str) -> bool:
+        return _matches_toggle_prefix(token, expected)
+
+    if _matches_option(option, "read"):
+        load_qmconfig()
+        return "Configuration reloaded from qmconfig.rc."
+
+    if _matches_option(option, "show"):
+        config = get_qmconfig()
+
+        def _format(toggle: bool) -> str:
+            return "{GON{x" if toggle else "{ROFF{x"
+
+        lines = [
+            f"ANSI prompt: {_format(config.ansiprompt)}",
+            f"ANSI color : {_format(config.ansicolor)}",
+            f"IP Address : {config.ip_address}",
+            f"Telnet GA  : {_format(config.telnetga)}",
+        ]
+        return ROM_NEWLINE.join(lines) + ROM_NEWLINE
+
+    def _is_truthy(token: str) -> bool:
+        return _matches_toggle_prefix(token, "on")
+
+    def _is_falsy(token: str) -> bool:
+        return _matches_toggle_prefix(token, "off")
+
+    if _matches_option(option, "ansiprompt"):
+        if _is_truthy(value):
+            set_ansiprompt(True)
+            return "New logins will now get an ANSI color prompt." + ROM_NEWLINE
+        if _is_falsy(value):
+            set_ansiprompt(False)
+            return "New logins will not get an ANSI color prompt." + ROM_NEWLINE
+        return 'Valid arguments are "on" and "off".' + ROM_NEWLINE
+
+    if _matches_option(option, "ansicolor"):
+        if _is_truthy(value):
+            set_ansicolor(True)
+            return "New players will have color enabled." + ROM_NEWLINE
+        if _is_falsy(value):
+            set_ansicolor(False)
+            return "New players will not have color enabled." + ROM_NEWLINE
+        return 'Valid arguments are "on" and "off".' + ROM_NEWLINE
+
+    if _matches_option(option, "telnetga"):
+        if _is_truthy(value):
+            set_telnetga(True)
+            return "Telnet GA will be enabled for new players." + ROM_NEWLINE
+        if _is_falsy(value):
+            set_telnetga(False)
+            return "Telnet GA will be disabled for new players." + ROM_NEWLINE
+        return 'Valid arguments are "on" and "off".' + ROM_NEWLINE
+
+    return "I have no clue what you are trying to do..." + ROM_NEWLINE
+
+
 def _get_trust(char: Character) -> int:
     trust = int(getattr(char, "trust", 0) or 0)
     level = int(getattr(char, "level", 0) or 0)
     return trust if trust > 0 else level
+
+
+def _set_telnet_ga_state(char: Character, enabled: bool) -> None:
+    """Synchronize COMM_TELNET_GA between the player session and descriptor."""
+
+    session = getattr(char, "desc", None)
+    connection = getattr(session, "connection", None)
+    if connection is not None and hasattr(connection, "set_go_ahead_enabled"):
+        connection.set_go_ahead_enabled(enabled)
+    if session is not None and hasattr(session, "go_ahead_enabled"):
+        session.go_ahead_enabled = bool(enabled)
+
+
+def _matches_toggle_prefix(value: str, expected: str) -> bool:
+    """Return ``True`` when *value* is a ROM-style prefix for *expected*."""
+
+    lowered = value.lower()
+    return expected.startswith(lowered)
 
 
 def _resolve_display_name(char: Character) -> str:

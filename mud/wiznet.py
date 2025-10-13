@@ -11,6 +11,9 @@ from typing import TYPE_CHECKING, Any
 from mud.utils.act import act_format
 
 
+ROM_NEWLINE = "\n\r"
+
+
 class WiznetFlag(IntFlag):
     """Wiznet flags mirroring ROM bit values."""
 
@@ -182,57 +185,57 @@ def cmd_wiznet(char: Any, args: str) -> str:
     if not args:
         if getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON:
             char.wiznet &= ~int(WiznetFlag.WIZ_ON)
-            return "Signing off of Wiznet."
+            return "Signing off of Wiznet." + ROM_NEWLINE
         else:
             char.wiznet |= int(WiznetFlag.WIZ_ON)
-            return "Welcome to Wiznet!"
+            return "Welcome to Wiznet!" + ROM_NEWLINE
 
     # Explicit on/off
     if args.lower().startswith("on"):
         char.wiznet |= int(WiznetFlag.WIZ_ON)
-        return "Welcome to Wiznet!"
+        return "Welcome to Wiznet!" + ROM_NEWLINE
 
     if args.lower().startswith("off"):
         char.wiznet &= ~int(WiznetFlag.WIZ_ON)
-        return "Signing off of Wiznet."
+        return "Signing off of Wiznet." + ROM_NEWLINE
 
     # Show status
     if args.lower().startswith("status"):
-        result = "Wiznet status:\n"
+        tokens: list[str] = []
 
         if not (getattr(char, "wiznet", 0) & WiznetFlag.WIZ_ON):
-            result += "off "
+            tokens.append("off")
 
         for entry in WIZNET_TABLE:
             if (getattr(char, "wiznet", 0) & int(entry["flag"])) and entry["name"] != "on":
-                result += f"{entry['name']} "
+                tokens.append(entry["name"])
 
-        return result.strip()
+        body = " ".join(tokens).strip()
+        return f"Wiznet status:{ROM_NEWLINE}{body}{ROM_NEWLINE}"
 
     # Show available options
     if args.lower().startswith("show"):
-        result = "Wiznet options available to you are:\n"
-
-        options = []
+        options: list[str] = []
         for entry in WIZNET_TABLE:
             if _get_trust(char) >= entry["level"]:
                 options.append(entry["name"])
 
-        return result + " ".join(options)
+        body = " ".join(options)
+        return f"Wiznet options available to you are:{ROM_NEWLINE}{body}{ROM_NEWLINE}"
 
     # Individual flag toggle
     flag_index = wiznet_lookup(args)
     if flag_index == -1:
-        return "No such option."
+        return "No such option." + ROM_NEWLINE
 
     entry = WIZNET_TABLE[flag_index]
     if _get_trust(char) < entry["level"]:
-        return "No such option."
+        return "No such option." + ROM_NEWLINE
 
     # Toggle the flag
     if getattr(char, "wiznet", 0) & int(entry["flag"]):
         char.wiznet &= ~int(entry["flag"])
-        return f"You will no longer see {entry['name']} on wiznet."
+        return f"You will no longer see {entry['name']} on wiznet." + ROM_NEWLINE
     else:
         char.wiznet |= int(entry["flag"])
-        return f"You will now see {entry['name']} on wiznet."
+        return f"You will now see {entry['name']} on wiznet." + ROM_NEWLINE
