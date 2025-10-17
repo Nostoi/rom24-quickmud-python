@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from mud.admin_logging.admin import log_orphan_help_request
 from mud.models.character import Character
@@ -10,7 +10,49 @@ from mud.models.help import HelpEntry, help_registry
 
 _logger = logging.getLogger(__name__)
 
-ROM_HELP_SEPARATOR = "\n============================================================\n\n"
+ROM_HELP_SEPARATOR = "\r\n============================================================\r\n\r\n"
+
+
+def _ensure_crlf(text: str) -> str:
+    """Normalise *text* to use CRLF line endings like ROM."""
+
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return normalized.replace("\n", "\r\n")
+
+
+def _rom_lines(lines: Sequence[str]) -> str:
+    """Return *lines* joined with ROM CRLF termination on each entry."""
+
+    segments: list[str] = []
+    for line in lines:
+        formatted = _ensure_crlf(line)
+        if not formatted.endswith("\r\n"):
+            formatted = f"{formatted}\r\n"
+        segments.append(formatted)
+    return "".join(segments)
+
+
+def _log_orphan_request(ch: Character, topic: str) -> bool:
+    """Return True if *topic* was logged or ignored, False when rebuked."""
+
+    if not topic:
+        return True
+
+    requester = getattr(ch, "name", "?") or "?"
+    if len(topic) > MAX_CMD_LEN:
+        trimmed = topic[: MAX_CMD_LEN - 1]
+        _logger.warning(
+            "Excessive help request length: %s requested %s.",
+            requester,
+            trimmed,
+        )
+        return False
+
+    try:
+        log_orphan_help_request(ch, topic)
+    except OSError:
+        _logger.exception("Failed to record orphaned help request for %s", requester)
+    return True
 
 
 def _normalize_topic(raw: str) -> str:
@@ -124,7 +166,7 @@ def _generate_command_help(term: str) -> str | None:
         lines.append("Usage: cast '<spell>' [target]")
         lines.append("Casting a learned spell consumes mana based on the spell level.")
 
-    return "\n".join(lines)
+    return _rom_lines(lines)
 
 
 def _suggest_command_topics(term: str) -> list[str]:
@@ -201,33 +243,28 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
             if text.startswith("."):
                 text = text[1:]
             sections.append(text)
-            chunks.append("\n".join(sections))
+            chunk = "\n".join(sections)
+            chunks.append(_ensure_crlf(chunk))
         return ROM_HELP_SEPARATOR.join(chunks)
 
     if blocked_entry is None:
         command_help = _generate_command_help(topic)
         if command_help:
+            if not _log_orphan_request(ch, topic):
+                return _rom_lines(["No help on that word.", "That was rude!"])
             return command_help
 
     if blocked_entry is None:
         suggestions = _suggest_command_topics(topic)
         if suggestions:
+            if not _log_orphan_request(ch, topic):
+                return _rom_lines(["No help on that word.", "That was rude!"])
             suggestion_text = ", ".join(suggestions)
-            return f"No help on that word. Try: {suggestion_text}"
+            return _rom_lines(["No help on that word.", f"Try: {suggestion_text}"])
 
-    message = "No help on that word."
+    lines = ["No help on that word."]
     if topic:
-        requester = getattr(ch, "name", "?") or "?"
-        if len(topic) > MAX_CMD_LEN:
-            trimmed = topic[: MAX_CMD_LEN - 1]
-            _logger.warning(
-                "Excessive help request length: %s requested %s.",
-                requester,
-                trimmed,
-            )
-            return message + "\nThat was rude!"
-        try:
-            log_orphan_help_request(ch, topic)
-        except OSError:
-            _logger.exception("Failed to record orphaned help request for %s", requester)
-    return message
+        if not _log_orphan_request(ch, topic):
+            lines.append("That was rude!")
+            return _rom_lines(lines)
+    return _rom_lines(lines)

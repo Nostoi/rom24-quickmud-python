@@ -229,6 +229,38 @@ def _check_channel_blockers(char: Character, toggle_flag: CommFlag) -> str | Non
     return None
 
 
+def do_auction(char: Character, args: str) -> str:
+    if "auction" in char.banned_channels:
+        return "You are banned from auction."
+
+    cleaned = args.strip()
+    if not cleaned:
+        if _has_comm_flag(char, CommFlag.NOAUCTION):
+            _clear_comm_flag(char, CommFlag.NOAUCTION)
+            return "{aAuction channel is now ON.{x"
+        _set_comm_flag(char, CommFlag.NOAUCTION)
+        return "{aAuction channel is now OFF.{x"
+
+    blocked = _check_channel_blockers(char, CommFlag.NOAUCTION)
+    if blocked:
+        return blocked
+
+    _clear_comm_flag(char, CommFlag.NOAUCTION)
+
+    def _should_receive(target: Character) -> bool:
+        if _has_comm_flag(target, CommFlag.NOAUCTION) or _has_comm_flag(target, CommFlag.QUIET):
+            return False
+        return True
+
+    broadcast_global(
+        f"{{a{char.name} auctions '{{A{cleaned}{{a'{{x",
+        channel="auction",
+        exclude=char,
+        should_send=_should_receive,
+    )
+    return f"{{aYou auction '{{A{cleaned}{{a'{{x"
+
+
 def do_gossip(char: Character, args: str) -> str:
     if "gossip" in char.banned_channels:
         return "You are banned from gossip."
@@ -475,6 +507,7 @@ def do_immtalk(char: Character, args: str) -> str:
             return False
         return True
 
-    message = f"[{char.name}]: {cleaned}"
-    broadcast_global(message, channel="immtalk", exclude=char, should_send=_should_receive)
-    return message
+    formatted = f"{{i[{{I{char.name}{{i]: {cleaned}{{x"
+    payload = f"{formatted}\n\r"
+    broadcast_global(payload, channel="immtalk", exclude=char, should_send=_should_receive)
+    return payload

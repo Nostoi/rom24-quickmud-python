@@ -233,7 +233,7 @@ def _broadcast_incog_message(char: Character, template: str) -> None:
 def _render_ban_listing() -> str:
     entries = bans.get_ban_entries()
     if not entries:
-        return "No sites banned at this time."
+        return "No sites banned at this time." + ROM_NEWLINE
     lines = ["Banned sites  level  type     status"]
     for entry in entries:
         pattern = entry.to_pattern()
@@ -245,7 +245,7 @@ def _render_ban_listing() -> str:
             type_text = "all"
         status = "perm" if entry.flags & BanFlag.PERMANENT else "temp"
         lines.append(f"{pattern:<12}    {entry.level:3d}  {type_text:<7}  {status}")
-    return "\n".join(lines)
+    return ROM_NEWLINE.join(lines) + ROM_NEWLINE
 
 
 def _apply_ban(char: Character, args: str, *, permanent: bool) -> str:
@@ -264,7 +264,7 @@ def _apply_ban(char: Character, args: str, *, permanent: bool) -> str:
     elif type_token.startswith("permit"):
         ban_type = BanFlag.PERMIT
     else:
-        return "Acceptable ban types are all, newbies, and permit."
+        return "Acceptable ban types are all, newbies, and permit." + ROM_NEWLINE
 
     host = host_token.strip()
     prefix = host.startswith("*")
@@ -274,7 +274,7 @@ def _apply_ban(char: Character, args: str, *, permanent: bool) -> str:
         core = core[:-1]
     core = core.strip()
     if not core:
-        return "You have to ban SOMETHING."
+        return "You have to ban SOMETHING." + ROM_NEWLINE
 
     trust = _get_trust(char)
     try:
@@ -286,13 +286,13 @@ def _apply_ban(char: Character, args: str, *, permanent: bool) -> str:
             trust_level=trust,
         )
     except BanPermissionError:
-        return "That ban was set by a higher power."
+        return "That ban was set by a higher power." + ROM_NEWLINE
 
     try:
         bans.save_bans_file()
     except Exception:
         pass
-    return f"{core} has been banned."
+    return f"{core} has been banned." + ROM_NEWLINE
 
 
 def cmd_ban(char: Character, args: str) -> str:
@@ -306,22 +306,25 @@ def cmd_permban(char: Character, args: str) -> str:
 def cmd_allow(char: Character, args: str) -> str:
     target = args.strip().lower()
     if not target:
-        return "Remove which site from the ban list?"
+        return "Remove which site from the ban list?" + ROM_NEWLINE
+
+    if "*" in target:
+        return "Site is not banned." + ROM_NEWLINE
 
     trust = _get_trust(char)
     try:
         removed = bans.remove_banned_host(target, trust_level=trust)
     except BanPermissionError:
-        return "You are not powerful enough to lift that ban."
+        return "You are not powerful enough to lift that ban." + ROM_NEWLINE
 
     if not removed:
-        return "Site is not banned."
+        return "Site is not banned." + ROM_NEWLINE
 
     try:
         bans.save_bans_file()
     except Exception:
         pass
-    return f"Ban on {target} lifted."
+    return f"Ban on {target} lifted." + ROM_NEWLINE
 
 
 def cmd_unban(char: Character, args: str) -> str:

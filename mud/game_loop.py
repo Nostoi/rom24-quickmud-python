@@ -895,31 +895,31 @@ def weather_tick() -> None:
             weather.mmhg < 1010 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.CLOUDY
-            messages.append("The sky is getting cloudy.")
+            messages.append("The sky is getting cloudy.\r\n")
     elif weather.sky == SkyState.CLOUDY:
         if weather.mmhg < 970 or (
             weather.mmhg < 990 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.RAINING
-            messages.append("It starts to rain.")
+            messages.append("It starts to rain.\r\n")
         elif weather.mmhg > 1030 and rng_mm.number_bits(2) == 0:
             weather.sky = SkyState.CLOUDLESS
-            messages.append("The clouds disappear.")
+            messages.append("The clouds disappear.\r\n")
     elif weather.sky == SkyState.RAINING:
         if weather.mmhg < 970 and rng_mm.number_bits(2) == 0:
             weather.sky = SkyState.LIGHTNING
-            messages.append("Lightning flashes in the sky.")
+            messages.append("Lightning flashes in the sky.\r\n")
         elif weather.mmhg > 1030 or (
             weather.mmhg > 1010 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.CLOUDY
-            messages.append("The rain stopped.")
+            messages.append("The rain stopped.\r\n")
     elif weather.sky == SkyState.LIGHTNING:
         if weather.mmhg > 1010 or (
             weather.mmhg > 990 and rng_mm.number_bits(2) == 0
         ):
             weather.sky = SkyState.RAINING
-            messages.append("The lightning has stopped.")
+            messages.append("The lightning has stopped.\r\n")
     else:
         weather.sky = SkyState.CLOUDLESS
 
@@ -936,7 +936,11 @@ def time_tick() -> None:
         except Exception:
             pass
     for message in messages:
-        broadcast_global(message, channel="info")
+        broadcast_global(
+            message,
+            channel="weather",
+            should_send=_should_receive_weather,
+        )
 
 
 _pulse_counter = 0

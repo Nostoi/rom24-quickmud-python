@@ -1,6 +1,6 @@
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import OBJ_VNUM_WHISTLE, CommFlag, PlayerFlag, Position
+from mud.models.constants import OBJ_VNUM_WHISTLE, CommFlag, PlayerFlag, Position, Sex
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -16,6 +16,7 @@ from mud.spec_funs import (
     spec_cast_cleric,
     spec_cast_mage,
     spec_fun_registry,
+    spec_thief,
 )
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world, world_state
@@ -464,4 +465,116 @@ def test_spec_cast_mage_uses_rom_spell_table() -> None:
         mob_registry.pop(mage_proto.vnum, None)
         room.people.remove(mage)
         room.remove_character(target)
+        character_registry.clear()
+
+
+def test_spec_thief_steals_from_sleeping_player(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7200, name="Thieves' Den")
+    sleeper = Character(name="Sleeper", level=25)
+    sleeper.is_npc = False
+    sleeper.position = int(Position.SLEEPING)
+    sleeper.gold = 1000
+    sleeper.silver = 2000
+    sleeper.messages = []
+    room.add_character(sleeper)
+
+    thief_proto = MobIndex(vnum=7201, short_descr="a nimble cutpurse", level=12)
+    thief_proto.spec_fun = "spec_thief"
+    mob_registry[thief_proto.vnum] = thief_proto
+
+    thief = MobInstance.from_prototype(thief_proto)
+    thief.spec_fun = "spec_thief"
+    thief.position = int(Position.STANDING)
+    thief.gold = 10
+    thief.silver = 5
+    thief.messages = []
+    room.add_mob(thief)
+
+    rolls = iter([15, 3])
+
+    monkeypatch.setattr(rng_mm, "number_bits", lambda _: 0)
+
+    def fake_number_range(start: int, end: int) -> int:
+        try:
+            return next(rolls)
+        except StopIteration:
+            return end
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    try:
+        result = spec_thief(thief)
+        assert result is True
+        assert thief.gold == 10 + 60
+        assert thief.silver == 5 + 60
+        assert sleeper.gold == 1000 - 60
+        assert sleeper.silver == 2000 - 60
+        assert sleeper.messages == []
+    finally:
+        room.people.remove(thief)
+        room.remove_character(sleeper)
+        mob_registry.pop(thief_proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_thief_fails_against_awake_player(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7300, name="Market Square")
+    victim = Character(name="Watcher", level=20)
+    victim.is_npc = False
+    victim.position = int(Position.STANDING)
+    victim.gold = 500
+    victim.silver = 800
+    victim.messages = []
+    victim.sex = int(Sex.MALE)
+    room.add_character(victim)
+
+    observer = Character(name="Bystander", level=10)
+    observer.is_npc = False
+    observer.position = int(Position.STANDING)
+    observer.messages = []
+    room.add_character(observer)
+
+    thief_proto = MobIndex(vnum=7301, short_descr="a lurking thief", level=14)
+    thief_proto.spec_fun = "spec_thief"
+    mob_registry[thief_proto.vnum] = thief_proto
+
+    thief = MobInstance.from_prototype(thief_proto)
+    thief.spec_fun = "spec_thief"
+    thief.position = int(Position.STANDING)
+    thief.gold = 40
+    thief.silver = 75
+    thief.messages = []
+    room.add_mob(thief)
+
+    monkeypatch.setattr(rng_mm, "number_bits", lambda _: 0)
+    rolls = iter([0])
+
+    def fake_number_range(start: int, end: int) -> int:
+        try:
+            return next(rolls)
+        except StopIteration:
+            return end
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    try:
+        result = spec_thief(thief)
+        assert result is True
+        assert thief.gold == 40
+        assert thief.silver == 75
+        assert victim.gold == 500
+        assert victim.silver == 800
+        assert victim.messages == ["You discover a lurking thief's hands in your wallet!"]
+        assert observer.messages == [
+            "Watcher discovers a lurking thief's hands in his wallet!"
+        ]
+    finally:
+        room.people.remove(thief)
+        room.remove_character(victim)
+        room.remove_character(observer)
+        mob_registry.pop(thief_proto.vnum, None)
         character_registry.clear()

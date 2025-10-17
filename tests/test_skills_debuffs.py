@@ -424,3 +424,35 @@ def test_plague_respects_saves_and_undead(monkeypatch: pytest.MonkeyPatch) -> No
     assert "plague" not in target.spell_effects
     assert caster.messages[-1] == "Ghoul seems to be unaffected."
     assert target.messages == []
+
+
+def test_sleep_level_gate_is_silent_failure() -> None:
+    caster = _make_character("Illusionist", level=18)
+    target = _make_character("Veteran", level=25)
+
+    caster.messages.clear()
+    target.messages.clear()
+
+    result = skill_handlers.sleep(caster, target)
+
+    assert result is False
+    assert target.spell_effects.get("sleep") is None
+    assert not caster.messages
+    assert not target.messages
+
+
+def test_sleep_save_is_silent_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = _make_character("Enchanter", level=32)
+    target = _make_character("Scout", level=30)
+
+    monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, victim, dam: True)
+
+    caster.messages.clear()
+    target.messages.clear()
+
+    result = skill_handlers.sleep(caster, target)
+
+    assert result is False
+    assert target.spell_effects.get("sleep") is None
+    assert not caster.messages
+    assert not target.messages

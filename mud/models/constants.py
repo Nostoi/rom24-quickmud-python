@@ -34,6 +34,7 @@ OBJ_VNUM_MUSHROOM = 20
 OBJ_VNUM_LIGHT_BALL = 21
 OBJ_VNUM_SPRING = 22
 OBJ_VNUM_DISC = 23
+OBJ_VNUM_PORTAL = 25
 OBJ_VNUM_ROSE = 1001
 
 # School equipment (OBJ_VNUM_SCHOOL_*) used during character creation (merc.h)

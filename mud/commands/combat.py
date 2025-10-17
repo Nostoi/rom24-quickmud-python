@@ -1,36 +1,124 @@
 import mud.skills.handlers as skill_handlers
 from mud import mobprog
-from mud.characters import is_same_group
+from mud.characters import is_clan_member, is_same_group
 from mud.combat import attack_round, multi_hit
-from mud.combat.engine import apply_damage, get_wielded_weapon, stop_fighting
+from mud.combat.engine import apply_damage, check_killer, get_wielded_weapon, stop_fighting
 from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
+    ActFlag,
     AffectFlag,
     DamageType,
     OffFlag,
+    PlayerFlag,
     Position,
+    RoomFlag,
     Stat,
+    LEVEL_IMMORTAL,
     convert_flags_from_letters,
 )
 from mud.skills import skill_registry
 from mud.utils import rng_mm
 
 
+def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
+    victim_room = getattr(victim, "room", None)
+    attacker_room = getattr(attacker, "room", None)
+    if victim_room is None or attacker_room is None:
+        return "They aren't here."
+
+    if getattr(victim, "fighting", None) is attacker or victim is attacker:
+        return None
+
+    if (
+        hasattr(attacker, "is_immortal")
+        and attacker.is_immortal()
+        and skill_handlers._coerce_int(getattr(attacker, "level", 0)) > LEVEL_IMMORTAL
+    ):
+        return None
+
+    if skill_handlers._is_charmed(attacker) and getattr(attacker, "master", None) is victim:
+        victim_name = getattr(victim, "name", None) or "Someone"
+        return f"{victim_name} is your beloved master."
+
+    victim_is_npc = bool(getattr(victim, "is_npc", True))
+
+    if victim_is_npc:
+        room_flags = skill_handlers._get_room_flags(victim_room)
+        if room_flags & int(RoomFlag.ROOM_SAFE):
+            return "Not in this room."
+
+        if skill_handlers._has_shop(victim):
+            return "The shopkeeper wouldn't like that."
+
+        act_flags = skill_handlers._get_act_flags(victim)
+        if act_flags & (ActFlag.TRAIN | ActFlag.PRACTICE | ActFlag.IS_HEALER | ActFlag.IS_CHANGER):
+            return "I don't think Mota would approve."
+
+        if not getattr(attacker, "is_npc", False):
+            if act_flags & ActFlag.PET:
+                victim_name = getattr(victim, "name", "they") or "they"
+                return f"But {victim_name} looks so cute and cuddly..."
+            if skill_handlers._is_charmed(victim) and getattr(victim, "master", None) is not attacker:
+                return "You don't own that monster."
+    else:
+        if getattr(attacker, "is_npc", False):
+            if skill_handlers._is_charmed(attacker):
+                master = getattr(attacker, "master", None)
+                if master is not None and getattr(master, "fighting", None) is not victim:
+                    return "Players are your friends!"
+            if skill_handlers._get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
+                return "Not in this room."
+        else:
+            if not is_clan_member(attacker):
+                return "Join a clan if you want to kill players."
+
+            player_flags = skill_handlers._get_player_flags(victim)
+            if player_flags & (PlayerFlag.KILLER | PlayerFlag.THIEF):
+                return None
+
+            if not is_clan_member(victim):
+                return "They aren't in a clan, leave them alone."
+
+            attacker_level = skill_handlers._coerce_int(getattr(attacker, "level", 0))
+            victim_level = skill_handlers._coerce_int(getattr(victim, "level", 0))
+            if attacker_level > victim_level + 8:
+                return "Pick on someone your own size."
+
+    return None
+
+
 def do_kill(char: Character, args: str) -> str:
-    if not args:
+    target_name = (args or "").strip()
+    if not target_name:
         return "Kill whom?"
-    target_name = args.lower()
     if not getattr(char, "room", None):
         return "You are nowhere."
-    for victim in list(char.room.people):
-        if victim is char:
-            continue
-        if victim.name and target_name in victim.name.lower():
-            return attack_round(char, victim)
-    return "They aren't here."
+
+    victim = _find_room_target(char, target_name)
+    if victim is None:
+        return "They aren't here."
+
+    if victim is char:
+        char.send_to_char("You hit yourself.  Ouch!")
+        multi_hit(char, char)
+        return "You hit yourself.  Ouch!"
+
+    safety_message = _kill_safety_message(char, victim)
+    if safety_message:
+        return safety_message
+
+    if getattr(victim, "fighting", None) is not None and not is_same_group(char, victim.fighting):
+        return "Kill stealing is not permitted."
+
+    if getattr(char, "position", Position.STANDING) == Position.FIGHTING:
+        return "You do the best you can!"
+
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+    check_killer(char, victim)
+    return attack_round(char, victim)
 
 
 def do_kick(char: Character, args: str) -> str:

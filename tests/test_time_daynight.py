@@ -2,6 +2,8 @@ from mud import config as mud_config
 from mud import game_loop
 from mud.config import get_pulse_tick
 from mud.models.character import Character, character_registry
+from mud.models.constants import Position, RoomFlag
+from mud.models.room import Room
 from mud.time import Sunlight, time_info
 
 
@@ -24,6 +26,8 @@ def teardown_function(func):
 
 def test_time_tick_advances_hour_and_triggers_sunrise():
     ch = Character(name="Tester")
+    room = Room(vnum=100)
+    room.add_character(ch)
     character_registry.append(ch)
     time_info.hour = 4
     # Advance exactly one ROM hour (PULSE_TICK pulses)
@@ -34,15 +38,25 @@ def test_time_tick_advances_hour_and_triggers_sunrise():
     assert "The day has begun." in ch.messages
 
 
-def test_sunrise_broadcasts_to_all_characters():
-    ch1 = Character(name="A")
-    ch2 = Character(name="B")
-    character_registry.extend([ch1, ch2])
+def test_sunrise_broadcast_targets_awake_outdoor_characters():
+    outdoor_room = Room(vnum=101)
+    indoor_room = Room(vnum=102, room_flags=int(RoomFlag.ROOM_INDOORS))
+
+    awake_outdoor = Character(name="Awake")
+    indoor_char = Character(name="Indoor")
+    sleeping_outdoor = Character(name="Sleeper", position=Position.SLEEPING)
+
+    outdoor_room.add_character(awake_outdoor)
+    outdoor_room.add_character(sleeping_outdoor)
+    indoor_room.add_character(indoor_char)
+
+    character_registry.extend([awake_outdoor, indoor_char, sleeping_outdoor])
     time_info.hour = 4
     for _ in range(get_pulse_tick()):
         game_loop.game_tick()
-    assert "The day has begun." in ch1.messages
-    assert "The day has begun." in ch2.messages
+    assert "The day has begun." in awake_outdoor.messages
+    assert "The day has begun." not in indoor_char.messages
+    assert "The day has begun." not in sleeping_outdoor.messages
 
 
 def test_rom_sunlight_transitions():
@@ -102,6 +116,8 @@ def test_time_scale_accelerates_tick(monkeypatch):
     assert mud_config.get_pulse_tick() == 1
 
     ch = Character(name="Scaler")
+    room = Room(vnum=103)
+    room.add_character(ch)
     character_registry.append(ch)
     game_loop.game_tick()  # one pulse with scaling
     assert time_info.hour == 5

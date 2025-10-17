@@ -197,6 +197,90 @@ def test_infravision_applies_affect_and_messages() -> None:
     assert caster.messages[-1] == "Scout already has infravision."
 
 
+def test_protection_evil_applies_save_bonus() -> None:
+    caster = Character(name="Priest", level=20, is_npc=False)
+    target = Character(name="Knight", level=18, is_npc=False)
+
+    assert skill_handlers.protection_evil(caster, target) is True
+
+    effect = target.spell_effects.get("protection evil")
+    assert effect is not None
+    assert effect.duration == 24
+    assert effect.level == caster.level
+    assert effect.saving_throw_mod == -1
+    assert effect.affect_flag == AffectFlag.PROTECT_EVIL
+    assert effect.wear_off_message == "You feel less protected."
+    assert target.has_affect(AffectFlag.PROTECT_EVIL)
+    assert target.saving_throw == -1
+    assert target.messages[-1] == "You feel holy and pure."
+    assert caster.messages[-1] == "Knight is protected from evil."
+
+    caster.messages.clear()
+    assert skill_handlers.protection_evil(caster, target) is False
+    assert caster.messages[-1] == "Knight is already protected."
+
+    target.remove_spell_effect("protection evil")
+    assert not target.has_affect(AffectFlag.PROTECT_EVIL)
+    assert target.saving_throw == 0
+    target.messages.clear()
+    caster.messages.clear()
+
+    target.apply_spell_effect(
+        SpellEffect(
+            name="protection good",
+            duration=24,
+            level=target.level,
+            saving_throw_mod=-1,
+            affect_flag=AffectFlag.PROTECT_GOOD,
+        )
+    )
+
+    assert skill_handlers.protection_evil(caster, target) is False
+    assert caster.messages[-1] == "Knight is already protected."
+
+
+def test_protection_good_applies_save_bonus() -> None:
+    caster = Character(name="DarkCleric", level=22, is_npc=False)
+    target = Character(name="Defender", level=20, is_npc=False)
+
+    target.apply_spell_effect(
+        SpellEffect(
+            name="protection evil",
+            duration=24,
+            level=target.level,
+            saving_throw_mod=-1,
+            affect_flag=AffectFlag.PROTECT_EVIL,
+        )
+    )
+
+    assert skill_handlers.protection_good(caster, target) is False
+    assert caster.messages[-1] == "Defender is already protected."
+
+    target.remove_spell_effect("protection evil")
+    assert not target.has_affect(AffectFlag.PROTECT_EVIL)
+    assert target.saving_throw == 0
+    caster.messages.clear()
+    target.messages.clear()
+
+    assert skill_handlers.protection_good(caster, target) is True
+
+    effect = target.spell_effects.get("protection good")
+    assert effect is not None
+    assert effect.duration == 24
+    assert effect.level == caster.level
+    assert effect.saving_throw_mod == -1
+    assert effect.affect_flag == AffectFlag.PROTECT_GOOD
+    assert effect.wear_off_message == "You feel less protected."
+    assert target.has_affect(AffectFlag.PROTECT_GOOD)
+    assert target.saving_throw == -1
+    assert target.messages[-1] == "You feel aligned with darkness."
+    assert caster.messages[-1] == "Defender is protected from good."
+
+    target.messages.clear()
+    assert skill_handlers.protection_good(target) is False
+    assert target.messages[-1] == "You are already protected."
+
+
 def test_stone_skin_applies_ac_and_messages() -> None:
     caster = Character(name="Geomancer", level=32, is_npc=False)
     target = Character(name="Sentinel", level=28, is_npc=False)

@@ -3,8 +3,10 @@ from __future__ import annotations
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 from types import SimpleNamespace
+from typing import Any
 
 from mud.affects.saves import check_dispel, saves_dispel, saves_spell
+from mud.advancement import gain_exp
 from mud.combat.engine import (
     apply_damage,
     attack_round,
@@ -41,6 +43,7 @@ from mud.models.constants import (
     ImmFlag,
     ItemType,
     LIQUID_TABLE,
+    MAX_LEVEL,
     Sector,
     PlayerFlag,
     Position,
@@ -56,6 +59,7 @@ from mud.models.constants import (
     LEVEL_IMMORTAL,
     LIQ_WATER,
     OBJ_VNUM_DISC,
+    OBJ_VNUM_PORTAL,
     OBJ_VNUM_LIGHT_BALL,
     OBJ_VNUM_MUSHROOM,
     OBJ_VNUM_ROSE,
@@ -70,7 +74,7 @@ from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.world.look import look
 from mud.world.movement import _get_random_room
-from mud.world.vision import can_see_room
+from mud.world.vision import can_see_room, room_is_dark
 
 from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
 from mud.skills.registry import check_improve
@@ -87,6 +91,9 @@ _TO_RESIST = 3
 _TO_VULN = 4
 _TO_WEAPON = 5
 _APPLY_NONE = 0
+_APPLY_AC = 17
+_APPLY_HITROLL = 18
+_APPLY_DAMROLL = 19
 _OBJECT_INVIS_WEAR_OFF = "$p fades into view."
 _OBJECT_FIREPROOF_WEAR_OFF = "$p's protective aura fades."
 
@@ -499,6 +506,202 @@ def _coerce_int(value: object) -> int:
         return 0
 
 
+def _resolve_trust(char: Character) -> int:
+    """Return ROM-style trust falling back to level when unset."""
+
+    trust = _coerce_int(getattr(char, "trust", 0))
+    if trust > 0:
+        return trust
+    return max(_coerce_int(getattr(char, "level", 0)), 0)
+
+
+def _is_immortal(char: Character) -> bool:
+    """Best-effort immortal probe for parity checks."""
+
+    checker = getattr(char, "is_immortal", None)
+    if callable(checker):
+        try:
+            return bool(checker())
+        except Exception:  # pragma: no cover - defensive guard
+            return False
+    return _resolve_trust(char) >= LEVEL_IMMORTAL
+
+
+def _room_accessible_without_sight(caster: Character, room: Any) -> bool:
+    """Replicate ROM ``can_see_room`` gating without blindness/darkness checks."""
+
+    if room is None:
+        return False
+
+    flags = _coerce_int(getattr(room, "room_flags", 0))
+    trust = _resolve_trust(caster)
+    is_immortal = _is_immortal(caster)
+
+    if flags & int(RoomFlag.ROOM_IMP_ONLY) and trust < MAX_LEVEL:
+        return False
+    if flags & int(RoomFlag.ROOM_GODS_ONLY) and not is_immortal:
+        return False
+    if flags & int(RoomFlag.ROOM_HEROES_ONLY) and not is_immortal:
+        return False
+    if flags & int(RoomFlag.ROOM_NEWBIES_ONLY) and trust > 5 and not is_immortal:
+        return False
+
+    room_clan = _coerce_int(getattr(room, "clan", 0))
+    caster_clan = _coerce_int(getattr(caster, "clan", 0))
+    if room_clan and not is_immortal and room_clan != caster_clan:
+        return False
+
+    return True
+
+
+def _clone_affect_entry(entry: Any) -> Affect | None:
+    """Return a copy of an affect-like entry without mutating the source."""
+
+    if isinstance(entry, Affect):
+        return Affect(
+            where=_coerce_int(getattr(entry, "where", _TO_OBJECT)),
+            type=_coerce_int(getattr(entry, "type", 0)),
+            level=_coerce_int(getattr(entry, "level", 0)),
+            duration=_coerce_int(getattr(entry, "duration", 0)),
+            location=_coerce_int(getattr(entry, "location", _APPLY_NONE)),
+            modifier=_coerce_int(getattr(entry, "modifier", 0)),
+            bitvector=_coerce_int(getattr(entry, "bitvector", 0)),
+        )
+    if isinstance(entry, dict):
+        return Affect(
+            where=_coerce_int(entry.get("where", _TO_OBJECT)),
+            type=_coerce_int(entry.get("type", 0)),
+            level=_coerce_int(entry.get("level", 0)),
+            duration=_coerce_int(entry.get("duration", 0)),
+            location=_coerce_int(entry.get("location", _APPLY_NONE)),
+            modifier=_coerce_int(entry.get("modifier", 0)),
+            bitvector=_coerce_int(entry.get("bitvector", 0)),
+        )
+    return None
+
+
+def _collect_affects(source: Any, *, clone: bool) -> list[Affect]:
+    """Gather affect entries from a source, optionally cloning for safe mutation."""
+
+    affects: list[Affect] = []
+    if source is None:
+        return affects
+
+    raw_affects = getattr(source, "affected", None)
+    if isinstance(raw_affects, list):
+        for index, entry in enumerate(list(raw_affects)):
+            if isinstance(entry, Affect):
+                if clone:
+                    clone_entry = _clone_affect_entry(entry)
+                    if clone_entry is not None:
+                        affects.append(clone_entry)
+                else:
+                    affects.append(entry)
+            elif isinstance(entry, dict):
+                converted = _clone_affect_entry(entry)
+                if converted is None:
+                    continue
+                if clone:
+                    affects.append(converted)
+                else:
+                    raw_affects[index] = converted
+                    affects.append(converted)
+
+    proto_affects = getattr(source, "affects", None)
+    if isinstance(proto_affects, list):
+        for entry in proto_affects:
+            converted = _clone_affect_entry(entry)
+            if converted is not None:
+                affects.append(converted)
+
+    return affects
+
+
+def _copy_base_affects_if_needed(obj: Object | ObjectData, proto: Any) -> None:
+    """Copy prototype affects onto an object the first time it is enchanted."""
+
+    if getattr(obj, "enchanted", False):
+        return
+
+    base_affects = _collect_affects(proto, clone=True)
+    current_affects = _collect_affects(obj, clone=False)
+
+    if base_affects or current_affects:
+        setattr(obj, "affected", base_affects + current_affects)
+    else:
+        setattr(obj, "affected", [])
+
+    obj.enchanted = True
+
+
+def _object_effective_extra_flags(obj: Object | ObjectData, proto: Any) -> int:
+    """Return combined extra flags from instance and prototype."""
+
+    base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+    proto_flags = 0
+    if proto is not None:
+        proto_flags = _coerce_int(getattr(proto, "extra_flags", 0))
+    return base_flags | proto_flags
+
+
+def _extract_runtime_object(obj: Object | ObjectData) -> None:
+    """Remove an object from the world, handling both modern and legacy models."""
+
+    if isinstance(obj, ObjectData):
+        from mud.game_loop import _extract_obj as _legacy_extract_obj  # late import to avoid cycles
+
+        _legacy_extract_obj(obj)
+        return
+
+    def _prune_from_container(container: Any) -> None:
+        contents = getattr(container, "contained_items", None)
+        if not isinstance(contents, list):
+            return
+        if obj in contents:
+            contents.remove(obj)
+        for child in list(contents):
+            _prune_from_container(child)
+
+    location = getattr(obj, "location", None)
+    if location is not None:
+        contents = getattr(location, "contents", None)
+        if isinstance(contents, list) and obj in contents:
+            contents.remove(obj)
+        if getattr(obj, "location", None) is location:
+            obj.location = None
+
+    for character in list(character_registry):
+        inventory = getattr(character, "inventory", None)
+        removed = False
+        if isinstance(inventory, list) and obj in inventory:
+            character.remove_object(obj)
+            removed = True
+        if not removed:
+            equipment = getattr(character, "equipment", None)
+            if isinstance(equipment, dict):
+                for slot, equipped in list(equipment.items()):
+                    if equipped is obj:
+                        character.remove_object(obj)
+                        removed = True
+                        break
+        for item in list(getattr(character, "inventory", []) or []):
+            _prune_from_container(item)
+        for item in list(getattr(character, "equipment", {}).values()):
+            if item is not None:
+                _prune_from_container(item)
+
+    for room in list(room_registry.values()):
+        contents = getattr(room, "contents", None)
+        if not isinstance(contents, list):
+            continue
+        if obj in contents:
+            contents.remove(obj)
+        for item in list(contents):
+            _prune_from_container(item)
+
+    contained = getattr(obj, "contained_items", None)
+    if isinstance(contained, list):
+        contained.clear()
 def _resolve_item_type(value: object) -> ItemType | None:
     """Translate assorted item type representations to ``ItemType``."""
 
@@ -553,6 +756,283 @@ def _character_name(character: Character | None) -> str:
     if isinstance(short_descr, str) and short_descr.strip():
         return short_descr.strip()
     return "Someone"
+
+
+def _character_has_affect(character: Character | None, flag: AffectFlag) -> bool:
+    """Return True when ``character`` carries the provided affect flag."""
+
+    if character is None:
+        return False
+    checker = getattr(character, "has_affect", None)
+    if callable(checker):
+        try:
+            return bool(checker(flag))
+        except Exception:  # pragma: no cover - parity guard
+            return False
+    affected = getattr(character, "affected_by", 0)
+    try:
+        return bool(int(affected) & int(flag))
+    except Exception:  # pragma: no cover - invalid flags fall back to False
+        return False
+
+
+def _effective_extra_flags(obj: Object | ObjectData | None) -> int:
+    """Return runtime extra flags including prototype fallbacks."""
+
+    if obj is None:
+        return 0
+    flags = _coerce_int(getattr(obj, "extra_flags", 0))
+    if flags:
+        return flags
+    proto = getattr(obj, "prototype", None)
+    if proto is not None:
+        flags = _coerce_int(getattr(proto, "extra_flags", 0))
+    return flags
+
+
+def _object_level(obj: Object | ObjectData | None) -> int:
+    """Return the object's effective level mirroring ROM lookups."""
+
+    if obj is None:
+        return 0
+    try:
+        level = int(getattr(obj, "level", 0) or 0)
+    except (TypeError, ValueError):
+        level = 0
+    if level > 0:
+        return level
+    proto = getattr(obj, "prototype", None)
+    try:
+        return max(0, int(getattr(proto, "level", 0) or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _is_name_match(search: str, candidate: str | None) -> bool:
+    """Return True when ``search`` matches ``candidate`` per ROM ``is_name``."""
+
+    if candidate is None:
+        return False
+    search_text = (search or "").strip().lower()
+    candidate_text = candidate.strip().lower()
+    if not search_text or not candidate_text:
+        return False
+    if candidate_text.startswith(search_text):
+        return True
+    parts = [chunk for chunk in search_text.split() if chunk]
+    if not parts:
+        return False
+    candidate_words = [chunk for chunk in candidate_text.split() if chunk]
+    if not candidate_words:
+        return False
+    for part in parts:
+        if not any(word.startswith(part) for word in candidate_words):
+            return False
+    return True
+
+
+def _object_name_matches(obj: Object | ObjectData, search: str) -> bool:
+    """Return True when any runtime or prototype keyword matches ``search``."""
+
+    candidates: list[str] = []
+    for attr_name in ("name", "short_descr"):
+        value = getattr(obj, attr_name, None)
+        if isinstance(value, str) and value.strip():
+            candidates.append(value)
+    proto = getattr(obj, "prototype", None)
+    if proto is not None:
+        for attr_name in ("name", "short_descr"):
+            value = getattr(proto, attr_name, None)
+            if isinstance(value, str) and value.strip():
+                candidates.append(value)
+    return any(_is_name_match(search, candidate) for candidate in candidates)
+
+
+def _iterate_world_objects():
+    """Yield (object, holder) pairs mirroring ROM ``object_list`` traversal."""
+
+    seen: set[int] = set()
+
+    def _walk(obj: Object | ObjectData, holder: object):
+        ident = id(obj)
+        if ident in seen:
+            return
+        seen.add(ident)
+        yield obj, holder
+        children: list[Object | ObjectData] = []
+        contained = getattr(obj, "contained_items", None)
+        if isinstance(contained, list):
+            children.extend(contained)
+        contains = getattr(obj, "contains", None)
+        if isinstance(contains, list):
+            children.extend(contains)
+        for child in children:
+            yield from _walk(child, holder)
+
+    for room in list(room_registry.values()):
+        contents = getattr(room, "contents", None)
+        if not isinstance(contents, list):
+            continue
+        for obj in list(contents):
+            yield from _walk(obj, room)
+
+    for character in list(character_registry):
+        inventory = getattr(character, "inventory", None)
+        if isinstance(inventory, list):
+            for obj in list(inventory):
+                yield from _walk(obj, character)
+        equipment = getattr(character, "equipment", None)
+        if isinstance(equipment, dict):
+            for obj in list(equipment.values()):
+                if obj is not None:
+                    yield from _walk(obj, character)
+
+
+def _can_see_object(observer: Character, obj: Object | ObjectData) -> bool:
+    """Replicate ROM ``can_see_obj`` for locate object visibility filtering."""
+
+    if observer is None or obj is None:
+        return False
+    if not getattr(observer, "is_npc", False):
+        act_flags = _coerce_int(getattr(observer, "act", 0))
+        if act_flags & int(PlayerFlag.HOLYLIGHT):
+            return True
+    extra_flags = _effective_extra_flags(obj)
+    if extra_flags & int(ExtraFlag.VIS_DEATH):
+        return False
+    if _character_has_affect(observer, AffectFlag.BLIND):
+        item_type = _resolve_item_type(getattr(obj, "item_type", None))
+        if item_type is None:
+            proto = getattr(obj, "prototype", None)
+            item_type = _resolve_item_type(getattr(proto, "item_type", None))
+        if item_type != ItemType.POTION:
+            return False
+    values = _normalize_value_list(obj, minimum=3)
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None:
+        proto = getattr(obj, "prototype", None)
+        item_type = _resolve_item_type(getattr(proto, "item_type", None))
+    if item_type == ItemType.LIGHT and _coerce_int(values[2]) != 0:
+        return True
+    if extra_flags & int(ExtraFlag.INVIS) and not _character_has_affect(observer, AffectFlag.DETECT_INVIS):
+        return False
+    if extra_flags & int(ExtraFlag.GLOW):
+        return True
+    room = getattr(observer, "room", None)
+    if room is not None and room_is_dark(room) and not _character_has_affect(observer, AffectFlag.DARK_VISION):
+        return False
+    return True
+
+
+def _can_see_locate_carrier(observer: Character, carrier: Character | None) -> bool:
+    """Replicate ROM ``can_see`` semantics for locate object carrier messaging."""
+
+    if observer is None or carrier is None:
+        return False
+    if observer is carrier:
+        return True
+
+    try:
+        trust = int(getattr(observer, "trust", 0) or 0)
+    except (TypeError, ValueError):
+        trust = 0
+    if trust <= 0:
+        try:
+            trust = int(getattr(observer, "level", 0) or 0)
+        except (TypeError, ValueError):
+            trust = 0
+
+    try:
+        invis_level = int(getattr(carrier, "invis_level", 0) or 0)
+    except (TypeError, ValueError):
+        invis_level = 0
+    if trust < invis_level:
+        return False
+
+    observer_room = getattr(observer, "room", None)
+    carrier_room = getattr(carrier, "room", None)
+    try:
+        incog_level = int(getattr(carrier, "incog_level", 0) or 0)
+    except (TypeError, ValueError):
+        incog_level = 0
+    if incog_level and observer_room is not carrier_room and trust < incog_level:
+        return False
+
+    if not getattr(observer, "is_npc", False):
+        act_flags = _coerce_int(getattr(observer, "act", 0))
+        if act_flags & int(PlayerFlag.HOLYLIGHT):
+            return True
+    else:
+        immortal_checker = getattr(observer, "is_immortal", None)
+        if callable(immortal_checker):
+            try:
+                if immortal_checker():
+                    return True
+            except Exception:  # pragma: no cover - parity guard
+                pass
+
+    if _character_has_affect(observer, AffectFlag.BLIND):
+        return False
+
+    if observer_room is not None and room_is_dark(observer_room):
+        if not (
+            _character_has_affect(observer, AffectFlag.INFRARED)
+            or _character_has_affect(observer, AffectFlag.DARK_VISION)
+        ):
+            immortal_checker = getattr(observer, "is_immortal", None)
+            immortal = False
+            if callable(immortal_checker):
+                try:
+                    immortal = bool(immortal_checker())
+                except Exception:  # pragma: no cover - parity guard
+                    immortal = False
+            else:
+                immortal = bool(immortal_checker)
+            if not immortal:
+                return False
+
+    if _character_has_affect(carrier, AffectFlag.INVISIBLE) and not _character_has_affect(observer, AffectFlag.DETECT_INVIS):
+        return False
+
+    if (
+        _character_has_affect(carrier, AffectFlag.SNEAK)
+        and getattr(carrier, "fighting", None) is None
+        and not _character_has_affect(observer, AffectFlag.DETECT_HIDDEN)
+    ):
+        return False
+
+    if (
+        _character_has_affect(carrier, AffectFlag.HIDE)
+        and getattr(carrier, "fighting", None) is None
+        and not _character_has_affect(observer, AffectFlag.DETECT_HIDDEN)
+    ):
+        return False
+
+    return True
+
+
+def _format_locate_destination(holder: object, caster: Character) -> str:
+    """Return ROM-style location messaging for locate object results."""
+
+    if isinstance(holder, Character):
+        if _can_see_locate_carrier(caster, holder):
+            return f"One is carried by {_character_name(holder)}."
+        return "One is in somewhere."
+
+    if holder is not None:
+        room_name = getattr(holder, "name", None) or "somewhere"
+        is_immortal = getattr(caster, "is_immortal", None)
+        if callable(is_immortal):
+            immortal = bool(is_immortal())
+        else:
+            immortal = bool(is_immortal)
+        if immortal:
+            vnum = getattr(holder, "vnum", None)
+            if vnum is not None:
+                return f"One is in {room_name} [Room {vnum}]."
+        return f"One is in {room_name}."
+
+    return "One is in somewhere."
 
 
 def _reflexive_pronoun(character: Character | None) -> str:
@@ -2679,25 +3159,366 @@ def earthquake(caster: Character, target=None) -> bool:  # noqa: ARG001 - parity
     return True
 
 
-def enchant_armor(caster, target=None):
-    """Stub implementation for enchant_armor.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def enchant_armor(caster: Character, target: Object | ObjectData | None = None) -> bool:
+    """ROM ``spell_enchant_armor``: enhance armor AC with ROM failure bands."""
+
+    if caster is None or target is None:
+        raise ValueError("enchant_armor requires a caster and armor target")
+
+    if not isinstance(target, (Object, ObjectData)):
+        raise TypeError("enchant_armor target must be an Object or ObjectData")
+
+    obj: Object | ObjectData = target
+    proto = getattr(obj, "prototype", None) or getattr(obj, "pIndexData", None)
+
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None and proto is not None:
+        item_type = _resolve_item_type(getattr(proto, "item_type", None))
+    if item_type is not ItemType.ARMOR:
+        _send_to_char(caster, "That isn't an armor.")
+        return False
+
+    if _coerce_int(getattr(obj, "wear_loc", int(WearLocation.NONE))) != int(WearLocation.NONE):
+        _send_to_char(caster, "The item must be carried to be enchanted.")
+        return False
+
+    fail = 25
+    ac_bonus = 0
+    ac_found = False
+
+    def _consider_affects(affects: list[Affect]) -> None:
+        nonlocal fail, ac_bonus, ac_found
+        for affect in affects:
+            location = _coerce_int(getattr(affect, "location", _APPLY_NONE))
+            modifier = _coerce_int(getattr(affect, "modifier", 0))
+            if location == _APPLY_AC:
+                ac_bonus = modifier
+                ac_found = True
+                fail += 5 * (modifier * modifier)
+            else:
+                fail += 20
+
+    if not getattr(obj, "enchanted", False) and proto is not None:
+        _consider_affects(_collect_affects(proto, clone=True))
+
+    object_affects = _collect_affects(obj, clone=False)
+    _consider_affects(object_affects)
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    fail -= level
+
+    effective_flags = _object_effective_extra_flags(obj, proto)
+    if effective_flags & int(ExtraFlag.BLESS):
+        fail -= 15
+    if effective_flags & int(ExtraFlag.GLOW):
+        fail -= 5
+
+    fail = max(5, min(fail, 85))
+    result = rng_mm.number_percent()
+
+    short_descr = _object_short_descr(obj)
+    room = getattr(caster, "room", None)
+
+    def _notify_room(message: str) -> None:
+        if room is not None:
+            broadcast_room(room, message, exclude=caster)
+
+    if result < fail // 5:
+        _send_to_char(caster, f"{short_descr} flares blindingly... and evaporates!")
+        _notify_room(f"{short_descr} flares blindingly... and evaporates!")
+        inventory = getattr(caster, "inventory", None)
+        removed = False
+        if isinstance(inventory, list) and obj in inventory:
+            caster.remove_object(obj)
+            removed = True
+        if not removed:
+            equipment = getattr(caster, "equipment", None)
+            if isinstance(equipment, dict):
+                for slot, equipped in list(equipment.items()):
+                    if equipped is obj:
+                        caster.remove_object(obj)
+                        removed = True
+                        break
+        _extract_runtime_object(obj)
+        return False
+
+    if result < fail // 3:
+        _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
+        _notify_room(f"{short_descr} glows brightly, then fades.")
+        setattr(obj, "enchanted", True)
+        setattr(obj, "affected", [])
+        obj.extra_flags = 0
+        return False
+
+    if result <= fail:
+        _send_to_char(caster, "Nothing seemed to happen.")
+        return False
+
+    _copy_base_affects_if_needed(obj, proto)
+    object_affects = _collect_affects(obj, clone=False)
+    obj.affected = object_affects
+
+    if result <= (90 - c_div(level, 5)):
+        _send_to_char(caster, f"{short_descr} shimmers with a gold aura.")
+        _notify_room(f"{short_descr} shimmers with a gold aura.")
+        added = -1
+        base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+        obj.extra_flags = base_flags | int(ExtraFlag.MAGIC)
+    else:
+        _send_to_char(caster, f"{short_descr} glows a brillant gold!")
+        _notify_room(f"{short_descr} glows a brillant gold!")
+        base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+        obj.extra_flags = base_flags | int(ExtraFlag.MAGIC | ExtraFlag.GLOW)
+        added = -2
+
+    obj_level = _coerce_int(getattr(obj, "level", 0))
+    if obj_level < LEVEL_HERO:
+        obj.level = min(LEVEL_HERO - 1, obj_level + 1)
+
+    updated = False
+    for affect in object_affects:
+        if _coerce_int(getattr(affect, "location", _APPLY_NONE)) == _APPLY_AC:
+            affect.type = 0
+            affect.modifier += added
+            affect.level = max(_coerce_int(getattr(affect, "level", 0)), level)
+            updated = True
+
+    if not updated:
+        object_affects.append(
+            Affect(
+                where=_TO_OBJECT,
+                type=0,
+                level=level,
+                duration=-1,
+                location=_APPLY_AC,
+                modifier=added,
+                bitvector=0,
+            )
+        )
+        obj.affected = object_affects
+
+    return True
 
 
-def enchant_weapon(caster, target=None):
-    """Stub implementation for enchant_weapon.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def enchant_weapon(caster: Character, target: Object | ObjectData | None = None) -> bool:
+    """ROM ``spell_enchant_weapon``: enhance weapon hit/damage modifiers."""
+
+    if caster is None or target is None:
+        raise ValueError("enchant_weapon requires a caster and weapon target")
+
+    if not isinstance(target, (Object, ObjectData)):
+        raise TypeError("enchant_weapon target must be an Object or ObjectData")
+
+    obj: Object | ObjectData = target
+    proto = getattr(obj, "prototype", None) or getattr(obj, "pIndexData", None)
+
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None and proto is not None:
+        item_type = _resolve_item_type(getattr(proto, "item_type", None))
+    if item_type is not ItemType.WEAPON:
+        _send_to_char(caster, "That isn't a weapon.")
+        return False
+
+    if _coerce_int(getattr(obj, "wear_loc", int(WearLocation.NONE))) != int(WearLocation.NONE):
+        _send_to_char(caster, "The item must be carried to be enchanted.")
+        return False
+
+    fail = 25
+    hit_bonus = 0
+    dam_bonus = 0
+    hit_found = False
+    dam_found = False
+
+    def _consider_affects(affects: list[Affect]) -> None:
+        nonlocal fail, hit_bonus, dam_bonus, hit_found, dam_found
+        for affect in affects:
+            location = _coerce_int(getattr(affect, "location", _APPLY_NONE))
+            modifier = _coerce_int(getattr(affect, "modifier", 0))
+            if location == _APPLY_HITROLL:
+                hit_bonus = modifier
+                hit_found = True
+                fail += 2 * (modifier * modifier)
+            elif location == _APPLY_DAMROLL:
+                dam_bonus = modifier
+                dam_found = True
+                fail += 2 * (modifier * modifier)
+            else:
+                fail += 25
+
+    if not getattr(obj, "enchanted", False) and proto is not None:
+        _consider_affects(_collect_affects(proto, clone=True))
+
+    weapon_affects = _collect_affects(obj, clone=False)
+    _consider_affects(weapon_affects)
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    fail -= c_div(3 * level, 2)
+
+    effective_flags = _object_effective_extra_flags(obj, proto)
+    if effective_flags & int(ExtraFlag.BLESS):
+        fail -= 15
+    if effective_flags & int(ExtraFlag.GLOW):
+        fail -= 5
+
+    fail = max(5, min(fail, 95))
+    result = rng_mm.number_percent()
+
+    short_descr = _object_short_descr(obj)
+    room = getattr(caster, "room", None)
+
+    def _notify_room(message: str) -> None:
+        if room is not None:
+            broadcast_room(room, message, exclude=caster)
+
+    if result < fail // 5:
+        _send_to_char(caster, f"{short_descr} shivers violently and explodes!")
+        _notify_room(f"{short_descr} shivers violently and explodeds!")
+        inventory = getattr(caster, "inventory", None)
+        removed = False
+        if isinstance(inventory, list) and obj in inventory:
+            caster.remove_object(obj)
+            removed = True
+        if not removed:
+            equipment = getattr(caster, "equipment", None)
+            if isinstance(equipment, dict):
+                for slot, equipped in list(equipment.items()):
+                    if equipped is obj:
+                        caster.remove_object(obj)
+                        removed = True
+                        break
+        _extract_runtime_object(obj)
+        return False
+
+    if result < fail // 2:
+        _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
+        _notify_room(f"{short_descr} glows brightly, then fades.")
+        setattr(obj, "enchanted", True)
+        setattr(obj, "affected", [])
+        obj.extra_flags = 0
+        return False
+
+    if result <= fail:
+        _send_to_char(caster, "Nothing seemed to happen.")
+        return False
+
+    _copy_base_affects_if_needed(obj, proto)
+    weapon_affects = _collect_affects(obj, clone=False)
+    obj.affected = weapon_affects
+
+    base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+    if result <= (100 - c_div(level, 5)):
+        _send_to_char(caster, f"{short_descr} glows blue.")
+        _notify_room(f"{short_descr} glows blue.")
+        added = 1
+        obj.extra_flags = base_flags | int(ExtraFlag.MAGIC)
+    else:
+        _send_to_char(caster, f"{short_descr} glows a brillant blue!")
+        _notify_room(f"{short_descr} glows a brillant blue!")
+        added = 2
+        obj.extra_flags = base_flags | int(ExtraFlag.MAGIC | ExtraFlag.GLOW)
+
+    obj_level = _coerce_int(getattr(obj, "level", 0))
+    if obj_level < LEVEL_HERO - 1:
+        obj.level = min(LEVEL_HERO - 1, obj_level + 1)
+
+    hum_needed = False
+    dam_updated = False
+    hit_updated = False
+
+    for affect in weapon_affects:
+        location = _coerce_int(getattr(affect, "location", _APPLY_NONE))
+        if location == _APPLY_DAMROLL:
+            affect.type = 0
+            affect.modifier += added
+            affect.level = max(_coerce_int(getattr(affect, "level", 0)), level)
+            if affect.modifier > 4:
+                hum_needed = True
+            dam_updated = True
+        elif location == _APPLY_HITROLL:
+            affect.type = 0
+            affect.modifier += added
+            affect.level = max(_coerce_int(getattr(affect, "level", 0)), level)
+            if affect.modifier > 4:
+                hum_needed = True
+            hit_updated = True
+
+    if not dam_updated:
+        weapon_affects.append(
+            Affect(
+                where=_TO_OBJECT,
+                type=0,
+                level=level,
+                duration=-1,
+                location=_APPLY_DAMROLL,
+                modifier=added,
+                bitvector=0,
+            )
+        )
+
+    if not hit_updated:
+        weapon_affects.append(
+            Affect(
+                where=_TO_OBJECT,
+                type=0,
+                level=level,
+                duration=-1,
+                location=_APPLY_HITROLL,
+                modifier=added,
+                bitvector=0,
+            )
+        )
+
+    obj.affected = weapon_affects
+
+    if hum_needed:
+        obj.extra_flags = _coerce_int(getattr(obj, "extra_flags", 0)) | int(ExtraFlag.HUM)
+
+    return True
 
 
-def energy_drain(caster, target=None):
-    """Stub implementation for energy_drain.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def energy_drain(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_energy_drain``: siphon XP, mana, move, and deal damage."""
+
+    if caster is None:
+        raise ValueError("energy_drain requires a caster")
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("energy_drain requires a target")
+
+    if victim is not caster:
+        alignment = int(getattr(caster, "alignment", 0) or 0)
+        caster.alignment = max(-1000, alignment - 50)
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    if saves_spell(level, victim, DamageType.NEGATIVE):
+        _send_to_char(victim, "You feel a momentary chill.")
+        return 0
+
+    damage: int
+    victim_level = max(int(getattr(victim, "level", 0) or 0), 0)
+    if victim_level <= 2:
+        damage = int(getattr(caster, "hit", 0) or 0) + 1
+    else:
+        low = c_div(level, 2)
+        high = c_div(3 * level, 2)
+        xp_loss = rng_mm.number_range(low, high)
+        if xp_loss > 0:
+            gain_exp(victim, -xp_loss)
+
+        victim.mana = c_div(int(getattr(victim, "mana", 0) or 0), 2)
+        victim.move = c_div(int(getattr(victim, "move", 0) or 0), 2)
+
+        damage = rng_mm.dice(1, max(1, level))
+        caster.hit = int(getattr(caster, "hit", 0) or 0) + damage
+
+    _send_to_char(victim, "You feel your life slipping away!")
+    _send_to_char(caster, "Wow....what a rush!")
+
+    before = int(getattr(victim, "hit", 0) or 0)
+    apply_damage(caster, victim, max(0, damage), DamageType.NEGATIVE, dt="energy drain")
+    after = int(getattr(victim, "hit", 0) or 0)
+    return max(0, before - after)
 
 
 def enhanced_damage(caster, target=None):
@@ -3425,11 +4246,34 @@ def gate(caster: Character, target: Character | None = None):
     return True
 
 
-def general_purpose(caster, target=None):
-    """Stub implementation for general_purpose.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def general_purpose(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    override_level: int | None = None,
+) -> int:
+    """ROM ``spell_general_purpose`` wand projectile damage."""
+
+    if caster is None or target is None:
+        raise ValueError("general_purpose requires caster and target")
+
+    base_level = override_level if override_level is not None else getattr(caster, "level", 0)
+    level = max(int(base_level or 0), 0)
+    roll = rng_mm.number_range(25, 100)
+    damage = roll
+    if saves_spell(level, target, DamageType.PIERCE):
+        damage = c_div(damage, 2)
+
+    before = int(getattr(target, "hit", 0) or 0)
+    apply_damage(
+        caster,
+        target,
+        max(0, damage),
+        DamageType.PIERCE,
+        dt="general purpose ammo",
+    )
+    after = int(getattr(target, "hit", 0) or 0)
+    return max(0, before - after)
 
 
 def giant_strength(
@@ -3634,11 +4478,34 @@ def hide(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def high_explosive(caster, target=None):
-    """Stub implementation for high_explosive.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def high_explosive(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    override_level: int | None = None,
+) -> int:
+    """ROM ``spell_high_explosive`` wand projectile damage."""
+
+    if caster is None or target is None:
+        raise ValueError("high_explosive requires caster and target")
+
+    base_level = override_level if override_level is not None else getattr(caster, "level", 0)
+    level = max(int(base_level or 0), 0)
+    roll = rng_mm.number_range(30, 120)
+    damage = roll
+    if saves_spell(level, target, DamageType.PIERCE):
+        damage = c_div(damage, 2)
+
+    before = int(getattr(target, "hit", 0) or 0)
+    apply_damage(
+        caster,
+        target,
+        max(0, damage),
+        DamageType.PIERCE,
+        dt="high explosive ammo",
+    )
+    after = int(getattr(target, "hit", 0) or 0)
+    return max(0, before - after)
 
 
 def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signature
@@ -3962,18 +4829,116 @@ def kick(
     return apply_damage(caster, opponent, damage, DamageType.BASH, dt="kick")
 
 
-def know_alignment(caster, target=None):
-    """Stub implementation for know_alignment.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def know_alignment(caster: Character, target: Character | None = None) -> str:
+    """ROM ``spell_know_alignment`` aura messaging based on alignment bands."""
+
+    if caster is None:
+        raise ValueError("know_alignment requires a caster")
+
+    victim = target or caster
+    if victim is None:
+        raise ValueError("know_alignment requires a target")
+
+    alignment = int(getattr(victim, "alignment", 0) or 0)
+    name = _character_name(victim)
+    possessive = _possessive_pronoun(victim)
+
+    def _choose(other: str, self_msg: str) -> str:
+        return self_msg if victim is caster else other
+
+    if alignment > 700:
+        message = _choose(f"{name} has a pure and good aura.", "You have a pure and good aura.")
+    elif alignment > 350:
+        message = _choose(f"{name} is of excellent moral character.", "You are of excellent moral character.")
+    elif alignment > 100:
+        message = _choose(f"{name} is often kind and thoughtful.", "You are often kind and thoughtful.")
+    elif alignment > -100:
+        message = _choose(f"{name} doesn't have a firm moral commitment.", "You don't have a firm moral commitment.")
+    elif alignment > -350:
+        message = _choose(f"{name} lies to {possessive} friends.", "You lie to your friends.")
+    elif alignment > -700:
+        message = _choose(f"{name} is a black-hearted murderer.", "You are a black-hearted murderer.")
+    else:
+        message = _choose(f"{name} is the embodiment of pure evil!", "You are the embodiment of pure evil!")
+
+    _send_to_char(caster, message)
+    return message
 
 
-def lightning_bolt(caster, target=None):
-    """Stub implementation for lightning_bolt.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def lightning_bolt(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_lightning_bolt``: level-scaled lightning damage."""
+
+    if caster is None or target is None:
+        raise ValueError("lightning_bolt requires a caster and target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    dam_each = (
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        25,
+        28,
+        31,
+        34,
+        37,
+        40,
+        40,
+        41,
+        42,
+        42,
+        43,
+        44,
+        44,
+        45,
+        46,
+        46,
+        47,
+        48,
+        48,
+        49,
+        50,
+        50,
+        51,
+        52,
+        52,
+        53,
+        54,
+        54,
+        55,
+        56,
+        56,
+        57,
+        58,
+        58,
+        59,
+        60,
+        60,
+        61,
+        62,
+        62,
+        63,
+        64,
+    )
+    index = min(level, len(dam_each) - 1)
+    base = dam_each[index]
+    low = c_div(base, 2)
+    high = base * 2
+    roll = rng_mm.number_range(low, high)
+
+    damage = roll
+    if saves_spell(level, target, DamageType.LIGHTNING):
+        damage = c_div(damage, 2)
+
+    before = int(getattr(target, "hit", 0) or 0)
+    apply_damage(caster, target, max(0, damage), DamageType.LIGHTNING, dt="lightning bolt")
+    after = int(getattr(target, "hit", 0) or 0)
+    return max(0, before - after)
 
 
 def lightning_breath(caster: Character, target: Character | None = None) -> int:
@@ -4004,18 +4969,81 @@ def lightning_breath(caster: Character, target: Character | None = None) -> int:
     return damage
 
 
-def locate_object(caster, target=None):
-    """Stub implementation for locate_object.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def locate_object(caster: Character, target: str | None = None) -> bool:
+    """ROM ``spell_locate_object``: reveal locations of matching objects."""
+
+    if caster is None:
+        raise ValueError("locate_object requires a caster")
+
+    argument = ""
+    if isinstance(target, str):
+        argument = target.strip()
+
+    if not argument:
+        _send_to_char(caster, "Nothing like that in heaven or earth.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    max_found = 200 if caster.is_immortal() else 2 * level
+
+    results: list[str] = []
+    detection_threshold = max(0, min(level * 2, 100))
+
+    for obj, holder in _iterate_world_objects():
+        if not _object_name_matches(obj, argument):
+            continue
+        if not _can_see_object(caster, obj):
+            continue
+        if _effective_extra_flags(obj) & int(ExtraFlag.NOLOCATE):
+            continue
+        if not caster.is_immortal() and level < _object_level(obj):
+            continue
+        if rng_mm.number_percent() > detection_threshold:
+            continue
+
+        results.append(_format_locate_destination(holder, caster))
+        if max_found >= 0 and len(results) >= max_found:
+            break
+
+    if not results:
+        _send_to_char(caster, "Nothing like that in heaven or earth.")
+        return False
+
+    for line in results:
+        if line:
+            formatted = line[0].upper() + line[1:]
+        else:
+            formatted = line
+        _send_to_char(caster, formatted)
+    return True
 
 
-def lore(caster, target=None):
-    """Stub implementation for lore.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def lore(caster: Character, target: Object | ObjectData | None = None) -> bool:
+    """ROM ``do_lore`` skill: chance-based appraisal using identify output."""
+
+    if caster is None:
+        raise ValueError("lore requires a caster")
+    if target is None:
+        raise ValueError("lore requires an object target")
+    if not isinstance(target, (Object, ObjectData)):
+        raise TypeError("lore target must be an object")
+
+    beats = _skill_beats("lore")
+    caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
+
+    chance = _skill_percent(caster, "lore")
+    if chance <= 0:
+        _send_to_char(caster, "You don't know anything about that.")
+        return False
+
+    roll = rng_mm.number_percent()
+    if roll <= chance:
+        check_improve(caster, "lore", True, 1)
+        return identify(caster, target)
+
+    _send_to_char(caster, "You can't glean any information about it.")
+    check_improve(caster, "lore", False, 1)
+    return False
 
 
 def mace(caster, target=None):
@@ -4025,11 +5053,80 @@ def mace(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def magic_missile(caster, target=None):
-    """Stub implementation for magic_missile.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def magic_missile(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_magic_missile``: level tabled energy bolts."""
+
+    if caster is None or target is None:
+        raise ValueError("magic_missile requires a caster and target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    dam_each = (
+        0,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7,
+        8,
+        8,
+        8,
+        8,
+        8,
+        9,
+        9,
+        9,
+        9,
+        9,
+        10,
+        10,
+        10,
+        10,
+        10,
+        11,
+        11,
+        11,
+        11,
+        11,
+        12,
+        12,
+        12,
+        12,
+        12,
+        13,
+        13,
+        13,
+        13,
+        13,
+        14,
+        14,
+        14,
+        14,
+        14,
+    )
+    index = min(level, len(dam_each) - 1)
+    base = dam_each[index]
+    low = c_div(base, 2)
+    high = base * 2
+    roll = rng_mm.number_range(low, high)
+
+    damage = roll
+    if saves_spell(level, target, DamageType.ENERGY):
+        damage = c_div(damage, 2)
+
+    before = int(getattr(target, "hit", 0) or 0)
+    apply_damage(caster, target, max(0, damage), DamageType.ENERGY, dt="magic missile")
+    after = int(getattr(target, "hit", 0) or 0)
+    return max(0, before - after)
 
 
 def mass_healing(caster, target=None):
@@ -4089,11 +5186,126 @@ def meditation(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def nexus(caster, target=None):
-    """Stub implementation for nexus.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def nexus(caster: Character, target: Character | None = None) -> list[Object]:
+    """ROM ``spell_nexus``: raise paired portals linking caster and target rooms."""
+
+    if caster is None or target is None:
+        raise ValueError("nexus requires a target")
+    if not isinstance(target, Character):
+        raise TypeError("nexus target must be a Character")
+
+    from_room = getattr(caster, "room", None)
+    to_room = getattr(target, "room", None)
+
+    def _fail() -> list[Object]:
+        _send_to_char(caster, "You failed.")
+        return []
+
+    if from_room is None or to_room is None or target is caster:
+        return _fail()
+
+    if not can_see_room(caster, to_room):
+        return _fail()
+    if not can_see_room(caster, from_room):
+        return _fail()
+
+    def _room_flags(room) -> int:
+        return _coerce_int(getattr(room, "room_flags", 0))
+
+    from_flags = _room_flags(from_room)
+    to_flags = _room_flags(to_room)
+
+    target_disallowed = (
+        int(RoomFlag.ROOM_SAFE)
+        | int(RoomFlag.ROOM_PRIVATE)
+        | int(RoomFlag.ROOM_SOLITARY)
+        | int(RoomFlag.ROOM_NO_RECALL)
+    )
+    origin_disallowed = int(RoomFlag.ROOM_SAFE) | int(RoomFlag.ROOM_NO_RECALL)
+
+    if to_flags & target_disallowed:
+        return _fail()
+    if from_flags & origin_disallowed:
+        return _fail()
+
+    level = max(_coerce_int(getattr(caster, "level", 0)), 0)
+    target_level = max(_coerce_int(getattr(target, "level", 0)), 0)
+    if target_level >= level + 3:
+        return _fail()
+
+    if is_clan_member(target) and not is_same_clan(caster, target):
+        return _fail()
+
+    target_is_npc = bool(getattr(target, "is_npc", True))
+    if not target_is_npc and target_level >= LEVEL_HERO:
+        return _fail()
+
+    if target_is_npc:
+        imm_flags = _coerce_int(getattr(target, "imm_flags", 0))
+        if imm_flags & int(ImmFlag.SUMMON):
+            return _fail()
+        if saves_spell(level, target, int(DamageType.NONE)):
+            return _fail()
+
+    held_obj = getattr(caster, "equipment", {}).get("hold") if hasattr(caster, "equipment") else None
+    held_type = _resolve_item_type(getattr(held_obj, "item_type", None))
+    if held_type is None and getattr(held_obj, "prototype", None) is not None:
+        held_type = _resolve_item_type(getattr(held_obj.prototype, "item_type", None))
+
+    if not caster.is_immortal():
+        if held_obj is None or held_type is not ItemType.WARP_STONE:
+            _send_to_char(caster, "You lack the proper component for this spell.")
+            return []
+
+    if held_obj is not None and held_type is ItemType.WARP_STONE:
+        stone_name = _object_short_descr(held_obj)
+        _send_to_char(caster, f"You draw upon the power of {stone_name}.")
+        _send_to_char(caster, "It flares brightly and vanishes!")
+        if hasattr(caster, "remove_object"):
+            caster.remove_object(held_obj)
+        if hasattr(held_obj, "location"):
+            held_obj.location = None
+
+    created: list[Object] = []
+
+    portal_out = spawn_object(OBJ_VNUM_PORTAL)
+    if portal_out is None:
+        return _fail()
+
+    timer = 1 + c_div(level, 10)
+    portal_out.timer = timer
+    if not isinstance(portal_out.value, list):
+        portal_out.value = [0, 0, 0, 0, 0]
+    while len(portal_out.value) <= 3:
+        portal_out.value.append(0)
+    portal_out.value[3] = _coerce_int(getattr(to_room, "vnum", 0))
+    from_room.add_object(portal_out)
+
+    portal_name = _object_short_descr(portal_out)
+    broadcast_room(from_room, f"{portal_name} rises up from the ground.", exclude=caster)
+    _send_to_char(caster, f"{portal_name} rises up before you.")
+    created.append(portal_out)
+
+    if to_room is from_room:
+        return created
+
+    portal_return = spawn_object(OBJ_VNUM_PORTAL)
+    if portal_return is None:
+        return created
+
+    portal_return.timer = timer
+    if not isinstance(portal_return.value, list):
+        portal_return.value = [0, 0, 0, 0, 0]
+    while len(portal_return.value) <= 3:
+        portal_return.value.append(0)
+    portal_return.value[3] = _coerce_int(getattr(from_room, "vnum", 0))
+    to_room.add_object(portal_return)
+
+    return_name = _object_short_descr(portal_return)
+    broadcast_room(to_room, f"{return_name} rises up from the ground.")
+    created.append(portal_return)
+
+    return created
 
 
 def parry(caster, target=None):
@@ -4354,32 +5566,255 @@ def polearm(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def portal(caster, target=None):
-    """Stub implementation for portal.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def portal(caster: Character, target: Character | None = None) -> Object | None:
+    """ROM ``spell_portal``: conjure a portal that links to the target's room."""
+
+    if caster is None or target is None:
+        raise ValueError("portal requires a target")
+    if not isinstance(target, Character):
+        raise TypeError("portal target must be a Character")
+
+    current_room = getattr(caster, "room", None)
+    target_room = getattr(target, "room", None)
+
+    def _fail() -> None:
+        _send_to_char(caster, "You failed.")
+
+    if current_room is None or target_room is None or target is caster:
+        _fail()
+        return None
+
+    if not can_see_room(caster, target_room):
+        _fail()
+        return None
+
+    def _room_flags(room) -> int:
+        return _coerce_int(getattr(room, "room_flags", 0))
+
+    target_flags = _room_flags(target_room)
+    current_flags = _room_flags(current_room)
+
+    disallowed = (
+        int(RoomFlag.ROOM_SAFE)
+        | int(RoomFlag.ROOM_PRIVATE)
+        | int(RoomFlag.ROOM_SOLITARY)
+        | int(RoomFlag.ROOM_NO_RECALL)
+    )
+
+    if target_flags & disallowed:
+        _fail()
+        return None
+    if current_flags & int(RoomFlag.ROOM_NO_RECALL):
+        _fail()
+        return None
+
+    level = max(_coerce_int(getattr(caster, "level", 0)), 0)
+    target_level = max(_coerce_int(getattr(target, "level", 0)), 0)
+    if target_level >= level + 3:
+        _fail()
+        return None
+
+    if is_clan_member(target) and not is_same_clan(caster, target):
+        _fail()
+        return None
+
+    target_is_npc = bool(getattr(target, "is_npc", True))
+    if not target_is_npc and target_level >= LEVEL_HERO:
+        _fail()
+        return None
+
+    if target_is_npc:
+        imm_flags = _coerce_int(getattr(target, "imm_flags", 0))
+        if imm_flags & int(ImmFlag.SUMMON):
+            _fail()
+            return None
+        if saves_spell(level, target, int(DamageType.NONE)):
+            _fail()
+            return None
+
+    held_obj = getattr(caster, "equipment", {}).get("hold") if hasattr(caster, "equipment") else None
+    held_type = _resolve_item_type(getattr(held_obj, "item_type", None))
+    if held_type is None and getattr(held_obj, "prototype", None) is not None:
+        held_type = _resolve_item_type(getattr(held_obj.prototype, "item_type", None))
+
+    if not caster.is_immortal():
+        if held_obj is None or held_type is not ItemType.WARP_STONE:
+            _send_to_char(caster, "You lack the proper component for this spell.")
+            return None
+
+    if held_obj is not None and held_type is ItemType.WARP_STONE:
+        stone_name = _object_short_descr(held_obj)
+        _send_to_char(caster, f"You draw upon the power of {stone_name}.")
+        _send_to_char(caster, "It flares brightly and vanishes!")
+        if hasattr(caster, "remove_object"):
+            caster.remove_object(held_obj)
+        if hasattr(held_obj, "location"):
+            held_obj.location = None
+
+    portal_obj = spawn_object(OBJ_VNUM_PORTAL)
+    if portal_obj is None:
+        _fail()
+        return None
+
+    timer = 2 + c_div(level, 25)
+    portal_obj.timer = timer
+
+    if not isinstance(portal_obj.value, list):
+        portal_obj.value = [0, 0, 0, 0, 0]
+    while len(portal_obj.value) <= 3:
+        portal_obj.value.append(0)
+    portal_obj.value[3] = _coerce_int(getattr(target_room, "vnum", 0))
+
+    current_room.add_object(portal_obj)
+
+    portal_name = _object_short_descr(portal_obj)
+    broadcast_room(current_room, f"{portal_name} rises up from the ground.", exclude=caster)
+    _send_to_char(caster, f"{portal_name} rises up before you.")
+
+    return portal_obj
 
 
-def protection_evil(caster, target=None):
-    """Stub implementation for protection_evil.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def protection_evil(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_protection_evil``: apply AFF_PROTECT_EVIL with save bonus."""
+
+    if caster is None:
+        raise ValueError("protection_evil requires a caster")
+
+    target = target or caster
+    if target is None:
+        raise ValueError("protection_evil requires a target")
+
+    if target.has_affect(AffectFlag.PROTECT_EVIL) or target.has_affect(AffectFlag.PROTECT_GOOD):
+        if target is caster:
+            _send_to_char(caster, "You are already protected.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+        return False
+    if target.has_spell_effect("protection evil") or target.has_spell_effect("protection good"):
+        if target is caster:
+            _send_to_char(caster, "You are already protected.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="protection evil",
+        duration=24,
+        level=level,
+        saving_throw_mod=-1,
+        affect_flag=AffectFlag.PROTECT_EVIL,
+        wear_off_message="You feel less protected.",
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "You feel holy and pure.")
+    if target is not caster:
+        _send_to_char(caster, f"{_character_name(target)} is protected from evil.")
+    return True
 
 
-def protection_good(caster, target=None):
-    """Stub implementation for protection_good.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def protection_good(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_protection_good``: apply AFF_PROTECT_GOOD with save bonus."""
+
+    if caster is None:
+        raise ValueError("protection_good requires a caster")
+
+    target = target or caster
+    if target is None:
+        raise ValueError("protection_good requires a target")
+
+    if target.has_affect(AffectFlag.PROTECT_GOOD) or target.has_affect(AffectFlag.PROTECT_EVIL):
+        if target is caster:
+            _send_to_char(caster, "You are already protected.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+        return False
+    if target.has_spell_effect("protection good") or target.has_spell_effect("protection evil"):
+        if target is caster:
+            _send_to_char(caster, "You are already protected.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+        return False
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    effect = SpellEffect(
+        name="protection good",
+        duration=24,
+        level=level,
+        saving_throw_mod=-1,
+        affect_flag=AffectFlag.PROTECT_GOOD,
+        wear_off_message="You feel less protected.",
+    )
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    _send_to_char(target, "You feel aligned with darkness.")
+    if target is not caster:
+        _send_to_char(caster, f"{_character_name(target)} is protected from good.")
+    return True
 
 
-def ray_of_truth(caster, target=None):
-    """Stub implementation for ray_of_truth.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def ray_of_truth(caster: Character, target: Character | None = None) -> int:
+    """ROM ``spell_ray_of_truth``: alignment-scaled holy damage with blindness."""
+
+    if caster is None or target is None:
+        raise ValueError("ray_of_truth requires a caster and target")
+    if not isinstance(target, Character):
+        raise TypeError("ray_of_truth target must be a Character")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    victim = target
+
+    if is_evil(caster):
+        victim = caster
+        _send_to_char(caster, "The energy explodes inside you!")
+    else:
+        if victim is not caster:
+            room = getattr(caster, "room", None)
+            if room is not None:
+                possessive = _possessive_pronoun(caster)
+                broadcast_room(
+                    room,
+                    f"{_character_name(caster)} raises {possessive} hand, and a blinding ray of light shoots forth!",
+                    exclude=caster,
+                )
+            _send_to_char(caster, "You raise your hand and a blinding ray of light shoots forth!")
+
+    if is_good(victim):
+        room = getattr(victim, "room", None)
+        if room is not None:
+            broadcast_room(
+                room,
+                f"{_character_name(victim)} seems unharmed by the light.",
+                exclude=victim,
+            )
+        _send_to_char(victim, "The light seems powerless to affect you.")
+        return 0
+
+    base_damage = rng_mm.dice(level, 10)
+    damage = base_damage
+    if saves_spell(level, victim, DamageType.HOLY):
+        damage = c_div(damage, 2)
+
+    alignment = int(getattr(victim, "alignment", 0) or 0)
+    alignment -= 350
+    if alignment < -1000:
+        alignment = -1000 + c_div(alignment + 1000, 3)
+
+    scaled = c_div(damage * alignment * alignment, 1_000_000)
+
+    before = int(getattr(victim, "hit", 0) or 0)
+    apply_damage(caster, victim, max(0, scaled), DamageType.HOLY, dt="ray of truth")
+    after = int(getattr(victim, "hit", 0) or 0)
+
+    blind_level = max(0, c_div(3 * level, 4))
+    blindness(SimpleNamespace(level=blind_level), victim)
+
+    return max(0, before - after)
 
 
 def recall(caster, target=None):
@@ -4389,25 +5824,218 @@ def recall(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def recharge(caster, target=None):
-    """Stub implementation for recharge.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def recharge(
+    caster: Character,
+    target: Object | ObjectData | None = None,
+) -> bool:
+    """ROM ``spell_recharge``: restore wand/staff charges with chance rolls."""
+
+    if caster is None or target is None:
+        raise ValueError("recharge requires a caster and target object")
+    if not isinstance(target, (Object, ObjectData)):
+        raise TypeError("recharge target must be an object instance")
+
+    obj = target
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None and getattr(obj, "prototype", None) is not None:
+        item_type = _resolve_item_type(getattr(obj.prototype, "item_type", None))
+
+    if item_type not in (ItemType.WAND, ItemType.STAFF):
+        _send_to_char(caster, "That item does not carry charges.")
+        return False
+
+    values = list(getattr(obj, "value", []) or [])
+    while len(values) <= 3:
+        values.append(0)
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    spell_level = _coerce_int(values[3])
+    if spell_level >= c_div(3 * level, 2):
+        _send_to_char(caster, "Your skills are not great enough for that.")
+        return False
+
+    stored_max = _coerce_int(values[1])
+    if stored_max == 0:
+        _send_to_char(caster, "That item has already been recharged once.")
+        return False
+
+    current_charges = _coerce_int(values[2])
+
+    chance = 40 + 2 * level
+    chance -= spell_level
+    diff = stored_max - current_charges
+    chance -= diff * diff
+    chance = max(c_div(level, 2), chance)
+
+    percent = rng_mm.number_percent()
+
+    short_descr = _object_short_descr(obj)
+    room = getattr(caster, "room", None)
+
+    if percent < c_div(chance, 2):
+        _send_to_char(caster, f"{short_descr} glows softly.")
+        if room is not None:
+            broadcast_room(room, f"{short_descr} glows softly.", exclude=caster)
+        values[2] = max(stored_max, current_charges)
+        values[1] = 0
+        obj.value = values
+        return True
+
+    if percent <= chance:
+        _send_to_char(caster, f"{short_descr} glows softly.")
+        _send_to_char(caster, f"{short_descr} glows softly.")
+        chargemax = stored_max - current_charges
+        if chargemax > 0:
+            chargeback = max(1, c_div(chargemax * percent, 100))
+        else:
+            chargeback = 0
+        values[2] = current_charges + chargeback
+        values[1] = 0
+        obj.value = values
+        return True
+
+    if percent <= min(95, c_div(3 * chance, 2)):
+        _send_to_char(caster, "Nothing seems to happen.")
+        if stored_max > 1:
+            values[1] = stored_max - 1
+            obj.value = values
+        return False
+
+    _send_to_char(caster, f"{short_descr} glows brightly and explodes!")
+    if room is not None:
+        broadcast_room(room, f"{short_descr} glows brightly and explodes!", exclude=caster)
+    _extract_runtime_object(obj)
+    return False
 
 
-def refresh(caster, target=None):
-    """Stub implementation for refresh.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def refresh(caster: Character, target: Character | None = None) -> bool:
+    """ROM ``spell_refresh``: restore movement points with messaging."""
+
+    if caster is None:
+        raise ValueError("refresh requires a caster")
+
+    target = target or caster
+    if target is None:
+        raise ValueError("refresh requires a target")
+
+    try:
+        level = max(int(getattr(caster, "level", 0) or 0), 0)
+    except (TypeError, ValueError):
+        level = 0
+
+    current_move = int(getattr(target, "move", 0) or 0)
+    max_move = int(getattr(target, "max_move", 0) or 0)
+    refreshed = current_move + level
+    if max_move:
+        refreshed = min(refreshed, max_move)
+    target.move = refreshed
+
+    if not max_move or refreshed >= max_move:
+        _send_to_char(target, "You feel fully refreshed!")
+    else:
+        _send_to_char(target, "You feel less tired.")
+
+    if target is not caster:
+        _send_to_char(caster, "Ok.")
+    return True
 
 
-def remove_curse(caster, target=None):
-    """Stub implementation for remove_curse.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def remove_curse(
+    caster: Character,
+    target: Character | Object | ObjectData | None = None,
+) -> bool:
+    """ROM ``spell_remove_curse`` for objects and characters."""
+
+    if caster is None:
+        raise ValueError("remove_curse requires a caster")
+
+    target = target or caster
+    if target is None:
+        raise ValueError("remove_curse requires a target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    nouncurse = int(ExtraFlag.NOUNCURSE)
+    nodrop = int(ExtraFlag.NODROP)
+    noremove = int(ExtraFlag.NOREMOVE)
+
+    def _clear_object_flags(obj: Object | ObjectData) -> bool:
+        flags = _effective_extra_flags(obj)
+        if not (flags & (nodrop | noremove)):
+            _send_to_char(caster, f"There doesn't seem to be a curse on {_object_short_descr(obj)}.")
+            return False
+        if flags & nouncurse:
+            _send_to_char(caster, f"The curse on {_object_short_descr(obj)} is beyond your power.")
+            return False
+
+        obj_level = _object_level(obj)
+        if saves_dispel(level + 2, obj_level, 0):
+            _send_to_char(caster, f"The curse on {_object_short_descr(obj)} is beyond your power.")
+            return False
+
+        base_flags = _coerce_int(getattr(obj, "extra_flags", 0) or 0)
+        base_flags &= ~nodrop
+        base_flags &= ~noremove
+        obj.extra_flags = base_flags
+
+        message = f"{_object_short_descr(obj)} glows blue."
+        _send_to_char(caster, message)
+        room = getattr(caster, "room", None)
+        if room is not None:
+            broadcast_room(room, message, exclude=caster)
+        return True
+
+    if isinstance(target, (Object, ObjectData)):
+        return _clear_object_flags(target)
+
+    if not isinstance(target, Character):
+        raise TypeError("remove_curse target must be Character or Object")
+
+    victim = target
+    room = getattr(victim, "room", None)
+    removed_any = False
+
+    if check_dispel(level, victim, "curse"):
+        _send_to_char(victim, "You feel better.")
+        if room is not None:
+            broadcast_room(room, f"{_character_name(victim)} looks more relaxed.", exclude=victim)
+        removed_any = True
+
+    seen: set[int] = set()
+    objects: list[Object | ObjectData] = []
+    inventory = getattr(victim, "inventory", None)
+    if isinstance(inventory, list):
+        objects.extend(obj for obj in inventory if isinstance(obj, (Object, ObjectData)))
+    equipment = getattr(victim, "equipment", None)
+    if isinstance(equipment, dict):
+        objects.extend(obj for obj in equipment.values() if isinstance(obj, (Object, ObjectData)))
+
+    for obj in objects:
+        obj_id = id(obj)
+        if obj_id in seen:
+            continue
+        seen.add(obj_id)
+        flags = _effective_extra_flags(obj)
+        if not (flags & (nodrop | noremove)) or (flags & nouncurse):
+            continue
+        obj_level = _object_level(obj)
+        if saves_dispel(level, obj_level, 0):
+            continue
+
+        base_flags = _coerce_int(getattr(obj, "extra_flags", 0) or 0)
+        new_flags = base_flags & ~nodrop & ~noremove
+        obj.extra_flags = new_flags
+
+        short_descr = _object_short_descr(obj)
+        _send_to_char(victim, f"Your {short_descr} glows blue.")
+        if room is not None:
+            broadcast_room(
+                room,
+                f"{_character_name(victim)}'s {short_descr} glows blue.",
+                exclude=victim,
+            )
+        removed_any = True
+
+    return removed_any
 
 
 def rescue(
@@ -4578,11 +6206,61 @@ def shocking_grasp(caster, target=None):
     return 42  # Placeholder damage/effect
 
 
-def sleep(caster, target=None):
-    """Stub implementation for sleep.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def sleep(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    override_level: int | None = None,
+) -> bool:
+    """ROM ``spell_sleep``: apply AFF_SLEEP via affect_join semantics."""
+
+    if caster is None or target is None:
+        raise ValueError("sleep requires a caster and target")
+
+    if target.has_spell_effect("sleep") or target.has_affect(AffectFlag.SLEEP):
+        if target is caster:
+            _send_to_char(caster, "You are already fast asleep.")
+        else:
+            name = _character_name(target)
+            _send_to_char(caster, f"{name} is already fast asleep.")
+        return False
+
+    if getattr(target, "is_npc", False):
+        act_flags = _coerce_int(getattr(target, "act", 0))
+        if act_flags & int(ActFlag.UNDEAD):
+            if target is not caster:
+                _send_to_char(caster, f"{_character_name(target)} is immune to sleep.")
+            return False
+
+    base_level = override_level if override_level is not None else getattr(caster, "level", 0)
+    level = max(_coerce_int(base_level), 0)
+    victim_level = _coerce_int(getattr(target, "level", 0))
+
+    if (level + 2) < victim_level:
+        return False
+
+    if saves_spell(max(level - 4, 0), target, DamageType.CHARM):
+        return False
+
+    effect = SpellEffect(
+        name="sleep",
+        duration=4 + level,
+        level=level,
+        affect_flag=AffectFlag.SLEEP,
+        wear_off_message="You feel less tired.",
+    )
+    target.apply_spell_effect(effect)
+
+    if target.position > Position.SLEEPING:
+        _send_to_char(target, "You feel very sleepy ..... zzzzzz.")
+        room = getattr(target, "room", None)
+        if room is not None:
+            room.broadcast(f"{_character_name(target)} goes to sleep.", exclude=target)
+        target.position = Position.SLEEPING
+    else:
+        _send_to_char(target, "You feel very sleepy ..... zzzzzz.")
+
+    return True
 
 
 def slow(

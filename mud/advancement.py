@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from mud.math.c_compat import c_div
 from mud.models.character import Character
+from mud.models.constants import LEVEL_HERO
 from mud.models.classes import CLASS_TABLE, ClassType
 from mud.models.races import PcRaceType
 
@@ -87,15 +88,27 @@ def advance_level(char: Character) -> None:
 
 
 def gain_exp(char: Character, amount: int) -> None:
-    """Grant experience and handle level ups.
+    """Grant (or deduct) experience and handle ROM-style leveling."""
 
-    Experience required to reach *n* is ``exp_per_level(char) * n``.
-    The character's ``exp`` tracks total lifetime experience.
-    """
+    if getattr(char, "is_npc", False):
+        return
+
+    if char.level >= LEVEL_HERO:
+        return
+
+    base = exp_per_level(char)
+    current_exp = int(getattr(char, "exp", 0) or 0)
+    new_total = current_exp + int(amount)
+
+    if base > 0:
+        char.exp = max(base, new_total)
+    else:
+        char.exp = max(0, new_total)
+
     if amount <= 0:
         return
-    char.exp += amount
+
     # Level up while total exp meets threshold for next level.
-    while char.exp >= exp_per_level(char) * (char.level + 1):
+    while char.level < LEVEL_HERO and char.exp >= base * (char.level + 1):
         char.level += 1
         advance_level(char)
