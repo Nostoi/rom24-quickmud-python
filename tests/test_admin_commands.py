@@ -10,6 +10,7 @@ from mud.commands.admin_commands import (
     cmd_incognito,
     cmd_newlock,
     cmd_permban,
+    cmd_banlist,
     cmd_qmconfig,
     cmd_wizlock,
 )
@@ -310,10 +311,10 @@ def test_qmconfig_loader_handles_inline_comment_markers(tmp_path, restore_qmconf
 def test_ban_lists_entries_and_sets_newbie_flag():
     admin = _make_admin(60)
 
-    assert cmd_ban(admin, "") == "No sites banned at this time."
+    assert cmd_ban(admin, "") == "No sites banned at this time." + ROM_NEWLINE
 
     response = cmd_ban(admin, "*midgaard newbies")
-    assert response == "midgaard has been banned."
+    assert response == "midgaard has been banned." + ROM_NEWLINE
 
     entries = bans.get_ban_entries()
     assert len(entries) == 1
@@ -323,10 +324,11 @@ def test_ban_lists_entries_and_sets_newbie_flag():
     assert not entry.flags & BanFlag.PERMANENT
 
     listing = cmd_ban(admin, "")
+    assert listing.endswith(ROM_NEWLINE)
     assert "Banned sites  level  type     status" in listing
     assert "*midgaard" in listing
     assert "newbies" in listing
-    assert listing.endswith("temp")
+    assert "temp" in listing
 
 
 def test_ban_listing_orders_new_entries_first():
@@ -339,9 +341,57 @@ def test_ban_listing_orders_new_entries_first():
     assert [entry.pattern for entry in entries[:2]] == ["second", "first"]
 
     listing = cmd_ban(admin, "")
-    lines = listing.splitlines()
+    assert listing.endswith(ROM_NEWLINE)
+    lines = [line for line in listing.split(ROM_NEWLINE) if line]
     assert lines[1].lstrip().startswith("second")
     assert lines[2].lstrip().startswith("first")
+
+
+def test_ban_listing_uses_rom_newline():
+    admin = _make_admin(60)
+
+    cmd_ban(admin, "alpha all")
+    cmd_permban(admin, "beta permit")
+
+    listing = cmd_ban(admin, "")
+    assert listing.endswith(ROM_NEWLINE)
+    assert "\n" in listing and "\r" in listing
+    assert "\n" not in listing.replace(ROM_NEWLINE, "")
+
+    alias = cmd_banlist(admin, "")
+    assert alias == listing
+
+    segments = listing.split(ROM_NEWLINE)
+    # Trailing ROM_NEWLINE yields final empty segment
+    assert segments[-1] == ""
+    for segment in segments[:-1]:
+        assert segment
+
+
+def test_ban_command_responses_use_rom_newline():
+    admin = _make_admin(60)
+
+    invalid = cmd_ban(admin, "example invalid")
+    assert invalid == "Acceptable ban types are all, newbies, and permit." + ROM_NEWLINE
+
+    missing = cmd_allow(admin, "")
+    assert missing == "Remove which site from the ban list?" + ROM_NEWLINE
+
+    cmd_ban(admin, "target all")
+    unknown = cmd_allow(admin, "unknown.example")
+    assert unknown == "Site is not banned." + ROM_NEWLINE
+
+
+def test_allow_requires_canonical_host_token():
+    admin = _make_admin(60)
+
+    cmd_ban(admin, "*midgaard all")
+
+    wildcard = cmd_allow(admin, "*midgaard")
+    assert wildcard == "Site is not banned." + ROM_NEWLINE
+
+    lifted = cmd_allow(admin, "midgaard")
+    assert lifted == "Ban on midgaard lifted." + ROM_NEWLINE
 
 
 def test_permban_and_allow_enforce_trust():
@@ -349,7 +399,7 @@ def test_permban_and_allow_enforce_trust():
     low = _make_admin(50)
 
     response = cmd_permban(high, "locked.example all")
-    assert response == "locked.example has been banned."
+    assert response == "locked.example has been banned." + ROM_NEWLINE
 
     entries = bans.get_ban_entries()
     assert len(entries) == 1
@@ -357,17 +407,23 @@ def test_permban_and_allow_enforce_trust():
     assert entry.flags & BanFlag.PERMANENT
     assert entry.level == 60
 
-    assert cmd_ban(low, "locked.example") == "That ban was set by a higher power."
+    assert (
+        cmd_ban(low, "locked.example")
+        == "That ban was set by a higher power." + ROM_NEWLINE
+    )
 
     assert (
         cmd_allow(low, "locked.example")
-        == "You are not powerful enough to lift that ban."
+        == "You are not powerful enough to lift that ban." + ROM_NEWLINE
     )
 
-    assert cmd_allow(high, "locked.example") == "Ban on locked.example lifted."
+    assert (
+        cmd_allow(high, "locked.example")
+        == "Ban on locked.example lifted." + ROM_NEWLINE
+    )
     assert not bans.get_ban_entries()
 
-    assert cmd_allow(high, "unknown.example") == "Site is not banned."
+    assert cmd_allow(high, "unknown.example") == "Site is not banned." + ROM_NEWLINE
 
 
 class DummyConnection:

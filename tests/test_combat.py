@@ -15,8 +15,10 @@ from mud.models.constants import (
     AffectFlag,
     DamageType,
     ImmFlag,
+    PlayerFlag,
     Position,
     ResFlag,
+    RoomFlag,
     VulnFlag,
     WeaponType,
     attack_lookup,
@@ -25,6 +27,7 @@ from mud.models.room import Room
 from mud.skills import load_skills, skill_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
+from mud.config import get_pulse_violence
 
 
 def setup_combat() -> tuple[Character, Character]:
@@ -67,6 +70,78 @@ def test_rescue_checks_group_permission(monkeypatch: pytest.MonkeyPatch) -> None
     assert out == "Kill stealing is not permitted."
     assert rescuer.wait == 0
     assert rescuer.fighting is None
+
+
+def test_kill_blocks_safe_room_for_npc() -> None:
+    attacker, victim = setup_combat()
+    attacker.room.room_flags = int(RoomFlag.ROOM_SAFE)
+
+    out = process_command(attacker, "kill victim")
+
+    assert out == "Not in this room."
+    assert attacker.fighting is None
+    assert victim.fighting is None
+
+
+def test_kill_requires_clan_for_player_targets() -> None:
+    initialize_world("area/area.lst")
+    attacker = create_test_character("Attacker", 3001)
+    victim = create_test_character("Target", 3001)
+
+    out = process_command(attacker, "kill target")
+
+    assert out == "Join a clan if you want to kill players."
+    assert attacker.fighting is None
+    assert victim.fighting is None
+
+
+def test_kill_flags_player_as_killer(monkeypatch: pytest.MonkeyPatch) -> None:
+    initialize_world("area/area.lst")
+    attacker = create_test_character("Attacker", 3001)
+    victim = create_test_character("Duelist", 3001)
+    attacker.clan = 1
+    victim.clan = 1
+    attacker.skills["hand to hand"] = 100
+    attacker.hitroll = 100
+    victim.hit = 50
+    victim.max_hit = 50
+
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+
+    out = process_command(attacker, "kill duelist")
+
+    assert attacker.act & int(PlayerFlag.KILLER)
+    assert "*** You are now a KILLER!! ***" in attacker.messages
+    assert attacker.wait >= get_pulse_violence()
+    assert out
+
+
+def test_kill_blocks_stealing_existing_fight() -> None:
+    attacker, victim = setup_combat()
+    ally = create_test_character("Ally", 3001)
+    victim.fighting = ally
+    ally.fighting = victim
+
+    out = process_command(attacker, "kill victim")
+
+    assert out == "Kill stealing is not permitted."
+    assert attacker.fighting is None
+
+
+def test_kill_blocks_charmed_player_attacking_master() -> None:
+    initialize_world("area/area.lst")
+    thrall = create_test_character("Thrall", 3001)
+    master = create_test_character("Master", 3001)
+
+    thrall.add_affect(AffectFlag.CHARM)
+    thrall.master = master
+
+    out = process_command(thrall, "kill master")
+
+    assert out == "Master is your beloved master."
+    assert thrall.fighting is None
+    assert master.fighting is None
 
 
 def _load_kick_skill() -> None:

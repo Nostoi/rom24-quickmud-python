@@ -4,10 +4,18 @@ from collections.abc import Callable
 from typing import Any
 
 from mud.combat import multi_hit
-from mud.models.constants import OBJ_VNUM_WHISTLE, AffectFlag, CommFlag, PlayerFlag, Position
+from mud.models.constants import (
+    LEVEL_IMMORTAL,
+    OBJ_VNUM_WHISTLE,
+    AffectFlag,
+    CommFlag,
+    PlayerFlag,
+    Position,
+)
 from mud.registry import room_registry
 from mud.skills.registry import skill_registry as global_skill_registry
 from mud.utils import rng_mm
+from mud.utils.act import act_format
 from mud.world.vision import can_see_character
 
 spec_fun_registry: dict[str, Callable[..., Any]] = {}
@@ -218,6 +226,71 @@ def _broadcast_area(room: Any, message: str) -> None:
 
 def _attack(mob: Any, victim: Any) -> None:
     multi_hit(mob, victim)
+
+
+def spec_thief(mob: Any) -> bool:
+    room = getattr(mob, "room", None)
+    if room is None or _get_position(mob) != Position.STANDING:
+        return False
+
+    mob_level = max(int(getattr(mob, "level", 0) or 0), 0)
+    for victim in _room_occupants(room):
+        if getattr(victim, "is_npc", False):
+            continue
+        victim_level = int(getattr(victim, "level", 0) or 0)
+        if victim_level >= LEVEL_IMMORTAL:
+            continue
+        if rng_mm.number_bits(5) != 0:
+            continue
+        if not can_see_character(mob, victim):
+            continue
+
+        if _is_awake(victim):
+            if rng_mm.number_range(0, mob_level) == 0:
+                victim_message = act_format(
+                    "You discover $n's hands in your wallet!",
+                    recipient=victim,
+                    actor=mob,
+                    arg2=victim,
+                )
+                _append_message(victim, victim_message)
+                for observer in _room_occupants(room):
+                    if observer is victim or observer is mob:
+                        continue
+                    alert = act_format(
+                        "$N discovers $n's hands in $S wallet!",
+                        recipient=observer,
+                        actor=mob,
+                        arg2=victim,
+                    )
+                    _append_message(observer, alert)
+                return True
+            continue
+
+        percent_cap = max(mob_level // 2, 0)
+        steal_cap = mob_level * mob_level
+
+        percent_gold = min(rng_mm.number_range(1, 20), percent_cap)
+        victim_gold = int(getattr(victim, "gold", 0) or 0)
+        gold = (victim_gold * percent_gold) // 100
+        gold = min(gold, steal_cap * 10)
+        if gold:
+            setattr(victim, "gold", victim_gold - gold)
+            mob_gold = int(getattr(mob, "gold", 0) or 0)
+            setattr(mob, "gold", mob_gold + gold)
+
+        percent_silver = min(rng_mm.number_range(1, 20), percent_cap)
+        victim_silver = int(getattr(victim, "silver", 0) or 0)
+        silver = (victim_silver * percent_silver) // 100
+        silver = min(silver, steal_cap * 25)
+        if silver:
+            setattr(victim, "silver", victim_silver - silver)
+            mob_silver = int(getattr(mob, "silver", 0) or 0)
+            setattr(mob, "silver", mob_silver + silver)
+
+        return True
+
+    return False
 
 
 # --- Minimal ROM-like spec functions (rng_mm parity) ---
@@ -484,6 +557,7 @@ def spec_cast_judge(mob: Any) -> bool:
 register_spec_fun("spec_executioner", spec_executioner)
 register_spec_fun("spec_guard", spec_guard)
 register_spec_fun("spec_patrolman", spec_patrolman)
+register_spec_fun("spec_thief", spec_thief)
 register_spec_fun("spec_cast_cleric", spec_cast_cleric)
 register_spec_fun("spec_cast_mage", spec_cast_mage)
 register_spec_fun("spec_cast_undead", spec_cast_undead)

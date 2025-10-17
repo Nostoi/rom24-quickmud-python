@@ -441,11 +441,21 @@ class Character:
         self.damroll -= damroll
         self.saving_throw -= saving_throw
 
-    def strip_affect(self, affect_name: str) -> None:
-        """Strip affect by name (simplified for combat system)."""
-        if affect_name == "sleep":
+    def strip_affect(self, affect_name: str) -> bool:
+        """Strip an affect by name and emit wear-off messaging when available."""
+
+        removed = self.remove_spell_effect(affect_name)
+        if removed is not None:
+            message = getattr(removed, "wear_off_message", None)
+            if message:
+                self.send_to_char(message)
+            return True
+
+        if affect_name == "sleep" and self.has_affect(AffectFlag.SLEEP):
             self.remove_affect(AffectFlag.SLEEP)
-        # Add other affects as needed
+            return True
+
+        return False
 
     def has_spell_effect(self, name: str) -> bool:
         """Check if a named spell affect is active (ROM is_affected equivalent)."""

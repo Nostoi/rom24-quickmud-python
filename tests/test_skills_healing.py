@@ -6,7 +6,9 @@ import pytest
 
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag
+from mud.models.constants import AffectFlag, ExtraFlag
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 from mud.utils import rng_mm
@@ -74,3 +76,79 @@ def test_cure_disease_and_poison_remove_affects(
         for message in target.messages
     )
     assert "Patient looks much better." in observer.messages
+
+
+def test_refresh_restores_move() -> None:
+    caster = Character(name="Healer", level=12, is_npc=False, move=30, max_move=30)
+    target = Character(name="Scout", level=10, is_npc=False, move=10, max_move=25)
+
+    assert skill_handlers.refresh(caster, target) is True
+    assert target.move == 22
+    assert target.messages[-1] == "You feel less tired."
+    assert caster.messages[-1] == "Ok."
+
+    caster.messages.clear()
+    target.messages.clear()
+    target.move = 20
+
+    assert skill_handlers.refresh(caster, target) is True
+    assert target.move == 25
+    assert target.messages[-1] == "You feel fully refreshed!"
+    assert caster.messages[-1] == "Ok."
+
+    target.messages.clear()
+    assert skill_handlers.refresh(target) is True
+    assert target.messages[-1] == "You feel fully refreshed!"
+
+
+def test_remove_curse_dispels_affect_and_object_flags(monkeypatch: pytest.MonkeyPatch) -> None:
+    caster = Character(name="Cleric", level=30, is_npc=False)
+    victim = Character(name="Bearer", level=20, is_npc=False)
+    observer = Character(name="Witness", level=18, is_npc=False)
+    room = Room(vnum=3006)
+    for character in (caster, victim, observer):
+        room.add_character(character)
+
+    prototype = ObjIndex(vnum=5000, short_descr="cursed sword", name="cursed sword")
+    cursed_weapon = Object(
+        instance_id=1,
+        prototype=prototype,
+        level=20,
+        extra_flags=int(ExtraFlag.NODROP | ExtraFlag.NOREMOVE),
+    )
+    victim.add_object(cursed_weapon)
+
+    victim.apply_spell_effect(
+        SpellEffect(
+            name="curse",
+            duration=5,
+            level=20,
+            affect_flag=AffectFlag.CURSE,
+            wear_off_message="The curse wears off.",
+        )
+    )
+
+    for character in (caster, victim, observer):
+        character.messages.clear()
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 99)
+
+    assert skill_handlers.remove_curse(caster, victim) is True
+    assert not victim.has_spell_effect("curse")
+    assert not victim.has_affect(AffectFlag.CURSE)
+    assert cursed_weapon.extra_flags & int(ExtraFlag.NODROP) == 0
+    assert cursed_weapon.extra_flags & int(ExtraFlag.NOREMOVE) == 0
+    assert "You feel better." in victim.messages
+    assert any(msg == "Your cursed sword glows blue." for msg in victim.messages)
+    assert observer.messages[-1] == "Bearer's cursed sword glows blue."
+    assert caster.messages[-1] == "Bearer's cursed sword glows blue."
+
+    cursed_weapon.extra_flags = int(ExtraFlag.NODROP | ExtraFlag.NOREMOVE)
+    caster.messages.clear()
+    observer.messages.clear()
+
+    assert skill_handlers.remove_curse(caster, cursed_weapon) is True
+    assert cursed_weapon.extra_flags & int(ExtraFlag.NODROP) == 0
+    assert cursed_weapon.extra_flags & int(ExtraFlag.NOREMOVE) == 0
+    assert caster.messages[-1] == "cursed sword glows blue."
+    assert observer.messages[-1] == "cursed sword glows blue."

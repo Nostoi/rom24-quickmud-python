@@ -35,6 +35,7 @@ from .alias_cmds import do_alias, do_prefi, do_prefix, do_unalias
 from .build import cmd_redit, handle_redit_command
 from .combat import do_kick, do_kill, do_rescue
 from .communication import (
+    do_auction,
     do_answer,
     do_clantalk,
     do_gossip,
@@ -136,6 +137,7 @@ COMMANDS: list[Command] = [
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("reply", do_reply, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
+    Command("auction", do_auction, min_position=Position.RESTING),
     Command("gossip", do_gossip, min_position=Position.RESTING),
     Command("grats", do_grats, min_position=Position.RESTING),
     Command("quote", do_quote, min_position=Position.RESTING),

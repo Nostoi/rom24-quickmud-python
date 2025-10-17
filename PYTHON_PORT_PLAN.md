@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: networking_telnet -->
+<!-- LAST-PROCESSED: help_system -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-13 (pytest --collect-only -q; 761 tests collected) -->
-<!-- LAST-TEST-RUN: 2025-10-13 (PYTHONPATH=. pytest tests/test_telnet_server.py::test_telnet_stream_normalizes_embedded_crlf tests/test_telnet_server.py::test_telnet_stream_preserves_rom_newline -q; 2 passed / 2 total) -->
-<!-- TEST-PASS-RATE: 100% (2 passed / 2 total) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-16 (pytest --collect-only -q; 812 tests collected) -->
+<!-- LAST-TEST-RUN: 2025-10-16 (PYTHONPATH=. pytest tests/test_combat.py::test_kill_blocks_charmed_player_attacking_master tests/test_combat.py::test_kill_blocks_safe_room_for_npc tests/test_combat.py::test_kill_requires_clan_for_player_targets tests/test_combat.py::test_kill_flags_player_as_killer tests/test_combat.py::test_kill_blocks_stealing_existing_fight -q; 5 passed / 5 total) -->
+<!-- TEST-PASS-RATE: 100% (5 passed / 5 total) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -21,7 +21,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | subsystem            | status        | evidence                                                                                                                                                                                              | tests                                                                                                                           |
 | -------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
-| skills_spells        | stub_or_partial | C: src/magic.c:2805-3404 (faerie fire/fog/identify); PY: mud/skills/handlers.py:1757-2440 (faerie fire/fog/identify stubs remain while invisibility/holy word parity recently landed) | tests/test_skills.py; tests/test_skills_learned.py; tests/test_skills_conjuration.py; tests/test_skills_healing.py; tests/test_skills_detection.py; tests/test_skills_damage.py |
+| skills_spells        | stub_or_partial | C: src/magic.c:3721-3773 (locate object parity); PY: mud/skills/handlers.py:4922-4968 (`locate_object` now enforces ROM detection chance & carrier visibility); tests/test_skills_detection.py::{test_locate_object_respects_detection_chance,test_locate_object_hides_invisible_carriers} |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
 | command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
@@ -91,19 +91,22 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 <!-- PARITY-GAPS-START -->
 <!-- SUBSYSTEM: channels START -->
 
-### channels — Parity Audit 2025-11-12
+### channels — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
-KEY RISKS: color, messaging
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.92)
+KEY RISKS: color, messaging, channel_toggle
 
 TASKS:
 
-- None (parity coverage achieved; monitor future ROM channel changes for new evidence.)
+- ✅ [P0] **channels: port auction channel toggle and broadcast parity** — done 2025-10-15
+  EVIDENCE: C src/act_comm.c:276-336; PY mud/commands/communication.py:205-287; PY mud/commands/dispatcher.py:32-116; TEST tests/test_communication.py::test_auction_channel_toggle_and_broadcast
+- ✅ [P1] **channels: restore ROM immtalk color envelope and newline formatting** — done 2025-10-16
+  EVIDENCE: C src/act_comm.c:716-742 (`act_new("{i[{I$n{i]: $t{x"...)` wraps immtalk chat with colour codes); PY mud/commands/communication.py:487-513; TEST tests/test_communication.py::{test_immtalk_uses_rom_colour_envelope,test_immtalk_restricts_to_immortals,test_immtalk_bypasses_nochannels_for_speaker}
 
 NOTES:
-- C: src/act_comm.c:333-704 keeps gossip/grats/quote/question/answer/music under COMM toggles with quiet/nochannel enforcement and color envelopes.
-- PY: mud/commands/communication.py:210-360 mirrors ROM toggles, quiet/nochannel gating, and color formatting for gossip/grats/quote/question/answer/music via `broadcast_global`.
-- TEST: tests/test_communication.py::{test_gossip_channel_toggle_and_broadcast,test_grats_channel_respects_mutes,test_quote_channel_toggle_and_broadcast,test_question_channel_toggle_and_broadcast,test_answer_channel_respects_comm_flags,test_music_channel_toggle_and_broadcast} exercise toggles, quiet/nochannel enforcement, and muted listener handling.
+- C: src/act_comm.c:276-336 implements auction toggles and coloured broadcasts gated by COMM_NOAUCTION and COMM_QUIET/COMM_NOCHANNELS; src/act_comm.c:716-742 formats immtalk with `{i[{I$n{i]: $t{x` and CRLF order for immortal chat.
+- PY: mud/commands/communication.py:205-287 mirrors ROM auction toggles and now formats immtalk with `{i[{I$n{i]: $t{x` envelopes and CRLF ordering.
+- TEST: tests/test_communication.py::{test_auction_channel_toggle_and_broadcast,test_gossip_channel_toggle_and_broadcast,test_immtalk_uses_rom_colour_envelope} cover channel toggles, listener filters, and immtalk colour envelopes.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: channels END -->
@@ -129,11 +132,22 @@ NOTES:
 <!-- SUBSYSTEM: wiznet_imm END -->
 <!-- SUBSYSTEM: combat START -->
 
-### combat — Parity Audit 2025-11-07
+### combat — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
-KEY RISKS: side_effects, rng
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+KEY RISKS: side_effects, rng, pk_flagging
 TASKS:
+
+- ✅ [P0] **combat: port kill command safety, charm, and lag gating to ROM parity** — done 2025-10-15
+  EVIDENCE: C src/fight.c:2758-2820; PY mud/commands/combat.py:20-139; PY mud/combat/engine.py:671-880; TEST tests/test_combat.py::{test_kill_blocks_safe_room_for_npc,test_kill_requires_clan_for_player_targets,test_kill_flags_player_as_killer,test_kill_blocks_stealing_existing_fight}
+- ✅ [P0] **combat: block charmed players from attacking their master with kill** — done 2025-10-16
+  EVIDENCE: C src/fight.c:2768-2782 (`IS_AFFECTED(ch, AFF_CHARM) && ch->master == victim` guard); PY mud/commands/combat.py:28-76; TEST tests/test_combat.py::test_kill_blocks_charmed_player_attacking_master
+
+- ✅ [P0] **combat: strip sleep spell effect when fighters wake into combat** — done 2025-12-16
+  EVIDENCE: PY mud/models/character.py:444-470; PY mud/combat/engine.py:528-545; TEST tests/test_combat_state.py::test_set_fighting_strips_sleep_spell_effect
+
+- ✅ [P0] **combat: announce sleep wear-off when combat wakes targets** — done 2025-12-16
+  EVIDENCE: C src/fight.c:151-170 (set_fighting strips sleep via affect_strip); PY mud/models/character.py:444-459; TEST tests/test_combat_state.py::test_set_fighting_announces_sleep_wear_off
 
 - ✅ [P0] **combat: compute weapon selection and THAC0 using ROM skill tables** — done 2025-10-20
   EVIDENCE: C src/fight.c:386-520; PY mud/combat/engine.py:90-220,380-470; TEST tests/test_combat.py::test_one_hit_uses_equipped_weapon; TEST tests/test_combat_thac0_engine.py::test_weapon_skill_influences_thac0
@@ -232,21 +246,98 @@ TASKS:
   - estimate: M
   - risk: medium
   - evidence: C src/fight.c:1460-1564 (`make_corpse` loop handling floating slots, rot-death removal, and timer ranges); PY mud/combat/death.py:182-274 (transfers inventory without adjusting timers/flags or handling floating objects).
+- ✅ [P0] **combat: strip sleep spell effects when combat begins** — done 2025-10-13
+  EVIDENCE: PY mud/models/character.py:444-471; PY mud/combat/engine.py:560-572; TEST tests/test_combat_state.py::test_set_fighting_strips_sleep_effect
 
 NOTES:
 
-- C: src/fight.c:1460-1721 and src/handler.c:2103-2140 cover `make_corpse`, `raw_kill`, gore spawns, pet cleanup, and clan hall placement for player deaths.
-- PY: mud/combat/death.py:349-573 mirrors ROM corpse handling, resets consumable timers, dismisses charmed pets, and returns PCs to their clan hall or altar after death; mud/groups/xp.py:45-121 zaps anti-alignment gear during group experience awards.
-- TEST: tests/test_combat_death.py::{test_make_corpse_strips_rot_death_and_drops_floating,test_player_kill_resets_state,test_player_death_dismisses_pet} lock in floating-slot drops, post-death state restoration, and pet dismissal side effects.
+- C: src/fight.c:1018-1340 and 2758-2820 detail `is_safe`, `check_killer`, and kill command gating for safe rooms, pets, charm, and PK flagging, including the beloved master guard for charmed attackers.
+- PY: mud/commands/combat.py:20-180 enforces kill safety checks, applies wait states, blocks charmed attackers from targeting their master, and calls `check_killer`; mud/combat/engine.py:671-880 handles PK flag assignment, charm cleanup, and wiznet notifications.
+- TEST: tests/test_combat.py::{test_kill_blocks_safe_room_for_npc,test_kill_requires_clan_for_player_targets,test_kill_flags_player_as_killer,test_kill_blocks_stealing_existing_fight,test_kill_blocks_charmed_player_attacking_master} verify safe-room gating, clan restrictions, killer flagging, kill-steal prevention, and charm-master protections.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
 ### skills_spells — Parity Audit 2025-12-11
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
-KEY RISKS: RNG, lag_wait, side_effects, area_effects
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+KEY RISKS: RNG, lag_wait, side_effects, area_effects, visibility
 TASKS:
+
+- ✅ [P0] **skills_spells: port recharge wand and staff restoration spell** — done 2025-12-18
+  EVIDENCE: C src/magic.c:4140-4206 (`spell_recharge` chance branches); PY mud/skills/handlers.py:5827-5908; TEST tests/test_skills_damage.py::{test_recharge_restores_charges,test_recharge_failure_paths}
+
+- ✅ [P0] **skills_spells: port ray of truth holy damage spell** — done 2025-12-18
+  EVIDENCE: C src/magic.c:4075-4106 (`spell_ray_of_truth` alignment-scaling logic); PY mud/skills/handlers.py:5761-5826; TEST tests/test_skills_damage.py::{test_ray_of_truth_blinds_and_scales_damage,test_ray_of_truth_respects_good_and_evil_alignment}
+
+- ✅ [P0] **skills_spells: restore portal sight gating to ROM can_see_room parity** — done 2025-12-18
+  EVIDENCE: PY mud/skills/handlers.py:5587-5595; TEST tests/test_skills_transport.py::test_portal_blocks_blind_caster_without_sight
+
+- ✅ [P0] **skills_spells: restore nexus sight gating to ROM can_see_room parity** — done 2025-12-18
+  EVIDENCE: PY mud/skills/handlers.py:5207-5210; TEST tests/test_skills_transport.py::test_nexus_blocks_blind_caster_without_sight
+
+- ✅ [P0] **skills_spells: allow nexus conjuration from private/solitary origin rooms** — done 2025-12-17
+  EVIDENCE: C src/magic2.c:120-189 (`spell_nexus` only guards ROOM_SAFE and ROOM_NO_RECALL on the caster's room); PY mud/skills/handlers.py:5190-5229 (from-room gating now mirrors ROM restrictions); TEST tests/test_skills_transport.py::test_nexus_allows_private_origin_rooms
+
+- ✅ [P0] **skills_spells: allow portal and nexus targeting when vision fails but ROM room gating passes** — done 2025-12-17
+  EVIDENCE: C src/handler.c:2590-2612 (`can_see_room` ignores blindness/darkness); PY mud/skills/handlers.py:509-554, mud/skills/handlers.py:5207-5209, mud/skills/handlers.py:5587-5609 (transport spells reuse ROM trust/clan gating when visibility fails); TEST tests/test_skills_transport.py::{test_portal_allows_blind_caster,test_nexus_targets_dark_room_without_infravision}
+
+- ✅ [P0] **skills_spells: restore locate object detection chance and carrier visibility parity** — done 2025-12-17
+  EVIDENCE: C src/magic.c:3721-3773; PY mud/skills/handlers.py:4922-4968, mud/skills/handlers.py:877-961; TEST tests/test_skills_detection.py::{test_locate_object_respects_detection_chance,test_locate_object_hides_invisible_carriers}
+
+- ✅ [P0] **skills_spells: port refresh stamina restoration spell** — done 2025-12-17
+  EVIDENCE: C src/magic.c:4200-4210; PY mud/skills/handlers.py:5416-5445; TEST tests/test_skills_healing.py::test_refresh_restores_move
+
+- ✅ [P0] **skills_spells: port remove curse spell for objects and characters** — done 2025-12-17
+  EVIDENCE: C src/magic.c:4210-4282; PY mud/skills/handlers.py:5448-5543; TEST tests/test_skills_healing.py::test_remove_curse_dispels_affect_and_object_flags
+
+- ✅ [P0] **skills_spells: port protection from evil saving-throw ward** — done 2025-12-17
+  EVIDENCE: C src/magic.c:4014-4038; PY mud/skills/handlers.py:5311-5350; TEST tests/test_skills_buffs.py::test_protection_evil_applies_save_bonus
+
+- ✅ [P0] **skills_spells: port protection from good saving-throw ward** — done 2025-12-17
+  EVIDENCE: C src/magic.c:4044-4068; PY mud/skills/handlers.py:5353-5392; TEST tests/test_skills_buffs.py::test_protection_good_applies_save_bonus
+
+- ✅ [P0] **skills_spells: port locate object divination spell** — done 2025-12-17
+  EVIDENCE: PY mud/skills/handlers.py:4826-4871; TEST tests/test_skills_detection.py::{test_locate_object_finds_visible_items,test_locate_object_blocks_nolocate_and_level}
+
+- ✅ [P1] **skills_spells: port lore object appraisal skill** — done 2025-12-17
+  EVIDENCE: PY mud/skills/handlers.py:4873-4897; TEST tests/test_skills_detection.py::{test_lore_appraises_known_objects,test_lore_fails_without_skill}
+
+- ✅ [P0] **skills_spells: port lightning bolt electrical damage spell** — done 2025-12-17
+  EVIDENCE: C src/magic.c:3696-3732 (`spell_lightning_bolt` damage table); PY mud/skills/handlers.py:4541-4614; TEST tests/test_skills_damage.py::{test_lightning_bolt_rolls_rom_damage_table,test_lightning_bolt_save_halves_damage}
+
+- ✅ [P0] **skills_spells: port magic missile force bolt damage spell** — done 2025-12-17
+  EVIDENCE: C src/magic.c:3784-3803 (`spell_magic_missile` damage table and save logic); PY mud/skills/handlers.py:4666-4739; TEST tests/test_skills_damage.py::{test_magic_missile_rolls_rom_damage_table,test_magic_missile_save_halves_damage}
+
+- ✅ [P0] **skills_spells: port enchant weapon offensive item spell** — done 2025-12-17
+  EVIDENCE: PY mud/skills/handlers.py:2809-2968; TEST tests/test_skills_buffs.py::test_enchant_weapon_applies_rom_bonuses; TEST tests/test_skills_buffs.py::test_enchant_weapon_failure_paths
+
+- ✅ [P0] **skills_spells: port enchant armor defensive item spell** — done 2025-12-17
+  EVIDENCE: PY mud/skills/handlers.py:2668-2807; TEST tests/test_skills_buffs.py::test_enchant_armor_applies_rom_ac_bonus; TEST tests/test_skills_buffs.py::test_enchant_armor_failure_paths
+
+- ✅ [P0] **skills_spells: have wand projectile spells honor override level for saving throws** — done 2025-12-16
+  EVIDENCE: PY mud/skills/handlers.py:3430-3665; TEST tests/test_skills_damage.py::test_general_purpose_wand_damage_respects_override_level; TEST tests/test_skills_damage.py::test_high_explosive_wand_damage_respects_override_level
+
+- ✅ [P0] **skills_spells: port general purpose wand projectile spell** — done 2025-12-15
+  EVIDENCE: C src/magic.c:4847-4860; PY mud/skills/handlers.py:3430-3450; TEST tests/test_skills_damage.py::test_general_purpose_wand_damage
+
+- ✅ [P0] **skills_spells: port high explosive wand projectile spell** — done 2025-12-15
+  EVIDENCE: C src/magic.c:4859-4876; PY mud/skills/handlers.py:3606-3640; TEST tests/test_skills_damage.py::test_high_explosive_wand_damage
+
+- ✅ [P0] **skills_spells: restore ROM wand attack nouns for general purpose/high explosive projectiles** — done 2025-12-16
+  EVIDENCE: C src/const.c:1538-1552 (skill_table nouns "general purpose ammo"/"high explosive ammo"); PY mud/skills/handlers.py:3438-3464; PY mud/skills/handlers.py:3664-3690; TEST tests/test_skills_damage.py::test_general_purpose_wand_damage_respects_override_level; TEST tests/test_skills_damage.py::test_high_explosive_wand_damage_respects_override_level
+
+- ✅ [P0] **skills_spells: align sleep wear-off message with ROM msg_off string** — done 2025-12-16
+  EVIDENCE: C src/const.c:1455-1460 (sleep msg_off "You feel less tired."); PY mud/skills/handlers.py:4663-4681; TEST tests/test_combat_state.py::test_set_fighting_announces_sleep_wear_off
+
+- ✅ [P0] **skills_spells: silence sleep failure messaging for level gate and saves** — done 2025-12-16
+  EVIDENCE: C src/magic.c:4358-4380 (sleep exits early without messaging on level/saves); PY mud/skills/handlers.py:4652-4661; TEST tests/test_skills_debuffs.py::test_sleep_level_gate_is_silent_failure; TEST tests/test_skills_debuffs.py::test_sleep_save_is_silent_failure
+
+- ✅ [P0] **skills_spells: port portal warp-stone conjuration spell** — done 2025-12-17
+  EVIDENCE: C src/magic2.c:56-104; PY mud/skills/handlers.py:5515-5620; TEST tests/test_skills_transport.py::{test_portal_conjures_warp_stone_gateway,test_portal_blocks_forbidden_destinations}
+
+- ✅ [P0] **skills_spells: port nexus twin-portal conjuration spell** — done 2025-12-17
+  EVIDENCE: C src/magic2.c:120-189; PY mud/skills/handlers.py:5140-5254; TEST tests/test_skills_transport.py::{test_nexus_creates_bidirectional_portals,test_nexus_fails_when_origin_forbids_recall}
 
 - ✅ [P0] **skills_spells: port continual light glow/object conjuration spell** — done 2025-12-12
   EVIDENCE: C src/magic.c:1466-1496; PY mud/skills/handlers.py:1601-1643; PY mud/models/constants.py:20-29; TEST tests/test_skills_conjuration.py::{test_continual_light_glows_object_in_inventory,test_continual_light_conjures_light_ball_in_room}
@@ -292,6 +383,11 @@ TASKS:
 
 - ✅ [P0] **skills_spells: port fireball explosive damage spell** — done 2025-12-11
   EVIDENCE: C src/magic.c:2740-2782 (`spell_fireball` dam table); PY mud/skills/handlers.py:2621-2691; TEST tests/test_skills_damage.py::{test_fireball_uses_rom_damage_table,test_fireball_save_halves_damage}
+- ✅ [P0] **skills_spells: port energy drain negative siphon spell** — done 2025-12-17
+  EVIDENCE: C src/magic.c:2702-2730 (`spell_energy_drain`); PY mud/skills/handlers.py:2684-2725; PY mud/advancement.py:89-118; TEST tests/test_skills_damage.py::{test_energy_drain_siphons_resources,test_energy_drain_saves_with_message}
+
+- ✅ [P0] **skills_spells: port know alignment aura messaging spell** — done 2025-12-17
+  EVIDENCE: C src/magic.c:3666-3685 (`spell_know_alignment`); PY mud/skills/handlers.py:3018-3053; TEST tests/test_skills_detection.py::{test_know_alignment_reports_aura,test_know_alignment_bounds_edges}
 
 - ✅ [P0] **skills_spells: port flamestrike holy fire bolt** — done 2025-12-11
   EVIDENCE: C src/magic.c:2790-2806 (`spell_flamestrike` dice formula); PY mud/skills/handlers.py:2708-2722; TEST tests/test_skills_damage.py::{test_flamestrike_rolls_rom_dice,test_flamestrike_save_halves_damage}
@@ -430,9 +526,14 @@ TASKS:
 
 - ✅ [P0] **skills_spells: restore infravision/invis affects for characters and objects** — done 2025-11-24
   EVIDENCE: PY mud/skills/handlers.py:L2405-L2492; TEST tests/test_skills_buffs.py::test_infravision_applies_affect_and_messages; TEST tests/test_skills_buffs.py::test_invis_handles_objects_and_characters
+- ✅ [P0] **skills_spells: implement sleep charm spell with ROM affect_join semantics** — done 2025-10-13
+  EVIDENCE: PY mud/skills/handlers.py:4581-4640; TEST tests/test_skills_debuffs.py::test_sleep_spell_applies_affect_and_messages; TEST tests/test_skills_debuffs.py::test_sleep_spell_respects_saves_and_undead
 
 NOTES:
 
+- C: src/magic2.c:56-189 enforce `can_see_room` checks for portal and nexus; PY mud/skills/handlers.py:5207-5210,5587-5595 now require sight so blind casters fail, matching ROM gating alongside the new transport regressions.
+- C: src/magic.c:4847-4876 now mirrors both wand spells; `general_purpose` and `high_explosive` handlers roll the ROM dice ranges and honor pierce saves before delegating to `apply_damage`.
+- NOTE: The earlier blind/dark portal allowances (task “allow portal and nexus targeting when vision fails...”) were reverted on 2025-12-18; parity now requires sight per ROM and is locked in by the new failure regressions.
 - C: src/magic.c:3280-3334 and 3583-3660 guided the holy word mass loop plus infravision/invis affect handling now mirrored in mud/skills/handlers.py.
 - C: src/magic.c:4441-4562 and src/act_move.c:1496-1518 outline the remaining stone skin, ventriloquate, and sneak parity gaps captured above.
 - PY: mud/skills/handlers.py mirrors ROM identify messaging for scrolls, wands, weapons, and containers while holy_word and invisibility parity remain covered under combat.
@@ -557,10 +658,13 @@ NOTES:
 
 ### weather — Parity Audit 2025-11-14
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: rng
 
 TASKS:
+
+- ✅ [P0] **weather: gate sunlight broadcasts to awake outdoor listeners like ROM** — done 2025-12-18
+  EVIDENCE: C src/update.c:532-626 (`weather_update` appends sunrise/sunset strings then sends to awake outdoor characters only); PY mud/game_loop.py:930-943 (time_tick now reuses `_should_receive_weather` for sunlight messages); TEST tests/test_time_daynight.py::{test_sunrise_broadcast_targets_awake_outdoor_characters,test_time_tick_advances_hour_and_triggers_sunrise}
 
 - ✅ [P0] **weather: port ROM barometric pressure and sky transitions** — done 2025-11-14
   EVIDENCE: C src/update.c:522-650; PY mud/game_loop.py:600-647; TEST tests/test_game_loop.py::test_weather_pressure_and_sky_transitions
@@ -582,12 +686,15 @@ TASKS:
   - estimate: S
   - risk: low
   - evidence: C src/update.c:522-650 (sends `buf` to CON_PLAYING descriptors that are outside and awake); PY mud/game_loop.py:600-647 (no messaging or outdoor gating).
+- ✅ [P0] **weather: append CRLF to sky-change broadcasts like ROM weather_update** — done 2025-12-18
+  EVIDENCE: C src/update.c:568-625 (strcat-ing messages with "\n\r"); PY mud/game_loop.py:893-924; TEST tests/test_game_loop.py::test_weather_broadcasts_outdoor_characters
 
 NOTES:
 
 - C: `src/update.c:522-650` drives seasonal pressure deltas, SKY_* state transitions, and outdoor broadcast gating each tick.
-- PY: `mud/game_loop.py:40-120` seeds `WeatherState` at boot and `weather_tick` (lines 600-647) mirrors the ROM pressure deltas and SKY_* transitions while leaving broadcast strings unimplemented.
+- PY: `mud/game_loop.py:40-120` seeds `WeatherState` at boot and `weather_tick` (lines 600-647) now mirrors ROM pressure, SKY_* transitions, and CRLF-terminated broadcasts for outdoor recipients.
 - TEST: `tests/test_game_loop.py::test_weather_pressure_and_sky_transitions` pins RNG rolls to assert the cloudless→lightning sequence and pressure clamps, and `tests/test_game_loop.py::test_weather_broadcasts_outdoor_characters` validates awake outdoor gating for message dispatch.
+- PY: `mud/game_loop.py:930-943` now shares the same `_should_receive_weather` gating as `weather_tick`, so sunrise and sunset announcements follow ROM's awake/outdoor restriction while retaining CRLF termination.
 - Applied tiny fix: none
 
   <!-- SUBSYSTEM: weather END -->
@@ -800,11 +907,17 @@ TASKS:
   - ✅ [P0] **help_system: limit creation help output to the first matching entry** — done 2025-11-30
     EVIDENCE: C src/act_info.c:1846-1888 (`do_help` breaks once `ch->desc->connected != CON_PLAYING`); PY mud/commands/help.py:151-190 (`do_help` accepts `limit_results` and truncates matches); PY mud/net/connection.py:407-414 (`_resolve_help_text` forwards `limit_first=True` for creation prompts)
     EVIDENCE: TEST tests/test_help_system.py::test_help_creation_flow_limits_to_first_entry
+  - ✅ [P0] **help_system: emit CRLF-terminated help responses to mirror ROM paging** — done 2025-12-18
+    EVIDENCE: C src/act_info.c:1852-1890 (strcat with `"\n\r"` separators); PY mud/commands/help.py:6-210; TEST tests/test_help_system.py::test_help_combines_matching_entries_with_separator
+  - ✅ [P0] **help_system: terminate fallback messaging with ROM CRLF separators** — done 2025-12-18
+    EVIDENCE: C src/act_info.c:1832-1908 (`do_help` sends "No help on that word.\n\r" via `send_to_char`); PY mud/commands/help.py:166-221; TEST tests/test_help_system.py::{test_help_respects_trust_levels,test_help_missing_topic_logs_request,test_help_generates_command_topic_when_missing,test_help_missing_topic_suggests_commands}
+- ✅ [P0] **help_system: log orphaned command fallbacks so staff see missing help entries** — done 2025-12-18
+  EVIDENCE: C src/act_info.c:1890-1908 (`do_help` always calls `append_file` when no entry matches); PY mud/commands/help.py:132-221 (`_log_orphan_request` records command/suggestion fallbacks); TEST tests/test_help_system.py::test_help_generates_command_topic_when_missing
   NOTES:
-- C: ROM emits separators and keyword headers when multiple help entries match; the Python command now mirrors that pagination flow.
-- PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output; creation flows now request a single entry so onboarding mirrors ROM's `do_help` break condition.
-- TEST: The new regression seeds stacked keyword entries and verifies the aggregated response includes both texts separated by the ROM divider.
-- Applied tiny fix: none
+  - C: ROM emits separators and keyword headers when multiple help entries match; the Python command now mirrors that pagination flow.
+  - PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output; creation flows now request a single entry so onboarding mirrors ROM's `do_help` break condition. Outputs now normalise to CRLF pairs for separators and body text to match telnet paging expectations.
+  - TEST: The new regression seeds stacked keyword entries and verifies the aggregated response includes both texts separated by the ROM divider.
+  - Applied tiny fix: none. Command/suggestion fallbacks now log to `OHELPS_FILE`, restoring ROM parity for staff orphan tracking.
   <!-- SUBSYSTEM: help_system END -->
   <!-- SUBSYSTEM: mob_programs START -->
 
@@ -866,15 +979,20 @@ TASKS:
 - ✅ [P0] **npc_spec_funs: port ROM law-enforcement specs (guard/executioner/patrolman)** — done 2025-11-02
   EVIDENCE: PY mud/spec_funs.py:L246-L403; TEST tests/test_spec_funs.py::test_guard_attacks_flagged_criminal; tests/test_spec_funs.py::test_patrolman_blows_whistle_when_breaking_fight
 
-- ✅ [P0] **npc_spec_funs: implement caster spec functions (spec_cast_cleric/mage/undead/judge)** — done 2025-11-02
-  EVIDENCE: PY mud/spec_funs.py:L409-L488; TEST tests/test_spec_funs.py::test_spec_cast_cleric_casts_expected_spells; tests/test_spec_funs.py::test_spec_cast_mage_uses_rom_spell_table
+  - ✅ [P0] **npc_spec_funs: implement caster spec functions (spec_cast_cleric/mage/undead/judge)** — done 2025-11-02
+    EVIDENCE: PY mud/spec_funs.py:L409-L488; TEST tests/test_spec_funs.py::test_spec_cast_cleric_casts_expected_spells; tests/test_spec_funs.py::test_spec_cast_mage_uses_rom_spell_table
+  - ✅ [P0] **npc_spec_funs: port ROM pickpocket behaviour for spec_thief** — done 2025-12-18
+    EVIDENCE: C src/special.c:1146-1181 (`spec_thief` steals gold/silver with wake detection and `number_bits(5)` gating); PY mud/spec_funs.py:199-289; TEST tests/test_spec_funs.py::{test_spec_thief_steals_from_sleeping_player,test_spec_thief_fails_against_awake_player}
+- ✅ [P1] **npc_spec_funs: restore spec_thief discovery messaging to use ROM possessive pronouns** — done 2025-12-18
+  EVIDENCE: C src/special.c:1146-1181 (`act` uses `$S wallet!` for observers discovering thieves); PY mud/spec_funs.py:247-286 (uses `act_format` to produce ROM pronouns); TEST tests/test_spec_funs.py::test_spec_thief_fails_against_awake_player
 
-NOTES:
+  NOTES:
 
-- C: src/special.c:261-995 implements the justice AI and caster spell tables that ROM relies on for town guards and magic-using mobs.
-- PY: mud/spec_funs.py registers only spec_cast_adept and lacks entries for guards, executioners, patrolmen, or caster behaviors, so no NPC ever runs ROM spec logic.
-- TEST: tests/test_spec_funs.py presently covers registry plumbing and spec_cast_adept RNG only; new regressions must simulate wanted PCs and combat targets to lock down behavior once the specs are ported.
-- Applied tiny fix: none
+  - C: src/special.c:261-995 implements the justice AI and caster spell tables that ROM relies on for town guards and magic-using mobs.
+  - PY: mud/spec_funs.py registers only spec_cast_adept and lacks entries for guards, executioners, patrolmen, or caster behaviors, so no NPC ever runs ROM spec logic.
+  - TEST: tests/test_spec_funs.py presently covers registry plumbing and spec_cast_adept RNG only; new regressions must simulate wanted PCs and combat targets to lock down behavior once the specs are ported.
+  - PY: mud/spec_funs.py now wires `spec_thief` to steal from sleeping victims while broadcasting discovery messages, and targeted tests cover both successful steals and caught pickpockets. Discovery broadcasts now route through `act_format` so observers receive ROM `$S wallet!` possessive pronouns.
+  - Applied tiny fix: none
 
 <!-- SUBSYSTEM: npc_spec_funs END -->
 <!-- PARITY-GAPS-END -->
@@ -898,7 +1016,7 @@ NOTES:
 | shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                        |
 | command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                                 |
 | socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social          |
-| channels                 | src/act_comm.c:do_gossip/do_grats/do_quote/do_question/do_answer/do_music | mud/commands/communication.py:do_gossip/do_grats/do_quote/do_question/do_answer/do_music |
+| channels                 | src/act_comm.c:do_auction/do_gossip/do_grats/do_quote/do_question/do_answer/do_music | mud/commands/communication.py:do_auction/do_gossip/do_grats/do_quote/do_question/do_answer/do_music |
 | wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                            |
 | world_loader             | src/db.c:load_area/load_rooms                                      | mud/loaders/json_loader.py:load_area_from_json/mud/loaders/area_loader.py                  |
 | resets                   | src/db.c:reset_room (O/P/G gating)                                 | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
@@ -1141,9 +1259,18 @@ NOTES:
 
 ### security_auth_bans — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.82)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
 KEY RISKS: security
 TASKS:
+
+- ✅ [P0] **security_auth_bans: require canonical host tokens for allow command** — done 2025-12-18
+  EVIDENCE: C src/ban.c:252-294 (`do_allow` compares `arg` directly without trimming wildcards); PY mud/commands/admin_commands.py:298-338 (`cmd_allow` now rejects `*` tokens before invoking `remove_banned_host`); TEST tests/test_admin_commands.py::test_allow_requires_canonical_host_token
+
+- ✅ [P0] **security_auth_bans: render ban listings with ROM CRLF ordering** — done 2025-12-18
+  EVIDENCE: C src/ban.c:152-198 (`ban_site` appends `"\n\r"` while paging ban listings); PY mud/commands/admin_commands.py:233-272 (ban listings now join rows with `ROM_NEWLINE` and append a trailing `\n\r`); TEST tests/test_admin_commands.py::{test_ban_listing_uses_rom_newline,test_ban_lists_entries_and_sets_newbie_flag}
+
+- ✅ [P0] **security_auth_bans: append ROM newline to ban/permban/allow responses** — done 2025-12-18
+  EVIDENCE: C src/ban.c:208-244 (`ban_site`/`do_allow` send newline-terminated responses); PY mud/commands/admin_commands.py:251-333 (`cmd_ban`, `_apply_ban`, and `cmd_allow` now append `ROM_NEWLINE` to success/error strings); TEST tests/test_admin_commands.py::{test_ban_command_responses_use_rom_newline,test_permban_and_allow_enforce_trust}
 
 - ✅ [P0] **security_auth_bans: reject BAN_ALL hosts before telnet greeting** — done 2025-11-09
   EVIDENCE: PY mud/net/connection.py:L732-L744; TEST tests/test_account_auth.py::test_banned_host_disconnects_before_greeting
@@ -1167,6 +1294,7 @@ NOTES:
 - PY: mud/net/connection.py:L732-L744 now checks `BanFlag.ALL` before ANSI negotiation and closes the descriptor after sending the ROM ban message.
 - TEST: tests/test_account_auth.py::test_banned_host_disconnects_before_greeting confirms banned hosts receive the ROM message, never hit the greeting prompts, and do not register a session.
 - UPDATE: mud/net/connection.py:L940-L1155 now mirrors `check_ban(..., BAN_NEWBIES)` by rejecting new-character creation attempts and preserving the ROM "New players are not allowed from your site." banner before any prompts.
+- PY: mud/commands/admin_commands.py:298-338 now mirrors ROM by refusing wildcard allow tokens, so staff must reference the canonical stored host when lifting bans.
 - Applied tiny fix: none
   <!-- SUBSYSTEM: security_auth_bans END -->
   <!-- SUBSYSTEM: logging_admin START -->

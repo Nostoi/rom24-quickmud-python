@@ -185,6 +185,48 @@ def test_music_channel_toggle_and_broadcast():
     bard.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
+def test_auction_channel_toggle_and_broadcast():
+    seller = make_player("Seller", 3001)
+    bidder = make_player("Bidder", 3001)
+    muted = make_player("Muted", 3001)
+    quiet = make_player("Quiet", 3001)
+    noauction = make_player("NoAuction", 3001)
+
+    muted.muted_channels.add("auction")
+    quiet.set_comm_flag(CommFlag.QUIET)
+    noauction.set_comm_flag(CommFlag.NOAUCTION)
+
+    out = process_command(seller, "auction Rare blade")
+    assert out == "{aYou auction '{ARare blade{a'{x"
+    assert "{aSeller auctions '{ARare blade{a'{x" in bidder.messages
+    assert all("Rare blade" not in msg for msg in muted.messages)
+    assert all("Rare blade" not in msg for msg in quiet.messages)
+    assert all("Rare blade" not in msg for msg in noauction.messages)
+    assert not seller.has_comm_flag(CommFlag.NOAUCTION)
+
+    toggle_off = process_command(seller, "auction")
+    assert toggle_off == "{aAuction channel is now OFF.{x"
+    assert seller.has_comm_flag(CommFlag.NOAUCTION)
+
+    toggle_on = process_command(seller, "auction")
+    assert toggle_on == "{aAuction channel is now ON.{x"
+    assert not seller.has_comm_flag(CommFlag.NOAUCTION)
+
+    seller.set_comm_flag(CommFlag.QUIET)
+    quiet_msg = process_command(seller, "auction hush")
+    assert quiet_msg == "You must turn off quiet mode first."
+    seller.clear_comm_flag(CommFlag.QUIET)
+
+    seller.set_comm_flag(CommFlag.NOCHANNELS)
+    nochannels_msg = process_command(seller, "auction hush")
+    assert nochannels_msg == "The gods have revoked your channel privileges."
+    seller.clear_comm_flag(CommFlag.NOCHANNELS)
+
+    seller.banned_channels.add("auction")
+    banned_msg = process_command(seller, "auction hush")
+    assert banned_msg == "You are banned from auction."
+
+
 def test_gossip_channel_toggle_and_broadcast():
     gossiper = make_player("Gossiper", 3001)
     listener = make_player("Listener", 3001)
@@ -353,8 +395,9 @@ def test_immtalk_restricts_to_immortals():
     assert denied == "You aren't an immortal."
 
     out = process_command(immortal, "immtalk Greetings")
-    assert out == "[Immortal]: Greetings"
-    assert "[Immortal]: Greetings" in watcher.messages
+    expected = "{i[{IImmortal{i]: Greetings{x\n\r"
+    assert out == expected
+    assert expected in watcher.messages
     assert all("Greetings" not in msg for msg in mortal.messages)
 
     toggle_off = process_command(immortal, "immtalk")
@@ -368,21 +411,38 @@ def test_immtalk_restricts_to_immortals():
 
     immortal.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels = process_command(immortal, "immtalk hush")
-    assert nochannels == "[Immortal]: hush"
-    assert "[Immortal]: hush" in watcher.messages
+    expected_hush = "{i[{IImmortal{i]: hush{x\n\r"
+    assert nochannels == expected_hush
+    assert expected_hush in watcher.messages
     immortal.clear_comm_flag(CommFlag.NOCHANNELS)
 
     watcher.messages.clear()
     immortal.set_comm_flag(CommFlag.QUIET)
     quiet_speaker = process_command(immortal, "immtalk hush2")
-    assert quiet_speaker == "[Immortal]: hush2"
-    assert "[Immortal]: hush2" in watcher.messages
+    expected_hush2 = "{i[{IImmortal{i]: hush2{x\n\r"
+    assert quiet_speaker == expected_hush2
+    assert expected_hush2 in watcher.messages
     immortal.clear_comm_flag(CommFlag.QUIET)
 
     watcher.messages.clear()
     watcher.set_comm_flag(CommFlag.NOWIZ)
     process_command(immortal, "immtalk Hidden")
     assert all("Hidden" not in msg for msg in watcher.messages)
+
+
+def test_immtalk_uses_rom_colour_envelope():
+    speaker = make_player("Immortal", 3001)
+    listener = make_player("Watcher", 3001)
+
+    speaker.level = LEVEL_IMMORTAL
+    listener.trust = LEVEL_IMMORTAL
+
+    result = process_command(speaker, "immtalk Status report")
+    expected = "{i[{IImmortal{i]: Status report{x\n\r"
+
+    assert result == expected
+    assert result.endswith("\n\r")
+    assert expected in listener.messages
 
 
 def test_immtalk_bypasses_nochannels_for_speaker():
@@ -397,8 +457,9 @@ def test_immtalk_bypasses_nochannels_for_speaker():
     immortal.set_comm_flag(CommFlag.QUIET)
 
     out = process_command(immortal, "immtalk hush")
-    assert out == "[Immortal]: hush"
-    assert "[Immortal]: hush" in watcher.messages
+    expected = "{i[{IImmortal{i]: hush{x\n\r"
+    assert out == expected
+    assert expected in watcher.messages
     assert all("hush" not in msg for msg in mortal.messages)
 
 

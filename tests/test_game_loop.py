@@ -144,7 +144,7 @@ def test_weather_broadcasts_outdoor_characters(monkeypatch):
 
     weather_tick()
 
-    assert "The sky is getting cloudy." in awake_outdoor.messages
+    assert awake_outdoor.messages == ["The sky is getting cloudy.\r\n"]
     assert not awake_indoor.messages
     assert not asleep_outdoor.messages
 

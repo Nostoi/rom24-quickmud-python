@@ -38,7 +38,7 @@ def test_help_defaults_to_summary_topic():
 def test_help_respects_trust_levels():
     load_help_file("data/help.json")
     mortal = Character(name="Newbie", level=1, trust=0)
-    assert process_command(mortal, "help wizhelp") == "No help on that word."
+    assert process_command(mortal, "help wizhelp") == "No help on that word.\r\n"
 
     immortal = Character(name="Imm", level=60)
     result = process_command(immortal, "help wizhelp")
@@ -58,7 +58,7 @@ def test_help_restricted_topic_logs_request(monkeypatch, tmp_path):
     log_path = Path("log") / OHELPS_FILE
     assert log_path.exists()
     assert "[ 3001] Newbie: wizhelp" in log_path.read_text(encoding="utf-8")
-    assert result == "No help on that word."
+    assert result == "No help on that word.\r\n"
 
 
 def test_help_reconstructs_multi_word_keywords():
@@ -80,9 +80,15 @@ def test_help_combines_matching_entries_with_separator():
     ch = Character(name="Tester")
     result = process_command(ch, "help armor")
 
-    assert "Basics." in result
-    assert "Advanced tips." in result
-    assert result.count("============================================================") == 1
+    expected = (
+        "ARMOR\r\n"
+        "Basics.\r\n"
+        "\r\n============================================================\r\n\r\n"
+        "ARMOR IMMORTAL\r\n"
+        "Advanced tips.\r\n"
+    )
+
+    assert result == expected
 
 
 def test_help_missing_topic_logs_request(monkeypatch, tmp_path):
@@ -98,7 +104,7 @@ def test_help_missing_topic_logs_request(monkeypatch, tmp_path):
     assert log_path.exists()
     content = log_path.read_text(encoding="utf-8")
     assert "[ 3001] Researcher: planar theory" in content
-    assert result == "No help on that word."
+    assert result == "No help on that word.\r\n"
 
 
 def test_help_overlong_request_rebukes_and_skips_logging(monkeypatch, tmp_path, caplog):
@@ -111,26 +117,38 @@ def test_help_overlong_request_rebukes_and_skips_logging(monkeypatch, tmp_path, 
     with caplog.at_level("WARNING"):
         result = process_command(ch, f"help {topic}")
 
-    assert "That was rude!" in result
-    assert "No help on that word." in result
+    assert result == "No help on that word.\r\nThat was rude!\r\n"
     assert any("Excessive help request length" in record.message for record in caplog.records)
     log_path = Path("log") / OHELPS_FILE
     assert not log_path.exists()
 
 
-def test_help_generates_command_topic_when_missing():
-    load_help_file("data/help.json")
-    ch = Character(name="Tester")
+def test_help_generates_command_topic_when_missing(monkeypatch, tmp_path):
+    help_path = Path(__file__).resolve().parent.parent / "data" / "help.json"
+    monkeypatch.chdir(tmp_path)
+    load_help_file(help_path)
+    ch = Character(name="Tester", is_npc=False)
+    ch.room = Room(vnum=3001)
     result = process_command(ch, "help unalias")
-    assert "Command: unalias" in result
-    assert "Minimum position" in result
+    expected = (
+        "Command: unalias\r\n"
+        "Aliases: None\r\n"
+        "Minimum position: Dead\r\n"
+        "Available to mortals.\r\n"
+    )
+    log_path = Path("log") / OHELPS_FILE
+    assert log_path.exists()
+    content = log_path.read_text(encoding="utf-8")
+    assert "[ 3001] Tester: unalias" in content
+    assert result == expected
 
 
 def test_help_missing_topic_suggests_commands():
     load_help_file("data/help.json")
     ch = Character(name="Tester")
     result = process_command(ch, "help unknown")
-    assert "Try:" in result
+    assert result.startswith("No help on that word.\r\nTry: ")
+    assert result.endswith("\r\n")
     assert "unban" in result or "unalias" in result
 
 

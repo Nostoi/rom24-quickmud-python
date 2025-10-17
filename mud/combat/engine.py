@@ -3,7 +3,8 @@ from __future__ import annotations
 from mud import mobprog
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
-from mud.characters import is_same_clan
+from mud.characters import is_clan_member, is_same_clan
+from mud.characters.follow import stop_follower
 from mud.combat.death import raw_kill
 from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
@@ -27,7 +28,9 @@ from mud.models.constants import (
     Position,
     WeaponType,
     attack_damage_type,
+    LEVEL_IMMORTAL,
 )
+from mud.persistence import save_character
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.utils import rng_mm
 from mud.skills import check_improve
@@ -46,6 +49,13 @@ WEAPON_SKILL_BY_TYPE: dict[WeaponType, str] = {
     WeaponType.WHIP: "whip",
     WeaponType.POLEARM: "polearm",
 }
+
+
+def _coerce_int(value: object) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
 
 
 def get_wielded_weapon(attacker: Character | None):
@@ -566,7 +576,7 @@ def set_fighting(ch: Character, victim: Character) -> None:
 
     # Strip sleep affect if present
     if ch.has_affect(AffectFlag.SLEEP):
-        ch.strip_affect("sleep")  # TODO: implement affect system
+        ch.strip_affect("sleep")
 
     ch.fighting = victim
     ch.position = Position.FIGHTING
@@ -803,6 +813,64 @@ def _clear_pk_flags(attacker: Character, victim: Character) -> None:
         victim.act = act_value & ~int(PlayerFlag.KILLER)
     elif act_value & int(PlayerFlag.THIEF):
         victim.act = act_value & ~int(PlayerFlag.THIEF)
+
+
+def _character_is_charmed(character: Character | None) -> bool:
+    if character is None:
+        return False
+    if hasattr(character, "has_spell_effect") and character.has_spell_effect("charm person"):
+        return True
+    return hasattr(character, "has_affect") and character.has_affect(AffectFlag.CHARM)
+
+
+def check_killer(attacker: Character | None, victim: Character | None) -> None:
+    if attacker is None or victim is None:
+        return
+
+    resolved_victim = victim
+    while _character_is_charmed(resolved_victim) and getattr(resolved_victim, "master", None) is not None:
+        resolved_victim = resolved_victim.master
+
+    if getattr(resolved_victim, "is_npc", False):
+        return
+
+    victim_act = _coerce_int(getattr(resolved_victim, "act", 0))
+    if victim_act & int(PlayerFlag.KILLER) or victim_act & int(PlayerFlag.THIEF):
+        return
+
+    if _character_is_charmed(attacker):
+        master = getattr(attacker, "master", None)
+        if master is None:
+            if attacker.strip_affect("charm person") and hasattr(attacker, "has_affect"):
+                attacker.remove_affect(AffectFlag.CHARM)
+        stop_follower(attacker)
+        return
+
+    if getattr(attacker, "is_npc", False):
+        return
+
+    if attacker is resolved_victim:
+        return
+
+    attacker_level = _coerce_int(getattr(attacker, "level", 0))
+    if attacker_level >= LEVEL_IMMORTAL:
+        return
+
+    if not is_clan_member(attacker):
+        return
+
+    attacker_act = _coerce_int(getattr(attacker, "act", 0))
+    if attacker_act & int(PlayerFlag.KILLER):
+        return
+
+    if getattr(attacker, "fighting", None) is resolved_victim:
+        return
+
+    attacker.send_to_char("*** You are now a KILLER!! ***")
+    attacker.act = attacker_act | int(PlayerFlag.KILLER)
+    victim_name = getattr(resolved_victim, "name", None) or "someone"
+    wiznet(f"$N is attempting to murder {victim_name}", attacker, None, WiznetFlag.WIZ_FLAGS, None, 0)
+    save_character(attacker)
 
 
 def _send_wiznet_death(attacker: Character, victim: Character) -> None:
