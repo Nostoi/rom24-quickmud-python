@@ -193,6 +193,21 @@ def can_carry_n(ch: Character) -> int:
     return MAX_WEAR + 2 * d + level
 
 
+def get_carry_weight(ch: Character) -> int:
+    """Return total carry weight including coin burden, mirroring ROM `get_carry_weight`."""
+
+    getter = getattr(ch, "get_carry_weight", None)
+    if callable(getter):
+        try:
+            return int(getter())
+        except TypeError:  # pragma: no cover - defensive fallback
+            pass
+    base_weight = int(getattr(ch, "carry_weight", 0) or 0)
+    silver = int(getattr(ch, "silver", 0) or 0)
+    gold = int(getattr(ch, "gold", 0) or 0)
+    return base_weight + silver // 10 + (gold * 2) // 5
+
+
 def _exit_block_message(char: Character, exit: Exit) -> str | None:
     """Return ROM-style denial message if a closed exit blocks movement."""
 
@@ -301,7 +316,9 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     if dir_key not in dir_map:
         return "You cannot go that way."
 
-    if char.carry_weight > can_carry_w(char) or char.carry_number > can_carry_n(char):
+    if get_carry_weight(char) > can_carry_w(char) or char.carry_number > can_carry_n(char):
+        current_wait = int(getattr(char, "wait", 0) or 0)
+        char.wait = max(current_wait, 1)
         return "You are too encumbered to move."
 
     idx = dir_map[dir_key]

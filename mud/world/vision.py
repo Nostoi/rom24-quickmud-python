@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 from mud.models.character import Character
+from mud.math.c_compat import c_div
 from mud.models.constants import (
     MAX_LEVEL,
     AffectFlag,
     PlayerFlag,
     RoomFlag,
     Sector,
+    Stat,
 )
 from mud.models.room import Room
 from mud.time import Sunlight, time_info
+from mud.utils import rng_mm
 
 _VISIBILITY_AFFECTS = AffectFlag.INFRARED | AffectFlag.DARK_VISION
 
@@ -56,6 +59,61 @@ def _has_holylight(char: Character | None) -> bool:
     return bool(act_flags & int(PlayerFlag.HOLYLIGHT))
 
 
+def _coerce_int(value: object) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _get_curr_stat_value(char: Character | None, stat: Stat) -> int:
+    if char is None:
+        return 0
+    getter = getattr(char, "get_curr_stat", None)
+    if callable(getter):
+        try:
+            value = getter(stat)
+        except Exception:
+            value = None
+        if value is not None:
+            return _coerce_int(value)
+    perm_stats = getattr(char, "perm_stat", None)
+    if isinstance(perm_stats, (list, tuple)):
+        idx = int(stat)
+        if 0 <= idx < len(perm_stats):
+            return _coerce_int(perm_stats[idx])
+    return 0
+
+
+def _get_skill_percent(char: Character | None, name: str) -> int:
+    if char is None:
+        return 0
+    skills = getattr(char, "skills", None)
+    if isinstance(skills, dict):
+        value = skills.get(name)
+        if value is None:
+            value = skills.get(name.lower())
+        if value is not None:
+            percent = _coerce_int(value)
+            return max(0, min(100, percent))
+    if getattr(char, "is_npc", False) and name.lower() == "sneak":
+        level = _coerce_int(getattr(char, "level", 0))
+        return level * 2 + 20
+    return 0
+
+
+def _sneak_success_chance(observer: Character, target: Character) -> int:
+    chance = _get_skill_percent(target, "sneak")
+    victim_dex = _get_curr_stat_value(target, Stat.DEX)
+    chance += (victim_dex * 3) // 2
+    observer_int = _get_curr_stat_value(observer, Stat.INT)
+    chance -= observer_int * 2
+    observer_level = _coerce_int(getattr(observer, "level", 0))
+    target_level = _coerce_int(getattr(target, "level", 0))
+    chance -= observer_level - c_div(target_level * 3, 2)
+    return chance
+
+
 def can_see_character(observer: Character, target: Character | None) -> bool:
     """Replicate ROM ``can_see`` for character-to-character checks."""
 
@@ -97,14 +155,13 @@ def can_see_character(observer: Character, target: Character | None) -> bool:
 
     if _has_affect(target, AffectFlag.SNEAK) and getattr(target, "fighting", None) is None:
         if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
-            return False
+            chance = _sneak_success_chance(observer, target)
+            if rng_mm.number_percent() < chance:
+                return False
 
     if _has_affect(target, AffectFlag.HIDE) and getattr(target, "fighting", None) is None:
         if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
             return False
-
-    if observer_room is not target_room:
-        return False
 
     return True
 
@@ -165,3 +222,24 @@ def can_see_room(char: Character, room: Room) -> bool:
         return False
 
     return True
+
+
+def describe_character(observer: Character, target: Character | None) -> str:
+    """Return a ROM-style ``PERS`` description for ``target``."""
+
+    if target is None:
+        return "someone"
+
+    if observer is target:
+        return "You"
+
+    name: str | None
+    if getattr(target, "is_npc", False):
+        name = getattr(target, "short_descr", None) or getattr(target, "name", None)
+    else:
+        name = getattr(target, "name", None)
+
+    if not name:
+        return "someone"
+
+    return str(name).strip() or "someone"

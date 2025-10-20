@@ -137,11 +137,15 @@ def _gather_object_state() -> tuple[dict[int, int], dict[int, list[object]]]:
         seen_chars.add(ident)
         for carried in getattr(char, "inventory", []) or []:
             if carried is not None:
+                setattr(carried, "carried_by", char)
+                setattr(carried, "location", getattr(char, "room", getattr(char, "location", None)))
                 tally(carried)
         equipment = getattr(char, "equipment", None)
         if isinstance(equipment, dict):
             for equipped in equipment.values():
                 if equipped is not None:
+                    setattr(equipped, "carried_by", char)
+                    setattr(equipped, "location", getattr(char, "room", getattr(char, "location", None)))
                     tally(equipped)
 
     for room in room_registry.values():
@@ -208,10 +212,14 @@ def _count_existing_objects() -> dict[int, int]:
             _record_object_counts(obj, counts)
         for occupant in getattr(room, "people", []) or []:
             for item in getattr(occupant, "inventory", []) or []:
+                setattr(item, "carried_by", occupant)
+                setattr(item, "location", getattr(occupant, "room", getattr(occupant, "location", None)))
                 _record_object_counts(item, counts)
             equipment = getattr(occupant, "equipment", None)
             if isinstance(equipment, dict):
                 for item in equipment.values():
+                    setattr(item, "carried_by", occupant)
+                    setattr(item, "location", getattr(occupant, "room", getattr(occupant, "location", None)))
                     _record_object_counts(item, counts)
 
     for vnum, proto in obj_registry.items():
@@ -471,7 +479,6 @@ def apply_resets(area: Area) -> None:
         elif cmd == "O":
             last_reset_succeeded = False
             obj_vnum = reset.arg1 or 0
-            limit = _resolve_reset_limit(reset.arg2)
             room_vnum = reset.arg3 or 0
             room = room_registry.get(room_vnum)
             if obj_vnum <= 0 or room is None:
@@ -488,7 +495,12 @@ def apply_resets(area: Area) -> None:
                 for obj in getattr(room, "contents", [])
                 if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_vnum
             ]
-            if len(existing_in_room) >= limit:
+            if existing_in_room:
+                last_obj = existing_in_room[-1]
+                last_reset_succeeded = False
+                continue
+            limit = _resolve_reset_limit(reset.arg2)
+            if limit != 999 and object_counts.get(obj_vnum, 0) >= limit:
                 last_obj = None
                 last_reset_succeeded = False
                 continue
@@ -675,6 +687,13 @@ def apply_resets(area: Area) -> None:
                     if room is not None and getattr(room, "area", None) is area:
                         container_obj = candidate
                         break
+                    carrier = getattr(candidate, "carried_by", None)
+                    if carrier is not None:
+                        carrier_room = getattr(carrier, "room", None)
+                        carrier_area = getattr(carrier_room, "area", None)
+                        if carrier_area is area:
+                            container_obj = candidate
+                            break
             if not container_obj:
                 for room in room_registry.values():
                     if room.area is not area:

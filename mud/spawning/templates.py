@@ -427,10 +427,14 @@ class MobInstance:
         self.room = room
 
     def add_to_inventory(self, obj: Object) -> None:
-        self.inventory.append(obj)
+        if obj not in self.inventory:
+            self.inventory.append(obj)
+        obj.carried_by = self
+        obj.location = None
 
     def equip(self, obj: Object, slot: int) -> None:  # stub
         self.add_to_inventory(obj)
+        obj.wear_loc = slot
 
     def has_act_flag(self, flag: ActFlag) -> bool:
         act_bits = getattr(self, "act", 0)

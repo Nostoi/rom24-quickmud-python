@@ -417,6 +417,29 @@ def do_note(char: Character, args: str) -> str:
         pcdata.in_progress = None
         return "Note posted."
 
+    if subcmd == "expire":
+        if not board.can_write(trust):
+            return "You cannot write on this board."
+        if not char.is_immortal():
+            return "Only immortals may set the expiration."
+        draft = pcdata.in_progress
+        if draft is None or draft.board_key != board.storage_key():
+            return "You have no note in progress."
+        now = time.time()
+        arg = rest_str.strip()
+        if arg:
+            try:
+                days = int(arg)
+            except ValueError:
+                return "Please provide the number of days."
+            if days <= 0:
+                return "Expiration must be a positive number of days."
+            expire_at = now + days * 24 * 60 * 60
+        else:
+            expire_at = board.default_expire(base_timestamp=now)
+        draft.expire = expire_at
+        return f"This note will expire on {time.ctime(expire_at)}."
+
     if subcmd == "remove":
         if not rest_str.strip():
             return "Remove which note?"

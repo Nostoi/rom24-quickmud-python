@@ -214,6 +214,44 @@ def test_buy_respects_carry_limits():
         time_info.hour = previous_hour
 
 
+def test_buy_denied_when_coins_exceed_weight_cap():
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = create_test_character("HeavyPurse", 3010)
+    char.gold = 1000
+    char.silver = 0
+    char.carry_number = 0
+    char.carry_weight = 0
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        if not any((obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in keeper.inventory):
+            lantern = spawn_object(3031)
+            assert lantern is not None
+            lantern.prototype.short_descr = "a hooded brass lantern"
+            keeper.inventory.append(lantern)
+
+        limit_weight = can_carry_w(char)
+        assert limit_weight == 100  # default with no stats
+
+        response = process_command(char, "buy lantern")
+        assert response == "You can't carry that much weight."
+        assert char.gold == 1000
+        assert char.silver == 0
+        assert not any((obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in char.inventory)
+    finally:
+        time_info.hour = previous_hour
+
+
 def test_buy_preserves_infinite_stock():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry

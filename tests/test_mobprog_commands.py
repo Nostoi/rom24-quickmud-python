@@ -5,16 +5,22 @@ from pathlib import Path
 import pytest
 
 from mud import mob_cmds
+from mud.commands.dispatcher import process_command
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.mob import MobIndex
+from mud.models.constants import LEVEL_HERO
+from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Exit, Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.skills import handlers as skill_handlers
 from mud.skills.registry import load_skills
+from mud.mobprog import Trigger
 from mud.utils import rng_mm
+
+
+ROM_NEWLINE = "\n\r"
 
 
 @pytest.fixture(autouse=True)
@@ -139,6 +145,31 @@ def test_spawn_move_and_force_commands_use_rom_semantics(monkeypatch):
     assert forced == [("Hero", "say hello")]
 
 
+def test_mpforce_numbered_target_selects_second_match(monkeypatch):
+    _, room, _ = _setup_area()
+
+    enforcer = Character(name="Enforcer", is_npc=True)
+    room.add_character(enforcer)
+    character_registry.append(enforcer)
+
+    first_guard = Character(name="Guard One", is_npc=False)
+    second_guard = Character(name="Guard Two", is_npc=False)
+    for guard in (first_guard, second_guard):
+        room.add_character(guard)
+        character_registry.append(guard)
+
+    forced: list[tuple[str, str]] = []
+
+    def fake_process(target: Character, command: str) -> None:
+        forced.append((target.name, command))
+
+    monkeypatch.setattr("mud.commands.dispatcher.process_command", fake_process)
+
+    mob_cmds.mob_interpret(enforcer, "force 2.guard say halt")
+
+    assert forced == [("Guard Two", "say halt")]
+
+
 def test_mpremember_sets_target():
     _, room, _ = _setup_area()
 
@@ -206,6 +237,39 @@ def test_mpcast_defensive_defaults_to_self():
     mob_cmds.mob_interpret(cleric, "cast 'armor'")
 
     assert cleric.has_spell_effect("armor")
+
+
+def test_mpstat_lists_mob_programs():
+    _, room, _ = _setup_area()
+
+    mob_proto = MobIndex(vnum=2100, short_descr="scripted sentinel")
+    mob_program = MobProgram(trig_type=int(Trigger.GREET), trig_phrase="hello", vnum=5100)
+    mob_proto.mprogs.append(mob_program)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    guardian = Character(name="Guardian", is_npc=True)
+    guardian.prototype = mob_proto
+    guardian.mprog_delay = 3
+    room.add_character(guardian)
+    character_registry.append(guardian)
+
+    target = Character(name="Traveler", is_npc=False)
+    guardian.mprog_target = target
+    room.add_character(target)
+    character_registry.append(target)
+
+    immortal = Character(name="Aria", is_npc=False, level=LEVEL_HERO)
+    immortal.is_admin = True
+
+    output = process_command(immortal, "mpstat Guardian")
+
+    lines = [line for line in output.split(ROM_NEWLINE) if line]
+    assert lines
+    assert lines[0].startswith("Mobile #2100")
+    assert "[scripted sentinel]" in lines[0]
+    assert any("Delay   3" in line and "Traveler" in line for line in lines)
+    assert any("Trigger [GREET" in line and "Program [5100]" in line for line in lines)
+    assert any("Phrase [hello]" in line for line in lines)
 
 
 def test_mpgforce_forces_room_members(monkeypatch):
@@ -398,6 +462,75 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
 
     mob_cmds.mob_interpret(mob, "flee")
     assert mob.room is escape
+
+
+def test_mpjunk_removes_equipped_items_and_nested_contents():
+    mob = Character(name="Janitor", is_npc=True)
+    container_proto = ObjIndex(vnum=7400, short_descr="a battered bin", name="bin")
+    scrap_proto = ObjIndex(vnum=7401, short_descr="a scrap", name="scrap")
+    container = Object(instance_id=None, prototype=container_proto)
+    nested = Object(instance_id=None, prototype=scrap_proto)
+    container.contained_items.append(nested)
+
+    mob.add_object(container)
+    mob.equip_object(container, "hold")
+
+    assert mob.carry_number == 1
+    assert mob.equipment.get("hold") is container
+    assert container.contained_items == [nested]
+
+    mob_cmds.mob_interpret(mob, "junk bin")
+
+    assert mob.equipment == {}
+    assert container not in mob.inventory
+    assert mob.carry_number == 0
+    assert mob.carry_weight == 0
+    assert container.contained_items == []
+
+
+def test_mpjunk_all_suffix_removes_matching_inventory_objects():
+    mob = Character(name="Collector", is_npc=True)
+    coin_proto = ObjIndex(vnum=7402, short_descr="a silver coin", name="coin")
+    torch_proto = ObjIndex(vnum=7403, short_descr="a travel torch", name="torch")
+    coin = Object(instance_id=None, prototype=coin_proto)
+    torch = Object(instance_id=None, prototype=torch_proto)
+
+    mob.add_object(coin)
+    mob.add_object(torch)
+
+    assert mob.carry_number == 2
+
+    mob_cmds.mob_interpret(mob, "junk all.coin")
+
+    assert coin not in mob.inventory
+    assert torch in mob.inventory
+    assert mob.carry_number == 1
+
+    mob_cmds.mob_interpret(mob, "junk all")
+
+    assert mob.inventory == []
+    assert mob.carry_number == 0
+
+
+def test_mpjunk_numbered_token_discards_correct_object():
+    _, room, _ = _setup_area()
+
+    proto = ObjIndex(vnum=7600, short_descr="a bronze sword", name="sword bronze")
+    obj_registry[proto.vnum] = proto
+
+    first = Object(instance_id=1, prototype=proto)
+    second = Object(instance_id=2, prototype=proto)
+
+    collector = Character(name="Collector", is_npc=True)
+    collector.inventory = [first, second]
+    collector.messages = []
+    room.add_character(collector)
+    character_registry.append(collector)
+
+    mob_cmds.mob_interpret(collector, "junk 2.sword")
+
+    assert first in collector.inventory
+    assert second not in collector.inventory
 
 
 def test_mpat_runs_command_in_target_room(monkeypatch):

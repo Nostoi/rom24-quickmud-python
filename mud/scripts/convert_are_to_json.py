@@ -4,6 +4,7 @@ from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
 from mud.loaders.reset_loader import validate_resets
+from mud.mobprog import clear_registered_programs, format_trigger_flag, get_registered_program
 from mud.models.constants import Direction, Sector
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
@@ -14,6 +15,7 @@ def clear_registries() -> None:
     room_registry.clear()
     mob_registry.clear()
     obj_registry.clear()
+    clear_registered_programs()
 
 
 def room_to_dict(room) -> dict:
@@ -136,6 +138,33 @@ def convert_area(path: str) -> dict:
         if m.area is area and getattr(m, "spec_fun", None):
             specials.append({"mob_vnum": m.vnum, "spec": str(m.spec_fun)})
 
+    # Capture mob program scripts and assignments.
+    mob_program_records: dict[int, dict[str, object]] = {}
+    for mob in mob_registry.values():
+        if mob.area is not area:
+            continue
+        for program in getattr(mob, "mprogs", []) or []:
+            program_vnum = int(getattr(program, "vnum", 0) or 0)
+            if program_vnum <= 0:
+                continue
+            record = mob_program_records.setdefault(
+                program_vnum,
+                {"code": "", "assignments": []},
+            )
+            trigger_name = format_trigger_flag(getattr(program, "trig_type", 0))
+            assignment: dict[str, object] = {"mob_vnum": mob.vnum}
+            if trigger_name:
+                assignment["trigger"] = trigger_name
+            phrase = getattr(program, "trig_phrase", "")
+            if phrase:
+                assignment["phrase"] = phrase
+            record["assignments"].append(assignment)
+
+    for vnum, record in mob_program_records.items():
+        program_obj = get_registered_program(vnum)
+        if program_obj and getattr(program_obj, "code", ""):
+            record["code"] = getattr(program_obj, "code")
+
     # Convert area-level resets
     resets = []
     for r in area.resets:
@@ -159,6 +188,11 @@ def convert_area(path: str) -> dict:
         "resets": resets,
         "specials": specials,
     }
+    if mob_program_records:
+        data["mob_programs"] = [
+            {"vnum": vnum, **record}
+            for vnum, record in sorted(mob_program_records.items())
+        ]
     return data
 
 

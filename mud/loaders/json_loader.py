@@ -14,10 +14,12 @@ from mud.models.constants import Direction, Sector, Sex
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
 from ..models.area import Area
-from ..models.mob import MobIndex
+from ..models.mob import MobIndex, MobProgram
 from ..models.obj import ObjIndex
 from ..models.room import Exit, ExtraDescr, Room
 from ..models.room_json import ResetJson
+from ..mobprog import register_program_code, resolve_trigger_flag
+from .specials_loader import apply_specials_from_json
 
 
 def _rom_flags_to_int(flags_str: str) -> int:
@@ -194,6 +196,8 @@ def load_area_from_json(json_file_path: str) -> Area:
 
     # Load mobs
     _load_mobs_from_json(data.get(mobs_key, []), area)
+    _load_mob_programs_from_json(data.get("mob_programs", []))
+    apply_specials_from_json(data.get("specials", []))
 
     # Load objects
     _load_objects_from_json(data.get(objects_key, []), area)
@@ -392,6 +396,43 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         )
 
         obj_registry[obj.vnum] = obj
+
+
+def _load_mob_programs_from_json(programs_data: list[dict[str, Any]]) -> None:
+    """Register mob program scripts and attach assignments from JSON."""
+
+    for program_entry in programs_data:
+        vnum = program_entry.get("vnum")
+        if vnum is None:
+            continue
+        code = program_entry.get("code", "")
+        if code:
+            register_program_code(vnum, code)
+
+    for program_entry in programs_data:
+        vnum = program_entry.get("vnum")
+        if vnum is None:
+            continue
+        code = program_entry.get("code", "")
+        assignments = program_entry.get("assignments", [])
+        for assignment in assignments:
+            mob_vnum = assignment.get("mob_vnum")
+            trigger_name = assignment.get("trigger", "")
+            phrase = assignment.get("phrase", "")
+            mob = mob_registry.get(mob_vnum)
+            trigger_flag = resolve_trigger_flag(trigger_name)
+            if mob is None or trigger_flag is None:
+                continue
+            program = MobProgram(
+                trig_type=int(trigger_flag),
+                trig_phrase=phrase,
+                vnum=vnum,
+                code=code or None,
+            )
+            mob.mprogs.append(program)
+            mob.mprog_flags |= int(trigger_flag)
+            if code:
+                register_program_code(vnum, code)
 
 
 def load_all_areas_from_json(json_dir: str) -> dict[int, Area]:

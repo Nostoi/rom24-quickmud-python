@@ -5,7 +5,7 @@ import shlex
 from pathlib import Path
 
 from mud.models.area import Area
-from mud.models.help import HelpEntry, help_registry, register_help
+from mud.models.help import HelpEntry, clear_help_registry, register_help
 from mud.models.help_json import HelpJson
 
 from .base_loader import BaseTokenizer
@@ -25,7 +25,7 @@ def load_help_file(path: str | Path) -> None:
     """Load help entries from ``path`` into ``help_registry``."""
     with open(path, encoding="utf-8") as fp:
         data = json.load(fp)
-    help_registry.clear()
+    clear_help_registry()
     global help_greeting
     help_greeting = ""
     for raw in data:

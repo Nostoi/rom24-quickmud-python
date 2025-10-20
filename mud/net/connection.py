@@ -32,6 +32,7 @@ from mud.account import (
 )
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
+from mud.commands.inventory import give_school_outfit
 from mud.commands.help import do_help
 from mud.config import get_qmconfig
 from mud.db.models import PlayerAccount
@@ -1513,6 +1514,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         )
         SESSIONS[session.name] = session
         char.desc = session
+        outfit_message: str | None = None
+        if is_new_player and give_school_outfit(char):
+            outfit_message = "You have been equipped by Mota."
+
         _apply_qmconfig_telnetga(
             char,
             session,
@@ -1523,6 +1528,8 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
+            if outfit_message:
+                await send_to_char(char, outfit_message)
             if not reconnecting:
                 await _send_login_motd(char)
                 if _should_send_newbie_help(char):

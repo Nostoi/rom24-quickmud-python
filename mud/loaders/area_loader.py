@@ -5,6 +5,7 @@ from mud.registry import area_registry
 from .base_loader import BaseTokenizer
 from .help_loader import load_helps
 from .mob_loader import load_mobiles
+from .mobprog_loader import load_mobprogs
 from .obj_loader import load_objects
 from .reset_loader import load_resets
 from .room_loader import load_rooms
@@ -19,6 +20,7 @@ SECTION_HANDLERS = {
     "#RESETS": load_resets,
     "#SHOPS": load_shops,
     "#SPECIALS": load_specials,
+    "#MOBPROGS": load_mobprogs,
 }
 
 

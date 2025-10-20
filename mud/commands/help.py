@@ -6,7 +6,7 @@ from collections.abc import Iterable, Sequence
 from mud.admin_logging.admin import log_orphan_help_request
 from mud.models.character import Character
 from mud.models.constants import MAX_CMD_LEN
-from mud.models.help import HelpEntry, help_registry
+from mud.models.help import HelpEntry, help_entries, help_registry
 
 _logger = logging.getLogger(__name__)
 
@@ -104,35 +104,27 @@ def _visible_level(entry: HelpEntry) -> int:
     return -entry.level - 1 if entry.level < 0 else entry.level
 
 
-def _iter_unique_entries(entries: Iterable[HelpEntry]) -> Iterable[HelpEntry]:
-    seen: set[int] = set()
-    for entry in entries:
-        key = id(entry)
-        if key in seen:
-            continue
-        seen.add(key)
-        yield entry
-
-
 def _is_keyword_match(term: str, entry: HelpEntry) -> bool:
     if not term:
         return False
 
-    term_lower = term.lower()
-    keywords = [keyword.lower() for keyword in entry.keywords]
-
-    # Full-string prefix match mirrors the first str_prefix check in ROM's is_name.
-    if any(keyword.startswith(term_lower) for keyword in keywords):
-        return True
-
-    parts = term_lower.split()
-    if not parts:
+    term_lower = term.lower().strip()
+    if not term_lower:
         return False
 
-    for part in parts:
-        if not any(keyword.startswith(part) for keyword in keywords):
-            return False
-    return True
+    parts = [segment for segment in term_lower.split() if segment]
+    for raw_keyword in entry.keywords:
+        tokens = [segment for segment in raw_keyword.lower().split() if segment]
+        if not tokens:
+            continue
+
+        if any(token.startswith(term_lower) for token in tokens):
+            return True
+
+        if parts and all(any(token.startswith(part) for token in tokens) for part in parts):
+            return True
+
+    return False
 
 
 def _generate_command_help(term: str) -> str | None:
@@ -202,7 +194,7 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
     topic_lower = topic.lower()
     trust = _get_trust(ch)
 
-    entry = help_registry.get(topic_lower)
+    bucket = help_registry.get(topic_lower, [])
     blocked_entry = None
     matches: list[HelpEntry] = []
     seen_entries: set[int] = set()
@@ -214,22 +206,24 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
         seen_entries.add(key)
         matches.append(candidate)
 
-    if entry:
-        if _visible_level(entry) <= trust:
-            _add_entry(entry)
-        else:
-            blocked_entry = entry
+    def _consider(candidate: HelpEntry) -> None:
+        nonlocal blocked_entry
 
-    for candidate in _iter_unique_entries(help_registry.values()):
-        if candidate is entry:
-            continue
         if not _is_keyword_match(topic, candidate):
-            continue
-        if _visible_level(candidate) > trust:
-            if blocked_entry is None:
-                blocked_entry = candidate
-            continue
-        _add_entry(candidate)
+            return
+
+        if _visible_level(candidate) <= trust:
+            _add_entry(candidate)
+            return
+
+        if blocked_entry is None:
+            blocked_entry = candidate
+
+    for candidate in bucket:
+        _consider(candidate)
+
+    for candidate in help_entries:
+        _consider(candidate)
 
     if matches:
         if limit_results:

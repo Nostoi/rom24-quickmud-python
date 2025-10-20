@@ -7,10 +7,15 @@ from types import SimpleNamespace
 from typing import Sequence, cast
 
 import pytest
+from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.orm import sessionmaker
 
 import mud.net.connection as net_connection
 
-from mud.account import load_character as load_player_character
+from mud.account import (
+    load_character as load_player_character,
+    save_character as save_player_character,
+)
 from mud.account.account_service import (
     LoginFailureReason,
     CreationSelection,
@@ -32,9 +37,16 @@ from mud.db.models import Base, Character, PlayerAccount
 from mud.db.session import SessionLocal, engine
 from mud.skills.groups import get_group
 from mud.models.constants import (
+    CommFlag,
+    DEFAULT_PAGE_LINES,
+    OBJ_VNUM_MAP,
+    OBJ_VNUM_SCHOOL_BANNER,
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
+    OBJ_VNUM_SCHOOL_SHIELD,
     OBJ_VNUM_SCHOOL_SWORD,
+    OBJ_VNUM_SCHOOL_VEST,
+    ROOM_VNUM_LIMBO,
     ROOM_VNUM_SCHOOL,
     ActFlag,
     AffectFlag,
@@ -58,6 +70,8 @@ from mud.net.connection import RECONNECT_MESSAGE, _broadcast_reconnect_notificat
 from mud.net.session import SESSIONS
 from mud.net.telnet_server import create_server
 from mud.security import bans
+from mud.world import initialize_world
+from mud.commands.inventory import give_school_outfit
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
@@ -1021,6 +1035,309 @@ def test_create_character_persists_creation_skills():
         assert _decode_creation_skills(record.creation_skills) == ("shield block", "flail")
     finally:
         session.close()
+
+
+def test_new_character_starts_with_recall():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("traveler", "secret")
+    account = login("traveler", "secret")
+    assert account is not None
+
+    assert create_character(account, "Nomad")
+
+    char = load_player_character("traveler", "Nomad")
+    assert char is not None
+    skills = getattr(char, "skills", {})
+    assert skills.get("recall") == 50
+
+
+def test_new_character_defaults_to_nosummon():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("beacon", "secret")
+    account = login("beacon", "secret")
+    assert account is not None
+
+    assert create_character(account, "Anchor")
+
+    char = load_player_character("beacon", "Anchor")
+    assert char is not None
+    assert int(getattr(char, "act", 0)) & int(PlayerFlag.NOSUMMON)
+
+
+def test_new_character_persists_true_sex():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("gender", "secret")
+    account = login("gender", "secret")
+    assert account is not None
+
+    assert create_character(account, "Queen", sex=Sex.FEMALE)
+
+    char = load_player_character("gender", "Queen")
+    assert char is not None
+    pcdata = getattr(char, "pcdata", None)
+    assert pcdata is not None
+    assert pcdata.true_sex == int(Sex.FEMALE)
+    assert char.sex == int(Sex.FEMALE)
+
+    pcdata.true_sex = int(Sex.MALE)
+    char.sex = int(Sex.MALE)
+    char.room = Room(vnum=ROOM_VNUM_LIMBO, name="Limbo", description="")
+    char.was_in_room = Room(vnum=ROOM_VNUM_SCHOOL, name="The School", description="")
+    save_player_character(char)
+
+    session = SessionLocal()
+    try:
+        stored = session.query(Character).filter_by(name="Queen").first()
+        assert stored is not None
+        assert stored.room_vnum == ROOM_VNUM_SCHOOL
+    finally:
+        session.close()
+
+    reloaded = load_player_character("gender", "Queen")
+    assert reloaded is not None
+    reloaded_pcdata = getattr(reloaded, "pcdata", None)
+    assert reloaded_pcdata is not None
+    assert reloaded_pcdata.true_sex == int(Sex.MALE)
+    assert reloaded.sex == int(Sex.MALE)
+
+
+def test_existing_database_gains_true_sex_column(tmp_path, monkeypatch):
+    legacy_db = tmp_path / "legacy.db"
+    legacy_engine = create_engine(f"sqlite:///{legacy_db}")
+
+    with legacy_engine.begin() as conn:
+        conn.exec_driver_sql(
+            """
+            CREATE TABLE player_accounts (
+                id INTEGER PRIMARY KEY,
+                username VARCHAR NOT NULL,
+                email VARCHAR DEFAULT '',
+                password_hash VARCHAR NOT NULL,
+                is_admin INTEGER DEFAULT 0
+            )
+            """
+        )
+        conn.exec_driver_sql(
+            """
+            CREATE TABLE characters (
+                id INTEGER PRIMARY KEY,
+                name VARCHAR NOT NULL UNIQUE,
+                level INTEGER,
+                hp INTEGER,
+                room_vnum INTEGER,
+                race INTEGER,
+                ch_class INTEGER,
+                sex INTEGER,
+                alignment INTEGER,
+                act INTEGER,
+                hometown_vnum INTEGER,
+                perm_stats VARCHAR,
+                size INTEGER,
+                form INTEGER,
+                parts INTEGER,
+                imm_flags INTEGER,
+                res_flags INTEGER,
+                vuln_flags INTEGER,
+                practice INTEGER,
+                train INTEGER,
+                default_weapon_vnum INTEGER,
+                newbie_help_seen INTEGER,
+                creation_points INTEGER,
+                creation_groups VARCHAR,
+                creation_skills VARCHAR,
+                player_id INTEGER,
+                FOREIGN KEY(player_id) REFERENCES player_accounts(id)
+            )
+            """
+        )
+        conn.exec_driver_sql(
+            """
+            CREATE TABLE object_instances (
+                id INTEGER PRIMARY KEY,
+                prototype_vnum INTEGER,
+                location VARCHAR,
+                character_id INTEGER,
+                FOREIGN KEY(character_id) REFERENCES characters(id)
+            )
+            """
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO player_accounts (id, username, email, password_hash, is_admin) "
+            "VALUES (1, 'legacy', '', 'hash', 0)"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO characters (id, name, level, hp, room_vnum, race, ch_class, sex, alignment, act, hometown_vnum, perm_stats, size, form, parts, imm_flags, res_flags, vuln_flags, practice, train, default_weapon_vnum, newbie_help_seen, creation_points, creation_groups, creation_skills, player_id) "
+            "VALUES (1, 'Legacy', 1, 100, 0, 0, 0, 2, 0, 0, 0, '[]', 0, 0, 0, 0, 0, 0, 5, 3, 0, 0, 40, '[]', '[]', 1)"
+        )
+
+    legacy_session_factory = sessionmaker(bind=legacy_engine)
+
+    from mud.db import session as db_session
+    from mud.account import account_manager
+
+    monkeypatch.setattr(db_session, "engine", legacy_engine, raising=False)
+    monkeypatch.setattr(db_session, "SessionLocal", legacy_session_factory, raising=False)
+    monkeypatch.setattr(account_manager, "SessionLocal", legacy_session_factory, raising=False)
+
+    from mud.db import migrations
+    monkeypatch.setattr(migrations, "engine", legacy_engine, raising=False)
+
+    migrations.run_migrations()
+
+    inspector = inspect(legacy_engine)
+    columns = {column["name"] for column in inspector.get_columns("characters")}
+    assert "true_sex" in columns
+
+    loaded = account_manager.load_character("legacy", "Legacy")
+    assert loaded is not None
+    pcdata = getattr(loaded, "pcdata", None)
+    assert pcdata is not None
+    assert pcdata.true_sex == int(Sex.FEMALE)
+    assert loaded.sex == int(Sex.FEMALE)
+
+
+def test_new_character_defaults_prompt_and_comm():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("status", "secret")
+    account = login("status", "secret")
+    assert account is not None
+
+    assert create_character(account, "Ticker")
+
+    char = load_player_character("status", "Ticker")
+    assert char is not None
+    assert getattr(char, "prompt", None) == "<%hhp %mm %vmv> "
+    comm_value = int(getattr(char, "comm", 0))
+    assert comm_value & int(CommFlag.PROMPT)
+    assert comm_value & int(CommFlag.COMBINE)
+
+
+def test_new_character_defaults_conditions():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("ration", "secret")
+    account = login("ration", "secret")
+    assert account is not None
+
+    assert create_character(account, "Forager")
+
+    char = load_player_character("ration", "Forager")
+    assert char is not None
+    pcdata = getattr(char, "pcdata", None)
+    assert pcdata is not None
+    assert pcdata.condition == [0, 48, 48, 48]
+
+
+def test_new_character_defaults_page_length():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("pager", "secret")
+    account = login("pager", "secret")
+    assert account is not None
+
+    assert create_character(account, "Scroll")
+
+    char = load_player_character("pager", "Scroll")
+    assert char is not None
+    assert getattr(char, "lines", None) == DEFAULT_PAGE_LINES
+
+
+def test_new_character_seeds_creation_groups_and_skills():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("heft", "secret")
+    account = login("heft", "secret")
+    assert account is not None
+
+    warrior_class = next(
+        entry for entry in get_creation_classes() if entry.name.lower() == "warrior"
+    )
+    human_race = next(
+        race for race in get_creation_races() if race.name.lower() == "human"
+    )
+
+    assert create_character(
+        account,
+        "Veteran",
+        race=human_race,
+        class_type=warrior_class,
+        creation_groups=("rom basics", "warrior basics", "warrior default"),
+        creation_skills=("bash",),
+        default_weapon_vnum=OBJ_VNUM_SCHOOL_SWORD,
+    )
+
+    char = load_player_character("heft", "Veteran")
+    assert char is not None
+    pcdata = getattr(char, "pcdata", None)
+    assert pcdata is not None
+
+    assert pcdata.points == char.creation_points
+    assert {"rom basics", "warrior basics", "warrior default"} <= set(pcdata.group_known)
+    assert "weaponsmaster" in pcdata.group_known
+    assert char.skills.get("bash") == 1
+    assert char.skills.get("sword") == 40
+    assert char.skills.get("recall") == 50
+    assert pcdata.learned == char.skills
+
+
+def test_new_character_receives_starting_outfit():
+    initialize_world("area/area.lst")
+
+    newbie = RuntimeCharacter(name="Newbie", level=1)
+    newbie.is_npc = False
+    newbie.inventory.clear()
+    newbie.equipment.clear()
+    newbie.default_weapon_vnum = OBJ_VNUM_SCHOOL_SWORD
+
+    provided = give_school_outfit(newbie)
+    assert provided is True
+
+    assert {"light", "body", "wield", "shield"} <= set(newbie.equipment.keys())
+
+    wielded = newbie.equipment["wield"]
+    assert getattr(getattr(wielded, "prototype", None), "vnum", None) in {
+        OBJ_VNUM_SCHOOL_SWORD,
+        newbie.default_weapon_vnum,
+    }
+
+    assert any(
+        getattr(getattr(obj, "prototype", None), "vnum", None) == OBJ_VNUM_MAP
+        for obj in newbie.inventory
+    )
+
+    assert give_school_outfit(newbie) is False
 
 
 def test_password_prompt_hides_echo():

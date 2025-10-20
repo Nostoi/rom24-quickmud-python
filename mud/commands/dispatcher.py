@@ -7,7 +7,7 @@ from enum import Enum, auto
 
 from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
-from mud.models.constants import Position
+from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, PlayerFlag, Position, AffectFlag
 from mud.models.social import social_registry
 from mud.net.session import Session
 from mud.wiznet import cmd_wiznet
@@ -51,9 +51,11 @@ from .communication import (
 )
 from .healer import do_heal
 from .help import do_help
+from .info import do_commands, do_wizhelp
 from .imc import do_imc
 from .inspection import do_exits, do_look, do_scan
-from .inventory import do_drop, do_equipment, do_get, do_inventory
+from .inventory import do_drop, do_equipment, do_get, do_inventory, do_outfit
+from .mobprog_tools import do_mpstat
 from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
 from .notes import do_board, do_note
 from .shop import do_buy, do_list, do_sell, do_value
@@ -78,6 +80,8 @@ class Command:
     admin_only: bool = False
     min_position: Position = Position.DEAD
     log_level: LogLevel = LogLevel.NORMAL
+    min_trust: int = 0
+    show: bool = True
 
 
 COMMANDS: list[Command] = [
@@ -88,6 +92,7 @@ COMMANDS: list[Command] = [
         aliases=("n",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command(
         "east",
@@ -95,6 +100,7 @@ COMMANDS: list[Command] = [
         aliases=("e",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command(
         "south",
@@ -102,6 +108,7 @@ COMMANDS: list[Command] = [
         aliases=("s",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command(
         "west",
@@ -109,6 +116,7 @@ COMMANDS: list[Command] = [
         aliases=("w",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command(
         "up",
@@ -116,6 +124,7 @@ COMMANDS: list[Command] = [
         aliases=("u",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command(
         "down",
@@ -123,6 +132,7 @@ COMMANDS: list[Command] = [
         aliases=("d",),
         min_position=Position.STANDING,
         log_level=LogLevel.NEVER,
+        show=False,
     ),
     Command("enter", do_enter, min_position=Position.STANDING),
     # Common actions
@@ -132,6 +142,7 @@ COMMANDS: list[Command] = [
     Command("drop", do_drop, min_position=Position.RESTING),
     Command("inventory", do_inventory, aliases=("inv",), min_position=Position.DEAD),
     Command("equipment", do_equipment, aliases=("eq",), min_position=Position.DEAD),
+    Command("outfit", do_outfit, min_position=Position.RESTING),
     # Communication
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
@@ -145,7 +156,13 @@ COMMANDS: list[Command] = [
     Command("answer", do_answer, min_position=Position.RESTING),
     Command("music", do_music, min_position=Position.RESTING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
-    Command("immtalk", do_immtalk, aliases=(":",), min_position=Position.DEAD),
+    Command(
+        "immtalk",
+        do_immtalk,
+        aliases=(":",),
+        min_position=Position.DEAD,
+        min_trust=LEVEL_HERO,
+    ),
     # Combat
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
@@ -164,6 +181,8 @@ COMMANDS: list[Command] = [
     # Boards/Notes/Help
     Command("board", do_board, min_position=Position.SLEEPING),
     Command("note", do_note, min_position=Position.DEAD),
+    Command("wizhelp", do_wizhelp, min_position=Position.DEAD, min_trust=LEVEL_HERO),
+    Command("commands", do_commands, min_position=Position.DEAD),
     Command("help", do_help, min_position=Position.DEAD),
     Command("telnetga", cmd_telnetga, min_position=Position.DEAD),
     # IMC and aliasing
@@ -171,25 +190,56 @@ COMMANDS: list[Command] = [
     Command("alias", do_alias, min_position=Position.DEAD),
     Command("unalias", do_unalias, min_position=Position.DEAD),
     Command("prefix", do_prefix, min_position=Position.DEAD),
-    Command("prefi", do_prefi, min_position=Position.DEAD),
+    Command("prefi", do_prefi, min_position=Position.DEAD, show=False),
     # Admin (leave position as DEAD; admin-only gating applies separately)
-    Command("@who", cmd_who, admin_only=True),
-    Command("@teleport", cmd_teleport, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("@spawn", cmd_spawn, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("ban", cmd_ban, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("permban", cmd_permban, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("deny", cmd_deny, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("allow", cmd_allow, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("banlist", cmd_banlist, admin_only=True),
-    Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("incognito", cmd_incognito, admin_only=True),
-    Command("holylight", cmd_holylight, admin_only=True),
-    Command("qmconfig", cmd_qmconfig, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("@redit", cmd_redit, admin_only=True),
-    Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS),
-    Command("wiznet", cmd_wiznet, admin_only=True),
+    Command("@who", cmd_who, admin_only=True, min_trust=LEVEL_HERO),
+    Command(
+        "@teleport",
+        cmd_teleport,
+        admin_only=True,
+        log_level=LogLevel.ALWAYS,
+        min_trust=LEVEL_HERO,
+    ),
+    Command(
+        "@spawn",
+        cmd_spawn,
+        admin_only=True,
+        log_level=LogLevel.ALWAYS,
+        min_trust=LEVEL_HERO,
+    ),
+    Command("ban", cmd_ban, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command(
+        "permban",
+        cmd_permban,
+        admin_only=True,
+        log_level=LogLevel.ALWAYS,
+        min_trust=LEVEL_HERO,
+    ),
+    Command("deny", cmd_deny, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("allow", cmd_allow, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("banlist", cmd_banlist, admin_only=True, min_trust=LEVEL_HERO),
+    Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("incognito", cmd_incognito, admin_only=True, min_trust=LEVEL_HERO),
+    Command("holylight", cmd_holylight, admin_only=True, min_trust=LEVEL_HERO),
+    Command(
+        "qmconfig",
+        cmd_qmconfig,
+        admin_only=True,
+        log_level=LogLevel.ALWAYS,
+        min_trust=LEVEL_HERO,
+    ),
+    Command("@redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("wiznet", cmd_wiznet, min_trust=LEVEL_IMMORTAL),
+    Command(
+        "mpstat",
+        do_mpstat,
+        admin_only=True,
+        log_level=LogLevel.NEVER,
+        min_trust=LEVEL_HERO,
+    ),
 ]
 
 
@@ -198,6 +248,22 @@ for cmd in COMMANDS:
     COMMAND_INDEX[cmd.name] = cmd
     for alias in cmd.aliases:
         COMMAND_INDEX[alias] = cmd
+
+
+def _get_trust(char: Character) -> int:
+    """Return the effective trust level mirroring ROM's `get_trust`."""
+
+    try:
+        trust = int(getattr(char, "trust", 0) or 0)
+    except Exception:
+        trust = 0
+    if trust > 0:
+        return trust
+    try:
+        level = int(getattr(char, "level", 0) or 0)
+    except Exception:
+        level = 0
+    return level
 
 
 def resolve_command(name: str) -> Command | None:
@@ -281,6 +347,26 @@ def process_command(char: Character, input_str: str) -> str:
 
     if not input_str.strip():
         return "What?"
+
+    remover = getattr(char, "remove_affect", None)
+    if callable(remover):
+        remover(AffectFlag.HIDE)
+    else:
+        affected = getattr(char, "affected_by", None)
+        if affected is not None:
+            try:
+                char.affected_by = int(affected) & ~int(AffectFlag.HIDE)
+            except Exception:
+                pass
+
+    act_bits = getattr(char, "act", 0)
+    try:
+        act_value = int(act_bits or 0)
+    except Exception:
+        act_value = 0
+    if not getattr(char, "is_npc", False) and act_value & int(PlayerFlag.FREEZE):
+        return "You're totally frozen!"
+
     trimmed = input_str.lstrip()
     core = trimmed.rstrip()
     trailing_ws = trimmed[len(core) :]
@@ -304,7 +390,10 @@ def process_command(char: Character, input_str: str) -> str:
     cmd_name, arg_str = _split_command_and_args(expanded)
     if not cmd_name:
         return "What?"
+    trust = _get_trust(char)
     command = resolve_command(cmd_name)
+    if command and trust < command.min_trust:
+        command = None
     if alias_used:
         log_line = expanded + trailing_ws
     elif prefixed_applied:

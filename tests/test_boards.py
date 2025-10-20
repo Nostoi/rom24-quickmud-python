@@ -2,6 +2,7 @@ import time
 
 import pytest
 
+import mud.commands.notes as note_cmds
 import mud.notes as notes
 from mud import persistence
 from mud.commands.dispatcher import process_command
@@ -397,6 +398,84 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
         assert board.notes[-1].expire == pytest.approx(expire_expected)
         assert char.pcdata.in_progress is None
         assert char.pcdata.last_notes[board.storage_key()] == board.notes[-1].timestamp
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_expire_allows_immortal_override(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "Immortal",
+            description="Immortal discussions",
+            read_level=0,
+            write_level=0,
+            purge_days=7,
+        )
+        notes.save_board(board)
+
+        char = create_test_character("Sage", 3001)
+        char.level = MAX_LEVEL
+        char.trust = MAX_LEVEL
+
+        process_command(char, "board immortal")
+        process_command(char, "note write")
+        process_command(char, "note subject Policy")
+
+        monkeypatch.setattr(note_cmds.time, "time", lambda: 1_000.0)
+        monkeypatch.setattr(note_cmds.time, "ctime", lambda ts: f"CTIME({int(ts)})")
+
+        output = process_command(char, "note expire 3")
+        assert "CTIME(" in output
+        draft = char.pcdata.in_progress
+        assert draft is not None
+        assert draft.expire == pytest.approx(1_000.0 + 3 * 24 * 60 * 60)
+
+        monkeypatch.setattr(note_cmds.time, "time", lambda: 2_000.0)
+        monkeypatch.setattr(note_cmds.time, "ctime", lambda ts: f"CTIME({int(ts)})")
+
+        default_output = process_command(char, "note expire")
+        assert "CTIME(" in default_output
+        assert draft.expire == pytest.approx(2_000.0 + 7 * 24 * 60 * 60)
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_expire_rejects_mortals(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    boards_dir = tmp_path / "boards"
+    orig_dir = _setup_boards(boards_dir)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        board = notes.get_board(
+            "General",
+            description="General discussion",
+            read_level=0,
+            write_level=0,
+            purge_days=5,
+        )
+        notes.save_board(board)
+
+        char = create_test_character("Author", 3001)
+        char.level = 20
+        char.trust = 20
+
+        process_command(char, "note write")
+        process_command(char, "note subject Update")
+
+        draft = char.pcdata.in_progress
+        assert draft is not None
+        initial_expire = draft.expire
+
+        monkeypatch.setattr(note_cmds.time, "time", lambda: 3_000.0)
+        result = process_command(char, "note expire 3")
+        assert result == "Only immortals may set the expiration."
+        assert draft.expire == initial_expire
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)

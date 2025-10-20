@@ -195,7 +195,7 @@
   EXAMPLE: pytest -q tests/test_movement_followers.py::test_followers_move_and_trigger_mobprogs
 - RULE: Serve help topics via registry loaded from ROM help JSON; dispatch `help` command through keyword lookup.
   RATIONALE: Preserves ROM help text layout and keyword search behavior.
-  EXAMPLE: text = help_registry["murder"].text
+  EXAMPLE: text = help_registry["murder"][0].text
 - RULE: Invoke NPC special functions via registry each tick; avoid hard-coded checks.
   RATIONALE: ROM uses spec_fun pointers for mob AI; registry preserves behaviors.
   EXAMPLE: spec_fun = spec_fun_registry.get(ch.spec_fun); spec_fun(ch)

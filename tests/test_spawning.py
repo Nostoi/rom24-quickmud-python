@@ -680,6 +680,54 @@ def test_reset_P_populates_multiple_items_up_to_limit():
     assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 3
 
 
+def test_reset_P_fills_mob_carried_container():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=9500, name="Guard Post", min_vnum=9500, max_vnum=9500)
+    room = Room(vnum=9500, name="Armory", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=9600, short_descr="a vigilant guard", level=15, wealth=0)
+    mob_proto.act_flags = int(ActFlag.IS_NPC)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    container_proto = ObjIndex(vnum=9700, short_descr="a locked coffer", item_type=int(ItemType.CONTAINER))
+    obj_registry[container_proto.vnum] = container_proto
+    loot_proto = ObjIndex(vnum=9701, short_descr="a stash of supplies", item_type=int(ItemType.TREASURE))
+    obj_registry[loot_proto.vnum] = loot_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="G", arg1=container_proto.vnum, arg2=1),
+        ResetJson(command="P", arg1=loot_proto.vnum, arg2=1, arg3=container_proto.vnum, arg4=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+
+    container = next(
+        (
+            obj
+            for obj in getattr(mob, "inventory", [])
+            if getattr(getattr(obj, "prototype", None), "vnum", None) == container_proto.vnum
+        ),
+        None,
+    )
+    assert container is not None
+
+    contents = [
+        getattr(getattr(item, "prototype", None), "vnum", None)
+        for item in getattr(container, "contained_items", [])
+    ]
+    assert loot_proto.vnum in contents
+
+
 def test_room_reset_zeroes_object_cost():
     room_registry.clear()
     area_registry.clear()
@@ -709,6 +757,34 @@ def test_room_reset_zeroes_object_cost():
     assert idol is not None
     assert idol.cost == 0
     assert getattr(idol.prototype, "cost", None) == 750
+
+
+def test_room_reset_does_not_stack_duplicate_objects():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    fountain_proto = ObjIndex(vnum=9310, short_descr="a marble fountain")
+    obj_registry[fountain_proto.vnum] = fountain_proto
+
+    area = Area(vnum=9310, name="Fountain Hall", min_vnum=9310, max_vnum=9310)
+    room = Room(vnum=9310, name="Hall of Water", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    area.resets = [ResetJson(command="O", arg1=fountain_proto.vnum, arg2=10, arg3=room.vnum)]
+
+    reset_handler.apply_resets(area)
+    reset_handler.apply_resets(area)
+
+    fountains = [
+        obj
+        for obj in room.contents
+        if getattr(getattr(obj, "prototype", None), "vnum", None) == fountain_proto.vnum
+    ]
+
+    assert len(fountains) == 1
 
 
 def test_room_reset_fuzzes_object_level(monkeypatch):
