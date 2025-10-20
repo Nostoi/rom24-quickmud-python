@@ -9,6 +9,7 @@ from enum import IntFlag
 from typing import TYPE_CHECKING, Any
 
 from mud.utils.act import act_format
+from mud.models.constants import LEVEL_IMMORTAL, MAX_LEVEL
 
 
 ROM_NEWLINE = "\n\r"
@@ -49,26 +50,26 @@ if TYPE_CHECKING:  # pragma: no cover - for type hints only
 
 # Wiznet table mapping names to flags and minimum levels (mirroring C const.c)
 WIZNET_TABLE = [
-    {"name": "on", "flag": WiznetFlag.WIZ_ON, "level": 1},  # IM = 1 (immortal)
-    {"name": "prefix", "flag": WiznetFlag.WIZ_PREFIX, "level": 1},
-    {"name": "ticks", "flag": WiznetFlag.WIZ_TICKS, "level": 1},
-    {"name": "logins", "flag": WiznetFlag.WIZ_LOGINS, "level": 1},
-    {"name": "sites", "flag": WiznetFlag.WIZ_SITES, "level": 54},  # L4
-    {"name": "links", "flag": WiznetFlag.WIZ_LINKS, "level": 57},  # L7
-    {"name": "newbies", "flag": WiznetFlag.WIZ_NEWBIE, "level": 1},
-    {"name": "spam", "flag": WiznetFlag.WIZ_SPAM, "level": 55},  # L5
-    {"name": "deaths", "flag": WiznetFlag.WIZ_DEATHS, "level": 1},
-    {"name": "resets", "flag": WiznetFlag.WIZ_RESETS, "level": 54},
-    {"name": "mobdeaths", "flag": WiznetFlag.WIZ_MOBDEATHS, "level": 54},
-    {"name": "flags", "flag": WiznetFlag.WIZ_FLAGS, "level": 55},
-    {"name": "penalties", "flag": WiznetFlag.WIZ_PENALTIES, "level": 55},
-    {"name": "saccing", "flag": WiznetFlag.WIZ_SACCING, "level": 55},
-    {"name": "levels", "flag": WiznetFlag.WIZ_LEVELS, "level": 1},
-    {"name": "load", "flag": WiznetFlag.WIZ_LOAD, "level": 52},  # L2
-    {"name": "restore", "flag": WiznetFlag.WIZ_RESTORE, "level": 52},
-    {"name": "snoops", "flag": WiznetFlag.WIZ_SNOOPS, "level": 52},
-    {"name": "switches", "flag": WiznetFlag.WIZ_SWITCHES, "level": 52},
-    {"name": "secure", "flag": WiznetFlag.WIZ_SECURE, "level": 51},  # L1
+    {"name": "on", "flag": WiznetFlag.WIZ_ON, "level": LEVEL_IMMORTAL},
+    {"name": "prefix", "flag": WiznetFlag.WIZ_PREFIX, "level": LEVEL_IMMORTAL},
+    {"name": "ticks", "flag": WiznetFlag.WIZ_TICKS, "level": LEVEL_IMMORTAL},
+    {"name": "logins", "flag": WiznetFlag.WIZ_LOGINS, "level": LEVEL_IMMORTAL},
+    {"name": "sites", "flag": WiznetFlag.WIZ_SITES, "level": MAX_LEVEL - 4},
+    {"name": "links", "flag": WiznetFlag.WIZ_LINKS, "level": MAX_LEVEL - 7},
+    {"name": "newbies", "flag": WiznetFlag.WIZ_NEWBIE, "level": LEVEL_IMMORTAL},
+    {"name": "spam", "flag": WiznetFlag.WIZ_SPAM, "level": MAX_LEVEL - 5},
+    {"name": "deaths", "flag": WiznetFlag.WIZ_DEATHS, "level": LEVEL_IMMORTAL},
+    {"name": "resets", "flag": WiznetFlag.WIZ_RESETS, "level": MAX_LEVEL - 4},
+    {"name": "mobdeaths", "flag": WiznetFlag.WIZ_MOBDEATHS, "level": MAX_LEVEL - 4},
+    {"name": "flags", "flag": WiznetFlag.WIZ_FLAGS, "level": MAX_LEVEL - 5},
+    {"name": "penalties", "flag": WiznetFlag.WIZ_PENALTIES, "level": MAX_LEVEL - 5},
+    {"name": "saccing", "flag": WiznetFlag.WIZ_SACCING, "level": MAX_LEVEL - 5},
+    {"name": "levels", "flag": WiznetFlag.WIZ_LEVELS, "level": LEVEL_IMMORTAL},
+    {"name": "load", "flag": WiznetFlag.WIZ_LOAD, "level": MAX_LEVEL - 2},
+    {"name": "restore", "flag": WiznetFlag.WIZ_RESTORE, "level": MAX_LEVEL - 2},
+    {"name": "snoops", "flag": WiznetFlag.WIZ_SNOOPS, "level": MAX_LEVEL - 2},
+    {"name": "switches", "flag": WiznetFlag.WIZ_SWITCHES, "level": MAX_LEVEL - 2},
+    {"name": "secure", "flag": WiznetFlag.WIZ_SECURE, "level": MAX_LEVEL - 1},
 ]
 
 
@@ -126,7 +127,16 @@ def wiznet(
             continue
 
         # Must be immortal/admin
-        if not getattr(ch, "is_admin", False):
+        is_admin = bool(getattr(ch, "is_admin", False))
+        is_immortal = False
+        if hasattr(ch, "is_immortal") and callable(getattr(ch, "is_immortal")):
+            try:
+                is_immortal = bool(ch.is_immortal())
+            except Exception:
+                is_immortal = False
+        else:
+            is_immortal = _get_trust(ch) >= LEVEL_IMMORTAL
+        if not (is_admin or is_immortal):
             continue
 
         # Must have WIZ_ON
@@ -157,9 +167,9 @@ def wiznet(
         )
 
         if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
-            formatted_msg = f"{{Z--> {expanded}{{x"
+            formatted_msg = f"{{Z--> {expanded}{{x{ROM_NEWLINE}"
         else:
-            formatted_msg = f"{{Z{expanded}{{x"
+            formatted_msg = f"{{Z{expanded}{{x{ROM_NEWLINE}"
 
         ch.messages.append(formatted_msg)
 
@@ -176,7 +186,17 @@ def cmd_wiznet(char: Any, args: str) -> str:
     """
     from mud.models.character import Character  # local import to avoid cycle
 
-    if not isinstance(char, Character) or not getattr(char, "is_admin", False):
+    if not isinstance(char, Character):
+        return "Huh?"
+
+    is_admin = bool(getattr(char, "is_admin", False))
+    is_immortal = False
+    try:
+        is_immortal = char.is_immortal()
+    except Exception:
+        is_immortal = _get_trust(char) >= LEVEL_IMMORTAL
+
+    if not (is_admin or is_immortal):
         return "Huh?"
 
     args = args.strip()
@@ -207,7 +227,7 @@ def cmd_wiznet(char: Any, args: str) -> str:
             tokens.append("off")
 
         for entry in WIZNET_TABLE:
-            if (getattr(char, "wiznet", 0) & int(entry["flag"])) and entry["name"] != "on":
+            if getattr(char, "wiznet", 0) & int(entry["flag"]):
                 tokens.append(entry["name"])
 
         body = " ".join(tokens).strip()

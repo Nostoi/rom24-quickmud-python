@@ -1,7 +1,7 @@
 import mud.persistence as persistence
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
-from mud.models.constants import Sex
+from mud.models.constants import Sex, LEVEL_IMMORTAL
 from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
 
@@ -45,18 +45,46 @@ def test_wiznet_flag_values():
 
 
 def test_wiznet_broadcast_filtering():
-    imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
-    mortal = Character(name="Mort", is_admin=False, wiznet=int(WiznetFlag.WIZ_ON))
+    imm = Character(
+        name="Imm",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    mortal = Character(
+        name="Mort",
+        is_admin=False,
+        is_npc=False,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
     character_registry.extend([imm, mortal])
 
     wiznet("Test message", WiznetFlag.WIZ_ON)
 
-    assert "{ZTest message{x" in imm.messages
+    assert "{ZTest message{x" + ROM_NEWLINE in imm.messages
     assert mortal.messages == []
 
 
+def test_wiznet_broadcasts_include_rom_newline():
+    imm = Character(
+        name="Imm",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS),
+    )
+    character_registry.append(imm)
+
+    wiznet("Tick message", WiznetFlag.WIZ_TICKS)
+
+    assert imm.messages
+    assert imm.messages[0].endswith(ROM_NEWLINE)
+    assert imm.messages[0].count(ROM_NEWLINE) == 1
+
+
 def test_wiznet_command_toggles_flag():
-    imm = Character(name="Imm", is_admin=True)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
     character_registry.append(imm)
     result = process_command(imm, "wiznet")
     assert imm.wiznet & int(WiznetFlag.WIZ_ON)
@@ -64,7 +92,7 @@ def test_wiznet_command_toggles_flag():
 
 
 def test_wiznet_command_trailing_newlines():
-    imm = Character(name="Imm", is_admin=True, level=60)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=60)
     character_registry.append(imm)
 
     responses = [
@@ -89,7 +117,7 @@ def test_wiznet_persistence(tmp_path):
     from mud.world import initialize_world
 
     initialize_world("area/area.lst")
-    imm = Character(name="Imm", is_admin=True)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
     # Set multiple flags
     imm.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS | WiznetFlag.WIZ_DEBUG)
     persistence.save_character(imm)
@@ -102,7 +130,13 @@ def test_wiznet_persistence(tmp_path):
 
 def test_wiznet_requires_specific_flag():
     # Immortal with WIZ_ON only should not receive WIZ_TICKS messages.
-    imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
+    imm = Character(
+        name="Imm",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
     character_registry.append(imm)
     wiznet("tick", WiznetFlag.WIZ_TICKS)
     assert all("tick" not in msg for msg in imm.messages)
@@ -110,12 +144,18 @@ def test_wiznet_requires_specific_flag():
     # After subscribing to WIZ_TICKS, should receive.
     imm.wiznet |= int(WiznetFlag.WIZ_TICKS)
     wiznet("tick2", WiznetFlag.WIZ_TICKS)
-    assert any(msg == "{Ztick2{x" for msg in imm.messages)
+    assert any(msg == "{Ztick2{x" + ROM_NEWLINE for msg in imm.messages)
 
 
 def test_wiznet_secure_flag_gating():
     # Without WIZ_SECURE bit, immortal should not receive WIZ_SECURE messages
-    imm = Character(name="Imm", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
+    imm = Character(
+        name="Imm",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
     character_registry.append(imm)
     wiznet("secure", WiznetFlag.WIZ_SECURE)
     assert all("secure" not in msg for msg in imm.messages)
@@ -123,11 +163,11 @@ def test_wiznet_secure_flag_gating():
     # After subscribing to WIZ_SECURE, message should be delivered
     imm.wiznet |= int(WiznetFlag.WIZ_SECURE)
     wiznet("secure2", WiznetFlag.WIZ_SECURE)
-    assert any(msg == "{Zsecure2{x" for msg in imm.messages)
+    assert any(msg == "{Zsecure2{x" + ROM_NEWLINE for msg in imm.messages)
 
 
 def test_wiznet_status_command():
-    imm = Character(name="Imm", is_admin=True, level=60)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=60)
     character_registry.append(imm)
 
     # Test status with WIZ_ON off
@@ -142,8 +182,19 @@ def test_wiznet_status_command():
     assert "deaths" in result
 
 
+def test_wiznet_status_includes_on_when_enabled():
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=60)
+    imm.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS)
+    character_registry.append(imm)
+
+    result = process_command(imm, "wiznet status")
+    lines = result.split(ROM_NEWLINE)
+    body = lines[1] if len(lines) > 1 else ""
+    assert "on" in body.split()
+
+
 def test_wiznet_show_command():
-    imm = Character(name="Imm", is_admin=True, level=60)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=60)
     character_registry.append(imm)
 
     result = process_command(imm, "wiznet show")
@@ -153,7 +204,7 @@ def test_wiznet_show_command():
 
 
 def test_wiznet_individual_flag_toggle():
-    imm = Character(name="Imm", is_admin=True, level=60)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=60)
     character_registry.append(imm)
 
     # Test turning on a flag
@@ -168,7 +219,7 @@ def test_wiznet_individual_flag_toggle():
 
 
 def test_wiznet_on_off_commands():
-    imm = Character(name="Imm", is_admin=True)
+    imm = Character(name="Imm", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
     character_registry.append(imm)
 
     # Test explicit "on"
@@ -182,17 +233,45 @@ def test_wiznet_on_off_commands():
     assert not (imm.wiznet & int(WiznetFlag.WIZ_ON))
 
 
+def test_wiznet_allows_level_immortals_without_admin_flag():
+    immortal = Character(name="Sage", level=LEVEL_IMMORTAL, is_admin=False, is_npc=False)
+    character_registry.append(immortal)
+
+    response = process_command(immortal, "wiznet")
+    assert "welcome to wiznet" in response.lower()
+    assert immortal.wiznet & int(WiznetFlag.WIZ_ON)
+
+    wiznet("Test immortal access", WiznetFlag.WIZ_ON)
+    assert "{ZTest immortal access{x" + ROM_NEWLINE in immortal.messages
+
+    mortal = Character(name="Peasant", level=10, is_npc=False)
+    character_registry.append(mortal)
+    assert process_command(mortal, "wiznet") == "Huh?"
+
+
 def test_wiznet_prefix_formatting():
-    imm_with_prefix = Character(name="ImmPrefix", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_PREFIX))
-    imm_without_prefix = Character(name="ImmPlain", is_admin=True, wiznet=int(WiznetFlag.WIZ_ON))
+    imm_with_prefix = Character(
+        name="ImmPrefix",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_PREFIX),
+    )
+    imm_without_prefix = Character(
+        name="ImmPlain",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
     character_registry.extend([imm_with_prefix, imm_without_prefix])
 
     wiznet("Test prefix", WiznetFlag.WIZ_ON)
 
     # Check that prefix character gets formatted message
-    assert imm_with_prefix.messages == ["{Z--> Test prefix{x"]
+    assert imm_with_prefix.messages == ["{Z--> Test prefix{x" + ROM_NEWLINE]
     # Check that non-prefix character gets color-wrapped message without arrow
-    assert imm_without_prefix.messages == ["{ZTest prefix{x"]
+    assert imm_without_prefix.messages == ["{ZTest prefix{x" + ROM_NEWLINE]
 
 
 def test_wiznet_act_formatting():
@@ -200,11 +279,15 @@ def test_wiznet_act_formatting():
     prefix_listener = Character(
         name="ImmPrefix",
         is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS | WiznetFlag.WIZ_PREFIX),
     )
     plain_listener = Character(
         name="ImmPlain",
         is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
     )
     character_registry.extend([prefix_listener, plain_listener])
@@ -230,27 +313,105 @@ def test_wiznet_act_formatting():
         character_registry.clear()
 
     assert prefix_listener.messages == [
-        "{Z--> Kestrel groks the fullness of her link.{x",
-        "{Z--> Kestrel answers 'Ready'{x",
+        "{Z--> Kestrel groks the fullness of her link.{x" + ROM_NEWLINE,
+        "{Z--> Kestrel answers 'Ready'{x" + ROM_NEWLINE,
     ]
     assert plain_listener.messages == [
-        "{ZKestrel groks the fullness of her link.{x",
-        "{ZKestrel answers 'Ready'{x",
+        "{ZKestrel groks the fullness of her link.{x" + ROM_NEWLINE,
+        "{ZKestrel answers 'Ready'{x" + ROM_NEWLINE,
     ]
+
+
+def test_wiznet_flag_skip_excludes_secure_listeners():
+    sender = Character(name="Archon", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
+    secure_listener = Character(
+        name="Sentinel",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=LEVEL_IMMORTAL,
+        wiznet=int(
+            WiznetFlag.WIZ_ON
+            | WiznetFlag.WIZ_LOAD
+            | WiznetFlag.WIZ_SECURE
+        ),
+    )
+    plain_listener = Character(
+        name="Chronicler",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOAD),
+    )
+
+    character_registry.extend([secure_listener, plain_listener])
+
+    try:
+        wiznet(
+            "$N loads $p.",
+            sender,
+            "ancient relic",
+            WiznetFlag.WIZ_LOAD,
+            WiznetFlag.WIZ_SECURE,
+            LEVEL_IMMORTAL,
+        )
+    finally:
+        character_registry.clear()
+
+    assert secure_listener.messages == []
+    assert plain_listener.messages == ["{ZArchon loads ancient relic.{x" + ROM_NEWLINE]
+
+
+def test_wiznet_min_level_blocks_low_trust_listeners():
+    high_trust = Character(
+        name="HighTrust",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOAD),
+    )
+    low_trust = Character(
+        name="LowTrust",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=40,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOAD),
+    )
+
+    character_registry.extend([high_trust, low_trust])
+
+    wiznet(
+        "rare artifact arrives.",
+        None,
+        None,
+        WiznetFlag.WIZ_LOAD,
+        None,
+        50,
+    )
+
+    assert high_trust.messages == ["{Zrare artifact arrives.{x" + ROM_NEWLINE]
+    assert low_trust.messages == []
+
+    character_registry.clear()
 
 
 def test_wiznet_trust_allows_secure_options():
     trusted = Character(
         name="Trusted",
         is_admin=True,
-        level=50,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
         trust=60,
         wiznet=int(WiznetFlag.WIZ_ON),
     )
     low_trust = Character(
         name="Low",
         is_admin=True,
-        level=50,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
         wiznet=int(WiznetFlag.WIZ_ON),
     )
     character_registry.extend([trusted, low_trust])
@@ -265,7 +426,7 @@ def test_wiznet_trust_allows_secure_options():
 
     trusted.messages.clear()
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
-    assert trusted.messages == ["{Zsecure notice{x"]
+    assert trusted.messages == ["{Zsecure notice{x" + ROM_NEWLINE]
 
     # Base level without additional trust should not see or toggle secure.
     show_low = process_command(low_trust, "wiznet show")
@@ -281,6 +442,7 @@ def test_wiznet_logins_channel_broadcasts():
     watcher = Character(
         name="Watcher",
         is_admin=True,
+        is_npc=False,
         level=60,
         trust=60,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_PREFIX),
@@ -288,6 +450,7 @@ def test_wiznet_logins_channel_broadcasts():
     skip_sites = Character(
         name="Sites",
         is_admin=True,
+        is_npc=False,
         level=60,
         trust=60,
         wiznet=int(
@@ -300,17 +463,24 @@ def test_wiznet_logins_channel_broadcasts():
     low_trust = Character(
         name="Low",
         is_admin=True,
+        is_npc=False,
         level=50,
         trust=50,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_PREFIX),
     )
-    logging_char = Character(name="Artemis", level=60, trust=60, is_admin=True)
+    logging_char = Character(
+        name="Artemis",
+        level=60,
+        trust=60,
+        is_admin=True,
+        is_npc=False,
+    )
 
     character_registry.extend([watcher, skip_sites, low_trust, logging_char])
 
     announce_wiznet_login(logging_char, host="aurora.example")
 
-    assert "{Z--> Artemis has left real life behind.{x" in watcher.messages
+    assert "{Z--> Artemis has left real life behind.{x" + ROM_NEWLINE in watcher.messages
     assert any("{Z--> Artemis@aurora.example has connected.{x" in msg for msg in skip_sites.messages)
     assert not any("has left real life behind" in msg for msg in skip_sites.messages)
     assert low_trust.messages == []
@@ -321,8 +491,8 @@ def test_wiznet_logins_channel_broadcasts():
 
     announce_wiznet_logout(logging_char)
 
-    assert "{Z--> Artemis rejoins the real world.{x" in watcher.messages
-    assert "{Z--> Artemis rejoins the real world.{x" in skip_sites.messages
+    assert "{Z--> Artemis rejoins the real world.{x" + ROM_NEWLINE in watcher.messages
+    assert "{Z--> Artemis rejoins the real world.{x" + ROM_NEWLINE in skip_sites.messages
     assert low_trust.messages == []
 
 
@@ -330,6 +500,7 @@ def test_wiz_sites_announces_successful_login(capsys):
     prefix_listener = Character(
         name="Prefix",
         is_admin=True,
+        is_npc=False,
         level=60,
         trust=60,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES | WiznetFlag.WIZ_PREFIX),
@@ -337,6 +508,7 @@ def test_wiz_sites_announces_successful_login(capsys):
     plain_listener = Character(
         name="Plain",
         is_admin=True,
+        is_npc=False,
         level=60,
         trust=60,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
@@ -344,6 +516,7 @@ def test_wiz_sites_announces_successful_login(capsys):
     uninterested = Character(
         name="NoSites",
         is_admin=True,
+        is_npc=False,
         level=60,
         trust=60,
         wiznet=int(WiznetFlag.WIZ_ON),
@@ -351,11 +524,18 @@ def test_wiz_sites_announces_successful_login(capsys):
     low_trust = Character(
         name="Low",
         is_admin=True,
+        is_npc=False,
         level=50,
         trust=40,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SITES),
     )
-    logging_char = Character(name="Lyra", level=60, trust=60, is_admin=True)
+    logging_char = Character(
+        name="Lyra",
+        level=60,
+        trust=60,
+        is_admin=True,
+        is_npc=False,
+    )
 
     character_registry.extend(
         [prefix_listener, plain_listener, uninterested, low_trust, logging_char]
@@ -366,7 +546,7 @@ def test_wiz_sites_announces_successful_login(capsys):
     out = capsys.readouterr().out
     assert "Lyra@academy.example has connected." in out
 
-    assert plain_listener.messages == ["{ZLyra@academy.example has connected.{x"]
+    assert plain_listener.messages == ["{ZLyra@academy.example has connected.{x" + ROM_NEWLINE]
     assert any(
         "{Z--> Lyra@academy.example has connected.{x" in msg
         for msg in prefix_listener.messages

@@ -39,59 +39,140 @@ def _iter_room_people(room: Room | None) -> Iterable[Character]:
     return list(getattr(room, "people", []) or [])
 
 
-def _match_char_name(char: Character, token: str) -> bool:
-    name = getattr(char, "name", None)
-    if not name or not token:
+def _parse_numbered_token(token: str) -> tuple[int, str]:
+    text = (token or "").strip()
+    if not text:
+        return 1, ""
+    if "." not in text:
+        return 1, text
+    prefix, remainder = text.split(".", 1)
+    try:
+        index = int(prefix or "0")
+    except ValueError:
+        index = 0
+    return index, remainder.strip()
+
+
+def _is_name_match(search: str, candidate: str | None) -> bool:
+    if not search or candidate is None:
         return False
-    return name.lower().startswith(token.lower())
+    search_text = search.strip().lower()
+    candidate_text = candidate.strip().lower()
+    if not search_text or not candidate_text:
+        return False
+    if candidate_text.startswith(search_text):
+        return True
+    parts = [chunk for chunk in search_text.split() if chunk]
+    if not parts:
+        return False
+    candidate_words = [chunk for chunk in candidate_text.split() if chunk]
+    if not candidate_words:
+        return False
+    return all(any(word.startswith(part) for word in candidate_words) for part in parts)
+
+
+def _iter_char_candidates(char: Character) -> Iterable[str]:
+    for attr in ("name", "short_descr", "long_descr"):
+        value = getattr(char, attr, None)
+        if isinstance(value, str) and value.strip():
+            yield value
+    proto = getattr(char, "prototype", None)
+    if proto is not None:
+        for attr in ("player_name", "short_descr", "long_descr"):
+            value = getattr(proto, attr, None)
+            if isinstance(value, str) and value.strip():
+                yield value
+
+
+def _match_char_name(char: Character, token: str) -> bool:
+    if not token:
+        return False
+    return any(_is_name_match(token, candidate) for candidate in _iter_char_candidates(char))
 
 
 def _find_char_in_room(ch: Character, name: str) -> Character | None:
     room = getattr(ch, "room", None)
+    index, token = _parse_numbered_token(name)
+    if index <= 0:
+        index = 1
+    search = token or name.strip()
+    if not search:
+        return None
     for occupant in _iter_room_people(room):
-        if _match_char_name(occupant, name):
-            return occupant
+        if _match_char_name(occupant, search):
+            index -= 1
+            if index <= 0:
+                return occupant
     return None
 
 
 def _find_char_world(name: str) -> Character | None:
-    if not name:
+    index, token = _parse_numbered_token(name)
+    if index <= 0:
+        index = 1
+    search = token or name.strip()
+    if not search:
         return None
     from mud.models.character import character_registry
 
     for candidate in list(character_registry):
-        if _match_char_name(candidate, name):
-            return candidate
+        if _match_char_name(candidate, search):
+            index -= 1
+            if index <= 0:
+                return candidate
     return None
 
 
+def _iter_obj_candidates(obj: Object | None) -> Iterable[str]:
+    if obj is None:
+        return []
+    candidates: list[str] = []
+    for attr in ("name", "short_descr"):
+        value = getattr(obj, attr, None)
+        if isinstance(value, str) and value.strip():
+            candidates.append(value)
+    prototype = getattr(obj, "prototype", None)
+    if prototype is not None:
+        for attr in ("name", "short_descr"):
+            value = getattr(prototype, attr, None)
+            if isinstance(value, str) and value.strip():
+                candidates.append(value)
+    return candidates
+
+
 def _match_obj_name(obj: Object | None, token: str) -> bool:
-    if obj is None or not token:
+    if not token:
         return False
-    name = getattr(obj, "name", None)
-    if not name:
-        prototype = getattr(obj, "prototype", None)
-        name = getattr(prototype, "name", None)
-    if not name:
-        return False
-    return name.lower().startswith(token.lower())
+    return any(_is_name_match(token, candidate) for candidate in _iter_obj_candidates(obj))
 
 
 def _find_obj_here(ch: Character, token: str) -> Object | None:
     if not token:
         return None
+    index, search_token = _parse_numbered_token(token)
+    if index <= 0:
+        index = 1
+    search = search_token or token.strip()
+    if not search:
+        return None
     room = getattr(ch, "room", None)
     if room is not None:
         for obj in list(getattr(room, "contents", []) or []):
-            if _match_obj_name(obj, token):
-                return obj
+            if _match_obj_name(obj, search):
+                index -= 1
+                if index <= 0:
+                    return obj
     for obj in list(getattr(ch, "inventory", []) or []):
-        if _match_obj_name(obj, token):
-            return obj
+        if _match_obj_name(obj, search):
+            index -= 1
+            if index <= 0:
+                return obj
     equipment = getattr(ch, "equipment", {}) or {}
     for obj in equipment.values():
-        if _match_obj_name(obj, token):
-            return obj
+        if _match_obj_name(obj, search):
+            index -= 1
+            if index <= 0:
+                return obj
     return None
 
 
@@ -746,53 +827,136 @@ def do_mpassist(ch: Character, argument: str) -> None:
 
 
 def _match_object(obj: Object, token: str) -> bool:
-    proto = getattr(obj, "prototype", None)
-    names: list[str] = []
-    if proto is not None:
-        for attr in ("name", "short_descr"):
-            value = getattr(proto, attr, None)
-            if value:
-                names.extend(str(value).lower().split())
-    if hasattr(obj, "name") and getattr(obj, "name", None):
-        names.extend(str(obj.name).lower().split())
-    token = token.lower()
-    return any(name.startswith(token) or token in name for name in names)
+    return _match_obj_name(obj, token)
 
 
 def do_mpjunk(ch: Character, argument: str) -> None:
     token = argument.strip()
     if not token:
         return
-    inventory = list(getattr(ch, "inventory", []) or [])
-    equipment = dict(getattr(ch, "equipment", {}) or {})
 
-    def _remove(obj: Object) -> None:
+    def _is_carried(obj: Object) -> bool:
+        inventory = getattr(ch, "inventory", []) or []
         if obj in inventory:
-            inventory.remove(obj)
-        for slot, equipped in list(equipment.items()):
-            if equipped is obj:
-                equipment.pop(slot, None)
+            return True
+        equipment = getattr(ch, "equipment", {}) or {}
+        return any(equipped is obj for equipped in equipment.values())
 
-    if token.lower() == "all":
-        for obj in list(inventory):
-            _remove(obj)
-        ch.inventory = []
-        ch.equipment = equipment
+    def _strip_from_collections(obj: Object) -> None:
+        removed = False
+        inventory = getattr(ch, "inventory", None)
+        if isinstance(inventory, list):
+            while obj in inventory:
+                inventory.remove(obj)
+                removed = True
+        equipment = getattr(ch, "equipment", None)
+        if isinstance(equipment, dict):
+            for slot, equipped in list(equipment.items()):
+                if equipped is obj:
+                    del equipment[slot]
+                    removed = True
+        if removed and hasattr(ch, "carry_number"):
+            try:
+                ch.carry_number = max(0, int(getattr(ch, "carry_number", 0)) - 1)
+            except Exception:
+                pass
+        recalc = getattr(ch, "_recalculate_carry_weight", None)
+        if callable(recalc):
+            recalc()
+
+    def _extract_runtime_object(obj: Object) -> None:
+        if any(hasattr(obj, attr) for attr in ("contains", "carried_by", "in_room", "in_obj")):
+            try:
+                from mud.game_loop import _extract_obj as _legacy_extract_obj
+            except ImportError:  # pragma: no cover - defensive
+                _legacy_extract_obj = None
+            if _legacy_extract_obj is not None:
+                _legacy_extract_obj(obj)  # type: ignore[arg-type]
+            return
+
+        for attr in ("contained_items", "contains"):
+            contents = list(getattr(obj, attr, []) or [])
+            for item in contents:
+                _extract_runtime_object(item)
+            collection = getattr(obj, attr, None)
+            if isinstance(collection, list):
+                collection.clear()
+
+        container = getattr(obj, "location", None)
+        if container is not None:
+            contents = getattr(container, "contents", None)
+            if isinstance(contents, list):
+                while obj in contents:
+                    contents.remove(obj)
+        if hasattr(obj, "location"):
+            obj.location = None
+
+    def _discard(obj: Object) -> None:
+        if obj is None:
+            return
+        was_carried = _is_carried(obj)
+        remover = getattr(ch, "remove_object", None)
+        if callable(remover):
+            try:
+                remover(obj)  # type: ignore[arg-type]
+            except Exception:
+                pass
+        if was_carried and _is_carried(obj):
+            _strip_from_collections(obj)
+
+        if hasattr(obj, "carried_by"):
+            setattr(obj, "carried_by", None)
+        _extract_runtime_object(obj)
+
+    def _iter_carried_objects() -> list[Object]:
+        seen: set[int] = set()
+        collected: list[Object] = []
+        for obj in list(getattr(ch, "inventory", []) or []):
+            key = id(obj)
+            if key in seen:
+                continue
+            seen.add(key)
+            collected.append(obj)
+        equipment = getattr(ch, "equipment", {}) or {}
+        for obj in equipment.values():
+            key = id(obj)
+            if key in seen:
+                continue
+            seen.add(key)
+            collected.append(obj)
+        return collected
+
+    lower = token.lower()
+    if lower == "all":
+        for obj in _iter_carried_objects():
+            _discard(obj)
         return
-    if token.lower().startswith("all."):
+    if lower.startswith("all."):
         suffix = token[4:]
-        for obj in list(inventory):
-            if _match_object(obj, suffix):
-                _remove(obj)
-        ch.inventory = inventory
-        ch.equipment = equipment
+        for obj in _iter_carried_objects():
+            if not suffix or _match_object(obj, suffix):
+                _discard(obj)
         return
-    for obj in list(inventory):
-        if _match_object(obj, token):
-            _remove(obj)
-            break
-    ch.inventory = inventory
-    ch.equipment = equipment
+
+    number, remainder = _parse_numbered_token(token)
+    if number <= 0:
+        number = 1
+    search = remainder or token
+    equipment = getattr(ch, "equipment", {}) or {}
+    remaining = number
+    for obj in equipment.values():
+        if _match_object(obj, search):
+            remaining -= 1
+            if remaining <= 0:
+                _discard(obj)
+                return
+    remaining = number
+    for obj in list(getattr(ch, "inventory", []) or []):
+        if _match_object(obj, search):
+            remaining -= 1
+            if remaining <= 0:
+                _discard(obj)
+                return
 
 
 def do_mpdamage(ch: Character, argument: str) -> None:

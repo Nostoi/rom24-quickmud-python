@@ -7,13 +7,13 @@ from mud.commands.dispatcher import process_command
 from mud.loaders.help_loader import load_help_file
 from mud.models.character import Character
 from mud.models.constants import OHELPS_FILE
-from mud.models.help import HelpEntry, help_registry, register_help
+from mud.models.help import HelpEntry, clear_help_registry, help_registry, register_help
 from mud.models.room import Room
 from mud.net.connection import _resolve_help_text
 
 
 def setup_function(_):
-    help_registry.clear()
+    clear_help_registry()
 
 
 def test_load_help_file_populates_registry():
@@ -91,6 +91,36 @@ def test_help_combines_matching_entries_with_separator():
     assert result == expected
 
 
+def test_help_returns_all_matching_entries_when_keywords_collide():
+    command_entry = HelpEntry(keywords=["STEAL"], text="Command synopsis.\n")
+    skill_entry = HelpEntry(keywords=["STEAL"], text="Skill description.\n")
+    register_help(command_entry)
+    register_help(skill_entry)
+
+    ch = Character(name="Thief")
+    result = process_command(ch, "help steal")
+
+    expected = (
+        "STEAL\r\n"
+        "Command synopsis.\r\n"
+        "\r\n============================================================\r\n\r\n"
+        "STEAL\r\n"
+        "Skill description.\r\n"
+    )
+
+    assert result == expected
+
+
+def test_help_partial_tokens_match_multi_word_keywords():
+    entry = HelpEntry(keywords=["ARMOR CLASS"], text="Armor class overview")
+    register_help(entry)
+
+    ch = Character(name="Tester")
+    result = process_command(ch, "help a c")
+
+    assert "Armor class overview" in result
+
+
 def test_help_missing_topic_logs_request(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     help_path = Path(__file__).resolve().parent.parent / "data" / "help.json"
@@ -143,6 +173,39 @@ def test_help_generates_command_topic_when_missing(monkeypatch, tmp_path):
     assert result == expected
 
 
+def test_help_cast_fallback_includes_usage(monkeypatch, tmp_path):
+    from mud.commands import dispatcher
+
+    monkeypatch.chdir(tmp_path)
+    clear_help_registry()
+
+    cast_command = dispatcher.Command("cast", dispatcher.do_commands)
+    commands = dispatcher.COMMANDS + [cast_command]
+    index = dict(dispatcher.COMMAND_INDEX)
+    index[cast_command.name] = cast_command
+    monkeypatch.setattr(dispatcher, "COMMANDS", commands, raising=False)
+    monkeypatch.setattr(dispatcher, "COMMAND_INDEX", index, raising=False)
+
+    ch = Character(name="Caster", is_npc=False)
+    ch.room = Room(vnum=3001)
+
+    result = process_command(ch, "help cast")
+
+    expected = (
+        "Command: cast\r\n"
+        "Aliases: None\r\n"
+        "Minimum position: Dead\r\n"
+        "Available to mortals.\r\n"
+        "Usage: cast '<spell>' [target]\r\n"
+        "Casting a learned spell consumes mana based on the spell level.\r\n"
+    )
+
+    log_path = Path("log") / OHELPS_FILE
+    assert log_path.exists()
+    assert "Caster: cast" in log_path.read_text(encoding="utf-8")
+    assert result == expected
+
+
 def test_help_missing_topic_suggests_commands():
     load_help_file("data/help.json")
     ch = Character(name="Tester")
@@ -150,6 +213,65 @@ def test_help_missing_topic_suggests_commands():
     assert result.startswith("No help on that word.\r\nTry: ")
     assert result.endswith("\r\n")
     assert "unban" in result or "unalias" in result
+
+
+def test_help_suggestions_limit_to_five(monkeypatch, tmp_path):
+    from mud.commands import dispatcher
+
+    monkeypatch.chdir(tmp_path)
+    clear_help_registry()
+
+    new_commands = [
+        dispatcher.Command("help", dispatcher.do_help),
+        dispatcher.Command("albatross", dispatcher.do_commands),
+        dispatcher.Command("alchemist", dispatcher.do_commands, aliases=("alch",)),
+        dispatcher.Command("alert", dispatcher.do_commands),
+        dispatcher.Command("alias", dispatcher.do_commands),
+        dispatcher.Command("align", dispatcher.do_commands),
+        dispatcher.Command("alley", dispatcher.do_commands),
+        dispatcher.Command("alpha", dispatcher.do_commands),
+    ]
+    new_index: dict[str, dispatcher.Command] = {}
+    for cmd in new_commands:
+        new_index[cmd.name] = cmd
+        for alias in cmd.aliases:
+            new_index[alias] = cmd
+
+    monkeypatch.setattr(dispatcher, "COMMANDS", new_commands, raising=False)
+    monkeypatch.setattr(dispatcher, "COMMAND_INDEX", new_index, raising=False)
+
+    ch = Character(name="Tester", is_npc=False)
+    ch.room = Room(vnum=3001)
+
+    result = process_command(ch, "help alz")
+
+    lines = result.split("\r\n")
+    assert lines[0] == "No help on that word."
+    suggestions_line = lines[1]
+    assert suggestions_line.startswith("Try: ")
+    suggestions = [entry.strip() for entry in suggestions_line[5:].split(",") if entry.strip()]
+    assert suggestions == ["albatross", "alchemist", "alert", "alias", "align"]
+    assert len(suggestions) == 5
+
+
+def test_help_preserves_duplicate_entries_with_identical_payloads():
+    duplicate_one = HelpEntry(keywords=["STEAL"], text="Duplicate synopsis.\n")
+    duplicate_two = HelpEntry(keywords=["STEAL"], text="Duplicate synopsis.\n")
+    register_help(duplicate_one)
+    register_help(duplicate_two)
+
+    ch = Character(name="Thief")
+    result = process_command(ch, "help steal")
+
+    expected = (
+        "STEAL\r\n"
+        "Duplicate synopsis.\r\n"
+        "\r\n============================================================\r\n\r\n"
+        "STEAL\r\n"
+        "Duplicate synopsis.\r\n"
+    )
+
+    assert result == expected
 
 
 def test_help_handles_quoted_topics():

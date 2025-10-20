@@ -6,6 +6,7 @@ from mud.db.models import Character as DBCharacter
 from mud.db.models import PlayerAccount
 from mud.db.session import SessionLocal
 from mud.models.character import Character, from_orm
+from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.models.conversion import (
     load_objects_for_character,
     save_objects_for_character,
@@ -48,7 +49,12 @@ def save_character(character: Character) -> None:
             db_char.hp = character.hit
             db_char.race = int(character.race or 0)
             db_char.ch_class = int(character.ch_class or 0)
-            db_char.sex = int(character.sex or 0)
+            pcdata = getattr(character, "pcdata", None)
+            true_sex_value = int(
+                getattr(pcdata, "true_sex", getattr(character, "sex", 0)) or 0
+            )
+            db_char.true_sex = true_sex_value
+            db_char.sex = int(character.sex or true_sex_value or 0)
             db_char.alignment = int(character.alignment or 0)
             db_char.act = int(getattr(character, "act", 0) or 0)
             db_char.hometown_vnum = int(character.hometown_vnum or 0)
@@ -66,7 +72,17 @@ def save_character(character: Character) -> None:
             db_char.creation_groups = json.dumps(list(getattr(character, "creation_groups", ())))
             db_char.newbie_help_seen = bool(getattr(character, "newbie_help_seen", False))
             room = getattr(character, "room", None)
-            db_char.room_vnum = int(getattr(room, "vnum", 0) or 0) if room is not None else None
+            was_in_room = getattr(character, "was_in_room", None)
+            room_vnum = 0
+            if room is not None:
+                room_vnum = int(getattr(room, "vnum", 0) or 0)
+                if room_vnum == int(ROOM_VNUM_LIMBO) and was_in_room is not None:
+                    room_vnum = int(getattr(was_in_room, "vnum", 0) or 0)
+            elif was_in_room is not None:
+                room_vnum = int(getattr(was_in_room, "vnum", 0) or 0)
+            if room_vnum <= 0:
+                room_vnum = int(ROOM_VNUM_TEMPLE)
+            db_char.room_vnum = room_vnum
             save_objects_for_character(session, character, db_char)
             session.commit()
     except Exception as e:

@@ -41,18 +41,31 @@ OBJ_VNUM_ROSE = 1001
 OBJ_VNUM_SCHOOL_MACE = 3700
 OBJ_VNUM_SCHOOL_DAGGER = 3701
 OBJ_VNUM_SCHOOL_SWORD = 3702
+OBJ_VNUM_SCHOOL_VEST = 3703
+OBJ_VNUM_SCHOOL_SHIELD = 3704
+OBJ_VNUM_SCHOOL_BANNER = 3716
 OBJ_VNUM_SCHOOL_SPEAR = 3717
 OBJ_VNUM_SCHOOL_STAFF = 3718
 OBJ_VNUM_SCHOOL_AXE = 3719
 OBJ_VNUM_SCHOOL_FLAIL = 3720
 OBJ_VNUM_SCHOOL_WHIP = 3721
 OBJ_VNUM_SCHOOL_POLEARM = 3722
+# Midgaard resources handed to new players
+OBJ_VNUM_MAP = 3162
 # Justice system utility items (merc.h)
 OBJ_VNUM_WHISTLE = 2116
+
+# Clan rival group vnums and patrol utilities (merc.h)
+GROUP_VNUM_TROLLS = 2100
+GROUP_VNUM_OGRES = 2101
+MOB_VNUM_PATROLMAN = 2106
 
 # Command/append-file limits (merc.h)
 MAX_CMD_LEN = 50
 OHELPS_FILE = "orphaned_helps.txt"
+
+# Telnet pagination defaults (merc.h PAGELEN)
+DEFAULT_PAGE_LINES = 22
 
 
 class Sector(IntEnum):

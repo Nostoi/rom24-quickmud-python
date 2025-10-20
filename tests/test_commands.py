@@ -1,5 +1,5 @@
 from mud.commands import process_command
-from mud.models.constants import Position
+from mud.models.constants import AffectFlag, PlayerFlag, Position
 from mud.registry import room_registry
 from mud.spawning.obj_spawner import spawn_object
 from mud.world import create_test_character, initialize_world
@@ -101,6 +101,43 @@ def test_scan_directional_depth_rom_style():
     assert "Target, nearby to the north." in out
 
 
+def test_scan_hides_invisible_targets():
+    initialize_world("area/area.lst")
+    char = create_test_character("Watcher", 3001)
+    north_room = room_registry[3054]
+    create_test_character("Visible", north_room.vnum)
+    hidden = create_test_character("Shadow", north_room.vnum)
+    hidden.invis_level = char.level + 5
+
+    out = process_command(char, "scan north")
+    assert "Visible, nearby to the north." in out
+    assert "Shadow" not in out
+
+    char.trust = hidden.invis_level
+    out2 = process_command(char, "scan north")
+    assert "Shadow, nearby to the north." in out2
+
+
+def test_scan_shows_sneaking_character_when_skill_roll_fails():
+    initialize_world("area/area.lst")
+    watcher = create_test_character("Watcher", 3001)
+    sneaky = create_test_character("Sneaky", 3001)
+    sneaky.add_affect(AffectFlag.SNEAK)
+
+    out = process_command(watcher, "scan")
+    assert "Sneaky, right here." in out
+
+
+def test_look_lists_sneaking_character_when_skill_roll_fails():
+    initialize_world("area/area.lst")
+    viewer = create_test_character("Viewer", 3001)
+    sneaky = create_test_character("Sneaky", 3001)
+    sneaky.add_affect(AffectFlag.SNEAK)
+
+    out = process_command(viewer, "look")
+    assert "Sneaky" in out
+
+
 def test_alias_create_expand_and_unalias():
     initialize_world("area/area.lst")
     char = create_test_character("AliasUser", 3001)
@@ -179,6 +216,121 @@ def test_prefix_macro_prepends_to_commands():
     out = process_command(speaker, "hello there")
     assert out == "You say, 'hello there'"
     assert f"{speaker.name} says, 'hello there'" in listener.messages
+
+
+def test_command_execution_breaks_hide():
+    initialize_world("area/area.lst")
+    char = create_test_character("Sneak", 3001)
+    char.add_affect(AffectFlag.HIDE)
+    assert char.has_affect(AffectFlag.HIDE) is True
+
+    out = process_command(char, "look")
+    assert "Temple" in out
+    assert char.has_affect(AffectFlag.HIDE) is False
+
+
+def test_look_hides_invisible_targets():
+    initialize_world("area/area.lst")
+    viewer = create_test_character("Watcher", 3001)
+    visible = create_test_character("Visible", 3001)
+    hidden = create_test_character("Shadow", 3001)
+    hidden.invis_level = viewer.level + 5
+
+    out = process_command(viewer, "look")
+    assert "Visible" in out
+    assert "Shadow" not in out
+
+    viewer.trust = hidden.invis_level
+    out2 = process_command(viewer, "look")
+    assert "Shadow" in out2
+
+
+def test_frozen_player_cannot_run_commands():
+    initialize_world("area/area.lst")
+    char = create_test_character("Icicle", 3001)
+    char.act = int(PlayerFlag.FREEZE)
+
+    out = process_command(char, "look")
+
+    assert out == "You're totally frozen!"
+
+
+def test_commands_lists_accessible_commands():
+    initialize_world("area/area.lst")
+    char = create_test_character("Lister", 3001)
+
+    output = process_command(char, "commands")
+    assert output.endswith("\n\r")
+
+    lines = [line for line in output.split("\n\r") if line]
+
+    from mud.commands.dispatcher import COMMANDS
+    from mud.models.constants import LEVEL_HERO
+
+    trust = char.trust if getattr(char, "trust", 0) > 0 else getattr(char, "level", 0)
+    expected = [
+        cmd.name
+        for cmd in COMMANDS
+        if cmd.show and cmd.min_trust < LEVEL_HERO and cmd.min_trust <= trust
+    ]
+
+    flattened: list[str] = []
+    for line in lines:
+        for start in range(0, len(line), 12):
+            name = line[start : start + 12].strip()
+            if name:
+                flattened.append(name)
+
+    assert flattened == expected
+    assert "@teleport" not in output
+    assert "wizlock" not in output
+    assert "immtalk" not in output
+    assert "prefi" not in flattened
+    assert "north" not in flattened
+
+
+def test_wizhelp_denied_to_mortals():
+    initialize_world("area/area.lst")
+    char = create_test_character("Novice", 3001)
+
+    output = process_command(char, "wizhelp")
+
+    assert output == "Huh?"
+
+
+def test_wizhelp_lists_immortal_commands():
+    initialize_world("area/area.lst")
+    char = create_test_character("Immortal", 3001)
+    from mud.models.constants import LEVEL_HERO
+
+    char.level = LEVEL_HERO
+
+    output = process_command(char, "wizhelp")
+    assert output.endswith("\n\r")
+
+    lines = [line for line in output.split("\n\r") if line]
+
+    from mud.commands.dispatcher import COMMANDS
+
+    trust = char.trust if getattr(char, "trust", 0) > 0 else getattr(char, "level", 0)
+    expected = [
+        cmd.name
+        for cmd in COMMANDS
+        if cmd.show and cmd.min_trust >= LEVEL_HERO and cmd.min_trust <= trust
+    ]
+
+    flattened: list[str] = []
+    for line in lines:
+        for start in range(0, len(line), 12):
+            name = line[start : start + 12].strip()
+            if name:
+                flattened.append(name)
+
+    assert flattened == expected
+    assert "commands" not in output
+    assert "wizhelp" in output
+    assert "@teleport" in output
+    assert "prefi" not in flattened
 
 
 def test_position_gating_sleeping_blocks_look_allows_scan():

@@ -115,6 +115,7 @@ class Character(Base):
     race: Mapped[int] = mapped_column(Integer, default=0)
     ch_class: Mapped[int] = mapped_column(Integer, default=0)
     sex: Mapped[int] = mapped_column(Integer, default=0)
+    true_sex: Mapped[int] = mapped_column(Integer, default=0)
     alignment: Mapped[int] = mapped_column(Integer, default=0)
     act: Mapped[int] = mapped_column(Integer, default=0)
     hometown_vnum: Mapped[int] = mapped_column(Integer, default=0)

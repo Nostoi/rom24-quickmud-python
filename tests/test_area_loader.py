@@ -6,10 +6,25 @@ import pytest
 from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
 from mud.loaders.reset_loader import validate_resets
-from mud.models.constants import AreaFlag, RoomFlag
-from mud.models.help import help_registry
-from mud.registry import area_registry, room_registry
+from mud.models.constants import (
+    AffectFlag,
+    AreaFlag,
+    ContainerFlag,
+    ExtraFlag,
+    LIQUID_TABLE,
+    RoomFlag,
+    WeaponFlag,
+    WeaponType,
+    WearFlag,
+    attack_lookup,
+    convert_flags_from_letters,
+)
+from mud.models.help import clear_help_registry, help_registry
+from mud.mobprog import Trigger, clear_registered_programs, get_registered_program
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.scripts.convert_are_to_json import clear_registries, convert_area
+from mud.spawning.obj_spawner import spawn_object
+from mud.skills.metadata import ROM_SKILL_NAMES_BY_INDEX
 
 
 def test_duplicate_area_vnum_raises_value_error(tmp_path):
@@ -152,7 +167,7 @@ def test_area_loader_seeds_rom_defaults(tmp_path):
 
 
 def test_help_section_registers_entries(tmp_path):
-    help_registry.clear()
+    clear_help_registry()
     area_registry.clear()
     content = (
         "#AREA\n"
@@ -173,16 +188,453 @@ def test_help_section_registers_entries(tmp_path):
 
     area = load_area_file(str(path))
 
-    entry = help_registry["primary"]
+    entry_list = help_registry["primary"]
+    assert len(entry_list) == 1
+    entry = entry_list[0]
     assert entry in area.helps
     assert entry.level == 0
     assert entry.text == "First line.\nSecond line.\n"
     assert set(entry.keywords) == {"PRIMARY", "Second Keyword", "third"}
-    assert help_registry["second keyword"] is entry
-    assert help_registry["third"] is entry
+    assert help_registry["second keyword"][0] is entry
+    assert help_registry["third"][0] is entry
 
-    help_registry.clear()
+    clear_help_registry()
     area_registry.clear()
+
+
+def test_loads_mobprogs_registers_code(tmp_path):
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    clear_registered_programs()
+
+    content = (
+        "#AREA\n"
+        "mprog.are~\n"
+        "MobProg Test~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#MOBILES\n"
+        "#1\n"
+        "testmob~\n"
+        "A test mob~\n"
+        "This mob has a script.~\n"
+        "A plain description.~\n"
+        "human~\n"
+        "0 0 0 0\n"
+        "1 0 0 1d1+0 1d1+0 1d1+0 beating\n"
+        "0 0 0 0\n"
+        "0 0 0 0\n"
+        "standing standing neutral 0\n"
+        "0 0 medium 0\n"
+        "M GREET 5000 hello there~\n"
+        "#0\n"
+        "#MOBPROGS\n"
+        "#5000\n"
+        "say Hello there!\n"
+        "~\n"
+        "#0\n"
+        "#$\n"
+    )
+    path = tmp_path / "mprog.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    mob = mob_registry[1]
+    assert mob.mprogs
+    program = mob.mprogs[0]
+    assert program.vnum == 5000
+    assert program.trig_phrase == "hello there"
+    assert program.trig_type == int(Trigger.GREET)
+    assert program.code == "say Hello there!"
+    assert get_registered_program(5000) is program
+
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    clear_registered_programs()
+
+
+def test_mob_flag_removal_lines_clear_flags(tmp_path):
+    area_registry.clear()
+    mob_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "flag_test.are~\n"
+        "Flag Test~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#MOBILES\n"
+        "#1\n"
+        "flag remover~\n"
+        "A flag remover mob~\n"
+        "A flag remover mob stands here.~\n"
+        "It looks configurable.~\n"
+        "human~\n"
+        "ABCD EFG 0 0\n"
+        "10 0 0 1d1+0 1d1+0 1d1+0 slash\n"
+        "0 0 0 0\n"
+        "ABC DEF GHI JKL\n"
+        "standing standing neutral 0\n"
+        "ABCD EFGH medium iron\n"
+        "F act AC\n"
+        "F aff G\n"
+        "F off AC\n"
+        "F imm D\n"
+        "F res HI\n"
+        "F vul L\n"
+        "F for AD\n"
+        "F par EH\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "flag_test.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    mob = mob_registry[1]
+    assert mob.act_flags == "BD"
+    assert mob.affected_by == "EF"
+    assert mob.offensive == "B"
+    assert mob.immune == "EF"
+    assert mob.resist == "G"
+    assert mob.vuln == "JK"
+    assert mob.form == "BC"
+    assert mob.parts == "FG"
+
+    area_registry.clear()
+    mob_registry.clear()
+
+
+def test_object_flag_affects_loaded(tmp_path):
+    area_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "flag_obj.are~\n"
+        "Flag Object~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#OBJECTS\n"
+        "#1\n"
+        "flagged sword~\n"
+        "a flagged sword~\n"
+        "A flagged sword lies here.~\n"
+        "steel~\n"
+        "weapon ABC AB\n"
+        "0 0 0 0 0\n"
+        "10 100 P\n"
+        "A\n"
+        "18 2\n"
+        "F A 18 2 AFF_HASTE\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "flag_obj.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    obj = obj_registry[1]
+    base_affect = obj.affects[0]
+    assert base_affect == {"location": 18, "modifier": 2}
+    assert obj.affected[0].where == 1
+    assert obj.affected[0].location == 18
+    assert obj.affected[0].modifier == 2
+
+    flag_affect_dict = obj.affects[1]
+    assert flag_affect_dict["where"] == "A"
+    assert flag_affect_dict["location"] == 18
+    assert flag_affect_dict["modifier"] == 2
+    assert flag_affect_dict["bitvector"] == int(AffectFlag.HASTE)
+
+    flag_affect = obj.affected[1]
+    assert flag_affect.where == 0
+    assert flag_affect.location == 18
+    assert flag_affect.modifier == 2
+    assert flag_affect.bitvector == int(AffectFlag.HASTE)
+
+    runtime = spawn_object(1)
+    assert runtime is not None
+    assert len(runtime.affected) == len(obj.affected)
+    assert runtime.affected[0].location == 18
+    assert runtime.affected[1].bitvector == int(AffectFlag.HASTE)
+
+    area_registry.clear()
+    obj_registry.clear()
+
+
+def test_object_level_and_condition_loaded(tmp_path):
+    area_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "stats_obj.are~\n"
+        "Stats Object~\n"
+        "Credits~\n"
+        "2 2\n"
+        "#OBJECTS\n"
+        "#2\n"
+        "stat sword~\n"
+        "a stat sword~\n"
+        "A stat sword rests here.~\n"
+        "steel~\n"
+        "weapon ABC AB\n"
+        "0 0 0 0 0\n"
+        "12 8 250 G\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "stats_obj.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    obj = obj_registry[2]
+    assert obj.level == 12
+    assert obj.weight == 8
+    assert obj.cost == 250
+    assert obj.condition == 90
+
+    area_registry.clear()
+    obj_registry.clear()
+
+
+def test_object_extra_and_wear_flags_loaded(tmp_path):
+    area_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "flag_bits.are~\n"
+        "Flag Bits~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#OBJECTS\n"
+        "#5\n"
+        "flag blade~\n"
+        "a flag blade~\n"
+        "A blade glows here.~\n"
+        "steel~\n"
+        "weapon BI AN\n"
+        "0 0 0 0 0\n"
+        "10 5 100 P\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "flag_bits.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    obj = obj_registry[5]
+    expected_extra = int(convert_flags_from_letters("BI", ExtraFlag))
+    expected_wear = int(convert_flags_from_letters("AN", WearFlag))
+    assert obj.extra_flags == expected_extra
+    assert obj.wear_flags == expected_wear
+
+    runtime = spawn_object(5)
+    assert runtime is not None
+    assert runtime.extra_flags == expected_extra
+    assert runtime.wear_flags == expected_wear
+
+    area_registry.clear()
+    obj_registry.clear()
+
+
+def test_mob_and_object_new_format_marked_true(tmp_path):
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "new_format.are~\n"
+        "New Format Test~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#MOBILES\n"
+        "#10\n"
+        "test mob~\n"
+        "a test mob~\n"
+        "A test mob stands here.~\n"
+        "A simple description.~\n"
+        "human~\n"
+        "0 0 0 0\n"
+        "1 0 0 1d1+0 1d1+0 1d1+0 beating\n"
+        "0 0 0 0\n"
+        "0 0 0 0\n"
+        "standing standing neutral 0\n"
+        "0 0 medium 0\n"
+        "#0\n"
+        "#OBJECTS\n"
+        "#20\n"
+        "test blade~\n"
+        "a test blade~\n"
+        "A test blade rests here.~\n"
+        "iron~\n"
+        "weapon 0 0\n"
+        "0 0 0 0 0\n"
+        "1 1 0 P\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "new_format.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    mob = mob_registry[10]
+    obj = obj_registry[20]
+
+    assert mob.new_format is True
+    assert obj.new_format is True
+
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+
+def test_object_weapon_and_wand_values_match_rom(tmp_path):
+    area_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "value_items.are~\n"
+        "Value Items~\n"
+        "Credits~\n"
+        "10 20\n"
+        "#OBJECTS\n"
+        "#10\n"
+        "practice blade~\n"
+        "a practice blade~\n"
+        "A practice blade rests here.~\n"
+        "steel~\n"
+        "weapon 0 0\n"
+        "sword 3 5 cleave AB\n"
+        "35 10 150 G\n"
+        "#11\n"
+        "trainer wand~\n"
+        "a trainer's wand~\n"
+        "A training wand has been dropped here.~\n"
+        "oak~\n"
+        "wand 0 0\n"
+        "5 5 20 'magic missile' 0\n"
+        "25 2 350 P\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "value_items.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    blade = obj_registry[10]
+    assert blade.value[0] == int(WeaponType.SWORD)
+    assert blade.value[1] == 3
+    assert blade.value[2] == 5
+    assert blade.value[3] == attack_lookup("cleave")
+    assert blade.value[4] == int(WeaponFlag.FLAMING | WeaponFlag.FROST)
+
+    wand = obj_registry[11]
+    assert wand.value[0] == 5
+    assert wand.value[1] == 5
+    assert wand.value[2] == 20
+    magic_index = ROM_SKILL_NAMES_BY_INDEX.index("magic missile")
+    assert wand.value[3] == magic_index
+    assert wand.value[4] == 0
+
+    area_registry.clear()
+    obj_registry.clear()
+
+
+def test_object_potion_and_container_values(tmp_path):
+    area_registry.clear()
+    obj_registry.clear()
+
+    content = (
+        "#AREA\n"
+        "value_more.are~\n"
+        "Value More~\n"
+        "Credits~\n"
+        "30 40\n"
+        "#OBJECTS\n"
+        "#20\n"
+        "detect potion~\n"
+        "a potion of detection~\n"
+        "A shimmering potion sits here.~\n"
+        "glass~\n"
+        "potion 0 0\n"
+        "12 'detect invis' 'cure light' 'cure serious' 'cure critical'\n"
+        "0 5 220 P\n"
+        "#21\n"
+        "bottle brew~\n"
+        "a bottle of brew~\n"
+        "A glass bottle lies here.~\n"
+        "glass~\n"
+        "drink 0 0\n"
+        "12 12 'firebreather' 0 0\n"
+        "0 6 30 P\n"
+        "#22\n"
+        "small chest~\n"
+        "a small training chest~\n"
+        "A training chest sits here.~\n"
+        "iron~\n"
+        "container 0 0\n"
+        "100 AB 5 10 0\n"
+        "0 20 100 P\n"
+        "#0\n"
+        "#$\n"
+    )
+
+    path = tmp_path / "value_more.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    potion = obj_registry[20]
+    assert potion.value[0] == 12
+    detect_index = ROM_SKILL_NAMES_BY_INDEX.index("detect invis")
+    cure_light = ROM_SKILL_NAMES_BY_INDEX.index("cure light")
+    cure_serious = ROM_SKILL_NAMES_BY_INDEX.index("cure serious")
+    cure_critical = ROM_SKILL_NAMES_BY_INDEX.index("cure critical")
+    assert potion.value[1] == detect_index
+    assert potion.value[2] == cure_light
+    assert potion.value[3] == cure_serious
+    assert potion.value[4] == cure_critical
+
+    bottle = obj_registry[21]
+    assert bottle.value[0] == 12
+    assert bottle.value[1] == 12
+    firebreather_index = next(
+        idx for idx, liquid in enumerate(LIQUID_TABLE) if liquid.name == "firebreather"
+    )
+    assert bottle.value[2] == firebreather_index
+    assert bottle.value[3] == 0
+    assert bottle.value[4] == 0
+
+    chest = obj_registry[22]
+    expected_flags = int(ContainerFlag.CLOSEABLE | ContainerFlag.PICKPROOF)
+    assert chest.value[0] == 100
+    assert chest.value[1] == expected_flags
+    assert chest.value[2] == 5
+    assert chest.value[3] == 10
+    assert chest.value[4] == 0
+
+    area_registry.clear()
+    obj_registry.clear()
 
 
 def test_optional_room_fields_roundtrip(tmp_path):
@@ -261,6 +713,75 @@ def test_convert_area_preserves_clan_and_owner(tmp_path):
     room_registry.clear()
 
 
+def test_convert_area_preserves_mobprogs(tmp_path):
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    clear_registered_programs()
+
+    content = (
+        "#AREA\n"
+        "mprog_json.are~\n"
+        "MobProg JSON Test~\n"
+        "Credits~\n"
+        "1 1\n"
+        "#MOBILES\n"
+        "#1\n"
+        "testmob~\n"
+        "A test mob~\n"
+        "Scripted mob.~\n"
+        "Simple description.~\n"
+        "human~\n"
+        "0 0 0 0\n"
+        "1 0 0 1d1+0 1d1+0 1d1+0 beating\n"
+        "0 0 0 0\n"
+        "0 0 0 0\n"
+        "standing standing neutral 0\n"
+        "0 0 medium 0\n"
+        "M GREET 6000 hello json~\n"
+        "#0\n"
+        "#MOBPROGS\n"
+        "#6000\n"
+        "say Hello JSON!\n"
+        "~\n"
+        "#0\n"
+        "#$\n"
+    )
+    area_path = tmp_path / "mprog_json.are"
+    area_path.write_text(content, encoding="latin-1")
+
+    clear_registries()
+    data = convert_area(str(area_path))
+    assert "mob_programs" in data
+    entry = data["mob_programs"][0]
+    assert entry["vnum"] == 6000
+    assert entry["code"] == "say Hello JSON!"
+    assignment = entry["assignments"][0]
+    assert assignment["mob_vnum"] == 1
+    assert assignment["trigger"] == "GREET"
+    assert assignment["phrase"] == "hello json"
+
+    json_path = tmp_path / "mprog_json.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    clear_registries()
+    load_area_from_json(str(json_path))
+
+    mob = mob_registry[1]
+    assert mob.mprogs
+    program = mob.mprogs[0]
+    assert program.vnum == 6000
+    assert program.trig_phrase == "hello json"
+    assert program.trig_type == int(Trigger.GREET)
+    assert program.code == "say Hello JSON!"
+    assert get_registered_program(6000) is program
+
+    area_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    clear_registered_programs()
+
+
 def test_json_loader_applies_defaults_and_law_flag(tmp_path):
     clear_registries()
     data = convert_area("area/midgaard.are")
@@ -300,3 +821,55 @@ def test_json_loader_populates_room_resets():
     )
     assert guardian_reset is not None
     assert guardian_reset in room.resets
+
+
+def test_json_loader_applies_specials_to_mobs(tmp_path):
+    clear_registries()
+
+    data = {
+        "area": {
+            "vnum": 1,
+            "name": "Spec Area",
+            "filename": "spec",
+            "min_level": 1,
+            "max_level": 1,
+            "builders": "",
+            "credits": "",
+            "min_vnum": 1,
+            "max_vnum": 1,
+            "area_flags": 0,
+            "security": 9,
+        },
+        "rooms": [],
+        "mobs": [
+            {
+                "id": 4200,
+                "name": "Spec Mob",
+                "player_name": "spec mob",
+                "long_description": "",
+                "description": "",
+                "race": "human",
+                "act_flags": "AIS",
+                "affected_by": "",
+                "alignment": 0,
+                "group": 0,
+                "level": 10,
+            }
+        ],
+        "objects": [],
+        "mob_programs": [],
+        "specials": [
+            {"mob_vnum": 4200, "spec": "spec_breath_fire"},
+        ],
+    }
+
+    json_path = tmp_path / "spec_area.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    load_area_from_json(str(json_path))
+
+    proto = mob_registry.get(4200)
+    assert proto is not None
+    assert (proto.spec_fun or "").lower() == "spec_breath_fire"
+
+    clear_registries()

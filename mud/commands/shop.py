@@ -24,7 +24,7 @@ from mud.skills import check_improve
 from mud.spawning.obj_spawner import spawn_object
 from mud.time import time_info
 from mud.utils import rng_mm
-from mud.world.movement import can_carry_n, can_carry_w
+from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.vision import room_is_dark
 
 _CLOSED_EARLY = "Sorry, I am closed. Come back later."
@@ -744,7 +744,7 @@ def do_buy(char: Character, args: str) -> str:
     if current_number + quantity > can_carry_n(char):
         return "You can't carry that many items."
 
-    current_weight = int(getattr(char, "carry_weight", 0) or 0)
+    current_weight = get_carry_weight(char)
     if infinite_stock:
         weight_per = int(
             getattr(selected_obj, "weight", None) or getattr(proto, "weight", 0) or 0

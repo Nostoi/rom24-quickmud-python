@@ -3,6 +3,7 @@ from __future__ import annotations
 from mud.models.character import Character
 from mud.models.constants import Direction
 from mud.world.look import dir_names, look
+from mud.world.vision import can_see_character, describe_character
 
 
 def do_scan(char: Character, args: str = "") -> str:
@@ -44,7 +45,9 @@ def do_scan(char: Character, args: str = "") -> str:
         for p in room.people:
             if p is char:
                 continue
-            who = p.name or "someone"
+            if not can_see_character(char, p):
+                continue
+            who = describe_character(char, p)
             if depth == 0:
                 lines.append(f"{who}, {distance[0]}")
             else:

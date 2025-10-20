@@ -1,10 +1,26 @@
+from typing import Any
+
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import OBJ_VNUM_WHISTLE, CommFlag, PlayerFlag, Position, Sex
+from mud.models.constants import (
+    GROUP_VNUM_OGRES,
+    GROUP_VNUM_TROLLS,
+    MOB_VNUM_PATROLMAN,
+    OBJ_VNUM_WHISTLE,
+    AffectFlag,
+    CommFlag,
+    PlayerFlag,
+    Position,
+    Sex,
+)
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
+from types import SimpleNamespace
+
+import mud.spec_funs as spec_module
+from mud.models.constants import Direction, EX_CLOSED, ItemType, Position, WearFlag
 from mud.models.object import Object
-from mud.models.room import Room
+from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
@@ -14,12 +30,20 @@ from mud.spec_funs import (
     register_spec_fun,
     run_npc_specs,
     spec_cast_cleric,
+    spec_cast_judge,
     spec_cast_mage,
+    spec_cast_undead,
     spec_fun_registry,
+    spec_fido,
+    spec_janitor,
+    spec_poison,
+    spec_mayor,
     spec_thief,
+    _reset_spec_mayor_state,
 )
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world, world_state
+from mud.time import time_info
 
 
 def test_case_insensitive_lookup() -> None:
@@ -74,25 +98,111 @@ def test_registry_executes_function():
         spec_fun_registry.update(prev)
 
 
-def test_spec_cast_adept_rng():
-    """RNG sequence parity anchor for spec_cast_adept using Mitchell–Moore.
+def test_spec_cast_adept_casts_support_spells(monkeypatch) -> None:
+    room = Room(vnum=5000, name="Adept Hall")
 
-    Seeds the MM generator and verifies the first several number_percent
-    outputs match known-good values derived from ROM semantics. Also asserts
-    that spec_cast_adept returns True/False in lockstep with a <=25 threshold
-    over that sequence, proving it uses rng_mm.number_percent().
-    """
-    from mud.spec_funs import spec_cast_adept
+    player = Character(name="Newbie", level=5)
+    player.is_npc = False
+    player.messages = []
+    room.add_character(player)
 
-    rng_mm.seed_mm(12345)
-    expected = [24, 97, 90, 83, 45, 44, 43, 87, 2, 89]
-    produced = [rng_mm.number_percent() for _ in range(len(expected))]
-    assert produced == expected
+    proto = MobIndex(vnum=5001, short_descr="a helpful adept", level=10)
+    proto.spec_fun = "spec_cast_adept"
+    mob_registry[proto.vnum] = proto
 
-    # Re-seed and check spec behavior corresponds to the same sequence
-    rng_mm.seed_mm(12345)
-    outcomes = [spec_cast_adept(object()) for _ in range(len(expected))]
-    assert outcomes == [v <= 25 for v in expected]
+    adept = MobInstance.from_prototype(proto)
+    adept.messages = []
+    adept.position = int(Position.STANDING)
+    room.add_mob(adept)
+
+    cast_calls: list[tuple[Any, Any, str]] = []
+
+    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)) or True)
+
+    bit_values = iter([0, 0])
+
+    def fake_bits(width: int) -> int:
+        try:
+            return next(bit_values)
+        except StopIteration:
+            return 0
+
+    monkeypatch.setattr(rng_mm, "number_bits", fake_bits)
+
+    try:
+        result = spec_module.spec_cast_adept(adept)
+        assert result is True
+        assert cast_calls == [(adept, player, "armor")]
+        assert "a helpful adept utters the word 'abrazak'." in player.messages
+    finally:
+        if adept in room.people:
+            room.people.remove(adept)
+        room.remove_character(player)
+        mob_registry.pop(proto.vnum, None)
+
+
+def test_spec_cast_adept_skips_high_level_players(monkeypatch) -> None:
+    room = Room(vnum=5002, name="Quiet Chapel")
+
+    veteran = Character(name="Veteran", level=15)
+    veteran.is_npc = False
+    veteran.messages = []
+    room.add_character(veteran)
+
+    proto = MobIndex(vnum=5003, short_descr="a kindly adept", level=10, spec_fun="spec_cast_adept")
+    mob_registry[proto.vnum] = proto
+
+    adept = MobInstance.from_prototype(proto)
+    adept.messages = []
+    adept.position = int(Position.STANDING)
+    room.add_mob(adept)
+
+    cast_calls: list[tuple[Any, Any, str]] = []
+    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)))
+    monkeypatch.setattr(rng_mm, "number_bits", lambda width: 0)
+
+    try:
+        result = spec_module.spec_cast_adept(adept)
+
+        assert result is False
+        assert cast_calls == []
+    finally:
+        if adept in room.people:
+            room.people.remove(adept)
+        room.remove_character(veteran)
+        mob_registry.pop(proto.vnum, None)
+
+
+def test_spec_cast_adept_requires_visibility(monkeypatch) -> None:
+    room = Room(vnum=5004, name="Dim Chapel")
+
+    hidden = Character(name="Sneaky", level=7)
+    hidden.is_npc = False
+    hidden.messages = []
+    hidden.affected_by = int(AffectFlag.INVISIBLE)
+    room.add_character(hidden)
+
+    proto = MobIndex(vnum=5005, short_descr="a patient adept", level=10, spec_fun="spec_cast_adept")
+    mob_registry[proto.vnum] = proto
+
+    adept = MobInstance.from_prototype(proto)
+    adept.messages = []
+    adept.position = int(Position.STANDING)
+    room.add_mob(adept)
+
+    cast_calls: list[tuple[Any, Any, str]] = []
+    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)))
+
+    try:
+        result = spec_module.spec_cast_adept(adept)
+
+        assert result is False
+        assert cast_calls == []
+    finally:
+        if adept in room.people:
+            room.people.remove(adept)
+        room.remove_character(hidden)
+        mob_registry.pop(proto.vnum, None)
 
 
 def test_mob_spec_fun_invoked():
@@ -119,6 +229,327 @@ def test_mob_spec_fun_invoked():
     finally:
         spec_fun_registry.clear()
         spec_fun_registry.update(prev)
+
+
+def test_spec_janitor_collects_trash() -> None:
+    room = Room(vnum=4000, name="Trash Heap")
+    janitor = SimpleNamespace(
+        name="Janitor",
+        room=room,
+        position=int(Position.STANDING),
+        inventory=[],
+        messages=[],
+        is_npc=True,
+    )
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    room.people = [janitor, observer]
+
+    trash = SimpleNamespace(
+        wear_flags=int(WearFlag.TAKE),
+        cost=5,
+        item_type=int(ItemType.TRASH),
+        in_room=room,
+        carried_by=None,
+    )
+    room.contents = [trash]
+
+    assert spec_janitor(janitor) is True
+    assert trash not in room.contents
+    assert trash in janitor.inventory
+    assert any("picks up some trash" in message for message in observer.messages)
+
+
+def test_spec_fido_eats_npc_corpses() -> None:
+    room = Room(vnum=4001, name="Graveyard")
+    fido = SimpleNamespace(
+        name="Fido",
+        room=room,
+        position=int(Position.STANDING),
+        messages=[],
+        is_npc=True,
+    )
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    room.people = [fido, observer]
+
+    loot = SimpleNamespace(
+        name="tarnished ring",
+        in_obj=None,
+        in_room=None,
+        carried_by=None,
+        location=None,
+    )
+    npc_corpse = SimpleNamespace(
+        item_type=int(ItemType.CORPSE_NPC),
+        contains=[loot],
+        contained_items=[loot],
+        in_room=room,
+        carried_by=None,
+        location=room,
+    )
+    loot.in_obj = npc_corpse
+    pc_corpse = SimpleNamespace(
+        item_type=int(ItemType.CORPSE_PC),
+        contains=[],
+        contained_items=[],
+        in_room=room,
+        carried_by=None,
+        location=room,
+    )
+    room.contents = [npc_corpse, pc_corpse]
+
+    assert spec_fido(fido) is True
+    assert npc_corpse not in room.contents
+    assert pc_corpse in room.contents
+    assert loot in room.contents
+    assert loot.in_obj is None
+    assert getattr(loot, "in_room", None) is room
+    assert any("savagely devours a corpse" in message for message in observer.messages)
+
+    observer.messages.clear()
+    assert spec_fido(fido) is False
+    assert pc_corpse in room.contents
+
+
+def test_spec_poison_bites_current_target(monkeypatch) -> None:
+    room = Room(vnum=4002, name="Serpent Pit")
+    snake = SimpleNamespace(
+        name="Cobra",
+        room=room,
+        position=int(Position.FIGHTING),
+        fighting=None,
+        level=20,
+        messages=[],
+    )
+    victim = SimpleNamespace(
+        name="Explorer",
+        room=room,
+        messages=[],
+    )
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    room.people = [snake, victim, observer]
+    snake.fighting = victim
+    victim.fighting = snake
+
+    rolls = iter([10, 99])
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: next(rolls))
+
+    calls: list[tuple[object, object, str]] = []
+
+    def fake_cast(caster, target, spell_name):
+        calls.append((caster, target, spell_name))
+        return True
+
+    monkeypatch.setattr("mud.spec_funs._cast_spell", fake_cast)
+
+    observer.messages.clear()
+    victim.messages.clear()
+    snake.messages.clear()
+
+    assert spec_poison(snake) is True
+    assert calls == [(snake, victim, "poison")]
+    assert any("You bite" in msg for msg in snake.messages)
+    assert any("bites you" in msg for msg in victim.messages)
+    assert any("bites" in msg for msg in observer.messages)
+
+    snake_count = len(snake.messages)
+    victim_count = len(victim.messages)
+    observer_count = len(observer.messages)
+
+    assert spec_poison(snake) is False
+    assert len(calls) == 1
+    assert len(snake.messages) == snake_count
+    assert len(victim.messages) == victim_count
+    assert len(observer.messages) == observer_count
+
+
+def _make_dragon_setup() -> tuple[Room, SimpleNamespace, SimpleNamespace]:
+    room = Room(vnum=4010, name="Dragon Lair")
+    dragon = SimpleNamespace(
+        name="Red Dragon",
+        room=room,
+        position=int(Position.FIGHTING),
+        fighting=None,
+        level=45,
+        messages=[],
+    )
+    knight = SimpleNamespace(
+        name="Knight",
+        room=room,
+        position=int(Position.FIGHTING),
+        fighting=dragon,
+        messages=[],
+    )
+    dragon.fighting = knight
+    room.people = [dragon, knight]
+    return room, dragon, knight
+
+
+def test_spec_breath_elemental_spells_target_current_enemy(monkeypatch) -> None:
+    _, dragon, knight = _make_dragon_setup()
+
+    calls: list[tuple[object, object | None, str]] = []
+
+    def fake_cast(caster, target, spell_name):
+        calls.append((caster, target, spell_name))
+        return True
+
+    monkeypatch.setattr(spec_module, "_cast_spell", fake_cast)
+    monkeypatch.setattr(spec_module.rng_mm, "number_bits", lambda bits: 0)
+
+    cases = [
+        (spec_module.spec_breath_fire, "fire breath"),
+        (spec_module.spec_breath_acid, "acid breath"),
+        (spec_module.spec_breath_frost, "frost breath"),
+        (spec_module.spec_breath_lightning, "lightning breath"),
+    ]
+
+    for func, spell in cases:
+        calls.clear()
+        assert func(dragon) is True
+        assert calls == [(dragon, knight, spell)]
+
+
+def test_spec_breath_gas_hits_room(monkeypatch) -> None:
+    _, dragon, _ = _make_dragon_setup()
+
+    calls: list[tuple[object, object | None, str]] = []
+
+    def fake_cast(caster, target, spell_name):
+        calls.append((caster, target, spell_name))
+        return True
+
+    monkeypatch.setattr(spec_module, "_cast_spell", fake_cast)
+
+    assert spec_module.spec_breath_gas(dragon) is True
+    assert calls == [(dragon, None, "gas breath")]
+
+
+def test_spec_breath_any_dispatches_to_element(monkeypatch) -> None:
+    _, dragon, _ = _make_dragon_setup()
+
+    outcomes: list[str] = []
+
+    def make_stub(name: str):
+        def _stub(mob):
+            assert mob is dragon
+            outcomes.append(name)
+            return True
+
+        return _stub
+
+    monkeypatch.setattr(spec_module, "spec_breath_fire", make_stub("fire"))
+    monkeypatch.setattr(spec_module, "spec_breath_lightning", make_stub("lightning"))
+    monkeypatch.setattr(spec_module, "spec_breath_gas", make_stub("gas"))
+    monkeypatch.setattr(spec_module, "spec_breath_acid", make_stub("acid"))
+    monkeypatch.setattr(spec_module, "spec_breath_frost", make_stub("frost"))
+
+    mapping = {
+        0: "fire",
+        1: "lightning",
+        2: "lightning",
+        3: "gas",
+        4: "acid",
+        5: "frost",
+        6: "frost",
+        7: "frost",
+    }
+
+    for roll, expected in mapping.items():
+        outcomes.clear()
+        monkeypatch.setattr(spec_module.rng_mm, "number_bits", lambda bits, value=roll: value)
+        assert spec_module.spec_breath_any(dragon) is True
+        assert outcomes == [expected]
+
+
+def test_spec_breath_requires_fighting_state() -> None:
+    room = Room(vnum=4011, name="Lair Antechamber")
+    dragon = SimpleNamespace(
+        name="Drowsy Dragon",
+        room=room,
+        position=int(Position.SLEEPING),
+        fighting=None,
+    )
+    room.people = [dragon]
+
+    assert spec_module.spec_breath_fire(dragon) is False
+    assert spec_module.spec_breath_any(dragon) is False
+
+
+def test_spec_mayor_opens_and_closes_gate(monkeypatch) -> None:
+    prev_hour = time_info.hour
+    monkeypatch.setattr(spec_module, "_MAYOR_OPEN_PATH", "W1Oe3S.")
+    monkeypatch.setattr(spec_module, "_MAYOR_CLOSE_PATH", "W1CE3S.")
+    _reset_spec_mayor_state()
+
+    office = Room(vnum=5000, name="Mayor's Office")
+    walkway = Room(vnum=5001, name="Gate Walk")
+    outside = Room(vnum=5002, name="Outer Road")
+
+    office.people = []
+    walkway.people = []
+    outside.people = []
+
+    office_to_walk = Exit(to_room=walkway)
+    walk_to_office = Exit(to_room=office)
+    gate_exit = Exit(to_room=outside, keyword="gate", exit_info=EX_CLOSED)
+    reverse_gate = Exit(to_room=walkway, keyword="gate", exit_info=EX_CLOSED)
+
+    office.exits[Direction.EAST.value] = office_to_walk
+    walkway.exits[Direction.WEST.value] = walk_to_office
+    walkway.exits[Direction.EAST.value] = gate_exit
+    outside.exits[Direction.WEST.value] = reverse_gate
+
+    clerk = SimpleNamespace(name="Clerk", room=office, messages=[], is_npc=False)
+    guard = SimpleNamespace(name="Guard", room=walkway, messages=[], is_npc=False)
+    office.people.append(clerk)
+    walkway.people.append(guard)
+
+    mayor = SimpleNamespace(
+        name="Mayor",
+        room=office,
+        position=int(Position.SLEEPING),
+        messages=[],
+        fighting=None,
+        is_npc=True,
+    )
+    office.people.append(mayor)
+
+    time_info.hour = 6
+    while True:
+        spec_mayor(mayor)
+        if not spec_module._mayor_moving and spec_module._mayor_path is None:
+            break
+
+    assert mayor.room is office
+    assert mayor.position == int(Position.SLEEPING)
+    assert gate_exit.exit_info & EX_CLOSED == 0
+    assert reverse_gate.exit_info & EX_CLOSED == 0
+    assert any("declare the city of Midgaard open" in msg for msg in guard.messages)
+
+    guard.messages.clear()
+    clerk.messages.clear()
+    _reset_spec_mayor_state()
+    mayor.room = office
+    if mayor not in office.people:
+        office.people.append(mayor)
+    if mayor in walkway.people:
+        walkway.people.remove(mayor)
+    mayor.position = int(Position.SLEEPING)
+
+    time_info.hour = 20
+    while True:
+        spec_mayor(mayor)
+        if not spec_module._mayor_moving and spec_module._mayor_path is None:
+            break
+
+    assert mayor.room is office
+    assert mayor.position == int(Position.SLEEPING)
+    assert gate_exit.exit_info & EX_CLOSED
+    assert reverse_gate.exit_info & EX_CLOSED
+    assert any("declare the city of Midgaard closed" in msg for msg in guard.messages)
+
+    _reset_spec_mayor_state()
+    time_info.hour = prev_hour
 
 
 def test_reset_spawn_triggers_spec_fun() -> None:
@@ -214,6 +645,49 @@ def test_guard_attacks_flagged_criminal() -> None:
         mob_registry.pop(guard_proto.vnum, None)
         room.remove_character(bystander)
         room.remove_character(criminal)
+        character_registry.clear()
+
+
+def test_spec_executioner_yells_and_attacks_criminal(monkeypatch) -> None:
+    initialize_world("area/area.lst")
+    character_registry.clear()
+
+    room = room_registry.get(3001)
+    assert room is not None
+
+    witness = create_test_character("Witness", room.vnum)
+    witness.messages.clear()
+    outlaw = create_test_character("Outlaw", room.vnum)
+    outlaw.messages.clear()
+    outlaw.act |= int(PlayerFlag.THIEF)
+
+    proto = MobIndex(vnum=9010, short_descr="the executioner", level=50, spec_fun="spec_executioner")
+    mob_registry[proto.vnum] = proto
+
+    executioner = MobInstance.from_prototype(proto)
+    executioner.spec_fun = "spec_executioner"
+    executioner.messages = []
+    executioner.comm = int(CommFlag.NOSHOUT)
+    room.add_mob(executioner)
+
+    attacks: list[tuple[Any, Any]] = []
+    monkeypatch.setattr(spec_module, "_attack", lambda mob, victim: attacks.append((mob, victim)))
+
+    try:
+        result = spec_module.spec_executioner(executioner)
+
+        assert result is True
+        assert attacks == [(executioner, outlaw)]
+        assert executioner.comm & int(CommFlag.NOSHOUT) == 0
+        assert any("You yell" in msg and "THIEF" in msg for msg in executioner.messages)
+        assert any("THIEF" in msg for msg in outlaw.messages)
+        assert any("THIEF" in msg for msg in witness.messages)
+    finally:
+        if executioner in room.people:
+            room.people.remove(executioner)
+        mob_registry.pop(proto.vnum, None)
+        room.remove_character(witness)
+        room.remove_character(outlaw)
         character_registry.clear()
 
 
@@ -468,6 +942,146 @@ def test_spec_cast_mage_uses_rom_spell_table() -> None:
         character_registry.clear()
 
 
+def test_spec_cast_undead_uses_rom_spell_table() -> None:
+    initialize_world("area/area.lst")
+    character_registry.clear()
+
+    room = room_registry.get(3001)
+    assert room is not None
+    target = create_test_character("UndeadTarget", room.vnum)
+    target.messages.clear()
+
+    undead_proto = MobIndex(vnum=9102, short_descr="undead", level=25)
+    undead_proto.spec_fun = "spec_cast_undead"
+    mob_registry[undead_proto.vnum] = undead_proto
+    undead = MobInstance.from_prototype(undead_proto)
+    undead.spec_fun = "spec_cast_undead"
+    undead.position = int(Position.FIGHTING)
+    undead.fighting = target
+    undead.messages = []
+    room.add_mob(undead)
+    target.fighting = undead
+
+    registry = world_state.skill_registry
+    assert registry is not None
+
+    undead_spells = [
+        "curse",
+        "weaken",
+        "chill touch",
+        "blindness",
+        "poison",
+        "energy drain",
+        "harm",
+        "teleport",
+        "plague",
+    ]
+    original_handlers: dict[str, object] = {}
+    recorded: list[str] = []
+
+    def _undead_stub(name: str):
+        def caster(_caster, _target=None, *_, **__):
+            recorded.append(name)
+            return True
+
+        return caster
+
+    for spell in undead_spells:
+        key = spell
+        original_handlers[key] = registry.handlers.get(key)
+        registry.handlers[key] = _undead_stub(key)
+
+    def predict(level: int, seed: int) -> str:
+        rng_mm.seed_mm(seed)
+        rng_mm.number_bits(2)
+        table = {
+            0: (0, "curse"),
+            1: (3, "weaken"),
+            2: (6, "chill touch"),
+            3: (9, "blindness"),
+            4: (12, "poison"),
+            5: (15, "energy drain"),
+            6: (18, "harm"),
+            7: (21, "teleport"),
+            8: (20, "plague"),
+        }
+        default = (18, "harm")
+        while True:
+            roll = rng_mm.number_bits(4)
+            min_level, spell = table.get(roll, default)
+            if level >= min_level:
+                return spell
+
+    try:
+        for level, seed in ((25, 1777), (12, 3001)):
+            undead.level = level
+            recorded.clear()
+            target.hit = target.max_hit = 200
+            undead.fighting = target
+            target.fighting = undead
+            expected = predict(level, seed)
+            rng_mm.seed_mm(seed)
+            assert spec_cast_undead(undead) is True
+            assert recorded
+            assert recorded[0].lower() == expected
+    finally:
+        for spell, handler in original_handlers.items():
+            if handler is None:
+                registry.handlers.pop(spell, None)
+            else:
+                registry.handlers[spell] = handler
+        mob_registry.pop(undead_proto.vnum, None)
+        room.people.remove(undead)
+        room.remove_character(target)
+        character_registry.clear()
+
+
+def test_spec_cast_judge_casts_high_explosive() -> None:
+    initialize_world("area/area.lst")
+    character_registry.clear()
+
+    room = room_registry.get(3001)
+    assert room is not None
+    target = create_test_character("JudgeTarget", room.vnum)
+    target.messages.clear()
+
+    judge_proto = MobIndex(vnum=9103, short_descr="judge", level=25)
+    judge_proto.spec_fun = "spec_cast_judge"
+    mob_registry[judge_proto.vnum] = judge_proto
+    judge = MobInstance.from_prototype(judge_proto)
+    judge.spec_fun = "spec_cast_judge"
+    judge.position = int(Position.FIGHTING)
+    judge.fighting = target
+    judge.messages = []
+    room.add_mob(judge)
+    target.fighting = judge
+
+    registry = world_state.skill_registry
+    assert registry is not None
+    original = registry.handlers.get("high explosive")
+    recorded: list[str] = []
+
+    def _judge_stub(_caster, _target=None, *_, **__):
+        recorded.append("high explosive")
+        return True
+
+    registry.handlers["high explosive"] = _judge_stub
+
+    try:
+        rng_mm.seed_mm(4242)
+        assert spec_cast_judge(judge) is True
+        assert recorded == ["high explosive"]
+    finally:
+        if original is None:
+            registry.handlers.pop("high explosive", None)
+        else:
+            registry.handlers["high explosive"] = original
+        mob_registry.pop(judge_proto.vnum, None)
+        room.people.remove(judge)
+        room.remove_character(target)
+        character_registry.clear()
+
+
 def test_spec_thief_steals_from_sleeping_player(monkeypatch) -> None:
     character_registry.clear()
 
@@ -577,4 +1191,304 @@ def test_spec_thief_fails_against_awake_player(monkeypatch) -> None:
         room.remove_character(victim)
         room.remove_character(observer)
         mob_registry.pop(thief_proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_nasty_ambushes_stronger_players(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7400, name="Shadowy Alley")
+
+    bystander = Character(name="Bystander", level=5)
+    bystander.is_npc = False
+    bystander.messages = []
+    room.add_character(bystander)
+
+    target = Character(name="Champion", level=16)
+    target.is_npc = False
+    target.messages = []
+    room.add_character(target)
+
+    proto = MobIndex(vnum=7401, short_descr="a nasty assassin", level=8)
+    proto.spec_fun = "spec_nasty"
+    mob_registry[proto.vnum] = proto
+
+    assassin = MobInstance.from_prototype(proto)
+    assassin.spec_fun = "spec_nasty"
+    assassin.position = int(Position.STANDING)
+    assassin.messages = []
+    room.add_mob(assassin)
+
+    calls: list[tuple[object, object]] = []
+    def fake_issue(mob, command, argument):
+        calls.append((command, argument))
+        if command == "do_kill":
+            mob.fighting = target
+            target.fighting = mob
+        return ""
+
+    monkeypatch.setattr(spec_module, "_issue_command", fake_issue)
+
+    try:
+        result = spec_module.spec_nasty(assassin)
+        assert result is True
+        assert calls == [("do_backstab", "Champion"), ("do_kill", "Champion")]
+    finally:
+        room.people.remove(assassin)
+        room.remove_character(target)
+        room.remove_character(bystander)
+        mob_registry.pop(proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_nasty_steals_gold_and_alerts_room(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7500, name="Dark Courtyard")
+
+    victim = Character(name="Hero", level=20)
+    victim.is_npc = False
+    victim.gold = 1000
+    victim.messages = []
+    room.add_character(victim)
+
+    observer = Character(name="Watcher", level=18)
+    observer.is_npc = False
+    observer.messages = []
+    room.add_character(observer)
+
+    proto = MobIndex(vnum=7501, short_descr="a nasty assassin", level=15)
+    proto.spec_fun = "spec_nasty"
+    mob_registry[proto.vnum] = proto
+
+    assassin = MobInstance.from_prototype(proto)
+    assassin.spec_fun = "spec_nasty"
+    assassin.position = int(Position.FIGHTING)
+    assassin.gold = 50
+    assassin.messages = []
+    assassin.fighting = victim
+    room.add_mob(assassin)
+
+    victim.fighting = assassin
+
+    monkeypatch.setattr(rng_mm, "number_bits", lambda _: 0)
+
+    try:
+        result = spec_module.spec_nasty(assassin)
+        assert result is True
+        assert victim.gold == 900
+        assert assassin.gold == 150
+        assert victim.messages == [
+            "a nasty assassin rips apart your coin purse, spilling your gold!",
+        ]
+        assert assassin.messages == [
+            "You slash apart Hero's coin purse and gather his gold.",
+        ]
+        assert observer.messages == ["Hero's coin purse is ripped apart!"]
+    finally:
+        room.people.remove(assassin)
+        room.remove_character(victim)
+        room.remove_character(observer)
+        mob_registry.pop(proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_nasty_flees_when_cornered(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7600, name="Grimy Street")
+
+    victim = Character(name="Guardian", level=18)
+    victim.is_npc = False
+    victim.messages = []
+    room.add_character(victim)
+
+    proto = MobIndex(vnum=7601, short_descr="a nasty assassin", level=14)
+    proto.spec_fun = "spec_nasty"
+    mob_registry[proto.vnum] = proto
+
+    assassin = MobInstance.from_prototype(proto)
+    assassin.spec_fun = "spec_nasty"
+    assassin.position = int(Position.FIGHTING)
+    assassin.messages = []
+    assassin.fighting = victim
+    assassin.hit = 100
+    assassin.max_hit = 100
+    room.add_mob(assassin)
+
+    victim.fighting = assassin
+    victim.hit = 120
+    victim.max_hit = 120
+
+    character_registry.append(victim)
+    character_registry.append(assassin)
+
+    safe_room = Room(vnum=7601, name="Escape Tunnel")
+    room.exits[int(Direction.EAST)] = Exit(to_room=safe_room)
+
+    def fake_bits(width: int) -> int:
+        return 1 if width == 2 else 1
+
+    monkeypatch.setattr(rng_mm, "number_bits", fake_bits)
+
+    try:
+        result = spec_module.spec_nasty(assassin)
+        assert result is True
+        assert assassin.fighting is None
+        assert victim.fighting is None
+        assert int(assassin.position) == int(Position.STANDING)
+        assert assassin.room is safe_room
+        assert victim.room is room
+        assert "a nasty assassin has fled!" in victim.messages
+    finally:
+        if assassin in room.people:
+            room.people.remove(assassin)
+        if assassin in safe_room.people:
+            safe_room.people.remove(assassin)
+        room.remove_character(victim)
+        mob_registry.pop(proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_troll_member_attacks_ogres(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7700, name="Clan Square")
+
+    ogre_proto = MobIndex(vnum=7701, short_descr="a hulking ogre", level=12)
+    ogre_proto.group = GROUP_VNUM_OGRES
+    mob_registry[ogre_proto.vnum] = ogre_proto
+    ogre = MobInstance.from_prototype(ogre_proto)
+    ogre.messages = []
+    room.add_mob(ogre)
+
+    observer = Character(name="Onlooker", level=20)
+    observer.is_npc = False
+    observer.messages = []
+    room.add_character(observer)
+
+    troll_proto = MobIndex(vnum=7702, short_descr="a nasty troll", level=14)
+    troll_proto.spec_fun = "spec_troll_member"
+    mob_registry[troll_proto.vnum] = troll_proto
+    troll = MobInstance.from_prototype(troll_proto)
+    troll.spec_fun = "spec_troll_member"
+    troll.position = int(Position.STANDING)
+    troll.messages = []
+    room.add_mob(troll)
+
+    calls: list[tuple[object, object]] = []
+    monkeypatch.setattr(spec_module, "_attack", lambda mob, vic: calls.append((mob, vic)))
+
+    rolls = iter([0, 2])
+
+    def fake_number_range(start: int, end: int) -> int:
+        try:
+            return next(rolls)
+        except StopIteration:
+            return start
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    try:
+        result = spec_module.spec_troll_member(troll)
+        assert result is True
+        assert calls == [(troll, ogre)]
+        expected = "a nasty troll says 'What's slimy Ogre trash like you doing around here?'"
+        assert ogre.messages == [expected]
+        assert observer.messages == [expected]
+    finally:
+        room.people.remove(troll)
+        room.people.remove(ogre)
+        room.remove_character(observer)
+        mob_registry.pop(troll_proto.vnum, None)
+        mob_registry.pop(ogre_proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_ogre_member_attacks_trolls(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7800, name="Rival Alley")
+
+    troll_proto = MobIndex(vnum=7801, short_descr="a fierce troll", level=13)
+    troll_proto.group = GROUP_VNUM_TROLLS
+    mob_registry[troll_proto.vnum] = troll_proto
+    troll = MobInstance.from_prototype(troll_proto)
+    troll.messages = []
+    room.add_mob(troll)
+
+    ogre_proto = MobIndex(vnum=7802, short_descr="a snarling ogre", level=15)
+    ogre_proto.spec_fun = "spec_ogre_member"
+    mob_registry[ogre_proto.vnum] = ogre_proto
+    ogre = MobInstance.from_prototype(ogre_proto)
+    ogre.spec_fun = "spec_ogre_member"
+    ogre.position = int(Position.STANDING)
+    ogre.messages = []
+    room.add_mob(ogre)
+
+    observer = Character(name="Citizen", level=18)
+    observer.is_npc = False
+    observer.messages = []
+    room.add_character(observer)
+
+    calls: list[tuple[object, object]] = []
+    monkeypatch.setattr(spec_module, "_attack", lambda mob, vic: calls.append((mob, vic)))
+
+    rolls = iter([0, 3])
+
+    def fake_number_range(start: int, end: int) -> int:
+        try:
+            return next(rolls)
+        except StopIteration:
+            return start
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+
+    try:
+        result = spec_module.spec_ogre_member(ogre)
+        assert result is True
+        assert calls == [(ogre, troll)]
+        expected = "a snarling ogre cracks his knuckles and says 'Do ya feel lucky?'"
+        assert troll.messages == [expected]
+        assert observer.messages == [expected]
+    finally:
+        room.people.remove(ogre)
+        room.people.remove(troll)
+        room.remove_character(observer)
+        mob_registry.pop(ogre_proto.vnum, None)
+        mob_registry.pop(troll_proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_troll_member_backs_off_when_patrol_present(monkeypatch) -> None:
+    character_registry.clear()
+
+    room = Room(vnum=7900, name="Guarded Street")
+
+    patrol_proto = MobIndex(vnum=MOB_VNUM_PATROLMAN, short_descr="a city patrol", level=20)
+    mob_registry[patrol_proto.vnum] = patrol_proto
+    patrol = MobInstance.from_prototype(patrol_proto)
+    room.add_mob(patrol)
+
+    troll_proto = MobIndex(vnum=7901, short_descr="a nasty troll", level=14)
+    troll_proto.spec_fun = "spec_troll_member"
+    mob_registry[troll_proto.vnum] = troll_proto
+    troll = MobInstance.from_prototype(troll_proto)
+    troll.spec_fun = "spec_troll_member"
+    troll.position = int(Position.STANDING)
+    troll.messages = []
+    room.add_mob(troll)
+
+    calls: list[tuple[object, object]] = []
+    monkeypatch.setattr(spec_module, "_attack", lambda mob, vic: calls.append((mob, vic)))
+
+    try:
+        result = spec_module.spec_troll_member(troll)
+        assert result is False
+        assert calls == []
+    finally:
+        room.people.remove(troll)
+        room.people.remove(patrol)
+        mob_registry.pop(troll_proto.vnum, None)
+        mob_registry.pop(patrol_proto.vnum, None)
         character_registry.clear()

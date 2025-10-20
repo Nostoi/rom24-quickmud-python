@@ -1,7 +1,51 @@
-from mud.models.mob import MobIndex
+from mud.models.mob import MobIndex, MobProgram
 from mud.registry import mob_registry
 
 from .base_loader import BaseTokenizer
+from mud.mobprog import resolve_trigger_flag
+
+
+def _remove_flag_letters(value: str, flags: str) -> str:
+    """Remove ROM flag letters contained in ``flags`` from ``value``."""
+
+    if not isinstance(value, str) or not flags:
+        return value
+    removals = {ch for ch in flags if ch.isalpha()}
+    if not removals:
+        return value
+    return "".join(ch for ch in value if ch not in removals)
+
+
+def _apply_flag_removal(mob: MobIndex, flag_type: str, flags: str) -> None:
+    flag_type = flag_type.lower()
+    updated = False
+    if flag_type.startswith("act"):
+        mob.act_flags = _remove_flag_letters(mob.act_flags, flags)
+        updated = True
+    elif flag_type.startswith("aff"):
+        mob.affected_by = _remove_flag_letters(mob.affected_by, flags)
+        updated = True
+    elif flag_type.startswith("off"):
+        mob.offensive = _remove_flag_letters(mob.offensive, flags)
+        updated = True
+    elif flag_type.startswith("imm"):
+        mob.immune = _remove_flag_letters(mob.immune, flags)
+        updated = True
+    elif flag_type.startswith("res"):
+        mob.resist = _remove_flag_letters(mob.resist, flags)
+        updated = True
+    elif flag_type.startswith("vul"):
+        mob.vuln = _remove_flag_letters(mob.vuln, flags)
+        updated = True
+    elif flag_type.startswith("for"):
+        mob.form = _remove_flag_letters(mob.form, flags)
+        updated = True
+    elif flag_type.startswith("par"):
+        mob.parts = _remove_flag_letters(mob.parts, flags)
+        updated = True
+
+    if updated and hasattr(mob, "_act_cache"):
+        mob._act_cache = None
 
 
 def load_mobiles(tokenizer: BaseTokenizer, area):
@@ -99,7 +143,45 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
                 size=size,
                 material=material,
                 area=area,
+                new_format=True,
             )
             mob_registry[vnum] = mob
+
+            while True:
+                peek = tokenizer.peek_line()
+                if peek is None:
+                    break
+                if peek.startswith("M "):
+                    entry = tokenizer.next_line()
+                    parts = entry[2:].split(None, 2)
+                    if len(parts) < 2:
+                        continue
+                    trigger_flag = resolve_trigger_flag(parts[0])
+                    if trigger_flag is None:
+                        continue
+                    try:
+                        program_vnum = int(parts[1])
+                    except ValueError:
+                        continue
+                    phrase = parts[2] if len(parts) > 2 else ""
+                    if phrase.endswith("~"):
+                        phrase = phrase[:-1]
+                    program = MobProgram(
+                        trig_type=int(trigger_flag),
+                        trig_phrase=phrase,
+                        vnum=program_vnum,
+                    )
+                    mob.mprogs.append(program)
+                    mob.mprog_flags |= int(trigger_flag)
+                    continue
+                if peek.startswith("F "):
+                    entry = tokenizer.next_line().strip()
+                    parts = entry.split()
+                    if len(parts) >= 3:
+                        flag_type = parts[1]
+                        letters = "".join(parts[2:])
+                        _apply_flag_removal(mob, flag_type, letters)
+                    continue
+                break
         elif line == "$":
             break

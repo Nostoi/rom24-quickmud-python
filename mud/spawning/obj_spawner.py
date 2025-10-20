@@ -2,7 +2,30 @@ from __future__ import annotations
 
 from mud.models.constants import ExtraFlag, WearLocation, convert_flags_from_letters
 from mud.models.object import Object
+from mud.models.obj import Affect
 from mud.registry import obj_registry
+
+
+def _clone_affect(affect: Affect | dict) -> Affect:
+    if isinstance(affect, Affect):
+        return Affect(
+            where=int(getattr(affect, "where", 1)),
+            type=int(getattr(affect, "type", -1)),
+            level=int(getattr(affect, "level", 0)),
+            duration=int(getattr(affect, "duration", 0)),
+            location=int(getattr(affect, "location", 0)),
+            modifier=int(getattr(affect, "modifier", 0)),
+            bitvector=int(getattr(affect, "bitvector", 0)),
+        )
+    return Affect(
+        where=int(affect.get("where", 1)),
+        type=int(affect.get("type", -1)),
+        level=int(affect.get("level", 0)),
+        duration=int(affect.get("duration", 0)),
+        location=int(affect.get("location", 0)),
+        modifier=int(affect.get("modifier", 0)),
+        bitvector=int(affect.get("bitvector", 0)),
+    )
 
 
 def spawn_object(vnum: int) -> Object | None:
@@ -39,6 +62,8 @@ def spawn_object(vnum: int) -> Object | None:
     except (TypeError, ValueError):
         inst.condition = condition or 0
     inst.item_type = getattr(proto, "item_type", None)
+    proto_affects = list(getattr(proto, "affected", []) or [])
+    inst.affected = [_clone_affect(affect) for affect in proto_affects]
     inst.wear_loc = int(WearLocation.NONE)
     if hasattr(proto, "count"):
         try:

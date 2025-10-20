@@ -6,7 +6,19 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
 from mud.math.c_compat import c_div
-from mud.models.constants import AffectFlag, CommFlag, ItemType, PlayerFlag, Position, Sex, Stat
+from mud.models.constants import (
+    AffectFlag,
+    CommFlag,
+    DEFAULT_PAGE_LINES,
+    ItemType,
+    PlayerFlag,
+    Position,
+    Sex,
+    Stat,
+    OBJ_VNUM_SCHOOL_DAGGER,
+    OBJ_VNUM_SCHOOL_MACE,
+    OBJ_VNUM_SCHOOL_SWORD,
+)
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -76,6 +88,88 @@ def _object_carry_weight(obj: "Object") -> int:
     return weight
 
 
+def _object_carry_number(obj: "Object") -> int:
+    """Return how many carry slots an object consumes, mirroring ROM `get_obj_number`."""
+
+    item_type = _resolve_item_type(getattr(obj, "item_type", None))
+    if item_type is None:
+        proto = getattr(obj, "prototype", None)
+        item_type = _resolve_item_type(getattr(proto, "item_type", None))
+
+    skip_types = {
+        ItemType.CONTAINER,
+        ItemType.MONEY,
+        ItemType.GEM,
+        ItemType.JEWELRY,
+    }
+
+    base = 0 if item_type in skip_types else 1
+
+    total = base
+    for child in list(getattr(obj, "contained_items", []) or []):
+        total += _object_carry_number(child)
+
+    return total
+
+
+_STARTING_WEAPON_SKILL_BY_VNUM: dict[int, str] = {
+    OBJ_VNUM_SCHOOL_DAGGER: "dagger",
+    OBJ_VNUM_SCHOOL_MACE: "mace",
+    OBJ_VNUM_SCHOOL_SWORD: "sword",
+}
+
+
+def _normalize_token(value: str | None) -> str:
+    return value.strip().lower() if value is not None else ""
+
+
+def _collect_creation_groups(groups: Iterable[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Return canonical group names and ordered skills granted by those groups."""
+
+    from mud.skills.groups import get_group
+
+    canonical_groups: list[str] = []
+    seen_groups: set[str] = set()
+    ordered_skills: list[str] = []
+    seen_skills: set[str] = set()
+
+    def _walk_group(name: str) -> None:
+        normalized_input = _normalize_token(name)
+        if not normalized_input:
+            return
+
+        group = get_group(name)
+        if group is None:
+            if normalized_input not in seen_groups:
+                seen_groups.add(normalized_input)
+                canonical_groups.append(name.strip())
+            return
+
+        canonical_name = group.name.strip()
+        canonical_key = _normalize_token(canonical_name)
+        if canonical_key in seen_groups:
+            return
+
+        seen_groups.add(canonical_key)
+        canonical_groups.append(canonical_name)
+
+        for entry in group.skills:
+            nested = get_group(entry)
+            if nested is not None:
+                _walk_group(nested.name)
+                continue
+            skill_key = _normalize_token(entry)
+            if not skill_key or skill_key in seen_skills:
+                continue
+            seen_skills.add(skill_key)
+            ordered_skills.append(skill_key)
+
+    for group_name in groups:
+        _walk_group(str(group_name))
+
+    return tuple(canonical_groups), tuple(ordered_skills)
+
+
 @dataclass
 class PCData:
     """Subset of PC_DATA from merc.h"""
@@ -89,7 +183,7 @@ class PCData:
     perm_move: int = 0
     true_sex: int = 0
     last_level: int = 0
-    condition: list[int] = field(default_factory=lambda: [0] * 4)
+    condition: list[int] = field(default_factory=lambda: [0, 48, 48, 48])
     points: int = 0
     security: int = 0
     board_name: str = "general"
@@ -196,7 +290,7 @@ class Character:
     hitroll: int = 0
     damroll: int = 0
     wimpy: int = 0
-    lines: int = 0
+    lines: int = DEFAULT_PAGE_LINES
     newbie_help_seen: bool = False
     played: int = 0
     logon: int = 0
@@ -356,20 +450,30 @@ class Character:
         equipment_weight = sum(_object_carry_weight(obj) for obj in self.equipment.values())
         self.carry_weight = inventory_weight + equipment_weight
 
+    def get_carry_weight(self) -> int:
+        """Return total carry weight including coin burden like ROM `get_carry_weight`."""
+
+        base_weight = int(getattr(self, "carry_weight", 0) or 0)
+        silver = int(getattr(self, "silver", 0) or 0)
+        gold = int(getattr(self, "gold", 0) or 0)
+        return base_weight + silver // 10 + (gold * 2) // 5
+
     def add_object(self, obj: Object) -> None:
         self.inventory.append(obj)
-        self.carry_number += 1
+        self.carry_number += _object_carry_number(obj)
         self._recalculate_carry_weight()
 
     def equip_object(self, obj: Object, slot: str) -> None:
+        carry_delta = _object_carry_number(obj)
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
-            self.carry_number += 1
+            self.carry_number += carry_delta
         self.equipment[slot] = obj
         self._recalculate_carry_weight()
 
     def remove_object(self, obj: Object) -> None:
+        carry_delta = _object_carry_number(obj)
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
@@ -377,7 +481,7 @@ class Character:
                 if eq is obj:
                     del self.equipment[slot]
                     break
-        self.carry_number -= 1
+        self.carry_number = max(0, self.carry_number - carry_delta)
         self._recalculate_carry_weight()
 
     # START affects_saves
@@ -640,6 +744,7 @@ def from_orm(db_char: DBCharacter) -> Character:
         hit=db_char.hp or 0,
         position=int(Position.STANDING),  # Default to standing for loaded chars
     )
+    char.pcdata = PCData()
     char.room = room
     char.ch_class = db_char.ch_class or 0
     char.race = db_char.race or 0
@@ -660,9 +765,52 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.newbie_help_seen = bool(getattr(db_char, "newbie_help_seen", False))
     char.creation_points = getattr(db_char, "creation_points", 0) or 0
     char.creation_groups = _decode_creation_groups(getattr(db_char, "creation_groups", ""))
-    char.creation_skills = _decode_creation_skills(getattr(db_char, "creation_skills", ""))
+    creation_skills = _decode_creation_skills(getattr(db_char, "creation_skills", ""))
+    char.creation_skills = creation_skills
+    known_groups, group_skill_list = _collect_creation_groups(char.creation_groups)
+    if known_groups:
+        char.pcdata.group_known = known_groups
+    char.pcdata.points = char.creation_points
+    try:
+        true_sex_value = int(getattr(db_char, "true_sex", char.sex) or 0)
+    except (TypeError, ValueError):
+        true_sex_value = int(char.sex or 0)
+    if true_sex_value < int(Sex.NONE) or true_sex_value > int(Sex.EITHER):
+        true_sex_value = int(char.sex or 0)
+    char.pcdata.true_sex = true_sex_value
+    prompt_value = getattr(db_char, "prompt", None)
+    if prompt_value:
+        char.prompt = str(prompt_value)
+    else:
+        char.prompt = "<%hhp %mm %vmv> "
+    try:
+        comm_value = int(getattr(db_char, "comm", 0) or 0)
+    except (TypeError, ValueError):
+        comm_value = 0
+    if comm_value <= 0:
+        char.comm = int(CommFlag.PROMPT | CommFlag.COMBINE)
+    else:
+        char.comm = comm_value
+    seeded_skills: dict[str, int] = {}
+    for skill_name in group_skill_list:
+        seeded_skills.setdefault(skill_name, 1)
+    for name in creation_skills:
+        normalized = name.strip().lower()
+        if not normalized:
+            continue
+        seeded_skills.setdefault(normalized, 1)
+    weapon_skill = _STARTING_WEAPON_SKILL_BY_VNUM.get(int(char.default_weapon_vnum or 0))
+    if weapon_skill:
+        current = seeded_skills.get(weapon_skill, 0)
+        if current < 40:
+            seeded_skills[weapon_skill] = 40
+    recall_learned = seeded_skills.get("recall", 0)
+    seeded_skills["recall"] = 50 if recall_learned < 50 else recall_learned
+    char.skills = seeded_skills
+    char.pcdata.learned = dict(seeded_skills)
     char.perm_stat = _decode_perm_stats(db_char.perm_stats)
     char.is_npc = False
+    char.sex = true_sex_value
     if db_char.player is not None:
         char.is_admin = bool(getattr(db_char.player, "is_admin", False))
     return char

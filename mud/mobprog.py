@@ -6,12 +6,11 @@ from enum import IntFlag
 from typing import TYPE_CHECKING
 
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, OffFlag, Position
-from mud.world.vision import can_see_character
+from mud.models.mob import MobProgram
 from mud.utils import rng_mm
 
 if TYPE_CHECKING:
     from mud.models.character import Character
-    from mud.models.mob import MobProgram
 
 
 class Trigger(IntFlag):
@@ -75,12 +74,105 @@ MAX_CALL_LEVEL = 5
 
 _PROGRAM_REGISTRY: dict[int, MobProgram] = {}
 
+_TRIGGER_NAME_MAP: dict[str, Trigger] = {
+    "act": Trigger.ACT,
+    "bribe": Trigger.BRIBE,
+    "death": Trigger.DEATH,
+    "entry": Trigger.ENTRY,
+    "fight": Trigger.FIGHT,
+    "give": Trigger.GIVE,
+    "greet": Trigger.GREET,
+    "grall": Trigger.GRALL,
+    "kill": Trigger.KILL,
+    "hpcnt": Trigger.HPCNT,
+    "random": Trigger.RANDOM,
+    "speech": Trigger.SPEECH,
+    "exit": Trigger.EXIT,
+    "exall": Trigger.EXALL,
+    "delay": Trigger.DELAY,
+    "surr": Trigger.SURR,
+    "surrender": Trigger.SURR,
+}
+
+_CANONICAL_TRIGGER_NAMES: dict[Trigger, str] = {
+    Trigger.ACT: "ACT",
+    Trigger.BRIBE: "BRIBE",
+    Trigger.DEATH: "DEATH",
+    Trigger.ENTRY: "ENTRY",
+    Trigger.FIGHT: "FIGHT",
+    Trigger.GIVE: "GIVE",
+    Trigger.GREET: "GREET",
+    Trigger.GRALL: "GRALL",
+    Trigger.KILL: "KILL",
+    Trigger.HPCNT: "HPCNT",
+    Trigger.RANDOM: "RANDOM",
+    Trigger.SPEECH: "SPEECH",
+    Trigger.EXIT: "EXIT",
+    Trigger.EXALL: "EXALL",
+    Trigger.DELAY: "DELAY",
+    Trigger.SURR: "SURRENDER",
+}
+
 
 def _register_program(prog: MobProgram) -> None:
     vnum = int(getattr(prog, "vnum", 0) or 0)
     code = getattr(prog, "code", None)
     if vnum > 0 and code:
         _PROGRAM_REGISTRY[vnum] = prog
+
+
+def clear_registered_programs() -> None:
+    """Reset the cached mob program registry (primarily for tests)."""
+
+    _PROGRAM_REGISTRY.clear()
+
+
+def get_registered_program(vnum: int) -> MobProgram | None:
+    """Return the cached program for ``vnum`` if one is registered."""
+
+    return _PROGRAM_REGISTRY.get(int(vnum))
+
+
+def resolve_trigger_flag(name: str) -> Trigger | None:
+    """Translate an ``M`` line trigger keyword into a :class:`Trigger`."""
+
+    if not name:
+        return None
+    return _TRIGGER_NAME_MAP.get(name.lower())
+
+
+def format_trigger_flag(value: int | Trigger) -> str:
+    """Return the ROM keyword for the provided trigger flag."""
+
+    try:
+        trigger = Trigger(int(value))
+    except (ValueError, TypeError):
+        return ""
+    return _CANONICAL_TRIGGER_NAMES.get(trigger, "")
+
+
+def register_program_code(vnum: int, code: str) -> None:
+    """Record program ``code`` and link it to any existing trigger entries."""
+
+    if int(vnum) <= 0:
+        return
+    attached = _attach_code_to_existing_programs(vnum, code)
+    if not attached:
+        _register_program(MobProgram(trig_type=0, vnum=vnum, code=code))
+
+
+def _attach_code_to_existing_programs(vnum: int, code: str) -> bool:
+    from mud.registry import mob_registry
+
+    attached = False
+    for mob in mob_registry.values():
+        for entry in getattr(mob, "mprogs", []) or []:
+            if int(getattr(entry, "vnum", 0) or 0) != int(vnum):
+                continue
+            entry.code = code
+            _register_program(entry)
+            attached = True
+    return attached
 
 
 def _get_registered_program(vnum: int) -> MobProgram | None:
@@ -109,6 +201,8 @@ def _get_programs(mob: object) -> list[MobProgram]:
 
 
 def _can_see(mob: object, target: object | None) -> bool:
+    from mud.world.vision import can_see_character
+
     if mob is None or target is None:
         return False
     try:
