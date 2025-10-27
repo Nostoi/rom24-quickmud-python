@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from mud.models.constants import Direction, Sector, Sex
+from mud.models.constants import Direction, RoomFlag, Sector, Sex
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
 from ..models.area import Area
@@ -23,39 +23,56 @@ from .specials_loader import apply_specials_from_json
 
 
 def _rom_flags_to_int(flags_str: str) -> int:
-    """Convert ROM-style letter flags to integer bitfield.
+    """Convert ROM-style letter flag strings to their integer bitfield."""
 
-    ROM uses letters A-Z and aa-dd to represent bit positions:
-    A=1<<0, B=1<<1, ..., Z=1<<25, aa=1<<26, bb=1<<27, cc=1<<28, dd=1<<29
-    """
-    if not flags_str or flags_str == "0":
+    if not flags_str:
         return 0
 
     result = 0
-
-    # Handle single characters and double characters
+    pending_number = 0
+    building_number = False
     i = 0
-    while i < len(flags_str):
-        if i + 1 < len(flags_str) and flags_str[i : i + 2] in ["aa", "bb", "cc", "dd"]:
-            # Double character flags (26-29)
-            double_char = flags_str[i : i + 2]
-            if double_char == "aa":
-                result |= 1 << 26
-            elif double_char == "bb":
-                result |= 1 << 27
-            elif double_char == "cc":
-                result |= 1 << 28
-            elif double_char == "dd":
-                result |= 1 << 29
-            i += 2
-        else:
-            # Single character flags (0-25)
-            char = flags_str[i]
-            if "A" <= char <= "Z":
-                result |= 1 << (ord(char) - ord("A"))
-            elif "a" <= char <= "z":
-                result |= 1 << (ord(char) - ord("a"))
+    length = len(flags_str)
+
+    while i < length:
+        ch = flags_str[i]
+
+        if ch.isspace() or ch == "|":
+            if building_number:
+                result += pending_number
+                pending_number = 0
+                building_number = False
             i += 1
+            continue
+
+        if ch.isdigit():
+            pending_number = pending_number * 10 + int(ch)
+            building_number = True
+            i += 1
+            continue
+
+        if building_number:
+            result += pending_number
+            pending_number = 0
+            building_number = False
+
+        if i + 1 < length:
+            token = flags_str[i : i + 2]
+            if token in {"aa", "bb", "cc", "dd"}:
+                offset = {"aa": 0, "bb": 1, "cc": 2, "dd": 3}[token]
+                result |= 1 << (26 + offset)
+                i += 2
+                continue
+
+        if "A" <= ch <= "Z":
+            result |= 1 << (ord(ch) - ord("A"))
+        elif "a" <= ch <= "z":
+            result |= 1 << (ord(ch) - ord("a") + 26)
+
+        i += 1
+
+    if building_number:
+        result += pending_number
 
     return result
 
@@ -72,17 +89,32 @@ def _parse_exit_flags(raw: Any) -> int:
         try:
             return int(stripped)
         except ValueError:
-            bits = 0
-            for ch in stripped:
-                if "A" <= ch <= "Z":
-                    bits |= 1 << (ord(ch) - ord("A"))
-                elif "a" <= ch <= "z":
-                    bits |= 1 << (ord(ch) - ord("a") + 26)
-            return bits
+            return _rom_flags_to_int(stripped)
     if isinstance(raw, list):
         bits = 0
         for entry in raw:
             bits |= _parse_exit_flags(entry)
+        return bits
+    return 0
+
+
+def _parse_room_flags(raw: Any) -> int:
+    """Convert room flag representations to integer bitmasks."""
+
+    if isinstance(raw, int):
+        return raw
+    if isinstance(raw, str):
+        stripped = raw.strip()
+        if not stripped or stripped == "0":
+            return 0
+        try:
+            return int(stripped)
+        except ValueError:
+            return _rom_flags_to_int(stripped)
+    if isinstance(raw, list):
+        bits = 0
+        for entry in raw:
+            bits |= _parse_room_flags(entry)
         return bits
     return 0
 
@@ -193,6 +225,7 @@ def load_area_from_json(json_file_path: str) -> Area:
 
     # Load rooms
     _load_rooms_from_json(data.get(rooms_key, []), area)
+    _link_exits_for_area(area)
 
     # Load mobs
     _load_mobs_from_json(data.get(mobs_key, []), area)
@@ -276,7 +309,7 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
             name=room_data.get("name", ""),
             description=room_data.get("description", ""),
             sector_type=sector,
-            room_flags=room_data.get("flags", 0),
+            room_flags=_parse_room_flags(room_data.get("flags", 0)),
             area=area,
         )
 
@@ -287,10 +320,8 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
         room.owner = room_data.get("owner", "")
 
         # Set ROOM_LAW flag for Midgaard law zone (vnums 3000-3400)
-        from mud.models.constants import RoomFlag
-
         if 3000 <= room.vnum < 3400:
-            room.room_flags |= RoomFlag.ROOM_LAW
+            room.room_flags |= int(RoomFlag.ROOM_LAW)
 
         # Load exits
         exits_data = room_data.get("exits", {})
@@ -307,6 +338,7 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
                     key=exit_data.get("key", 0),
                     exit_info=exit_flags,
                     rs_flags=exit_flags,
+                    orig_door=direction.value,
                 )
                 room.exits[direction.value] = exit_obj
             except KeyError:
@@ -318,6 +350,55 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
             room.extra_descr.append(extra_desc)
 
         room_registry[room.vnum] = room
+
+
+def _link_exits_for_area(area: Area) -> None:
+    """Resolve exit destinations and reverse links like ROM fix_exits."""
+
+    reverse_map = {
+        Direction.NORTH: Direction.SOUTH,
+        Direction.EAST: Direction.WEST,
+        Direction.SOUTH: Direction.NORTH,
+        Direction.WEST: Direction.EAST,
+        Direction.UP: Direction.DOWN,
+        Direction.DOWN: Direction.UP,
+    }
+
+    for room in list(room_registry.values()):
+        if getattr(room, "area", None) is not area:
+            continue
+
+        exits = getattr(room, "exits", []) or []
+        has_exit = False
+
+        for idx, exit_obj in enumerate(exits):
+            if exit_obj is None:
+                continue
+
+            dest_vnum = getattr(exit_obj, "vnum", None)
+            to_room = room_registry.get(dest_vnum)
+            exit_obj.to_room = to_room
+
+            if to_room is None:
+                continue
+
+            has_exit = True
+            reverse_dir = reverse_map.get(Direction(idx))
+            if reverse_dir is None:
+                continue
+
+            reverse_exits = getattr(to_room, "exits", []) or []
+            if reverse_dir.value >= len(reverse_exits):
+                continue
+
+            reverse_exit = reverse_exits[reverse_dir.value]
+            if reverse_exit is None:
+                continue
+
+            reverse_exit.to_room = room
+
+        if not has_exit:
+            room.room_flags |= int(RoomFlag.ROOM_NO_MOB)
 
 
 def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:

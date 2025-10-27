@@ -427,7 +427,7 @@ class MobInstance:
         self.room = room
 
     def add_to_inventory(self, obj: Object) -> None:
-        if obj not in self.inventory:
+        if not any(existing is obj for existing in self.inventory):
             self.inventory.append(obj)
         obj.carried_by = self
         obj.location = None

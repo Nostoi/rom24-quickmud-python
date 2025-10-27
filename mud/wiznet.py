@@ -126,6 +126,16 @@ def wiznet(
         if ch == sender_ch:
             continue
 
+        # ROM wiznet iterates descriptor_list, which only contains PCs.
+        if getattr(ch, "is_npc", True):
+            continue
+
+        if (
+            getattr(ch, "desc", None) is None
+            and getattr(ch, "connection", None) is None
+        ):
+            continue
+
         # Must be immortal/admin
         is_admin = bool(getattr(ch, "is_admin", False))
         is_immortal = False
@@ -161,17 +171,13 @@ def wiznet(
         expanded = act_format(
             message,
             recipient=ch,
-            actor=ch,
+            actor=sender_ch or ch,
             arg1=obj,
             arg2=sender_ch,
         )
 
-        if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX:
-            formatted_msg = f"{{Z--> {expanded}{{x{ROM_NEWLINE}"
-        else:
-            formatted_msg = f"{{Z{expanded}{{x{ROM_NEWLINE}"
-
-        ch.messages.append(formatted_msg)
+        prefix = "{Z--> " if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX else "{Z"
+        ch.messages.append(f"{prefix}{expanded}{ROM_NEWLINE}{{x")
 
 
 def cmd_wiznet(char: Any, args: str) -> str:

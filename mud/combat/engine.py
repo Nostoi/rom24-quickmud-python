@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 from mud import mobprog
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
-from mud.characters import is_clan_member, is_same_clan
+from mud.characters import is_clan_member, is_same_clan, is_same_group
 from mud.characters.follow import stop_follower
 from mud.combat.death import raw_kill
 from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
@@ -29,12 +31,15 @@ from mud.models.constants import (
     WeaponType,
     attack_damage_type,
     LEVEL_IMMORTAL,
+    WearFlag,
 )
 from mud.persistence import save_character
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
+from mud.models.social import expand_placeholders
 from mud.utils import rng_mm
 from mud.skills import check_improve
 from mud.wiznet import WiznetFlag, wiznet
+from mud.world.vision import can_see_object
 
 
 HAND_TO_HAND_SKILL = "hand to hand"
@@ -696,6 +701,27 @@ def _corpse_is_npc(corpse) -> bool:
         return False
 
 
+def _object_has_wear_flag(obj, flag: WearFlag) -> bool:
+    """Return True when *obj* or its prototype includes the provided wear flag."""
+
+    try:
+        wear_flags = int(getattr(obj, "wear_flags", 0) or 0)
+    except (TypeError, ValueError):
+        wear_flags = 0
+    if wear_flags & int(flag):
+        return True
+
+    proto = getattr(obj, "prototype", None)
+    if proto is None:
+        return False
+
+    try:
+        proto_flags = int(getattr(proto, "wear_flags", 0) or 0)
+    except (TypeError, ValueError):
+        proto_flags = 0
+    return bool(proto_flags & int(flag))
+
+
 def _transfer_corpse_coins(attacker: Character, corpse) -> bool:
     """Move coins from *corpse* to *attacker*, returning True when any moved."""
 
@@ -769,7 +795,7 @@ def _auto_collect_coins(attacker: Character, corpse) -> bool:
 
 
 def _auto_sacrifice(attacker: Character, corpse) -> None:
-    """Stub autosac handling that mirrors ROM's gating semantics."""
+    """Sacrifice empty NPC corpses when AUTOSAC is enabled, mirroring ROM."""
 
     if not _player_has_flag(attacker, PlayerFlag.AUTOSAC):
         return
@@ -778,8 +804,123 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
     if _player_has_flag(attacker, PlayerFlag.AUTOLOOT) and getattr(corpse, "contained_items", []):
         return
 
-    attacker.send_to_char("You offer the corpse to the gods.")
-    # TODO: invoke do_sacrifice once the command is ported.
+    if not can_see_object(attacker, corpse):
+        return
+
+    room = getattr(corpse, "location", None) or getattr(attacker, "room", None)
+    if room is None:
+        return
+
+    if not _object_has_wear_flag(corpse, WearFlag.TAKE):
+        return
+    if _object_has_wear_flag(corpse, WearFlag.NO_SAC):
+        return
+
+    corpse_level = max(0, int(getattr(corpse, "level", 0) or 0))
+    silver_reward = max(1, corpse_level * 3)
+    current_silver = max(0, int(getattr(attacker, "silver", 0) or 0))
+
+    attacker.silver = current_silver + silver_reward
+    if silver_reward == 1:
+        attacker.send_to_char("Mota gives you one silver coin for your sacrifice.")
+    else:
+        attacker.send_to_char(
+            f"Mota gives you {silver_reward} silver coins for your sacrifice."
+        )
+
+    corpse_name = (
+        getattr(corpse, "short_descr", None)
+        or getattr(corpse, "name", "")
+        or "corpse"
+    )
+    room.broadcast(
+        expand_placeholders(
+            "$n sacrifices $N to Mota.", attacker, SimpleNamespace(name=corpse_name)
+        ),
+        exclude=attacker,
+    )
+    wiznet(
+        "$N sends up $p as a burnt offering.",
+        attacker,
+        corpse,
+        WiznetFlag.WIZ_SACCING,
+        None,
+        0,
+    )
+
+    try:
+        from mud.game_loop import _extract_obj as _legacy_extract_obj
+    except ImportError:  # pragma: no cover - defensive guard
+        _legacy_extract_obj = None
+
+    if _legacy_extract_obj is not None:
+        _legacy_extract_obj(corpse)
+    else:  # pragma: no cover - fallback for isolated tests
+        for item in list(getattr(corpse, "contained_items", []) or []):
+            if hasattr(item, "location") and getattr(item, "location", None) is corpse:
+                item.location = None
+        if hasattr(corpse, "contained_items"):
+            try:
+                corpse.contained_items.clear()
+            except AttributeError:
+                corpse.contained_items = []
+        setattr(corpse, "gold", 0)
+        setattr(corpse, "silver", 0)
+
+    if hasattr(corpse, "contained_items"):
+        try:
+            corpse.contained_items.clear()
+        except AttributeError:  # pragma: no cover - defensive guard
+            corpse.contained_items = []
+    setattr(corpse, "gold", 0)
+    setattr(corpse, "silver", 0)
+
+    if hasattr(room, "contents") and corpse in room.contents:
+        room.contents.remove(corpse)
+    if hasattr(corpse, "location"):
+        corpse.location = None
+
+    if not _player_has_flag(attacker, PlayerFlag.AUTOSPLIT):
+        return
+
+    people = list(getattr(room, "people", []) or [])
+    group_members: list[Character] = []
+    for member in people:
+        if not is_same_group(member, attacker):
+            continue
+        if hasattr(member, "has_affect") and member.has_affect(AffectFlag.CHARM):
+            continue
+        group_members.append(member)
+
+    member_count = len(group_members)
+    if member_count < 2:
+        attacker.send_to_char("Just keep it all.")
+        return
+    if silver_reward <= 1:
+        return
+
+    share = silver_reward // member_count
+    remainder = silver_reward % member_count
+    if share == 0:
+        attacker.send_to_char("Don't even bother, cheapskate.")
+        return
+
+    attacker.silver = current_silver + share + remainder
+    attacker.send_to_char(
+        f"You split {silver_reward} silver coins. Your share is {share + remainder} silver."
+    )
+
+    split_message = (
+        f"$n splits {silver_reward} silver coins. Your share is {share} silver."
+    )
+    for member in group_members:
+        if member is attacker:
+            continue
+        member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
+        if hasattr(member, "messages"):
+            member.messages.append(
+                expand_placeholders(split_message, attacker, member)
+            )
 
 
 def _handle_auto_actions(attacker: Character, corpse) -> None:

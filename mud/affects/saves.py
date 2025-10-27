@@ -5,6 +5,9 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, DamageType, DefenseBit
 from mud.utils import rng_mm
 
+
+ROM_NEWLINE = "\n\r"
+
 # Minimal fMana mapping from ROM const.c order: mage, cleric → True; thief, warrior → False
 FMANA_BY_CLASS = {
     0: True,  # mage
@@ -154,8 +157,8 @@ def check_dispel(dis_level: int, victim: Character, effect_name: str) -> bool:
     if not saves_dispel(dis_level, effect.level, effect.duration):
         removed = victim.remove_spell_effect(effect_name)
         if removed and removed.wear_off_message:
-            victim.send_to_char(removed.wear_off_message)
+            victim.send_to_char(f"{removed.wear_off_message}{ROM_NEWLINE}")
         return True
 
-    effect.level = max(0, effect.level - 1)
+    effect.level -= 1
     return False

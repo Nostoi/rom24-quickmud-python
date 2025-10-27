@@ -1,24 +1,35 @@
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
+from typing import Any
 from pathlib import Path
 import socket
+import time
 
 import pytest
 
 import mud.game_loop as game_loop
 from mud.commands import process_command
 from mud.imc import (
+    IMCCHAN_LOG,
+    IMC_HISTORY_LIMIT,
+    IMCChannel,
+    IMCColor,
+    IMCState,
     _UCACHE_REFRESH_INTERVAL,
     _handle_disconnect,
+    _load_channel_history,
+    _parse_channels,
     get_state,
     imc_enabled,
     maybe_open_socket,
     pump_idle,
     reset_state,
+    save_channel_history,
 )
 from mud.imc.commands import IMCPacket
 from mud.imc.protocol import Frame, parse_frame, serialize_frame
+from mud.loaders.social_loader import load_socials
 from mud.world import create_test_character, initialize_world
 
 
@@ -61,6 +72,7 @@ def _write_imc_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "\n".join(
             [
                 "#IMCCHAN",
+                "   * Default IMC2 broadcast configuration",
                 "ChanName IMC2",
                 "ChanLocal quickmud",
                 "ChanRegF [$n] $t",
@@ -131,6 +143,37 @@ def _write_imc_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return config, channels, helps
 
 
+def test_parse_channels_skips_comments(tmp_path):
+    channel_path = tmp_path / "imc.channels"
+    channel_path.write_text(
+        "\n".join(
+            [
+                "#IMCCHAN",
+                "* Leading comment",
+                "ChanName Foo",
+                " ChanLocal bar",  # include leading space to ensure trim
+                "* Another comment",  # should be ignored
+                "ChanRegF [$n] $t",
+                "ChanEmoF * $n $t",
+                "ChanSocF [$n socials] $t",
+                "ChanLevel 101",
+                "End",
+                "#END",
+            ]
+        )
+        + "\n",
+        encoding="latin-1",
+    )
+
+    channels = _parse_channels(channel_path)
+
+    assert len(channels) == 1
+    channel = channels[0]
+    assert channel.name == "Foo"
+    assert channel.local_name == "bar"
+    assert channel.reg_format == "[$n] $t"
+
+
 def _write_ban_and_ucache(tmp_path: Path) -> tuple[Path, Path]:
     ignores = tmp_path / "imc.ignores"
     ignores.write_text("#IGNORES\nrouter.bad\nworse@mud\n#END\n", encoding="latin-1")
@@ -198,6 +241,346 @@ def test_parse_serialize_roundtrip():
     assert serialize_frame(frame) == sample
 
 
+def test_load_channel_history_limits_entries(tmp_path):
+    channel = IMCChannel(
+        name="IMC2",
+        local_name="QuickMud",
+        level=101,
+        reg_format="[$n] $t",
+        emote_format="* $n $t",
+        social_format="[$n socials] $t",
+    )
+    history_dir = tmp_path
+    history_path = history_dir / "QuickMud.hist"
+    raw_entries = [f"[{i:02d}] stored" for i in range(IMC_HISTORY_LIMIT + 5)]
+    serialized: list[str] = ["", "   ", "\t"]
+    for idx, entry in enumerate(raw_entries):
+        if idx == 0:
+            serialized.append(f"   {entry}")
+        elif idx == 1:
+            serialized.append(f"{entry}~")
+        else:
+            serialized.append(entry)
+        if idx < len(raw_entries) - 1:
+            serialized.append("  ")
+    serialized.append("")
+    history_path.write_text("\n".join(serialized) + "\n", encoding="latin-1")
+
+    history = _load_channel_history([channel], history_dir)
+
+    assert history == {"QuickMud": raw_entries[:IMC_HISTORY_LIMIT]}
+    assert all(not line.endswith("~") for line in history["QuickMud"])
+    assert all(line == line.lstrip() for line in history["QuickMud"])
+    assert not history_path.exists()
+
+
+def test_save_channel_history_writes_per_channel(tmp_path: Path) -> None:
+    history_dir = tmp_path / "history"
+    history_dir.mkdir()
+
+    channel = IMCChannel(
+        name="IMC2",
+        local_name="QuickMud",
+        level=101,
+        reg_format="[$n] $t",
+        emote_format="* $n $t",
+        social_format="[$n socials] $t",
+    )
+    empty_channel = IMCChannel(
+        name="Other",
+        local_name="OtherMud",
+        level=101,
+        reg_format="[$n] $t",
+        emote_format="* $n $t",
+        social_format="[$n socials] $t",
+    )
+
+    entries = [f"[{i:02d}] entry" for i in range(IMC_HISTORY_LIMIT)]
+    stale_path = history_dir / "OtherMud.hist"
+    stale_path.write_text("stale\n", encoding="latin-1")
+
+    state = IMCState(
+        config={},
+        channels=[channel, empty_channel],
+        helps={},
+        commands={},
+        packet_handlers={},
+        connected=False,
+        config_path=tmp_path / "imc.config",
+        channels_path=tmp_path / "imc.channels",
+        help_path=tmp_path / "imc.help",
+        commands_path=tmp_path / "imc.commands",
+        ignores_path=tmp_path / "imc.ignores",
+        ucache_path=tmp_path / "imc.ucache",
+        history_dir=history_dir,
+        router_bans=[],
+        colors={},
+        who_template=None,
+        user_cache={},
+        channel_history={"QuickMud": entries, "OtherMud": []},
+        connection=None,
+        outgoing_queue=[],
+    )
+
+    save_channel_history(state)
+
+    history_file = history_dir / "QuickMud.hist"
+    assert history_file.read_text(encoding="latin-1") == "\n".join(entries) + "\n"
+    assert not stale_path.exists()
+
+
+def test_append_channel_history_formats_and_limits_entries(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    import mud.imc.__init__ as imc_module
+
+    fixed_time = time.struct_time((1997, 12, 3, 4, 5, 0, 0, 337, -1))
+    monkeypatch.setattr(imc_module.time, "time", lambda: 0, raising=False)
+    monkeypatch.setattr(imc_module.time, "localtime", lambda _: fixed_time, raising=False)
+
+    channel = IMCChannel(
+        name="IMC2",
+        local_name="QuickMud",
+        level=101,
+        reg_format="[$n] $t",
+        emote_format="* $n $t",
+        social_format="[$n socials] $t",
+    )
+    state = IMCState(
+        config={},
+        channels=[channel],
+        helps={},
+        commands={},
+        packet_handlers={},
+        connected=True,
+        config_path=tmp_path / "imc.config",
+        channels_path=tmp_path / "imc.channels",
+        help_path=tmp_path / "imc.help",
+        commands_path=tmp_path / "imc.commands",
+        ignores_path=tmp_path / "imc.ignores",
+        ucache_path=tmp_path / "imc.ucache",
+        history_dir=tmp_path,
+        router_bans=[],
+        colors={},
+        who_template=None,
+        user_cache={},
+        channel_history={"QuickMud": []},
+        connection=None,
+        outgoing_queue=[],
+    )
+
+    state.append_channel_history("QuickMud", "First")
+    assert state.channel_history["QuickMud"] == ["~R[12/03 04:05] ~GFirst"]
+
+    for index in range(IMC_HISTORY_LIMIT):
+        state.append_channel_history("QuickMud", f"Msg {index}")
+
+    history = state.channel_history["QuickMud"]
+    assert len(history) == IMC_HISTORY_LIMIT
+    assert history[0].endswith("Msg 0")
+    assert history[-1].endswith(f"Msg {IMC_HISTORY_LIMIT - 1}")
+
+    state.append_channel_history("Unknown", "Ignored")
+    assert "Unknown" not in state.channel_history
+
+
+def test_append_channel_history_logs_when_enabled(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    import mud.imc.__init__ as imc_module
+
+    fixed_time = time.struct_time((2001, 2, 3, 4, 5, 0, 0, 34, -1))
+    monkeypatch.setattr(imc_module.time, "time", lambda: 0, raising=False)
+    monkeypatch.setattr(imc_module.time, "localtime", lambda _: fixed_time, raising=False)
+
+    channel = IMCChannel(
+        name="IMC2",
+        local_name="QuickMud",
+        level=101,
+        reg_format="[$n] $t",
+        emote_format="* $n $t",
+        social_format="[$n socials] $t",
+        flags=IMCCHAN_LOG,
+    )
+    colors = {
+        "red": IMCColor(name="Red", mud_tag="{R", imc_tag="~R"),
+        "green": IMCColor(name="Green", mud_tag="{G", imc_tag="~G"),
+    }
+    state = IMCState(
+        config={},
+        channels=[channel],
+        helps={},
+        commands={},
+        packet_handlers={},
+        connected=True,
+        config_path=tmp_path / "imc.config",
+        channels_path=tmp_path / "imc.channels",
+        help_path=tmp_path / "imc.help",
+        commands_path=tmp_path / "imc.commands",
+        ignores_path=tmp_path / "imc.ignores",
+        ucache_path=tmp_path / "imc.ucache",
+        history_dir=tmp_path,
+        router_bans=[],
+        colors=colors,
+        who_template=None,
+        user_cache={},
+        channel_history={"QuickMud": []},
+        connection=None,
+        outgoing_queue=[],
+    )
+
+    state.append_channel_history("QuickMud", "Logged message")
+
+    log_path = tmp_path / "QuickMud.log"
+    assert log_path.read_text(encoding="latin-1") == "[02/03 04:05] Logged message\n"
+    assert state.channel_history["QuickMud"][-1].endswith("Logged message")
+
+
+def test_imc_channel_command_shows_history(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_COMMANDS_PATH", str(_default_imc_dir() / "imc.commands"))
+    monkeypatch.setenv("IMC_HISTORY_DIR", str(tmp_path))
+    history_entry = "~R[12/03 04:05] ~GFirst"
+    (tmp_path / "quickmud.hist").write_text(f"{history_entry}\n", encoding="latin-1")
+    reset_state()
+
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+    channel = state.channels[0]
+
+    ch = create_test_character("IMCImm", 3001)
+    ch.level = 200
+    ch.trust = 200
+    ch.imc_permission = "Imp"
+
+    response = process_command(ch, channel.local_name)
+    assert f"~cThe last 1 {channel.local_name} messages:\r\n" in response
+    assert history_entry in response
+
+    reply = process_command(ch, f"{channel.local_name} message")
+    assert "IMC channel messaging is not available" in reply
+
+
+def _enable_imc(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> tuple[IMCState, IMCChannel]:
+    config, channels, helps = _write_imc_fixture(tmp_path)
+    monkeypatch.setenv("IMC_ENABLED", "true")
+    monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
+    monkeypatch.setenv("IMC_CHANNELS_PATH", str(channels))
+    monkeypatch.setenv("IMC_HELP_PATH", str(helps))
+    monkeypatch.setenv("IMC_HISTORY_DIR", str(tmp_path))
+    _install_fake_imc_connection(monkeypatch)
+    reset_state()
+    state = maybe_open_socket(force_reload=True)
+    assert state is not None
+    assert state.channels
+    return state, state.channels[0]
+
+
+def _prepare_imc_character(state: IMCState) -> Any:
+    initialize_world("area/area.lst")
+    load_socials("data/socials.json")
+    ch = create_test_character("IMCSpeaker", 3001)
+    ch.level = 200
+    ch.trust = 200
+    ch.imc_permission = "Imp"
+    return ch
+
+
+def test_imc_channel_command_sends_message(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    state, channel = _enable_imc(monkeypatch, tmp_path)
+    ch = _prepare_imc_character(state)
+    ch.imc_listen = {channel.local_name}
+
+    response = process_command(ch, f"{channel.local_name} Hello IMC")
+
+    assert response == ""
+    assert state.outgoing_queue, "channel send should queue a router frame"
+    frame = state.outgoing_queue[-1]
+    parsed = parse_frame(frame)
+    assert parsed.type == "ice-msg-b"
+    assert parsed.target == "*@*"
+    assert parsed.source == f"{ch.name}@{state.config.get('LocalName')}"
+    payload = parsed.message
+    assert f"channel={channel.name}" in payload
+    assert "text=Hello IMC" in payload
+    assert "emote=0" in payload
+    assert payload.endswith("echo=1")
+
+
+def test_imc_channel_command_sends_emote(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    state, channel = _enable_imc(monkeypatch, tmp_path)
+    ch = _prepare_imc_character(state)
+    ch.imc_listen = {channel.local_name}
+
+    response = process_command(ch, f"{channel.local_name} ,waves")
+
+    assert response == ""
+    assert state.outgoing_queue, "channel emote should queue a router frame"
+    frame = state.outgoing_queue[-1]
+    parsed = parse_frame(frame)
+    assert parsed.type == "ice-msg-b"
+    assert parsed.target == "*@*"
+    payload = parsed.message
+    assert f"channel={channel.name}" in payload
+    assert "text=waves" in payload
+    assert "emote=1" in payload
+
+
+def test_imc_channel_command_sends_social(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    state, channel = _enable_imc(monkeypatch, tmp_path)
+    ch = _prepare_imc_character(state)
+    ch.imc_listen = {channel.local_name}
+
+    response = process_command(ch, f"{channel.local_name} @wave Ruff@OtherMud")
+
+    assert response == ""
+    assert state.outgoing_queue, "channel social should queue a router frame"
+    frame = state.outgoing_queue[-1]
+    parsed = parse_frame(frame)
+    assert parsed.type == "ice-msg-b"
+    assert parsed.target == "*@*"
+    payload = parsed.message
+    assert f"channel={channel.name}" in payload
+    assert "emote=2" in payload
+    assert "text=IMCSpeaker waves goodbye to Ruff@OtherMud." in payload
+
+
+def test_imc_channel_command_requires_listen(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    state, channel = _enable_imc(monkeypatch, tmp_path)
+    ch = _prepare_imc_character(state)
+
+    blocked = process_command(ch, f"{channel.local_name} Hello")
+
+    assert "not currently listening" in blocked
+    assert "imclisten" in blocked
+    assert not state.outgoing_queue
+
+    ch.imc_listen = {channel.local_name}
+    allowed = process_command(ch, f"{channel.local_name} Hello")
+
+    assert allowed == ""
+    assert state.outgoing_queue
+
+
+def test_imc_channel_command_toggles_logging(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    state, channel = _enable_imc(monkeypatch, tmp_path)
+    ch = _prepare_imc_character(state)
+
+    enable_message = process_command(ch, f"{channel.local_name} log")
+
+    assert "~RFile logging enabled" in enable_message
+    assert state.channels[0].flags & IMCCHAN_LOG
+    contents = state.channels_path.read_text(encoding="latin-1")
+    assert f"ChanFlags {IMCCHAN_LOG}" in contents
+
+    disable_message = process_command(ch, f"{channel.local_name} log")
+
+    assert "~GFile logging disabled" in disable_message
+    assert not (state.channels[0].flags & IMCCHAN_LOG)
+    contents = state.channels_path.read_text(encoding="latin-1")
+    assert "ChanFlags 0" in contents
 def test_parse_frame_accepts_additional_whitespace():
     frame = parse_frame("chat   alice@quickmud    *   :Hello there")
     assert frame == Frame(type="chat", source="alice@quickmud", target="*", message="Hello there")

@@ -2,9 +2,22 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any
+from types import SimpleNamespace
+from typing import Any, Optional
 
-from mud.imc import IMCHelp, IMCState, imc_enabled, maybe_open_socket
+from mud.imc import (
+    IMCCHAN_LOG,
+    IMC_HISTORY_LIMIT,
+    IMCChannel,
+    IMCHelp,
+    IMCState,
+    imc_enabled,
+    maybe_open_socket,
+    send_channel_message,
+    update_channel_flags,
+)
+from mud.models.constants import Sex
+from mud.models.social import Social, expand_placeholders, social_registry
 
 _PERMISSION_LEVELS: list[tuple[str, int]] = [
     ("Notset", 0),
@@ -180,3 +193,205 @@ def _render_columns(topics: Iterable[str]) -> list[str]:
         columns.append("".join(row).rstrip())
 
     return columns
+
+
+def try_imc_command(char: Any, command: str, argument: str) -> Optional[str]:
+    """Handle IMC channel-style commands when IMC is enabled."""
+
+    if getattr(char, "is_npc", False):
+        return None
+
+    if not imc_enabled():
+        return None
+
+    try:
+        state = maybe_open_socket()
+    except (FileNotFoundError, ValueError):
+        return "IMC is enabled but configuration is unavailable."
+
+    if not state:
+        return "IMC is enabled but configuration is unavailable."
+
+    command_lower = command.lower()
+    channel = next(
+        (
+            entry
+            for entry in state.channels
+            if entry.local_name.lower() == command_lower
+            or entry.name.lower() == command_lower
+        ),
+        None,
+    )
+    if channel is None:
+        return None
+
+    required_level = channel.level or 0
+    try:
+        trust_value = int(getattr(char, "trust", getattr(char, "level", 0)) or 0)
+    except (TypeError, ValueError):
+        trust_value = 0
+    perm_rank = _character_permission_rank(char)
+    if trust_value < required_level and perm_rank < required_level:
+        return None
+
+    history_key = channel.local_name or channel.name
+    history = state.channel_history.get(history_key, [])
+
+    stripped_argument = argument.strip()
+
+    if not stripped_argument:
+        count = min(len(history), IMC_HISTORY_LIMIT)
+        lines = [
+            f"~cThe last {count} {history_key} messages:\r\n",
+        ]
+        for entry in history[-IMC_HISTORY_LIMIT:]:
+            lines.append(f"{entry}\r\n")
+        return "".join(lines)
+
+    admin_rank = _PERMISSION_BY_NAME["admin"][1]
+    if stripped_argument.lower() == "log" and perm_rank >= admin_rank:
+        channel_name = channel.local_name or channel.name
+        if channel.flags & IMCCHAN_LOG:
+            updated_flags = channel.flags & ~IMCCHAN_LOG
+            update_channel_flags(state, channel, updated_flags)
+            return f"~GFile logging disabled for {channel_name}.\r\n"
+        updated_flags = channel.flags | IMCCHAN_LOG
+        update_channel_flags(state, channel, updated_flags)
+        return (
+            f"~RFile logging enabled for {channel_name}, PLEASE don't forget to undo this when it isn't needed!\r\n"
+        )
+
+    if not _character_listens_to_channel(char, history_key):
+        return (
+            f"You are not currently listening to {history_key}. "
+            "Use the imclisten command to listen to this channel.\r\n"
+        )
+
+    payload = argument.lstrip()
+    if payload.startswith("@"):
+        social_argument = payload[1:].lstrip()
+        social_result = _handle_channel_social(state, channel, char, social_argument)
+        return social_result
+    emote = 0
+    if payload.startswith(","):
+        payload = payload[1:].lstrip()
+        emote = 1
+
+    if not payload:
+        return ""
+
+    send_channel_message(state, channel, char, payload, emote)
+    return ""
+
+
+def _handle_channel_social(state: IMCState, channel: IMCChannel, char: Any, argument: str) -> str:
+    if not argument:
+        return ""
+
+    social_name, remainder = _split_first_token(argument)
+    if not social_name:
+        return ""
+
+    social = social_registry.get(social_name.lower())
+    if social is None:
+        return f"~YSocial ~W{social_name}~Y does not exist on this mud.\r\n"
+
+    target_name = ""
+    target_mud = ""
+    if remainder:
+        target_name, target_mud, error = _parse_social_target(remainder)
+        if error:
+            return error
+
+    template, victim, error = _select_social_template(state, char, social, target_name, target_mud)
+    if error:
+        return error
+
+    message = expand_placeholders(template, char, victim)
+    send_channel_message(state, channel, char, message, 2)
+    return ""
+
+
+def _split_first_token(text: str) -> tuple[str, str]:
+    parts = text.split(None, 1)
+    if not parts:
+        return "", ""
+    if len(parts) == 1:
+        return parts[0], ""
+    return parts[0], parts[1]
+
+
+def _parse_social_target(raw: str) -> tuple[str, str, Optional[str]]:
+    if "@" not in raw:
+        return "", "", "You need to specify a person@mud for a target.\r\n"
+    person, mud = raw.split("@", 1)
+    person = person.strip()
+    mud = mud.strip()
+    if not person or not mud:
+        return "", "", "You need to specify a person@mud for a target.\r\n"
+    return person, mud, None
+
+
+def _select_social_template(
+    state: IMCState,
+    char: Any,
+    social: Social,
+    target_name: str,
+    target_mud: str,
+) -> tuple[str, Optional[Any], Optional[str]]:
+    local_name = (state.config.get("LocalName") or "QuickMUD").lower()
+    actor_name = getattr(char, "name", "")
+    victim: Optional[Any] = None
+
+    if target_name and target_mud:
+        if target_name.lower() == actor_name.lower() and target_mud.lower() == local_name:
+            template = social.others_auto
+            if not template:
+                display = social.name or ""
+                return "", None, f"~YSocial ~W{display}~Y: Missing others_auto.\r\n"
+            victim = SimpleNamespace(name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud))
+            return template, victim, None
+
+        template = social.others_found
+        if not template:
+            display = social.name or ""
+            return "", None, f"~YSocial ~W{display}~Y: Missing others_found.\r\n"
+        victim = SimpleNamespace(name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud))
+        return template, victim, None
+
+    template = social.others_no_arg
+    if not template:
+        display = social.name or ""
+        return "", None, f"~YSocial ~W{display}~Y: Missing others_no_arg.\r\n"
+    return template, None, None
+
+
+def _resolve_remote_sex(state: IMCState, person: str, mud: str) -> Sex:
+    key = f"{person}@{mud}".lower()
+    entry = state.user_cache.get(key)
+    if entry and entry.gender is not None:
+        try:
+            return Sex(entry.gender)
+        except ValueError:
+            pass
+    return Sex.MALE
+
+
+def _character_listens_to_channel(char: Any, channel_name: str) -> bool:
+    if not channel_name:
+        return True
+
+    raw_listen = getattr(char, "imc_listen", None)
+    if raw_listen is None:
+        return False
+
+    entries: set[str]
+    if isinstance(raw_listen, str):
+        entries = {token.lower() for token in raw_listen.split() if token}
+    else:
+        try:
+            entries = {str(token).lower() for token in raw_listen if token}
+        except TypeError:
+            entries = {str(raw_listen).lower()}
+
+    return channel_name.lower() in entries

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.math.c_compat import c_div
+from typing import Any
+
 from mud.models.constants import (
     MAX_LEVEL,
     AffectFlag,
@@ -9,12 +11,62 @@ from mud.models.constants import (
     RoomFlag,
     Sector,
     Stat,
+    ExtraFlag,
+    ItemType,
 )
 from mud.models.room import Room
 from mud.time import Sunlight, time_info
 from mud.utils import rng_mm
 
 _VISIBILITY_AFFECTS = AffectFlag.INFRARED | AffectFlag.DARK_VISION
+
+
+def _object_extra_flags(obj: Any) -> int:
+    """Return runtime or prototype extra flags for *obj*."""
+
+    try:
+        flags = int(getattr(obj, "extra_flags", 0) or 0)
+    except (TypeError, ValueError):
+        flags = 0
+    if flags:
+        return flags
+    proto = getattr(obj, "prototype", None)
+    try:
+        return int(getattr(proto, "extra_flags", 0) or 0)
+    except (TypeError, ValueError, AttributeError):
+        return 0
+
+
+def _object_item_type(obj: Any) -> ItemType | None:
+    """Resolve the item's type using runtime overrides before prototypes."""
+
+    for source in (obj, getattr(obj, "prototype", None)):
+        if source is None:
+            continue
+        try:
+            raw_type = int(getattr(source, "item_type", 0) or 0)
+        except (TypeError, ValueError):
+            continue
+        try:
+            return ItemType(raw_type)
+        except ValueError:
+            continue
+    return None
+
+
+def _object_light_timer(obj: Any) -> int:
+    """Return the remaining light duration for light objects."""
+
+    for source in (obj, getattr(obj, "prototype", None)):
+        if source is None:
+            continue
+        values = getattr(source, "value", None)
+        if isinstance(values, (list, tuple)) and len(values) > 2:
+            try:
+                return int(values[2])
+            except (TypeError, ValueError):
+                continue
+    return 0
 
 
 def _get_trust(char: Character) -> int:
@@ -219,6 +271,41 @@ def can_see_room(char: Character, room: Room) -> bool:
     room_clan = int(getattr(room, "clan", 0) or 0)
     char_clan = int(getattr(char, "clan", 0) or 0)
     if room_clan and not char.is_immortal() and room_clan != char_clan:
+        return False
+
+    return True
+
+
+def can_see_object(observer: Character | None, obj: Any) -> bool:
+    """Replicate ROM ``can_see_obj`` visibility gating for objects."""
+
+    if observer is None or obj is None:
+        return False
+
+    if not getattr(observer, "is_npc", False) and _has_holylight(observer):
+        return True
+
+    extra_flags = _object_extra_flags(obj)
+    if extra_flags & int(ExtraFlag.VIS_DEATH):
+        return False
+
+    if _has_affect(observer, AffectFlag.BLIND):
+        item_type = _object_item_type(obj)
+        if item_type != ItemType.POTION:
+            return False
+
+    item_type = _object_item_type(obj)
+    if item_type == ItemType.LIGHT and _object_light_timer(obj) != 0:
+        return True
+
+    if extra_flags & int(ExtraFlag.INVIS) and not _has_affect(observer, AffectFlag.DETECT_INVIS):
+        return False
+
+    if extra_flags & int(ExtraFlag.GLOW):
+        return True
+
+    room = getattr(observer, "room", None)
+    if room is not None and room_is_dark(room) and not _has_affect(observer, AffectFlag.DARK_VISION):
         return False
 
     return True

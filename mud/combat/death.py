@@ -12,6 +12,7 @@ from mud.models.constants import (
     PlayerFlag,
     Position,
     WearLocation,
+    WearFlag,
     ITEM_INVENTORY,
     ITEM_ROT_DEATH,
     ITEM_VIS_DEATH,
@@ -433,6 +434,11 @@ def make_corpse(victim: Character) -> Object | None:
     if corpse is None:
         corpse = _fallback_corpse(vnum, item_type=ItemType.CORPSE_NPC if is_npc else ItemType.CORPSE_PC)
     corpse.item_type = int(ItemType.CORPSE_NPC if is_npc else ItemType.CORPSE_PC)
+    try:
+        wear_flags = int(getattr(corpse, "wear_flags", 0) or 0)
+    except (TypeError, ValueError):
+        wear_flags = 0
+    corpse.wear_flags = wear_flags | int(WearFlag.TAKE)
     corpse.cost = 0
     corpse.level = int(getattr(victim, "level", 0) or 0)
     corpse.timer = rng_mm.number_range(3, 6) if is_npc else rng_mm.number_range(25, 40)

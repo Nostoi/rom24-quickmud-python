@@ -74,7 +74,7 @@ from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.world.look import look
 from mud.world.movement import _get_random_room
-from mud.world.vision import can_see_room, room_is_dark
+from mud.world.vision import can_see_object, can_see_room, room_is_dark
 
 from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
 from mud.skills.registry import check_improve
@@ -889,39 +889,9 @@ def _iterate_world_objects():
 
 
 def _can_see_object(observer: Character, obj: Object | ObjectData) -> bool:
-    """Replicate ROM ``can_see_obj`` for locate object visibility filtering."""
+    """Delegate to shared ROM-style object visibility helper."""
 
-    if observer is None or obj is None:
-        return False
-    if not getattr(observer, "is_npc", False):
-        act_flags = _coerce_int(getattr(observer, "act", 0))
-        if act_flags & int(PlayerFlag.HOLYLIGHT):
-            return True
-    extra_flags = _effective_extra_flags(obj)
-    if extra_flags & int(ExtraFlag.VIS_DEATH):
-        return False
-    if _character_has_affect(observer, AffectFlag.BLIND):
-        item_type = _resolve_item_type(getattr(obj, "item_type", None))
-        if item_type is None:
-            proto = getattr(obj, "prototype", None)
-            item_type = _resolve_item_type(getattr(proto, "item_type", None))
-        if item_type != ItemType.POTION:
-            return False
-    values = _normalize_value_list(obj, minimum=3)
-    item_type = _resolve_item_type(getattr(obj, "item_type", None))
-    if item_type is None:
-        proto = getattr(obj, "prototype", None)
-        item_type = _resolve_item_type(getattr(proto, "item_type", None))
-    if item_type == ItemType.LIGHT and _coerce_int(values[2]) != 0:
-        return True
-    if extra_flags & int(ExtraFlag.INVIS) and not _character_has_affect(observer, AffectFlag.DETECT_INVIS):
-        return False
-    if extra_flags & int(ExtraFlag.GLOW):
-        return True
-    room = getattr(observer, "room", None)
-    if room is not None and room_is_dark(room) and not _character_has_affect(observer, AffectFlag.DARK_VISION):
-        return False
-    return True
+    return can_see_object(observer, obj)
 
 
 def _can_see_locate_carrier(observer: Character, carrier: Character | None) -> bool:

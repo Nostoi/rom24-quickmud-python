@@ -66,7 +66,11 @@ from mud.models.character import (
     character_registry,
 )
 from mud.models.room import Room
-from mud.net.connection import RECONNECT_MESSAGE, _broadcast_reconnect_notifications
+from mud.net.connection import (
+    RECONNECT_MESSAGE,
+    _announce_login_or_reconnect,
+    _broadcast_reconnect_notifications,
+)
 from mud.net.session import SESSIONS
 from mud.net.telnet_server import create_server
 from mud.security import bans
@@ -2305,7 +2309,7 @@ def test_duplicate_login_requires_reconnect_consent():
     release_account("dup")
 
 
-def test_reconnect_announces_wiz_links():
+def test_reconnect_announces_wiz_links(monkeypatch):
     character_registry.clear()
 
     room = Room(vnum=42, name="Limbo")
@@ -2324,6 +2328,7 @@ def test_reconnect_announces_wiz_links():
     imm_receives = RuntimeCharacter(
         name="ImmHigh",
         is_admin=True,
+        is_npc=False,
         trust=60,
         level=60,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
@@ -2331,6 +2336,7 @@ def test_reconnect_announces_wiz_links():
     imm_blocked = RuntimeCharacter(
         name="ImmLow",
         is_admin=True,
+        is_npc=False,
         trust=50,
         level=50,
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
@@ -2338,11 +2344,24 @@ def test_reconnect_announces_wiz_links():
     imm_plain = RuntimeCharacter(
         name="ImmPlain",
         is_admin=True,
+        is_npc=False,
         trust=60,
         level=60,
         wiznet=int(WiznetFlag.WIZ_ON),
     )
+    imm_receives.connection = SimpleNamespace()
+    imm_blocked.connection = SimpleNamespace()
+    imm_plain.connection = SimpleNamespace()
+    reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
     character_registry.extend([imm_receives, imm_blocked, imm_plain])
+
+    logged: list[str] = []
+
+    def _capture_log(message: str) -> str:
+        logged.append(message)
+        return message
+
+    monkeypatch.setattr(net_connection, "log_game_event", _capture_log)
 
     try:
         _broadcast_reconnect_notifications(reconnecting)
@@ -2350,10 +2369,126 @@ def test_reconnect_announces_wiz_links():
         character_registry.clear()
 
     assert any("Hero has reconnected." in msg for msg in watcher.messages)
-    assert imm_receives.messages == ["{ZHero groks the fullness of his link.{x"]
-    assert imm_blocked.messages == []
+    expected = "{ZHero groks the fullness of his link.\n\r{x"
+    assert imm_receives.messages == [expected]
+    assert imm_blocked.messages == [expected]
     assert all("groks" not in msg for msg in imm_plain.messages)
     assert RECONNECT_MESSAGE == "Reconnecting. Type replay to see missed tells."
+    assert logged == ["Hero@midgaard.example reconnected."]
+
+    watcher.messages.clear()
+    imm_receives.messages.clear()
+    imm_blocked.messages.clear()
+    imm_plain.messages.clear()
+    logged.clear()
+
+    reconnecting.connection.peer_host = None
+
+    character_registry.extend([imm_receives, imm_blocked, imm_plain])
+    try:
+        _broadcast_reconnect_notifications(reconnecting)
+    finally:
+        character_registry.clear()
+
+    assert any("Hero has reconnected." in msg for msg in watcher.messages)
+    assert logged == ["Hero@(unknown) reconnected."]
+    assert imm_receives.messages == [expected]
+    assert imm_blocked.messages == [expected]
+
+
+def test_reconnect_skips_login_announcements(monkeypatch):
+    character_registry.clear()
+
+    reconnecting = RuntimeCharacter(
+        name="Hero",
+        is_npc=False,
+        trust=60,
+        level=50,
+        sex=Sex.MALE,
+    )
+    reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
+
+    link_listener = RuntimeCharacter(
+        name="LinkImm",
+        is_admin=True,
+        is_npc=False,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
+    )
+    login_listener = RuntimeCharacter(
+        name="LoginImm",
+        is_admin=True,
+        is_npc=False,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS),
+    )
+    link_listener.connection = SimpleNamespace()
+    login_listener.connection = SimpleNamespace()
+
+    character_registry.extend([link_listener, login_listener])
+
+    login_called = False
+
+    def _capture_login(*_args, **_kwargs) -> None:
+        nonlocal login_called
+        login_called = True
+
+    monkeypatch.setattr(net_connection, "announce_wiznet_login", _capture_login)
+
+    try:
+        reminder = _announce_login_or_reconnect(reconnecting, "midgaard.example", reconnecting=True)
+    finally:
+        character_registry.clear()
+
+    assert not login_called
+    assert link_listener.messages == ["{ZHero groks the fullness of his link.\n\r{x"]
+    assert login_listener.messages == []
+    assert reminder is False
+
+
+def test_reconnect_announces_note_reminder(monkeypatch):
+    character_registry.clear()
+
+    reconnecting = RuntimeCharacter(
+        name="Hero",
+        is_npc=False,
+        trust=60,
+        level=50,
+        sex=Sex.MALE,
+    )
+    reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
+    reconnecting.pcdata = SimpleNamespace(in_progress="draft")
+
+    link_listener = RuntimeCharacter(
+        name="LinkImm",
+        is_admin=True,
+        is_npc=False,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
+    )
+    link_listener.connection = SimpleNamespace()
+
+    character_registry.append(link_listener)
+
+    login_called = False
+
+    def _capture_login(*_args, **_kwargs) -> None:
+        nonlocal login_called
+        login_called = True
+
+    monkeypatch.setattr(net_connection, "announce_wiznet_login", _capture_login)
+
+    try:
+        reminder = _announce_login_or_reconnect(reconnecting, "midgaard.example", reconnecting=True)
+    finally:
+        character_registry.clear()
+
+    assert reminder is True
+    assert not login_called
+    assert link_listener.messages == ["{ZHero groks the fullness of his link.\n\r{x"]
 
 
 def test_newbie_permit_enforcement():
