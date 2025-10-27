@@ -18,12 +18,15 @@ from mud.models.constants import (
     Position,
     MAX_LEVEL,
     ROOM_VNUM_ALTAR,
+    OBJ_VNUM_CORPSE_NPC,
+    RoomFlag,
     Stat,
     WearLocation,
+    WearFlag,
     OBJ_VNUM_GUTS,
 )
 from mud.models.mob import MobIndex
-from mud.models.obj import ObjIndex
+from mud.models.obj import ObjIndex, object_registry
 from mud.models.object import Object
 from mud.utils import rng_mm
 from mud.wiznet import WiznetFlag
@@ -159,7 +162,7 @@ def test_raw_kill_awards_group_xp_and_creates_corpse(monkeypatch: pytest.MonkeyP
 def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> None:
     _ensure_world()
     attacker = create_test_character("Attacker", 3001)
-    attacker.act = int(PlayerFlag.AUTOLOOT | PlayerFlag.AUTOGOLD | PlayerFlag.AUTOSAC)
+    attacker.act = int(PlayerFlag.AUTOLOOT | PlayerFlag.AUTOGOLD)
     attacker.hitroll = 100
     attacker.damroll = 10
     room = attacker.room
@@ -198,6 +201,229 @@ def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> 
 
     assert any("got toasted by Attacker" in message for message in immortal.messages)
     assert any("quickly gather" in message for message in attacker.messages)
+
+
+def test_autosacrifice_removes_empty_corpse(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    attacker.act = int(PlayerFlag.AUTOLOOT | PlayerFlag.AUTOGOLD | PlayerFlag.AUTOSAC)
+    attacker.hitroll = 100
+    attacker.damroll = 12
+    attacker.messages = []
+
+    room = attacker.room
+    assert room is not None
+
+    observer = create_test_character("Observer", room.vnum)
+    observer.messages = []
+
+    immortal = Character(name="Immortal", is_npc=False)
+    immortal.is_admin = True
+    immortal.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_SACCING)
+    immortal.messages = []
+    character_registry.append(immortal)
+
+    victim = _make_victim("Victim", room, level=7, hit_points=1)
+    _add_loot(victim, 6002, "a sacrificial token")
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    assert all(
+        getattr(obj, "item_type", None) != int(ItemType.CORPSE_NPC) for obj in room.contents
+    )
+
+    expected_reward = max(1, victim.level * 3)
+    assert attacker.silver == expected_reward
+    assert any("Mota gives" in message for message in attacker.messages)
+    assert any("sacrifices" in message for message in observer.messages)
+    assert any("burnt offering" in message for message in immortal.messages)
+
+
+def test_autosacrifice_autosplit_shares_silver(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    leader = create_test_character("Leader", 3001)
+    leader.act = int(PlayerFlag.AUTOLOOT | PlayerFlag.AUTOSAC | PlayerFlag.AUTOSPLIT)
+    leader.hitroll = 100
+    leader.damroll = 12
+    leader.messages = []
+    leader.silver = 0
+
+    room = leader.room
+    assert room is not None
+
+    ally = create_test_character("Ally", room.vnum)
+    ally.leader = leader
+    ally.messages = []
+    ally.silver = 0
+
+    victim = _make_victim("Victim", room, level=7, hit_points=1)
+    _add_loot(victim, 6003, "a shared trinket")
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(leader, victim)
+
+    expected_share = (7 * 3) // 2
+    expected_remainder = (7 * 3) % 2
+
+    assert leader.silver == expected_share + expected_remainder
+    assert ally.silver == expected_share
+    assert any("You split 21 silver coins." in msg for msg in leader.messages)
+    assert any("Your share is 10 silver" in msg for msg in ally.messages)
+
+
+def test_autosacrifice_autosplit_solo_messages(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    attacker.act = int(PlayerFlag.AUTOSAC | PlayerFlag.AUTOSPLIT)
+    attacker.hitroll = 100
+    attacker.damroll = 12
+    attacker.messages = []
+
+    room = attacker.room
+    assert room is not None
+
+    victim = _make_victim("Victim", room, level=5, hit_points=1)
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    assert any(message == "Just keep it all." for message in attacker.messages)
+
+
+def test_autosacrifice_requires_visibility(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    attacker.act = int(PlayerFlag.AUTOSAC)
+    attacker.hitroll = 100
+    attacker.damroll = 12
+    attacker.messages = []
+
+    room = attacker.room
+    assert room is not None
+    room.room_flags |= int(RoomFlag.ROOM_DARK)
+    room.light = 0
+
+    victim = _make_victim("Victim", room, level=5, hit_points=1)
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    corpses = [
+        obj
+        for obj in room.contents
+        if getattr(obj, "item_type", None) == int(ItemType.CORPSE_NPC)
+    ]
+    assert corpses, "corpse should remain when attacker cannot see it"
+    assert attacker.silver == 0
+    assert all("Mota gives" not in message for message in attacker.messages)
+
+
+def test_autosacrifice_skips_no_sac_corpse(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    attacker.act = int(PlayerFlag.AUTOSAC)
+    attacker.hitroll = 100
+    attacker.damroll = 12
+    attacker.messages = []
+
+    room = attacker.room
+    assert room is not None
+
+    proto = ObjIndex(vnum=OBJ_VNUM_CORPSE_NPC, short_descr="a blocked corpse")
+    proto.description = "The corpse of %s is lying here."
+    blocked_corpse = Object(instance_id=None, prototype=proto)
+    blocked_corpse.item_type = int(ItemType.CORPSE_NPC)
+    blocked_corpse.wear_flags = int(WearFlag.TAKE | WearFlag.NO_SAC)
+    blocked_corpse.contained_items = []
+
+    monkeypatch.setattr("mud.combat.death.spawn_object", lambda vnum: blocked_corpse)
+    victim = _make_victim("Victim", room, level=6, hit_points=1)
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    assert blocked_corpse in room.contents
+    assert attacker.silver == 0
+    assert all("Mota gives" not in message for message in attacker.messages)
+
+
+def test_autosacrifice_extracts_corpse(monkeypatch: pytest.MonkeyPatch) -> None:
+    _ensure_world()
+    attacker = create_test_character("Attacker", 3001)
+    attacker.act = int(PlayerFlag.AUTOSAC)
+    attacker.hitroll = 100
+    attacker.damroll = 12
+
+    room = attacker.room
+    assert room is not None
+
+    victim = _make_victim("Victim", room, level=5, hit_points=1)
+
+    captured: dict[str, Object] = {}
+
+    import mud.combat.death as death_module
+
+    original_make_corpse = death_module.make_corpse
+
+    def capture_make_corpse(*args, **kwargs):
+        corpse = original_make_corpse(*args, **kwargs)
+        captured["corpse"] = corpse
+        return corpse
+
+    monkeypatch.setattr(death_module, "make_corpse", capture_make_corpse)
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    corpse = captured.get("corpse")
+    assert corpse is not None
+
+    assert corpse not in object_registry
+    assert getattr(corpse, "location", None) is None
+    assert not getattr(corpse, "contained_items", [])
 
 
 def test_raw_kill_updates_kill_counters() -> None:

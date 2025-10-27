@@ -323,6 +323,7 @@ class Character:
     # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
     imc_permission: str = "Mort"
     muted_channels: set[str] = field(default_factory=set)
+    imc_listen: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
     wiznet: int = 0
     comm: int = 0

@@ -37,6 +37,7 @@ from mud.commands.help import do_help
 from mud.config import get_qmconfig
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
+from mud.logging import log_game_event
 from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_LIMBO
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
@@ -95,13 +96,13 @@ def _effective_trust(char: "Character") -> int:
     return trust if trust > 0 else getattr(char, "level", 0)
 
 
-def _sanitize_host(host: str | None) -> str | None:
-    """Return a trimmed host string or ``None`` when unavailable."""
+def _sanitize_host(host: str | None, *, placeholder: str | None = None) -> str | None:
+    """Return a trimmed host string or a placeholder when resolution fails."""
 
     if not host:
-        return None
+        return placeholder
     cleaned = host.strip()
-    return cleaned or None
+    return cleaned or placeholder
 
 
 def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
@@ -119,20 +120,18 @@ def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
         _effective_trust(char),
     )
 
-    host_display = _sanitize_host(host)
-    if not host_display:
-        return
-
+    host_display = _sanitize_host(host, placeholder="(unknown)")
     site_message = f"{char.name}@{host_display} has connected."
+    log_game_event(site_message)
+
     wiznet(
         site_message,
-        char,
+        None,
         None,
         WiznetFlag.WIZ_SITES,
         None,
         _effective_trust(char),
     )
-    print(f"[SITES] {site_message}")
 
 
 def announce_wiznet_logout(char: "Character") -> None:
@@ -140,6 +139,8 @@ def announce_wiznet_logout(char: "Character") -> None:
 
     if not getattr(char, "name", None):
         return
+
+    log_game_event(f"{char.name} has quit.")
 
     wiznet(
         "$N rejoins the real world.",
@@ -179,11 +180,10 @@ def announce_wiznet_new_player(
         0,
     )
 
-    sanitized_host = _sanitize_host(host)
-    if not sanitized_host:
-        return
-
+    sanitized_host = _sanitize_host(host, placeholder="(unknown)")
     site_message = f"{normalized}@{sanitized_host} new player."
+    log_game_event(site_message)
+
     wiznet(
         site_message,
         None,
@@ -192,10 +192,11 @@ def announce_wiznet_new_player(
         None,
         max(trust_level, 0),
     )
-    print(f"[NEWBIE] {site_message}")
 
 
-def _broadcast_reconnect_notifications(char: "Character") -> None:
+def _broadcast_reconnect_notifications(
+    char: "Character", host: str | None = None
+) -> None:
     """Notify the room and wiznet listeners about a successful reconnect."""
 
     name = getattr(char, "name", None)
@@ -206,14 +207,39 @@ def _broadcast_reconnect_notifications(char: "Character") -> None:
     if room is not None:
         room.broadcast(f"{name} has reconnected.", exclude=char)
 
+    host_candidate = host
+    if host_candidate is None:
+        session = getattr(char, "desc", None)
+        if session is not None:
+            host_candidate = getattr(getattr(session, "connection", None), "peer_host", None)
+    if host_candidate is None:
+        host_candidate = getattr(getattr(char, "connection", None), "peer_host", None)
+    host_display = _sanitize_host(host_candidate, placeholder="(unknown)")
+    log_game_event(f"{name}@{host_display} reconnected.")
+
     wiznet(
         "$N groks the fullness of $S link.",
         char,
         None,
         WiznetFlag.WIZ_LINKS,
         None,
-        _effective_trust(char),
+        0,
     )
+
+
+def _announce_login_or_reconnect(
+    char: "Character", host: str | None, reconnecting: bool
+) -> bool:
+    """Dispatch wiznet announcements for fresh logins or reconnects."""
+
+    note_reminder = False
+    if reconnecting:
+        _broadcast_reconnect_notifications(char, host)
+        pcdata = getattr(char, "pcdata", None)
+        note_reminder = bool(getattr(pcdata, "in_progress", None))
+    else:
+        announce_wiznet_login(char, host)
+    return note_reminder
 
 
 def _stop_idling(char: "Character") -> None:
@@ -670,6 +696,7 @@ async def _disconnect_session(session: Session) -> "Character" | None:
 
     if old_char is not None:
         name = getattr(old_char, "name", "") or "Someone"
+        log_game_event(f"Closing link to {name}.")
         room = getattr(old_char, "room", None)
         if room is not None:
             try:
@@ -691,7 +718,7 @@ async def _disconnect_session(session: Session) -> "Character" | None:
                 None,
                 WiznetFlag.WIZ_LINKS,
                 None,
-                _effective_trust(old_char),
+                0,
             )
         except Exception:
             pass
@@ -1540,8 +1567,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         try:
             if reconnecting:
                 await send_to_char(char, RECONNECT_MESSAGE)
-                _broadcast_reconnect_notifications(char)
-            announce_wiznet_login(char, host_for_ban)
+            note_reminder = _announce_login_or_reconnect(char, host_for_ban, reconnecting)
+            if reconnecting and note_reminder:
+                await send_to_char(
+                    char,
+                    "You have a note in progress. Type NWRITE to continue it.",
+                )
         except Exception as exc:
             print(f"[ERROR] Failed to announce wiznet login for {session.name}: {exc}")
 

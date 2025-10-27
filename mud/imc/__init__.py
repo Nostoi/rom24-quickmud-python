@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Mapping, Optional
 
 import os
 import select
@@ -22,6 +22,10 @@ from .network import (
     connect_and_handshake,
 )
 
+IMC_HISTORY_LIMIT = 20
+IMCCHAN_LOG = 1 << 0
+
+
 @dataclass(frozen=True)
 class IMCChannel:
     """Snapshot of an IMC channel entry from `imc.channels`."""
@@ -32,6 +36,8 @@ class IMCChannel:
     reg_format: str
     emote_format: str
     social_format: str
+    flags: int = 0
+    open: bool = True
 
 
 @dataclass(frozen=True)
@@ -118,6 +124,42 @@ class IMCState:
         handler = self.packet_handlers.get(packet.type)
         if handler:
             handler(packet)
+
+    def append_channel_history(self, channel_name: str, message: str) -> None:
+        """Record channel history like ROM ``update_imchistory``."""
+
+        if not channel_name or not message:
+            return
+
+        channel = next(
+            (channel for channel in self.channels if channel.local_name == channel_name),
+            None,
+        )
+        if not channel:
+            return
+
+        entry = _format_history_entry(message)
+        history = self.channel_history.setdefault(channel_name, [])
+        if len(history) >= IMC_HISTORY_LIMIT:
+            history.pop(0)
+        history.append(entry)
+
+        if channel.flags & IMCCHAN_LOG:
+            self._append_channel_log(channel, entry)
+
+    def _append_channel_log(self, channel: IMCChannel, entry: str) -> None:
+        if not channel.local_name:
+            return
+
+        path = self.history_dir / f"{channel.local_name}.log"
+        stripped = _strip_color_codes(entry, self.colors)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="latin-1") as handle:
+                handle.write(f"{stripped}\n")
+        except OSError:
+            # Logging failures should not interrupt runtime history updates.
+            pass
 
 
 _state: Optional[IMCState] = None
@@ -238,6 +280,16 @@ def _parse_channels(path: Path) -> List[IMCChannel]:
             level = int(level_value) if level_value is not None else None
         except ValueError:
             level = None
+        flags_value = current.get("ChanFlags")
+        try:
+            flags = int(flags_value) if flags_value is not None else 0
+        except ValueError:
+            flags = 0
+        open_value = current.get("ChanOpen")
+        try:
+            is_open = bool(int(open_value)) if open_value is not None else True
+        except ValueError:
+            is_open = True
         channels.append(
             IMCChannel(
                 name=current.get("ChanName", ""),
@@ -246,6 +298,8 @@ def _parse_channels(path: Path) -> List[IMCChannel]:
                 reg_format=current.get("ChanRegF", ""),
                 emote_format=current.get("ChanEmoF", ""),
                 social_format=current.get("ChanSocF", ""),
+                flags=flags,
+                open=is_open,
             )
         )
 
@@ -253,6 +307,8 @@ def _parse_channels(path: Path) -> List[IMCChannel]:
         for raw in handle:
             line = raw.strip()
             if not line:
+                continue
+            if line.startswith("*"):
                 continue
             upper = line.upper()
             if upper.startswith("#"):
@@ -509,10 +565,200 @@ def _load_channel_history(channels: List[IMCChannel], history_dir: Path) -> Dict
         path = history_dir / f"{channel.local_name}.hist"
         if not path.exists():
             continue
+        entries: List[str] = []
         with path.open(encoding="latin-1") as handle:
-            lines = [line.rstrip("\n") for line in handle]
-        history[channel.local_name.lower()] = [line for line in lines if line]
+            for raw_line in handle:
+                trimmed_lead = raw_line.lstrip()
+                if not trimmed_lead:
+                    continue
+                line = trimmed_lead.rstrip("\r\n")
+                if not line:
+                    continue
+                if line.endswith("~"):
+                    line = line[:-1]
+                    if not line:
+                        continue
+                entries.append(line)
+                if len(entries) == IMC_HISTORY_LIMIT:
+                    break
+        history[channel.local_name] = entries
+        try:
+            path.unlink()
+        except OSError:
+            pass
     return history
+
+
+def _format_history_entry(message: str, timestamp: Optional[int] = None) -> str:
+    """Return a ROM-formatted channel history entry."""
+
+    current_time = int(time.time()) if timestamp is None else int(timestamp)
+    local = time.localtime(current_time)
+    return (
+        f"~R[{local.tm_mon:02d}/{local.tm_mday:02d} "
+        f"{local.tm_hour:02d}:{local.tm_min:02d}] ~G{message}"
+    )
+
+
+def _strip_color_codes(message: str, colors: Mapping[str, IMCColor]) -> str:
+    stripped = message
+    for color in colors.values():
+        if color.imc_tag:
+            stripped = stripped.replace(color.imc_tag, "")
+    for color in colors.values():
+        if color.mud_tag:
+            stripped = stripped.replace(color.mud_tag, "")
+    return stripped
+
+
+def _translate_to_imc_codes(message: str, colors: Mapping[str, IMCColor]) -> str:
+    translated = message
+    for color in colors.values():
+        mud_tag = color.mud_tag
+        imc_tag = color.imc_tag
+        if mud_tag and imc_tag:
+            translated = translated.replace(mud_tag, imc_tag)
+    return translated
+
+
+def _persist_channel_flags(path: Path, channel: IMCChannel) -> None:
+    if not path.exists():
+        return
+
+    try:
+        with path.open(encoding="latin-1") as handle:
+            lines = handle.readlines()
+    except OSError:
+        return
+
+    output: list[str] = []
+    in_block = False
+    target = False
+    flags_written = False
+
+    for line in lines:
+        stripped = line.strip()
+        upper = stripped.upper()
+        if upper in {"#IMCCHAN", "#CHANNEL"}:
+            if in_block and target and not flags_written:
+                output.append(f"ChanFlags {channel.flags}\n")
+            in_block = True
+            target = False
+            flags_written = False
+            output.append(line)
+            continue
+
+        if not in_block:
+            output.append(line)
+            continue
+
+        if stripped == "End":
+            if target and not flags_written:
+                output.append(f"ChanFlags {channel.flags}\n")
+            output.append(line)
+            in_block = False
+            target = False
+            flags_written = False
+            continue
+
+        if stripped.startswith("ChanName"):
+            name_value = stripped[len("ChanName") :].strip()
+            if name_value.lower() == channel.name.lower():
+                target = True
+            output.append(line)
+            continue
+
+        if target and stripped.startswith("ChanFlags"):
+            prefix = line[: len(line) - len(line.lstrip())]
+            output.append(f"{prefix}ChanFlags {channel.flags}\n")
+            flags_written = True
+            continue
+
+        output.append(line)
+
+    if in_block and target and not flags_written:
+        output.append(f"ChanFlags {channel.flags}\n")
+
+    tmp_path = path.with_suffix(".tmp")
+    try:
+        with tmp_path.open("w", encoding="latin-1") as handle:
+            handle.writelines(output)
+        os.replace(tmp_path, path)
+    except OSError:
+        try:
+            tmp_path.unlink()
+        except OSError:
+            pass
+
+
+def _channel_target(channel: IMCChannel) -> tuple[str, str]:
+    if channel.open:
+        return "ice-msg-b", "*@*"
+    mud = channel.name.split(":", 1)[0] or channel.name
+    return "ice-msg-p", f"IMC@{mud}"
+
+
+def _format_sender(char: Any, state: IMCState) -> str:
+    name = getattr(char, "name", None) or "Someone"
+    local = state.config.get("LocalName") or "QuickMUD"
+    return f"{name}@{local}"
+
+
+def send_channel_message(state: IMCState, channel: IMCChannel, char: Any, message: str, emote: int) -> None:
+    if not message:
+        return
+    packet_type, target = _channel_target(channel)
+    sender = _format_sender(char, state)
+    translated = _translate_to_imc_codes(message, state.colors)
+    payload = (
+        f"channel={channel.name} "
+        f"text={translated} "
+        f"emote={emote} "
+        "echo=1"
+    )
+    frame = f"{packet_type} {sender} {target} :{payload}"
+    state.outgoing_queue.append(frame)
+
+
+def update_channel_flags(state: IMCState, channel: IMCChannel, flags: int) -> IMCChannel:
+    updated = replace(channel, flags=flags)
+    try:
+        index = state.channels.index(channel)
+    except ValueError:
+        state.channels.append(updated)
+    else:
+        state.channels[index] = updated
+    _persist_channel_flags(state.channels_path, updated)
+    return updated
+
+
+def save_channel_history(state: Optional[IMCState] = None) -> None:
+    """Persist in-memory channel history snapshots like ROM's ``imc_savehistory``."""
+
+    target = state or _state
+    if not target:
+        return
+
+    for channel in target.channels:
+        local_name = channel.local_name
+        if not local_name:
+            continue
+
+        path = target.history_dir / f"{local_name}.hist"
+        entries = target.channel_history.get(local_name, [])
+
+        if not entries:
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+            continue
+
+        limited_entries = entries[:IMC_HISTORY_LIMIT]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="latin-1") as handle:
+            for entry in limited_entries:
+                handle.write(f"{entry}\n")
 
 
 def imc_enabled() -> bool:
@@ -554,7 +800,6 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
 
     if (
         _state
-        and _state.connected
         and not force_reload
         and _state.config_path == config_path
         and _state.channels_path == channels_path
@@ -582,7 +827,7 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
     channel_history = _load_channel_history(channels, history_dir)
 
     idle_pulses = previous_state.idle_pulses if previous_state else 0
-    if previous_state and not force_reload:
+    if previous_state:
         ucache_refresh_deadline = previous_state.ucache_refresh_deadline
     else:
         ucache_refresh_deadline = idle_pulses + _UCACHE_REFRESH_INTERVAL

@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: login_account_nanny -->
+<!-- LAST-PROCESSED: imc_chat -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-12-23 (pytest --collect-only -q; 882 tests collected, 0 errors) -->
-<!-- LAST-TEST-RUN: 2025-12-23 (pytest --collect-only -q; infrastructure healthy, 882 tests discovered) -->
-<!-- TEST-PASS-RATE: 100% (3 passed / 3 total) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-12-24 (pytest --collect-only -q; 921 tests collected, 0 errors) -->
+<!-- LAST-TEST-RUN: 2025-12-24 (PYTHONPATH=. pytest tests/test_imc.py -q) -->
+<!-- TEST-PASS-RATE: 100% (30 passed / 30 total) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -112,12 +112,24 @@ NOTES:
 <!-- SUBSYSTEM: channels END -->
 <!-- SUBSYSTEM: wiznet_imm START -->
 
-### wiznet_imm — Parity Audit 2025-12-14
+### wiznet_imm — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
-KEY RISKS: visibility, messaging
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+KEY RISKS: visibility, messaging, logging
 
 TASKS:
+
+- ✅ [P0] **wiznet_imm: route wiznet act formatting through sender context** — done 2025-10-22
+  EVIDENCE: C src/act_wiz.c:171-189; PY mud/wiznet.py:133-179; TEST tests/test_wiznet.py::test_wiznet_act_uses_sender_pronouns
+
+- ✅ [P0] **wiznet_imm: skip NPC listeners to mirror descriptor-only broadcasts** — done 2025-10-21
+  EVIDENCE: C src/act_wiz.c:171-189 (`wiznet` iterates `descriptor_list`, which only contains playing PCs); PY mud/wiznet.py:120-176 (broadcast loop now skips `is_npc` listeners before trust gating); TEST tests/test_wiznet.py::test_wiznet_broadcast_ignores_npcs
+
+- ✅ [P1] **wiznet_imm: broadcast WIZ_SITES login/new-player alerts even when host is unknown** — done 2025-12-24
+  EVIDENCE: C src/nanny.c:260-311; C src/nanny.c:500-535; PY mud/net/connection.py:123-210; TEST tests/test_wiznet.py::{test_announce_wiznet_login_without_host_broadcasts_sites,test_announce_wiznet_new_player_without_host_broadcasts_sites}
+
+- ✅ [P0] **wiznet_imm: move ROM newline before color reset for wiznet broadcasts** — done 2025-12-24
+  EVIDENCE: C src/act_wiz.c:171-189 (`wiznet` writes `{Z`/`{Z--> ` prefix, calls `act_new` which appends the `\n\r`, then sends `{x` afterwards); PY mud/wiznet.py:160-178; TEST tests/test_wiznet.py::test_wiznet_broadcast_color_reset_order
 
 - ✅ [P1] **wiznet_imm: return ROM newline order for wiznet command messaging without duplicate bytes** — done 2025-12-14
   EVIDENCE: PY mud/wiznet.py:14-241; PY mud/net/connection.py:315-333; TEST tests/test_wiznet.py::test_wiznet_command_trailing_newlines
@@ -133,8 +145,28 @@ TASKS:
 - ✅ [P1] **wiznet_imm: append ROM newlines to broadcast payloads** — done 2025-12-22
   EVIDENCE: C src/comm.c:2360-2364; PY mud/wiznet.py:92-140; TEST tests/test_wiznet.py::test_wiznet_broadcasts_include_rom_newline
 
+- ✅ [P0] **wiznet_imm: deliver WIZ_SITES login alerts to logging immortals** — done 2025-12-24
+  EVIDENCE: C src/nanny.c:280-286; PY mud/net/connection.py:122-137; TEST tests/test_wiznet.py::test_announce_wiznet_login_includes_logging_immortal
+
+- ✅ [P0] **wiznet_imm: log reconnection host events for WIZ_LINKS parity** — done 2025-12-24
+  EVIDENCE: PY mud/net/connection.py:197-238; TEST tests/test_account_auth.py::test_reconnect_announces_wiz_links
+
+- ✅ [P0] **wiznet_imm: suppress duplicate login/newbie alerts on reconnect** — done 2025-12-24
+  EVIDENCE: PY mud/net/connection.py:1562-1566; TEST tests/test_account_auth.py::test_reconnect_skips_login_announcements
+
+- ✅ [P0] **wiznet_imm: broadcast reconnection WIZ_LINKS alerts without trust gating** — done 2025-12-24
+  EVIDENCE: C src/comm.c:1834-1868; PY mud/net/connection.py:200-240,690-735; TEST tests/test_wiznet.py::test_reconnect_wiz_links_ignores_reconnect_trust_gate; TEST tests/test_account_auth.py::test_reconnect_announces_wiz_links
+
 NOTES:
 
+- C: `src/act_wiz.c:171-189` invokes `act_new(string, d->character, obj, ch, TO_CHAR, POS_DEAD)` so `$n/$e/$m` resolve against the broadcasting immortal (`ch`).
+- PY: `mud/wiznet.py:150-180` now passes the broadcasting immortal as the `actor` to `act_format`, so `$n/$e/$m` tokens describe the sender like ROM `act_new`.
+- C: `src/comm.c:1834-1868` calls `wiznet(..., 0, 0)` for reconnect announcements so even low-trust staff receive WIZ_LINKS alerts, and the Python broadcast now mirrors that minimum.
+- PY: `mud/net/connection.py:200-240,690-735` passes `min_level=0` for WIZ_LINKS reconnect/link-loss flows so lower-trust immortals continue to hear the alerts.
+
+- C: `src/nanny.c:260-311` logs `"%s@%s has connected."` and always calls `wiznet(log_buf, NULL, NULL, WIZ_SITES, ...)` even if the descriptor host string is blank, so immortals still receive the connection notice.
+- C: `src/nanny.c:500-535` logs `"%s@%s new player."` and likewise broadcasts to WIZ_SITES regardless of host data to keep audit parity.
+- PY: `mud/net/connection.py:107-226` now relays SITES broadcasts and substitutes the `(unknown)` placeholder when `_sanitize_host` cannot resolve a host, preserving ROM alerts for unresolved connections.
 - C: `src/act_wiz.c:67-150` formats wiznet command responses with ``"\n\r"`` suffixes.
 - PY: `mud/wiznet.py:185-241` now returns ROM newline ordering for toggles/status/show/errors while TelnetStream converts trailing ``"\n\r"`` to a single CRLF on the socket.
 - PY: `mud/wiznet.py:92-140` mirrors ROM `act_new` by appending `ROM_NEWLINE` to broadcast payloads so immortal buffers remain line-aligned.
@@ -189,9 +221,21 @@ TASKS:
   - evidence: C src/fight.c:228-241 (second/third attack `check_improve`); C src/fight.c:555-572 (enhanced damage `check_improve`); PY mud/combat/engine.py:255-284/677-684 (TODO comments leaving improvements unimplemented).
     EVIDENCE: PY mud/combat/engine.py:288-316; PY mud/combat/engine.py:727-734
     EVIDENCE: TEST tests/test_combat_skills.py::test_second_attack_trains_on_success; TEST tests/test_combat_skills.py::test_enhanced_damage_checks_improve
+- ✅ [P0] **combat: autosac corpses when AUTOSAC flag set after autoloot** — done 2025-12-24
+  EVIDENCE: PY mud/combat/engine.py:770-831; TEST tests/test_combat_death.py::test_autosacrifice_removes_empty_corpse
+- ✅ [P1] **combat: autosac should honor AUTOSPLIT by sharing silver with grouped allies** — done 2025-12-24
+  EVIDENCE: PY mud/combat/engine.py:770-851; TEST tests/test_combat_death.py::test_autosacrifice_autosplit_shares_silver
+- ✅ [P1] **combat: autosac must extract NPC corpses using ROM `extract_obj` pipeline** — done 2025-12-24
+  EVIDENCE: PY mud/combat/engine.py:804-850; PY mud/game_loop.py:670-747; TEST tests/test_combat_death.py::test_autosacrifice_extracts_corpse
+- ✅ [P1] **combat: autosac autosplit must emit ROM solo-group fallback messaging** — done 2025-12-24
+  EVIDENCE: C src/act_comm.c:1906-1937; PY mud/combat/engine.py:818-853; TEST tests/test_combat_death.py::test_autosacrifice_autosplit_solo_messages
 - ✅ [P0] **combat: port ROM raw_kill pipeline for corpses, XP, and auto-loot toggles** — done 2025-11-22
   EVIDENCE: PY mud/combat/engine.py:655-831; PY mud/combat/death.py:20-138; PY mud/groups/xp.py:1-205
   EVIDENCE: TEST tests/test_combat_death.py::test_raw_kill_awards_group_xp_and_creates_corpse; TEST tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs; TEST tests/test_combat_death.py::test_player_kill_clears_pk_flags
+- ✅ [P0] **combat: autosac must respect ROM visibility before sacrificing corpses** — done 2025-12-24
+  EVIDENCE: C src/fight.c:933-971; C src/handler.c:2280-2298; PY mud/world/vision.py:24-120; PY mud/combat/engine.py:704-853; TEST tests/test_combat_death.py::test_autosacrifice_requires_visibility
+- ✅ [P0] **combat: autosac must honor ROM ITEM_TAKE/ITEM_NO_SAC gating before rewarding silver** — done 2025-12-24
+  EVIDENCE: C src/act_obj.c:1765-1834; PY mud/combat/engine.py:704-853; TEST tests/test_combat_death.py::test_autosacrifice_skips_no_sac_corpse
 - ✅ [P0] **combat: skip parry/dodge/shield checks for spell damage** — done 2025-11-24
   - priority: P0
   - rationale: The Python `apply_damage` helper keys defense rolls off the damage type, so area spells such as holy word now trigger shield blocks and parries even though ROM only runs those checks when `dt >= TYPE_HIT`, letting enemies negate mass-alignment blasts.
@@ -268,14 +312,36 @@ NOTES:
 - PY: mud/commands/combat.py:20-180 enforces kill safety checks, applies wait states, blocks charmed attackers from targeting their master, and calls `check_killer`; mud/combat/engine.py:671-880 handles PK flag assignment, charm cleanup, and wiznet notifications.
 - TEST: tests/test_combat.py::{test_kill_blocks_safe_room_for_npc,test_kill_requires_clan_for_player_targets,test_kill_flags_player_as_killer,test_kill_blocks_stealing_existing_fight,test_kill_blocks_charmed_player_attacking_master} verify safe-room gating, clan restrictions, killer flagging, kill-steal prevention, and charm-master protections.
 - Applied tiny fix: none
-  <!-- SUBSYSTEM: combat END -->
+  - ✅ [P0] **combat: mark make_corpse outputs as takeable so autosacrifice matches ROM CAN_WEAR gating** — done 2025-12-24
+  EVIDENCE: C src/fight.c:1460-1550 (`make_corpse` routes corpses through OBJ_VNUM_CORPSE_* prototypes); ARE area/limbo.are:52-65 (`npc_corpse 0 A` TAKE flag); PY mud/combat/death.py:438-441; TEST tests/test_combat_death.py::{test_autosacrifice_removes_empty_corpse,test_autosacrifice_extracts_corpse,test_autosacrifice_autosplit_shares_silver}
+
+<!-- SUBSYSTEM: combat END -->
   <!-- SUBSYSTEM: skills_spells START -->
 
-### skills_spells — Parity Audit 2025-12-11
+### skills_spells — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: RNG, lag_wait, side_effects, area_effects, visibility
 TASKS:
+
+- ✅ [P0] **skills_spells: restore advance_level time module import** — done 2025-10-21
+  EVIDENCE: C src/update.c:61-120 (`advance_level` references `current_time` for session tracking); PY mud/advancement.py:1-120 (`import time` restored before `advance_level` uses `time.time()`); TEST tests/test_advancement.py::test_advance_level_updates_permanent_stats
+
+- ✅ [P0] **skills_spells: restore exp_per_level low-point multiplier truncation** — done 2025-12-24
+  EVIDENCE: C src/skills.c:639-676 (`exp_per_level` truncates `class_mult`/100 before scaling when `points < 40`); PY mud/advancement.py:66-84 now truncates multipliers prior to applying `BASE_XP_PER_LEVEL`; TEST tests/test_advancement.py::{test_exp_per_level_applies_modifiers,test_gain_exp_uses_creation_point_curve}
+- ✅ [P0] **skills_spells: restore advance_level session tracking import** — done 2025-12-24
+  EVIDENCE: C src/update.c:61-120 (`advance_level` uses `current_time - ch->logon` for session played before updating `last_level`); PY mud/advancement.py:1-118 (module now imports `time` before using `time.time()`); TEST tests/test_advancement.py::{test_advance_level_updates_permanent_stats,test_advance_level_reports_gains}
+- ✅ [P0] **skills_spells: restore gain_exp thresholds to use ROM creation-point exp_per_level curve** — done 2025-12-24
+  EVIDENCE: C src/update.c:120-137 (`gain_exp` clamps and levels against `exp_per_level(ch, ch->pcdata->points)`); C src/skills.c:639-676 (`exp_per_level` applies creation-point curve and race/class multipliers); PY mud/advancement.py:17-126; TEST tests/test_advancement.py::test_gain_exp_uses_creation_point_curve
+
+- ✅ [P0] **skills_spells: enforce ROM creation-point XP floor and messaging in gain_exp** — done 2025-12-24
+  EVIDENCE: PY mud/advancement.py:92-166; TEST tests/test_advancement.py::test_gain_exp_honors_creation_point_floor; TEST tests/test_advancement.py::test_gain_exp_emits_levelup_messages
+
+- ✅ [P0] **skills_spells: mirror ROM advance_level permanence and level-up summary** — done 2025-12-24
+  EVIDENCE: PY mud/advancement.py:86-122; TEST tests/test_advancement.py::test_advance_level_updates_permanent_stats; TEST tests/test_advancement.py::test_advance_level_reports_gains
+
+- ✅ [P0] **skills_spells: accumulate gain_exp awards before level gating for ROM group XP parity** — done 2025-12-24
+  EVIDENCE: C src/fight.c:1789 (`group_gain` calls `gain_exp` per groupmate); C src/update.c:120-135 (`gain_exp` adds the award then checks `exp_per_level` before leveling); PY mud/advancement.py:90-111; TEST tests/test_combat_death.py::test_raw_kill_awards_group_xp_and_creates_corpse
 
 - ✅ [P0] **skills_spells: port recharge wand and staff restoration spell** — done 2025-12-18
   EVIDENCE: C src/magic.c:4140-4206 (`spell_recharge` chance branches); PY mud/skills/handlers.py:5827-5908; TEST tests/test_skills_damage.py::{test_recharge_restores_charges,test_recharge_failure_paths}
@@ -559,9 +625,9 @@ NOTES:
   <!-- SUBSYSTEM: skills_spells END -->
   <!-- SUBSYSTEM: affects_saves START -->
 
-### affects_saves — Parity Audit 2025-11-28
+### affects_saves — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: stat_modifiers, dispel
 TASKS:
 
@@ -574,20 +640,36 @@ TASKS:
 - ✅ [P1] **affects_saves: support affect_join stacking and duration refresh semantics** — done 2025-11-19
   EVIDENCE: PY mud/models/character.py:340-390; TEST tests/test_affects.py::test_affect_join_refreshes_duration
 
+- ✅ [P0] **affects_saves: allow failed dispels to push spell levels below zero** — done 2025-12-24
+  EVIDENCE: C src/magic.c:267-303; PY mud/affects/saves.py:135-150; TEST tests/test_affects.py::test_check_dispel_allows_negative_levels
+
+- ✅ [P1] **affects_saves: append ROM newline to wear-off messaging** — done 2025-12-24
+  EVIDENCE: C src/magic.c:269-273; C src/update.c:756-780; PY mud/affects/saves.py:9-150; PY mud/affects/engine.py:1-40; TEST tests/test_affects.py::test_wear_off_messages_include_rom_newline
+
 NOTES:
 
 - C: src/handler.c:213-319 falls back to weapon/magic immunity defaults when `dam_type` hits the switch default, so invalid types should not crash parity logic.
 - PY: mud/affects/saves.py now guards the `DamageType` conversion so invalid or None damage codes fall back to ROM's weapon/magic defaults without raising.
 - TEST: tests/test_affects.py includes regressions covering both `_check_immune` and `saves_spell` handling of invalid damage codes alongside the existing dispel/stacking coverage.
+- C: src/update.c:756-780 and src/magic.c:269-273 both append `\n\r` after wear-off messages so immortals and mortals see newline-terminated notifications.
 - Applied tiny fix: none
 <!-- SUBSYSTEM: affects_saves END -->
 <!-- SUBSYSTEM: resets START -->
 
 ### resets — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: flags, rng, economy
 TASKS:
+
+- ✅ [P0] **resets: avoid promoting reverse exits to doors when applying door resets** — done 2025-12-24
+  EVIDENCE: C src/db.c:1645-1673 (`reset_room` copies each exit's `rs_flags` without inventing new door flags); PY mud/spawning/reset_handler.py:520-590 (door resets now leave reverse exits untouched beyond resetting their own `exit_info`); TEST tests/test_spawning.py::test_door_reset_does_not_promote_one_way_exit
+- ✅ [P0] **resets: preserve reverse exit rs_flags when applying door resets** — done 2025-12-24
+  EVIDENCE: C src/db.c:1003-1088; C src/db.c:1641-1670; PY mud/spawning/reset_handler.py:530-572; TEST tests/test_spawning.py::test_door_reset_preserves_reverse_rs_flags
+
+- ✅ [P0] **resets: propagate door reset closed/locked state to reverse exits** — done 2025-12-24
+  EVIDENCE: C src/db.c:1038-1074 (`load_resets` sets door `rs_flags`/`exit_info` with closed/locked bits); PY mud/spawning/reset_handler.py:529-578 (reverse exit now inherits closed/locked state while preserving flags).
+  EVIDENCE: TEST tests/test_spawning.py::{test_door_reset_preserves_reverse_rs_flags,test_door_reset_propagates_reverse_state}
 
 - ✅ [P0] **resets: restore create_mobile field parity for NPC spawns** — done 2025-10-14
   - FILES: mud/spawning/templates.py; mud/spawning/reset_handler.py; tests/test_spawning.py
@@ -662,8 +744,12 @@ TASKS:
 - ✅ [P0] **resets: prevent O resets from stacking duplicate room objects when arg2 exceeds one** — done 2025-12-22
   EVIDENCE: C src/db.c:1754-1784 (`reset_room` skips spawning when `count_obj_list` finds an existing object in the room); PY mud/spawning/reset_handler.py:479-507; TEST tests/test_spawning.py::test_room_reset_does_not_stack_duplicate_objects
 
+- ✅ [P0] **resets: allow repeated G/E resets to overflow limit when ROM random gate fires** — done 2025-12-24
+  EVIDENCE: C src/db.c:1880-1984; PY mud/spawning/reset_handler.py:570-633; PY mud/spawning/templates.py:429-433; TEST tests/test_spawning.py::test_reset_generates_overflow_item_for_existing_inventory
+
 NOTES:
 
+- C: src/db.c:1645-1673 reapplies each exit's own `rs_flags` to `exit_info`; reset handling now mirrors this by clearing and reapplying the targeted exit only, leaving one-way reverse exits unchanged while a new regression guards the behaviour.
 - C: src/db.c:2003-2179 seeds runtime flags, perm stats, and Sex.EITHER rerolling that the Python spawn helper now mirrors.
 - C: src/db.c:1688-2008 also fuzzes G/E equipment with `number_fuzzy(level)` so mob loot follows LastMob's tier, now matched by `_compute_object_level` with hero-cap clamping.
 - PY: mud/spawning/templates.py copies ROM flags/spec_fun metadata, rerolls Sex.EITHER via `rng_mm.number_range`, and preserves perm stats for reset spawns while `_compute_object_level` currently drops to `0` for most items.
@@ -756,14 +842,28 @@ NOTES:
 
 ### world_loader — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: file_formats, side_effects
 TASKS:
+
+- ✅ [P0] **world_loader: parse extended ROM letter flags for rooms and exits** — done 2025-12-24
+  EVIDENCE: C src/db.c:2743-2804 (`fread_flag` and `flag_convert` translate lowercase ROM flag letters to bits ≥26).
+  EVIDENCE: PY mud/loaders/json_loader.py:25-118 (shared `_rom_flags_to_int` powers room/exit parsing for lowercase sequences).
+  EVIDENCE: TEST tests/test_area_loader.py::test_json_loader_parses_extended_flag_letters
+
+- ✅ [P0] **world_loader: stop cloning forward door flags onto one-way reverse exits during linking** — done 2025-12-24
+  EVIDENCE: C src/db.c:1448-1511 (`fix_exits` links rooms without mutating reverse exit flags); PY mud/loaders/json_loader.py:322-360 (`_link_exits_for_area` now leaves reverse `rs_flags` untouched while still wiring `to_room`); TEST tests/test_area_loader.py::test_json_loader_preserves_one_way_exit_flags
+- ✅ [P0] **world_loader: skip overriding reverse exit rs_flags when linking exits** — done 2025-12-24
+  EVIDENCE: C src/db.c:1384-1460; PY mud/loaders/json_loader.py:322-369; TEST tests/test_area_loader.py::test_json_loader_links_exit_targets
 
 - ✅ [P0] **world_loader: attach area resets to owning rooms when loading JSON** — done 2025-12-07
   EVIDENCE: C src/db.c:1009-1108 (load_resets threads each reset into the owning room chain via new_reset).
   EVIDENCE: PY mud/loaders/json_loader.py:120-213 (JSON loader now clears per-room chains and appends resets alongside the area list).
   EVIDENCE: TEST tests/test_area_loader.py::test_json_loader_populates_room_resets (asserts temple 3001 lists its guardian reset).
+
+- ✅ [P0] **world_loader: persist exit orig_door indices when loading JSON areas** — done 2025-12-24
+  EVIDENCE: C src/db.c:1198-1220 (`pexit->orig_door = door;` during room load); PY mud/loaders/json_loader.py:300-309 (Exit creation now records `orig_door`).
+  EVIDENCE: TEST tests/test_area_loader.py::test_json_loader_sets_exit_orig_door
 
 - ✅ [P0] **world_loader: seed ROM area age defaults when loading JSON areas** — done 2025-10-18
   EVIDENCE: C src/db.c:441-470 (load_area seeds age/nplayer/empty defaults)
@@ -772,7 +872,10 @@ TASKS:
 
 - ✅ [P0] **world_loader: apply JSON specials entries to mob prototypes during load** — done 2025-12-22
   EVIDENCE: C src/db.c:1344-1372 (`load_specials` assigns `spec_fun` pointers when reading #SPECIALS); PY mud/loaders/json_loader.py:120-210 (JSON loader now calls `apply_specials_from_json` after loading mob prototypes); TEST tests/test_area_loader.py::test_json_loader_applies_specials_to_mobs
-  NOTES:
+- ✅ [P0] **world_loader: resolve exit targets and reverse links after JSON load** — done 2025-12-24
+  EVIDENCE: C src/db.c:1384-1460; PY mud/loaders/json_loader.py:194-369; TEST tests/test_area_loader.py::test_json_loader_links_exit_targets
+NOTES:
+- C: src/db.c:1448-1511 links exits without mutating reverse metadata; the JSON linker now mirrors this by preserving one-way reverse exit flags, with a regression guarding the behaviour.
 - Resets now flow into both the area-wide list and the owning room, restoring ROM OLC behaviour and enabling `@redit show` to list the canonical reset set.
 - Linking preserves ordering by tracking the last room vnum exactly like `load_resets`, so `G/E/P` commands inherit the previous room context.
 - Regression confirms Midgaard's guardian reset appears on room 3001 and shares identity with the area-level reset entry.
@@ -845,6 +948,15 @@ KEY RISKS: networking, keepalive, packet_loss
 
 TASKS:
 
+- ✅ [P0] **imc_chat: require IMC listeners to tune channels before transmitting** — done 2025-12-24
+  EVIDENCE: C src/imc.c:8389-8437; PY mud/models/character.py:320-332; PY mud/commands/imc.py:170-230; TEST tests/test_imc.py::test_imc_channel_command_requires_listen
+
+- ✅ [P0] **imc_chat: support '@' social channel packets like ROM `imc_send_social`** — done 2025-12-24
+  EVIDENCE: C src/imc.c:8330-8441; C src/imc.c:8056-8145; PY mud/commands/imc.py:200-320; TEST tests/test_imc.py::test_imc_channel_command_sends_social
+
+- ✅ [P0] **imc_chat: prune and unlink saved channel histories when loading IMC state** — done 2025-12-24
+  EVIDENCE: C src/imc.c:3884-3936; PY mud/imc/__init__.py:501-526; TEST tests/test_imc.py::test_load_channel_history_limits_entries
+
 - ✅ [P0] **imc_chat: load IMC color table into runtime state** — done 2025-10-04
   EVIDENCE: C src/imc.c:4221-4270; DATA imc/imc.color; PY mud/imc/__init__.py:120-247; TEST tests/test_imc.py::test_maybe_open_socket_loads_color_table
 - ✅ [P0] **imc_chat: load IMC who template for IMCWHO responses** — done 2025-10-04
@@ -862,6 +974,14 @@ TASKS:
   EVIDENCE: C src/imc.c:3387-3545 (`imc_loop` select/poll/keepalive); PY mud/imc/__init__.py:612-724 (`_poll_router_socket`, `_dispatch_buffered_packets`, `_send_keepalive`, `pump_idle`); TEST tests/test_imc.py::{test_pump_idle_processes_pending_packets,test_pump_idle_handles_socket_disconnect}
 - ✅ [P0] **imc_chat: flush outbound packet queue during idle pump** — done 2025-11-17
   EVIDENCE: C src/imc.c:3478-3520 (`imc_loop` write-ready branch calling `imc_write_socket`); PY mud/imc/__init__.py:84-118,612-740 (`IMCState` outgoing queue, `_flush_outgoing_queue`, `pump_idle`)
+- ✅ [P0] **imc_chat: load saved channel histories in FIFO order like ROM `imc_loadhistory`** — done 2025-12-24
+  EVIDENCE: C src/imc.c:3884-3936 (`imc_loadhistory` loads earliest entries and unlinks files);
+  EVIDENCE: PY mud/imc/__init__.py:500-536 (`_load_channel_history` stops at IMC_HISTORY_LIMIT without reversing);
+  EVIDENCE: TEST tests/test_imc.py::test_load_channel_history_limits_entries
+- ✅ [P1] **imc_chat: preserve channel history keys with original `local_name` casing like ROM structs** — done 2025-12-24
+  EVIDENCE: C src/imc.c:3884-3936 (`imc_loadhistory` populates `tempchan->history` keyed by the channel struct);
+  EVIDENCE: PY mud/imc/__init__.py:508-528 (`_load_channel_history` now records entries under the exact `local_name`);
+  EVIDENCE: TEST tests/test_imc.py::test_load_channel_history_limits_entries
   EVIDENCE: TEST tests/test_imc.py::test_pump_idle_flushes_outgoing_queue
 - ✅ [P1] **imc_chat: refresh and persist IMC user cache on idle pulses** — done 2025-10-09
   EVIDENCE: PY mud/imc/__init__.py:520-760; TEST tests/test_imc.py::test_pump_idle_refreshes_user_cache
@@ -875,6 +995,24 @@ TASKS:
   - evidence: C src/imc.c:3424-3439 (`imc_prune_ucache` scheduling); C src/imc.c:2857-2899 (`imc_ucache_update`/`imc_save_ucache`); PY mud/imc/__init__.py:539-724 (idle pulses tracked with unused `ucache_refresh_deadline` field)
 - ✅ [P1] **imc_chat: mirror ROM reconnect fallback between SHA-256 and legacy auth** — done 2025-11-26
   EVIDENCE: PY mud/imc/__init__.py:L103-L176; PY mud/imc/__init__.py:L552-L642; TEST tests/test_imc.py::test_disconnect_fallback_switches_auth_mode
+- ✅ [P1] **imc_chat: strip ROM whitespace and trailing tildes when loading channel history** — done 2025-12-24
+  EVIDENCE: C src/imc.c:1157-1198; PY mud/imc/__init__.py:500-534; TEST tests/test_imc.py::test_load_channel_history_limits_entries
+- ✅ [P1] **imc_chat: ignore `*` comment lines when parsing imc.channels** — done 2025-12-24
+  EVIDENCE: C src/imc.c:4046-4062; PY mud/imc/__init__.py:229-280; TEST tests/test_imc.py::test_parse_channels_skips_comments
+- ✅ [P0] **imc_chat: send channel messages over router packets like ROM `imc_sendmessage`** — done 2025-12-24
+  EVIDENCE: C src/imc.c:1907-1940; C src/imc.c:8423-8447
+  EVIDENCE: PY mud/imc/__init__.py:614-650; PY mud/commands/imc.py:109-141
+  EVIDENCE: TEST tests/test_imc.py::test_imc_channel_command_sends_message; TEST tests/test_imc.py::test_imc_channel_command_sends_emote
+- ✅ [P1] **imc_chat: support IMC channel `log` toggle to persist history like ROM `imc_command`** — done 2025-12-24
+  EVIDENCE: C src/imc.c:8429-8441
+  EVIDENCE: PY mud/imc/__init__.py:624-732; PY mud/commands/imc.py:236-269
+  EVIDENCE: TEST tests/test_imc.py::test_imc_channel_command_toggles_logging
+- ✅ [P0] **imc_chat: append channel history entries with ROM timestamp formatting** — done 2025-12-24
+  EVIDENCE: C src/imc.c:1729-1845 (`update_imchistory` timestamps messages and rotates the 20-slot buffer); PY mud/imc/__init__.py:556-564,125-138 (`_format_history_entry` and `IMCState.append_channel_history` format entries and prune the oldest when full); TEST tests/test_imc.py::test_append_channel_history_formats_and_limits_entries
+- ✅ [P0] **imc_chat: persist channel history snapshots on shutdown like ROM `imc_savehistory`** — done 2025-12-24
+  EVIDENCE: C src/imc.c:3913-3940 (`imc_savehistory` iterates channels and writes `<local_name>.hist` files); PY mud/imc/__init__.py:532-559 (`save_channel_history` writes per-channel history lists and prunes stale files); TEST tests/test_imc.py::test_save_channel_history_writes_per_channel
+- ✅ [P0] **imc_chat: log IMCCHAN_LOG channel history to `.log` files with ROM color stripping** — done 2025-10-27
+  EVIDENCE: C src/imc.c:1729-1808 (`update_imchistory` appends stripped entries to `<local_name>.log` when `IMCCHAN_LOG` is set); PY mud/imc/__init__.py:31-35,103-139,566-579 (`IMCCHAN_LOG` flag, runtime logging, and color stripping helpers); TEST tests/test_imc.py::test_append_channel_history_logs_when_enabled
 
 NOTES:
 
@@ -1254,6 +1392,8 @@ TASKS:
   EVIDENCE: PY mud/net/connection.py:L60-L115; PY mud/net/connection.py:L231-L784; PY mud/net/ansi.py:L5-L40; PY mud/net/protocol.py:L1-L33; PY mud/loaders/help_loader.py:L14-L75; PY mud/world/world_state.py:L135-L166; DATA data/help.json:L1-L24; TEST tests/test_account_auth.py:L53-L627; TEST tests/test_account_auth.py::test_ansi_prompt_negotiates_preference; tests/test_account_auth.py::test_help_greeting_respects_ansi_choice
 - ✅ [P0] **login_account_nanny: restore ROM WIZ_LINKS reconnect alerts and player messaging** — done 2025-11-12
   EVIDENCE: PY mud/net/connection.py:L61-L128,L821-L866; PY mud/account/account_service.py:L54-L59,L431-L509; TEST tests/test_account_auth.py::test_reconnect_announces_wiz_links
+- ✅ [P0] **login_account_nanny: remind reconnecting players about in-progress notes** — done 2025-12-24
+  EVIDENCE: PY mud/net/connection.py:197-239,1562-1569; TEST tests/test_account_auth.py::test_reconnect_announces_note_reminder
 - ✅ [P0] **login_account_nanny: broadcast WIZ_SITES site notices after successful logins** — done 2025-11-12
   EVIDENCE: PY mud/net/connection.py:L68-L129,L836-L879; TEST tests/test_wiznet.py::test_wiz_sites_announces_successful_login
 - ✅ [P1] **login_account_nanny: implement ROM password echo toggles and reconnect flow** — done 2025-10-09
@@ -1450,19 +1590,41 @@ NOTES:
   <!-- SUBSYSTEM: security_auth_bans END -->
   <!-- SUBSYSTEM: logging_admin START -->
 
-### logging_admin — Parity Audit 2025-12-14
+### logging_admin — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
-KEY RISKS: messaging, visibility, configuration
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+KEY RISKS: messaging, visibility, configuration, logging_format
 TASKS:
+
+- ✅ [P0] **logging_admin: restore "(unknown)" host placeholder for login site alerts** — done 2025-12-24
+  EVIDENCE: C src/comm.c:988; PY mud/net/connection.py:90-150; TEST tests/test_wiznet.py::test_announce_wiznet_login_without_host_broadcasts_sites
+- ✅ [P0] **logging_admin: extend `(unknown)` placeholder to new-player site alerts** — done 2025-12-24
+  EVIDENCE: C src/nanny.c:545-548; PY mud/net/connection.py:150-220; TEST tests/test_wiznet.py::test_announce_wiznet_new_player_without_host_broadcasts_sites
+
+- ✅ [P1] **logging_admin: restore ROM ctime timestamp formatting for log_game_event** — done 2025-12-24
+  EVIDENCE: C src/db.c:3903-3911; PY mud/logging.py:9-20; TEST tests/test_logging_admin.py::test_log_game_event_matches_ctime_format
+
+- ✅ [P0] **logging_admin: log wiznet lifecycle events to ROM audit stream** — done 2025-10-22
+  EVIDENCE: C src/nanny.c:284-286; C src/act_comm.c:1478-1492; PY mud/logging.py:1-21; PY mud/net/connection.py:107-214; PY mud/wiznet.py:118-177; TEST tests/test_wiznet.py::{test_announce_wiznet_login_logs_connection,test_announce_wiznet_logout_logs_quit,test_announce_wiznet_new_player_logs_creation}
+
+- ✅ [P0] **logging_admin: restore level-up log_string parity for gain_exp** — done 2025-10-22
+  EVIDENCE: PY mud/logging.py:1-21; PY mud/advancement.py:189-210; TEST tests/test_advancement.py::test_gain_exp_logs_levelup
 
 - ✅ [P1] **logging_admin: restore ROM newline order for qmconfig replies without duplicate terminators** — done 2025-12-14
   EVIDENCE: PY mud/commands/admin_commands.py:24-166; PY mud/net/connection.py:315-333; TEST tests/test_admin_commands.py::test_qmconfig_toggle_messages_include_newline
 
+- ✅ [P0] **logging_admin: log forced disconnects to the ROM audit stream** — done 2025-12-24
+  EVIDENCE: C src/comm.c:1040-1088; PY mud/net/connection.py:650-720; TEST tests/test_logging_admin.py::test_forced_disconnect_logs_closing_link
+
 NOTES:
 
-- C: `src/act_wiz.c:4696-4778` terminates qmconfig help/show/toggle outputs with ``"\n\r"``.
-- PY: `mud/commands/admin_commands.py:24-166` now returns ROM newline ordering while TelnetStream preserves the ``"\n\r"`` terminator so wiznet/qmconfig replies land as single ROM newlines without duplication.
+- C: `src/nanny.c:284-286` and `src/act_comm.c:1478-1492` call `log_string` for connections, new players, and quits before invoking `wiznet`, providing an audit trail for descriptor lifecycle events.
+- PY: `mud/net/connection.py:107-214` routes login, logout, and new-player notices through `log_game_event` before broadcasting wiznet updates, matching ROM's audit trail.
+- GAP RESOLVED: Hostless descriptors default to `"(unknown)"` in `src/comm.c:988`, and `mud/net/connection.py` now mirrors the `$N@(unknown)` formatting for login and new-player wiznet site alerts and audit logs.
+- GAP RESOLVED: `_disconnect_session` now mirrors `close_socket` by logging `"Closing link to %s."` before WIZ_LINKS broadcasts so admin audits capture forced disconnects.
+
+- C: `src/db.c:3903-3911` uses `ctime(&current_time)` and strips the trailing newline so log entries include two-space day padding just like the ROM server log.
+- PY: `mud/logging.py:9-20` now delegates to `time.ctime()` and trims the trailing newline so audit entries match ROM whitespace exactly when written to stderr.
 - TEST: `tests/test_admin_commands.py::{test_qmconfig_toggle_messages_include_newline,test_qmconfig_abbreviations}` lock newline suffixes and option abbreviations.
 - Applied tiny fix: Restored `ROM_NEWLINE` to ``"\n\r"`` and taught `TelnetStream.send_text` to append exactly one ROM terminator without duplicating bytes when newline=True.
   <!-- SUBSYSTEM: logging_admin END -->
@@ -1722,6 +1884,9 @@ TASKS:
 - ✅ [P1] **command_interpreter: implement wizhelp command output for immortals** — done 2025-12-22
   EVIDENCE: C src/interp.c:822-840; PY mud/commands/info.py:18-63; PY mud/commands/dispatcher.py:173-220; TEST tests/test_commands.py::test_wizhelp_lists_immortal_commands
 
+- ✅ [P0] **command_interpreter: route orphan commands through IMC channel history hook** — done 2025-10-27
+  EVIDENCE: C src/imc.c:8292-8424 (`imc_command_hook` delegates unknown commands to IMC channels); PY mud/commands/dispatcher.py:360-418, mud/commands/imc.py:1-160 (`try_imc_command` mirrors channel history lookup); TEST tests/test_imc.py::test_imc_channel_command_shows_history
+
 - ✅ [P0] **command_interpreter: enforce command table trust gating before dispatch** — done 2025-12-22
   EVIDENCE: C src/interp.c:412-474 (`interpret` only matches commands where `cmd_table.level <= get_trust(ch)`); PY mud/commands/dispatcher.py:244-387; TEST tests/test_commands.py::test_wizhelp_denied_to_mortals
 
@@ -1838,9 +2003,9 @@ NOTES:
   <!-- SUBSYSTEM: game_update_loop END -->
     <!-- SUBSYSTEM: login_account_nanny START -->
 
-### login_account_nanny — Parity Audit 2025-12-22
+### login_account_nanny — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: flags, skills
 TASKS:
 
@@ -1869,6 +2034,9 @@ TASKS:
   PY mud/models/character.py:666-725 (`from_orm` applies ROM defaults when DB rows omit prompt/comm);
   TEST tests/test_account_auth.py::test_new_character_defaults_prompt_and_comm
 
+- ✅ [P1] **login_account_nanny: remove non-ROM console prints from wiznet site alerts** — done 2025-12-24
+  EVIDENCE: C src/nanny.c:280-311; C src/nanny.c:500-535; PY mud/net/connection.py:100-210; TEST tests/test_wiznet.py::test_announce_wiznet_login_without_extra_stdout
+
 NOTES:
 
 - C: src/nanny.c:436-602 drives wizlock/newlock decisions and duplicate-session prompts before password validation.
@@ -1877,6 +2045,7 @@ NOTES:
 - Tests: tests/test_account_auth.py::{test_wizlock_blocks_mortals,test_newlock_blocks_new_accounts,test_duplicate_login_requires_reconnect_consent,test_new_character_starts_with_recall} cover wizlock/newlock gates, duplicate session prompts, and the recall skill seeding parity fix.
 - C: src/act_wiz.c:251-307 enumerates outfit slot choices, which `give_school_outfit` mirrors to equip banner, vest, shield, and the best available weapon while skipping two-handers.
 - PY: mud/net/connection.py provisions the outfit and Midgaard map on first login and exposes `outfit` through the dispatcher for <= level 5 players to restock gear.
+- PY: mud/net/connection.py now logs and broadcasts site messages without writing `[SITES]`/`[NEWBIE]` markers to stdout, matching ROM's `wiznet` output.
 - Applied tiny fix: none
 
 <!-- SUBSYSTEM: login_account_nanny END -->

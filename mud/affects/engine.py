@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from mud.models.character import Character
 
+ROM_NEWLINE = "\n\r"
+
 __all__ = ["tick_spell_effects"]
 
 
@@ -25,6 +27,6 @@ def tick_spell_effects(character: Character) -> list[str]:
         wear_off = getattr(effect, "wear_off_message", None)
         character.remove_spell_effect(name)
         if wear_off:
-            messages.append(wear_off)
+            messages.append(f"{wear_off}{ROM_NEWLINE}")
 
     return messages

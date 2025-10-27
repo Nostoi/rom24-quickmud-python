@@ -548,7 +548,14 @@ def apply_resets(area: Area) -> None:
             if not base_flags:
                 base_flags = int(getattr(exit_obj, "exit_info", 0) or 0)
 
-            base_flags |= EX_ISDOOR
+            if not (base_flags & EX_ISDOOR):
+                logging.warning(
+                    "Invalid D reset non-door exit %s in room %s",
+                    door,
+                    room_vnum,
+                )
+                continue
+
             base_flags &= ~(EX_CLOSED | EX_LOCKED)
 
             if state >= 1:
@@ -565,8 +572,7 @@ def apply_resets(area: Area) -> None:
                 if rev_exits and rev_idx < len(rev_exits):
                     rev_exit = rev_exits[rev_idx]
                     if rev_exit is not None:
-                        rev_exit.rs_flags = base_flags
-                        rev_exit.exit_info = base_flags
+                        rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
         elif cmd == "G":
             if not last_reset_succeeded:
                 continue
@@ -579,15 +585,8 @@ def apply_resets(area: Area) -> None:
                 logging.warning("Invalid G reset %s (no LastMob)", obj_vnum)
                 last_reset_succeeded = False
                 continue
-            existing = [
-                o
-                for o in getattr(last_mob, "inventory", [])
-                if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
-            ]
             is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
             if not is_shopkeeper:
-                if len(existing) >= limit:
-                    continue
                 proto_count = object_counts.get(obj_vnum, 0)
                 if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                     continue
@@ -620,15 +619,8 @@ def apply_resets(area: Area) -> None:
                 logging.warning("Invalid E reset %s (no LastMob)", obj_vnum)
                 last_reset_succeeded = False
                 continue
-            existing = [
-                o
-                for o in getattr(last_mob, "inventory", [])
-                if getattr(getattr(o, "prototype", None), "vnum", None) == obj_vnum
-            ]
             is_shopkeeper = getattr(getattr(last_mob, "prototype", None), "vnum", None) in shop_registry
             if not is_shopkeeper:
-                if len(existing) >= limit:
-                    continue
                 proto_count = object_counts.get(obj_vnum, 0)
                 if proto_count >= limit and rng_mm.number_range(0, 4) != 0:
                     continue

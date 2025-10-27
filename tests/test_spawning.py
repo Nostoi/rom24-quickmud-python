@@ -1,11 +1,15 @@
 import pytest
 
 import mud.spawning.reset_handler as reset_handler
+import logging
+
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     EX_CLOSED,
+    EX_ISDOOR,
     EX_LOCKED,
+    EX_PICKPROOF,
     ITEM_INVENTORY,
     MAX_STATS,
     ActFlag,
@@ -425,6 +429,106 @@ def test_door_reset_applies_closed_and_locked_state():
     assert east_exit.exit_info & EX_CLOSED
     assert east_exit.exit_info & EX_LOCKED
     assert east_exit.rs_flags & EX_LOCKED
+
+
+def test_door_reset_preserves_reverse_rs_flags():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=999, name="Door Test")
+    area_registry[area.vnum] = area
+
+    room_a = Room(vnum=2000, name="Room A", area=area)
+    room_b = Room(vnum=2001, name="Room B", area=area)
+    room_registry[room_a.vnum] = room_a
+    room_registry[room_b.vnum] = room_b
+
+    forward_exit = Exit(vnum=room_b.vnum, rs_flags=EX_ISDOOR, exit_info=EX_ISDOOR)
+    reverse_exit = Exit(
+        vnum=room_a.vnum,
+        rs_flags=EX_ISDOOR | EX_PICKPROOF,
+        exit_info=EX_ISDOOR | EX_PICKPROOF,
+    )
+    forward_exit.to_room = room_b
+    reverse_exit.to_room = room_a
+    room_a.exits[Direction.EAST.value] = forward_exit
+    room_b.exits[Direction.WEST.value] = reverse_exit
+
+    area.resets = [ResetJson(command="D", arg1=room_a.vnum, arg2=Direction.EAST.value, arg3=2)]
+
+    reset_handler.apply_resets(area)
+
+    assert forward_exit.rs_flags & EX_LOCKED
+    assert forward_exit.exit_info & EX_LOCKED
+    assert reverse_exit.rs_flags & EX_PICKPROOF
+    assert not (reverse_exit.rs_flags & EX_LOCKED)
+    assert reverse_exit.exit_info == reverse_exit.rs_flags
+
+
+def test_door_reset_does_not_promote_one_way_exit():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=1000, name="Latch Test")
+    area_registry[area.vnum] = area
+
+    room_a = Room(vnum=4000, name="Door A", area=area)
+    room_b = Room(vnum=4001, name="Door B", area=area)
+    room_registry[room_a.vnum] = room_a
+    room_registry[room_b.vnum] = room_b
+
+    forward_exit = Exit(vnum=room_b.vnum, rs_flags=EX_ISDOOR, exit_info=EX_ISDOOR)
+    reverse_exit = Exit(vnum=room_a.vnum, rs_flags=0, exit_info=0)
+    forward_exit.to_room = room_b
+    reverse_exit.to_room = room_a
+    room_a.exits[Direction.EAST.value] = forward_exit
+    room_b.exits[Direction.WEST.value] = reverse_exit
+
+    area.resets = [ResetJson(command="D", arg1=room_a.vnum, arg2=Direction.EAST.value, arg3=2)]
+
+    reset_handler.apply_resets(area)
+
+    assert forward_exit.exit_info & EX_LOCKED
+    assert forward_exit.exit_info & EX_CLOSED
+    assert reverse_exit.exit_info == 0
+    assert reverse_exit.rs_flags == 0
+
+
+def test_door_reset_requires_door_flag(caplog):
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+
+    area = Area(vnum=1001, name="Flag Test")
+    area_registry[area.vnum] = area
+
+    room_a = Room(vnum=5000, name="Room A", area=area)
+    room_b = Room(vnum=5001, name="Room B", area=area)
+    room_registry[room_a.vnum] = room_a
+    room_registry[room_b.vnum] = room_b
+
+    forward_exit = Exit(vnum=room_b.vnum, rs_flags=0, exit_info=0)
+    reverse_exit = Exit(vnum=room_a.vnum, rs_flags=0, exit_info=0)
+    forward_exit.to_room = room_b
+    reverse_exit.to_room = room_a
+    room_a.exits[Direction.EAST.value] = forward_exit
+    room_b.exits[Direction.WEST.value] = reverse_exit
+
+    area.resets = [ResetJson(command="D", arg1=room_a.vnum, arg2=Direction.EAST.value, arg3=2)]
+
+    with caplog.at_level(logging.WARNING):
+        reset_handler.apply_resets(area)
+
+    assert forward_exit.exit_info == 0
+    assert forward_exit.rs_flags == 0
+    assert reverse_exit.exit_info == 0
+    assert reverse_exit.rs_flags == 0
+    assert any("non-door exit" in message for message in caplog.messages)
 
 
 def test_reset_restores_base_exit_state():
@@ -1149,6 +1253,55 @@ def test_reset_equips_limit_overflow_probability(monkeypatch):
 
     overflow_inventory = run_with_roll(roll_value=0)
     assert len(overflow_inventory) == 1
+
+
+def test_reset_generates_overflow_item_for_existing_inventory(monkeypatch):
+    original_number_range = rng_mm.number_range
+
+    monkeypatch.setattr(rng_mm, "number_fuzzy", lambda value: value)
+
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    shop_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=3200, name="Overflow Inventory Area", min_vnum=3200, max_vnum=3200)
+    room = Room(vnum=3200, name="Overflow Inventory Room", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    mob_proto = MobIndex(vnum=3201, short_descr="an overflow mob", level=30)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    obj_proto = ObjIndex(vnum=3202, short_descr="an overflow trinket")
+    obj_registry[obj_proto.vnum] = obj_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=mob_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="G", arg1=obj_proto.vnum, arg2=1),
+        ResetJson(command="G", arg1=obj_proto.vnum, arg2=1),
+    ]
+
+    def fake_number_range(low: int, high: int) -> int:
+        if low == 0 and high == 4:
+            return 0
+        return original_number_range(low, high)
+
+    monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+    reset_handler.apply_resets(area)
+
+    mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
+    assert mob is not None
+
+    overflow_inventory = [
+        obj
+        for obj in getattr(mob, "inventory", [])
+        if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_proto.vnum
+    ]
+
+    assert len(overflow_inventory) == 2
 
 
 def test_reset_P_skips_when_players_present():

@@ -10,6 +10,10 @@ from mud.models.constants import (
     AffectFlag,
     AreaFlag,
     ContainerFlag,
+    Direction,
+    EX_CLOSED,
+    EX_ISDOOR,
+    EX_PICKPROOF,
     ExtraFlag,
     LIQUID_TABLE,
     RoomFlag,
@@ -821,6 +825,267 @@ def test_json_loader_populates_room_resets():
     )
     assert guardian_reset is not None
     assert guardian_reset in room.resets
+
+
+def test_json_loader_parses_room_flag_letters(tmp_path):
+    clear_registries()
+
+    data = {
+        "area": {
+            "vnum": 501,
+            "name": "Flag Letters",
+            "filename": "flag_letters",
+            "min_level": 1,
+            "max_level": 1,
+            "builders": "",
+            "credits": "",
+            "min_vnum": 6000,
+            "max_vnum": 6001,
+            "area_flags": 0,
+            "security": 9,
+        },
+        "rooms": [
+            {
+                "id": 6000,
+                "name": "Letter Room",
+                "description": "",
+                "sector_type": "inside",
+                "flags": "AD",
+                "exits": {"east": {"to_room": 6001, "flags": "0", "key": 0}},
+            },
+            {
+                "id": 6001,
+                "name": "Next",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {},
+            },
+        ],
+        "mobs": [],
+        "objects": [],
+        "mob_programs": [],
+    }
+
+    json_path = tmp_path / "flag_letters.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    load_area_from_json(str(json_path))
+
+    room = room_registry[6000]
+    expected_flags = int(RoomFlag.ROOM_DARK | RoomFlag.ROOM_INDOORS)
+    assert room.room_flags == expected_flags
+
+    area_registry.clear()
+    room_registry.clear()
+
+
+def test_json_loader_parses_extended_flag_letters(tmp_path):
+    area_registry.clear()
+    room_registry.clear()
+
+    data = {
+        "name": "Extended Flags",
+        "vnum_range": {"min": 7000, "max": 7001},
+        "builders": [],
+        "rooms": [
+            {
+                "id": 7000,
+                "name": "Arena",
+                "description": "",
+                "sector_type": "inside",
+                "flags": "aB",
+                "exits": {"east": {"to_room": 7001, "flags": "a", "key": 0}},
+            },
+            {
+                "id": 7001,
+                "name": "Spillway",
+                "description": "",
+                "sector_type": "inside",
+                "flags": "0",
+                "exits": {},
+            },
+        ],
+        "mobs": [],
+        "objects": [],
+        "mob_programs": [],
+    }
+
+    json_path = tmp_path / "extended_flags.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    load_area_from_json(str(json_path))
+
+    room = room_registry[7000]
+    expected_room_flags = (1 << 26) | (1 << 1)
+    assert room.room_flags == expected_room_flags
+
+    exit_obj = room.exits[Direction.EAST.value]
+    assert exit_obj is not None
+    expected_exit_flags = 1 << 26
+    assert exit_obj.exit_info == expected_exit_flags
+    assert exit_obj.rs_flags == expected_exit_flags
+
+    area_registry.clear()
+    room_registry.clear()
+
+
+def test_json_loader_links_exit_targets(tmp_path):
+    clear_registries()
+
+    north_flags = int(EX_ISDOOR | EX_CLOSED)
+    south_flags = int(EX_ISDOOR | EX_PICKPROOF)
+
+    data = {
+        "area": {
+            "vnum": 200,
+            "name": "Link Test",
+            "filename": "link_test",
+            "min_level": 1,
+            "max_level": 1,
+            "builders": "",
+            "credits": "",
+            "min_vnum": 100,
+            "max_vnum": 102,
+            "area_flags": 0,
+            "security": 9,
+        },
+        "rooms": [
+            {
+                "id": 100,
+                "name": "North Room",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {
+                    "north": {"to_room": 101, "flags": north_flags, "description": "", "keyword": "door"}
+                },
+            },
+            {
+                "id": 101,
+                "name": "South Room",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {
+                    "south": {"to_room": 100, "flags": south_flags, "description": "", "keyword": "door"}
+                },
+            },
+            {
+                "id": 102,
+                "name": "Dead End",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {},
+            },
+        ],
+        "mobs": [],
+        "objects": [],
+        "resets": [],
+    }
+
+    json_path = tmp_path / "link_area.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    load_area_from_json(str(json_path))
+
+    north_room = room_registry[100]
+    south_room = room_registry[101]
+    dead_end = room_registry[102]
+
+    north_exit = north_room.exits[Direction.NORTH.value]
+    south_exit = south_room.exits[Direction.SOUTH.value]
+
+    assert north_exit is not None
+    assert south_exit is not None
+    assert north_exit.to_room is south_room
+    assert south_exit.to_room is north_room
+    assert north_exit.rs_flags == north_flags
+    assert south_exit.rs_flags == south_flags
+    assert dead_end.room_flags & RoomFlag.ROOM_NO_MOB
+
+    clear_registries()
+
+
+def test_json_loader_preserves_one_way_exit_flags(tmp_path):
+    clear_registries()
+
+    door_flags = int(EX_ISDOOR | EX_CLOSED)
+
+    data = {
+        "area": {
+            "vnum": 300,
+            "name": "One Way Door",
+            "filename": "one_way",
+            "min_level": 1,
+            "max_level": 1,
+            "builders": "",
+            "credits": "",
+            "min_vnum": 400,
+            "max_vnum": 401,
+            "area_flags": 0,
+            "security": 9,
+        },
+        "rooms": [
+            {
+                "id": 400,
+                "name": "Door Side",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {
+                    "north": {"to_room": 401, "flags": door_flags, "description": "", "keyword": "door"}
+                },
+            },
+            {
+                "id": 401,
+                "name": "Open Side",
+                "description": "",
+                "sector_type": "inside",
+                "flags": 0,
+                "exits": {
+                    "south": {"to_room": 400, "flags": 0, "description": "", "keyword": ""}
+                },
+            },
+        ],
+        "mobs": [],
+        "objects": [],
+        "resets": [],
+    }
+
+    json_path = tmp_path / "one_way.json"
+    json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    load_area_from_json(str(json_path))
+
+    door_room = room_registry[400]
+    open_room = room_registry[401]
+
+    north_exit = door_room.exits[Direction.NORTH.value]
+    south_exit = open_room.exits[Direction.SOUTH.value]
+
+    assert north_exit is not None
+    assert south_exit is not None
+    assert north_exit.rs_flags == door_flags
+    assert south_exit.rs_flags == 0
+
+    clear_registries()
+
+
+def test_json_loader_sets_exit_orig_door():
+    clear_registries()
+
+    area_registry.clear()
+    room_registry.clear()
+    load_area_from_json("data/areas/midgaard.json")
+
+    for room in room_registry.values():
+        for index, exit_obj in enumerate(room.exits):
+            if exit_obj is not None:
+                assert exit_obj.orig_door == index
+
+    clear_registries()
 
 
 def test_json_loader_applies_specials_to_mobs(tmp_path):

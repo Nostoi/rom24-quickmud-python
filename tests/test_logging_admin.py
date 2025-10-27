@@ -1,8 +1,13 @@
+import asyncio
 from datetime import datetime
 from pathlib import Path
+from typing import Any
+from types import SimpleNamespace
 
 import mud.persistence as persistence
 from mud.commands import process_command
+import mud.logging as mud_logging
+from mud.logging import log_game_event
 from mud.admin_logging.admin import (
     is_log_all_enabled,
     log_admin_command,
@@ -10,7 +15,8 @@ from mud.admin_logging.admin import (
     set_log_all,
 )
 from mud.models.character import character_registry
-from mud.net.session import SESSIONS
+import mud.net.connection as net_connection
+from mud.net.session import SESSIONS, Session
 from mud.wiznet import WiznetFlag
 from mud.world import create_test_character, initialize_world
 
@@ -198,6 +204,73 @@ def test_log_sanitization_preserves_user_spacing(monkeypatch, tmp_path):
     log_path = Path("log") / "admin.log"
     lines = log_path.read_text(encoding="utf-8").splitlines()
     assert lines[-1].endswith("echo hi  ")
+
+
+def test_forced_disconnect_logs_closing_link(monkeypatch):
+    player = create_test_character("Linkdead", 3001)
+
+    class DummyConnection:
+        def __init__(self) -> None:
+            self.closed = False
+            self.sent: list[str] = []
+
+        async def send_line(self, message: str) -> None:
+            self.sent.append(message)
+
+        async def close(self) -> None:
+            self.closed = True
+
+    dummy_conn = DummyConnection()
+    player.connection = dummy_conn
+    broadcasted: list[str] = []
+    player.room = SimpleNamespace(
+        broadcast=lambda message, exclude=None: broadcasted.append(message),
+        remove_character=lambda character: None,
+    )
+    session = Session(
+        name=player.name,
+        character=player,
+        reader=SimpleNamespace(),
+        connection=dummy_conn,
+        account_name="account",
+        ansi_enabled=True,
+    )
+    player.desc = session
+    SESSIONS[player.name] = session
+
+    captured: list[str] = []
+
+    def _capture(message: str) -> str:
+        captured.append(message)
+        return message
+
+    monkeypatch.setattr(net_connection, "log_game_event", _capture)
+
+    asyncio.run(net_connection._disconnect_session(session))
+
+    assert captured == ["Closing link to Linkdead."]
+    assert broadcasted == ["Linkdead has lost the link."]
+    assert dummy_conn.closed is True
+    assert player.connection is None
+    assert player.desc is None
+    assert session.name not in SESSIONS
+
+
+def test_log_game_event_matches_ctime_format(monkeypatch, capsys):
+    calls: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+    def _fake_ctime(*args: Any, **kwargs: Any) -> str:
+        calls.append((args, kwargs))
+        return "Tue Dec 24 01:02:03 1996\n"
+
+    monkeypatch.setattr(mud_logging.time, "ctime", _fake_ctime)
+
+    entry = log_game_event("Artemis has connected.")
+    captured = capsys.readouterr()
+
+    assert calls == [((), {})]
+    assert entry == "Tue Dec 24 01:02:03 1996 :: Artemis has connected."
+    assert captured.err == entry + "\n"
 
 
 def test_log_sanitization_strips_control_edges(monkeypatch, tmp_path):

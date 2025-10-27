@@ -52,7 +52,7 @@ from .communication import (
 from .healer import do_heal
 from .help import do_help
 from .info import do_commands, do_wizhelp
-from .imc import do_imc
+from .imc import do_imc, try_imc_command
 from .inspection import do_exits, do_look, do_scan
 from .inventory import do_drop, do_equipment, do_get, do_inventory, do_outfit
 from .mobprog_tools import do_mpstat
@@ -427,6 +427,9 @@ def process_command(char: Character, input_str: str) -> str:
         social = social_registry.get(cmd_name.lower())
         if social:
             return perform_social(char, cmd_name, arg_str)
+        imc_response = try_imc_command(char, cmd_name, arg_str)
+        if imc_response is not None:
+            return imc_response
         return "Huh?"
     if command.admin_only and not getattr(char, "is_admin", False):
         return "You do not have permission to use this command."

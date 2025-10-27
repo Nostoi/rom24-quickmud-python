@@ -8,6 +8,9 @@ from mud.models.constants import AffectFlag, DamageType, DefenseBit, Stat
 from mud.utils import rng_mm
 
 
+ROM_NEWLINE = "\n\r"
+
+
 def test_affect_flag_toggle():
     ch = Character()
     ch.add_affect(AffectFlag.BLIND)
@@ -57,7 +60,7 @@ def test_affect_to_char_applies_stat_modifiers():
     assert ch.get_curr_stat(Stat.STR) == 13
 
     messages = tick_spell_effects(ch)
-    assert messages == ["You feel stronger."]
+    assert messages == [f"You feel stronger.{ROM_NEWLINE}"]
     assert ch.get_curr_stat(Stat.STR) == 15
     assert Stat.STR.value < len(ch.mod_stat)
     assert ch.mod_stat[Stat.STR.value] == 0
@@ -215,7 +218,7 @@ def test_check_dispel_strips_affect(monkeypatch):
     assert check_dispel(30, target, "sanctuary") is True
     assert not target.has_spell_effect("sanctuary")
     assert not target.has_affect(AffectFlag.SANCTUARY)
-    assert target.messages[-1] == "The white aura fades away."
+    assert target.messages[-1] == f"The white aura fades away.{ROM_NEWLINE}"
 
     # Permanent affects are harder to dispel but failed attempts lower their level
     perm_effect = SpellEffect(
@@ -231,6 +234,56 @@ def test_check_dispel_strips_affect(monkeypatch):
     assert check_dispel(30, target, "sanctuary") is False
     assert target.has_spell_effect("sanctuary")
     assert target.spell_effects["sanctuary"].level == 17
+
+
+def test_wear_off_messages_include_rom_newline(monkeypatch):
+    ticking = Character(level=12)
+    ticking_effect = SpellEffect(
+        name="fly",
+        duration=0,
+        level=12,
+        wear_off_message="You slowly float to the ground.",
+    )
+    ticking.spell_effects[ticking_effect.name] = ticking_effect
+
+    messages = tick_spell_effects(ticking)
+    assert messages == [f"{ticking_effect.wear_off_message}{ROM_NEWLINE}"]
+
+    dispel_target = Character(level=40)
+    dispel_effect = SpellEffect(
+        name="shield",
+        duration=4,
+        level=35,
+        wear_off_message="Your force shield shimmers then fades.",
+    )
+    assert dispel_target.apply_spell_effect(dispel_effect) is True
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 5)
+    assert check_dispel(50, dispel_target, dispel_effect.name) is True
+    assert dispel_target.messages[-1] == (
+        f"{dispel_effect.wear_off_message}{ROM_NEWLINE}"
+    )
+
+
+def test_check_dispel_allows_negative_levels(monkeypatch):
+    target = Character(level=20)
+    effect = SpellEffect(
+        name="sanctuary",
+        duration=-1,
+        level=0,
+        affect_flag=AffectFlag.SANCTUARY,
+    )
+    assert target.apply_spell_effect(effect) is True
+
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 0)
+
+    assert check_dispel(30, target, "sanctuary") is False
+    assert target.has_spell_effect("sanctuary")
+    assert target.spell_effects["sanctuary"].level == -1
+
+    assert check_dispel(30, target, "sanctuary") is False
+    assert target.has_spell_effect("sanctuary")
+    assert target.spell_effects["sanctuary"].level == -2
 
 
 def test_imm_res_vuln_flag_values():
