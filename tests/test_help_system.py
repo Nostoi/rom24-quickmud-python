@@ -1,5 +1,4 @@
 from pathlib import Path
-from pathlib import Path
 
 from types import SimpleNamespace
 
@@ -206,6 +205,27 @@ def test_help_cast_fallback_includes_usage(monkeypatch, tmp_path):
     assert result == expected
 
 
+def test_help_hidden_command_returns_no_help(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    clear_help_registry()
+
+    ch = Character(name="Player", level=1, trust=0, is_npc=False)
+    ch.room = Room(vnum=3001)
+
+    result = process_command(ch, "help prefi")
+
+    assert result.startswith("No help on that word.")
+    assert "Command: prefi" not in result
+    if "Try:" in result:
+        lines = [line for line in result.split("\r\n") if line]
+        suggestions_line = next((line for line in lines if line.startswith("Try: ")), "")
+        suggestions = [entry.strip() for entry in suggestions_line[5:].split(",") if entry.strip()]
+        assert "prefi" not in suggestions
+    log_path = Path("log") / OHELPS_FILE
+    assert log_path.exists()
+    assert "Player: prefi" in log_path.read_text(encoding="utf-8")
+
+
 def test_help_missing_topic_suggests_commands():
     load_help_file("data/help.json")
     ch = Character(name="Tester")
@@ -252,6 +272,38 @@ def test_help_suggestions_limit_to_five(monkeypatch, tmp_path):
     suggestions = [entry.strip() for entry in suggestions_line[5:].split(",") if entry.strip()]
     assert suggestions == ["albatross", "alchemist", "alert", "alias", "align"]
     assert len(suggestions) == 5
+
+
+def test_help_suggestions_skip_hidden_commands(monkeypatch, tmp_path):
+    from mud.commands import dispatcher
+
+    monkeypatch.chdir(tmp_path)
+    clear_help_registry()
+
+    help_command = dispatcher.Command("help", dispatcher.do_help)
+    visible = dispatcher.Command("prefix", dispatcher.do_commands)
+    hidden = dispatcher.Command("prefi", dispatcher.do_commands, show=False)
+    commands = [help_command, hidden, visible]
+    index: dict[str, dispatcher.Command] = {}
+    for cmd in commands:
+        index[cmd.name] = cmd
+        for alias in cmd.aliases:
+            index[alias] = cmd
+
+    monkeypatch.setattr(dispatcher, "COMMANDS", commands, raising=False)
+    monkeypatch.setattr(dispatcher, "COMMAND_INDEX", index, raising=False)
+
+    ch = Character(name="Player", level=1, trust=0, is_npc=False)
+    ch.room = Room(vnum=3001)
+
+    result = process_command(ch, "help pref")
+
+    lines = result.split("\r\n")
+    assert lines[0] == "No help on that word."
+    suggestions_line = lines[1]
+    assert suggestions_line.startswith("Try: ")
+    suggestions = [entry.strip() for entry in suggestions_line[5:].split(",") if entry.strip()]
+    assert suggestions == ["prefix"]
 
 
 def test_help_preserves_duplicate_entries_with_identical_payloads():

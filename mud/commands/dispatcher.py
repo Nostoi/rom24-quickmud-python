@@ -50,7 +50,7 @@ from .communication import (
     do_tell,
 )
 from .healer import do_heal
-from .help import do_help
+from .help import do_help, do_wizlist
 from .info import do_commands, do_wizhelp
 from .imc import do_imc, try_imc_command
 from .inspection import do_exits, do_look, do_scan
@@ -183,6 +183,7 @@ COMMANDS: list[Command] = [
     Command("note", do_note, min_position=Position.DEAD),
     Command("wizhelp", do_wizhelp, min_position=Position.DEAD, min_trust=LEVEL_HERO),
     Command("commands", do_commands, min_position=Position.DEAD),
+    Command("wizlist", do_wizlist, min_position=Position.DEAD),
     Command("help", do_help, min_position=Position.DEAD),
     Command("telnetga", cmd_telnetga, min_position=Position.DEAD),
     # IMC and aliasing
@@ -266,14 +267,21 @@ def _get_trust(char: Character) -> int:
     return level
 
 
-def resolve_command(name: str) -> Command | None:
+def resolve_command(name: str, *, trust: int | None = None) -> Command | None:
     name = name.lower()
     if name in COMMAND_INDEX:
-        return COMMAND_INDEX[name]
+        command = COMMAND_INDEX[name]
+        if trust is None or trust >= command.min_trust:
+            return command
     # ROM str_prefix behavior: choose the first command in table order
     # whose name starts with the provided prefix. If none match, return None.
-    matches = [cmd for cmd in COMMANDS if cmd.name.startswith(name)]
-    return matches[0] if matches else None
+    for cmd in COMMANDS:
+        if not cmd.name.startswith(name):
+            continue
+        if trust is not None and trust < cmd.min_trust:
+            continue
+        return cmd
+    return None
 
 
 def _split_command_and_args(input_str: str) -> tuple[str, str]:
@@ -391,7 +399,7 @@ def process_command(char: Character, input_str: str) -> str:
     if not cmd_name:
         return "What?"
     trust = _get_trust(char)
-    command = resolve_command(cmd_name)
+    command = resolve_command(cmd_name, trust=trust)
     if command and trust < command.min_trust:
         command = None
     if alias_used:

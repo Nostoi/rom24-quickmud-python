@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from mud.admin_logging.admin import log_orphan_help_request
 from mud.models.character import Character
-from mud.models.constants import MAX_CMD_LEN
+from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, MAX_CMD_LEN
+
+if TYPE_CHECKING:
+    from mud.commands.dispatcher import Command
 from mud.models.help import HelpEntry, help_entries, help_registry
 
 _logger = logging.getLogger(__name__)
@@ -127,25 +131,57 @@ def _is_keyword_match(term: str, entry: HelpEntry) -> bool:
     return False
 
 
-def _generate_command_help(term: str) -> str | None:
+def _generate_command_help(ch: Character, term: str) -> str | None:
     if not term:
         return None
 
     from mud.commands.dispatcher import COMMANDS, resolve_command
 
     lookup = term.lower()
-    command = resolve_command(lookup)
+    raw_trust = getattr(ch, "trust", 0) or 0
+    try:
+        trust = int(raw_trust)
+    except Exception:
+        trust = 0
+    raw_level = getattr(ch, "level", 0) or 0
+    try:
+        level = int(raw_level)
+    except Exception:
+        level = 0
+    effective_trust = trust if trust > 0 else level
+    is_admin = getattr(ch, "is_admin", False)
+    can_view_hidden = is_admin or effective_trust >= LEVEL_HERO
+
+    command = resolve_command(lookup, trust=effective_trust)
     if command is None or (command.name != lookup and lookup not in command.aliases):
         for candidate in COMMANDS:
             if lookup in candidate.aliases:
-                command = candidate
+                if not candidate.show and not can_view_hidden:
+                    continue
+                if effective_trust >= candidate.min_trust:
+                    command = candidate
+                else:
+                    command = None
                 break
     if command is None:
         return None
 
+    if not command.show and not can_view_hidden:
+        return None
+
+    if command.admin_only and not is_admin:
+        return None
+
     aliases = ", ".join(command.aliases) if command.aliases else "None"
     position = command.min_position.name.replace("_", " ").title()
-    restriction = "Immortal-only command." if command.admin_only else "Available to mortals."
+    if command.admin_only:
+        restriction = "Immortal-only command (admin flag required)."
+    elif command.min_trust >= LEVEL_IMMORTAL or command.min_trust >= LEVEL_HERO:
+        restriction = "Immortal-only command."
+    elif command.min_trust > 0:
+        restriction = f"Available from level {command.min_trust}."
+    else:
+        restriction = "Available to mortals."
 
     lines = [
         f"Command: {command.name}",
@@ -161,21 +197,48 @@ def _generate_command_help(term: str) -> str | None:
     return _rom_lines(lines)
 
 
-def _suggest_command_topics(term: str) -> list[str]:
+def _suggest_command_topics(ch: Character, term: str) -> list[str]:
     if not term:
         return []
 
     from mud.commands.dispatcher import COMMANDS
 
+    raw_trust = getattr(ch, "trust", 0) or 0
+    try:
+        trust = int(raw_trust)
+    except Exception:
+        trust = 0
+    raw_level = getattr(ch, "level", 0) or 0
+    try:
+        level = int(raw_level)
+    except Exception:
+        level = 0
+    effective_trust = trust if trust > 0 else level
+    is_admin = getattr(ch, "is_admin", False)
+    can_view_hidden = is_admin or effective_trust >= LEVEL_HERO
+
+    def _visible(command: "Command") -> bool:
+        if command.min_trust > effective_trust:
+            return False
+        if command.admin_only and not is_admin:
+            return False
+        if not command.show and not can_view_hidden:
+            return False
+        return True
+
     lookup = term.lower()
     suggestions: list[str] = []
     for command in COMMANDS:
+        if not _visible(command):
+            continue
         if command.name.startswith(lookup) or any(alias.startswith(lookup) for alias in command.aliases):
             suggestions.append(command.name)
 
     if not suggestions and len(lookup) > 1:
         prefix = lookup[:2]
-        suggestions = [cmd.name for cmd in COMMANDS if cmd.name.startswith(prefix)]
+        suggestions = [
+            cmd.name for cmd in COMMANDS if _visible(cmd) and cmd.name.startswith(prefix)
+        ]
 
     seen: set[str] = set()
     ordered: list[str] = []
@@ -242,14 +305,14 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
         return ROM_HELP_SEPARATOR.join(chunks)
 
     if blocked_entry is None:
-        command_help = _generate_command_help(topic)
+        command_help = _generate_command_help(ch, topic)
         if command_help:
             if not _log_orphan_request(ch, topic):
                 return _rom_lines(["No help on that word.", "That was rude!"])
             return command_help
 
     if blocked_entry is None:
-        suggestions = _suggest_command_topics(topic)
+        suggestions = _suggest_command_topics(ch, topic)
         if suggestions:
             if not _log_orphan_request(ch, topic):
                 return _rom_lines(["No help on that word.", "That was rude!"])
@@ -262,3 +325,9 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
             lines.append("That was rude!")
             return _rom_lines(lines)
     return _rom_lines(lines)
+
+
+def do_wizlist(ch: Character, args: str) -> str:
+    """Mirror ROM do_wizlist by delegating to the wizlist help topic."""
+
+    return do_help(ch, "wizlist")

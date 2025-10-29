@@ -1,10 +1,10 @@
-<!-- LAST-PROCESSED: imc_chat -->
+<!-- LAST-PROCESSED: help_system -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-12-24 (pytest --collect-only -q; 921 tests collected, 0 errors) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-29 (pytest --collect-only -q; 941 tests collected, 0 errors) -->
 <!-- LAST-TEST-RUN: 2025-12-24 (PYTHONPATH=. pytest tests/test_imc.py -q) -->
 <!-- TEST-PASS-RATE: 100% (30 passed / 30 total) -->
 
@@ -23,7 +23,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 | combat               | present_wired | C: src/fight.c:one_hit; PY: mud/combat/engine.py:attack_round                                                                                                                                         | tests/test_combat.py; tests/test_combat_thac0.py; tests/test_weapon_special_attacks.py                                          |
 | skills_spells        | stub_or_partial | C: src/magic.c:3721-3773 (locate object parity); PY: mud/skills/handlers.py:4922-4968 (`locate_object` now enforces ROM detection chance & carrier visibility); tests/test_skills_detection.py::{test_locate_object_respects_detection_chance,test_locate_object_hides_invisible_carriers} |
 | affects_saves        | present_wired | C: src/magic.c:saves_spell; C: src/handler.c:check_immune; PY: mud/affects/saves.py:saves_spell/\_check_immune                                                                                        | tests/test_affects.py; tests/test_defense_flags.py                                                                              |
-| command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command                                                                                                                             | tests/test_commands.py                                                                                                          |
+| command_interpreter  | present_wired | C: src/interp.c:interpret; PY: mud/commands/dispatcher.py:process_command/resolve_command; PY: mud/commands/help.py:do_wizlist | tests/test_commands.py; tests/test_commands.py::test_abbrev_skips_inaccessible_command; tests/test_commands.py::test_wizlist_displays_help_topic |
 | socials              | present_wired | C: src/interp.c:check_social; DOC: doc/area.txt § Socials; ARE: area/social.are; PY: mud/commands/socials.py:perform_social                                                                           | tests/test_socials.py; tests/test_social_conversion.py; tests/test_social_placeholders.py                                       |
 | channels             | present_wired | C: src/act_comm.c:333-704 (`do_gossip`/`do_grats`/`do_quote`/`do_question`/`do_answer`/`do_music`); PY: mud/commands/communication.py:210-360 (gossip/grats/quote/question/answer/music parity) | tests/test_communication.py::test_gossip_channel_toggle_and_broadcast; tests/test_communication.py::test_grats_channel_respects_mutes; tests/test_communication.py::test_quote_channel_toggle_and_broadcast; tests/test_communication.py::test_question_channel_toggle_and_broadcast; tests/test_communication.py::test_answer_channel_respects_comm_flags; tests/test_communication.py::test_music_channel_toggle_and_broadcast |
 | wiznet_imm           | present_wired | C: src/act_wiz.c:171-189 (`wiznet` act formatting and cyan envelope); PY: mud/utils/act.py:1-147; mud/wiznet.py:11-170 (wiznet formatting/broadcast) | tests/test_wiznet.py::test_wiznet_act_formatting; tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert |
@@ -1088,11 +1088,14 @@ NOTES:
   <!-- SUBSYSTEM: player_save_format END -->
   <!-- SUBSYSTEM: help_system START -->
 
-### help_system — Parity Audit 2025-12-21
+### help_system — Parity Audit 2025-10-29
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: side_effects, output, logging
 TASKS:
+
+- ✅ [P0] **help_system: hide ROM `show = 0` commands from fallback metadata** — done 2025-10-29
+  EVIDENCE: C src/interp.c:358-359 (`prefi` entry sets show = 0); PY mud/commands/help.py:134-212 (fallback skips hidden commands for mortals and suggestions); TEST tests/test_help_system.py::{test_help_hidden_command_returns_no_help,test_help_suggestions_skip_hidden_commands}
 
 - ✅ [P0] **help_system: match partial multi-word tokens like ROM `is_name`** — done 2025-12-21
   EVIDENCE: C src/handler.c:932-980 (`is_name` walks keyword tokens with prefix checks); PY mud/commands/help.py:70-118 (`_is_keyword_match` now compares per-token prefixes); TEST tests/test_help_system.py::test_help_partial_tokens_match_multi_word_keywords
@@ -1134,7 +1137,8 @@ TASKS:
   - C: ROM emits separators and keyword headers when multiple help entries match, and `is_name` allows partial token prefixes; the Python command now mirrors that pagination and matching logic.
   - PY: `do_help` collects all visible matches, prepends keyword lines, and joins them with the ROM divider before returning output; creation flows now request a single entry so onboarding mirrors ROM's `do_help` break condition. `_is_keyword_match` tokenises keywords so partial prefixes like "a c" resolve to "ARMOR CLASS".
   - TEST: Regression coverage exercises stacked keyword entries, quoted topics, partial token lookups, and fallback logging to guard ROM parity for help discovery.
-  - Applied tiny fix: none. Command/suggestion fallbacks now log to `OHELPS_FILE`, restoring ROM parity for staff orphan tracking.
+  - C: src/interp.c:358-359 hides `prefi` from player listings by setting `show` to 0; the Python fallback now mirrors that behaviour by denying hidden command metadata and suggestions to non-admin callers while still logging the orphaned topic.
+  - Applied tiny fix: none. Command/suggestion fallbacks continue to log to `OHELPS_FILE`, restoring ROM parity for staff orphan tracking.
   <!-- SUBSYSTEM: help_system END -->
   <!-- SUBSYSTEM: mob_programs START -->
 
@@ -1291,7 +1295,7 @@ NOTES:
 | movement_encumbrance     | src/act_move.c:move_char; src/handler.c:room_is_private            | mud/world/movement.py:move_character                                                       |
 | resets                   | src/db.c:load_resets ('D' commands); src/db.c:reset_room           | mud/spawning/reset_handler.py:apply_resets/reset_area                                      |
 | shops_economy            | src/act_obj.c:get_keeper/do_buy                                    | mud/commands/shop.py:do_buy/do_sell                                                        |
-| command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command                                                 |
+| command_interpreter      | src/interp.c:interpret                                             | mud/commands/dispatcher.py:process_command/resolve_command                                 |
 | socials                  | src/db2.c:load_socials; src/interp.c:check_social                  | mud/loaders/social_loader.py:load_socials; mud/commands/socials.py:perform_social          |
 | channels                 | src/act_comm.c:do_auction/do_gossip/do_grats/do_quote/do_question/do_answer/do_music | mud/commands/communication.py:do_auction/do_gossip/do_grats/do_quote/do_question/do_answer/do_music |
 | wiznet_imm               | src/act_wiz.c:wiznet                                               | mud/wiznet.py:wiznet/cmd_wiznet                                                            |
@@ -1332,7 +1336,7 @@ NOTES:
 ## Parity Gaps & Corrections
 
 <!-- PARITY-GAPS-START -->
-<!-- AUDITED: resets, weather, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, channels, wiznet_imm -->
+<!-- AUDITED: resets, weather, movement_encumbrance, world_loader, area_format_loader, imc_chat, player_save_format, help_system, boards_notes, game_update_loop, combat, skills_spells, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, mob_programs, affects_saves, npc_spec_funs, command_interpreter, channels, wiznet_imm -->
 <!-- SUBSYSTEM: persistence START -->
 
 ### persistence — Parity Audit 2025-11-26
@@ -1867,11 +1871,18 @@ NOTES:
   <!-- SUBSYSTEM: boards_notes END -->
       <!-- SUBSYSTEM: command_interpreter START -->
 
-### command_interpreter — Parity Audit 2025-09-18
+### command_interpreter — Parity Audit 2025-12-24
 
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
-KEY RISKS: side_effects, abbreviations
+KEY RISKS: side_effects, abbreviations, prefix_resolution
+
 TASKS:
+
+- ✅ [P0] **command_interpreter: continue prefix search past gated commands** — done 2025-12-24
+  EVIDENCE: C src/interp.c:439-452; PY mud/commands/dispatcher.py:186-284; TEST tests/test_commands.py::test_abbrev_skips_inaccessible_command
+
+- ✅ [P0] **command_interpreter: expose wizlist command via dispatcher** — done 2025-12-24
+  EVIDENCE: C src/act_info.c:651-653; PY mud/commands/dispatcher.py:185-187; PY mud/commands/help.py:267-270; TEST tests/test_commands.py::test_wizlist_displays_help_topic
 
 - ✅ [P0] **command_interpreter: clear hide affect when executing any command** — done 2025-12-22
   EVIDENCE: C src/interp.c:398-436 (`interpret` removes `AFF_HIDE` before dispatch); PY mud/commands/dispatcher.py:314-348 (strip hide prior to alias/prefix handling); TEST tests/test_commands.py::test_command_execution_breaks_hide
@@ -1898,7 +1909,7 @@ TASKS:
 
 - ✅ [P0] Implement user-defined aliases (alias.c) — done 2025-09-08
   EVIDENCE: C src/alias.c:L1-L200 (substitute_alias/do_alias); C src/interp.c:L140-L178 (alias in cmd table)
-  EVIDENCE: PY mud/commands/alias_cmds.py:L1-L60; mud/commands/dispatcher.py:L96-L138 (\_expand_aliases & registrations)
+  EVIDENCE: PY mud/commands/alias_cmds.py:L1-L60; mud/commands/dispatcher.py:L96-L138 (_expand_aliases & registrations)
   EVIDENCE: PY mud/persistence.py:L35-L38; L63-L66; L111-L115 (persist/restore aliases)
   EVIDENCE: TEST tests/test_commands.py::test_alias_create_expand_and_unalias; tests/test_commands.py::test_alias_persists_in_save_load
 
@@ -1921,7 +1932,7 @@ TASKS:
 
 - ✅ [P0] Restore ROM punctuation command parsing for apostrophe say alias — done 2025-09-18
   EVIDENCE: C src/interp.c:430-468 (punctuation command parsing and `'` → say mapping)
-  EVIDENCE: PY mud/commands/dispatcher.py:\_split_command_and_args/process_command (punctuation token support before shlex)
+  EVIDENCE: PY mud/commands/dispatcher.py:_split_command_and_args/process_command (punctuation token support before shlex)
   EVIDENCE: TEST tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
   RATIONALE: ROM `interpret` treats leading punctuation like `'` as standalone commands so players can chat (`'message`) or emote without balancing quotes; the Python dispatcher previously fed these inputs to `shlex.split`, raising `ValueError` and returning "Huh?".
   FILES: mud/commands/dispatcher.py (parser adjustments for punctuation alias before shlex).
@@ -1947,12 +1958,12 @@ TASKS:
 NOTES:
 
 - C: src/interp.c:430-468 strips leading punctuation and dispatches `'` → say before argument tokenizing, while later lines 520-560 enforce position messages already ported.
-- PY: mud/commands/dispatcher.py:\_split_command_and_args now mirrors ROM punctuation handling before shlex tokenization so `'hello` reaches `do_say` and aliases resolve.
-- PY: mud/commands/dispatcher.py now prepends stored prefixes before alias expansion, and mud/commands/alias_cmds.py exposes `prefix`/`prefi` so players can configure ROM-style macros.
-- TEST: tests/test_commands.py::{test_apostrophe_alias_routes_to_say,test_punctuation_inputs_do_not_raise_value_error}
-- PY: mud/world/vision.py enforces ROM AFF_SNEAK detection odds using Mitchell–Moore RNG so sneaking characters remain visible when the skill roll fails.
-- Applied tiny fix: Added `_split_command_and_args` to guard punctuation commands ahead of shlex splitting.
-    <!-- SUBSYSTEM: command_interpreter END -->
+- PY: mud/commands/dispatcher.py:_split_command_and_args now mirrors ROM punctuation handling before shlex tokenization so `'hello` reaches `do_say` and aliases resolve.
+- PY: mud/commands/dispatcher.py:186-284 now skips gated commands during prefix resolution so mortals fall through to accessible handlers like `imc` before returning socials or IMC fallbacks.
+- PY: mud/commands/help.py:267-270 wires `do_wizlist` to `do_help("wizlist")`, and `mud/commands/dispatcher.py:185-187` registers the command so mortals receive the ROM help output.
+- Applied tiny fix: none
+
+<!-- SUBSYSTEM: command_interpreter END -->
   <!-- SUBSYSTEM: game_update_loop START -->
 
 ### game_update_loop — Parity Audit 2025-10-20

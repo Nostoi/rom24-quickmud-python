@@ -55,6 +55,16 @@ def test_abbreviations_and_quotes(movable_char_factory):
     assert out3 == "You say, 'hello world'"
 
 
+def test_abbrev_skips_inaccessible_command():
+    initialize_world("area/area.lst")
+    char = create_test_character("Novice", 3001)
+
+    explicit = process_command(char, "imc")
+    abbreviated = process_command(char, "im")
+
+    assert abbreviated == explicit
+
+
 def test_apostrophe_alias_routes_to_say():
     initialize_world("area/area.lst")
     speaker = create_test_character("Speaker", 3001)
@@ -331,6 +341,49 @@ def test_wizhelp_lists_immortal_commands():
     assert "wizhelp" in output
     assert "@teleport" in output
     assert "prefi" not in flattened
+
+
+def test_wizlist_displays_help_topic():
+    initialize_world("area/area.lst")
+    char = create_test_character("Curious", 3001)
+
+    from mud.commands.help import do_help
+
+    expected = do_help(char, "wizlist")
+    output = process_command(char, "wizlist")
+
+    assert output == expected
+
+
+def test_help_admin_command_hidden_from_mortals():
+    initialize_world("area/area.lst")
+    char = create_test_character("Curious", 3001)
+
+    from mud.commands.help import do_help
+
+    output = do_help(char, "@teleport")
+
+    lines = [line for line in output.split("\r\n") if line]
+    assert lines == ["No help on that word."]
+
+
+def test_help_admin_command_visible_to_admins():
+    initialize_world("area/area.lst")
+    char = create_test_character("Archon", 3001)
+
+    from mud.commands.help import _generate_command_help, do_help
+    from mud.models.constants import LEVEL_HERO
+
+    char.level = LEVEL_HERO
+    char.is_admin = True
+
+    expected = _generate_command_help(char, "@teleport")
+    output = do_help(char, "@teleport")
+
+    assert expected is not None
+    assert output == expected
+    assert "Command: @teleport" in output
+    assert "Immortal-only command (admin flag required)." in output
 
 
 def test_position_gating_sleeping_blocks_look_allows_scan():
