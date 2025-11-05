@@ -27,8 +27,8 @@ class SkillUseResult:
     success: bool
     message: str = ""
     payload: Any | None = None
-    cooldown: int = 0
-    lag: int = 0
+    cooldown: int | None = None
+    lag: int | None = None
 
     def __bool__(self) -> bool:  # pragma: no cover - convenience shim
         return self.success
@@ -171,7 +171,6 @@ class SkillRegistry:
             raise ValueError("skill on cooldown")
 
         lag = self._compute_skill_lag(caster, skill)
-        self._apply_wait_state(caster, lag)
         caster.mana -= skill.mana_cost
 
         learned: int | None
@@ -192,6 +191,7 @@ class SkillRegistry:
         if success:
             handler_result = self.handlers[name](caster, target)
             result = self._normalize_success_result(skill, handler_result, lag)
+            success = bool(getattr(result, "success", success))
         else:
             failure_message = self._failure_message(skill)
             if hasattr(caster, "messages") and isinstance(caster.messages, list):
@@ -204,8 +204,16 @@ class SkillRegistry:
                 lag=lag,
             )
 
-        cooldowns[name] = skill.cooldown
+        final_cooldown = skill.cooldown
+        if isinstance(result.cooldown, int):
+            final_cooldown = int(result.cooldown)
+        cooldowns[name] = max(0, final_cooldown)
         caster.cooldowns = cooldowns
+
+        final_lag = lag
+        if isinstance(result.lag, int):
+            final_lag = int(result.lag)
+        self._apply_wait_state(caster, final_lag)
 
         self._check_improve(caster, skill, name, success)
         return result
@@ -219,14 +227,60 @@ class SkillRegistry:
         """Wrap handler returns into a `SkillUseResult` with sensible defaults."""
 
         if isinstance(handler_result, SkillUseResult):
-            cooldown = handler_result.cooldown or skill.cooldown
-            wait_state = handler_result.lag or lag
+            cooldown_override = handler_result.cooldown
+            if cooldown_override is None:
+                cooldown = skill.cooldown
+            else:
+                cooldown = int(cooldown_override)
+
+            lag_override = handler_result.lag
+            if lag_override is None:
+                wait_state = lag
+            else:
+                wait_state = int(lag_override)
+
+            message = handler_result.message
+            if not message:
+                message = (
+                    self._default_success_message(skill)
+                    if handler_result.success
+                    else self._failure_message(skill)
+                )
             return SkillUseResult(
                 success=handler_result.success,
-                message=handler_result.message,
+                message=message,
                 payload=handler_result.payload,
                 cooldown=cooldown,
                 lag=wait_state,
+            )
+
+        if hasattr(handler_result, "success"):
+            response_success = bool(getattr(handler_result, "success"))
+            response_message = getattr(handler_result, "message", "")
+            payload = getattr(handler_result, "payload", None)
+            cooldown_attr = getattr(handler_result, "cooldown", None)
+            wait_state = getattr(handler_result, "lag", None)
+
+            if not response_message:
+                response_message = (
+                    self._default_success_message(skill)
+                    if response_success
+                    else self._failure_message(skill)
+                )
+
+            cooldown = (
+                int(cooldown_attr)
+                if isinstance(cooldown_attr, int)
+                else skill.cooldown
+            )
+            wait = int(wait_state) if isinstance(wait_state, int) else lag
+
+            return SkillUseResult(
+                success=response_success,
+                message=response_message,
+                payload=payload,
+                cooldown=cooldown,
+                lag=wait,
             )
 
         message = ""

@@ -32,6 +32,7 @@ from mud.magic.effects import (
     shock_effect,
 )
 from mud.math.c_compat import c_div
+from mud.skills.registry import SkillUseResult
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
     AffectFlag,
@@ -469,6 +470,30 @@ def _send_to_char(character: Character, message: str) -> None:
             pass
     if hasattr(character, "messages"):
         character.messages.append(message)
+
+
+ROM_NEWLINE = "\n\r"
+
+
+_SPELL_NULL_MESSAGE = f"That's not a spell!{ROM_NEWLINE}"
+
+
+def _spell_null_stub_response(caster: Character | None) -> SkillUseResult:
+    """Return a ROM ``spell_null`` style failure response for stubbed skills."""
+
+    if caster is not None:
+        try:
+            _send_to_char(caster, _SPELL_NULL_MESSAGE)
+        except Exception:  # pragma: no cover - defensive parity guard
+            pass
+
+    return SkillUseResult(
+        success=False,
+        message=_SPELL_NULL_MESSAGE,
+        payload=None,
+        cooldown=0,
+        lag=0,
+    )
 
 
 def _is_outside(character: Character) -> bool:
@@ -1257,7 +1282,7 @@ def axe(caster, target=None):
     """Stub implementation for axe.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def backstab(
@@ -2514,7 +2539,7 @@ def dagger(caster, target=None):
     """Stub implementation for dagger.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def demonfire(caster: Character, target: Character | None = None) -> int:
@@ -3088,7 +3113,7 @@ def dodge(caster, target=None):
     """Stub implementation for dodge.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def earthquake(caster: Character, target=None) -> bool:  # noqa: ARG001 - parity signature
@@ -3495,14 +3520,14 @@ def enhanced_damage(caster, target=None):
     """Stub implementation for enhanced_damage.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def envenom(caster, target=None):
     """Stub implementation for envenom.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def faerie_fire(caster: Character, target: Character | None = None) -> bool:
@@ -3605,14 +3630,14 @@ def farsight(caster, target=None):
     """Stub implementation for farsight.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def fast_healing(caster, target=None):
     """Stub implementation for fast_healing.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def fire_breath(caster: Character, target: Character | None = None) -> int:
@@ -3801,7 +3826,7 @@ def flail(caster, target=None):
     """Stub implementation for flail.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def flamestrike(caster: Character, target: Character | None = None) -> int:
@@ -4309,14 +4334,14 @@ def haggle(caster, target=None):
     """Stub implementation for haggle.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def hand_to_hand(caster, target=None):
     """Stub implementation for hand_to_hand.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def haste(
@@ -4438,14 +4463,14 @@ def heat_metal(caster, target=None):
     """Stub implementation for heat_metal.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def hide(caster, target=None):
     """Stub implementation for hide.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def high_explosive(
@@ -5020,7 +5045,7 @@ def mace(caster, target=None):
     """Stub implementation for mace.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def magic_missile(caster: Character, target: Character | None = None) -> int:
@@ -5103,7 +5128,7 @@ def mass_healing(caster, target=None):
     """Stub implementation for mass_healing.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def mass_invis(caster: Character, target: Character | None = None) -> bool:
@@ -5153,7 +5178,7 @@ def meditation(caster, target=None):
     """Stub implementation for meditation.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def nexus(caster: Character, target: Character | None = None) -> list[Object]:
@@ -5282,7 +5307,7 @@ def parry(caster, target=None):
     """Stub implementation for parry.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def pass_door(caster: Character, target: Character | None = None) -> bool:
@@ -5342,14 +5367,14 @@ def peek(caster, target=None):
     """Stub implementation for peek.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def pick_lock(caster, target=None):
     """Stub implementation for pick_lock.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def plague(caster: Character, target: Character | None = None) -> bool:
@@ -5533,7 +5558,7 @@ def polearm(caster, target=None):
     """Stub implementation for polearm.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def portal(caster: Character, target: Character | None = None) -> Object | None:
@@ -5791,7 +5816,7 @@ def recall(caster, target=None):
     """Stub implementation for recall.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def recharge(
@@ -6106,14 +6131,14 @@ def scrolls(caster, target=None):
     """Stub implementation for scrolls.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def second_attack(caster, target=None):
     """Stub implementation for second_attack.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def shield(caster, target=None):
@@ -6166,14 +6191,14 @@ def shield_block(caster, target=None):
     """Stub implementation for shield_block.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def shocking_grasp(caster, target=None):
     """Stub implementation for shocking_grasp.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def sleep(
@@ -6362,21 +6387,21 @@ def spear(caster, target=None):
     """Stub implementation for spear.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def staves(caster, target=None):
     """Stub implementation for staves.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def steal(caster, target=None):
     """Stub implementation for steal.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def stone_skin(caster: Character, target: Character | None = None) -> bool:  # noqa: ARG001 - parity signature
@@ -6510,7 +6535,7 @@ def sword(caster, target=None):
     """Stub implementation for sword.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def teleport(caster: Character, target: Character | None = None) -> bool:
@@ -6579,7 +6604,7 @@ def third_attack(caster, target=None):
     """Stub implementation for third_attack.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def trip(caster: Character, target: Character | None = None) -> str:
@@ -6751,7 +6776,7 @@ def wands(caster, target=None):
     """Stub implementation for wands.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def weaken(caster: Character, target: Character | None = None) -> bool:
@@ -6799,7 +6824,7 @@ def whip(caster, target=None):
     """Stub implementation for whip.
     TODO: Implement actual ROM logic from C source.
     """
-    return 42  # Placeholder damage/effect
+    return _spell_null_stub_response(caster)
 
 
 def word_of_recall(caster: Character, target: Character | None = None) -> bool:

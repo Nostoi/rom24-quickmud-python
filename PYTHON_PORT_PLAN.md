@@ -1,12 +1,12 @@
-<!-- LAST-PROCESSED: help_system -->
+<!-- LAST-PROCESSED: skills_spells -->
 <!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
 <!-- ARCHITECTURAL-GAPS-DETECTED: 0 -->
 <!-- SUBSYSTEM-CATALOG: combat, skills_spells, affects_saves, command_interpreter, socials, channels, wiznet_imm, world_loader, resets, weather, time_daynight, movement_encumbrance, stats_position, shops_economy, boards_notes, help_system, mob_programs, npc_spec_funs, game_update_loop, persistence, login_account_nanny, networking_telnet, security_auth_bans, logging_admin, olc_builders, area_format_loader, imc_chat, player_save_format -->
 <!-- TEST-INFRASTRUCTURE: operational (pytest --collect-only -q) -->
 <!-- VALIDATION-STATUS: green (collection succeeded) -->
-<!-- LAST-INFRASTRUCTURE-CHECK: 2025-10-29 (pytest --collect-only -q; 941 tests collected, 0 errors) -->
-<!-- LAST-TEST-RUN: 2025-12-24 (PYTHONPATH=. pytest tests/test_imc.py -q) -->
-<!-- TEST-PASS-RATE: 100% (30 passed / 30 total) -->
+<!-- LAST-INFRASTRUCTURE-CHECK: 2025-11-02 (pytest --collect-only -q; 944 tests collected, 0 errors; reconfirmed spell_null newline parity scaffolding) -->
+<!-- LAST-TEST-RUN: 2025-11-02 (PYTHONPATH=. pytest tests/test_skills_weapon_stubs.py -q; verifies spell_null newline feedback) -->
+<!-- TEST-PASS-RATE: 100% (1 passed / 1 total) -->
 
 # Python Conversion Plan for QuickMUD
 
@@ -323,6 +323,22 @@ NOTES:
 STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
 KEY RISKS: RNG, lag_wait, side_effects, area_effects, visibility
 TASKS:
+
+- ✅ [P0] **skills_spells: replace weapon skill stubs with ROM `spell_null` rejection messaging** — done 2025-10-29
+  EVIDENCE: C src/magic.c:3856-3861 (`spell_null` prints "That's not a spell!" and exits without side effects)
+  EVIDENCE: PY mud/skills/handlers.py:120-170; mud/skills/handlers.py:1248-6805 (weapon skill stubs now call `_spell_null_stub_response`)
+  EVIDENCE: PY mud/skills/registry.py:168-233 (normalize handler responses with `success` attributes and propagate failure states)
+  EVIDENCE: TEST tests/test_skills_weapon_stubs.py::test_weapon_skill_use_reports_not_spell
+
+- ✅ [P0] **skills_spells: append ROM newline to spell_null rejection messaging** — done 2025-11-02
+  EVIDENCE: C src/magic.c:3858 (`spell_null` sends "That's not a spell!\n\r")
+  EVIDENCE: PY mud/skills/handlers.py:475-495 (`_SPELL_NULL_MESSAGE` now appends `ROM_NEWLINE` before returning failure payload)
+  EVIDENCE: TEST tests/test_skills_weapon_stubs.py::test_weapon_skill_use_reports_not_spell
+
+- ✅ [P0] **skills_spells: apply handler cooldown and lag overrides after execution to suppress wait-state penalties** — done 2025-10-31
+  EVIDENCE: PY mud/skills/registry.py:157-219 (propagate handler-provided cooldown/lag before applying wait state and cooldown bookkeeping)
+  EVIDENCE: PY mud/skills/handlers.py:471-505 (`_spell_null_stub_response` emits ROM failure messaging with zeroed cooldown and lag)
+  EVIDENCE: TEST tests/test_skills_weapon_stubs.py::test_weapon_skill_use_reports_not_spell
 
 - ✅ [P0] **skills_spells: restore advance_level time module import** — done 2025-10-21
   EVIDENCE: C src/update.c:61-120 (`advance_level` references `current_time` for session tracking); PY mud/advancement.py:1-120 (`import time` restored before `advance_level` uses `time.time()`); TEST tests/test_advancement.py::test_advance_level_updates_permanent_stats
