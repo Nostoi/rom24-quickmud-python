@@ -32,7 +32,7 @@ from .admin_commands import (
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_prefi, do_prefix, do_unalias
-from .build import cmd_redit, handle_redit_command
+from .build import cmd_asave, cmd_redit, handle_redit_command
 from .combat import do_kick, do_kill, do_rescue
 from .communication import (
     do_auction,
@@ -231,6 +231,7 @@ COMMANDS: list[Command] = [
         min_trust=LEVEL_HERO,
     ),
     Command("@redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@asave", cmd_asave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("wiznet", cmd_wiznet, min_trust=LEVEL_IMMORTAL),

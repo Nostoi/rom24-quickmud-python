@@ -5,14 +5,16 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import Any
 
-from mud.affects.saves import check_dispel, saves_dispel, saves_spell
 from mud.advancement import gain_exp
+from mud.affects.saves import check_dispel, saves_dispel, saves_spell
+from mud.characters import is_clan_member, is_same_clan, is_same_group
+from mud.characters.follow import add_follower, stop_follower
 from mud.combat.engine import (
     apply_damage,
     attack_round,
-    get_wielded_weapon,
     get_weapon_skill,
     get_weapon_sn,
+    get_wielded_weapon,
     is_evil,
     is_good,
     is_neutral,
@@ -21,8 +23,6 @@ from mud.combat.engine import (
     update_pos,
 )
 from mud.game_loop import SkyState, weather
-from mud.characters import is_clan_member, is_same_clan, is_same_group
-from mud.characters.follow import add_follower, stop_follower
 from mud.magic.effects import (
     SpellTarget,
     acid_effect,
@@ -34,51 +34,48 @@ from mud.magic.effects import (
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
-    AffectFlag,
-    ActFlag,
-    ContainerFlag,
-    DamageType,
-    ExtraFlag,
-    OffFlag,
-    ImmFlag,
-    ItemType,
-    LIQUID_TABLE,
-    MAX_LEVEL,
-    Sector,
-    PlayerFlag,
-    Position,
-    ResFlag,
-    RoomFlag,
-    Sex,
-    Stat,
-    VulnFlag,
-    WearLocation,
-    WeaponFlag,
-    WeaponType,
     LEVEL_HERO,
     LEVEL_IMMORTAL,
     LIQ_WATER,
+    LIQUID_TABLE,
+    MAX_LEVEL,
     OBJ_VNUM_DISC,
-    OBJ_VNUM_PORTAL,
     OBJ_VNUM_LIGHT_BALL,
     OBJ_VNUM_MUSHROOM,
+    OBJ_VNUM_PORTAL,
     OBJ_VNUM_ROSE,
     OBJ_VNUM_SPRING,
     ROOM_VNUM_TEMPLE,
+    ActFlag,
+    AffectFlag,
+    ContainerFlag,
+    DamageType,
+    ExtraFlag,
+    ImmFlag,
+    ItemType,
+    OffFlag,
+    PlayerFlag,
+    Position,
+    RoomFlag,
+    Sector,
+    Sex,
+    Stat,
+    VulnFlag,
+    WeaponFlag,
+    WeaponType,
+    WearLocation,
 )
-from mud.models.object import Object
 from mud.models.obj import Affect, ObjectData
+from mud.models.object import Object
 from mud.net.protocol import broadcast_room
-from mud.spawning.obj_spawner import spawn_object
 from mud.registry import room_registry
+from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
+from mud.skills.registry import check_improve
+from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
 from mud.world.look import look
 from mud.world.movement import _get_random_room
 from mud.world.vision import can_see_object, can_see_room, room_is_dark
-
-from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
-from mud.skills.registry import check_improve
-
 
 # ROM const.c lists "spell" as the noun_damage for the cause harm trio.
 _CAUSE_SPELL_ATTACK_NOUN = "spell"
@@ -287,6 +284,7 @@ def _emit_affect_descriptions(caster: Character, obj: Object | ObjectData | obje
             _send_to_char(caster, f"Adds {descriptor} weapon flags.")
         else:
             _send_to_char(caster, f"Unknown bit {where}: {bitvector}")
+
 
 _ITEM_TYPE_NAMES: dict[ItemType, str] = {
     ItemType.SCROLL: "scroll",
@@ -627,9 +625,9 @@ def _copy_base_affects_if_needed(obj: Object | ObjectData, proto: Any) -> None:
     current_affects = _collect_affects(obj, clone=False)
 
     if base_affects or current_affects:
-        setattr(obj, "affected", base_affects + current_affects)
+        obj.affected = base_affects + current_affects
     else:
-        setattr(obj, "affected", [])
+        obj.affected = []
 
     obj.enchanted = True
 
@@ -702,6 +700,8 @@ def _extract_runtime_object(obj: Object | ObjectData) -> None:
     contained = getattr(obj, "contained_items", None)
     if isinstance(contained, list):
         contained.clear()
+
+
 def _resolve_item_type(value: object) -> ItemType | None:
     """Translate assorted item type representations to ``ItemType``."""
 
@@ -961,7 +961,9 @@ def _can_see_locate_carrier(observer: Character, carrier: Character | None) -> b
             if not immortal:
                 return False
 
-    if _character_has_affect(carrier, AffectFlag.INVISIBLE) and not _character_has_affect(observer, AffectFlag.DETECT_INVIS):
+    if _character_has_affect(carrier, AffectFlag.INVISIBLE) and not _character_has_affect(
+        observer, AffectFlag.DETECT_INVIS
+    ):
         return False
 
     if (
@@ -1111,7 +1113,12 @@ def _is_safe_spell(caster: Character, victim: Character, *, area: bool) -> bool:
     if getattr(victim, "fighting", None) is caster or victim is caster:
         return False
 
-    if hasattr(caster, "is_immortal") and caster.is_immortal() and getattr(caster, "level", 0) > LEVEL_IMMORTAL and not area:
+    if (
+        hasattr(caster, "is_immortal")
+        and caster.is_immortal()
+        and getattr(caster, "level", 0) > LEVEL_IMMORTAL
+        and not area
+    ):
         return False
 
     victim_is_npc = bool(getattr(victim, "is_npc", True))
@@ -1141,7 +1148,12 @@ def _is_safe_spell(caster: Character, victim: Character, *, area: bool) -> bool:
                 if not is_same_group(victim, caster_fighting):
                     return True
     else:
-        if area and hasattr(victim, "is_immortal") and victim.is_immortal() and getattr(victim, "level", 0) > LEVEL_IMMORTAL:
+        if (
+            area
+            and hasattr(victim, "is_immortal")
+            and victim.is_immortal()
+            and getattr(victim, "level", 0) > LEVEL_IMMORTAL
+        ):
             return True
 
         if caster_is_npc:
@@ -1251,13 +1263,6 @@ def armor(caster: Character, target: Character | None = None) -> bool:
     level = max(int(getattr(caster, "level", 0) or 0), 0)
     effect = SpellEffect(name="armor", duration=24, level=level, ac_mod=-20)
     return target.apply_spell_effect(effect)
-
-
-def axe(caster, target=None):
-    """Stub implementation for axe.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def backstab(
@@ -1595,6 +1600,156 @@ def calm(
     return applied
 
 
+def cancellation(caster: Character, target: Character | None = None) -> bool:
+    """ROM spell_cancellation: remove ALL spell effects (no save).
+
+    Mirroring ROM src/magic.c:1033-1203.
+    """
+    if caster is None or target is None:
+        raise ValueError("cancellation requires caster and target")
+
+    # ROM L1039: level += 2
+    level = max(int(getattr(caster, "level", 0) or 0), 0) + 2
+
+    # ROM L1041-1047: Type check - only NPC->PC or PC->NPC (except charmed)
+    caster_is_npc = getattr(caster, "is_npc", True)
+    target_is_npc = getattr(target, "is_npc", True)
+    caster_charmed = caster.has_affect(AffectFlag.CHARM) and hasattr(caster, "master")
+
+    if not caster_is_npc and target_is_npc and not (caster_charmed and getattr(caster, "master", None) is target):
+        pass  # PC -> NPC allowed
+    elif caster_is_npc and not target_is_npc:
+        pass  # NPC -> PC allowed
+    else:
+        _send_to_char(caster, "You failed, try dispel magic.")
+        return False
+
+    # ROM L1049: unlike dispel magic, the victim gets NO save
+    # ROM L1051-1199: check_dispel on many spells
+    found = False
+    room = getattr(target, "room", None)
+
+    # Helper to broadcast room messages
+    def _broadcast_room_msg(msg: str) -> None:
+        if room:
+            broadcast_room(room, msg.replace("$n", _character_name(target)), exclude=target)
+
+    if check_dispel(level, target, "armor"):
+        found = True
+
+    if check_dispel(level, target, "bless"):
+        found = True
+
+    if check_dispel(level, target, "blindness"):
+        found = True
+        _broadcast_room_msg("$n is no longer blinded.")
+
+    if check_dispel(level, target, "calm"):
+        found = True
+        _broadcast_room_msg("$n no longer looks so peaceful...")
+
+    if check_dispel(level, target, "change_sex"):
+        found = True
+        _broadcast_room_msg("$n looks more like $mself again.")
+
+    if check_dispel(level, target, "charm_person"):
+        found = True
+        _broadcast_room_msg("$n regains $s free will.")
+
+    if check_dispel(level, target, "chill_touch"):
+        found = True
+        _broadcast_room_msg("$n looks warmer.")
+
+    if check_dispel(level, target, "curse"):
+        found = True
+
+    if check_dispel(level, target, "detect_evil"):
+        found = True
+
+    if check_dispel(level, target, "detect_good"):
+        found = True
+
+    if check_dispel(level, target, "detect_hidden"):
+        found = True
+
+    if check_dispel(level, target, "detect_invis"):
+        found = True
+
+    if check_dispel(level, target, "detect_magic"):
+        found = True
+
+    if check_dispel(level, target, "faerie_fire"):
+        _broadcast_room_msg("$n's outline fades.")
+        found = True
+
+    if check_dispel(level, target, "fly"):
+        _broadcast_room_msg("$n falls to the ground!")
+        found = True
+
+    if check_dispel(level, target, "frenzy"):
+        _broadcast_room_msg("$n no longer looks so wild.")
+        found = True
+
+    if check_dispel(level, target, "giant_strength"):
+        _broadcast_room_msg("$n no longer looks so mighty.")
+        found = True
+
+    if check_dispel(level, target, "haste"):
+        _broadcast_room_msg("$n is no longer moving so quickly.")
+        found = True
+
+    if check_dispel(level, target, "infravision"):
+        found = True
+
+    if check_dispel(level, target, "invis"):
+        _broadcast_room_msg("$n fades into existance.")
+        found = True
+
+    if check_dispel(level, target, "mass_invis"):
+        _broadcast_room_msg("$n fades into existance.")
+        found = True
+
+    if check_dispel(level, target, "pass_door"):
+        found = True
+
+    if check_dispel(level, target, "protection_evil"):
+        found = True
+
+    if check_dispel(level, target, "protection_good"):
+        found = True
+
+    if check_dispel(level, target, "sanctuary"):
+        _broadcast_room_msg("The white aura around $n's body vanishes.")
+        found = True
+
+    if check_dispel(level, target, "shield"):
+        _broadcast_room_msg("The shield protecting $n vanishes.")
+        found = True
+
+    if check_dispel(level, target, "sleep"):
+        found = True
+
+    if check_dispel(level, target, "slow"):
+        _broadcast_room_msg("$n is no longer moving so slowly.")
+        found = True
+
+    if check_dispel(level, target, "stone_skin"):
+        _broadcast_room_msg("$n's skin regains its normal texture.")
+        found = True
+
+    if check_dispel(level, target, "weaken"):
+        _broadcast_room_msg("$n looks stronger.")
+        found = True
+
+    # ROM L1200-1203: send result message
+    if found:
+        _send_to_char(caster, "Ok.")
+    else:
+        _send_to_char(caster, "Spell failed.")
+
+    return found
+
+
 def cause_critical(caster: Character, target: Character | None = None) -> int:
     """ROM ``spell_cause_critical`` damage (3d8 + level - 6)."""
 
@@ -1827,9 +1982,7 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
         flags = int(getattr(room, "room_flags", 0) or 0)
         if flags & int(RoomFlag.ROOM_LAW):
             if hasattr(caster, "messages") and isinstance(caster.messages, list):
-                caster.messages.append(
-                    "The mayor does not allow charming in the city limits."
-                )
+                caster.messages.append("The mayor does not allow charming in the city limits.")
             return False
 
     if saves_spell(level, target, DamageType.CHARM):
@@ -2030,15 +2183,9 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
 
     caster_name = getattr(caster, "name", None) or "Someone"
     target_name = getattr(target, "name", None) or "Someone"
-    caster_msg = (
-        f"{{3You spray {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
-    )
-    target_msg = (
-        f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light across your vision!{{x"
-    )
-    room_msg = (
-        f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
-    )
+    caster_msg = f"{{3You spray {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
+    target_msg = f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light across your vision!{{x"
+    room_msg = f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
 
     if hasattr(caster, "messages"):
         caster.messages.append(caster_msg)
@@ -2058,11 +2205,11 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
     else:
         blind_level = c_div(capped, 2)
         original_level = getattr(caster, "level", 0)
-        setattr(caster, "level", blind_level)
+        caster.level = blind_level
         try:
             blindness(caster, target)
         finally:
-            setattr(caster, "level", original_level)
+            caster.level = original_level
 
     target.hit -= damage
     update_pos(target)
@@ -2087,7 +2234,7 @@ def continual_light(
             _send_to_char(caster, f"{_object_short_descr(target)} is already glowing.")
             return False
 
-        setattr(target, "extra_flags", extra_flags | int(ExtraFlag.GLOW))
+        target.extra_flags = extra_flags | int(ExtraFlag.GLOW)
         message = f"{_object_short_descr(target)} glows with a white light."
         _send_to_char(caster, message)
 
@@ -2255,19 +2402,14 @@ def create_water(caster: Character, target: Object | None = None) -> bool:
     return True
 
 
-def cure_blindness(
-    caster: Character, target: Character | None = None
-) -> bool:
+def cure_blindness(caster: Character, target: Character | None = None) -> bool:
     """Dispel ROM blindness affect with success/failure messaging."""
 
     victim = target or caster
     if victim is None:
         raise ValueError("cure_blindness requires a target")
 
-    if not (
-        victim.has_affect(AffectFlag.BLIND)
-        or victim.has_spell_effect("blindness")
-    ):
+    if not (victim.has_affect(AffectFlag.BLIND) or victim.has_spell_effect("blindness")):
         if victim is caster:
             _send_to_char(victim, "You aren't blind.")
         else:
@@ -2293,9 +2435,7 @@ def cure_blindness(
     return False
 
 
-def cure_critical(
-    caster: Character, target: Character | None = None
-) -> int:
+def cure_critical(caster: Character, target: Character | None = None) -> int:
     """ROM ``spell_cure_critical`` healing dice and messaging."""
 
     target = target or caster
@@ -2318,19 +2458,14 @@ def cure_critical(
     return heal
 
 
-def cure_disease(
-    caster: Character, target: Character | None = None
-) -> bool:
+def cure_disease(caster: Character, target: Character | None = None) -> bool:
     """Dispel ROM plague affect with messaging for success/failure."""
 
     victim = target or caster
     if victim is None:
         raise ValueError("cure_disease requires a target")
 
-    if not (
-        victim.has_affect(AffectFlag.PLAGUE)
-        or victim.has_spell_effect("plague")
-    ):
+    if not (victim.has_affect(AffectFlag.PLAGUE) or victim.has_spell_effect("plague")):
         if victim is caster:
             _send_to_char(victim, "You aren't ill.")
         else:
@@ -2378,19 +2513,14 @@ def cure_light(caster: Character, target: Character | None = None) -> int:
     return heal
 
 
-def cure_poison(
-    caster: Character, target: Character | None = None
-) -> bool:
+def cure_poison(caster: Character, target: Character | None = None) -> bool:
     """Dispel ROM poison affect with messaging on outcome."""
 
     victim = target or caster
     if victim is None:
         raise ValueError("cure_poison requires a target")
 
-    if not (
-        victim.has_affect(AffectFlag.POISON)
-        or victim.has_spell_effect("poison")
-    ):
+    if not (victim.has_affect(AffectFlag.POISON) or victim.has_spell_effect("poison")):
         if victim is caster:
             _send_to_char(victim, "You aren't poisoned.")
         else:
@@ -2416,9 +2546,7 @@ def cure_poison(
     return False
 
 
-def cure_serious(
-    caster: Character, target: Character | None = None
-) -> int:
+def cure_serious(caster: Character, target: Character | None = None) -> int:
     """ROM ``spell_cure_serious`` healing dice and messaging."""
 
     target = target or caster
@@ -2508,13 +2636,6 @@ def curse(caster, target=None, *, override_level: int | None = None):
         victim_name = getattr(victim, "name", None) or "Someone"
         _send_to_char(caster, f"{victim_name} looks very uncomfortable.")
     return True
-
-
-def dagger(caster, target=None):
-    """Stub implementation for dagger.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def demonfire(caster: Character, target: Character | None = None) -> int:
@@ -3084,13 +3205,6 @@ def dispel_magic(caster: Character, target: Character | None = None) -> bool:
     return success
 
 
-def dodge(caster, target=None):
-    """Stub implementation for dodge.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def earthquake(caster: Character, target=None) -> bool:  # noqa: ARG001 - parity signature
     """ROM ``spell_earthquake`` area bash damage with flying immunity."""
 
@@ -3215,8 +3329,8 @@ def enchant_armor(caster: Character, target: Object | ObjectData | None = None) 
     if result < fail // 3:
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
         _notify_room(f"{short_descr} glows brightly, then fades.")
-        setattr(obj, "enchanted", True)
-        setattr(obj, "affected", [])
+        obj.enchanted = True
+        obj.affected = []
         obj.extra_flags = 0
         return False
 
@@ -3362,8 +3476,8 @@ def enchant_weapon(caster: Character, target: Object | ObjectData | None = None)
     if result < fail // 2:
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
         _notify_room(f"{short_descr} glows brightly, then fades.")
-        setattr(obj, "enchanted", True)
-        setattr(obj, "affected", [])
+        obj.enchanted = True
+        obj.affected = []
         obj.extra_flags = 0
         return False
 
@@ -3491,18 +3605,187 @@ def energy_drain(caster: Character, target: Character | None = None) -> int:
     return max(0, before - after)
 
 
-def enhanced_damage(caster, target=None):
-    """Stub implementation for enhanced_damage.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def envenom(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    item_name: str = "",
+) -> dict[str, Any]:
+    """ROM do_envenom: poison food/drink or edged weapons.
 
+    Mirroring ROM src/act_obj.c:849-963.
 
-def envenom(caster, target=None):
-    """Stub implementation for envenom.
-    TODO: Implement actual ROM logic from C source.
+    Returns dict with keys: success (bool), message (str), poisoned_food (bool), poisoned_weapon (bool)
     """
-    return 42  # Placeholder damage/effect
+    if caster is None:
+        return {"success": False, "message": "No caster"}
+
+    # ROM L856-860: check for argument
+    if not item_name:
+        return {"success": False, "message": "Envenom what item?"}
+
+    # ROM L862-868: find object in inventory
+    obj = None
+    inventory = list(getattr(caster, "inventory", []) or [])
+    for candidate in inventory:
+        obj_name = getattr(candidate, "name", None) or getattr(getattr(candidate, "prototype", None), "name", "")
+        if obj_name and item_name.lower() in obj_name.lower():
+            obj = candidate
+            break
+
+    if obj is None:
+        return {"success": False, "message": "You don't have that item."}
+
+    # ROM L870-874: check skill
+    caster_skill = int(getattr(caster, "skills", {}).get("envenom", 0))
+    if caster_skill < 1:
+        return {"success": False, "message": "Are you crazy? You'd poison yourself!"}
+
+    proto = getattr(obj, "prototype", None)
+    obj_item_type = getattr(obj, "item_type", None) or getattr(proto, "item_type", None)
+
+    # Resolve item type
+    if isinstance(obj_item_type, str):
+        try:
+            obj_item_type = ItemType[obj_item_type.upper()]
+        except (KeyError, AttributeError):
+            obj_item_type = None
+    elif isinstance(obj_item_type, int):
+        try:
+            obj_item_type = ItemType(obj_item_type)
+        except ValueError:
+            obj_item_type = None
+
+    # ROM L876-903: poison food/drink
+    if obj_item_type in (ItemType.FOOD, ItemType.DRINK_CON):
+        # ROM L878-883: check for blessed/fireproof
+        obj_extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
+        proto_extra_flags = int(getattr(proto, "extra_flags", 0) or 0)
+        effective_flags = obj_extra_flags | proto_extra_flags
+
+        if (effective_flags & int(ExtraFlag.BLESS)) or (effective_flags & int(ExtraFlag.BURN_PROOF)):
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            return {"success": False, "message": f"You fail to poison {short_descr}."}
+
+        # ROM L885-896: success check
+        values = list(getattr(obj, "value", [0, 0, 0, 0]))
+        while len(values) < 4:
+            values.append(0)
+
+        percent = rng_mm.number_percent()
+        if percent < caster_skill:
+            # Success!
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            room = getattr(caster, "room", None)
+            if room is not None:
+                broadcast_room(
+                    room, f"{_character_name(caster)} treats {short_descr} with deadly poison.", exclude=caster
+                )
+
+            _send_to_char(caster, f"You treat {short_descr} with deadly poison.")
+
+            if not values[3]:
+                values[3] = 1
+                obj.value = values
+                check_improve(caster, "envenom", True, 4)
+
+            # ROM L894: WAIT_STATE
+            return {"success": True, "message": "", "poisoned_food": True}
+
+        # ROM L898-902: failure
+        short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+        if values[3] == 0:
+            check_improve(caster, "envenom", False, 4)
+
+        return {"success": False, "message": f"You fail to poison {short_descr}.", "poisoned_food": False}
+
+    # ROM L905-959: poison weapon
+    if obj_item_type == ItemType.WEAPON:
+        obj_extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
+        proto_extra_flags = int(getattr(proto, "extra_flags", 0) or 0)
+        effective_flags = obj_extra_flags | proto_extra_flags
+
+        # ROM L907-918: check weapon flags
+        weapon_flags = 0
+        for aff in list(getattr(obj, "affected", []) or []):
+            where = int(getattr(aff, "where", 0) or 0)
+            if where == _TO_WEAPON:
+                weapon_flags |= int(getattr(aff, "bitvector", 0) or 0)
+
+        forbidden_flags = (
+            int(WeaponFlag.FLAMING)
+            | int(WeaponFlag.FROST)
+            | int(WeaponFlag.VAMPIRIC)
+            | int(WeaponFlag.SHARP)
+            | int(WeaponFlag.VORPAL)
+            | int(WeaponFlag.SHOCKING)
+        )
+
+        if (
+            (weapon_flags & forbidden_flags)
+            or (effective_flags & int(ExtraFlag.BLESS))
+            or (effective_flags & int(ExtraFlag.BURN_PROOF))
+        ):
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            return {"success": False, "message": f"You can't seem to envenom {short_descr}."}
+
+        # ROM L920-925: check for edged weapon
+        values = list(getattr(obj, "value", [0, 0, 0, 0]))
+        while len(values) < 4:
+            values.append(0)
+
+        weapon_attack_type = int(values[3] if len(values) > 3 else 0)
+        if weapon_attack_type < 0:
+            return {"success": False, "message": "You can only envenom edged weapons."}
+
+        # ROM L927-931: check if already poisoned
+        if weapon_flags & int(WeaponFlag.POISON):
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            return {"success": False, "message": f"{short_descr} is already envenomed."}
+
+        # ROM L933-951: success check
+        percent = rng_mm.number_percent()
+        if percent < caster_skill:
+            # ROM L937-944: create poison affect
+            level = max(int(getattr(caster, "level", 0) or 0), 0)
+            duration = c_div(level * percent, 100 * 2)
+            affect_level = c_div(level * percent, 100)
+
+            poison_affect = Affect(
+                where=_TO_WEAPON,
+                type=-1,  # ROM uses gsn_poison but we use -1 for object affects
+                level=affect_level,
+                duration=duration,
+                location=0,
+                modifier=0,
+                bitvector=int(WeaponFlag.POISON),
+            )
+
+            if not hasattr(obj, "affected") or obj.affected is None:
+                obj.affected = []
+            obj.affected.append(poison_affect)
+
+            # ROM L946-948: messages
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            room = getattr(caster, "room", None)
+            if room is not None:
+                broadcast_room(
+                    room, f"{_character_name(caster)} coats {short_descr} with deadly venom.", exclude=caster
+                )
+
+            _send_to_char(caster, f"You coat {short_descr} with venom.")
+            check_improve(caster, "envenom", True, 3)
+
+            return {"success": True, "message": "", "poisoned_weapon": True}
+
+        # ROM L952-958: failure
+        short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+        check_improve(caster, "envenom", False, 3)
+        return {"success": False, "message": f"You fail to envenom {short_descr}.", "poisoned_weapon": False}
+
+    # ROM L961-962: can't poison this type
+    short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+    return {"success": False, "message": f"You can't poison {short_descr}."}
 
 
 def faerie_fire(caster: Character, target: Character | None = None) -> bool:
@@ -3601,18 +3884,31 @@ def faerie_fog(caster: Character, target: Character | None = None) -> bool:
     return revealed_any
 
 
-def farsight(caster, target=None):
-    """Stub implementation for farsight.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def farsight(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    direction: str = "",
+) -> str:
+    """ROM spell_farsight: magical scan if not blind.
 
-
-def fast_healing(caster, target=None):
-    """Stub implementation for fast_healing.
-    TODO: Implement actual ROM logic from C source.
+    Mirroring ROM src/magic2.c:44-53.
     """
-    return 42  # Placeholder damage/effect
+    if caster is None:
+        raise ValueError("farsight requires a caster")
+
+    # ROM L46-50: blind check
+    if caster.has_affect(AffectFlag.BLIND):
+        _send_to_char(caster, "Maybe it would help if you could see?")
+        return ""
+
+    # ROM L52: do_function(ch, &do_scan, target_name)
+    from mud.commands.inspection import do_scan
+
+    result = do_scan(caster, direction)
+    if result:
+        _send_to_char(caster, result)
+    return result
 
 
 def fire_breath(caster: Character, target: Character | None = None) -> int:
@@ -3776,14 +4072,14 @@ def fireproof(caster: Character, target: Object | ObjectData | None = None) -> b
         modifier=0,
         bitvector=int(ExtraFlag.BURN_PROOF),
     )
-    setattr(affect, "spell_name", "fireproof")
-    setattr(affect, "wear_off_message", _OBJECT_FIREPROOF_WEAR_OFF)
+    affect.spell_name = "fireproof"
+    affect.wear_off_message = _OBJECT_FIREPROOF_WEAR_OFF
 
     affects = getattr(obj, "affected", None)
     if isinstance(affects, list):
         affects.append(affect)
     else:
-        setattr(obj, "affected", [affect])
+        obj.affected = [affect]
 
     obj.extra_flags = extra_flags | int(ExtraFlag.BURN_PROOF)
 
@@ -3795,13 +4091,6 @@ def fireproof(caster: Character, target: Object | ObjectData | None = None) -> b
         broadcast_room(room, message, exclude=caster)
 
     return True
-
-
-def flail(caster, target=None):
-    """Stub implementation for flail.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def flamestrike(caster: Character, target: Character | None = None) -> int:
@@ -3971,7 +4260,11 @@ def frenzy(caster: Character, target: Character | None = None) -> bool:  # noqa:
     target_neutral = is_neutral(target)
     target_evil = is_evil(target)
 
-    if (caster_good and not target_good) or (caster_neutral and not target_neutral) or (caster_evil and not target_evil):
+    if (
+        (caster_good and not target_good)
+        or (caster_neutral and not target_neutral)
+        or (caster_evil and not target_evil)
+    ):
         name = _character_name(target)
         _send_to_char(caster, f"Your god doesn't seem to like {name}")
         return False
@@ -4305,18 +4598,22 @@ def giant_strength(
     return True
 
 
-def haggle(caster, target=None):
-    """Stub implementation for haggle.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def haggle(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """ROM haggle: passive skill checked during shop buy/sell transactions.
 
+    Mirroring ROM src/act_obj.c:2601-2933 (three inline checks).
 
-def hand_to_hand(caster, target=None):
-    """Stub implementation for hand_to_hand.
-    TODO: Implement actual ROM logic from C source.
+    Haggle is not a command - it's a passive skill checked in:
+    - do_buy (L2722-2730): reduces purchase cost
+    - do_sell (L2924-2933): increases sale price
+    - pet shop (L2601-2609): reduces pet cost
+
+    This function should never be called directly as a skill command.
     """
-    return 42  # Placeholder damage/effect
+    return {
+        "success": False,
+        "message": "Haggle is a passive skill used automatically when buying or selling at shops.",
+    }
 
 
 def haste(
@@ -4413,6 +4710,34 @@ def haste(
     return True
 
 
+def harm(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_harm: damage spell that reduces target to near-death.
+
+    Mirroring ROM src/magic.c:3048-3059.
+    """
+    if caster is None or target is None:
+        raise ValueError("harm requires caster and target")
+
+    level = max(int(getattr(caster, "level", 0) or 0), 0)
+    target_hit = int(getattr(target, "hit", 0) or 0)
+
+    # ROM L3053: dam = UMAX(20, victim->hit - dice(1,4))
+    dice_roll = rng_mm.dice(1, 4)
+    dam = max(20, target_hit - dice_roll)
+
+    # ROM L3054-3055: save reduces to min(50, dam/2)
+    if saves_spell(level, target, DamageType.HARM):
+        dam = min(50, c_div(dam, 2))
+
+    # ROM L3056: cap at 100
+    dam = min(100, dam)
+
+    # ROM L3057: damage(ch, victim, dam, sn, DAM_HARM, TRUE)
+    target.hit -= dam
+    update_pos(target)
+    return dam
+
+
 def heal(caster: Character, target: Character | None = None) -> int:
     """ROM ``spell_heal`` fixed healing with warm feeling messaging."""
 
@@ -4434,18 +4759,239 @@ def heal(caster: Character, target: Character | None = None) -> int:
     return heal_amount
 
 
-def heat_metal(caster, target=None):
-    """Stub implementation for heat_metal.
-    TODO: Implement actual ROM logic from C source.
+def heat_metal(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    override_level: int | None = None,
+) -> int:
+    """ROM spell_heat_metal: heat metal items causing victim to drop or take damage.
+
+    Mirroring ROM src/magic.c:3123-3277.
     """
-    return 42  # Placeholder damage/effect
+    if caster is None or target is None:
+        raise ValueError("heat_metal requires caster and target")
+
+    level = override_level if override_level is not None else max(int(getattr(caster, "level", 0) or 0), 0)
+    dam = 0
+    fail = True
+
+    # ROM L3131-3132: check saves and fire immunity
+    victim_imm = int(getattr(target, "imm_flags", 0) or 0)
+    if saves_spell(level + 2, target, DamageType.FIRE) or (victim_imm & ImmFlag.FIRE):
+        _send_to_char(caster, "Your spell had no effect.")
+        _send_to_char(target, "You feel momentarily warmer.")
+        return 0
+
+    # ROM L3134-3263: iterate through victim's inventory
+    room = getattr(target, "room", None)
+    inventory = list(getattr(target, "inventory", []) or [])
+    equipment = dict(getattr(target, "equipment", {}) or {})
+
+    # Combine inventory and equipped items for iteration
+    all_items = inventory + list(equipment.values())
+
+    for obj in all_items:
+        # ROM L3138-3141: check if item should be heated
+        obj_level = int(getattr(obj, "level", 0) or 0)
+        if not (rng_mm.number_range(1, 2 * level) > obj_level):
+            continue
+        if saves_spell(level, target, DamageType.FIRE):
+            continue
+
+        obj_extra = int(getattr(obj, "extra_flags", 0) or 0)
+        if (obj_extra & ExtraFlag.NONMETAL) or (obj_extra & ExtraFlag.BURN_PROOF):
+            continue
+
+        obj_type = getattr(obj, "item_type", None)
+        wear_loc = int(getattr(obj, "wear_loc", -1))
+        is_worn = wear_loc != -1
+
+        # ROM L3143-3261: handle ARMOR and WEAPON types
+        if obj_type == ItemType.ARMOR:
+            if is_worn:
+                # ROM L3146-3175: try to remove worn armor
+                obj_weight = int(getattr(obj, "weight", 0) or 0)
+                dex = int(getattr(target, "dex", 10) or 10)
+                can_remove = c_div(obj_weight, 10) < rng_mm.number_range(1, 2 * dex)
+
+                # Simplified: assume can_drop_obj returns True (no cursed items check)
+                if can_remove:
+                    # Successfully removed
+                    obj_name = getattr(obj, "short_descr", "something")
+                    if room:
+                        broadcast_room(
+                            room,
+                            f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            exclude=target,
+                        )
+                    _send_to_char(target, f"You remove and drop {obj_name} before it burns you.")
+                    dam += c_div(rng_mm.number_range(1, obj_level), 3)
+
+                    # Move from equipped to room
+                    for slot, equipped in list(equipment.items()):
+                        if equipped is obj:
+                            del target.equipment[slot]
+                            break
+                    if room and hasattr(room, "objects"):
+                        room.objects.append(obj)
+                    fail = False
+                else:
+                    # ROM L3167-3174: stuck on body
+                    obj_name = getattr(obj, "short_descr", "something")
+                    _send_to_char(target, f"Your skin is seared by {obj_name}!")
+                    dam += rng_mm.number_range(1, obj_level)
+                    fail = False
+            else:
+                # ROM L3177-3201: not worn, try to drop from inventory
+                obj_name = getattr(obj, "short_descr", "something")
+                # Simplified: assume can_drop (no cursed check)
+                if True:  # can_drop_obj
+                    if room:
+                        broadcast_room(
+                            room,
+                            f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            exclude=target,
+                        )
+                    _send_to_char(target, f"You and drop {obj_name} before it burns you.")
+                    dam += c_div(rng_mm.number_range(1, obj_level), 6)
+
+                    if obj in target.inventory:
+                        target.inventory.remove(obj)
+                    if room and hasattr(room, "objects"):
+                        room.objects.append(obj)
+                    fail = False
+                else:
+                    # Cannot drop
+                    _send_to_char(target, f"Your skin is seared by {obj_name}!")
+                    dam += c_div(rng_mm.number_range(1, obj_level), 2)
+                    fail = False
+
+        elif obj_type == ItemType.WEAPON:
+            # ROM L3204-3260: handle weapons
+            if is_worn:
+                # ROM L3206-3207: skip flaming weapons
+                obj_weapon_flags = int(
+                    getattr(obj, "value", [0, 0, 0, 0])[3]
+                    if hasattr(obj, "value") and len(getattr(obj, "value", [])) > 3
+                    else 0
+                )
+                if obj_weapon_flags & WeaponFlag.FLAMING:
+                    continue
+
+                # Try to drop wielded weapon
+                obj_name = getattr(obj, "short_descr", "something")
+                # Simplified: assume can_drop
+                if True:  # can_drop_obj and remove_obj
+                    if room:
+                        broadcast_room(
+                            room,
+                            f"{_character_name(target)} is burned by {obj_name}, and throws it to the ground.",
+                            exclude=target,
+                        )
+                    _send_to_char(target, "You throw your red-hot weapon to the ground!")
+                    dam += 1
+
+                    # Unequip weapon
+                    for slot, equipped in list(equipment.items()):
+                        if equipped is obj:
+                            del target.equipment[slot]
+                            break
+                    if room and hasattr(room, "objects"):
+                        room.objects.append(obj)
+                    fail = False
+                else:
+                    # ROM L3224-3232: stuck with weapon
+                    _send_to_char(target, "Your weapon sears your flesh!")
+                    dam += rng_mm.number_range(1, obj_level)
+                    fail = False
+            else:
+                # ROM L3234-3259: weapon in inventory
+                obj_name = getattr(obj, "short_descr", "something")
+                if True:  # can_drop_obj
+                    if room:
+                        broadcast_room(
+                            room,
+                            f"{_character_name(target)} throws a burning hot {obj_name} to the ground!",
+                            exclude=target,
+                        )
+                    _send_to_char(target, f"You and drop {obj_name} before it burns you.")
+                    dam += c_div(rng_mm.number_range(1, obj_level), 6)
+
+                    if obj in target.inventory:
+                        target.inventory.remove(obj)
+                    if room and hasattr(room, "objects"):
+                        room.objects.append(obj)
+                    fail = False
+                else:
+                    # Cannot drop
+                    _send_to_char(target, f"Your skin is seared by {obj_name}!")
+                    dam += c_div(rng_mm.number_range(1, obj_level), 2)
+                    fail = False
+
+    # ROM L3265-3276: final damage application
+    if fail:
+        _send_to_char(caster, "Your spell had no effect.")
+        _send_to_char(target, "You feel momentarily warmer.")
+        return 0
+    else:
+        # ROM L3273-3275: save for reduced damage
+        if saves_spell(level, target, DamageType.FIRE):
+            dam = c_div(2 * dam, 3)
+
+        # Apply damage
+        target.hit -= dam
+        update_pos(target)
+        return dam
 
 
-def hide(caster, target=None):
-    """Stub implementation for hide.
-    TODO: Implement actual ROM logic from C source.
+def hide(caster: Character, target: Character | None = None) -> str:
+    """ROM do_hide - attempt to hide from observers.
+
+    Mirrors ROM src/act_move.c:1526-1542 (do_hide).
+
+    Logic:
+    - Send message "You attempt to hide."
+    - Remove existing AFF_HIDE if present (L1530-1531)
+    - Roll: number_percent() < get_skill(ch, gsn_hide) (L1533)
+    - On success: SET_BIT(ch->affected_by, AFF_HIDE) (L1535)
+    - check_improve() on both success and failure (L1536, 1539)
+
+    Args:
+        caster: Character attempting to hide
+        target: Unused (parity signature)
+
+    Returns:
+        Message string
     """
-    return 42  # Placeholder damage/effect
+    from mud.utils import rng_mm
+
+    if caster is None:
+        raise ValueError("hide requires a caster")
+
+    # ROM L1528: send_to_char("You attempt to hide.\n\r", ch);
+    _send_to_char(caster, "You attempt to hide.")
+
+    # ROM L1530-1531: if (IS_AFFECTED(ch, AFF_HIDE)) REMOVE_BIT(ch->affected_by, AFF_HIDE);
+    if caster.has_affect(AffectFlag.HIDE):
+        caster.remove_affect(AffectFlag.HIDE)
+
+    # ROM L1533: if (number_percent() < get_skill(ch, gsn_hide))
+    skill_pct = _skill_percent(caster, "hide")
+    roll = rng_mm.number_percent()
+
+    if roll < skill_pct:
+        # ROM L1535: SET_BIT(ch->affected_by, AFF_HIDE);
+        affected_by = int(getattr(caster, "affected_by", 0) or 0)
+        caster.affected_by = affected_by | int(AffectFlag.HIDE)
+
+        # ROM L1536: check_improve(ch, gsn_hide, TRUE, 3);
+        check_improve(caster, "hide", success=True, multiplier=3)
+    else:
+        # ROM L1539: check_improve(ch, gsn_hide, FALSE, 3);
+        check_improve(caster, "hide", success=False, multiplier=3)
+
+    return "You attempt to hide."
 
 
 def high_explosive(
@@ -4719,14 +5265,14 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
             modifier=0,
             bitvector=int(ExtraFlag.INVIS),
         )
-        setattr(affect, "spell_name", "invisibility")
-        setattr(affect, "wear_off_message", _OBJECT_INVIS_WEAR_OFF)
+        affect.spell_name = "invisibility"
+        affect.wear_off_message = _OBJECT_INVIS_WEAR_OFF
 
         affects = getattr(obj, "affected", None)
         if isinstance(affects, list):
             affects.append(affect)
         else:
-            setattr(obj, "affected", [affect])
+            obj.affected = [affect]
 
         obj.extra_flags = extra_flags | int(ExtraFlag.INVIS)
         message = f"{_object_short_descr(obj)} fades out of sight."
@@ -5016,13 +5562,6 @@ def lore(caster: Character, target: Object | ObjectData | None = None) -> bool:
     return False
 
 
-def mace(caster, target=None):
-    """Stub implementation for mace.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def magic_missile(caster: Character, target: Character | None = None) -> int:
     """ROM ``spell_magic_missile``: level tabled energy bolts."""
 
@@ -5099,11 +5638,33 @@ def magic_missile(caster: Character, target: Character | None = None) -> int:
     return max(0, before - after)
 
 
-def mass_healing(caster, target=None):
-    """Stub implementation for mass_healing.
-    TODO: Implement actual ROM logic from C source.
+def mass_healing(caster: Character, target: Character | None = None) -> bool:
+    """ROM spell_mass_healing: cast heal and refresh on same-type room occupants.
+
+    Mirroring ROM src/magic.c:3807-3824.
     """
-    return 42  # Placeholder damage/effect
+    if caster is None:
+        raise ValueError("mass_healing requires a caster")
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        return False
+
+    # ROM L3816-3822: iterate room people and cast on same type
+    # (IS_NPC(ch) && IS_NPC(gch)) || (!IS_NPC(ch) && !IS_NPC(gch))
+    caster_is_npc = getattr(caster, "is_npc", True)
+    healed = False
+
+    for occupant in list(getattr(room, "people", []) or []):
+        occupant_is_npc = getattr(occupant, "is_npc", True)
+        # Only heal if both are NPCs or both are PCs
+        if caster_is_npc == occupant_is_npc:
+            # ROM L3820-3821: cast heal and refresh on the target
+            heal(caster, occupant)
+            refresh(caster, occupant)
+            healed = True
+
+    return healed
 
 
 def mass_invis(caster: Character, target: Character | None = None) -> bool:
@@ -5147,13 +5708,6 @@ def mass_invis(caster: Character, target: Character | None = None) -> bool:
 
     _send_to_char(caster, "Ok.")
     return applied
-
-
-def meditation(caster, target=None):
-    """Stub implementation for meditation.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def nexus(caster: Character, target: Character | None = None) -> list[Object]:
@@ -5278,13 +5832,6 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
     return created
 
 
-def parry(caster, target=None):
-    """Stub implementation for parry.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def pass_door(caster: Character, target: Character | None = None) -> bool:
     """ROM ``spell_pass_door`` affect application with duplicate handling."""
 
@@ -5338,18 +5885,187 @@ def pass_door(caster: Character, target: Character | None = None) -> bool:
     return True
 
 
-def peek(caster, target=None):
-    """Stub implementation for peek.
-    TODO: Implement actual ROM logic from C source.
+def peek(caster: Character, target: Character | None = None) -> dict[str, any]:
+    """ROM peek skill: chance to see victim's inventory when looking at them.
+
+    Mirroring ROM src/act_info.c:501-507 (show_char_to_char_1).
+
+    Returns dict with keys: success (bool), inventory (list[Object]), message (str)
     """
-    return 42  # Placeholder damage/effect
+    if caster is None or target is None:
+        return {"success": False, "message": "No target to peek at"}
+
+    # ROM L501-502: peek only works on others, only for PCs
+    if target is caster:
+        return {"success": False, "message": "You can see your own inventory"}
+
+    caster_is_npc = getattr(caster, "is_npc", True)
+    if caster_is_npc:
+        return {"success": False, "message": "NPCs don't peek"}
+
+    # ROM L502: skill check - number_percent() < get_skill(ch, gsn_peek)
+    caster_skill = int(getattr(caster, "skills", {}).get("peek", 0))
+    percent = rng_mm.number_percent()
+
+    if percent >= caster_skill:
+        return {"success": False, "message": "You failed to peek"}
+
+    # ROM L504-506: success - show inventory
+    inventory = list(getattr(target, "inventory", []) or [])
+
+    return {
+        "success": True,
+        "inventory": inventory,
+        "message": f"You peek at {getattr(target, 'name', 'someone')}'s inventory",
+    }
 
 
-def pick_lock(caster, target=None):
-    """Stub implementation for pick_lock.
-    TODO: Implement actual ROM logic from C source.
+def pick_lock(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    target_name: str = "",
+) -> dict[str, Any]:
+    """ROM do_pick: unlock doors, portals, or containers with skill check.
+
+    Mirroring ROM src/act_move.c:841-991.
+
+    Returns dict with keys: success (bool), message (str), picked_type (str)
     """
-    return 42  # Placeholder damage/effect
+    if caster is None:
+        return {"success": False, "message": "No caster"}
+
+    if not target_name:
+        return {"success": False, "message": "Pick what?"}
+
+    caster_skill = int(getattr(caster, "skills", {}).get("pick lock", 0))
+    caster_is_npc = getattr(caster, "is_npc", True)
+
+    room = getattr(caster, "room", None)
+    if room is None:
+        return {"success": False, "message": "You're not in a room."}
+
+    people = list(getattr(room, "people", []) or [])
+    caster_level = int(getattr(caster, "level", 0) or 0)
+
+    for guard in people:
+        if guard is caster:
+            continue
+        if not getattr(guard, "is_npc", False):
+            continue
+        awake_positions = {Position.STANDING, Position.SITTING, Position.FIGHTING, Position.RESTING}
+        guard_pos = getattr(guard, "position", Position.STANDING)
+        if guard_pos not in awake_positions:
+            continue
+        guard_level = int(getattr(guard, "level", 0) or 0)
+        if caster_level + 5 < guard_level:
+            guard_name = _character_name(guard)
+            return {"success": False, "message": f"{guard_name} is standing too close to the lock."}
+
+    percent = rng_mm.number_percent()
+    if not caster_is_npc and percent > caster_skill:
+        _send_to_char(caster, "You failed.")
+        check_improve(caster, "pick lock", False, 2)
+        return {"success": False, "message": ""}
+
+    obj = None
+    inventory = list(getattr(caster, "inventory", []) or [])
+    for candidate in inventory:
+        obj_name = getattr(candidate, "name", None) or getattr(getattr(candidate, "prototype", None), "name", "")
+        if obj_name and target_name.lower() in obj_name.lower():
+            obj = candidate
+            break
+
+    if obj is None:
+        room_contents = list(getattr(room, "contents", []) or [])
+        for candidate in room_contents:
+            obj_name = getattr(candidate, "name", None) or getattr(getattr(candidate, "prototype", None), "name", "")
+            if obj_name and target_name.lower() in obj_name.lower():
+                obj = candidate
+                break
+
+    if obj is not None:
+        proto = getattr(obj, "prototype", None)
+        obj_item_type = getattr(obj, "item_type", None) or getattr(proto, "item_type", None)
+
+        if isinstance(obj_item_type, str):
+            try:
+                obj_item_type = ItemType[obj_item_type.upper()]
+            except (KeyError, AttributeError):
+                obj_item_type = None
+        elif isinstance(obj_item_type, int):
+            try:
+                obj_item_type = ItemType(obj_item_type)
+            except ValueError:
+                obj_item_type = None
+
+        if obj_item_type == ItemType.PORTAL:
+            values = list(getattr(obj, "value", [0, 0, 0, 0, 0]))
+            while len(values) < 5:
+                values.append(0)
+
+            portal_flags = int(values[1] if len(values) > 1 else 0)
+
+            EX_ISDOOR = 1
+            EX_CLOSED = 2
+            EX_LOCKED = 4
+            EX_PICKPROOF = 32
+
+            if not (portal_flags & EX_ISDOOR):
+                return {"success": False, "message": "You can't do that."}
+
+            if not (portal_flags & EX_CLOSED):
+                return {"success": False, "message": "It's not closed."}
+
+            if int(values[4] if len(values) > 4 else 0) < 0:
+                return {"success": False, "message": "It can't be unlocked."}
+
+            if portal_flags & EX_PICKPROOF:
+                return {"success": False, "message": "You failed."}
+
+            values[1] = portal_flags & ~EX_LOCKED
+            obj.value = values
+
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            _send_to_char(caster, f"You pick the lock on {short_descr}.")
+            broadcast_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", exclude=caster)
+            check_improve(caster, "pick lock", True, 2)
+            return {"success": True, "message": "", "picked_type": "portal"}
+
+        if obj_item_type == ItemType.CONTAINER:
+            values = list(getattr(obj, "value", [0, 0, 0, 0, 0]))
+            while len(values) < 5:
+                values.append(0)
+
+            cont_flags = int(values[1] if len(values) > 1 else 0)
+
+            CONT_CLOSEABLE = int(ContainerFlag.CLOSEABLE)
+            CONT_CLOSED = int(ContainerFlag.CLOSED)
+            CONT_LOCKED = int(ContainerFlag.LOCKED)
+            CONT_PICKPROOF = int(ContainerFlag.PICKPROOF)
+
+            if not (cont_flags & CONT_CLOSED):
+                return {"success": False, "message": "It's not closed."}
+
+            if int(values[2] if len(values) > 2 else 0) < 0:
+                return {"success": False, "message": "It can't be unlocked."}
+
+            if not (cont_flags & CONT_LOCKED):
+                return {"success": False, "message": "It's already unlocked."}
+
+            if cont_flags & CONT_PICKPROOF:
+                return {"success": False, "message": "You failed."}
+
+            values[1] = cont_flags & ~CONT_LOCKED
+            obj.value = values
+
+            short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
+            _send_to_char(caster, f"You pick the lock on {short_descr}.")
+            broadcast_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", exclude=caster)
+            check_improve(caster, "pick lock", True, 2)
+            return {"success": True, "message": "", "picked_type": "container"}
+
+    return {"success": False, "message": "You don't see that here."}
 
 
 def plague(caster: Character, target: Character | None = None) -> bool:
@@ -5438,7 +6154,14 @@ def poison(
             if hasattr(obj, "weapon_flags"):
                 weapon_flags |= _coerce_int(getattr(obj, "weapon_flags", 0))
 
-            disallowed = int(WeaponFlag.FLAMING | WeaponFlag.FROST | WeaponFlag.VAMPIRIC | WeaponFlag.SHARP | WeaponFlag.VORPAL | WeaponFlag.SHOCKING)
+            disallowed = int(
+                WeaponFlag.FLAMING
+                | WeaponFlag.FROST
+                | WeaponFlag.VAMPIRIC
+                | WeaponFlag.SHARP
+                | WeaponFlag.VORPAL
+                | WeaponFlag.SHOCKING
+            )
             if weapon_flags & disallowed:
                 _send_to_char(caster, f"You can't seem to envenom {_object_short_descr(obj)}.")
                 return False
@@ -5464,19 +6187,19 @@ def poison(
                 modifier=0,
                 bitvector=int(WeaponFlag.POISON),
             )
-            setattr(affect, "spell_name", "poison")
-            setattr(affect, "wear_off_message", "The poison on $p dries up.")
+            affect.spell_name = "poison"
+            affect.wear_off_message = "The poison on $p dries up."
 
             affects = getattr(obj, "affected", None)
             if isinstance(affects, list):
                 affects.append(affect)
             else:
-                setattr(obj, "affected", [affect])
+                obj.affected = [affect]
 
             new_flags = weapon_flags | int(WeaponFlag.POISON)
             values[4] = new_flags
             obj.value = values
-            setattr(obj, "weapon_flags", new_flags)
+            obj.weapon_flags = new_flags
 
             message = f"{_object_short_descr(obj)} is coated with deadly venom."
             _send_to_char(caster, message)
@@ -5527,13 +6250,6 @@ def poison(
             exclude=victim,
         )
     return True
-
-
-def polearm(caster, target=None):
-    """Stub implementation for polearm.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def portal(caster: Character, target: Character | None = None) -> Object | None:
@@ -5787,11 +6503,77 @@ def ray_of_truth(caster: Character, target: Character | None = None) -> int:
     return max(0, before - after)
 
 
-def recall(caster, target=None):
-    """Stub implementation for recall.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def recall(caster: Character, target: Character | None = None) -> str:
+    """ROM do_recall - mirrors src/act_move.c:1563-1628."""
+    from mud.advancement import gain_exp
+    from mud.combat.engine import stop_fighting
+    from mud.utils import rng_mm
+
+    if caster is None:
+        raise ValueError("recall requires a caster")
+
+    is_npc = getattr(caster, "is_npc", False)
+    act_bits = int(getattr(caster, "act", 0) or 0)
+    is_pet = bool(act_bits & int(ActFlag.PET))
+
+    if is_npc and not is_pet:
+        return "Only players can recall."
+
+    current_room = getattr(caster, "room", None)
+    if current_room is not None:
+        caster_name = _character_name(caster)
+        broadcast_room(current_room, f"{caster_name} prays for transportation!", exclude=caster)
+
+    location = room_registry.get(ROOM_VNUM_TEMPLE)
+    if location is None:
+        return "You are completely lost."
+
+    if current_room is location:
+        return ""
+
+    room_flags = _get_room_flags(current_room)
+    if room_flags & int(RoomFlag.ROOM_NO_RECALL) or caster.has_affect(AffectFlag.CURSE):
+        return "Mota has forsaken you."
+
+    victim = getattr(caster, "fighting", None)
+    if victim is not None:
+        skill_pct = _skill_percent(caster, "recall")
+        success_rate = 80 * skill_pct // 100
+
+        if rng_mm.number_percent() < success_rate:
+            check_improve(caster, "recall", success=False, multiplier=6)
+            caster.wait = max(int(getattr(caster, "wait", 0) or 0), 4)
+            return "You failed!."
+
+        has_desc = getattr(caster, "desc", None) is not None
+        lose = 25 if has_desc else 50
+        gain_exp(caster, -lose)
+        check_improve(caster, "recall", success=True, multiplier=4)
+        stop_fighting(caster, True)
+        result_msg = f"You recall from combat!  You lose {lose} exps."
+    else:
+        result_msg = ""
+
+    move_points = int(getattr(caster, "move", 0) or 0)
+    caster.move = c_div(move_points, 2)
+
+    if current_room is not None:
+        caster_name = _character_name(caster)
+        broadcast_room(current_room, f"{caster_name} disappears.", exclude=caster)
+        current_room.remove_character(caster)
+
+    location.add_character(caster)
+    broadcast_room(location, f"{_character_name(caster)} appears in the room.", exclude=caster)
+
+    view = look(caster)
+    if view:
+        result_msg = f"{result_msg}\n{view}" if result_msg else view
+
+    pet = getattr(caster, "pet", None)
+    if pet is not None:
+        recall(pet)
+
+    return result_msg
 
 
 def recharge(
@@ -6102,20 +6884,6 @@ def sanctuary(caster, target=None):
     return True
 
 
-def scrolls(caster, target=None):
-    """Stub implementation for scrolls.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
-def second_attack(caster, target=None):
-    """Stub implementation for second_attack.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def shield(caster, target=None):
     """ROM ``spell_shield`` AC reduction aura."""
 
@@ -6162,18 +6930,88 @@ def shield(caster, target=None):
     return True
 
 
-def shield_block(caster, target=None):
-    """Stub implementation for shield_block.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+def shocking_grasp(caster: Character, target: Character | None = None) -> int:
+    """ROM spell_shocking_grasp damage table with save-for-half.
 
-
-def shocking_grasp(caster, target=None):
-    """Stub implementation for shocking_grasp.
-    TODO: Implement actual ROM logic from C source.
+    Mirroring ROM src/magic.c:4333-4354.
     """
-    return 42  # Placeholder damage/effect
+    if target is None:
+        raise ValueError("shocking_grasp requires a target")
+
+    # ROM L4337: damage table for shocking grasp
+    dam_each = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        20,
+        25,
+        29,
+        33,
+        36,
+        39,
+        39,
+        39,
+        40,
+        40,
+        41,
+        41,
+        42,
+        42,
+        43,
+        43,
+        44,
+        44,
+        45,
+        45,
+        46,
+        46,
+        47,
+        47,
+        48,
+        48,
+        49,
+        49,
+        50,
+        50,
+        51,
+        51,
+        52,
+        52,
+        53,
+        53,
+        54,
+        54,
+        55,
+        55,
+        56,
+        56,
+        57,
+        57,
+    ]
+
+    # ROM L4347-4348: clamp level to table bounds
+    level = max(getattr(caster, "level", 0), 0)
+    capped_level = max(0, min(level, len(dam_each) - 1))
+
+    # ROM L4349: dam = number_range(dam_each[level]/2, dam_each[level]*2)
+    base = dam_each[capped_level]
+    low = c_div(base, 2)
+    high = base * 2
+    damage = rng_mm.number_range(low, high)
+
+    # ROM L4350-4351: save for half damage
+    if saves_spell(level, target, DamageType.LIGHTNING):
+        damage = c_div(damage, 2)
+
+    # ROM L4352: damage(ch, victim, dam, sn, DAM_LIGHTNING, TRUE)
+    # Simplified: directly apply damage
+    target.hit -= damage
+    update_pos(target)
+    return damage
 
 
 def sleep(
@@ -6358,25 +7196,125 @@ def sneak(caster: Character, target: Character | None = None) -> bool:  # noqa: 
     return False
 
 
-def spear(caster, target=None):
-    """Stub implementation for spear.
-    TODO: Implement actual ROM logic from C source.
+def steal(
+    caster: Character,
+    target: Character | None = None,
+    *,
+    item_name: str = "",
+    target_name: str = "",
+) -> dict[str, any]:
+    """ROM do_steal: attempt to steal gold/items from victim.
+
+    Mirroring ROM src/act_obj.c:2161-2330.
+
+    Returns dict with keys: success (bool), stolen (Object|None), gold (int), silver (int), message (str)
     """
-    return 42  # Placeholder damage/effect
+    if caster is None:
+        return {"success": False, "message": "No caster"}
 
+    if not item_name or not target_name:
+        if target is None:
+            return {"success": False, "message": "Steal what from whom?"}
 
-def staves(caster, target=None):
-    """Stub implementation for staves.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    # ROM L2179-2183: find victim
+    if target is None:
+        return {"success": False, "message": "They aren't here."}
 
+    # ROM L2185-2189: can't steal from self
+    if target is caster:
+        return {"success": False, "message": "That's pointless."}
 
-def steal(caster, target=None):
-    """Stub implementation for steal.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
+    # ROM L2191-2192: safety check (simplified - no is_safe implemented yet)
+    # ROM L2194-2199: can't steal from fighting mob
+    if getattr(target, "is_npc", True) and getattr(target, "position", Position.STANDING) == Position.FIGHTING:
+        return {"success": False, "message": "Kill stealing is not permitted.\\nYou'd better not -- you might get hit."}
+
+    # ROM L2201-2209: calculate success chance
+    percent = rng_mm.number_percent()
+    victim_awake = getattr(target, "position", Position.STANDING) >= Position.SLEEPING
+
+    if not victim_awake:
+        percent -= 10  # ROM L2204-2205: sleeping victim
+    # ROM L2206-2209: visibility modifiers (simplified - no can_see check)
+    else:
+        percent += 50  # ROM L2208: normal penalty
+
+    # ROM L2211-2214: skill check and level range check
+    caster_level = int(getattr(caster, "level", 0) or 0)
+    target_level = int(getattr(target, "level", 0) or 0)
+    caster_skill = int(getattr(caster, "skills", {}).get("steal", 0))
+    caster_is_npc = getattr(caster, "is_npc", True)
+    target_is_npc = getattr(target, "is_npc", True)
+
+    level_diff_too_high = abs(caster_level - target_level) > 7 and not target_is_npc and not caster_is_npc
+    skill_failed = not caster_is_npc and percent > caster_skill
+
+    if level_diff_too_high or skill_failed:
+        # ROM L2216-2265: Failure
+        caster_name = getattr(caster, "name", "someone")
+
+        # ROM L2220-2221: remove sneak
+        if hasattr(caster, "affected_by"):
+            caster.affected_by &= ~int(AffectFlag.SNEAK)
+
+        # ROM L2225-2240: yell messages (simplified)
+        messages = [
+            f"{caster_name} is a lousy thief!",
+            f"{caster_name} couldn't rob their way out of a paper bag!",
+            f"{caster_name} tried to rob me!",
+            f"Keep your hands out of there, {caster_name}!",
+        ]
+        yell_msg = messages[rng_mm.number_range(0, 3)]
+
+        # ROM L2247-2250: NPC attacks on failure
+        result = {
+            "success": False,
+            "message": "Oops.",
+            "victim_yell": yell_msg,
+            "victim_attacks": target_is_npc,
+        }
+
+        # ROM L2256-2261: Set THIEF flag for PC->PC theft
+        if not caster_is_npc and not target_is_npc:
+            result["thief_flag"] = True
+
+        return result
+
+    # ROM L2268-2296: Steal gold/coins
+    if item_name.lower() in ["coin", "coins", "gold", "silver"]:
+        target_gold = int(getattr(target, "gold", 0) or 0)
+        target_silver = int(getattr(target, "silver", 0) or 0)
+        max_level = 60  # ROM MAX_LEVEL
+
+        # ROM L2274-2275: proportional to level
+        gold_stolen = c_div(target_gold * rng_mm.number_range(1, caster_level), max_level)
+        silver_stolen = c_div(target_silver * rng_mm.number_range(1, caster_level), max_level)
+
+        if gold_stolen <= 0 and silver_stolen <= 0:
+            return {"success": False, "message": "You couldn't get any coins."}
+
+        # ROM L2282-2285: transfer coins
+        if hasattr(caster, "gold"):
+            caster.gold = getattr(caster, "gold", 0) + gold_stolen
+        if hasattr(caster, "silver"):
+            caster.silver = getattr(caster, "silver", 0) + silver_stolen
+        if hasattr(target, "gold"):
+            target.gold -= gold_stolen
+        if hasattr(target, "silver"):
+            target.silver -= silver_stolen
+
+        # ROM L2286-2294: success message
+        if silver_stolen <= 0:
+            msg = f"Bingo!  You got {gold_stolen} gold coins."
+        elif gold_stolen <= 0:
+            msg = f"Bingo!  You got {silver_stolen} silver coins."
+        else:
+            msg = f"Bingo!  You got {silver_stolen} silver and {gold_stolen} gold coins."
+
+        return {"success": True, "gold": gold_stolen, "silver": silver_stolen, "message": msg}
+
+    # ROM L2299-2311: Steal object (simplified - no object handling yet)
+    return {"success": False, "message": "You can't find it."}
 
 
 def stone_skin(caster: Character, target: Character | None = None) -> bool:  # noqa: ARG001 - parity signature
@@ -6441,7 +7379,12 @@ def summon(caster: Character, target: Character | None = None) -> bool:
         return False
 
     target_flags = _get_room_flags(target_room)
-    disallowed = int(RoomFlag.ROOM_SAFE) | int(RoomFlag.ROOM_PRIVATE) | int(RoomFlag.ROOM_SOLITARY) | int(RoomFlag.ROOM_NO_RECALL)
+    disallowed = (
+        int(RoomFlag.ROOM_SAFE)
+        | int(RoomFlag.ROOM_PRIVATE)
+        | int(RoomFlag.ROOM_SOLITARY)
+        | int(RoomFlag.ROOM_NO_RECALL)
+    )
     if target_flags & disallowed:
         _send_to_char(caster, "You failed.")
         return False
@@ -6506,13 +7449,6 @@ def summon(caster: Character, target: Character | None = None) -> bool:
     return True
 
 
-def sword(caster, target=None):
-    """Stub implementation for sword.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def teleport(caster: Character, target: Character | None = None) -> bool:
     """ROM ``spell_teleport``: send a character to a random room."""
 
@@ -6573,13 +7509,6 @@ def teleport(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(victim, view)
 
     return True
-
-
-def third_attack(caster, target=None):
-    """Stub implementation for third_attack.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def trip(caster: Character, target: Character | None = None) -> str:
@@ -6747,13 +7676,6 @@ def ventriloquate(caster: Character, target: str | None = None) -> bool:  # noqa
     return delivered
 
 
-def wands(caster, target=None):
-    """Stub implementation for wands.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
-
-
 def weaken(caster: Character, target: Character | None = None) -> bool:
     """ROM ``spell_weaken``: reduce strength and apply the weaken affect."""
 
@@ -6793,13 +7715,6 @@ def weaken(caster: Character, target: Character | None = None) -> bool:
                 occupant.messages.append(message)
 
     return True
-
-
-def whip(caster, target=None):
-    """Stub implementation for whip.
-    TODO: Implement actual ROM logic from C source.
-    """
-    return 42  # Placeholder damage/effect
 
 
 def word_of_recall(caster: Character, target: Character | None = None) -> bool:
@@ -6855,3 +7770,106 @@ def word_of_recall(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(victim, view)
 
     return True
+
+
+# Passive skill handlers (no command - checked automatically during combat/other actions)
+
+
+def axe(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Axe is a passive combat skill."}
+
+
+def dagger(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Dagger is a passive combat skill."}
+
+
+def dodge(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive defense skill - checked during combat."""
+    return {"success": False, "message": "Dodge is a passive defense skill."}
+
+
+def enhanced_damage(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive damage bonus - applied during combat."""
+    return {"success": False, "message": "Enhanced damage is a passive combat bonus."}
+
+
+def fast_healing(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive regeneration - applied during ticks."""
+    return {"success": False, "message": "Fast healing is a passive regeneration skill."}
+
+
+def flail(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Flail is a passive combat skill."}
+
+
+def hand_to_hand(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive unarmed combat skill - checked during combat."""
+    return {"success": False, "message": "Hand to hand is a passive combat skill."}
+
+
+def mace(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Mace is a passive combat skill."}
+
+
+def parry(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive defense skill - checked during combat."""
+    return {"success": False, "message": "Parry is a passive defense skill."}
+
+
+def polearm(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Polearm is a passive combat skill."}
+
+
+def second_attack(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive multi-attack skill - checked during combat."""
+    return {"success": False, "message": "Second attack is a passive combat skill."}
+
+
+def shield_block(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive defense skill - checked during combat."""
+    return {"success": False, "message": "Shield block is a passive defense skill."}
+
+
+def spear(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Spear is a passive combat skill."}
+
+
+def sword(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Sword is a passive combat skill."}
+
+
+def third_attack(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive multi-attack skill - checked during combat."""
+    return {"success": False, "message": "Third attack is a passive combat skill."}
+
+
+def whip(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive weapon proficiency - checked during combat."""
+    return {"success": False, "message": "Whip is a passive combat skill."}
+
+
+def meditation(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Passive mana regeneration skill - applied during ticks."""
+    return {"success": False, "message": "Meditation is a passive mana regeneration skill."}
+
+
+def scrolls(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Magic item usage - invoked via recite command."""
+    return {"success": False, "message": "Use the recite command to read scrolls."}
+
+
+def staves(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Magic item usage - invoked via brandish command."""
+    return {"success": False, "message": "Use the brandish command to use staves."}
+
+
+def wands(caster: Character, target: Character | None = None) -> dict[str, Any]:
+    """Magic item usage - invoked via zap command."""
+    return {"success": False, "message": "Use the zap command to use wands."}

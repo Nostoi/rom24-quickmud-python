@@ -641,9 +641,9 @@ def _ensure_exit(room: Room, direction: Direction) -> Exit:
         exit_obj = Exit()
         room.exits[direction.value] = exit_obj
     return exit_obj
-def _handle_exit_command(
-    char: Character, room: Room, direction: Direction, args_parts: list[str]
-) -> str:
+
+
+def _handle_exit_command(char: Character, room: Room, direction: Direction, args_parts: list[str]) -> str:
     if not args_parts:
         exit_obj = room.exits[direction.value] if direction.value < len(room.exits) else None
         if exit_obj is None:
@@ -654,9 +654,7 @@ def _handle_exit_command(
         keyword = exit_obj.keyword or "(none)"
         description = exit_obj.description or "(no description)"
         return (
-            f"Exit {direction.name.lower()} -> {target}\n"
-            f"Key: {key} Flags: {flags}\n"
-            f"Keyword: {keyword}\n{description}"
+            f"Exit {direction.name.lower()} -> {target}\nKey: {key} Flags: {flags}\nKeyword: {keyword}\n{description}"
         )
 
     subcmd = args_parts[0].lower()
@@ -981,6 +979,9 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
         cmd = args_parts[0].lower()
         args_parts = args_parts[1:]
 
+    if cmd == "@asave":
+        return cmd_asave(char, " ".join(parts[1:]) if len(parts) > 1 else "")
+
     if cmd in {"done", "exit"}:
         _clear_session(session)
         return "Exiting room editor."
@@ -1099,6 +1100,8 @@ def cmd_redit(char: Character, args: str) -> str:
 
 def handle_redit_command(char: Character, session: Session, input_str: str) -> str:
     return _interpret_redit(session, char, input_str)
+
+
 _REVERSE_DIRECTIONS: dict[Direction, Direction] = {
     Direction.NORTH: Direction.SOUTH,
     Direction.SOUTH: Direction.NORTH,
@@ -1115,3 +1118,105 @@ def _get_area_for_vnum(vnum: int) -> Area | None:
             return area
     return None
 
+
+def cmd_asave(char: Character, args: str) -> str:
+    from mud.olc.save import save_area_list, save_area_to_json
+
+    arg = args.strip().lower()
+
+    if not arg:
+        return (
+            "Syntax:\n"
+            "  asave <vnum>   - saves a particular area\n"
+            "  asave list     - saves the area.lst file\n"
+            "  asave area     - saves the area being edited\n"
+            "  asave changed  - saves all changed zones\n"
+            "  asave world    - saves the world! (db dump)\n"
+        )
+
+    pcdata = getattr(char, "pcdata", None)
+    char_security = int(getattr(pcdata, "security", 0)) if pcdata else 0
+
+    if arg.isdigit():
+        vnum = int(arg)
+        area = area_registry.get(vnum)
+        if area is None:
+            area = _get_area_for_vnum(vnum)
+        if area is None:
+            return "That area does not exist."
+
+        if not _is_builder(char, area):
+            return "You are not a builder for this area."
+
+        save_area_list()
+        success = save_area_to_json(area)
+        if success:
+            return f"Area {area.name} (vnum {area.vnum}) saved."
+        else:
+            return "Failed to save area."
+
+    if arg == "world":
+        save_area_list()
+        saved_count = 0
+        for area in area_registry.values():
+            if not _is_builder(char, area):
+                continue
+            if save_area_to_json(area):
+                saved_count += 1
+
+        return f"You saved the world. ({saved_count} areas)"
+
+    if arg == "changed":
+        save_area_list()
+        saved_areas: list[str] = []
+
+        for area in area_registry.values():
+            if not _is_builder(char, area):
+                continue
+
+            if getattr(area, "changed", False):
+                if save_area_to_json(area):
+                    area_name = getattr(area, "name", "Unknown") or "Unknown"
+                    file_name = getattr(area, "file_name", "unknown") or "unknown"
+                    saved_areas.append(f"{area_name:24} - '{file_name}'")
+
+        if not saved_areas:
+            return "No changed areas to save."
+
+        result = "Saved zones:\n" + "\n".join(saved_areas)
+        return result
+
+    if arg == "list":
+        success = save_area_list()
+        if success:
+            return "Area list saved."
+        else:
+            return "Failed to save area list."
+
+    if arg == "area":
+        session = _get_session(char)
+        if session is None:
+            return "You do not have an active connection."
+
+        if session.editor != "redit":
+            return "You are not editing an area, therefore an area vnum is required."
+
+        room = session.editor_state.get("room") if session.editor_state else None
+        if not isinstance(room, Room):
+            return "You are not editing a room."
+
+        area = getattr(room, "area", None)
+        if area is None:
+            return "The room you are editing has no area."
+
+        if not _is_builder(char, area):
+            return "You are not a builder for this area."
+
+        save_area_list()
+        success = save_area_to_json(area)
+        if success:
+            return f"Area {area.name} saved."
+        else:
+            return "Failed to save area."
+
+    return "Invalid argument. Use 'asave' with no arguments for help."

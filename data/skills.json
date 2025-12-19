@@ -99,6 +99,20 @@
     }
   },
   {
+    "name": "cancellation",
+    "type": "spell",
+    "function": "cancellation",
+    "target": "victim",
+    "mana_cost": 20,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "",
+      "wear_off": "!Cancellation!"
+    }
+  },
+  {
     "name": "cause critical",
     "type": "spell",
     "function": "cause_critical",
@@ -756,6 +770,20 @@
     "messages": {
       "damage": "",
       "wear_off": "You feel yourself slow down."
+    }
+  },
+  {
+    "name": "harm",
+    "type": "spell",
+    "function": "harm",
+    "target": "victim",
+    "mana_cost": 35,
+    "lag": 12,
+    "cooldown": 0,
+    "failure_rate": 0.0,
+    "messages": {
+      "damage": "harm spell",
+      "wear_off": "!Harm!"
     }
   },
   {
