@@ -1638,110 +1638,119 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
         if room:
             broadcast_room(room, msg.replace("$n", _character_name(target)), exclude=target)
 
-    if check_dispel(level, target, "armor"):
+    def _cancel_effect(effect_name: str) -> bool:
+        effect = target.spell_effects.get(effect_name)
+        if effect is None:
+            return False
+        removed = target.remove_spell_effect(effect_name)
+        if removed and removed.wear_off_message:
+            target.send_to_char(f"{removed.wear_off_message}\n\r")
+        return bool(removed)
+
+    if _cancel_effect("armor"):
         found = True
 
-    if check_dispel(level, target, "bless"):
+    if _cancel_effect("bless"):
         found = True
 
-    if check_dispel(level, target, "blindness"):
+    if _cancel_effect("blindness"):
         found = True
         _broadcast_room_msg("$n is no longer blinded.")
 
-    if check_dispel(level, target, "calm"):
+    if _cancel_effect("calm"):
         found = True
         _broadcast_room_msg("$n no longer looks so peaceful...")
 
-    if check_dispel(level, target, "change_sex"):
+    if _cancel_effect("change_sex"):
         found = True
         _broadcast_room_msg("$n looks more like $mself again.")
 
-    if check_dispel(level, target, "charm_person"):
+    if _cancel_effect("charm_person"):
         found = True
         _broadcast_room_msg("$n regains $s free will.")
 
-    if check_dispel(level, target, "chill_touch"):
+    if _cancel_effect("chill_touch"):
         found = True
         _broadcast_room_msg("$n looks warmer.")
 
-    if check_dispel(level, target, "curse"):
+    if _cancel_effect("curse"):
         found = True
 
-    if check_dispel(level, target, "detect_evil"):
+    if _cancel_effect("detect_evil"):
         found = True
 
-    if check_dispel(level, target, "detect_good"):
+    if _cancel_effect("detect_good"):
         found = True
 
-    if check_dispel(level, target, "detect_hidden"):
+    if _cancel_effect("detect_hidden"):
         found = True
 
-    if check_dispel(level, target, "detect_invis"):
+    if _cancel_effect("detect_invis"):
         found = True
 
-    if check_dispel(level, target, "detect_magic"):
+    if _cancel_effect("detect_magic"):
         found = True
 
-    if check_dispel(level, target, "faerie_fire"):
+    if _cancel_effect("faerie_fire"):
         _broadcast_room_msg("$n's outline fades.")
         found = True
 
-    if check_dispel(level, target, "fly"):
+    if _cancel_effect("fly"):
         _broadcast_room_msg("$n falls to the ground!")
         found = True
 
-    if check_dispel(level, target, "frenzy"):
+    if _cancel_effect("frenzy"):
         _broadcast_room_msg("$n no longer looks so wild.")
         found = True
 
-    if check_dispel(level, target, "giant_strength"):
+    if _cancel_effect("giant_strength"):
         _broadcast_room_msg("$n no longer looks so mighty.")
         found = True
 
-    if check_dispel(level, target, "haste"):
+    if _cancel_effect("haste"):
         _broadcast_room_msg("$n is no longer moving so quickly.")
         found = True
 
-    if check_dispel(level, target, "infravision"):
+    if _cancel_effect("infravision"):
         found = True
 
-    if check_dispel(level, target, "invis"):
+    if _cancel_effect("invis"):
         _broadcast_room_msg("$n fades into existance.")
         found = True
 
-    if check_dispel(level, target, "mass_invis"):
+    if _cancel_effect("mass_invis"):
         _broadcast_room_msg("$n fades into existance.")
         found = True
 
-    if check_dispel(level, target, "pass_door"):
+    if _cancel_effect("pass_door"):
         found = True
 
-    if check_dispel(level, target, "protection_evil"):
+    if _cancel_effect("protection_evil"):
         found = True
 
-    if check_dispel(level, target, "protection_good"):
+    if _cancel_effect("protection_good"):
         found = True
 
-    if check_dispel(level, target, "sanctuary"):
+    if _cancel_effect("sanctuary"):
         _broadcast_room_msg("The white aura around $n's body vanishes.")
         found = True
 
-    if check_dispel(level, target, "shield"):
+    if _cancel_effect("shield"):
         _broadcast_room_msg("The shield protecting $n vanishes.")
         found = True
 
-    if check_dispel(level, target, "sleep"):
+    if _cancel_effect("sleep"):
         found = True
 
-    if check_dispel(level, target, "slow"):
+    if _cancel_effect("slow"):
         _broadcast_room_msg("$n is no longer moving so slowly.")
         found = True
 
-    if check_dispel(level, target, "stone_skin"):
+    if _cancel_effect("stone_skin"):
         _broadcast_room_msg("$n's skin regains its normal texture.")
         found = True
 
-    if check_dispel(level, target, "weaken"):
+    if _cancel_effect("weaken"):
         _broadcast_room_msg("$n looks stronger.")
         found = True
 
