@@ -5,6 +5,7 @@ import pytest
 from mud.combat.death import death_cry, raw_kill
 from mud.combat.engine import attack_round
 from mud.combat.kill_table import get_kill_data, reset_kill_table
+from mud.advancement import exp_per_level
 from mud.characters.follow import add_follower
 from mud.groups import xp as xp_module
 from mud.models.character import Character, SpellEffect, character_registry
@@ -122,6 +123,11 @@ def test_raw_kill_awards_group_xp_and_creates_corpse(monkeypatch: pytest.MonkeyP
     attacker.damroll = 12
     ally.level = 10
 
+    base_attacker_exp = exp_per_level(attacker)
+    base_ally_exp = exp_per_level(ally)
+    attacker.exp = base_attacker_exp
+    ally.exp = base_ally_exp
+
     calls: list[tuple[Character, int]] = []
 
     def fake_xp_compute(gch: Character, vic: Character, total_levels: int) -> int:
@@ -151,8 +157,8 @@ def test_raw_kill_awards_group_xp_and_creates_corpse(monkeypatch: pytest.MonkeyP
     assert corpse.silver == 3
     assert loot in corpse.contained_items
 
-    assert attacker.exp == 100
-    assert ally.exp == 100
+    assert attacker.exp == base_attacker_exp + 100
+    assert ally.exp == base_ally_exp + 100
     assert any(msg == "You receive 100 experience points." for msg in attacker.messages)
     assert any(msg == "You receive 100 experience points." for msg in ally.messages)
     assert len(calls) == 2
@@ -236,9 +242,7 @@ def test_autosacrifice_removes_empty_corpse(monkeypatch: pytest.MonkeyPatch) -> 
 
     attack_round(attacker, victim)
 
-    assert all(
-        getattr(obj, "item_type", None) != int(ItemType.CORPSE_NPC) for obj in room.contents
-    )
+    assert all(getattr(obj, "item_type", None) != int(ItemType.CORPSE_NPC) for obj in room.contents)
 
     expected_reward = max(1, victim.level * 3)
     assert attacker.silver == expected_reward
@@ -337,11 +341,7 @@ def test_autosacrifice_requires_visibility(monkeypatch: pytest.MonkeyPatch) -> N
 
     attack_round(attacker, victim)
 
-    corpses = [
-        obj
-        for obj in room.contents
-        if getattr(obj, "item_type", None) == int(ItemType.CORPSE_NPC)
-    ]
+    corpses = [obj for obj in room.contents if getattr(obj, "item_type", None) == int(ItemType.CORPSE_NPC)]
     assert corpses, "corpse should remain when attacker cannot see it"
     assert attacker.silver == 0
     assert all("Mota gives" not in message for message in attacker.messages)

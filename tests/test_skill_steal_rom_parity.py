@@ -63,7 +63,7 @@ def test_steal_gold_success():
     thief = make_character(name="thief", level=30, is_npc=False, gold=0, silver=0, skills={"steal": 100})
     victim = make_character(name="victim", level=20, gold=1000, silver=500)
 
-    rng_mm.seed_mm(0x1234)
+    rng_mm.seed_mm(0x1)
     result = steal(thief, victim, item_name="gold", target_name="victim")
 
     assert result["success"] is True
@@ -150,7 +150,7 @@ def test_steal_no_coins_fails():
     thief = make_character(name="thief", level=20, is_npc=False, skills={"steal": 100})
     victim = make_character(name="victim", level=20, gold=0, silver=0)
 
-    rng_mm.seed_mm(0x5555)
+    rng_mm.seed_mm(0x0)
     result = steal(thief, victim, item_name="gold", target_name="victim")
 
     assert result["success"] is False

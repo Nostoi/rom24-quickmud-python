@@ -380,6 +380,12 @@ def apply_resets(area: Area) -> None:
 
     _restore_exit_states(area)
 
+    room_obj_targets: dict[tuple[int, int], int] = {}
+    for reset in area.resets:
+        if (reset.command or "").upper() == "O":
+            key = (reset.arg3 or 0, reset.arg1 or 0)
+            room_obj_targets[key] = room_obj_targets.get(key, 0) + 1
+
     for reset in area.resets:
         cmd = (reset.command or "").upper()
         if cmd == "M":
@@ -495,8 +501,9 @@ def apply_resets(area: Area) -> None:
                 for obj in getattr(room, "contents", [])
                 if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_vnum
             ]
-            if existing_in_room:
-                last_obj = existing_in_room[-1]
+            desired_total = room_obj_targets.get((room_vnum, obj_vnum), 1)
+            if len(existing_in_room) >= desired_total:
+                last_obj = existing_in_room[-1] if existing_in_room else None
                 last_reset_succeeded = False
                 continue
             limit = _resolve_reset_limit(reset.arg2)
@@ -597,7 +604,8 @@ def apply_resets(area: Area) -> None:
                     obj.level = override_level
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
-                _sync_object_count(obj_vnum, object_counts)
+                else:
+                    _sync_object_count(obj_vnum, object_counts)
                 last_mob.add_to_inventory(obj)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
@@ -631,7 +639,8 @@ def apply_resets(area: Area) -> None:
                     obj.level = override_level
                 if is_shopkeeper:
                     _mark_shopkeeper_inventory(last_mob, obj)
-                _sync_object_count(obj_vnum, object_counts)
+                else:
+                    _sync_object_count(obj_vnum, object_counts)
                 last_mob.equip(obj, slot)
                 last_obj = obj
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
@@ -640,7 +649,8 @@ def apply_resets(area: Area) -> None:
                 logging.warning("Invalid E reset %s", obj_vnum)
                 last_reset_succeeded = False
         elif cmd == "P":
-            last_reset_succeeded = False
+            # ROM src/db.c:1788 - P command does NOT reset last flag at entry
+            # Only set last=FALSE on failure, last=TRUE on success (mirroring ROM line 1817, 1835)
             obj_vnum, _ = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             container_vnum = reset.arg3 or 0
             target_count = max(1, int(reset.arg4 or 1))
@@ -761,8 +771,8 @@ def apply_resets(area: Area) -> None:
             except Exception:
                 pass
             last_obj = container_obj
-            if made > 0:
-                last_reset_succeeded = True
+            # ROM src/db.c:1835 - always set last=TRUE after P loop, even if 0 objects made
+            last_reset_succeeded = True
         elif cmd == "R":
             room_vnum = reset.arg1 or 0
             max_dirs = int(reset.arg2 or 0)

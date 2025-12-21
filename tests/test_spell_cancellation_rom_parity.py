@@ -37,7 +37,7 @@ def test_cancellation_pc_to_npc():
     """ROM L1041-1047: PC can cancel NPC spells."""
     pc = make_character(name="pc", level=30, is_npc=False)
     npc = make_character(name="npc", level=20, is_npc=True)
-    npc.spell_effects = [SpellEffect(name="armor", duration=10, level=10, ac_mod=-10)]
+    npc.apply_spell_effect(SpellEffect(name="armor", duration=10, level=10, ac_mod=-10))
     pc.messages = []
 
     result = cancellation(pc, npc)
@@ -49,7 +49,7 @@ def test_cancellation_npc_to_pc():
     """ROM L1041-1047: NPC can cancel PC spells."""
     npc = make_character(name="npc", level=30, is_npc=True)
     pc = make_character(name="pc", level=20, is_npc=False)
-    pc.spell_effects = [SpellEffect(name="bless", duration=10, level=10)]
+    pc.apply_spell_effect(SpellEffect(name="bless", duration=10, level=10))
     npc.messages = []
 
     result = cancellation(npc, pc)
@@ -61,7 +61,7 @@ def test_cancellation_same_type_fails():
     """ROM L1041-1047: Same type (PC->PC or NPC->NPC) fails."""
     pc1 = make_character(name="pc1", level=30, is_npc=False)
     pc2 = make_character(name="pc2", level=20, is_npc=False)
-    pc2.spell_effects = [SpellEffect(name="shield", duration=10, level=10)]
+    pc2.apply_spell_effect(SpellEffect(name="shield", duration=10, level=10))
     pc1.messages = []
 
     result = cancellation(pc1, pc2)
@@ -78,11 +78,9 @@ def test_cancellation_removes_multiple_effects():
     pc.messages = []
     room.people = [pc, npc]
 
-    npc.spell_effects = [
-        SpellEffect(name="armor", duration=10, level=10, ac_mod=-10),
-        SpellEffect(name="bless", duration=10, level=10),
-        SpellEffect(name="shield", duration=10, level=10, ac_mod=-20),
-    ]
+    npc.apply_spell_effect(SpellEffect(name="armor", duration=10, level=10, ac_mod=-10))
+    npc.apply_spell_effect(SpellEffect(name="bless", duration=10, level=10))
+    npc.apply_spell_effect(SpellEffect(name="shield", duration=10, level=10, ac_mod=-20))
 
     result = cancellation(pc, npc)
 
@@ -94,7 +92,6 @@ def test_cancellation_no_effects_fails():
     """ROM L1200-1203: Spell fails if no effects removed."""
     pc = make_character(name="pc", level=30, is_npc=False)
     npc = make_character(name="npc", level=20, is_npc=True)
-    npc.spell_effects = []
     pc.messages = []
 
     result = cancellation(pc, npc)
@@ -107,11 +104,10 @@ def test_cancellation_level_bonus():
     """ROM L1039: Cancellation gets +2 level bonus."""
     pc = make_character(name="pc", level=10, is_npc=False)
     npc = make_character(name="npc", level=20, is_npc=True)
-    npc.spell_effects = [SpellEffect(name="armor", duration=10, level=5)]
+    npc.apply_spell_effect(SpellEffect(name="armor", duration=10, level=5))
 
     result = cancellation(pc, npc)
 
-    # With +2 bonus, level 10 caster becomes level 12 for dispel checks
     assert result is True
 
 
@@ -119,11 +115,10 @@ def test_cancellation_no_save():
     """ROM L1049: Unlike dispel magic, victim gets NO save."""
     pc = make_character(name="pc", level=1, is_npc=False)
     npc = make_character(name="npc", level=50, is_npc=True)
-    npc.spell_effects = [SpellEffect(name="armor", duration=10, level=5)]
+    npc.apply_spell_effect(SpellEffect(name="armor", duration=10, level=5))
 
     result = cancellation(pc, npc)
 
-    # Even level 1 vs level 50, cancellation should work (no save)
     assert result is True
 
 
@@ -146,10 +141,9 @@ def test_cancellation_charmed_exception():
 
     pc.affected_by = int(AffectFlag.CHARM)
     pc.master = npc_master
-    npc_master.spell_effects = [SpellEffect(name="armor", duration=10, level=10)]
+    npc_master.apply_spell_effect(SpellEffect(name="armor", duration=10, level=10))
     pc.messages = []
 
     result = cancellation(pc, npc_master)
 
-    # Charmed PC canceling master should fail
     assert result is False

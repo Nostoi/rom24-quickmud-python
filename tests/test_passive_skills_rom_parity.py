@@ -29,6 +29,10 @@ class TestFastHealing:
     def test_fast_healing_adds_bonus_on_success(self, movable_char_factory):
         """ROM L185-189: if (roll < fast_healing_skill) gain += roll * gain / 100."""
         char = movable_char_factory("warrior", 3001)
+        char.level = 10
+        char.perm_stat = [15, 15, 15, 15, 15]
+        char.mod_stat = [0, 0, 0, 0, 0]
+        char.ch_class = 3
         char.skills["fast healing"] = 75
         char.hit = 50
         char.max_hit = 100
@@ -42,6 +46,10 @@ class TestFastHealing:
     def test_fast_healing_no_bonus_on_failure(self, movable_char_factory):
         """Verify no bonus when roll >= skill."""
         char = movable_char_factory("warrior", 3001)
+        char.level = 10
+        char.perm_stat = [15, 15, 15, 15, 15]
+        char.mod_stat = [0, 0, 0, 0, 0]
+        char.ch_class = 3
         char.skills["fast healing"] = 30
         char.hit = 50
         char.max_hit = 100
@@ -73,6 +81,10 @@ class TestMeditation:
     def test_meditation_adds_bonus_on_success(self, movable_char_factory):
         """ROM L265-269: if (roll < meditation_skill) gain += roll * gain / 100."""
         char = movable_char_factory("cleric", 3001)
+        char.level = 10
+        char.perm_stat = [15, 15, 15, 15, 15]
+        char.mod_stat = [0, 0, 0, 0, 0]
+        char.ch_class = 2
         char.skills["meditation"] = 75
         char.mana = 50
         char.max_mana = 100
@@ -86,6 +98,10 @@ class TestMeditation:
     def test_meditation_no_bonus_on_failure(self, movable_char_factory):
         """Verify no bonus when roll >= skill."""
         char = movable_char_factory("cleric", 3001)
+        char.level = 10
+        char.perm_stat = [15, 15, 15, 15, 15]
+        char.mod_stat = [0, 0, 0, 0, 0]
+        char.ch_class = 2
         char.skills["meditation"] = 30
         char.mana = 50
         char.max_mana = 100

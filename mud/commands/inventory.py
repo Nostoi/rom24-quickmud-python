@@ -10,6 +10,56 @@ from mud.models.constants import (
     WeaponFlag,
 )
 from mud.spawning.obj_spawner import spawn_object
+from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
+
+
+def _get_obj_weight(obj: object) -> int:
+    """Return object's weight following ROM get_obj_weight logic."""
+    proto = getattr(obj, "prototype", None)
+    if proto is not None:
+        base_weight = int(getattr(proto, "weight", 0) or 0)
+    else:
+        base_weight = int(getattr(obj, "weight", 0) or 0)
+
+    contained_items = getattr(obj, "contained_items", []) or []
+    for item in contained_items:
+        base_weight += _get_obj_weight(item)
+    return base_weight
+
+
+def _get_obj_number(obj: object) -> int:
+    """Return object count following ROM get_obj_number logic.
+
+    Money and gems don't count toward carry_number in ROM.
+    Containers don't count, but their non-gem/non-money contents do.
+    """
+    from mud.models.constants import ItemType
+
+    proto = getattr(obj, "prototype", None)
+    if proto is None:
+        proto = obj
+
+    item_type_raw = getattr(proto, "item_type", 0)
+    if item_type_raw is None:
+        item_type = 0
+    elif isinstance(item_type_raw, (int, ItemType)):
+        item_type = int(item_type_raw)
+    else:
+        try:
+            item_type = int(item_type_raw)
+        except (ValueError, TypeError):
+            item_type = 0
+
+    if item_type in (int(ItemType.MONEY), int(ItemType.GEM), int(ItemType.CONTAINER)):
+        count = 0
+    else:
+        count = 1
+
+    contained_items = getattr(obj, "contained_items", []) or []
+    for item in contained_items:
+        count += _get_obj_number(item)
+
+    return count
 
 
 def _objects_match_vnum(objects: Iterable[object], vnum: int) -> bool:
@@ -69,9 +119,7 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
     if include_map:
         inventory = list(getattr(char, "inventory", []) or [])
         equipped_items = list(equipment.values())
-        if not _objects_match_vnum(inventory, OBJ_VNUM_MAP) and not _objects_match_vnum(
-            equipped_items, OBJ_VNUM_MAP
-        ):
+        if not _objects_match_vnum(inventory, OBJ_VNUM_MAP) and not _objects_match_vnum(equipped_items, OBJ_VNUM_MAP):
             map_obj = spawn_object(OBJ_VNUM_MAP)
             if map_obj is not None:
                 map_obj.cost = 0
@@ -82,12 +130,22 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
 
 
 def do_get(char: Character, args: str) -> str:
+    """Get object from room, following ROM src/act_obj.c:do_get encumbrance checks."""
     if not args:
         return "Get what?"
     name = args.lower()
     for obj in list(char.room.contents):
         obj_name = (obj.short_descr or obj.name or "").lower()
         if name in obj_name:
+            obj_number = _get_obj_number(obj)
+            obj_weight = _get_obj_weight(obj)
+
+            if char.carry_number + obj_number > can_carry_n(char):
+                return f"{obj.short_descr or obj.name}: you can't carry that many items."
+
+            if get_carry_weight(char) + obj_weight > can_carry_w(char):
+                return f"{obj.short_descr or obj.name}: you can't carry that much weight."
+
             char.room.contents.remove(obj)
             char.add_object(obj)
             return f"You pick up {obj.short_descr or obj.name}."

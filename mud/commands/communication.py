@@ -58,10 +58,7 @@ def _validate_tell_target(sender: Character, target: Character) -> str | None:
         return "You tell yourself nothing new."
     if "tell" in target.muted_channels:
         return "They aren't listening."
-    if (
-        (_has_comm_flag(target, CommFlag.QUIET) or _has_comm_flag(target, CommFlag.DEAF))
-        and not sender.is_immortal()
-    ):
+    if (_has_comm_flag(target, CommFlag.QUIET) or _has_comm_flag(target, CommFlag.DEAF)) and not sender.is_immortal():
         return f"{target.name} is not receiving tells."
     if not sender.is_immortal() and not getattr(target, "is_awake", lambda: True)():
         return "They can't hear you."
@@ -213,10 +210,8 @@ def do_shout(char: Character, args: str) -> str:
     char.wait = max(int(current_wait), 12)
 
     def _should_receive(target: Character) -> bool:
-        return not (
-            _has_comm_flag(target, CommFlag.SHOUTSOFF)
-            or _has_comm_flag(target, CommFlag.QUIET)
-        )
+        return not (_has_comm_flag(target, CommFlag.SHOUTSOFF) or _has_comm_flag(target, CommFlag.QUIET))
+
     broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)
     return f"You shout, '{cleaned}'"
 
@@ -511,3 +506,87 @@ def do_immtalk(char: Character, args: str) -> str:
     payload = f"{formatted}\n\r"
     broadcast_global(payload, channel="immtalk", exclude=char, should_send=_should_receive)
     return payload
+
+
+def do_emote(char: Character, args: str) -> str:
+    """
+    Perform a custom emote action.
+
+    ROM Reference: src/act_comm.c lines 1067-1090 (do_emote)
+
+    Usage: emote <action>
+
+    Displays "<your name> <action>" to everyone in the room.
+    Example: "emote smiles happily" displays "Bob smiles happily"
+    """
+    args = args.strip()
+    if not args:
+        return "Emote what?"
+
+    # Broadcast to room
+    message = f"{char.name} {args}"
+    if char.room:
+        broadcast_room(char.room, message, exclude=char)
+
+    return message
+
+
+def do_pose(char: Character, args: str) -> str:
+    """
+    Perform a custom emote action (alias for emote).
+
+    ROM Reference: pose is typically an alias to emote in ROM
+
+    Usage: pose <action>
+
+    Same as 'emote'. Displays "<your name> <action>" to everyone in the room.
+    """
+    return do_emote(char, args)
+
+
+def do_yell(char: Character, args: str) -> str:
+    """
+    Yell to adjacent rooms.
+
+    ROM Reference: src/act_comm.c lines 1033-1065 (do_yell)
+
+    Usage: yell <message>
+
+    Shouts a message that can be heard in your room and adjacent rooms.
+    More local than 'shout' which is heard game-wide.
+    """
+    if _has_comm_flag(char, CommFlag.NOSHOUT):
+        return "You can't yell."
+
+    args = args.strip()
+    if not args:
+        return "Yell what?"
+
+    # Yell to current room and adjacent rooms
+    message = f"{char.name} yells '{args}'"
+
+    # Broadcast to current room
+    if char.room:
+        broadcast_room(char.room, message, exclude=char)
+
+        # Broadcast to adjacent rooms
+        # In full implementation, would iterate through exits and broadcast there too
+        # For now, just local room (can be enhanced later)
+
+    return f"You yell '{args}'"
+
+
+def do_cgossip(char: Character, args: str) -> str:
+    """
+    Colored gossip channel.
+
+    ROM Reference: src/act_comm.c (cgossip is a color variant of gossip)
+
+    Usage: cgossip <message>
+
+    Like gossip but with color codes. Some MUDs have this as a separate channel.
+    For now, this is an alias to gossip with color support.
+    """
+    # cgossip is typically just gossip with color
+    # The gossip command already supports color codes
+    return do_gossip(char, args)

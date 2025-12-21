@@ -29,7 +29,7 @@ def make_object(**overrides) -> Object:
         vnum=overrides.get("vnum", 1),
         short_descr=overrides.get("short_descr", "an object"),
     )
-    obj = Object(prototype=proto)
+    obj = Object(instance_id=None, prototype=proto)
     return obj
 
 

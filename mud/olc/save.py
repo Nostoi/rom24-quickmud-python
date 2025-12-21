@@ -135,6 +135,14 @@ def _sector_int_to_name(sector: int) -> str:
 
 def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
     vnum = int(getattr(mob_proto, "vnum", 0))
+
+    sex_value = getattr(mob_proto, "sex", "neutral")
+    if isinstance(sex_value, int):
+        sex_map = {0: "none", 1: "male", 2: "female", 3: "neutral"}
+        sex_str = sex_map.get(sex_value, "neutral")
+    else:
+        sex_str = str(sex_value) if sex_value else "neutral"
+
     return {
         "id": vnum,
         "name": getattr(mob_proto, "short_descr", "") or "",
@@ -142,20 +150,20 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
         "long_description": getattr(mob_proto, "long_descr", "") or "",
         "description": getattr(mob_proto, "description", "") or "",
         "race": getattr(mob_proto, "race", "human") or "human",
-        "act_flags": getattr(mob_proto, "act", "") or "0",
-        "affected_by": getattr(mob_proto, "affected_by", "") or "0",
+        "act_flags": str(getattr(mob_proto, "act", "") or "0"),
+        "affected_by": str(getattr(mob_proto, "affected_by", "") or "0"),
         "alignment": int(getattr(mob_proto, "alignment", 0)),
         "group": int(getattr(mob_proto, "group", 0)),
         "level": int(getattr(mob_proto, "level", 1)),
         "thac0": int(getattr(mob_proto, "hitroll", 0)),
-        "ac": getattr(mob_proto, "ac", "1d1+0") or "1d1+0",
-        "hit_dice": getattr(mob_proto, "hit_dice", "1d1+0") or "1d1+0",
-        "mana_dice": getattr(mob_proto, "mana_dice", "1d1+0") or "1d1+0",
-        "damage_dice": getattr(mob_proto, "damage_dice", "1d1+0") or "1d1+0",
-        "damage_type": getattr(mob_proto, "dam_type", "none") or "none",
-        "start_pos": getattr(mob_proto, "start_pos", "stand") or "stand",
-        "default_pos": getattr(mob_proto, "default_pos", "stand") or "stand",
-        "sex": getattr(mob_proto, "sex", "neutral") or "neutral",
+        "ac": str(getattr(mob_proto, "ac", "1d1+0") or "1d1+0"),
+        "hit_dice": str(getattr(mob_proto, "hit_dice", "1d1+0") or "1d1+0"),
+        "mana_dice": str(getattr(mob_proto, "mana_dice", "1d1+0") or "1d1+0"),
+        "damage_dice": str(getattr(mob_proto, "damage_dice", "1d1+0") or "1d1+0"),
+        "damage_type": str(getattr(mob_proto, "dam_type", "none") or "none"),
+        "start_pos": str(getattr(mob_proto, "start_pos", "stand") or "stand"),
+        "default_pos": str(getattr(mob_proto, "default_pos", "stand") or "stand"),
+        "sex": sex_str,
         "wealth": int(getattr(mob_proto, "wealth", 0)),
     }
 

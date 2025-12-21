@@ -3,22 +3,21 @@ from __future__ import annotations
 import shlex
 from collections import defaultdict
 
-from mud.models.clans import get_clan, lookup_clan_id
-
 from mud.models.area import Area
 from mud.models.character import Character
+from mud.models.clans import get_clan, lookup_clan_id
 from mud.models.constants import (
-    Direction,
     EX_CLOSED,
     EX_EASY,
     EX_HARD,
     EX_INFURIATING,
     EX_ISDOOR,
     EX_LOCKED,
-    EX_NOPASS,
-    EX_NOLOCK,
     EX_NOCLOSE,
+    EX_NOLOCK,
+    EX_NOPASS,
     EX_PICKPROOF,
+    Direction,
     RoomFlag,
     Sector,
     WearFlag,
@@ -26,7 +25,7 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.models.object import Object
-from mud.models.room import ExtraDescr, Exit, Room
+from mud.models.room import Exit, ExtraDescr, Room
 from mud.models.room_json import ResetJson
 from mud.net.session import Session
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -1134,9 +1133,6 @@ def cmd_asave(char: Character, args: str) -> str:
             "  asave world    - saves the world! (db dump)\n"
         )
 
-    pcdata = getattr(char, "pcdata", None)
-    char_security = int(getattr(pcdata, "security", 0)) if pcdata else 0
-
     if arg.isdigit():
         vnum = int(arg)
         area = area_registry.get(vnum)
@@ -1220,3 +1216,1242 @@ def cmd_asave(char: Character, args: str) -> str:
             return "Failed to save area."
 
     return "Invalid argument. Use 'asave' with no arguments for help."
+
+
+def cmd_aedit(char: Character, args: str) -> str:
+    """Area editor - ROM src/olc.c:410-469."""
+    session = _get_session(char)
+    if session is None:
+        return "You do not have an active connection."
+
+    arg = args.strip()
+
+    if session.editor == "aedit":
+        return _interpret_aedit(session, char, arg)
+
+    if not arg:
+        return "Syntax: @aedit <area vnum>"
+
+    try:
+        area_vnum = int(arg)
+    except ValueError:
+        return "Area vnum must be a number."
+
+    area = area_registry.get(area_vnum)
+    if area is None:
+        return "That area does not exist."
+
+    if not _is_builder(char, area):
+        return "Insufficient security to edit this area."
+
+    _ensure_session_area(session, area)
+    return f"Now editing area {area.name} (vnum {area.vnum}).\nType 'show' to display area info, 'done' to exit."
+
+
+def _ensure_session_area(session: Session, area: Area) -> None:
+    session.editor = "aedit"
+    session.editor_state = {"area": area}
+
+
+def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
+    """Command interpreter for aedit - ROM src/olc.c:216-235 (aedit_table)."""
+    area = session.editor_state.get("area") if session.editor_state else None
+    if not isinstance(area, Area):
+        _clear_session(session)
+        return "Area editor session lost. Type '@aedit <vnum>' to begin again."
+
+    stripped = raw_input.strip()
+    if not stripped:
+        return "Syntax: name <value> | credits <value> | security <number> | builder <add|remove> <name> | show | done"
+
+    try:
+        parts = shlex.split(stripped)
+    except ValueError:
+        return "Invalid area editor syntax."
+
+    if not parts:
+        return "Syntax: name <value> | credits <value> | security <number> | builder <add|remove> <name> | show | done"
+
+    cmd = parts[0].lower()
+    args_parts = parts[1:]
+
+    if cmd == "@aedit":
+        if not args_parts:
+            return "You are already editing this area."
+        cmd = args_parts[0].lower()
+        args_parts = args_parts[1:]
+
+    if cmd == "@asave":
+        return cmd_asave(char, " ".join(parts[1:]) if len(parts) > 1 else "")
+
+    if cmd in {"done", "exit"}:
+        _clear_session(session)
+        return "Exiting area editor."
+
+    if cmd == "show":
+        return _aedit_show(area)
+
+    if cmd == "name":
+        if not args_parts:
+            return "Usage: name <new area name>"
+        new_name = " ".join(args_parts)
+        area.name = new_name
+        area.changed = True
+        return f"Area name set to: {new_name}"
+
+    if cmd == "credits":
+        if not args_parts:
+            return "Usage: credits <author name>"
+        new_credits = " ".join(args_parts)
+        area.credits = new_credits
+        area.changed = True
+        return f"Area credits set to: {new_credits}"
+
+    if cmd == "security":
+        if not args_parts:
+            return "Usage: security <0-9>"
+        try:
+            security_level = int(args_parts[0])
+        except ValueError:
+            return "Security level must be a number."
+
+        if security_level < 0 or security_level > 9:
+            return "Security level must be between 0 and 9."
+
+        area.security = security_level
+        area.changed = True
+        return f"Security level set to {security_level}."
+
+    if cmd == "builder":
+        return _handle_builder_command(area, args_parts)
+
+    if cmd == "vnum":
+        if not args_parts:
+            return "Usage: vnum <area vnum>"
+        try:
+            new_vnum = int(args_parts[0])
+        except ValueError:
+            return "Area vnum must be a number."
+        area.vnum = new_vnum
+        area.changed = True
+        return f"Area vnum set to {new_vnum}."
+
+    if cmd == "lvnum":
+        if not args_parts:
+            return "Usage: lvnum <lower vnum>"
+        try:
+            lvnum = int(args_parts[0])
+        except ValueError:
+            return "Lower vnum must be a number."
+        area.min_vnum = lvnum
+        area.changed = True
+        return f"Lower vnum set to {lvnum}."
+
+    if cmd == "uvnum":
+        if not args_parts:
+            return "Usage: uvnum <upper vnum>"
+        try:
+            uvnum = int(args_parts[0])
+        except ValueError:
+            return "Upper vnum must be a number."
+        area.max_vnum = uvnum
+        area.changed = True
+        return f"Upper vnum set to {uvnum}."
+
+    if cmd == "filename":
+        if not args_parts:
+            return "Usage: filename <filename>"
+        new_filename = args_parts[0]
+        area.file_name = new_filename
+        area.changed = True
+        return f"Filename set to: {new_filename}"
+
+    return f"Unknown area editor command: {cmd}"
+
+
+def _aedit_show(area: Area) -> str:
+    lines = []
+    lines.append(f"Area: {area.name or '(unnamed)'}")
+    lines.append(f"Vnum:     {area.vnum}")
+    lines.append(f"File:     {area.file_name or '(none)'}")
+    lines.append(f"Vnums:    {area.min_vnum} - {area.max_vnum}")
+    lines.append(f"Security: {area.security}")
+    lines.append(f"Builders: {area.builders or 'None'}")
+    lines.append(f"Credits:  {area.credits or '(none)'}")
+    lines.append(f"Changed:  {'Yes' if area.changed else 'No'}")
+    return "\n".join(lines)
+
+
+def _handle_builder_command(area: Area, args_parts: list[str]) -> str:
+    """Builder list management - ROM src/olc.c:builder."""
+    if len(args_parts) < 2:
+        return "Usage: builder <add|remove> <name>"
+
+    action = args_parts[0].lower()
+    builder_name = args_parts[1].lower()
+
+    if action not in {"add", "remove"}:
+        return "Usage: builder <add|remove> <name>"
+
+    builders_str = (area.builders or "").strip()
+    if builders_str.lower() in {"", "none"}:
+        builders_list = []
+    else:
+        builders_list = [b.strip().lower() for b in builders_str.replace(",", " ").split() if b.strip()]
+
+    if action == "add":
+        if builder_name in builders_list:
+            return f"Builder '{builder_name}' is already in the list."
+        builders_list.append(builder_name)
+        area.builders = " ".join(builders_list)
+        area.changed = True
+        return f"Builder '{builder_name}' added."
+
+    if action == "remove":
+        if builder_name not in builders_list:
+            return f"Builder '{builder_name}' is not in the list."
+        builders_list.remove(builder_name)
+        area.builders = " ".join(builders_list) if builders_list else "None"
+        area.changed = True
+        return f"Builder '{builder_name}' removed."
+
+    return "Unknown builder command."
+
+
+def handle_aedit_command(char: Character, session: Session, input_str: str) -> str:
+    return _interpret_aedit(session, char, input_str)
+
+
+def cmd_oedit(char: Character, args: str) -> str:
+    """Object editor - ROM src/olc.c:532-584."""
+    session = _get_session(char)
+    if session is None:
+        return "You do not have an active connection."
+
+    arg = args.strip()
+
+    if session.editor == "oedit":
+        return _interpret_oedit(session, char, arg)
+
+    if not arg:
+        return "Syntax: @oedit <object vnum>"
+
+    try:
+        obj_vnum = int(arg)
+    except ValueError:
+        return "Object vnum must be a number."
+
+    from mud.models.obj import ObjIndex, obj_index_registry
+
+    obj_proto = obj_index_registry.get(obj_vnum)
+    if obj_proto is None:
+        area = _get_area_for_vnum(obj_vnum)
+        if area is None:
+            return "That vnum is not assigned to an area."
+        if not _is_builder(char, area):
+            return "You do not have builder rights for that area."
+        obj_proto = ObjIndex(vnum=obj_vnum, area=area)
+        obj_index_registry[obj_vnum] = obj_proto
+        if area:
+            area.changed = True
+        return f"New object prototype created (vnum {obj_vnum}).\nType 'show' to display, 'done' to exit."
+
+    area = getattr(obj_proto, "area", None)
+    if not _is_builder(char, area):
+        return "Insufficient security to edit this object."
+
+    _ensure_session_obj(session, obj_proto)
+    return f"Now editing object {obj_proto.short_descr or '(unnamed)'} (vnum {obj_vnum}).\nType 'show' to display, 'done' to exit."
+
+
+def _ensure_session_obj(session: Session, obj_proto) -> None:
+    session.editor = "oedit"
+    session.editor_state = {"obj_proto": obj_proto}
+
+
+def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
+    """Command interpreter for oedit - ROM src/olc.c:oedit_table."""
+    from mud.models.obj import ObjIndex
+
+    obj_proto = session.editor_state.get("obj_proto") if session.editor_state else None
+    if not isinstance(obj_proto, ObjIndex):
+        _clear_session(session)
+        return "Object editor session lost. Type '@oedit <vnum>' to begin again."
+
+    stripped = raw_input.strip()
+    if not stripped:
+        return "Syntax: name <value> | short <value> | long <value> | type <type> | level <num> | show | done"
+
+    try:
+        parts = shlex.split(stripped)
+    except ValueError:
+        return "Invalid object editor syntax."
+
+    if not parts:
+        return "Syntax: name <value> | short <value> | long <value> | type <type> | level <num> | show | done"
+
+    cmd = parts[0].lower()
+    args_parts = parts[1:]
+
+    if cmd == "@oedit":
+        if not args_parts:
+            return "You are already editing this object."
+        cmd = args_parts[0].lower()
+        args_parts = args_parts[1:]
+
+    if cmd == "@asave":
+        return cmd_asave(char, " ".join(parts[1:]) if len(parts) > 1 else "")
+
+    if cmd in {"done", "exit"}:
+        _clear_session(session)
+        return "Exiting object editor."
+
+    if cmd == "show":
+        return _oedit_show(obj_proto)
+
+    if cmd == "name":
+        if not args_parts:
+            return "Usage: name <keywords>"
+        new_name = " ".join(args_parts)
+        obj_proto.name = new_name
+        _mark_obj_changed(obj_proto)
+        return f"Object name (keywords) set to: {new_name}"
+
+    if cmd == "short":
+        if not args_parts:
+            return "Usage: short <short description>"
+        new_short = " ".join(args_parts)
+        obj_proto.short_descr = new_short
+        _mark_obj_changed(obj_proto)
+        return f"Short description set to: {new_short}"
+
+    if cmd == "long":
+        if not args_parts:
+            return "Usage: long <long description>"
+        new_long = " ".join(args_parts)
+        obj_proto.description = new_long
+        _mark_obj_changed(obj_proto)
+        return f"Long description set to: {new_long}"
+
+    if cmd == "type":
+        if not args_parts:
+            return "Usage: type <item type>"
+        item_type = args_parts[0].lower()
+        obj_proto.item_type = item_type
+        _mark_obj_changed(obj_proto)
+        return f"Item type set to: {item_type}"
+
+    if cmd == "level":
+        if not args_parts:
+            return "Usage: level <number>"
+        try:
+            level = int(args_parts[0])
+        except ValueError:
+            return "Level must be a number."
+        if level < 0:
+            return "Level must be non-negative."
+        obj_proto.level = level
+        _mark_obj_changed(obj_proto)
+        return f"Object level set to {level}."
+
+    if cmd == "weight":
+        if not args_parts:
+            return "Usage: weight <number>"
+        try:
+            weight = int(args_parts[0])
+        except ValueError:
+            return "Weight must be a number."
+        obj_proto.weight = weight
+        _mark_obj_changed(obj_proto)
+        return f"Weight set to {weight}."
+
+    if cmd == "cost":
+        if not args_parts:
+            return "Usage: cost <number>"
+        try:
+            cost = int(args_parts[0])
+        except ValueError:
+            return "Cost must be a number."
+        obj_proto.cost = cost
+        _mark_obj_changed(obj_proto)
+        return f"Cost set to {cost}."
+
+    if cmd == "material":
+        if not args_parts:
+            return "Usage: material <name>"
+        material = " ".join(args_parts)
+        obj_proto.material = material
+        _mark_obj_changed(obj_proto)
+        return f"Material set to: {material}"
+
+    if cmd in {"v0", "v1", "v2", "v3", "v4"}:
+        index = int(cmd[1])
+        if not args_parts:
+            return f"Usage: {cmd} <number>"
+        try:
+            value = int(args_parts[0])
+        except ValueError:
+            return "Value must be a number."
+        if not isinstance(obj_proto.value, list):
+            obj_proto.value = [0, 0, 0, 0, 0]
+        while len(obj_proto.value) <= index:
+            obj_proto.value.append(0)
+        obj_proto.value[index] = value
+        _mark_obj_changed(obj_proto)
+        return f"Value[{index}] set to {value}."
+
+    if cmd == "ed":
+        return _handle_obj_extra_command(obj_proto, args_parts)
+
+    return f"Unknown object editor command: {cmd}"
+
+
+def _oedit_show(obj_proto) -> str:
+    lines = []
+    lines.append(f"Object: {obj_proto.short_descr or '(unnamed)'}")
+    lines.append(f"Vnum:     {obj_proto.vnum}")
+    lines.append(f"Name:     {obj_proto.name or '(none)'}")
+    lines.append(f"Short:    {obj_proto.short_descr or '(none)'}")
+    lines.append(f"Long:     {obj_proto.description or '(none)'}")
+    lines.append(f"Type:     {obj_proto.item_type}")
+    lines.append(f"Level:    {obj_proto.level}")
+    lines.append(f"Weight:   {obj_proto.weight}")
+    lines.append(f"Cost:     {obj_proto.cost}")
+    lines.append(f"Material: {obj_proto.material or '(none)'}")
+
+    value_list = obj_proto.value if isinstance(obj_proto.value, list) else [0, 0, 0, 0, 0]
+    for i in range(5):
+        val = value_list[i] if i < len(value_list) else 0
+        lines.append(f"Value[{i}]: {val}")
+
+    area = getattr(obj_proto, "area", None)
+    area_name = getattr(area, "name", "Unknown") if area else "None"
+    lines.append(f"Area:     {area_name}")
+
+    if obj_proto.extra_descr:
+        lines.append(f"Extra descriptions: {len(obj_proto.extra_descr)}")
+
+    return "\n".join(lines)
+
+
+def _handle_obj_extra_command(obj_proto, args_parts: list[str]) -> str:
+    if not args_parts:
+        return "Usage: ed <add|desc|delete|list> ..."
+
+    subcmd = args_parts[0].lower()
+    rest = args_parts[1:]
+
+    if subcmd == "list":
+        if not obj_proto.extra_descr:
+            return "No extra descriptions defined."
+        lines = ["Extra descriptions:"]
+        for extra in obj_proto.extra_descr:
+            keyword = extra.get("keyword", "(none)")
+            desc = extra.get("description", "(no description)")
+            lines.append(f"- {keyword}: {desc}")
+        return "\n".join(lines)
+
+    if subcmd == "add":
+        if not rest:
+            return "Usage: ed add <keyword>"
+        keyword = rest[0]
+        if not isinstance(obj_proto.extra_descr, list):
+            obj_proto.extra_descr = []
+        for extra in obj_proto.extra_descr:
+            if extra.get("keyword") == keyword:
+                return f"Extra description '{keyword}' already exists. Use 'ed desc {keyword} <text>' to modify."
+        obj_proto.extra_descr.append({"keyword": keyword, "description": ""})
+        _mark_obj_changed(obj_proto)
+        return f"Extra description '{keyword}' created. Use 'ed desc {keyword} <text>' to set the text."
+
+    if subcmd in {"delete", "remove"}:
+        if not rest:
+            return "Usage: ed delete <keyword>"
+        keyword = rest[0]
+        if not isinstance(obj_proto.extra_descr, list):
+            return f"No extra description named '{keyword}'."
+        for i, extra in enumerate(obj_proto.extra_descr):
+            if extra.get("keyword") == keyword:
+                obj_proto.extra_descr.pop(i)
+                _mark_obj_changed(obj_proto)
+                return f"Extra description '{keyword}' removed."
+        return f"No extra description named '{keyword}'."
+
+    if subcmd in {"desc", "description"}:
+        if len(rest) < 2:
+            return "Usage: ed desc <keyword> <text>"
+        keyword = rest[0]
+        text = " ".join(rest[1:])
+        if not isinstance(obj_proto.extra_descr, list):
+            obj_proto.extra_descr = []
+        for extra in obj_proto.extra_descr:
+            if extra.get("keyword") == keyword:
+                extra["description"] = text
+                _mark_obj_changed(obj_proto)
+                return f"Extra description '{keyword}' updated."
+        obj_proto.extra_descr.append({"keyword": keyword, "description": text})
+        _mark_obj_changed(obj_proto)
+        return f"Extra description '{keyword}' created and set."
+
+    return "Unknown extra description command."
+
+
+def _mark_obj_changed(obj_proto) -> None:
+    area = getattr(obj_proto, "area", None)
+    if area:
+        area.changed = True
+
+
+def handle_oedit_command(char: Character, session: Session, input_str: str) -> str:
+    return _interpret_oedit(session, char, input_str)
+
+
+def cmd_medit(char: Character, args: str) -> str:
+    """Mobile editor - ROM src/olc.c:588-650."""
+    session = _get_session(char)
+    if session is None:
+        return "You do not have an active connection."
+
+    arg = args.strip()
+
+    if session.editor == "medit":
+        return _interpret_medit(session, char, arg)
+
+    if not arg:
+        return "Syntax: @medit <mobile vnum>"
+
+    try:
+        mob_vnum = int(arg)
+    except ValueError:
+        return "Mobile vnum must be a number."
+
+    from mud.models.mob import MobIndex, mob_registry
+
+    mob_proto = mob_registry.get(mob_vnum)
+    if mob_proto is None:
+        area = _get_area_for_vnum(mob_vnum)
+        if area is None:
+            return "That vnum is not assigned to an area."
+        if not _is_builder(char, area):
+            return "You do not have builder rights for that area."
+        mob_proto = MobIndex(vnum=mob_vnum, area=area)
+        mob_registry[mob_vnum] = mob_proto
+        if area:
+            area.changed = True
+        return f"New mobile prototype created (vnum {mob_vnum}).\nType 'show' to display, 'done' to exit."
+
+    area = getattr(mob_proto, "area", None)
+    if not _is_builder(char, area):
+        return "Insufficient security to edit this mobile."
+
+    _ensure_session_mob(session, mob_proto)
+    return f"Now editing mobile {mob_proto.short_descr or '(unnamed)'} (vnum {mob_vnum}).\nType 'show' to display, 'done' to exit."
+
+
+def _ensure_session_mob(session: Session, mob_proto) -> None:
+    session.editor = "medit"
+    session.editor_state = {"mob_proto": mob_proto}
+
+
+def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
+    """Command interpreter for medit - ROM src/olc.c:medit_table."""
+    from mud.models.mob import MobIndex
+
+    mob_proto = session.editor_state.get("mob_proto") if session.editor_state else None
+    if not isinstance(mob_proto, MobIndex):
+        _clear_session(session)
+        return "Mobile editor session lost. Type '@medit <vnum>' to begin again."
+
+    stripped = raw_input.strip()
+    if not stripped:
+        return "Syntax: name <value> | short <value> | long <value> | level <num> | align <num> | show | done"
+
+    try:
+        parts = shlex.split(stripped)
+    except ValueError:
+        return "Invalid mobile editor syntax."
+
+    if not parts:
+        return "Syntax: name <value> | short <value> | long <value> | level <num> | align <num> | show | done"
+
+    cmd = parts[0].lower()
+    args_parts = parts[1:]
+
+    if cmd == "@medit":
+        if not args_parts:
+            return "You are already editing this mobile."
+        cmd = args_parts[0].lower()
+        args_parts = args_parts[1:]
+
+    if cmd == "@asave":
+        return cmd_asave(char, " ".join(parts[1:]) if len(parts) > 1 else "")
+
+    if cmd in {"done", "exit"}:
+        _clear_session(session)
+        return "Exiting mobile editor."
+
+    if cmd == "show":
+        return _medit_show(mob_proto)
+
+    if cmd == "name":
+        if not args_parts:
+            return "Usage: name <player name>"
+        new_name = " ".join(args_parts)
+        mob_proto.player_name = new_name
+        _mark_mob_changed(mob_proto)
+        return f"Player name set to: {new_name}"
+
+    if cmd == "short":
+        if not args_parts:
+            return "Usage: short <short description>"
+        new_short = " ".join(args_parts)
+        mob_proto.short_descr = new_short
+        _mark_mob_changed(mob_proto)
+        return f"Short description set to: {new_short}"
+
+    if cmd == "long":
+        if not args_parts:
+            return "Usage: long <long description>"
+        new_long = " ".join(args_parts)
+        mob_proto.long_descr = new_long
+        _mark_mob_changed(mob_proto)
+        return f"Long description set to: {new_long}"
+
+    if cmd in {"desc", "description"}:
+        if not args_parts:
+            return "Usage: desc <description>"
+        new_desc = " ".join(args_parts)
+        mob_proto.description = new_desc
+        _mark_mob_changed(mob_proto)
+        return f"Description set to: {new_desc}"
+
+    if cmd == "level":
+        if not args_parts:
+            return "Usage: level <number>"
+        try:
+            level = int(args_parts[0])
+        except ValueError:
+            return "Level must be a number."
+        if level < 1:
+            return "Level must be at least 1."
+        mob_proto.level = level
+        _mark_mob_changed(mob_proto)
+        return f"Mobile level set to {level}."
+
+    if cmd in {"align", "alignment"}:
+        if not args_parts:
+            return "Usage: align <number>"
+        try:
+            alignment = int(args_parts[0])
+        except ValueError:
+            return "Alignment must be a number."
+        if alignment < -1000 or alignment > 1000:
+            return "Alignment must be between -1000 and 1000."
+        mob_proto.alignment = alignment
+        _mark_mob_changed(mob_proto)
+        return f"Alignment set to {alignment}."
+
+    if cmd == "hitroll":
+        if not args_parts:
+            return "Usage: hitroll <number>"
+        try:
+            hitroll = int(args_parts[0])
+        except ValueError:
+            return "Hitroll must be a number."
+        mob_proto.hitroll = hitroll
+        _mark_mob_changed(mob_proto)
+        return f"Hitroll set to {hitroll}."
+
+    if cmd == "damroll":
+        if not args_parts:
+            return "Usage: damroll <number>"
+        try:
+            damroll = int(args_parts[0])
+        except ValueError:
+            return "Damroll must be a number."
+        mob_proto.thac0 = damroll
+        _mark_mob_changed(mob_proto)
+        return f"Damroll set to {damroll}."
+
+    if cmd == "race":
+        if not args_parts:
+            return "Usage: race <race name>"
+        race = args_parts[0].lower()
+        mob_proto.race = race
+        _mark_mob_changed(mob_proto)
+        return f"Race set to: {race}"
+
+    if cmd == "sex":
+        if not args_parts:
+            return "Usage: sex <male|female|neutral|none>"
+        sex_str = args_parts[0].lower()
+        sex_map = {"male": 1, "female": 2, "neutral": 0, "none": 0}
+        if sex_str not in sex_map:
+            return "Sex must be male, female, neutral, or none."
+        from mud.models.constants import Sex
+
+        mob_proto.sex = Sex(sex_map[sex_str])
+        _mark_mob_changed(mob_proto)
+        return f"Sex set to: {sex_str}"
+
+    if cmd == "wealth":
+        if not args_parts:
+            return "Usage: wealth <number>"
+        try:
+            wealth = int(args_parts[0])
+        except ValueError:
+            return "Wealth must be a number."
+        if wealth < 0:
+            return "Wealth must be non-negative."
+        mob_proto.wealth = wealth
+        _mark_mob_changed(mob_proto)
+        return f"Wealth set to {wealth}."
+
+    if cmd == "group":
+        if not args_parts:
+            return "Usage: group <number>"
+        try:
+            group = int(args_parts[0])
+        except ValueError:
+            return "Group must be a number."
+        mob_proto.group = group
+        _mark_mob_changed(mob_proto)
+        return f"Group set to {group}."
+
+    if cmd == "hit":
+        if len(args_parts) < 1:
+            return "Usage: hit <dice string> (e.g., 2d8+10)"
+        hit_dice = args_parts[0]
+        mob_proto.hit_dice = hit_dice
+        _mark_mob_changed(mob_proto)
+        return f"Hit dice set to: {hit_dice}"
+
+    if cmd == "mana":
+        if len(args_parts) < 1:
+            return "Usage: mana <dice string> (e.g., 100d2+0)"
+        mana_dice = args_parts[0]
+        mob_proto.mana_dice = mana_dice
+        _mark_mob_changed(mob_proto)
+        return f"Mana dice set to: {mana_dice}"
+
+    if cmd in {"dam", "damage"}:
+        if len(args_parts) < 1:
+            return "Usage: dam <dice string> (e.g., 1d6+2)"
+        damage_dice = args_parts[0]
+        mob_proto.damage_dice = damage_dice
+        _mark_mob_changed(mob_proto)
+        return f"Damage dice set to: {damage_dice}"
+
+    if cmd == "damtype":
+        if not args_parts:
+            return "Usage: damtype <damage type>"
+        damtype = " ".join(args_parts)
+        mob_proto.damage_type = damtype
+        _mark_mob_changed(mob_proto)
+        return f"Damage type set to: {damtype}"
+
+    if cmd == "ac":
+        if len(args_parts) < 1:
+            return "Usage: ac <dice string> (e.g., 6d1+0)"
+        ac_dice = args_parts[0]
+        mob_proto.ac = ac_dice
+        _mark_mob_changed(mob_proto)
+        return f"AC dice set to: {ac_dice}"
+
+    if cmd == "material":
+        if not args_parts:
+            return "Usage: material <name>"
+        material = " ".join(args_parts)
+        mob_proto.material = material
+        _mark_mob_changed(mob_proto)
+        return f"Material set to: {material}"
+
+    return f"Unknown mobile editor command: {cmd}"
+
+
+def _medit_show(mob_proto) -> str:
+    lines = []
+    lines.append(f"Mobile: {mob_proto.short_descr or '(unnamed)'}")
+    lines.append(f"Vnum:       {mob_proto.vnum}")
+    lines.append(f"Name:       {mob_proto.player_name or '(none)'}")
+    lines.append(f"Short:      {mob_proto.short_descr or '(none)'}")
+    lines.append(f"Long:       {mob_proto.long_descr or '(none)'}")
+    lines.append(f"Description: {mob_proto.description or '(none)'}")
+    lines.append(f"Level:      {mob_proto.level}")
+    lines.append(f"Alignment:  {mob_proto.alignment}")
+    lines.append(f"Hitroll:    {mob_proto.hitroll}")
+    lines.append(f"Race:       {mob_proto.race}")
+
+    sex_val = mob_proto.sex
+    if hasattr(sex_val, "name"):
+        sex_str = sex_val.name.lower()
+    elif sex_val == 1:
+        sex_str = "male"
+    elif sex_val == 2:
+        sex_str = "female"
+    else:
+        sex_str = "neutral"
+    lines.append(f"Sex:        {sex_str}")
+
+    lines.append(f"Wealth:     {mob_proto.wealth}")
+    lines.append(f"Group:      {mob_proto.group}")
+    lines.append(f"Hit dice:   {mob_proto.hit_dice}")
+    lines.append(f"Mana dice:  {mob_proto.mana_dice}")
+    lines.append(f"Damage dice: {mob_proto.damage_dice}")
+    lines.append(f"Damage type: {mob_proto.damage_type}")
+    lines.append(f"AC:         {mob_proto.ac}")
+    lines.append(f"Material:   {mob_proto.material or '(none)'}")
+
+    area = getattr(mob_proto, "area", None)
+    area_name = getattr(area, "name", "Unknown") if area else "None"
+    lines.append(f"Area:       {area_name}")
+
+    return "\n".join(lines)
+
+
+def _mark_mob_changed(mob_proto) -> None:
+    area = getattr(mob_proto, "area", None)
+    if area:
+        area.changed = True
+
+
+def handle_medit_command(char: Character, session: Session, input_str: str) -> str:
+    return _interpret_medit(session, char, input_str)
+
+
+def cmd_rstat(char: Character, args: str) -> str:
+    """Display detailed room statistics - ROM builder tool."""
+    arg = args.strip()
+
+    if not arg:
+        room = getattr(char, "room", None)
+        if room is None:
+            return "You are not in a room."
+    else:
+        try:
+            vnum = int(arg)
+        except ValueError:
+            return "Room vnum must be a number."
+        room = room_registry.get(vnum)
+        if room is None:
+            return f"No room with vnum {vnum}."
+
+    lines = []
+    lines.append(f"Room: {room.name or '(unnamed)'}")
+    lines.append(f"Vnum: {room.vnum}")
+    lines.append(f"Description: {room.description or '(none)'}")
+
+    area = getattr(room, "area", None)
+    area_name = getattr(area, "name", "Unknown") if area else "None"
+    lines.append(f"Area: {area_name}")
+
+    sector_name = _SECTOR_NAMES.get(int(getattr(room, "sector_type", 0)), "unknown")
+    lines.append(f"Sector: {sector_name}")
+
+    room_flags = getattr(room, "room_flags", 0)
+    flag_names = [name for bit, name in _ROOM_FLAG_DISPLAY if room_flags & bit]
+    lines.append(f"Flags: {' '.join(flag_names) if flag_names else 'none'}")
+
+    lines.append(f"Heal rate: {getattr(room, 'heal_rate', 100)}")
+    lines.append(f"Mana rate: {getattr(room, 'mana_rate', 100)}")
+
+    owner = getattr(room, "owner", "")
+    lines.append(f"Owner: {owner if owner else 'none'}")
+
+    clan_id = getattr(room, "clan", 0)
+    if clan_id:
+        clan = get_clan(clan_id)
+        clan_name = getattr(clan, "name", f"clan{clan_id}") if clan else f"clan{clan_id}"
+        lines.append(f"Clan: {clan_name}")
+
+    exits = getattr(room, "exits", [])
+    if any(exits):
+        lines.append("\nExits:")
+        for dir_val, exit_obj in enumerate(exits):
+            if exit_obj is not None:
+                dir_name = Direction(dir_val).name.lower()
+                to_vnum = getattr(exit_obj, "vnum", 0)
+                keyword = getattr(exit_obj, "keyword", None)
+                exit_info = getattr(exit_obj, "exit_info", 0)
+                flag_names = [name for bit, name in _EXIT_FLAG_DISPLAY if exit_info & bit]
+                flags_str = f" [{' '.join(flag_names)}]" if flag_names else ""
+                keyword_str = f" ({keyword})" if keyword else ""
+                lines.append(f"  {dir_name}: {to_vnum}{keyword_str}{flags_str}")
+
+    extra_descr = getattr(room, "extra_descr", [])
+    if extra_descr:
+        lines.append(f"\nExtra descriptions: {len(extra_descr)}")
+        for extra in extra_descr[:5]:
+            keyword = getattr(extra, "keyword", "(none)")
+            lines.append(f"  - {keyword}")
+        if len(extra_descr) > 5:
+            lines.append(f"  ... and {len(extra_descr) - 5} more")
+
+    return "\n".join(lines)
+
+
+def cmd_ostat(char: Character, args: str) -> str:
+    """Display detailed object statistics - ROM builder tool."""
+    from mud.models.obj import obj_index_registry
+
+    arg = args.strip()
+    if not arg:
+        return "Syntax: @ostat <vnum>"
+
+    try:
+        vnum = int(arg)
+    except ValueError:
+        return "Object vnum must be a number."
+
+    obj_proto = obj_index_registry.get(vnum)
+    if obj_proto is None:
+        return f"No object prototype with vnum {vnum}."
+
+    lines = []
+    lines.append(f"Object: {obj_proto.short_descr or '(unnamed)'}")
+    lines.append(f"Vnum: {vnum}")
+    lines.append(f"Name: {obj_proto.name or '(none)'}")
+    lines.append(f"Short: {obj_proto.short_descr or '(none)'}")
+    lines.append(f"Long: {obj_proto.description or '(none)'}")
+    lines.append(f"Type: {obj_proto.item_type}")
+    lines.append(f"Level: {obj_proto.level}")
+    lines.append(f"Weight: {obj_proto.weight}")
+    lines.append(f"Cost: {obj_proto.cost}")
+    lines.append(f"Material: {obj_proto.material or '(none)'}")
+    lines.append(f"Condition: {obj_proto.condition}")
+
+    value_list = obj_proto.value if isinstance(obj_proto.value, list) else [0, 0, 0, 0, 0]
+    values_str = " ".join(str(v) for v in value_list[:5])
+    lines.append(f"Values: {values_str}")
+
+    area = getattr(obj_proto, "area", None)
+    area_name = getattr(area, "name", "Unknown") if area else "None"
+    lines.append(f"Area: {area_name}")
+
+    extra_descr = getattr(obj_proto, "extra_descr", [])
+    if extra_descr:
+        lines.append(f"\nExtra descriptions: {len(extra_descr)}")
+        for extra in extra_descr[:3]:
+            keyword = extra.get("keyword", "(none)")
+            lines.append(f"  - {keyword}")
+        if len(extra_descr) > 3:
+            lines.append(f"  ... and {len(extra_descr) - 3} more")
+
+    affects = getattr(obj_proto, "affects", [])
+    if affects:
+        lines.append(f"\nAffects: {len(affects)}")
+        for aff in affects[:5]:
+            if isinstance(aff, dict):
+                loc = aff.get("location", "unknown")
+                mod = aff.get("modifier", 0)
+                lines.append(f"  {loc}: {mod:+d}")
+        if len(affects) > 5:
+            lines.append(f"  ... and {len(affects) - 5} more")
+
+    return "\n".join(lines)
+
+
+def cmd_mstat(char: Character, args: str) -> str:
+    """Display detailed mobile statistics - ROM builder tool."""
+    from mud.models.mob import mob_registry
+
+    arg = args.strip()
+    if not arg:
+        return "Syntax: @mstat <vnum>"
+
+    try:
+        vnum = int(arg)
+    except ValueError:
+        return "Mobile vnum must be a number."
+
+    mob_proto = mob_registry.get(vnum)
+    if mob_proto is None:
+        return f"No mobile prototype with vnum {vnum}."
+
+    lines = []
+    lines.append(f"Mobile: {mob_proto.short_descr or '(unnamed)'}")
+    lines.append(f"Vnum: {vnum}")
+    lines.append(f"Name: {mob_proto.player_name or '(none)'}")
+    lines.append(f"Short: {mob_proto.short_descr or '(none)'}")
+    lines.append(f"Long: {mob_proto.long_descr or '(none)'}")
+    lines.append(f"Description: {mob_proto.description or '(none)'}")
+    lines.append(f"Level: {mob_proto.level}")
+    lines.append(f"Alignment: {mob_proto.alignment}")
+    lines.append(f"Hitroll: {mob_proto.hitroll}")
+    lines.append(f"Race: {mob_proto.race}")
+
+    sex_val = mob_proto.sex
+    if hasattr(sex_val, "name"):
+        sex_str = sex_val.name.lower()
+    elif sex_val == 1:
+        sex_str = "male"
+    elif sex_val == 2:
+        sex_str = "female"
+    else:
+        sex_str = "none"
+    lines.append(f"Sex: {sex_str}")
+
+    lines.append(f"Wealth: {mob_proto.wealth}")
+    lines.append(f"Group: {mob_proto.group}")
+    lines.append(f"Hit dice: {mob_proto.hit_dice}")
+    lines.append(f"Mana dice: {mob_proto.mana_dice}")
+    lines.append(f"Damage dice: {mob_proto.damage_dice}")
+    lines.append(f"Damage type: {mob_proto.damage_type}")
+    lines.append(f"AC: {mob_proto.ac}")
+    lines.append(f"Material: {mob_proto.material or '(none)'}")
+
+    area = getattr(mob_proto, "area", None)
+    area_name = getattr(area, "name", "Unknown") if area else "None"
+    lines.append(f"Area: {area_name}")
+
+    spec_fun = getattr(mob_proto, "spec_fun", None)
+    if spec_fun:
+        lines.append(f"Special function: {spec_fun}")
+
+    shop = getattr(mob_proto, "pShop", None)
+    if shop:
+        lines.append("Has shop")
+
+    return "\n".join(lines)
+
+
+def cmd_goto(char: Character, args: str) -> str:
+    """Teleport to a room vnum - ROM builder tool."""
+    arg = args.strip()
+
+    if not arg:
+        return "Syntax: @goto <room vnum>"
+
+    try:
+        vnum = int(arg)
+    except ValueError:
+        return "Room vnum must be a number."
+
+    target_room = room_registry.get(vnum)
+    if target_room is None:
+        return f"No room with vnum {vnum}."
+
+    old_room = getattr(char, "room", None)
+    char.room = target_room
+
+    if old_room and old_room != target_room:
+        return f"You teleport from {old_room.vnum} to {target_room.vnum}.\n{target_room.name}"
+    else:
+        return f"You arrive at {target_room.name} [{vnum}]."
+
+
+def cmd_vlist(char: Character, args: str) -> str:
+    """List all vnums in an area - ROM builder tool."""
+    arg = args.strip()
+
+    if not arg:
+        current_room = getattr(char, "room", None)
+        if current_room:
+            area = getattr(current_room, "area", None)
+        else:
+            area = None
+        if area is None:
+            return "Syntax: @vlist <area vnum>"
+    else:
+        try:
+            area_vnum = int(arg)
+        except ValueError:
+            return "Area vnum must be a number."
+        area = area_registry.get(area_vnum)
+        if area is None:
+            return f"No area with vnum {area_vnum}."
+
+    from mud.models.mob import mob_registry
+    from mud.models.obj import obj_index_registry
+
+    area_name = getattr(area, "name", "Unknown")
+    min_vnum = getattr(area, "min_vnum", 0)
+    max_vnum = getattr(area, "max_vnum", 0)
+
+    lines = []
+    lines.append(f"Area: {area_name} (vnums {min_vnum}-{max_vnum})")
+    lines.append("")
+
+    rooms = [vnum for vnum in room_registry.keys() if min_vnum <= vnum <= max_vnum]
+    if rooms:
+        rooms.sort()
+        lines.append(f"Rooms ({len(rooms)}):")
+        for vnum in rooms[:20]:
+            room = room_registry[vnum]
+            name = getattr(room, "name", "(unnamed)")
+            lines.append(f"  [{vnum}] {name}")
+        if len(rooms) > 20:
+            lines.append(f"  ... and {len(rooms) - 20} more")
+        lines.append("")
+
+    mobs = [vnum for vnum in mob_registry.keys() if min_vnum <= vnum <= max_vnum]
+    if mobs:
+        mobs.sort()
+        lines.append(f"Mobiles ({len(mobs)}):")
+        for vnum in mobs[:20]:
+            mob = mob_registry[vnum]
+            name = getattr(mob, "short_descr", "(unnamed)")
+            lines.append(f"  [{vnum}] {name}")
+        if len(mobs) > 20:
+            lines.append(f"  ... and {len(mobs) - 20} more")
+        lines.append("")
+
+    objs = [vnum for vnum in obj_index_registry.keys() if min_vnum <= vnum <= max_vnum]
+    if objs:
+        objs.sort()
+        lines.append(f"Objects ({len(objs)}):")
+        for vnum in objs[:20]:
+            obj = obj_index_registry[vnum]
+            name = getattr(obj, "short_descr", "(unnamed)")
+            lines.append(f"  [{vnum}] {name}")
+        if len(objs) > 20:
+            lines.append(f"  ... and {len(objs) - 20} more")
+
+    return "\n".join(lines)
+
+
+def cmd_hedit(char: Character, args: str) -> str:
+    """Help file editor - ROM builder tool."""
+    from mud.models.help import help_registry, register_help, HelpEntry
+
+    session = _get_session(char)
+    if session is None:
+        return "You do not have an active connection."
+
+    arg = args.strip()
+
+    if session.editor == "hedit":
+        return _interpret_hedit(session, char, arg)
+
+    if not arg:
+        return "Syntax: @hedit <keyword> or @hedit new"
+
+    if arg.lower() == "new":
+        new_help = HelpEntry(keywords=["new"], text="", level=0)
+        _ensure_session_help(session, new_help, is_new=True)
+        return "Creating new help entry.\nType 'keywords <word word>' to set keywords, 'text <content>' for text, 'done' to save."
+
+    keyword = arg.lower()
+    entries = help_registry.get(keyword, [])
+
+    if not entries:
+        new_help = HelpEntry(keywords=[keyword], text="", level=0)
+        _ensure_session_help(session, new_help, is_new=True)
+        return f"Creating new help entry for '{keyword}'.\nType 'text <content>' to set text, 'level <num>' for level, 'done' to save."
+
+    help_entry = entries[0]
+    _ensure_session_help(session, help_entry, is_new=False)
+    return f"Editing help entry: {' '.join(help_entry.keywords)}\nType 'show' to display, 'done' to save."
+
+
+def _ensure_session_help(session: Session, help_entry, is_new: bool = False) -> None:
+    session.editor = "hedit"
+    session.editor_state = {"help": help_entry, "is_new": is_new}
+
+
+def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
+    """Command interpreter for hedit."""
+    from mud.models.help import register_help, HelpEntry
+
+    help_entry = session.editor_state.get("help") if session.editor_state else None
+    if not isinstance(help_entry, HelpEntry):
+        _clear_session(session)
+        return "Help editor session lost. Type '@hedit <keyword>' to begin again."
+
+    stripped = raw_input.strip()
+    if not stripped:
+        return "Syntax: keywords <words> | text <content> | level <num> | show | done"
+
+    try:
+        parts = shlex.split(stripped)
+    except ValueError:
+        return "Invalid help editor syntax."
+
+    if not parts:
+        return "Syntax: keywords <words> | text <content> | level <num> | show | done"
+
+    cmd = parts[0].lower()
+    args_parts = parts[1:]
+
+    if cmd == "@hedit":
+        if not args_parts:
+            return "You are already editing this help entry."
+        cmd = args_parts[0].lower()
+        args_parts = args_parts[1:]
+
+    if cmd in {"done", "exit"}:
+        is_new = session.editor_state.get("is_new", False)
+        if is_new:
+            register_help(help_entry)
+        _clear_session(session)
+        return "Help entry saved. Use '@hesave' to write to disk."
+
+    if cmd == "show":
+        return _hedit_show(help_entry)
+
+    if cmd in {"keywords", "keyword"}:
+        if not args_parts:
+            return "Usage: keywords <word word word>"
+        new_keywords = [w.lower() for w in args_parts]
+        help_entry.keywords = new_keywords
+        return f"Keywords set to: {' '.join(new_keywords)}"
+
+    if cmd == "text":
+        if not args_parts:
+            return "Usage: text <help text content>"
+        new_text = " ".join(args_parts)
+        help_entry.text = new_text
+        return "Help text updated."
+
+    if cmd == "level":
+        if not args_parts:
+            return "Usage: level <number>"
+        try:
+            level = int(args_parts[0])
+        except ValueError:
+            return "Level must be a number."
+        if level < 0:
+            return "Level must be non-negative."
+        help_entry.level = level
+        return f"Level set to {level}."
+
+    return f"Unknown help editor command: {cmd}"
+
+
+def _hedit_show(help_entry) -> str:
+    lines = []
+    lines.append(f"Keywords: {' '.join(help_entry.keywords)}")
+    lines.append(f"Level:    {help_entry.level}")
+    lines.append(f"Text:     {help_entry.text[:100]}{'...' if len(help_entry.text) > 100 else ''}")
+    return "\n".join(lines)
+
+
+def cmd_hesave(char: Character, args: str, help_file: "Path | None" = None) -> str:
+    """Save help files to disk - ROM builder tool.
+
+    Args:
+        char: Character executing the command
+        args: Command arguments (unused)
+        help_file: Optional path for testing; defaults to data/help.json
+    """
+    import json
+    from pathlib import Path
+    from mud.models.help import help_entries
+
+    if help_file is None:
+        help_file = Path("data/help.json")
+
+    help_data = []
+    for entry in help_entries:
+        help_data.append({"keywords": entry.keywords, "level": entry.level, "text": entry.text})
+
+    try:
+        with open(help_file, "w") as f:
+            json.dump(help_data, f, indent=2)
+        return f"Saved {len(help_data)} help entries to {help_file}"
+    except Exception as e:
+        return f"Error saving help file: {e}"
+
+
+def handle_hedit_command(char: Character, session: Session, input_str: str) -> str:
+    return _interpret_hedit(session, char, input_str)

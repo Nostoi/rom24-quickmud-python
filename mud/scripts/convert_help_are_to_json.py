@@ -10,6 +10,9 @@ def parse_help_are(path: Path) -> list[dict]:
 
     Preserves help text exactly (including spacing and newlines).
     Each entry is a dict with: level:int, keywords:list[str], text:str.
+
+    Handles quoted multi-word keywords like 'ENHANCED DAMAGE' by treating
+    them as single keywords and stripping the quotes.
     """
     entries: list[dict] = []
     in_helps = False
@@ -30,6 +33,43 @@ def parse_help_are(path: Path) -> list[dict]:
             }
         )
         level, keywords, buf = None, None, []
+
+    def parse_keywords(keyword_str: str) -> list[str]:
+        """Parse keyword string, handling quoted multi-word phrases.
+
+        Examples:
+            "DAMAGE DEATH" -> ["DAMAGE", "DEATH"]
+            "'ENHANCED DAMAGE'" -> ["ENHANCED DAMAGE"]
+            "'ARMOR CLASS' ARMOR AC" -> ["ARMOR CLASS", "ARMOR", "AC"]
+        """
+        result = []
+        i = 0
+        while i < len(keyword_str):
+            # Skip whitespace
+            while i < len(keyword_str) and keyword_str[i].isspace():
+                i += 1
+            if i >= len(keyword_str):
+                break
+
+            # Check for quoted keyword
+            if keyword_str[i] == "'":
+                # Find closing quote
+                i += 1  # skip opening quote
+                start = i
+                while i < len(keyword_str) and keyword_str[i] != "'":
+                    i += 1
+                if i < len(keyword_str):
+                    # Found closing quote
+                    result.append(keyword_str[start:i])
+                    i += 1  # skip closing quote
+            else:
+                # Regular unquoted keyword
+                start = i
+                while i < len(keyword_str) and not keyword_str[i].isspace():
+                    i += 1
+                result.append(keyword_str[start:i])
+
+        return result
 
     with path.open("r", encoding="utf-8", errors="ignore") as fp:
         for raw in fp:
@@ -62,8 +102,8 @@ def parse_help_are(path: Path) -> list[dict]:
                     # Not a numeric level; skip
                     level = None
                     continue
-                # Keywords are space-separated tokens
-                keywords = [tok for tok in rest.split() if tok]
+                # Parse keywords, handling quoted multi-word phrases
+                keywords = parse_keywords(rest)
                 buf = []
                 continue
 

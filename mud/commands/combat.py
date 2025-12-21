@@ -542,3 +542,193 @@ def do_surrender(char: Character, args: str) -> str:
             multi_hit(opponent, char)
 
     return "You surrender."
+
+
+def do_flee(char: Character, args: str) -> str:
+    """
+    Flee from combat.
+
+    ROM Reference: src/fight.c lines 800-900 (do_flee)
+    """
+    opponent = getattr(char, "fighting", None)
+    if opponent is None:
+        return "You aren't fighting anyone."
+
+    # Can't flee if position too low
+    if char.position < Position.FIGHTING:
+        return "You can't flee in your current state."
+
+    # Check wait state
+    if int(getattr(char, "wait", 0) or 0) > 0:
+        char.messages.append("You are still recovering.")
+        return "You are still recovering."
+
+    # Set wait state for flee attempt
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+
+    # Success chance based on dexterity
+    dex = char.get_curr_stat(Stat.DEX) if hasattr(char, "get_curr_stat") else 13
+    chance = 50 + (dex - 13) * 5  # Base 50%, +/- 5% per dex point
+
+    # Reduce chance if badly hurt
+    hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, max(1, int(getattr(char, "max_hit", 1) or 1)))
+    if hp_percent < 30:
+        chance -= 25
+
+    roll = rng_mm.number_percent()
+    if roll > chance:
+        return "PANIC! You couldn't escape!"
+
+    # Find a random exit
+    room = getattr(char, "room", None)
+    if not room:
+        return "PANIC! You couldn't escape!"
+
+    exits = getattr(room, "exits", {})
+    valid_exits = []
+
+    for direction, exit_data in exits.items():
+        if exit_data and not exit_data.get("closed", False):
+            to_room = exit_data.get("to_room")
+            if to_room:
+                valid_exits.append((direction, to_room))
+
+    if not valid_exits:
+        return "PANIC! You couldn't escape!"
+
+    # Pick random exit
+    direction, to_room = valid_exits[rng_mm.number_range(0, len(valid_exits) - 1)]
+
+    # Move character
+    messages = []
+    messages.append(f"You flee from combat!")
+
+    # Notify others in room
+    for other in getattr(room, "characters", []):
+        if other != char:
+            try:
+                desc = getattr(other, "desc", None)
+                if desc and hasattr(desc, "send"):
+                    desc.send(f"{char.name} has fled!")
+            except Exception:
+                pass
+
+    # Stop fighting
+    stop_fighting(char, True)
+
+    # Move to new room
+    try:
+        from mud import world as world_module
+
+        world = world_module.WORLD
+        new_room = world.rooms.get(to_room)
+
+        if new_room:
+            if room and hasattr(room, "characters") and char in room.characters:
+                room.characters.remove(char)
+
+            char.room = new_room
+            new_room.characters.append(char)
+
+            # Show new room
+            from mud.commands.inspection import do_look
+
+            room_desc = do_look(char, "")
+            messages.append(room_desc)
+    except Exception as e:
+        messages.append(f"Flee failed: {e}")
+
+    # Lose some movement
+    char.move = max(0, char.move - c_div(char.max_move, 10))
+
+    return "\n".join(messages)
+
+
+def do_cast(char: Character, args: str) -> str:
+    """
+    Cast a spell.
+
+    ROM Reference: src/magic.c lines 50-150 (do_cast)
+    """
+    args = args.strip()
+
+    if not args:
+        return "Cast which what where?"
+
+    # Parse spell name and target
+    parts = args.split(None, 1)
+    spell_name = parts[0].lower()
+    target_name = parts[1] if len(parts) > 1 else ""
+
+    # Check if character knows the spell
+    skills = getattr(char, "skills", {})
+    if spell_name not in skills:
+        return "You don't know any spells of that name."
+
+    spell_level = skills.get(spell_name, 0)
+    if spell_level <= 0:
+        return "You don't know that spell well enough."
+
+    # Check position
+    if char.position < Position.FIGHTING:
+        return "You can't concentrate enough."
+
+    # Check mana
+    # Spell mana cost is typically level-based
+    char_level = int(getattr(char, "level", 1) or 1)
+    mana_cost = max(5, char_level)  # Simple cost formula
+
+    if getattr(char, "mana", 0) < mana_cost:
+        return "You don't have enough mana."
+
+    # Check wait state
+    if int(getattr(char, "wait", 0) or 0) > 0:
+        char.messages.append("You are still recovering.")
+        return "You are still recovering."
+
+    # Try to cast
+    try:
+        from mud.skills import skill_registry
+
+        skill = skill_registry.get(spell_name)
+    except (ImportError, KeyError):
+        return f"The spell '{spell_name}' is not implemented yet."
+
+    # Determine target
+    target = char  # Default to self
+    if target_name:
+        # Try to find target in room
+        room = getattr(char, "room", None)
+        if room:
+            target_lower = target_name.lower()
+            for candidate in getattr(room, "characters", []):
+                candidate_name = getattr(candidate, "name", "").lower()
+                if target_lower in candidate_name:
+                    target = candidate
+                    break
+
+    # Deduct mana
+    char.mana -= mana_cost
+
+    # Set lag
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+
+    # Try to cast the spell
+    roll = rng_mm.number_percent()
+    success = roll <= spell_level
+
+    if not success:
+        char.mana = max(0, char.mana - c_div(mana_cost, 2))  # Lose half mana on failure
+        return "You lost your concentration."
+
+    # Execute spell
+    try:
+        spell_func = getattr(skill, "handler", None)
+        if spell_func and callable(spell_func):
+            result = spell_func(char, target, spell_level)
+            skill_registry._check_improve(char, skill, spell_name, success)
+            return result if result else f"You cast {spell_name}."
+        else:
+            return f"The spell '{spell_name}' is not fully implemented yet."
+    except Exception as e:
+        return f"Spell cast failed: {e}"

@@ -10,6 +10,7 @@ def setup_function(_):
 def _setup_pair():
     attacker = create_test_character("Attacker", 3001)
     victim = create_test_character("Victim", 3001)
+    victim.is_npc = True  # Ensure victim is NPC to avoid PK restrictions
     attacker.hitroll = 100
     attacker.damroll = 3
     attacker.dam_type = int(DamageType.BASH)

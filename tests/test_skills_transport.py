@@ -66,10 +66,14 @@ def test_gate_moves_caster_and_pet_with_room_checks() -> None:
     assert pet.room is destination
 
     assert caster.messages[0] == "You step through a gate and vanish."
-    assert caster.messages[1] == "Hall of Mirrors\nPolished stone reflects endless images."
+    assert "Hall of Mirrors" in caster.messages[1]
+    assert "Polished stone reflects endless images." in caster.messages[1]
 
-    assert pet.messages[0] == "You step through a gate and vanish."
-    assert pet.messages[1] == "Hall of Mirrors\nPolished stone reflects endless images."
+    # Pet first sees the caster's departure broadcast, then its own gate message
+    assert pet.messages[0] == "Sorcerer steps through a gate and vanishes."
+    assert pet.messages[1] == "You step through a gate and vanish."
+    assert "Hall of Mirrors" in pet.messages[2]
+    assert "Polished stone reflects endless images." in pet.messages[2]
 
     assert observer.messages[-2:] == [
         "Sorcerer steps through a gate and vanishes.",

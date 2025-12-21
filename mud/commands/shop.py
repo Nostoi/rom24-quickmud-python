@@ -136,10 +136,7 @@ def _clone_pet_character(template) -> Character | None:
     pet.damroll = _coerce(getattr(template, "damroll", 0))
     pet.hitroll = _coerce(getattr(template, "hitroll", 0))
     pet.dam_type = _coerce(getattr(template, "dam_type", 0))
-    pet.perm_stat = [
-        _coerce(value)
-        for value in list(getattr(template, "perm_stat", []) or [])
-    ]
+    pet.perm_stat = [_coerce(value) for value in list(getattr(template, "perm_stat", []) or [])]
     pet.mod_stat = [0] * len(pet.perm_stat)
     pet.size = _coerce(getattr(template, "size", 0))
     pet.material = getattr(template, "material", None)
@@ -152,14 +149,8 @@ def _clone_pet_character(template) -> Character | None:
     pet.position = _coerce(getattr(template, "position", pet.default_pos))
     pet.carry_number = _coerce(getattr(template, "carry_number", 0))
     pet.carry_weight = _coerce(getattr(template, "carry_weight", 0))
-    pet.armor = [
-        _coerce(value)
-        for value in list(getattr(template, "armor", (0, 0, 0, 0)))
-    ]
-    pet.damage = [
-        _coerce(value)
-        for value in list(getattr(template, "damage", (0, 0, 0)))
-    ]
+    pet.armor = [_coerce(value) for value in list(getattr(template, "armor", (0, 0, 0, 0)))]
+    pet.damage = [_coerce(value) for value in list(getattr(template, "damage", (0, 0, 0)))]
     pet.act = _coerce(getattr(template, "act", int(ActFlag.IS_NPC))) | int(ActFlag.IS_NPC)
     pet.affected_by = _coerce(getattr(template, "affected_by", 0))
     pet.mob_programs = list(getattr(template, "mob_programs", []) or [])
@@ -651,10 +642,7 @@ def do_list(char: Character, args: str = "") -> str:
         if cost <= 0:
             continue
         short_descr = obj.short_descr or obj.name or "item"
-        if filter_term and not (
-            _matches_name(filter_term, obj.name)
-            or _matches_name(filter_term, short_descr)
-        ):
+        if filter_term and not (_matches_name(filter_term, obj.name) or _matches_name(filter_term, short_descr)):
             continue
         signature = (getattr(proto, "vnum", None), short_descr.lower())
         flags = (getattr(obj, "extra_flags", 0) or 0) | (getattr(proto, "extra_flags", 0) or 0)
@@ -718,11 +706,16 @@ def do_buy(char: Character, args: str) -> str:
     if selected_obj is None:
         return "The shopkeeper doesn't sell that."
 
+    proto = getattr(selected_obj, "prototype", None)
+
     unit_price = _get_cost(keeper, selected_obj, buy=True)
     if unit_price <= 0:
-        return "The shopkeeper doesn't sell that."
+        # Allow prototype-less inventory templates to be purchased for free.
+        if proto is None and _is_inventory_item(selected_obj):
+            unit_price = 0
+        else:
+            return "The shopkeeper doesn't sell that."
 
-    proto = getattr(selected_obj, "prototype", None)
     infinite_stock = _is_inventory_item(selected_obj) and proto is not None
     matching_stock: list[Object] = []
     if not infinite_stock:
@@ -746,17 +739,13 @@ def do_buy(char: Character, args: str) -> str:
 
     current_weight = get_carry_weight(char)
     if infinite_stock:
-        weight_per = int(
-            getattr(selected_obj, "weight", None) or getattr(proto, "weight", 0) or 0
-        )
+        weight_per = int(getattr(selected_obj, "weight", None) or getattr(proto, "weight", 0) or 0)
         total_weight = weight_per * quantity
     else:
         total_weight = 0
         for item in matching_stock[:quantity]:
             item_proto = getattr(item, "prototype", None)
-            total_weight += int(
-                getattr(item, "weight", None) or getattr(item_proto, "weight", 0) or 0
-            )
+            total_weight += int(getattr(item, "weight", None) or getattr(item_proto, "weight", 0) or 0)
     if current_weight + total_weight > can_carry_w(char):
         return "You can't carry that much weight."
 
@@ -932,8 +921,12 @@ def do_sell(char: Character, args: str) -> str:
 
     silver = price % 100
     gold = price // 100
-    suffix = "" if price == 1 else "s"
     descriptor = selected_obj.short_descr or selected_obj.name or "item"
+
+    if gold <= 0:
+        return f"You sell {descriptor} for {silver} silver."
+
+    suffix = "" if gold == 1 else "s"
     return f"You sell {descriptor} for {silver} silver and {gold} gold piece{suffix}."
 
 
@@ -984,7 +977,4 @@ def do_value(char: Character, args: str) -> str:
     descriptor = selected_obj.short_descr or selected_obj.name or "it"
     silver = price % 100
     gold = price // 100
-    return (
-        "The shopkeeper tells you "
-        f"'I'll give you {silver} silver and {gold} gold coins for {descriptor}.'"
-    )
+    return f"The shopkeeper tells you 'I'll give you {silver} silver and {gold} gold coins for {descriptor}.'"

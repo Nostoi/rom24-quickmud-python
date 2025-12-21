@@ -38,6 +38,19 @@ def do_scan(char: Character, args: str = "") -> str:
         "off in the distance %s.",
     ]
 
+    def _get_exit(room, direction: Direction):  # type: ignore[valid-type]
+        if not room:
+            return None
+        exits = getattr(room, "exits", None)
+        if not exits:
+            return None
+        idx = int(direction)
+        if isinstance(exits, dict):
+            return exits.get(idx) or exits.get(direction)
+        if 0 <= idx < len(exits):
+            return exits[idx]
+        return None
+
     def list_room(room, depth: int, door: int) -> list[str]:
         lines: list[str] = []
         if not room:
@@ -62,7 +75,7 @@ def do_scan(char: Character, args: str = "") -> str:
         lines += list_room(char.room, 0, -1)
         # each direction at depth 1
         for d in order:
-            ex = char.room.exits[int(d)] if char.room.exits and int(d) < len(char.room.exits) else None
+            ex = _get_exit(char.room, d)
             to_room = ex.to_room if ex else None
             lines += list_room(to_room, 1, int(d))
         if len(lines) == 1:
@@ -91,7 +104,7 @@ def do_scan(char: Character, args: str = "") -> str:
     lines = [f"Looking {dir_str} you see:"]
     scan_room = char.room
     for depth in (1, 2, 3):
-        ex = scan_room.exits[int(d)] if scan_room and scan_room.exits and int(d) < len(scan_room.exits) else None
+        ex = _get_exit(scan_room, d)
         scan_room = ex.to_room if ex else None
         if not scan_room:
             break

@@ -19,6 +19,7 @@ from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
 from mud.registry import obj_registry
+from mud.utils import rng_mm
 import mud.skills.handlers as skill_handlers
 from mud.skills.handlers import (
     continual_light,

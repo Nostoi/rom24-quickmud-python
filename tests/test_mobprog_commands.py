@@ -8,7 +8,7 @@ from mud import mob_cmds
 from mud.commands.dispatcher import process_command
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import LEVEL_HERO
+from mud.models.constants import LEVEL_HERO, ItemType
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -466,8 +466,18 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
 
 def test_mpjunk_removes_equipped_items_and_nested_contents():
     mob = Character(name="Janitor", is_npc=True)
-    container_proto = ObjIndex(vnum=7400, short_descr="a battered bin", name="bin")
-    scrap_proto = ObjIndex(vnum=7401, short_descr="a scrap", name="scrap")
+    container_proto = ObjIndex(
+        vnum=7400,
+        short_descr="a battered bin",
+        name="bin",
+        item_type=int(ItemType.CONTAINER),
+    )
+    scrap_proto = ObjIndex(
+        vnum=7401,
+        short_descr="a scrap",
+        name="scrap",
+        item_type=int(ItemType.TRASH),
+    )
     container = Object(instance_id=None, prototype=container_proto)
     nested = Object(instance_id=None, prototype=scrap_proto)
     container.contained_items.append(nested)

@@ -17,14 +17,14 @@ def setup_function(_):
 
 def test_load_help_file_populates_registry():
     load_help_file("data/help.json")
-    assert "murder" in help_registry
+    assert "dwarf" in help_registry
 
 
 def test_help_command_returns_topic_text():
     load_help_file("data/help.json")
     ch = Character(name="Tester")
-    result = process_command(ch, "help murder")
-    assert "Murder is a terrible crime." in result
+    result = process_command(ch, "help dwarf")
+    assert "Dwarves are short" in result
 
 
 def test_help_defaults_to_summary_topic():
@@ -159,12 +159,7 @@ def test_help_generates_command_topic_when_missing(monkeypatch, tmp_path):
     ch = Character(name="Tester", is_npc=False)
     ch.room = Room(vnum=3001)
     result = process_command(ch, "help unalias")
-    expected = (
-        "Command: unalias\r\n"
-        "Aliases: None\r\n"
-        "Minimum position: Dead\r\n"
-        "Available to mortals.\r\n"
-    )
+    expected = "Command: unalias\r\nAliases: None\r\nMinimum position: Dead\r\nAvailable to mortals.\r\n"
     log_path = Path("log") / OHELPS_FILE
     assert log_path.exists()
     content = log_path.read_text(encoding="utf-8")

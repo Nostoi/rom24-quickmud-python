@@ -1,7 +1,9 @@
+from mud.commands.inventory import do_get
 from mud.models.character import Character
 from mud.models.constants import ActFlag, Direction, ItemType, LEVEL_IMMORTAL
 from mud.models.room import Exit, Room
 from mud.world.movement import can_carry_n, can_carry_w, move_character
+
 
 def _build_rooms() -> tuple[Room, Room]:
     start = Room(vnum=1000, name="Start")
@@ -153,3 +155,60 @@ def test_overweight_move_sets_wait_state():
     assert denial == "You are too encumbered to move."
     assert ch.room is start
     assert ch.wait >= 1
+
+
+def test_do_get_blocked_by_weight_limit(object_factory):
+    """Test ROM src/act_obj.c:do_get weight limit enforcement."""
+    room = Room(vnum=2000, name="Test Room")
+    ch = Character(name="Weak", level=1)
+    room.add_character(ch)
+
+    ch.carry_weight = can_carry_w(ch)
+
+    heavy_obj = object_factory({"vnum": 100, "short_descr": "a heavy stone", "weight": 5})
+    room.add_object(heavy_obj)
+
+    result = do_get(ch, "stone")
+
+    assert "can't carry that much weight" in result
+    assert heavy_obj in room.contents
+    assert heavy_obj not in ch.inventory
+
+
+def test_do_get_blocked_by_item_count_limit(object_factory):
+    """Test ROM src/act_obj.c:do_get item count limit enforcement."""
+    room = Room(vnum=2001, name="Test Room")
+    ch = Character(name="Full Hands", level=1)
+    room.add_character(ch)
+
+    ch.carry_number = can_carry_n(ch)
+
+    light_obj = object_factory({"vnum": 101, "short_descr": "a feather", "weight": 1})
+    room.add_object(light_obj)
+
+    result = do_get(ch, "feather")
+
+    assert "can't carry that many items" in result
+    assert light_obj in room.contents
+    assert light_obj not in ch.inventory
+
+
+def test_do_get_succeeds_when_under_limits(object_factory):
+    """Test successful get when under both weight and item limits."""
+    room = Room(vnum=2002, name="Test Room")
+    ch = Character(name="Free Hands", level=1)
+    room.add_character(ch)
+
+    ch.carry_number = 0
+    ch.carry_weight = 0
+
+    obj = object_factory({"vnum": 102, "short_descr": "a small gem", "weight": 1})
+    room.add_object(obj)
+
+    result = do_get(ch, "gem")
+
+    assert "You pick up" in result
+    assert obj not in room.contents
+    assert obj in ch.inventory
+    assert ch.carry_number == 1
+    assert ch.carry_weight == 1

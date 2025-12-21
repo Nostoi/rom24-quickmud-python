@@ -28,6 +28,9 @@ def _rom_flags_to_int(flags_str: str) -> int:
     if not flags_str:
         return 0
 
+    if isinstance(flags_str, int):
+        return flags_str
+
     result = 0
     pending_number = 0
     building_number = False

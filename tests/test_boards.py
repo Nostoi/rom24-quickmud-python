@@ -321,7 +321,7 @@ def test_board_listing_retains_current_board_without_access(tmp_path):
 
         output = process_command(char, "board")
         assert "personal" in output.lower()
-        assert "cannot read or write" in output.lower()
+        assert "cannot read nor write" in output.lower()
         assert char.pcdata.board_name == personal.storage_key()
     finally:
         character_registry.clear()

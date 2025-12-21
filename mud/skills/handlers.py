@@ -1260,6 +1260,10 @@ def armor(caster: Character, target: Character | None = None) -> bool:
     if target is None:
         raise ValueError("armor requires a target")
 
+    if target.has_spell_effect("armor"):
+        _send_to_char(caster, "They are already protected.")
+        return False
+
     level = max(int(getattr(caster, "level", 0) or 0), 0)
     effect = SpellEffect(name="armor", duration=24, level=level, ac_mod=-20)
     return target.apply_spell_effect(effect)
@@ -2660,7 +2664,7 @@ def demonfire(caster: Character, target: Character | None = None) -> int:
         victim_name = getattr(victim, "name", None) or "Someone"
         if room is not None:
             for occupant in list(getattr(room, "people", []) or []):
-                if occupant is caster:
+                if occupant is caster or occupant is victim:
                     continue
                 message = f"{caster_name} calls forth the demons of Hell upon {victim_name}!"
                 _send_to_char(occupant, message)
@@ -4804,6 +4808,8 @@ def heat_metal(
             continue
 
         obj_type = getattr(obj, "item_type", None)
+        if obj_type is None and hasattr(obj, "prototype"):
+            obj_type = getattr(obj.prototype, "item_type", None)
         wear_loc = int(getattr(obj, "wear_loc", -1))
         is_worn = wear_loc != -1
 
@@ -7231,7 +7237,7 @@ def steal(
 
     # ROM L2201-2209: calculate success chance
     percent = rng_mm.number_percent()
-    victim_awake = getattr(target, "position", Position.STANDING) >= Position.SLEEPING
+    victim_awake = getattr(target, "position", Position.STANDING) > Position.SLEEPING
 
     if not victim_awake:
         percent -= 10  # ROM L2204-2205: sleeping victim

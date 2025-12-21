@@ -32,10 +32,18 @@ def _total_wealth(char: Character) -> int:
     return int(char.gold) * 100 + int(char.silver)
 
 
+def _create_shop_character(name: str, room_vnum: int) -> Character:
+    char = create_test_character(name, room_vnum)
+    char.level = 20
+    char.perm_stat = [20, 15, 15, 15, 15]
+    char.mod_stat = [0, 0, 0, 0, 0]
+    return char
+
+
 def test_buy_from_grocer():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Buyer", 3010)
+    char = _create_shop_character("Buyer", 3010)
     char.gold = 100
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -71,7 +79,7 @@ def test_buy_from_grocer():
 def test_buy_uses_gold_and_silver():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Buyer", 3010)
+    char = _create_shop_character("Buyer", 3010)
     char.gold = 0
     char.silver = 6050
     keeper = next(
@@ -105,7 +113,7 @@ def test_buy_uses_gold_and_silver():
 def test_buy_rejects_items_above_level():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Newbie", 3010)
+    char = _create_shop_character("Newbie", 3010)
     char.gold = 200
     char.level = 1
     keeper = next(
@@ -139,7 +147,7 @@ def test_buy_rejects_items_above_level():
 def test_buy_respects_carry_limits():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Packrat", 3010)
+    char = _create_shop_character("Packrat", 3010)
     char.gold = 200
     char.silver = 0
     keeper = next(
@@ -193,8 +201,7 @@ def test_buy_respects_carry_limits():
         assert char.gold == before_gold
         assert char.silver == before_silver
         assert not any(
-            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern")
-            for obj in char.inventory
+            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in char.inventory
         )
         assert lantern_count() == baseline_count
 
@@ -206,8 +213,7 @@ def test_buy_respects_carry_limits():
         assert char.gold == before_gold
         assert char.silver == before_silver
         assert not any(
-            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern")
-            for obj in char.inventory
+            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in char.inventory
         )
         assert lantern_count() == baseline_count
     finally:
@@ -234,7 +240,9 @@ def test_buy_denied_when_coins_exceed_weight_cap():
     previous_hour = time_info.hour
     try:
         time_info.hour = 10
-        if not any((obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in keeper.inventory):
+        if not any(
+            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in keeper.inventory
+        ):
             lantern = spawn_object(3031)
             assert lantern is not None
             lantern.prototype.short_descr = "a hooded brass lantern"
@@ -247,7 +255,9 @@ def test_buy_denied_when_coins_exceed_weight_cap():
         assert response == "You can't carry that much weight."
         assert char.gold == 1000
         assert char.silver == 0
-        assert not any((obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in char.inventory)
+        assert not any(
+            (obj.short_descr or obj.name or "").lower().startswith("a hooded brass lantern") for obj in char.inventory
+        )
     finally:
         time_info.hour = previous_hour
 
@@ -255,7 +265,7 @@ def test_buy_denied_when_coins_exceed_weight_cap():
 def test_buy_preserves_infinite_stock():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Quartermaster", 3010)
+    char = _create_shop_character("Quartermaster", 3010)
     char.gold = 200
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -307,7 +317,7 @@ def test_buy_preserves_infinite_stock():
 def test_buy_handles_multiple_inventory_copies():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Quartermaster", 3010)
+    char = _create_shop_character("Quartermaster", 3010)
     char.gold = 300
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -375,7 +385,7 @@ def test_buy_handles_multiple_inventory_copies():
 def test_buy_inventory_fallback_uses_original_object():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Forager", 3010)
+    char = _create_shop_character("Forager", 3010)
     char.gold = 200
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -419,7 +429,7 @@ def test_buy_inventory_fallback_uses_original_object():
 def test_buy_multiple_items_from_inventory():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("BulkBuyer", 3010)
+    char = _create_shop_character("BulkBuyer", 3010)
     char.gold = 5
     char.silver = 0
     keeper = next(
@@ -464,7 +474,7 @@ def test_buy_multiple_items_from_inventory():
 def test_buy_specific_stock_slot():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("TargetBuyer", 3010)
+    char = _create_shop_character("TargetBuyer", 3010)
     char.gold = 5
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -508,7 +518,7 @@ def test_buy_specific_stock_slot():
 def test_list_price_matches_buy_price():
     initialize_world("area/area.lst")
     assert 3002 in shop_registry
-    char = create_test_character("Buyer", 3010)
+    char = _create_shop_character("Buyer", 3010)
     char.gold = 100
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -543,7 +553,7 @@ def test_list_price_matches_buy_price():
 
 def test_sell_to_grocer():
     initialize_world("area/area.lst")
-    char = create_test_character("Seller", 3010)
+    char = _create_shop_character("Seller", 3010)
     char.gold = 0
     keeper = next(
         (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
@@ -585,7 +595,7 @@ def test_sell_to_grocer():
 
 def test_sell_awards_gold_and_silver():
     initialize_world("area/area.lst")
-    char = create_test_character("Seller", 3010)
+    char = _create_shop_character("Seller", 3010)
     char.gold = 0
     char.silver = 25
     keeper = next(
@@ -623,7 +633,7 @@ def test_sell_awards_gold_and_silver():
 
 def test_sell_reports_gold_and_silver():
     initialize_world("area/area.lst")
-    char = create_test_character("Merchant", 3010)
+    char = _create_shop_character("Merchant", 3010)
     char.gold = 0
     char.silver = 0
     keeper = next(
@@ -645,24 +655,22 @@ def test_sell_reports_gold_and_silver():
     try:
         time_info.hour = 10
         response = process_command(char, "sell lantern")
-        match = re.search(r"for (\d+) silver and (\d+) gold piece(s?)\.\Z", response)
+        match = re.search(r"for (\d+) silver(?: and (\d+) gold piece(s?))?\.\Z", response)
         assert match is not None
         silver = int(match.group(1))
-        gold = int(match.group(2))
-        suffix = match.group(3)
+        gold = int(match.group(2)) if match.group(2) is not None else 0
+        suffix = match.group(3) or ""
         total_price = silver + gold * 100
         assert _total_wealth(char) == total_price
-        if total_price == 1:
-            assert suffix == ""
-        else:
-            assert suffix == "s"
+        if gold:
+            assert suffix == ("" if gold == 1 else "s")
     finally:
         time_info.hour = previous_hour
 
 
 def test_sell_respects_drop_and_visibility_gates():
     initialize_world("area/area.lst")
-    char = create_test_character("Seller", 3010)
+    char = _create_shop_character("Seller", 3010)
     char.gold = 0
     char.silver = 0
 
@@ -720,7 +728,7 @@ def test_sell_respects_drop_and_visibility_gates():
 
 def test_sell_sets_reply_after_missing_item():
     initialize_world("area/area.lst")
-    char = create_test_character("ReplyLess", 3010)
+    char = _create_shop_character("ReplyLess", 3010)
     char.gold = 0
     char.silver = 0
 
@@ -745,7 +753,7 @@ def test_sell_sets_reply_after_missing_item():
 
 def test_sell_extracts_and_resets_timer():
     initialize_world("area/area.lst")
-    char = create_test_character("Seller", 3010)
+    char = _create_shop_character("Seller", 3010)
     char.gold = 0
     char.silver = 0
 
@@ -821,7 +829,7 @@ def test_sell_extracts_and_resets_timer():
 
 def test_sell_haggle_applies_discount():
     initialize_world("area/area.lst")
-    char = create_test_character("Haggler", 3010)
+    char = _create_shop_character("Haggler", 3010)
     char.gold = 0
     char.silver = 0
     char.skills = {"haggle": 85}
@@ -860,9 +868,11 @@ def test_sell_haggle_applies_discount():
     finally:
         rng_mm.number_percent = original_roll
 
-    match = re.search(r"for (\d+) silver and (\d+) gold", response)
+    match = re.search(r"for (\d+) silver(?: and (\d+) gold)?", response)
     assert match is not None
-    total_price = int(match.group(1)) + int(match.group(2)) * 100
+    silver = int(match.group(1))
+    gold = int(match.group(2)) if match.group(2) is not None else 0
+    total_price = silver + gold * 100
 
     expected_bonus = (proto_cost // 2) * 40 // 100
     cap_by_buy = (95 * buy_price) // 100 if buy_price > 0 else base_sell + expected_bonus
@@ -873,7 +883,7 @@ def test_sell_haggle_applies_discount():
 
 def test_value_respects_drop_and_visibility_gates():
     initialize_world("area/area.lst")
-    char = create_test_character("Appraiser", 3010)
+    char = _create_shop_character("Appraiser", 3010)
     char.gold = 0
     char.silver = 0
 
@@ -925,7 +935,7 @@ def test_value_respects_drop_and_visibility_gates():
 
 def test_value_lists_offer():
     initialize_world("area/area.lst")
-    char = create_test_character("Barter", 3010)
+    char = _create_shop_character("Barter", 3010)
     char.gold = 0
     char.silver = 0
 
@@ -970,7 +980,7 @@ def test_value_lists_offer():
 
 def test_sell_numbered_selector():
     initialize_world("area/area.lst")
-    char = create_test_character("Vendor", 3010)
+    char = _create_shop_character("Vendor", 3010)
     char.gold = 0
     char.silver = 0
     keeper = next(
@@ -1003,10 +1013,10 @@ def test_sell_numbered_selector():
 
         response = process_command(char, "sell 2.lantern")
         assert "you sell" in response.lower()
-        match = re.search(r"for (\d+) silver and (\d+) gold piece(s?)\.\Z", response)
+        match = re.search(r"for (\d+) silver(?: and (\d+) gold piece(s?))?\.\Z", response)
         assert match is not None
         silver = int(match.group(1))
-        gold = int(match.group(2))
+        gold = int(match.group(2)) if match.group(2) is not None else 0
         price = silver + gold * 100
 
         assert _total_wealth(char) == before_char + price
@@ -1077,7 +1087,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
 
 def test_shop_respects_open_hours():
     initialize_world("area/area.lst")
-    char = create_test_character("Captain patron", 3001)
+    char = _create_shop_character("Captain patron", 3001)
     char.gold = 500
     keeper = spawn_mob(3006)
     assert keeper is not None
@@ -1127,10 +1137,9 @@ def test_shop_respects_open_hours():
         time_info.hour = previous_hour
 
 
-
 def test_list_shows_rom_columns_and_filters():
     initialize_world("area/area.lst")
-    char = create_test_character("List patron", 3001)
+    char = _create_shop_character("List patron", 3001)
     char.gold = 500
     keeper = spawn_mob(3006)
     assert keeper is not None
@@ -1165,7 +1174,7 @@ def test_list_shows_rom_columns_and_filters():
         ration_line = next(line for line in lines if "travel ration" in line)
         apples_line = next(line for line in lines if "rack of apples" in line)
         assert " 2 ]" in ration_line  # shows finite quantity
-        assert "--" in apples_line   # infinite stock marker
+        assert "--" in apples_line  # infinite stock marker
 
         filtered = process_command(char, "list ration")
         assert "travel ration" in filtered
@@ -1183,7 +1192,7 @@ def test_list_shows_rom_columns_and_filters():
 
 def test_list_filters_empty_inventory():
     initialize_world("area/area.lst")
-    char = create_test_character("Filter patron", 3001)
+    char = _create_shop_character("Filter patron", 3001)
     keeper = spawn_mob(3006)
     assert keeper is not None
     keeper.move_to_room(char.room)
@@ -1210,7 +1219,7 @@ def test_list_filters_empty_inventory():
 
 def test_shop_refuses_invisible_customers():
     initialize_world("area/area.lst")
-    char = create_test_character("Sneaky patron", 3001)
+    char = _create_shop_character("Sneaky patron", 3001)
     char.gold = 500
     char.add_affect(AffectFlag.INVISIBLE)
     keeper = spawn_mob(3006)
@@ -1239,7 +1248,7 @@ def test_shop_refuses_invisible_customers():
 
 def test_shop_respects_keeper_wealth():
     initialize_world("area/area.lst")
-    char = create_test_character("Consigner", 3001)
+    char = _create_shop_character("Consigner", 3001)
     char.gold = 0
     keeper = spawn_mob(3006)
     assert keeper is not None
@@ -1266,9 +1275,14 @@ def test_shop_respects_keeper_wealth():
         keeper.gold = 2
         keeper.silver = 0
         accepted = process_command(char, "sell canoe")
-        match = re.search(r"(\d+) silver", accepted)
-        assert match is not None
-        price = int(match.group(1))
+        silver_match = re.search(r"(\d+) silver", accepted)
+        assert silver_match is not None
+        silver = int(silver_match.group(1))
+
+        gold_match = re.search(r"(\d+) gold", accepted)
+        gold = int(gold_match.group(1)) if gold_match is not None else 0
+
+        price = gold * 100 + silver
         assert _total_wealth(char) == price
         assert char.gold == price // 100
         assert char.silver == price % 100

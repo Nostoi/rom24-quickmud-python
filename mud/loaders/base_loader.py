@@ -20,14 +20,24 @@ class BaseTokenizer:
         self.index = pos
         return line
 
+    def _raw_line(self):
+        """Read next line without skipping empty/comment lines."""
+        if self.index < len(self.lines):
+            line = self.lines[self.index]
+            self.index += 1
+            return line
+        return None
+
     def read_string_tilde(self):
         parts = []
         while True:
-            line = self.next_line()
+            line = self._raw_line()
             if line is None:
                 break
-            if line.endswith("~"):
-                parts.append(line[:-1])
+            # Check for tilde at end (may have trailing whitespace)
+            stripped = line.rstrip()
+            if stripped.endswith("~"):
+                parts.append(stripped[:-1])
                 break
             parts.append(line)
         return "\n".join(parts)

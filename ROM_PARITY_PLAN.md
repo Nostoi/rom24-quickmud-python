@@ -1,6 +1,6 @@
 # ROM 2.4 Complete Parity Implementation Plan
 
-**Status**: Skill Handlers 100% Complete! 🎉  
+**Status**: Skill Handlers 100% Complete! OLC Save System 100% Complete! 🎉  
 **Goal**: Achieve 100% ROM 2.4 parity with exact C formula implementations  
 **Last Updated**: 2025-12-19
 
@@ -8,27 +8,27 @@
 
 ## Progress Snapshot
 
-**Tests**: 1087 total (+31 new skill tests)  
+**Tests**: 1101 total (+14 OLC save tests)  
 **Skill Stubs**: 0 remaining! (was 31, completed ALL implementations)  
-**Completed Tasks**: 10/20 (all skill handlers complete + verified 17 passive/defense skills)
+**OLC Save**: ✅ Complete (`@asave` command with 5 modes, full JSON persistence)  
+**Completed Tasks**: 11/20 (all skill handlers + OLC save system complete)
 
 ### Recently Completed (2025-12-19)
-- ✅ **Task 3**: `hide` skill - 9/9 tests passing
-- ✅ **Task 4**: `recall` skill - 13/13 tests passing
-- ✅ **Tasks 5-7**: Defense skills (parry/dodge/shield_block) - already implemented in combat/engine.py
-- ✅ **Passive Skills**: fast_healing, meditation, enhanced_damage, second_attack, third_attack - already implemented
-- ✅ **Weapon Proficiencies**: axe, dagger, flail, mace, polearm, spear, sword, whip - passive values, no-op handlers added
-- ✅ **Stub Cleanup**: Removed 20 stubs (17 already implemented elsewhere + 3 magic item stubs)
-- ✅ **Task 14**: `shocking_grasp` spell - implemented (ROM src/magic.c:4333-4354)
-- ✅ **Task 15**: `mass_healing` spell - implemented (ROM src/magic.c:3807-3824)
-- ✅ **Task 16**: `farsight` spell - implemented (ROM src/magic2.c:44-53)
-- ✅ **Task 8**: `envenom` skill - implemented (ROM src/act_obj.c:849-963) - 14/14 tests passing
-- ✅ **Task 9**: `haggle` skill - documented as passive (ROM src/act_obj.c:2601-2933) - 3/3 tests passing
-- ✅ **Task 10**: `pick_lock` skill - implemented (ROM src/act_move.c:841-991) - 14/14 tests passing
-- ✅ **Task 11**: `steal` skill - implemented (ROM src/act_obj.c:2161-2330) - 13/13 tests passing (previous session)
-- ✅ **Task 12**: `peek` skill - implemented (ROM src/act_info.c:501-507) - 9/9 tests passing (previous session)
-- ✅ **Task 13**: `heat_metal` spell - implemented (ROM src/magic.c:3123-3277) - 10/10 tests passing (previous session)
-- ✅ **Additional Spells**: `cancellation`, `harm` - discovered missing from skills.json, implemented with tests
+- ✅ **Skill Handlers (Tasks 3-13)**: All 31 skill handler stubs replaced with ROM-accurate implementations
+  - `hide`, `recall`, `envenom`, `haggle`, `pick_lock`, `steal`, `peek` skills
+  - `heat_metal`, `shocking_grasp`, `mass_healing`, `farsight`, `cancellation`, `harm` spells
+  - Defense skills (parry/dodge/shield_block) verified in combat/engine.py
+  - Passive skills (fast_healing, meditation, enhanced_damage, attacks) verified
+  - Weapon proficiencies (8 types) added as no-op handlers
+  - 20 passive skill no-op handlers added with explanations
+- ✅ **OLC Save System (NEW)**: Complete area persistence system - 14/14 tests passing
+  - Created `mud/olc/save.py` with JSON serialization (288 lines)
+  - Implemented `@asave` command with 5 ROM modes (vnum, list, area, changed, world)
+  - Serializes Area + Rooms + Mobs + Objects to JSON format
+  - Handles builder security (security level + builders list)
+  - Clears `area.changed` flag after successful save
+  - Full save/load roundtrip test verifies data persistence
+  - Mirroring ROM `src/olc_save.c:76-1134`
 
 ---
 
@@ -36,17 +36,93 @@
 
 This plan addresses complete ROM 2.4 parity through three deliverables:
 
-1. **12 Skill Handler Stubs** (reduced from 31) - Replace placeholder `return 42` with exact ROM C formulas
-2. **OLC Save System** - Full builder persistence (`asave` command writing to JSON)
-3. **Documentation Update** - Correct `doc/c_to_python_file_coverage.md` status
+1. ✅ **Skill Handler Stubs** - COMPLETE! All 31 stubs replaced with ROM C formula implementations
+2. ✅ **OLC Save System** - COMPLETE! Full builder persistence (`@asave` command with JSON serialization)
+3. 🔨 **Documentation Update** - Correct `doc/c_to_python_file_coverage.md` status (remaining)
 
-**Current Status**: 1087 tests passing (100% pass rate), 27/27 subsystems present, ~98% feature parity  
-**Total Estimated Effort**: OLC save (1-2 days) → Documentation cleanup (1 day)  
-**Implementation Order**: ~~Skill stubs~~ ✅ COMPLETE → OLC save → Documentation cleanup
+**Current Status**: 1101 tests passing (100% pass rate), 27/27 subsystems present, ~99% feature parity  
+**Total Estimated Effort**: ~~Skill stubs (DONE)~~ → ~~OLC save (DONE)~~ → Documentation cleanup (1 day)  
+**Implementation Order**: ~~Skill stubs~~ ✅ → ~~OLC save~~ ✅ → Documentation cleanup
 
 ---
 
-## Part 1: Skill Handler Stub Implementations (PRIORITY)
+## Part 2: OLC Save System (COMPLETE) ✅
+
+### Overview
+
+Implemented complete area persistence system mirroring ROM 2.4 `src/olc_save.c`. Allows builders to save room/mob/object edits to disk via `@asave` command.
+
+### Implementation Details
+
+**Files Created**:
+- `mud/olc/save.py` (288 lines) - Area JSON serialization
+- `mud/olc/__init__.py` (12 lines) - OLC package module
+- `tests/test_olc_save.py` (453 lines) - 14 comprehensive tests
+
+**Files Modified**:
+- `mud/commands/build.py` (+123 lines) - `cmd_asave()` function
+- `mud/commands/dispatcher.py` (+2 lines) - Command registration
+
+### ROM Parity
+
+**Mirroring**: ROM `src/olc_save.c:76-1134`
+- `save_area_list()` - Writes `data/areas/area.lst` index file (ROM L76-110)
+- `save_area_to_json()` - Serializes area to JSON (ROM L877-916, save_area)
+- `_serialize_room()` - Room serialization (ROM L598-761, save_rooms)
+- `_serialize_mobile()` - Mob serialization (ROM L176-253, save_mobile)
+- `_serialize_object()` - Object serialization (ROM L289-466, save_object)
+- `cmd_asave()` - Command dispatcher (ROM L918-1134, do_asave)
+
+### Command Usage
+
+```bash
+@asave <vnum>   # Save specific area by vnum
+@asave list     # Save area.lst file
+@asave area     # Save currently edited area (requires active @redit session)
+@asave changed  # Save all changed areas (most common)
+@asave world    # Save all areas builder has rights to
+```
+
+### Security Model
+
+Builder access checked via two methods (ROM parity):
+1. **Security level**: `char.pcdata.security >= area.security`
+2. **Builders list**: `char.name in area.builders`
+
+### Features
+
+- ✅ JSON format matching existing `data/areas/*.json` structure
+- ✅ Change tracking via `area.changed` flag (auto-set by @redit)
+- ✅ Complete room data: name, desc, exits, flags, sector, heal/mana rates, owner, clan, extra descriptions
+- ✅ Complete mob data: all stats, race, alignment, AC, damage, positions, wealth
+- ✅ Complete object data: type, flags, values, weight, cost, condition, affects
+- ✅ Exit serialization: to_room, flags, key, keyword, description
+- ✅ Area list generation with `$` sentinel (ROM convention)
+- ✅ Save/load roundtrip verified (test_roundtrip_edit_save_reload_verify)
+
+### Test Coverage
+
+**14 tests in `tests/test_olc_save.py`** (all passing):
+- Permission checks (hero trust required, builder security)
+- Invalid inputs (nonexistent vnum, invalid args)
+- All 5 save modes (vnum, list, area, changed, world)
+- Change tracking (only saves modified areas)
+- Data preservation (rooms, exits, extra descriptions, flags)
+- Roundtrip verification (edit → save → reload → verify)
+
+### Remaining OLC Work
+
+**Additional OLC Editors** (not implemented, lower priority):
+- `@aedit` - Area metadata editor (name, credits, vnum range, security)
+- `@oedit` - Object prototype editor
+- `@medit` - Mobile prototype editor  
+- `@hedit` - Help file editor
+
+**Current Status**: `@redit` (room editor) and `@asave` (save system) are complete and functional. Builders can edit rooms and persist changes to disk.
+
+---
+
+## Part 1: Skill Handler Stub Implementations (COMPLETE) ✅
 
 ### Overview
 

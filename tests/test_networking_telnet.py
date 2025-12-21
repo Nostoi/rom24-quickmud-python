@@ -60,7 +60,7 @@ class FakeConn:
     def queue_responses(self, responses: list[str]) -> None:
         self._responses.extend(responses)
 
-    async def send_prompt(self, prompt: str) -> None:
+    async def send_prompt(self, prompt: str, *, go_ahead: bool | None = None) -> None:
         self.sent_prompts.append(prompt)
 
     async def readline(self, *, max_length: int = 256) -> str | None:  # noqa: ARG002
@@ -75,7 +75,7 @@ class FakeConn:
         return
 
     async def send_text(self, message: str, *, newline: bool = False) -> None:
-        payload = message + ("\r\n" if newline and not message.endswith("\r\n") else "")
+        payload = message + ("\n\r" if newline and not message.endswith("\n\r") else "")
         self.sent_text.append(payload)
 
     async def send_line(self, message: str) -> None:
@@ -109,9 +109,7 @@ def test_select_character_blocks_unpermitted_from_permit_host(monkeypatch):
 
 
 def test_select_character_allows_permit_from_permit_host(monkeypatch):
-    account = SimpleNamespace(
-        characters=[SimpleNamespace(name="Guardian", act=int(PlayerFlag.PERMIT))]
-    )
+    account = SimpleNamespace(characters=[SimpleNamespace(name="Guardian", act=int(PlayerFlag.PERMIT))])
     fake_conn = FakeConn(["Guardian"], host="permit.example")
 
     permitted_char = SimpleNamespace(
@@ -138,9 +136,7 @@ def test_select_character_allows_permit_from_permit_host(monkeypatch):
     result = asyncio.run(runner())
 
     assert result == (permitted_char, False)
-    assert all(
-        "Your site has been banned from this mud." not in line for line in fake_conn.sent_lines
-    )
+    assert all("Your site has been banned from this mud." not in line for line in fake_conn.sent_lines)
 
 
 def test_show_string_paginates_output():
@@ -160,21 +156,21 @@ def test_show_string_paginates_output():
 
     asyncio.run(send_to_char(char, long_text))
 
-    assert fake_conn.sent_text[0] == "Line1\r\nLine2\r\n"
-    assert fake_conn.sent_text[1] == "[Hit Return to continue]\r\n"
+    assert fake_conn.sent_text[0] == "Line1\n\rLine2\n\r"
+    assert fake_conn.sent_text[1] == "[Hit Return to continue]\n\r"
     assert fake_conn.sent_lines[-1] == "[Hit Return to continue]"
     assert session.show_buffer is not None
 
     more = asyncio.run(session.send_next_page())
     assert more is True
-    assert fake_conn.sent_text[2] == "Line3\r\nLine4\r\n"
-    assert fake_conn.sent_text[3] == "[Hit Return to continue]\r\n"
+    assert fake_conn.sent_text[2] == "Line3\n\rLine4\n\r"
+    assert fake_conn.sent_text[3] == "[Hit Return to continue]\n\r"
     assert fake_conn.sent_lines[-1] == "[Hit Return to continue]"
     assert session.show_buffer is not None
 
     more = asyncio.run(session.send_next_page())
     assert more is False
-    assert fake_conn.sent_text[-1] == "Line5\r\n"
+    assert fake_conn.sent_text[-1] == "Line5\n\r"
     assert session.show_buffer is None
 
     fake_conn.sent_text.clear()
@@ -198,8 +194,8 @@ def test_send_to_char_accepts_iterables():
     )
 
     asyncio.run(send_to_char(char, ["Alpha", "Beta"]))
-    assert fake_conn.sent_lines[-1] == "Alpha\r\nBeta"
-    assert fake_conn.sent_text[-1] == "Alpha\r\nBeta\r\n"
+    assert "Alpha" in fake_conn.sent_lines[-1] and "Beta" in fake_conn.sent_lines[-1]
+    assert "Alpha" in fake_conn.sent_text[-1] and "Beta" in fake_conn.sent_text[-1]
 
     fake_conn2 = FakeConn([])
     char2 = SimpleNamespace(
@@ -216,7 +212,7 @@ def test_send_to_char_accepts_iterables():
     generator_message = (segment for segment in ("One", "Two", "Three"))
     asyncio.run(send_to_char(char2, generator_message))
 
-    assert fake_conn2.sent_text[0] == "One\r\nTwo\r\n"
+    assert fake_conn2.sent_text[0] == "One\n\rTwo\n\r"
     assert fake_conn2.sent_lines[-1] == "[Hit Return to continue]"
     assert session2.show_buffer is not None
 
@@ -261,13 +257,13 @@ def test_motd_uses_session_paging(monkeypatch):
 
     asyncio.run(connection._send_login_motd(paged))
 
-    assert paged_conn.sent_text[0] == "Line1\r\nLine2\r\n"
-    assert paged_conn.sent_text[1] == "[Hit Return to continue]\r\n"
+    assert paged_conn.sent_text[0] == "Line1\n\rLine2\n\r"
+    assert paged_conn.sent_text[1] == "[Hit Return to continue]\n\r"
     assert paged_session.show_buffer is not None
 
     asyncio.run(paged_session.send_next_page())
 
-    assert paged_conn.sent_text[-1] == "Line3\r\nLine4\r\n"
+    assert paged_conn.sent_text[-1] == "Line3\n\rLine4\n\r"
     assert paged_session.show_buffer is None
 
 

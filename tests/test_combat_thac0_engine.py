@@ -15,6 +15,7 @@ def setup_thac0_env():
     initialize_world("area/area.lst")
     atk = create_test_character("Atk", 3001)
     vic = create_test_character("Vic", 3001)
+    vic.is_npc = True
     vic.armor = [0, 0, 0, 0]
     atk.dam_type = int(DamageType.BASH)
     atk.damroll = 3

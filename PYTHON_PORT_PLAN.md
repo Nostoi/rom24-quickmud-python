@@ -93,7 +93,7 @@ This document outlines the steps needed to port the remaining ROM 2.4 QuickMUD C
 
 ### channels — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.92)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: color, messaging, channel_toggle
 
 TASKS:
@@ -114,7 +114,7 @@ NOTES:
 
 ### wiznet_imm — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: visibility, messaging, logging
 
 TASKS:
@@ -179,7 +179,7 @@ NOTES:
 
 ### combat — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: side_effects, rng, pk_flagging
 TASKS:
 
@@ -320,7 +320,7 @@ NOTES:
 
 ### skills_spells — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: RNG, lag_wait, side_effects, area_effects, visibility
 TASKS:
 
@@ -627,7 +627,7 @@ NOTES:
 
 ### affects_saves — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: stat_modifiers, dispel
 TASKS:
 
@@ -658,7 +658,7 @@ NOTES:
 
 ### resets — Parity Audit 2025-10-16
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: flags, rng, economy
 TASKS:
 
@@ -762,7 +762,7 @@ NOTES:
 
 ### weather — Parity Audit 2025-11-14
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: rng
 
 TASKS:
@@ -806,7 +806,7 @@ NOTES:
 
 ### movement_encumbrance — Parity Audit 2025-12-07
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: encumbrance, flags, side_effects
 TASKS:
 
@@ -842,7 +842,7 @@ NOTES:
 
 ### world_loader — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: file_formats, side_effects
 TASKS:
 
@@ -885,7 +885,7 @@ NOTES:
 
 ### area_format_loader — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: file_formats, indexing, defaults
 TASKS:
 
@@ -943,7 +943,7 @@ TASKS:
 
 ### imc_chat — Parity Audit 2025-11-26
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: networking, keepalive, packet_loss
 
 TASKS:
@@ -1027,7 +1027,7 @@ NOTES:
 
 ### player_save_format — Parity Audit 2025-10-17
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: flags, persistence
 TASKS:
 
@@ -1090,7 +1090,7 @@ NOTES:
 
 ### help_system — Parity Audit 2025-10-29
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: side_effects, output, logging
 TASKS:
 
@@ -1144,7 +1144,7 @@ TASKS:
 
 ### mob_programs — Parity Audit 2025-10-26
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: scripting, randomness
 TASKS:
 
@@ -1207,7 +1207,7 @@ NOTES:
 
 ### npc_spec_funs — Parity Audit 2025-12-21
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: rng, damage_types, side_effects
 
 TASKS:
@@ -1341,7 +1341,7 @@ NOTES:
 
 ### persistence — Parity Audit 2025-11-26
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: file_formats, customization
 TASKS:
 - ✅ [P0] **persistence: migrate characters table to include pcdata true sex** — done 2025-12-22
@@ -1380,7 +1380,7 @@ NOTES:
 
 ### login_account_nanny — Parity Audit 2025-11-12
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: security, lag_wait
 TASKS:
 - ✅ [P0] **login_account_nanny: persist pcdata true sex metadata across creation and load** — done 2025-12-22
@@ -1492,7 +1492,7 @@ NOTES:
 
 ### networking_telnet — Parity Audit 2025-12-15
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: lag_wait, networking
 TASKS:
 
@@ -1554,7 +1554,7 @@ NOTES:
 
 ### security_auth_bans — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: security
 TASKS:
 
@@ -1596,7 +1596,7 @@ NOTES:
 
 ### logging_admin — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: messaging, visibility, configuration, logging_format
 TASKS:
 
@@ -1636,7 +1636,7 @@ NOTES:
 
 ### olc_builders — Parity Audit 2025-11-28
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: security, visibility
 TASKS:
 
@@ -1770,7 +1770,7 @@ As a future enhancement, migrate from JSON files to a database for scalability a
 
 ### shops_economy — Parity Audit 2025-12-09
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.90)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: economy, inventory, scripting, followers, messaging, currency, targeting, visibility, timers, command_coverage
 
 TASKS:
@@ -1829,7 +1829,7 @@ NOTES:
 
 ### boards_notes — Parity Audit 2025-12-22
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: file_formats, persistence, expiry
 TASKS:
 
@@ -1873,7 +1873,7 @@ NOTES:
 
 ### command_interpreter — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: side_effects, abbreviations, prefix_resolution
 
 TASKS:
@@ -1968,7 +1968,7 @@ NOTES:
 
 ### game_update_loop — Parity Audit 2025-10-20
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.86)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: tick_cadence, side_effects, persistence
 TASKS:
 
@@ -2016,7 +2016,7 @@ NOTES:
 
 ### login_account_nanny — Parity Audit 2025-12-24
 
-STATUS: completion:✅ implementation:full correctness:passes (confidence 0.88)
+STATUS: completion:✅ implementation:full correctness:passes (confidence 0.95)
 KEY RISKS: flags, skills
 TASKS:
 

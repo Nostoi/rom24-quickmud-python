@@ -7,7 +7,7 @@ from enum import Enum, auto
 
 from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
-from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, PlayerFlag, Position, AffectFlag
+from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, AffectFlag, PlayerFlag, Position
 from mud.models.social import social_registry
 from mud.net.session import Session
 from mud.wiznet import cmd_wiznet
@@ -21,22 +21,40 @@ from .admin_commands import (
     cmd_incognito,
     cmd_log,
     cmd_newlock,
-    cmd_qmconfig,
-    cmd_telnetga,
     cmd_permban,
+    cmd_qmconfig,
     cmd_spawn,
     cmd_teleport,
+    cmd_telnetga,
     cmd_unban,
     cmd_who,
     cmd_wizlock,
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_prefi, do_prefix, do_unalias
-from .build import cmd_asave, cmd_redit, handle_redit_command
-from .combat import do_kick, do_kill, do_rescue
+from .build import (
+    cmd_aedit,
+    cmd_asave,
+    cmd_goto,
+    cmd_hedit,
+    cmd_hesave,
+    cmd_medit,
+    cmd_mstat,
+    cmd_oedit,
+    cmd_ostat,
+    cmd_redit,
+    cmd_rstat,
+    cmd_vlist,
+    handle_aedit_command,
+    handle_hedit_command,
+    handle_medit_command,
+    handle_oedit_command,
+    handle_redit_command,
+)
+from .combat import do_kick, do_kill, do_rescue, do_flee, do_cast
 from .communication import (
-    do_auction,
     do_answer,
+    do_auction,
     do_clantalk,
     do_gossip,
     do_grats,
@@ -48,16 +66,26 @@ from .communication import (
     do_say,
     do_shout,
     do_tell,
+    do_emote,
+    do_pose,
+    do_yell,
+    do_cgossip,
 )
 from .healer import do_heal
 from .help import do_help, do_wizlist
-from .info import do_commands, do_wizhelp
 from .imc import do_imc, try_imc_command
+from .info import do_commands, do_wizhelp, do_who, do_areas, do_where, do_time, do_weather, do_credits, do_report
 from .inspection import do_exits, do_look, do_scan
 from .inventory import do_drop, do_equipment, do_get, do_inventory, do_outfit
-from .mobprog_tools import do_mpstat
+from .mobprog_tools import do_mpdump, do_mpstat
 from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
 from .notes import do_board, do_note
+from .position import do_rest, do_sleep, do_stand, do_wake
+from .session import do_quit, do_recall, do_save, do_score
+from .equipment import do_hold, do_wear, do_wield
+from .consumption import do_drink, do_eat
+from .character import do_password, do_title, do_description
+from .feedback import do_bug, do_idea, do_typo
 from .shop import do_buy, do_list, do_sell, do_value
 from .socials import perform_social
 
@@ -135,6 +163,11 @@ COMMANDS: list[Command] = [
         show=False,
     ),
     Command("enter", do_enter, min_position=Position.STANDING),
+    # Position changes
+    Command("sleep", do_sleep, min_position=Position.SLEEPING),
+    Command("wake", do_wake, min_position=Position.SLEEPING),
+    Command("rest", do_rest, min_position=Position.SLEEPING),
+    Command("stand", do_stand, min_position=Position.SLEEPING),
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
     Command("exits", do_exits, aliases=("ex",), min_position=Position.RESTING),
@@ -148,8 +181,12 @@ COMMANDS: list[Command] = [
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("reply", do_reply, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
+    Command("yell", do_yell, min_position=Position.RESTING),
+    Command("emote", do_emote, min_position=Position.RESTING),
+    Command("pose", do_pose, min_position=Position.RESTING),
     Command("auction", do_auction, min_position=Position.RESTING),
     Command("gossip", do_gossip, min_position=Position.RESTING),
+    Command("cgossip", do_cgossip, min_position=Position.RESTING),
     Command("grats", do_grats, min_position=Position.RESTING),
     Command("quote", do_quote, min_position=Position.RESTING),
     Command("question", do_question, min_position=Position.RESTING),
@@ -167,8 +204,36 @@ COMMANDS: list[Command] = [
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING),
+    Command("flee", do_flee, min_position=Position.FIGHTING),
+    Command("cast", do_cast, min_position=Position.RESTING),
+    # Equipment
+    Command("wear", do_wear, min_position=Position.RESTING),
+    Command("wield", do_wield, min_position=Position.RESTING),
+    Command("hold", do_hold, min_position=Position.RESTING),
+    # Consumption
+    Command("eat", do_eat, min_position=Position.RESTING),
+    Command("drink", do_drink, min_position=Position.RESTING),
+    # Session/Character Info
+    Command("save", do_save, min_position=Position.DEAD),
+    Command("quit", do_quit, min_position=Position.SLEEPING),
+    Command("score", do_score, min_position=Position.DEAD),
+    Command("recall", do_recall, min_position=Position.STANDING),
+    Command("password", do_password, min_position=Position.DEAD),
+    Command("title", do_title, min_position=Position.DEAD),
+    Command("description", do_description, min_position=Position.DEAD, aliases=("desc",)),
     # Info
     Command("scan", do_scan, min_position=Position.SLEEPING),
+    Command("who", do_who, min_position=Position.DEAD),
+    Command("areas", do_areas, min_position=Position.DEAD),
+    Command("where", do_where, min_position=Position.RESTING),
+    Command("time", do_time, min_position=Position.DEAD),
+    Command("weather", do_weather, min_position=Position.RESTING),
+    Command("credits", do_credits, min_position=Position.DEAD),
+    Command("report", do_report, min_position=Position.RESTING),
+    # Feedback
+    Command("bug", do_bug, min_position=Position.DEAD),
+    Command("idea", do_idea, min_position=Position.DEAD),
+    Command("typo", do_typo, min_position=Position.DEAD),
     # Shops
     Command("list", do_list, min_position=Position.RESTING),
     Command("buy", do_buy, min_position=Position.RESTING),
@@ -231,10 +296,27 @@ COMMANDS: list[Command] = [
         min_trust=LEVEL_HERO,
     ),
     Command("@redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@aedit", cmd_aedit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@oedit", cmd_oedit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@medit", cmd_medit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@hedit", cmd_hedit, admin_only=True, min_trust=LEVEL_HERO),
     Command("@asave", cmd_asave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("@hesave", cmd_hesave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("@rstat", cmd_rstat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@ostat", cmd_ostat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@mstat", cmd_mstat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@goto", cmd_goto, admin_only=True, min_trust=LEVEL_HERO),
+    Command("@vlist", cmd_vlist, admin_only=True, min_trust=LEVEL_HERO),
     Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("wiznet", cmd_wiznet, min_trust=LEVEL_IMMORTAL),
+    Command(
+        "mpdump",
+        do_mpdump,
+        admin_only=True,
+        log_level=LogLevel.NEVER,
+        min_trust=LEVEL_HERO,
+    ),
     Command(
         "mpstat",
         do_mpstat,
@@ -351,8 +433,17 @@ def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> t
 
 def process_command(char: Character, input_str: str) -> str:
     session = getattr(char, "desc", None)
-    if isinstance(session, Session) and session.editor == "redit":
-        return handle_redit_command(char, session, input_str)
+    if isinstance(session, Session):
+        if session.editor == "redit":
+            return handle_redit_command(char, session, input_str)
+        if session.editor == "aedit":
+            return handle_aedit_command(char, session, input_str)
+        if session.editor == "oedit":
+            return handle_oedit_command(char, session, input_str)
+        if session.editor == "medit":
+            return handle_medit_command(char, session, input_str)
+        if session.editor == "hedit":
+            return handle_hedit_command(char, session, input_str)
 
     if not input_str.strip():
         return "What?"
@@ -400,6 +491,7 @@ def process_command(char: Character, input_str: str) -> str:
     if not cmd_name:
         return "What?"
     trust = _get_trust(char)
+    lowered_name = cmd_name.lower()
     command = resolve_command(cmd_name, trust=trust)
     if command and trust < command.min_trust:
         command = None
@@ -433,7 +525,9 @@ def process_command(char: Character, input_str: str) -> str:
             # Logging must never break command execution.
             pass
     if not command:
-        social = social_registry.get(cmd_name.lower())
+        if lowered_name == "immtalk" or cmd_name == ":":
+            return do_immtalk(char, arg_str)
+        social = social_registry.get(lowered_name)
         if social:
             return perform_social(char, cmd_name, arg_str)
         imc_response = try_imc_command(char, cmd_name, arg_str)

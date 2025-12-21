@@ -3,9 +3,11 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from mud.affects.saves import saves_spell
+from mud.game_loop import SkyState, weather
 from mud.math.c_compat import c_div
 from mud.models.character import Character
-from mud.models.constants import DamageType, Position
+from mud.models.constants import DamageType, Position, Sector
+from mud.models.room import Room
 from mud.skills.handlers import acid_blast, burning_hands, call_lightning
 from mud.utils import rng_mm
 
@@ -126,4 +128,25 @@ def _assert_matches_rom(
 def test_damage_spells_match_rom() -> None:
     _assert_matches_rom(acid_blast, _rom_acid_blast, seed=0xACE1, level=32)
     _assert_matches_rom(burning_hands, _rom_burning_hands, seed=0xBEEF, level=24)
-    _assert_matches_rom(call_lightning, _rom_call_lightning, seed=0xABCD, level=36)
+
+    level = 36
+    caster = make_character(level=level)
+    victim = make_character(hit=120, max_hit=120, level=24)
+    rom_victim = make_character(hit=120, max_hit=120, level=24)
+
+    room = Room(vnum=1, name="Test", sector_type=int(Sector.FIELD))
+    room.add_character(caster)
+    room.add_character(victim)
+    old_sky = weather.sky
+    weather.sky = SkyState.RAINING
+
+    try:
+        rng_mm.seed_mm(0xABCD)
+        expected = _rom_call_lightning(level, rom_victim)
+        rng_mm.seed_mm(0xABCD)
+        dealt = call_lightning(caster, victim)
+
+        assert dealt == expected
+        assert victim.hit == 120 - dealt
+    finally:
+        weather.sky = old_sky

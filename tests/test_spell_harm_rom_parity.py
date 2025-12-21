@@ -102,7 +102,7 @@ def test_harm_capped_at_100():
 def test_harm_updates_position():
     """Harm updates victim position if killed."""
     caster = make_character(level=30)
-    victim = make_character(hit=25, max_hit=100, level=1)
+    victim = make_character(hit=19, max_hit=100, level=1)
 
     rng_mm.seed_mm(0xDEAD)
     dealt = harm(caster, victim)

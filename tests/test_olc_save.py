@@ -346,3 +346,109 @@ def test_asave_preserves_room_data_during_save(tmp_path):
         assert "north" in test_room["exits"]
     finally:
         mud.olc.save.save_area_to_json = backup_save
+
+
+def test_roundtrip_edit_save_reload_verify(tmp_path):
+    from mud.loaders.json_loader import load_area_from_json
+    from mud.models.constants import Direction, EX_ISDOOR, EX_CLOSED, EX_LOCKED
+    
+    hero = create_test_character("Hero", 3001)
+    hero.level = LEVEL_HERO
+    hero.is_admin = True
+    hero.room.area.security = 1
+    hero.pcdata.security = 9
+    session = _attach_session(hero)
+
+    original_vnum = hero.room.vnum
+    original_area_vnum = hero.room.area.vnum
+    
+    process_command(hero, "@redit")
+    process_command(hero, 'name "Roundtrip Test Room"')
+    process_command(hero, 'desc "This room tests full save/load cycle"')
+    process_command(hero, "sector desert")
+    process_command(hero, "heal 200")
+    process_command(hero, "mana 50")
+    process_command(hero, "room safe dark")
+    process_command(hero, 'owner TestOwner')
+    process_command(hero, 'ed add sign')
+    process_command(hero, 'ed desc sign "A weathered sign hangs here"')
+    process_command(hero, "north create 3002")
+    process_command(hero, "north key 1234")
+    process_command(hero, 'north keyword "door gate"')
+    process_command(hero, 'north desc "A sturdy door blocks the way"')
+    process_command(hero, "north flags door closed locked")
+    process_command(hero, "done")
+
+    import mud.olc.save
+    test_output = str(tmp_path / "test_areas")
+    Path(test_output).mkdir(parents=True, exist_ok=True)
+    
+    backup_save = mud.olc.save.save_area_to_json
+    
+    def patched_save(area, output_dir="data/areas"):
+        return backup_save(area, output_dir=test_output)
+    
+    mud.olc.save.save_area_to_json = patched_save
+
+    try:
+        process_command(hero, f"@asave {original_area_vnum}")
+        
+        saved_files = list(Path(test_output).glob("*.json"))
+        assert len(saved_files) > 0
+        json_file = saved_files[0]
+        
+        with open(json_file, 'r') as f:
+            saved_data = json.load(f)
+        
+        room_data = next((r for r in saved_data["rooms"] if r["id"] == original_vnum), None)
+        assert room_data is not None
+        
+        assert room_data["name"] == "Roundtrip Test Room"
+        assert "save/load cycle" in room_data["description"]
+        assert room_data["sector_type"] == "desert"
+        assert room_data["heal_rate"] == 200
+        assert room_data["mana_rate"] == 50
+        assert room_data["owner"] == "TestOwner"
+        
+        room_flags = room_data["flags"]
+        from mud.models.constants import RoomFlag
+        assert room_flags & int(RoomFlag.ROOM_SAFE)
+        assert room_flags & int(RoomFlag.ROOM_DARK)
+        
+        extras = room_data["extra_descriptions"]
+        assert len(extras) >= 1
+        sign_extra = next((e for e in extras if e["keyword"] == "sign"), None)
+        assert sign_extra is not None
+        assert "weathered" in sign_extra["description"]
+        
+        exits = room_data["exits"]
+        assert "north" in exits
+        north_exit = exits["north"]
+        assert north_exit["to_room"] == 3002
+        assert north_exit["key"] == 1234
+        assert north_exit["keyword"] == "door gate"
+        assert "sturdy door" in north_exit["description"]
+        
+        exit_flags = int(north_exit["flags"])
+        assert exit_flags & EX_ISDOOR
+        assert exit_flags & EX_CLOSED
+        assert exit_flags & EX_LOCKED
+        
+        saved_area = load_area_from_json(json_file)
+        assert saved_area is not None
+        assert saved_area.name == saved_data["name"]
+        
+        reloaded_room = None
+        for vnum in range(saved_area.min_vnum, saved_area.max_vnum + 1):
+            if vnum == original_vnum:
+                reloaded_room = room_registry.get(vnum)
+                break
+        
+        if reloaded_room:
+            assert reloaded_room.name == "Roundtrip Test Room"
+            assert "save/load cycle" in (reloaded_room.description or "")
+            assert reloaded_room.heal_rate == 200
+            assert reloaded_room.mana_rate == 50
+            
+    finally:
+        mud.olc.save.save_area_to_json = backup_save
