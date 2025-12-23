@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mud.account import load_character, save_character
 from mud.commands import process_command
 from mud.config import CORS_ORIGINS, HOST, PORT
+from mud.game_loop import async_game_loop
 from mud.world.world_state import create_test_character, initialize_world
 
 from .websocket_session import WebSocketPlayerSession
@@ -21,10 +24,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global game tick task
+_game_task = None
+
 
 @app.on_event("startup")
 async def startup() -> None:
+    global _game_task
     initialize_world(None)
+    # Start game loop as background task
+    _game_task = asyncio.create_task(async_game_loop())
+    print("🎮 Game loop started for WebSocket server")
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    global _game_task
+    if _game_task:
+        _game_task.cancel()
+        try:
+            await _game_task
+        except asyncio.CancelledError:
+            print("Game loop stopped")
+            pass
 
 
 @app.websocket("/ws")
