@@ -4,9 +4,12 @@
     "min": 0,
     "max": 0
   },
-  "builders": [],
+  "builders": [
+    "None"
+  ],
   "rooms": [],
   "mobiles": [],
   "objects": [],
+  "resets": [],
   "specials": []
 }

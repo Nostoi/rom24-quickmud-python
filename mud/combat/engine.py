@@ -33,7 +33,7 @@ from mud.models.constants import (
     LEVEL_IMMORTAL,
     WearFlag,
 )
-from mud.persistence import save_character
+from mud.account.account_manager import save_character
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.models.social import expand_placeholders
 from mud.utils import rng_mm

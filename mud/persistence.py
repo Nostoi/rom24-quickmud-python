@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+# ============================================================================
+# DEPRECATED: This module is deprecated in favor of mud.account.account_manager
+# ============================================================================
+# This JSON-based persistence system is kept for backward compatibility only.
+# All new code should use mud.account.account_manager for database persistence.
+# 
+# Migration status: All active save_character() calls now use database version.
+# ============================================================================
+
 import json
 import os
 import time

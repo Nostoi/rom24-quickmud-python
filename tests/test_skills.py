@@ -610,7 +610,8 @@ def test_shield_applies_ac_bonus_and_duration() -> None:
     assert result is True
     effect = target.spell_effects["shield"]
     assert effect.duration == 8 + caster.level
-    assert target.armor == [-20, -20, -20, -20]
+    # ROM initializes armor to [100,100,100,100], shield applies -20 to all = [80,80,80,80]
+    assert target.armor == [80, 80, 80, 80]
     assert target.messages[-1] == "You are surrounded by a force shield."
     assert "Tank is surrounded by a force shield." in watcher.messages
 

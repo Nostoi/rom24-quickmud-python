@@ -263,8 +263,9 @@ def do_weather(char: Character, args: str) -> str:
         return "You can't see the sky from nowhere."
 
     # Check if in a room where you can see the sky
+    # ROM Reference: src/act_info.c checks room_flags & ROOM_INDOORS
     room_flags = getattr(char_room, "room_flags", 0)
-    if room_flags & RoomFlag.INDOORS:
+    if room_flags & RoomFlag.ROOM_INDOORS:
         return "You can't see the sky from here."
 
     # Get weather conditions
@@ -316,21 +317,22 @@ def do_report(char: Character, args: str) -> str:
 
     Reports your hit points, mana, and movement to everyone in the room.
     """
-    # Get character stats
-    hp = getattr(char, "hp", 0)
-    max_hp = getattr(char, "max_hp", 1)
+    # Get character stats - ROM uses hit/max_hit, not hp/max_hp
+    # ROM Reference: src/act_comm.c:800-850 uses ch->hit, ch->max_hit
+    hit = getattr(char, "hit", 0)
+    max_hit = getattr(char, "max_hit", 1)
     mana = getattr(char, "mana", 0)
     max_mana = getattr(char, "max_mana", 1)
     move = getattr(char, "move", 0)
     max_move = getattr(char, "max_move", 1)
 
     # Calculate percentages
-    hp_pct = (hp * 100) // max_hp if max_hp > 0 else 0
+    hp_pct = (hit * 100) // max_hit if max_hit > 0 else 0
     mana_pct = (mana * 100) // max_mana if max_mana > 0 else 0
     move_pct = (move * 100) // max_move if max_move > 0 else 0
 
     # Message to self
-    msg = f"You report: {hp}/{max_hp} hp {mana}/{max_mana} mana {move}/{max_move} mv."
+    msg = f"You report: {hit}/{max_hit} hp {mana}/{max_mana} mana {move}/{max_move} mv."
 
     # Broadcast to room
     room = getattr(char, "room", None)

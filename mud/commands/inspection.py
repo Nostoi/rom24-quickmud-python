@@ -115,7 +115,19 @@ def do_scan(char: Character, args: str = "") -> str:
 
 
 def do_look(char: Character, args: str = "") -> str:
-    return look(char)
+    """
+    Look at room, character, object, or direction.
+    
+    ROM Reference: src/act_info.c do_look
+    
+    Usage:
+    - look (show room)
+    - look <character> (examine character)
+    - look <object> (examine object)
+    - look in <container> (show container contents)
+    - look <direction> (peek through exit)
+    """
+    return look(char, args)
 
 
 def do_exits(char: Character, args: str = "") -> str:

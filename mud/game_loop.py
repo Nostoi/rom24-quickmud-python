@@ -30,7 +30,7 @@ from mud.models.obj import ObjectData, object_registry
 from mud.models.room import room_registry
 from mud.net.protocol import broadcast_global
 from mud.music import song_update
-from mud.persistence import save_character
+from mud.account.account_manager import save_character
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs

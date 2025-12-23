@@ -1552,3 +1552,134 @@ def mp_kill_trigger(mob: Character, ch: object | None) -> bool:
 
 def mp_surr_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.SURR)
+
+
+# ============================================================================
+# MobProg Helper Functions (ROM parity)
+# ============================================================================
+# The following functions provide public API matching ROM C mob_prog.c
+# They wrap internal helper functions with ROM-compatible signatures.
+
+
+def count_people_room(mob: Character, flag: int = 0) -> int:
+    """Count characters in mob's room based on filter flag.
+
+    ROM parity: src/mob_prog.c:263-279 count_people_room
+
+    Args:
+        mob: The mob whose room to check
+        flag: Filter type:
+            0 = all visible characters (excluding mob itself)
+            1 = players only
+            2 = NPCs only
+            3 = NPCs with same vnum as mob
+            4 = same group members
+
+    Returns:
+        Number of characters matching the filter criteria
+    """
+    return _count_people_room(mob, flag)
+
+
+def keyword_lookup(table: list[str], keyword: str) -> int:
+    """Return index of keyword in table, or -1 if not found.
+
+    ROM parity: src/mob_prog.c:199-206 keyword_lookup
+
+    Args:
+        table: List of strings to search (ROM uses null-terminated array)
+        keyword: String to find (case-insensitive)
+
+    Returns:
+        Index of keyword in table, or -1 if not found
+
+    Note:
+        ROM C uses table[i][0] != '\\n' as terminator.
+        Python equivalent checks list bounds and empty strings.
+    """
+    if not keyword or not table:
+        return -1
+    lowered = keyword.lower()
+    for i, entry in enumerate(table):
+        if not entry or entry.startswith("\n"):
+            break
+        if entry.lower() == lowered:
+            return i
+    return -1
+
+
+def has_item(char: Character, vnum: int = -1, item_type: int = -1, require_worn: bool = False) -> bool:
+    """Check if character has item matching vnum or item_type.
+
+    ROM parity: src/mob_prog.c:309-318 has_item
+
+    Args:
+        char: Character to check
+        vnum: Item vnum to match (-1 = any)
+        item_type: Item type to match (-1 = any)
+        require_worn: If True, item must be equipped
+
+    Returns:
+        True if character has matching item
+
+    Note:
+        At least one of vnum or item_type must be specified (not -1).
+        If both specified, item must match both criteria.
+    """
+    if char is None:
+        return False
+
+    vnum_filter = None if vnum < 0 else vnum
+    type_filter = None if item_type < 0 else item_type
+
+    return _character_has_item(char, vnum=vnum_filter, item_type=type_filter, require_worn=require_worn)
+
+
+def get_mob_vnum_room(char: Character, vnum: int) -> bool:
+    """Check if mob with given vnum exists in character's room.
+
+    ROM parity: src/mob_prog.c:323-330 get_mob_vnum_room
+
+    Args:
+        char: Character whose room to check
+        vnum: Mob prototype vnum to find
+
+    Returns:
+        True if mob with matching vnum found in room
+    """
+    room = getattr(char, "room", None)
+    if room is None:
+        return False
+
+    for occupant in getattr(room, "people", []) or []:
+        if occupant is char:
+            continue
+        if not getattr(occupant, "is_npc", False):
+            continue
+        if _character_proto_vnum(occupant) == vnum:
+            return True
+
+    return False
+
+
+def get_obj_vnum_room(char: Character, vnum: int) -> bool:
+    """Check if object with given vnum exists in character's room.
+
+    ROM parity: src/mob_prog.c:335-342 get_obj_vnum_room
+
+    Args:
+        char: Character whose room to check
+        vnum: Object prototype vnum to find
+
+    Returns:
+        True if object with matching vnum found in room
+    """
+    room = getattr(char, "room", None)
+    if room is None:
+        return False
+
+    for obj in getattr(room, "contents", []) or []:
+        if _object_vnum(obj) == vnum:
+            return True
+
+    return False

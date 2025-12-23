@@ -80,9 +80,7 @@ _RESERVED_NAMES = {
 }
 
 
-_HOMETOWN_CHOICES: Final[tuple[tuple[str, int], ...]] = (
-    ("Midgaard", ROOM_VNUM_SCHOOL),
-)
+_HOMETOWN_CHOICES: Final[tuple[tuple[str, int], ...]] = (("Midgaard", ROOM_VNUM_SCHOOL),)
 
 _DEFAULT_WEAPONS: Final[tuple[str, ...]] = ("dagger",)
 
@@ -377,9 +375,7 @@ class CreationSelection:
         cost = self._chosen_skills.pop(normalized, 0)
         if cost > 0:
             self.creation_points = max(self._base_points, self.creation_points - cost)
-        self._skill_order = [
-            entry for entry in self._skill_order if self._normalize(entry) != normalized
-        ]
+        self._skill_order = [entry for entry in self._skill_order if self._normalize(entry) != normalized]
         if not sources:
             self._skill_sources.pop(normalized, None)
             self._known_skills.discard(normalized)
@@ -396,11 +392,7 @@ class CreationSelection:
         if not sources:
             self._group_sources.pop(normalized, None)
             self._known_groups.discard(normalized)
-            self._ordered_groups = [
-                entry
-                for entry in self._ordered_groups
-                if self._normalize(entry) != normalized
-            ]
+            self._ordered_groups = [entry for entry in self._ordered_groups if self._normalize(entry) != normalized]
             for child in self._group_children.get(normalized, set()):
                 self._remove_group_source(child, f"group:{normalized}")
             for skill in self._group_skill_children.get(normalized, set()):
@@ -418,11 +410,7 @@ class CreationSelection:
             self._skill_sources.pop(normalized, None)
             self._known_skills.discard(normalized)
             self._chosen_skills.pop(normalized, None)
-            self._skill_order = [
-                entry
-                for entry in self._skill_order
-                if self._normalize(entry) != normalized
-            ]
+            self._skill_order = [entry for entry in self._skill_order if self._normalize(entry) != normalized]
         else:
             self._skill_sources[normalized] = sources
 
@@ -488,11 +476,7 @@ class CreationSelection:
         if not sources:
             self._group_sources.pop(normalized, None)
             self._known_groups.discard(normalized)
-            self._ordered_groups = [
-                entry
-                for entry in self._ordered_groups
-                if self._normalize(entry) != normalized
-            ]
+            self._ordered_groups = [entry for entry in self._ordered_groups if self._normalize(entry) != normalized]
         else:
             self._group_sources[normalized] = sources
 
@@ -505,9 +489,7 @@ class CreationSelection:
         return True
 
     def experience_per_level(self) -> int:
-        return exp_per_level_for_creation(
-            self.race, self.class_type, self.creation_points
-        )
+        return exp_per_level_for_creation(self.race, self.class_type, self.creation_points)
 
     def skill_names(self) -> tuple[str, ...]:
         ordered: list[str] = []
@@ -599,9 +581,7 @@ def is_valid_account_name(username: str) -> bool:
         return False
 
     capitalized = candidate.capitalize()
-    if capitalized != "Alander" and (
-        capitalized.startswith("Alan") or capitalized.endswith("Alander")
-    ):
+    if capitalized != "Alander" and (capitalized.startswith("Alan") or capitalized.endswith("Alander")):
         return False
 
     if len(candidate) < 2 or len(candidate) > 12:
@@ -676,9 +656,7 @@ def _clamp_stats_to_race(stats: Iterable[int], race: PcRaceType) -> list[int]:
     return clamped
 
 
-def finalize_creation_stats(
-    race: PcRaceType, class_type: ClassType, stats: Iterable[int]
-) -> list[int]:
+def finalize_creation_stats(race: PcRaceType, class_type: ClassType, stats: Iterable[int]) -> list[int]:
     """Clamp rolled stats to race bounds and apply the class prime bonus."""
 
     clamped = _clamp_stats_to_race(stats, race)
@@ -859,9 +837,7 @@ def login_with_host(
         _mark_account_active(username)
         return LoginResult(account, None, reconnect_requested)
 
-    failure = (
-        LoginFailureReason.BAD_CREDENTIALS if exists else LoginFailureReason.UNKNOWN_ACCOUNT
-    )
+    failure = LoginFailureReason.BAD_CREDENTIALS if exists else LoginFailureReason.UNKNOWN_ACCOUNT
     return LoginResult(None, failure, reconnect_requested)
 
 
@@ -936,11 +912,7 @@ def create_character(
         sex_value = int(Sex.MALE)
 
     hometown = hometown_vnum if hometown_vnum is not None else starting_room_vnum
-    weapon_vnum = (
-        int(default_weapon_vnum)
-        if default_weapon_vnum is not None
-        else selected_class.first_weapon_vnum
-    )
+    weapon_vnum = int(default_weapon_vnum) if default_weapon_vnum is not None else selected_class.first_weapon_vnum
     default_groups = iter_group_names(
         (
             "rom basics",
@@ -948,30 +920,20 @@ def create_character(
             selected_class.default_group,
         )
     )
-    groups_tuple = (
-        iter_group_names(creation_groups)
-        if creation_groups is not None
-        else default_groups
-    )
-    skills_tuple = (
-        iter_skill_names(creation_skills)
-        if creation_skills is not None
-        else ()
-    )
+    groups_tuple = iter_group_names(creation_groups) if creation_groups is not None else default_groups
+    skills_tuple = iter_skill_names(creation_skills) if creation_skills is not None else ()
     default_points = int(selected_race.points) + (
         _group_cost_for_class(selected_class.default_group, selected_class) or 0
     )
-    creation_points_value = (
-        int(creation_points)
-        if creation_points is not None
-        else default_points
-    )
+    creation_points_value = int(creation_points) if creation_points is not None else default_points
     practice_value = practice if practice is not None else 5
     train_value = train if train is not None else 3
 
     session = SessionLocal()
     try:
-        if session.query(Character).filter_by(name=sanitized).first():
+        existing = session.query(Character).filter_by(name=sanitized).first()
+        if existing:
+            print(f"[ERROR] Character creation failed: name '{sanitized}' already exists (id={existing.id})")
             return False
 
         new_char = Character(
@@ -994,6 +956,9 @@ def create_character(
             vuln_flags=int(archetype.vulnerability_flags) if archetype else 0,
             practice=int(practice_value),
             train=int(train_value),
+            perm_hit=100,
+            perm_mana=100,
+            perm_move=100,
             act=int(PlayerFlag.NOSUMMON),
             default_weapon_vnum=weapon_vnum,
             newbie_help_seen=False,
@@ -1004,6 +969,10 @@ def create_character(
         )
         session.add(new_char)
         session.commit()
+        print(f"[INFO] Character '{sanitized}' created successfully for account {account.username} (id={new_char.id})")
         return True
+    except Exception as e:
+        print(f"[ERROR] Failed to create character '{sanitized}': {e}")
+        return False
     finally:
         session.close()

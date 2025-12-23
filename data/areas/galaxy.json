@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 9300,
-    "name": "Galaxy",
-    "filename": "galaxy.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Galaxy",
+  "vnum_range": {
+    "min": 9300,
+    "max": 9399
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 9301,
@@ -28,7 +28,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -45,7 +44,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -77,7 +75,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -104,7 +101,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -136,7 +132,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -158,7 +153,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -185,7 +179,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -212,7 +205,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -229,7 +221,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -251,7 +242,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -278,7 +268,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -305,7 +294,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -327,7 +315,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -354,7 +341,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -386,18 +372,16 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9320,
       "name": "Too Bright to Tell",
-      "description": "Indeed it is too bright to tell.  Because what you are witnessing is the\nrare event of a Supernova, how a star explodes itself into galactic dust.\nYou may find yourself lucky to witness this rare event but even luckier,\nyou have finally got out of this galaxy as your body turns into dust.\nThat really HURTS!\n",
+      "description": "Indeed it is too bright to tell.  Because what you are witnessing is the\nrare event of a Supernova, how a star explodes itself into galactic dust.\nYou may find yourself lucky to witness this rare event but even luckier,\nyou have finally got out of this galaxy as your body turns into dust.\nThat really HURTS!  \n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -419,7 +403,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -446,13 +429,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9323,
       "name": "Corner of the Galaxy",
-      "description": "You wonder why the galaxy is limited.  All you have done in Astronomy\ncourses now prove worthless.  Well who told you to take one at the start?\n",
+      "description": "You wonder why the galaxy is limited.  All you have done in Astronomy\ncourses now prove worthless.  Well who told you to take one at the start?  \n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -473,7 +455,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -500,7 +481,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -511,7 +491,6 @@
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -533,7 +512,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -560,7 +538,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -582,7 +559,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -609,7 +585,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -651,7 +626,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -683,13 +657,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9332,
       "name": "Hercules' Mighty Throne",
-      "description": "You stand before the throne of a long-forgotten hero.  It is full of bounty\nthat he got from the Ten Labours.\n",
+      "description": "You stand before the throne of a long-forgotten hero.  It is full of bounty\nthat he got from the Ten Labours. \n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -705,7 +678,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -732,7 +704,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -754,7 +725,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -798,7 +768,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -825,7 +794,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -847,7 +815,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -864,13 +831,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9345,
       "name": "Along the seashore",
-      "description": "You start to feel the heat of Summer.  Amongst the rocky beach you notice\nhidden forms which could be camouflaged crabs.\n",
+      "description": "You start to feel the heat of Summer.  Amongst the rocky beach you notice\nhidden forms which could be camouflaged crabs. \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -886,7 +852,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -903,7 +868,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -920,7 +884,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -947,7 +910,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -969,7 +931,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -986,7 +947,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1008,7 +968,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1025,7 +984,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1042,13 +1000,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9354,
       "name": "End of the Mystic Chains",
-      "description": "You have reached the end of the mystic chains.  Looking up, you notice a\nsmall landing on which you can climb.  However, there seems to be another\nforcefield blocking your way.\n",
+      "description": "You have reached the end of the mystic chains.  Looking up, you notice a\nsmall landing on which you can climb.  However, there seems to be another\nforcefield blocking your way.  \n",
       "sector_type": "mountain",
       "flags": 0,
       "exits": {
@@ -1067,7 +1024,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1089,13 +1045,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9356,
       "name": "Tail of the Draco",
-      "description": "At last you realize that you are on a giant snake-like dragon called the\nDraco, the guardian of the inner galaxy.  You realize that the Draco is\nactually flying now!\n",
+      "description": "At last you realize that you are on a giant snake-like dragon called the\nDraco, the guardian of the inner galaxy.  You realize that the Draco is\nactually flying now! \n",
       "sector_type": "hills",
       "flags": 0,
       "exits": {
@@ -1111,7 +1066,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1133,7 +1087,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1155,7 +1108,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1179,7 +1131,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1201,7 +1152,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1223,7 +1173,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1245,7 +1194,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1269,7 +1217,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1298,13 +1245,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9365,
       "name": "Cassiopeia's Throne",
-      "description": "This is the Throne room of the Queen of the Universe.  From here you can see\nevery star and constellation in the Universe.\n",
+      "description": "This is the Throne room of the Queen of the Universe.  From here you can see\nevery star and constellation in the Universe. \n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -1320,7 +1266,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1342,13 +1287,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9367,
       "name": "Cepheus' Throne",
-      "description": "This is the Throne room of the King of the Universe.  From here you can see\nevery star and constellation in the Universe.\n",
+      "description": "This is the Throne room of the King of the Universe.  From here you can see\nevery star and constellation in the Universe. \n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -1369,7 +1313,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1391,7 +1334,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1413,13 +1355,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
       "id": 9370,
       "name": "End of the Dipper",
-      "description": "You have finished the path of the Dipper.  Here, the most prominent feature\nis a set of claw-marks.  You also notice a room to the south; it looks as\nif Polaris could lie here.\n",
+      "description": "You have finished the path of the Dipper.  Here, the most prominent feature\nis a set of claw-marks.  You also notice a room to the south; it looks as\nif Polaris could lie here. \n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -1435,7 +1376,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     },
     {
@@ -1451,11 +1391,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9300
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 9301,
       "name": "a poor mudder",
@@ -1635,7 +1574,7 @@
       "id": 9306,
       "name": "a white dwarf",
       "player_name": "oldstyle white dwarf",
-      "long_description": "A tiny white dwarf is trying to sneak away from duty.\n",
+      "long_description": "A tiny white dwarf is trying to sneak away from duty. \n",
       "description": "Like the red giant, he is also appointed to stand guard for the galaxy.\nBut somehow he manages to escape.  Though tiny, it can take a lot of hits!\n",
       "race": "human",
       "act_flags": "ACG",
@@ -1811,7 +1750,7 @@
       "name": "Orion the hunter",
       "player_name": "oldstyle orion",
       "long_description": "Orion is still hunting for Scorpio.\n",
-      "description": "He is the legendary hunter who almost defeated Taurus the bull, but got\nkilled by Scorpio.  The gods put them both up as constellations but one\nappears on one side of the sky and the other the other side so they will\nnever meet.\n",
+      "description": "He is the legendary hunter who almost defeated Taurus the bull, but got\nkilled by Scorpio.  The gods put them both up as constellations but one\nappears on one side of the sky and the other the other side so they will\nnever meet. \n",
       "race": "human",
       "act_flags": "ABG",
       "affected_by": "H",
@@ -1881,7 +1820,7 @@
       "name": "the Head of Draco",
       "player_name": "oldstyle draco head",
       "long_description": "The gigantic Head of Draco lurks out from beneath and prepares to roast you.\n",
-      "description": "This evil-looking head is even larger than a giant.  He is the last guardian\nbefore entering the inner galaxy.  His neck is flexing in a random fashion so\nhitting the head is certainly not easy.\n",
+      "description": "This evil-looking head is even larger than a giant.  He is the last guardian \nbefore entering the inner galaxy.  His neck is flexing in a random fashion so \nhitting the head is certainly not easy.\n",
       "race": "human",
       "act_flags": "ABFG",
       "affected_by": "DH",
@@ -1986,7 +1925,7 @@
       "name": "Taurus",
       "player_name": "oldstyle taurus",
       "long_description": "Taurus wants to leave, but has been forced to stay as a guardian here.\n",
-      "description": "You see a wild-looking bull with a bad temper.  He is well-built and looks like\nhe can fight well ... indeed he has fought with Orion before and survived.\n",
+      "description": "You see a wild-looking bull with a bad temper.  He is well-built and looks like \nhe can fight well ... indeed he has fought with Orion before and survived.\n",
       "race": "human",
       "act_flags": "ABFGQ",
       "affected_by": "DH",
@@ -2091,7 +2030,7 @@
       "name": "Cancer",
       "player_name": "oldstyle cancer",
       "long_description": "Cancer the crab is here, hoarding the treasure away from you.\n",
-      "description": "You see a gigantic crab (YES, it is bigger than you!) with a crushed shell.\nLegend is that he was crushed by Hercules when he was sent by Hera to kill him.\nSo Hera made Cancer a constellation for his work.\n",
+      "description": "You see a gigantic crab (YES, it is bigger than you!) with a crushed shell.\nLegend is that he was crushed by Hercules when he was sent by Hera to kill him.\nSo Hera made Cancer a constellation for his work. \n",
       "race": "human",
       "act_flags": "ABGQ",
       "affected_by": "H",
@@ -2231,7 +2170,7 @@
       "name": "Scorpio",
       "player_name": "oldstyle scorpio",
       "long_description": "Scorpio is moving his tail towards you, waiting to put an end to some mortals.\n",
-      "description": "Ever since he killed Orion in the myths, he has been punished by having\nSagittarius' arrow aimed at his heart forever.\n",
+      "description": "Ever since he killed Orion in the myths, he has been punished by having \nSagittarius' arrow aimed at his heart forever.\n",
       "race": "human",
       "act_flags": "ABFGQ",
       "affected_by": "DH",
@@ -2301,7 +2240,7 @@
       "name": "Capricorn",
       "player_name": "oldstyle capricorn",
       "long_description": "Capricorn is here, feeling bored ... he wants a fight!\n",
-      "description": "You see a mean-looking ram here.  He used to be a fierce fighter in the ancient\nwar but now the gods have decided to put him here, to live out the rest of his\ndays in peace.\n",
+      "description": "You see a mean-looking ram here.  He used to be a fierce fighter in the ancient\nwar but now the gods have decided to put him here, to live out the rest of his \ndays in peace.\n",
       "race": "human",
       "act_flags": "ABGQ",
       "affected_by": "H",
@@ -2336,7 +2275,7 @@
       "name": "Aquarius",
       "player_name": "oldstyle aquarius",
       "long_description": "The beautiful Aquarius is standing here, holding THE vessel.\n",
-      "description": "The pretty Water Bearer is smiling at you, you think you'd better give her a\nhand with holding the vessel.\n",
+      "description": "The pretty Water Bearer is smiling at you, you think you'd better give her a \nhand with holding the vessel. \n",
       "race": "human",
       "act_flags": "ABGQ",
       "affected_by": "H",
@@ -2441,7 +2380,7 @@
       "name": "Ursa Major the bear",
       "player_name": "oldstyle bear ursa major",
       "long_description": "Ursa Major the bear is the last defense against any intruders.\n",
-      "description": "The Huge Bear which resides in the northern skies is here.\nYou think you'd better turn back.  At least you have got a chance of survival.\n",
+      "description": "The Huge Bear which resides in the northern skies is here. \nYou think you'd better turn back.  At least you have got a chance of survival.\n",
       "race": "bear",
       "act_flags": "ABFGQ",
       "affected_by": "DH",
@@ -2546,7 +2485,7 @@
       "name": "Polaris, the polar star",
       "player_name": "oldstyle polaris polar star",
       "long_description": "Polaris, the polar star, who commands the whole Universe, stands before you!\n",
-      "description": "He is the Master of the Universe, (NOT He-Man!), the most powerful!\nEven the King and the Queen obey him.  As you look at him you notice he is\nactually a STAR, with dazzling bright light ... maybe you shouldn't have come\nhere at all?\n",
+      "description": "He is the Master of the Universe, (NOT He-Man!), the most powerful!  \nEven the King and the Queen obey him.  As you look at him you notice he is \nactually a STAR, with dazzling bright light ... maybe you shouldn't have come\nhere at all?\n",
       "race": "human",
       "act_flags": "ABG",
       "affected_by": "BDH",
@@ -2584,16 +2523,16 @@
       "description": "A long, slender whip lies here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "AB",
-      "wear_flags": "AN",
-      "weight": 10,
-      "cost": 90,
-      "condition": "390",
+      "extra_flags": 3,
+      "wear_flags": 8193,
+      "weight": 90,
+      "cost": 390,
+      "condition": 100,
       "values": [
-        0,
+        7,
         2,
         6,
-        0,
+        4,
         0
       ],
       "affects": [],
@@ -2605,11 +2544,11 @@
       "description": "Arm plates of the Zodiac lie here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AI",
-      "weight": 22,
-      "cost": 100,
-      "condition": "3100",
+      "extra_flags": 1089,
+      "wear_flags": 257,
+      "weight": 100,
+      "cost": 3100,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -2640,11 +2579,11 @@
       "description": "A belt of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AL",
-      "weight": 17,
-      "cost": 70,
-      "condition": "3800",
+      "extra_flags": 1089,
+      "wear_flags": 2049,
+      "weight": 70,
+      "cost": 3800,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -2671,16 +2610,16 @@
       "description": "A massive skull of a dead Draco lies here.",
       "material": "oldstyle",
       "item_type": "staff",
-      "extra_flags": "BGH",
-      "wear_flags": "AO",
-      "weight": 14,
-      "cost": 200,
-      "condition": "4300",
+      "extra_flags": 194,
+      "wear_flags": 16385,
+      "weight": 200,
+      "cost": 4300,
+      "condition": 100,
       "values": [
         15,
         5,
         5,
-        0,
+        6,
         0
       ],
       "affects": [],
@@ -2692,11 +2631,11 @@
       "description": "A fleece of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AC",
-      "weight": 20,
-      "cost": 90,
-      "condition": "2000",
+      "extra_flags": 1089,
+      "wear_flags": 5,
+      "weight": 90,
+      "cost": 2000,
+      "condition": 100,
       "values": [
         7,
         7,
@@ -2723,11 +2662,11 @@
       "description": "A hoof of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AG",
-      "weight": 20,
-      "cost": 100,
-      "condition": "1280",
+      "extra_flags": 1089,
+      "wear_flags": 65,
+      "weight": 100,
+      "cost": 1280,
+      "condition": 100,
       "values": [
         3,
         3,
@@ -2758,11 +2697,11 @@
       "description": "A mask of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGHK",
-      "wear_flags": "AE",
-      "weight": 16,
-      "cost": 70,
-      "condition": "3600",
+      "extra_flags": 1217,
+      "wear_flags": 17,
+      "weight": 70,
+      "cost": 3600,
+      "condition": 100,
       "values": [
         2,
         2,
@@ -2793,11 +2732,11 @@
       "description": "A shell of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AD",
-      "weight": 20,
-      "cost": 150,
-      "condition": "3800",
+      "extra_flags": 1089,
+      "wear_flags": 9,
+      "weight": 150,
+      "cost": 3800,
+      "condition": 100,
       "values": [
         7,
         7,
@@ -2824,11 +2763,11 @@
       "description": "A skin of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AK",
-      "weight": 20,
-      "cost": 150,
-      "condition": "1740",
+      "extra_flags": 1089,
+      "wear_flags": 1025,
+      "weight": 150,
+      "cost": 1740,
+      "condition": 100,
       "values": [
         7,
         7,
@@ -2850,11 +2789,11 @@
       "description": "A bracelet of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "AGK",
-      "wear_flags": "AM",
-      "weight": 15,
-      "cost": 10,
-      "condition": "2600",
+      "extra_flags": 1089,
+      "wear_flags": 4097,
+      "weight": 10,
+      "cost": 2600,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2881,11 +2820,11 @@
       "description": "A shield of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AJ",
-      "weight": 25,
-      "cost": 150,
-      "condition": "3900",
+      "extra_flags": 1089,
+      "wear_flags": 513,
+      "weight": 150,
+      "cost": 3900,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2916,11 +2855,11 @@
       "description": "A shield of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "BGH",
-      "wear_flags": "AJ",
-      "weight": 0,
-      "cost": 150,
-      "condition": "0",
+      "extra_flags": 194,
+      "wear_flags": 513,
+      "weight": 150,
+      "cost": 0,
+      "condition": 100,
       "values": [
         1,
         1,
@@ -2951,16 +2890,16 @@
       "description": "Sting of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "AGK",
-      "wear_flags": "AN",
-      "weight": 19,
-      "cost": 70,
-      "condition": "2700",
+      "extra_flags": 1089,
+      "wear_flags": 8193,
+      "weight": 70,
+      "cost": 2700,
+      "condition": 100,
       "values": [
         0,
         4,
         4,
-        0,
+        11,
         0
       ],
       "affects": [
@@ -2986,16 +2925,16 @@
       "description": "The Arrow of Sagittarius lies here.",
       "material": "oldstyle",
       "item_type": "wand",
-      "extra_flags": "AGK",
-      "wear_flags": "AO",
-      "weight": 11,
-      "cost": 70,
-      "condition": "3400",
+      "extra_flags": 1089,
+      "wear_flags": 16385,
+      "weight": 70,
+      "cost": 3400,
+      "condition": 100,
       "values": [
         10,
         10,
         10,
-        0,
+        62,
         0
       ],
       "affects": [],
@@ -3012,16 +2951,16 @@
       "description": "The Titanic Bow of Sagittarius lies here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "AGK",
-      "wear_flags": "AN",
-      "weight": 20,
-      "cost": 200,
-      "condition": "2800",
+      "extra_flags": 1089,
+      "wear_flags": 8193,
+      "weight": 200,
+      "cost": 2800,
+      "condition": 100,
       "values": [
         0,
         2,
         9,
-        0,
+        6,
         0
       ],
       "affects": [
@@ -3047,11 +2986,11 @@
       "description": "A pair of horns of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AH",
-      "weight": 22,
-      "cost": 60,
-      "condition": "3000",
+      "extra_flags": 1089,
+      "wear_flags": 129,
+      "weight": 60,
+      "cost": 3000,
+      "condition": 100,
       "values": [
         4,
         4,
@@ -3082,16 +3021,16 @@
       "description": "A vessel of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "staff",
-      "extra_flags": "AGK",
-      "wear_flags": "AO",
-      "weight": 12,
-      "cost": 120,
-      "condition": "5900",
+      "extra_flags": 1089,
+      "wear_flags": 16385,
+      "weight": 120,
+      "cost": 5900,
+      "condition": 100,
       "values": [
         10,
         10,
         10,
-        0,
+        20,
         0
       ],
       "affects": [],
@@ -3108,11 +3047,11 @@
       "description": "A fish tail of the Zodiac lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "AGK",
-      "wear_flags": "AF",
-      "weight": 21,
-      "cost": 100,
-      "condition": "950",
+      "extra_flags": 1089,
+      "wear_flags": 33,
+      "weight": 100,
+      "cost": 950,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -3143,11 +3082,11 @@
       "description": "A ring of specialty lies here.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "ABFGK",
-      "wear_flags": "AB",
-      "weight": 26,
-      "cost": 30,
-      "condition": "4200",
+      "extra_flags": 1123,
+      "wear_flags": 3,
+      "weight": 30,
+      "cost": 4200,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3178,11 +3117,11 @@
       "description": "A sceptre of interest lies here.",
       "material": "oldstyle",
       "item_type": "light",
-      "extra_flags": "ABFGK",
-      "wear_flags": "ACDEGHIJKLMN",
-      "weight": 22,
-      "cost": 40,
-      "condition": "2400",
+      "extra_flags": 1123,
+      "wear_flags": 16349,
+      "weight": 40,
+      "cost": 2400,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3213,11 +3152,11 @@
       "description": "Here lies a fortune ... a small ring of power.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "ABFGI",
-      "wear_flags": "AB",
+      "extra_flags": 355,
+      "wear_flags": 3,
       "weight": 30,
-      "cost": 30,
-      "condition": "1690",
+      "cost": 1690,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3248,16 +3187,16 @@
       "description": "A dazzling white object lies on the ground.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "ABFGI",
-      "wear_flags": "AN",
-      "weight": 29,
-      "cost": 200,
-      "condition": "4200",
+      "extra_flags": 355,
+      "wear_flags": 8193,
+      "weight": 200,
+      "cost": 4200,
+      "condition": 100,
       "values": [
         0,
         4,
         6,
-        0,
+        6,
         0
       ],
       "affects": [
@@ -3278,11 +3217,11 @@
       "description": "A shoot grows here, covered with dew.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "AB",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3299,11 +3238,11 @@
       "description": "A flower grows here, waiting to be picked up.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "AB",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3320,11 +3259,11 @@
       "description": "A leaf lies here, as if just fallen from a tree.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "AB",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3341,11 +3280,11 @@
       "description": "A branch lies here, still covered with snow.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "AB",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3362,11 +3301,11 @@
       "description": "Some chains lie on the floor.",
       "material": "oldstyle",
       "item_type": "trash",
-      "extra_flags": "AF",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 500,
-      "condition": "0",
+      "extra_flags": 33,
+      "wear_flags": 1,
+      "weight": 500,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3381,6 +3320,759 @@
           "description": "They certainly look important!\n"
         }
       ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 9301,
+      "arg2": 3,
+      "arg3": 9313,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9301,
+      "arg2": 3,
+      "arg3": 9322,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9301,
+      "arg2": 3,
+      "arg3": 9323,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9304,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9308,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9312,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9321,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9321,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9321,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9321,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9333,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9302,
+      "arg2": 9,
+      "arg3": 9355,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9303,
+      "arg2": 5,
+      "arg3": 9310,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9303,
+      "arg2": 5,
+      "arg3": 9310,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9303,
+      "arg2": 5,
+      "arg3": 9310,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9303,
+      "arg2": 5,
+      "arg3": 9318,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9303,
+      "arg2": 5,
+      "arg3": 9322,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9304,
+      "arg2": 4,
+      "arg3": 9322,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 9301,
+      "arg2": 50,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9304,
+      "arg2": 4,
+      "arg3": 9322,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 9301,
+      "arg2": 50,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9304,
+      "arg2": 4,
+      "arg3": 9317,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 9301,
+      "arg2": 50,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9304,
+      "arg2": 4,
+      "arg3": 9317,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 9301,
+      "arg2": 50,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9305,
+      "arg2": 4,
+      "arg3": 9304,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9305,
+      "arg2": 4,
+      "arg3": 9308,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9305,
+      "arg2": 4,
+      "arg3": 9309,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9305,
+      "arg2": 4,
+      "arg3": 9313,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9306,
+      "arg2": 3,
+      "arg3": 9306,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9306,
+      "arg2": 3,
+      "arg3": 9314,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9306,
+      "arg2": 3,
+      "arg3": 9322,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9307,
+      "arg2": 1,
+      "arg3": 9310,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9308,
+      "arg2": 1,
+      "arg3": 9330,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9328,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9309,
+      "arg2": 1,
+      "arg3": 9332,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9302,
+      "arg2": 1,
+      "arg3": 10,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9310,
+      "arg2": 1,
+      "arg3": 9317,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9311,
+      "arg2": 1,
+      "arg3": 9328,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9304,
+      "arg2": 1,
+      "arg3": 13,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9312,
+      "arg2": 7,
+      "arg3": 9326,
+      "arg4": 7
+    },
+    {
+      "command": "M",
+      "arg1": 9313,
+      "arg2": 1,
+      "arg3": 9363,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9305,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9314,
+      "arg2": 2,
+      "arg3": 9358,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9314,
+      "arg2": 2,
+      "arg3": 9360,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9315,
+      "arg2": 1,
+      "arg3": 9342,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9324,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9306,
+      "arg2": 1,
+      "arg3": 3,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9316,
+      "arg2": 1,
+      "arg3": 9343,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9307,
+      "arg2": 1,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9317,
+      "arg2": 1,
+      "arg3": 9344,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9308,
+      "arg2": 1,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9318,
+      "arg2": 1,
+      "arg3": 9344,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9319,
+      "arg2": 1,
+      "arg3": 9345,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9325,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9309,
+      "arg2": 1,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9320,
+      "arg2": 1,
+      "arg3": 9346,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9310,
+      "arg2": 1,
+      "arg3": 12,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9321,
+      "arg2": 1,
+      "arg3": 9347,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9311,
+      "arg2": 1,
+      "arg3": 14,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9322,
+      "arg2": 1,
+      "arg3": 9348,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9326,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 9312,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9313,
+      "arg2": 1,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9323,
+      "arg2": 1,
+      "arg3": 9349,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9314,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9324,
+      "arg2": 1,
+      "arg3": 9350,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9315,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9316,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9325,
+      "arg2": 1,
+      "arg3": 9351,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9327,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9317,
+      "arg2": 1,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9326,
+      "arg2": 1,
+      "arg3": 9352,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9318,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9327,
+      "arg2": 1,
+      "arg3": 9353,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9319,
+      "arg2": 1,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9328,
+      "arg2": 1,
+      "arg3": 9353,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9329,
+      "arg2": 1,
+      "arg3": 9370,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9330,
+      "arg2": 1,
+      "arg3": 9365,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9320,
+      "arg2": 1,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9331,
+      "arg2": 1,
+      "arg3": 9367,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9321,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9332,
+      "arg2": 1,
+      "arg3": 9371,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9322,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 9323,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 9339,
+      "arg2": 4,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 9354,
+      "arg2": 4,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 9359,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 9363,
+      "arg2": 2,
+      "arg3": 2,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 9301,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 9313,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 9314,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 9315,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9316,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9317,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9318,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9319,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9320,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9321,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9322,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9323,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9324,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9325,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9326,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9327,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9328,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9329,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 9330,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 9331,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 9332,
+      "spec": "spec_breath_acid"
     }
   ]
 }

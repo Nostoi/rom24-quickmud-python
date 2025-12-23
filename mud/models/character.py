@@ -334,7 +334,7 @@ class Character:
     # Daze (pulses) — separate action delay used by ROM combat
     daze: int = 0
     # Armor class per index [AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC]
-    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    armor: list[int] = field(default_factory=lambda: [100, 100, 100, 100])
     # Per-character command aliases: name -> expansion (pre-dispatch)
     aliases: dict[str, str] = field(default_factory=dict)
     # Optional defense chances (percent) for parity-friendly tests
@@ -739,11 +739,20 @@ def from_orm(db_char: DBCharacter) -> Character:
     from mud.registry import room_registry
 
     room = room_registry.get(db_char.room_vnum)
+
+    # ROM initializes hit=max_hit=20, mana=max_mana=100, move=max_move=100 (src/recycle.c:299-304)
+    # For newly created chars, use saved hp as both hit and max_hit
+    saved_hp = db_char.hp or 20
     char = Character(
         name=db_char.name,
         level=db_char.level or 0,
-        hit=db_char.hp or 0,
-        position=int(Position.STANDING),  # Default to standing for loaded chars
+        hit=saved_hp,
+        max_hit=saved_hp,  # Will be updated from pcdata.perm_hit or equipment
+        mana=100,
+        max_mana=100,
+        move=100,
+        max_move=100,
+        position=int(Position.STANDING),
     )
     char.pcdata = PCData()
     char.room = room
@@ -755,6 +764,18 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.ansi_enabled = bool(char.act & int(PlayerFlag.COLOUR))
     char.practice = db_char.practice or 0
     char.train = db_char.train or 0
+
+    # Load perm stats from DB into pcdata (ROM src/handler.c:586-588)
+    # These are base max values before equipment bonuses
+    char.pcdata.perm_hit = getattr(db_char, "perm_hit", saved_hp)
+    char.pcdata.perm_mana = getattr(db_char, "perm_mana", 100)
+    char.pcdata.perm_move = getattr(db_char, "perm_move", 100)
+
+    # Initialize max stats from perm stats (ROM src/handler.c:607-609)
+    char.max_hit = char.pcdata.perm_hit
+    char.max_mana = char.pcdata.perm_mana
+    char.max_move = char.pcdata.perm_move
+
     char.size = db_char.size or 0
     char.form = db_char.form or 0
     char.parts = db_char.parts or 0

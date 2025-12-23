@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 1100,
-    "name": "Shire",
-    "filename": "shire.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Shire",
+  "vnum_range": {
+    "min": 1100,
+    "max": 1199
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 1100,
@@ -29,7 +29,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -53,7 +52,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -77,7 +75,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -107,7 +104,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -137,13 +133,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1105,
       "name": "The General Store",
-      "description": "You are inside the general store.  All sorts of goodies are stacked on the\nmany shelves.  Your local friendly shopkeeper is smiling patiently, waiting to\nserve you to the best of his abilities.  The only exit is to the south.\n",
+      "description": "You are inside the general store.  All sorts of goodies are stacked on the\nmany shelves.  Your local friendly shopkeeper is smiling patiently, waiting to \nserve you to the best of his abilities.  The only exit is to the south.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -155,7 +150,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -191,7 +185,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -209,7 +202,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -227,7 +219,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -257,13 +248,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1110,
       "name": "Shiriff Post of the Eastern Shire",
-      "description": "You are in the Shiriff Post which acts as the nucleus for the three shiriffs\nof the Eastern Shire.  As you examine the shiriffs on duty, you come to realize\nthat the halflings of the Shire are not to be reckoned with.  You cower with\nawe.  A door offers passage to the east.\n",
+      "description": "You are in the Shiriff Post which acts as the nucleus for the three shiriffs\nof the Eastern Shire.  As you examine the shiriffs on duty, you come to realize\nthat the halflings of the Shire are not to be reckoned with.  You cower with \nawe.  A door offers passage to the east.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -281,7 +271,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -299,7 +288,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -329,7 +317,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -365,7 +352,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -383,7 +369,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -401,7 +386,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -419,13 +403,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1117,
       "name": "Shiriff Training Grounds",
-      "description": "The sounds of mock battle and feigned death cries fill your ears.  Every\nwhich way you turn you see halfling trainees at the prime of their youth.  A\nwizened old battle instructor meets your gaze and asks if he may be of\nservice.  The only exit lies to the west.\n",
+      "description": "The sounds of mock battle and feigned death cries fill your ears.  Every\nwhich way you turn you see halfling trainees at the prime of their youth.  A\nwizened old battle instructor meets your gaze and asks if he may be of \nservice.  The only exit lies to the west.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -437,7 +420,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -467,7 +449,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -485,7 +466,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -521,13 +501,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1121,
       "name": "The Grocer's Delight",
-      "description": "You tremble with ecstasy as the tempting odors of freshly made pipeweed\nbread fill your lungs.  Rumor has it that the pipeweed bread sold here can\nrestore vitality.  You look around but find no one to take your order.\nYou then peep over the counter and discover a friendly grocer who is too\nshort to be seen over the counter.  The only exit is to the north.\n",
+      "description": "You tremble with ecstasy as the tempting odors of freshly made pipeweed\nbread fill your lungs.  Rumor has it that the pipeweed bread sold here can\nrestore vitality.  You look around but find no one to take your order.  \nYou then peep over the counter and discover a friendly grocer who is too \nshort to be seen over the counter.  The only exit is to the north.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -539,7 +518,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -569,7 +547,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -593,7 +570,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -617,7 +593,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -641,7 +616,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -665,7 +639,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -683,7 +656,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -719,7 +691,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -737,7 +708,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -755,7 +725,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -779,13 +748,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1132,
       "name": "Delving Lane",
-      "description": "Delving Lane runs north and south in this small borough of the Shire.  To\nthe south stands Brandywine Bridge.  The Green Dragon, the undisputed leader\nin the art of innkeeping, offers rest and comfort to the east.  You hear the\nbray of horses from the west.\n",
+      "description": "Delving Lane runs north and south in this small borough of the Shire.  To \nthe south stands Brandywine Bridge.  The Green Dragon, the undisputed leader\nin the art of innkeeping, offers rest and comfort to the east.  You hear the\nbray of horses from the west.\n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -809,13 +777,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1133,
       "name": "Delving Lane",
-      "description": "Delving Lane runs north and south in this small borough of the Shire.  A\nlarge, imposing building lies to the east.  You hear the bray of horses from\nthe west.\n",
+      "description": "Delving Lane runs north and south in this small borough of the Shire.  A \nlarge, imposing building lies to the east.  You hear the bray of horses from\nthe west.\n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -845,7 +812,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -869,7 +835,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -900,7 +865,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -918,7 +882,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -943,7 +906,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -973,7 +935,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -997,7 +958,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1021,13 +981,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1141,
       "name": "Gamgee Residence",
-      "description": "You stand inside a modest home.  You deduce that this is indeed the home\nof whomever owns the surrounding lands.  The air is somewhat musty and\nthe smell reminds you of a stable.  As you look around disdainfully, you\nthink to yourself that this is more of a shack than a proper residence and\nyou long for the urban riches of the Shire proper.\n",
+      "description": "You stand inside a modest home.  You deduce that this is indeed the home\nof whomever owns the surrounding lands.  The air is somewhat musty and \nthe smell reminds you of a stable.  As you look around disdainfully, you\nthink to yourself that this is more of a shack than a proper residence and\nyou long for the urban riches of the Shire proper.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1039,7 +998,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1063,7 +1021,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1081,7 +1038,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1105,7 +1061,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1123,7 +1078,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1147,7 +1101,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1171,7 +1124,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1195,7 +1147,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1225,7 +1176,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1249,7 +1199,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1285,13 +1234,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1152,
       "name": "A dark tunnel",
-      "description": "You stand inside a small underground tunnel.  The ceiling is so low that\nyou must crouch to avoid hitting your head.  The tunnel continues north and\nsouth.  To the west lies a small home.  All you can see is darkness.\n",
+      "description": "You stand inside a small underground tunnel.  The ceiling is so low that \nyou must crouch to avoid hitting your head.  The tunnel continues north and\nsouth.  To the west lies a small home.  All you can see is darkness.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1315,13 +1263,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1153,
       "name": "Shiriff Post of the Lower Shire",
-      "description": "You are in the shiriff Post which acts as the nucleus for the three shiriffs\nof the Lower Shire.  As you examine the shiriffs on duty, you come to realize\nthat the halflings of the Shire are not to be reckoned with.  You cower with\nawe.  The only exit is to the east.\n",
+      "description": "You are in the shiriff Post which acts as the nucleus for the three shiriffs \nof the Lower Shire.  As you examine the shiriffs on duty, you come to realize\nthat the halflings of the Shire are not to be reckoned with.  You cower with\nawe.  The only exit is to the east.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1333,7 +1280,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1351,7 +1297,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1369,7 +1314,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
@@ -1393,13 +1337,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     },
     {
       "id": 1157,
       "name": "The Inn of the Green Dragon",
-      "description": "You are standing in the Inn of the Green dragon.  Large paintings of\nhalflings at work, and halflings at play adorn the walls.  Comfortable\nbenches and seats line the walls.  A stairway leads down.\n",
+      "description": "You are standing in the Inn of the Green dragon.  Large paintings of \nhalflings at work, and halflings at play adorn the walls.  Comfortable \nbenches and seats line the walls.  A stairway leads down.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1410,11 +1353,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1100
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 1100,
       "name": "the Elven Wizard",
@@ -2543,11 +2485,11 @@
       "description": "The rainbow staff lies here.",
       "material": "oldstyle",
       "item_type": "light",
-      "extra_flags": "G",
-      "wear_flags": "A",
-      "weight": 5,
-      "cost": 80,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "weight": 80,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2569,16 +2511,16 @@
       "description": "Sting lies here.",
       "material": "mithril",
       "item_type": "weapon",
-      "extra_flags": "ABK",
-      "wear_flags": "AN",
-      "weight": 17,
-      "cost": 10,
-      "condition": "3500",
+      "extra_flags": 1027,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 3500,
+      "condition": 100,
       "values": [
-        0,
+        2,
         2,
         7,
-        0,
+        10,
         0
       ],
       "affects": [
@@ -2595,11 +2537,11 @@
       "description": "A sign demands your attention.",
       "material": "oldstyle",
       "item_type": "furniture",
-      "extra_flags": "0",
-      "wear_flags": "0",
+      "extra_flags": 0,
+      "wear_flags": 0,
       "weight": 0,
       "cost": 0,
-      "condition": "0",
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2611,7 +2553,7 @@
       "extra_descriptions": [
         {
           "keyword": "sign",
-          "description": "Welcome to the Shire.  As you enter the Shire from Haon-Dor you come under\nthe jurisdiction of the Thain, the peacekeeper of the Shire.  Consequently,\nby entering these lands you agree to obey our laws.  If you break these laws,\nyou will be severely punished.  We do not like riff raff in our peaceful\ntown.\nThe Thain\nPeacekeeper of the Shire\n"
+          "description": "Welcome to the Shire.  As you enter the Shire from Haon-Dor you come under\nthe jurisdiction of the Thain, the peacekeeper of the Shire.  Consequently,\nby entering these lands you agree to obey our laws.  If you break these laws,\nyou will be severely punished.  We do not like riff raff in our peaceful\ntown.\n\n\t\t\t\t\tThe Thain\n\t\t\t\t\tPeacekeeper of the Shire\n\n"
         }
       ]
     },
@@ -2621,11 +2563,11 @@
       "description": "A loaf of pipeweed bread arouses your hunger.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "15",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 15,
+      "condition": 100,
       "values": [
         30,
         24,
@@ -2642,11 +2584,11 @@
       "description": "A silvery cloak lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AK",
-      "weight": 15,
-      "cost": 30,
-      "condition": "1320",
+      "extra_flags": 1088,
+      "wear_flags": 1025,
+      "weight": 30,
+      "cost": 1320,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -2668,11 +2610,11 @@
       "description": "The One Ring is here.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "G",
-      "wear_flags": "AB",
-      "weight": 20,
-      "cost": 30,
-      "condition": "1660",
+      "extra_flags": 64,
+      "wear_flags": 3,
+      "weight": 30,
+      "cost": 1660,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2680,7 +2622,12 @@
         0,
         0
       ],
-      "affects": [],
+      "affects": [
+        {
+          "location": 0,
+          "modifier": 0
+        }
+      ],
       "extra_descriptions": []
     },
     {
@@ -2689,16 +2636,16 @@
       "description": "An elven spear lies here.",
       "material": "wood",
       "item_type": "weapon",
-      "extra_flags": "BGK",
-      "wear_flags": "AN",
-      "weight": 16,
-      "cost": 50,
-      "condition": "500",
+      "extra_flags": 1090,
+      "wear_flags": 8193,
+      "weight": 50,
+      "cost": 500,
+      "condition": 100,
       "values": [
-        0,
+        3,
         2,
         8,
-        0,
+        34,
         0
       ],
       "affects": [
@@ -2715,16 +2662,16 @@
       "description": "A mithril axe lies here.",
       "material": "mithril",
       "item_type": "weapon",
-      "extra_flags": "ACMO",
-      "wear_flags": "AN",
-      "weight": 17,
-      "cost": 120,
-      "condition": "1440",
+      "extra_flags": 20485,
+      "wear_flags": 8193,
+      "weight": 120,
+      "cost": 1440,
+      "condition": 100,
       "values": [
-        0,
+        5,
         2,
         8,
-        0,
+        25,
         0
       ],
       "affects": [
@@ -2741,11 +2688,11 @@
       "description": "The girth of the thain lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "0",
-      "wear_flags": "AL",
-      "weight": 17,
-      "cost": 40,
-      "condition": "3600",
+      "extra_flags": 0,
+      "wear_flags": 2049,
+      "weight": 40,
+      "cost": 3600,
+      "condition": 100,
       "values": [
         5,
         5,
@@ -2767,16 +2714,16 @@
       "description": "A tiny dagger lies here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 1,
-      "cost": 30,
-      "condition": "230",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 30,
+      "cost": 230,
+      "condition": 100,
       "values": [
-        0,
+        2,
         1,
         6,
-        0,
+        11,
         0
       ],
       "affects": [],
@@ -2788,11 +2735,11 @@
       "description": "An egg lies here.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "2",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 2,
+      "condition": 100,
       "values": [
         12,
         12,
@@ -2809,11 +2756,11 @@
       "description": "A bag is on the floor.",
       "material": "oldstyle",
       "item_type": "container",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "11",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 11,
+      "condition": 100,
       "values": [
         50,
         0,
@@ -2830,11 +2777,11 @@
       "description": "A lantern is on the floor.",
       "material": "oldstyle",
       "item_type": "light",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 40,
-      "condition": "60",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 40,
+      "cost": 60,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2851,17 +2798,17 @@
       "description": "A long weapon with a sharp end is on the floor.",
       "material": "wood",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 21,
-      "cost": 100,
-      "condition": "1810",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 100,
+      "cost": 1810,
+      "condition": 100,
       "values": [
-        0,
+        8,
         2,
         11,
-        0,
-        0
+        21,
+        32
       ],
       "affects": [
         {
@@ -2877,16 +2824,16 @@
       "description": "A flail is on the floor.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 5,
-      "cost": 80,
-      "condition": "390",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 80,
+      "cost": 390,
+      "condition": 100,
       "values": [
-        0,
+        6,
         2,
         4,
-        0,
+        27,
         0
       ],
       "affects": [],
@@ -2898,17 +2845,17 @@
       "description": "A long weapon with a wooden blade is on the floor.",
       "material": "wood",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 3,
-      "cost": 100,
-      "condition": "980",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 100,
+      "cost": 980,
+      "condition": 100,
       "values": [
-        0,
+        8,
         2,
         3,
-        0,
-        0
+        7,
+        32
       ],
       "affects": [
         {
@@ -2924,16 +2871,16 @@
       "description": "A tiny but very sharp dagger lies here.",
       "material": "steel",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 6,
-      "cost": 10,
-      "condition": "480",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 480,
+      "condition": 100,
       "values": [
-        0,
+        2,
         2,
         4,
-        0,
+        11,
         0
       ],
       "affects": [
@@ -2954,20 +2901,1058 @@
       "description": "You see see a heavy club. Looks just right for whomping heads.",
       "material": "wood",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 12,
-      "cost": 30,
-      "condition": "620",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 30,
+      "cost": 620,
+      "condition": 100,
       "values": [
-        0,
+        4,
         2,
         7,
-        0,
+        7,
         0
       ],
       "affects": [],
       "extra_descriptions": []
+    }
+  ],
+  "resets": [
+    {
+      "command": "O",
+      "arg1": 1102,
+      "arg2": 1,
+      "arg3": 1103,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1118,
+      "arg2": 1,
+      "arg3": 1105,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1111,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 1112,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1120,
+      "arg2": 1,
+      "arg3": 1107,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1104,
+      "arg2": 2,
+      "arg3": 1108,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1104,
+      "arg2": 2,
+      "arg3": 1108,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1103,
+      "arg2": 6,
+      "arg3": 1108,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1110,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 1116,
+      "arg2": 9,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1110,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1111,
+      "arg2": 4,
+      "arg3": 1110,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1112,
+      "arg2": 1,
+      "arg3": 1111,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1117,
+      "arg2": 100,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1108,
+      "arg2": 5,
+      "arg3": 13,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1128,
+      "arg2": 4,
+      "arg3": 1114,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1103,
+      "arg2": 99,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1128,
+      "arg2": 4,
+      "arg3": 1115,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1103,
+      "arg2": 99,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1113,
+      "arg2": 1,
+      "arg3": 1116,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 648,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 649,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 650,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1123,
+      "arg2": 5,
+      "arg3": 1116,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1123,
+      "arg2": 5,
+      "arg3": 1116,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1124,
+      "arg2": 2,
+      "arg3": 1116,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1124,
+      "arg2": 2,
+      "arg3": 1116,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1116,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1116,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1116,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1121,
+      "arg2": 1,
+      "arg3": 1117,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1113,
+      "arg2": 100,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1126,
+      "arg2": 3,
+      "arg3": 1117,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 1115,
+      "arg2": 100,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1126,
+      "arg2": 3,
+      "arg3": 1117,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 1115,
+      "arg2": 100,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1126,
+      "arg2": 3,
+      "arg3": 1117,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 1115,
+      "arg2": 100,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1119,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 1116,
+      "arg2": 3,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1119,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1111,
+      "arg2": 4,
+      "arg3": 1119,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1119,
+      "arg2": 1,
+      "arg3": 1121,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1103,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1123,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1123,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1124,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1124,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1124,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1114,
+      "arg2": 1,
+      "arg3": 1124,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1115,
+      "arg2": 6,
+      "arg3": 1125,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1127,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1127,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1127,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1129,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1129,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1129,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1130,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1130,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1122,
+      "arg2": 9,
+      "arg3": 1130,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1125,
+      "arg2": 1,
+      "arg3": 1128,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1100,
+      "arg2": 1,
+      "arg3": 1128,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1104,
+      "arg2": 1,
+      "arg3": 12,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1100,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1116,
+      "arg2": 1,
+      "arg3": 1136,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1106,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 622,
+      "arg2": 25,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1117,
+      "arg2": 1,
+      "arg3": 1136,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1107,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 621,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1101,
+      "arg2": 1,
+      "arg3": 1137,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 1101,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 1105,
+      "arg2": 1,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 623,
+      "arg2": 15,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1108,
+      "arg2": 1,
+      "arg3": 1138,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1106,
+      "arg2": 5,
+      "arg3": 1139,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 1106,
+      "arg2": 5,
+      "arg3": 1139,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 1106,
+      "arg2": 5,
+      "arg3": 1139,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 1106,
+      "arg2": 5,
+      "arg3": 1139,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 1106,
+      "arg2": 5,
+      "arg3": 1139,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 1102,
+      "arg2": 1,
+      "arg3": 1141,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1105,
+      "arg2": 3,
+      "arg3": 1142,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1105,
+      "arg2": 3,
+      "arg3": 1142,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1105,
+      "arg2": 3,
+      "arg3": 1142,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1109,
+      "arg2": 4,
+      "arg3": 1142,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1109,
+      "arg2": 4,
+      "arg3": 1142,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1109,
+      "arg2": 4,
+      "arg3": 1142,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1109,
+      "arg2": 4,
+      "arg3": 1142,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1107,
+      "arg2": 6,
+      "arg3": 1143,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1130,
+      "arg2": 1,
+      "arg3": 1144,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 1110,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 648,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 649,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 650,
+      "arg2": 999,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1131,
+      "arg2": 1,
+      "arg3": 1157,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1123,
+      "arg2": 5,
+      "arg3": 1144,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1123,
+      "arg2": 5,
+      "arg3": 1144,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1123,
+      "arg2": 5,
+      "arg3": 1144,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1144,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1144,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1144,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1127,
+      "arg2": 7,
+      "arg3": 1144,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1145,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 1116,
+      "arg2": 3,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1145,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1111,
+      "arg2": 4,
+      "arg3": 1145,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1153,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 1116,
+      "arg2": 3,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1110,
+      "arg2": 8,
+      "arg3": 1153,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1111,
+      "arg2": 4,
+      "arg3": 1153,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 616,
+      "arg2": 100,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 1128,
+      "arg2": 4,
+      "arg3": 1154,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 1128,
+      "arg2": 4,
+      "arg3": 1155,
+      "arg4": 1
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 1100,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1101,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 1110,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 1111,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 1112,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 1116,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 1117,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 1121,
+      "spec": "spec_guard"
+    },
+    {
+      "mob_vnum": 1122,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 1132,
+      "spec": "spec_guard"
     }
   ]
 }

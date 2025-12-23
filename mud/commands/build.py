@@ -101,6 +101,11 @@ def _is_builder(char: Character, area: Area | None) -> bool:
     return False
 
 
+def _has_help_security(char: Character) -> bool:
+    pcdata = getattr(char, "pcdata", None)
+    return int(getattr(pcdata, "security", 0) or 0) >= 9
+
+
 def _mark_area_changed(room: Room | None) -> None:
     if not room:
         return
@@ -2320,6 +2325,9 @@ def cmd_hedit(char: Character, args: str) -> str:
 
     arg = args.strip()
 
+    if session.editor != "hedit" and not _has_help_security(char):
+        return "HEdit: Insufficient security to edit helps."
+
     if session.editor == "hedit":
         return _interpret_hedit(session, char, arg)
 
@@ -2346,7 +2354,26 @@ def cmd_hedit(char: Character, args: str) -> str:
 
 def _ensure_session_help(session: Session, help_entry, is_new: bool = False) -> None:
     session.editor = "hedit"
-    session.editor_state = {"help": help_entry, "is_new": is_new}
+    session.editor_state = {
+        "help": help_entry,
+        "is_new": is_new,
+        "original_keywords": list(getattr(help_entry, "keywords", []) or []),
+    }
+
+
+def _reindex_help_entry(help_entry, original_keywords: list[str]) -> None:
+    from mud.models.help import help_registry, register_help
+
+    for keyword in original_keywords:
+        key = keyword.lower()
+        bucket = help_registry.get(key)
+        if not bucket:
+            continue
+        if help_entry in bucket:
+            bucket.remove(help_entry)
+        if not bucket:
+            help_registry.pop(key, None)
+    register_help(help_entry)
 
 
 def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
@@ -2381,8 +2408,14 @@ def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
 
     if cmd in {"done", "exit"}:
         is_new = session.editor_state.get("is_new", False)
+        original_keywords = session.editor_state.get("original_keywords", list(help_entry.keywords))
         if is_new:
             register_help(help_entry)
+        else:
+            previous = [keyword.lower() for keyword in original_keywords if keyword]
+            current = [keyword.lower() for keyword in help_entry.keywords if keyword]
+            if previous != current:
+                _reindex_help_entry(help_entry, original_keywords)
         _clear_session(session)
         return "Help entry saved. Use '@hesave' to write to disk."
 
@@ -2437,6 +2470,9 @@ def cmd_hesave(char: Character, args: str, help_file: "Path | None" = None) -> s
     import json
     from pathlib import Path
     from mud.models.help import help_entries
+
+    if not _has_help_security(char):
+        return "HEdit: Insufficient security to edit helps."
 
     if help_file is None:
         help_file = Path("data/help.json")

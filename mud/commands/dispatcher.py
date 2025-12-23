@@ -51,7 +51,20 @@ from .build import (
     handle_oedit_command,
     handle_redit_command,
 )
-from .combat import do_kick, do_kill, do_rescue, do_flee, do_cast
+from .combat import (
+    do_backstab,
+    do_bash,
+    do_berserk,
+    do_cast,
+    do_dirt,
+    do_disarm,
+    do_flee,
+    do_kick,
+    do_kill,
+    do_rescue,
+    do_surrender,
+    do_trip,
+)
 from .communication import (
     do_answer,
     do_auction,
@@ -71,6 +84,23 @@ from .communication import (
     do_yell,
     do_cgossip,
 )
+from .consider import do_consider
+from .doors import do_close, do_lock, do_open, do_pick, do_unlock
+from .give import do_give
+from .group_commands import do_follow, do_group, do_gtell, do_order, do_split
+from .affects import do_affects
+from .compare import do_compare
+from .channels import do_channels
+from .liquids import do_fill, do_pour, do_empty
+from .murder import do_murder
+from .thief_skills import do_sneak, do_hide, do_visible, do_steal
+from .info_extended import do_examine, do_read, do_count, do_whois, do_worth, do_sit
+from .auto_settings import (
+    do_autolist, do_autoall, do_autoassist, do_autoexit, do_autogold,
+    do_autoloot, do_autosac, do_autosplit, do_brief, do_compact,
+    do_combine, do_colour, do_color, do_prompt,
+)
+from .misc_info import do_motd, do_imotd, do_rules, do_story, do_socials, do_skills, do_spells, do_rent
 from .healer import do_heal
 from .help import do_help, do_wizlist
 from .imc import do_imc, try_imc_command
@@ -87,6 +117,7 @@ from .consumption import do_drink, do_eat
 from .character import do_password, do_title, do_description
 from .feedback import do_bug, do_idea, do_typo
 from .shop import do_buy, do_list, do_sell, do_value
+from .magic_items import do_recite, do_brandish, do_zap
 from .socials import perform_social
 
 CommandFunc = Callable[[Character, str], str]
@@ -205,7 +236,34 @@ COMMANDS: list[Command] = [
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING),
     Command("flee", do_flee, min_position=Position.FIGHTING),
+    Command("backstab", do_backstab, aliases=("bs",), min_position=Position.STANDING),
+    Command("bash", do_bash, min_position=Position.FIGHTING),
+    Command("berserk", do_berserk, min_position=Position.FIGHTING),
+    Command("dirt", do_dirt, min_position=Position.FIGHTING),
+    Command("disarm", do_disarm, min_position=Position.FIGHTING),
+    Command("trip", do_trip, min_position=Position.FIGHTING),
+    Command("surrender", do_surrender, min_position=Position.FIGHTING),
+    Command("murder", do_murder, min_position=Position.FIGHTING),
     Command("cast", do_cast, min_position=Position.RESTING),
+    Command("consider", do_consider, aliases=("con",), min_position=Position.RESTING),
+    # Group Commands
+    Command("follow", do_follow, min_position=Position.RESTING),
+    Command("group", do_group, min_position=Position.SLEEPING),
+    Command("gtell", do_gtell, aliases=("gt", ";"), min_position=Position.SLEEPING),
+    Command("split", do_split, min_position=Position.RESTING),
+    Command("order", do_order, min_position=Position.RESTING),
+    # Item Transfer
+    Command("give", do_give, min_position=Position.RESTING),
+    # Door Commands
+    Command("open", do_open, min_position=Position.RESTING),
+    Command("close", do_close, min_position=Position.RESTING),
+    Command("lock", do_lock, min_position=Position.RESTING),
+    Command("unlock", do_unlock, min_position=Position.RESTING),
+    Command("pick", do_pick, min_position=Position.RESTING),
+    # Magic Items
+    Command("recite", do_recite, min_position=Position.RESTING),
+    Command("brandish", do_brandish, min_position=Position.RESTING),
+    Command("zap", do_zap, min_position=Position.RESTING),
     # Equipment
     Command("wear", do_wear, min_position=Position.RESTING),
     Command("wield", do_wield, min_position=Position.RESTING),
@@ -213,6 +271,10 @@ COMMANDS: list[Command] = [
     # Consumption
     Command("eat", do_eat, min_position=Position.RESTING),
     Command("drink", do_drink, min_position=Position.RESTING),
+    # Liquid Commands
+    Command("fill", do_fill, min_position=Position.RESTING),
+    Command("pour", do_pour, min_position=Position.RESTING),
+    Command("empty", do_empty, min_position=Position.RESTING),
     # Session/Character Info
     Command("save", do_save, min_position=Position.DEAD),
     Command("quit", do_quit, min_position=Position.SLEEPING),
@@ -230,6 +292,45 @@ COMMANDS: list[Command] = [
     Command("weather", do_weather, min_position=Position.RESTING),
     Command("credits", do_credits, min_position=Position.DEAD),
     Command("report", do_report, min_position=Position.RESTING),
+    Command("affects", do_affects, min_position=Position.DEAD),
+    Command("compare", do_compare, min_position=Position.RESTING),
+    Command("channels", do_channels, min_position=Position.DEAD),
+    # P1 - Thief Skills
+    Command("sneak", do_sneak, min_position=Position.STANDING),
+    Command("hide", do_hide, min_position=Position.RESTING),
+    Command("visible", do_visible, min_position=Position.SLEEPING),
+    Command("steal", do_steal, min_position=Position.STANDING),
+    # P1 - Info Extended
+    Command("examine", do_examine, aliases=("exa",), min_position=Position.RESTING),
+    Command("read", do_read, min_position=Position.RESTING),
+    Command("count", do_count, min_position=Position.SLEEPING),
+    Command("whois", do_whois, min_position=Position.DEAD),
+    Command("worth", do_worth, min_position=Position.SLEEPING),
+    Command("sit", do_sit, min_position=Position.SLEEPING),
+    # P2 - Auto Settings
+    Command("autolist", do_autolist, min_position=Position.DEAD),
+    Command("autoall", do_autoall, min_position=Position.DEAD),
+    Command("autoassist", do_autoassist, min_position=Position.DEAD),
+    Command("autoexit", do_autoexit, min_position=Position.DEAD),
+    Command("autogold", do_autogold, min_position=Position.DEAD),
+    Command("autoloot", do_autoloot, min_position=Position.DEAD),
+    Command("autosac", do_autosac, min_position=Position.DEAD),
+    Command("autosplit", do_autosplit, min_position=Position.DEAD),
+    Command("brief", do_brief, min_position=Position.DEAD),
+    Command("compact", do_compact, min_position=Position.DEAD),
+    Command("combine", do_combine, min_position=Position.DEAD),
+    Command("colour", do_colour, min_position=Position.DEAD),
+    Command("color", do_color, min_position=Position.DEAD),
+    Command("prompt", do_prompt, min_position=Position.DEAD),
+    # P2 - Misc Info
+    Command("motd", do_motd, min_position=Position.DEAD),
+    Command("imotd", do_imotd, min_position=Position.DEAD, min_trust=LEVEL_HERO),
+    Command("rules", do_rules, min_position=Position.DEAD),
+    Command("story", do_story, min_position=Position.DEAD),
+    Command("socials", do_socials, min_position=Position.DEAD),
+    Command("skills", do_skills, min_position=Position.DEAD),
+    Command("spells", do_spells, min_position=Position.DEAD),
+    Command("rent", do_rent, min_position=Position.DEAD),
     # Feedback
     Command("bug", do_bug, min_position=Position.DEAD),
     Command("idea", do_idea, min_position=Position.DEAD),

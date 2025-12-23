@@ -4,33 +4,37 @@
     "min": 6500,
     "max": 6599
   },
-  "builders": [],
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 6500,
       "name": "Path to Dwarven Village",
-      "description": "All around you are the mountains of the southern range, home of dwarves and\ngiants.  You can climb back down the mountains to the west and leave these\nrealms, or seek riches in the northern mineshafts.  A dirt road leads south,\ntowards a small building.  You can hear crying and shrieking coming from it.\n",
+      "description": "All around you are the mountains of the southern range, home of dwarves and \ngiants.  You can climb back down the mountains to the west and leave these \nrealms, or seek riches in the northern mineshafts.  A dirt road leads south, \ntowards a small building.  You can hear crying and shrieking coming from it.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6501,
           "description": "The path continues.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6601,
           "description": "You hear the patter of little feet.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6562,
           "description": "A rocky road leads back to Midgaard and the mines of Moria.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -38,21 +42,22 @@
       "name": "Path, base of mountain",
       "description": "Now you are at the bottom of a rugged mountain.  The forest around you is\nvery dense, and it seems very dark to the north.\n",
       "sector_type": "hills",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6502,
           "description": "The path continues up the mountain.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6500,
           "description": "The path heads toward the main city.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -60,21 +65,22 @@
       "name": "Path, middle of mountain",
       "description": "Standing on the middle of the mountain, you can easily see the turning\npoint to the south, and the top of the mountain is very near to the north.\n",
       "sector_type": "mountain",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6503,
           "description": "The top of the mountain is easily seen from here.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6501,
           "description": "The base of the mountain is near.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -82,26 +88,28 @@
       "name": "Top of mountain",
       "description": "You are now on the top of the mountain.  To the south you see a path\nleading down the mountain.  To the east and west you see entrances to\nwhat seems like mines.\n",
       "sector_type": "hills",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6540,
           "description": "An entrance to the mountain which seems to lead underground.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6502,
           "description": "The path leads down the mountain to the main city.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6505,
           "description": "There is an entrance to the mountain.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -109,19 +117,20 @@
       "name": "Narrow Path",
       "description": "This is a narrow path leading to the Dwarven Kingdom.  It looks less\ntravelled than the others, and it is very creepy.  The path opens up\nto the south, and continues to the north.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6506,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6540,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -129,20 +138,21 @@
       "name": "Entrance to Mountain",
       "description": "Here is an entrance to the mountain.  The door looks very well built,\nand you can hear noise coming from within.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6503,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6513,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -150,15 +160,17 @@
       "name": "Bend in Narrow Path",
       "description": "This is a narrow path that bends to the east here.  The trees hang over\nthe path, and it is very overgrown.  The narrow path continues to the\nsouth and to the east.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6507,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6504,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -167,7 +179,6 @@
           "description": "They hang over the road in the most ominous of ways.\n"
         }
       ],
-      "resets": [],
       "area": 6500
     },
     {
@@ -175,19 +186,20 @@
       "name": "Narrow path",
       "description": "This path is very narrow, and it continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6508,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6506,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -195,19 +207,20 @@
       "name": "Narrow north-south path",
       "description": "This path leads to the north and south.  To the north you can see a\ndoor, and to the south the path continues.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6509,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6507,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -215,24 +228,26 @@
       "name": "Door to Kingdom",
       "description": "Here the path turns to the west.  You can see a door in front of you,\nand the path continues to the west and south.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6510,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "south": {
           "to_room": 6508,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6522,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -240,20 +255,21 @@
       "name": "Path to the Castle",
       "description": "You are on a path that will eventually lead to the castle.  It\ncontinues north to the castle, and there is a door on the western wall.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6511,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6509,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -261,40 +277,42 @@
       "name": "Still on the path to the Castle",
       "description": "You are still on the path to the castle, or back to the\nDwarven village, whichever way you wish to go.  The path\ncontinues to the north and south.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6512,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6510,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
       "id": 6512,
       "name": "Door to Castle",
-      "description": "Here there is a door to the castle to the east.  The castle\nis elegantly designed, and looks much like a roll of toilet paper\nstanding on end.  A sign says:\n",
+      "description": "Here there is a door to the castle to the east.  The castle\nis elegantly designed, and looks much like a roll of toilet paper\nstanding on end.  A sign says:\n\n              ******************************************\n              *  WELCOME TO THE CASTLE OF STRANGELOVE  *\n              *      Here, celibacy is uninvited       *\n              ******************************************\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6525,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6514
         },
         "south": {
           "to_room": 6511,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -302,27 +320,29 @@
       "name": "Inside the entrance",
       "description": "Everything here is covered in soot and very grimy.  The path continues\nto the east and north, and there is a door to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6514,
           "description": "The little underground path continues to the north.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6505,
           "description": "The path leads outside the entrance.\n",
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "west": {
           "to_room": 6526,
           "description": "This looks like an entrance to some type of store room.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -330,19 +350,20 @@
       "name": "Path",
       "description": "You are on a path in the dwarven village which leads north to the shops\nand south to the corner of the area.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6515,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6513,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -350,20 +371,21 @@
       "name": "Turn in road",
       "description": "You are on a path that leads to a Hide & Tooth shop to the west, and the\npath continues to the south.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 6514,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6516,
           "description": "The Hide & Tooth shop is seen to the west.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -371,19 +393,20 @@
       "name": "Hide & Tooth Shop",
       "description": "You are in the Hide & Tooth shop.  Here you may buy the finest in Dwarven\nweapons and armors. The path continues to the north and east.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6517,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6515,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -391,23 +414,25 @@
       "name": "Path to the north of shop",
       "description": "You are on a path to the north of the Hide & Tooth shop.  The path continues\nto the north, and there is Granite Head's bakery to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6518,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6516,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6535,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -415,19 +440,20 @@
       "name": "North of Shops",
       "description": "Here the path bends to the east towards the barracks. To the\nsouth you can see the shops.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6519,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6517,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -435,23 +461,25 @@
       "name": "Path by Hospital",
       "description": "Here the path passes by the Hospital to the north.  It continues\nto the east to the barracks, and to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6534,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6520,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6518,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -459,19 +487,20 @@
       "name": "Path next to barracks",
       "description": "Here the path continues west, and east to the barracks.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6521,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6519,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -479,20 +508,21 @@
       "name": "Entrance to barracks",
       "description": "Here there is an entrance to the barracks to the south, and\nthe path continues to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 6523,
           "keyword": "door",
-          "flags": []
+          "flags": "1",
+          "key": -1
         },
         "west": {
           "to_room": 6520,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -500,11 +530,12 @@
       "name": "Guard House",
       "description": "You are in the guard house to the west of the entrance\nto the castle.  There are nude posters covering the walls.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6509,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -513,7 +544,6 @@
           "description": "There is a wall poster of a nude Minne Pearl.\n"
         }
       ],
-      "resets": [],
       "area": 6500
     },
     {
@@ -521,20 +551,21 @@
       "name": "First Barrack room",
       "description": "Here is the first of two main rooms of barracks.  The\nbarracks continue to the south, and you can leave the room\nto the north.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6521,
           "keyword": "door",
-          "flags": []
+          "flags": "1",
+          "key": -1
         },
         "south": {
           "to_room": 6524,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -542,20 +573,21 @@
       "name": "Back of Barracks",
       "description": "Here is the back of the dwarven barracks.  There are rows\nof beds here, and there is a stench that is unbearable.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6523,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 2001,
           "keyword": "floorboards boards",
-          "flags": []
+          "flags": "1",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -563,20 +595,21 @@
       "name": "Inside of Castle Strangelove",
       "description": "You are just inside the castle.  It is very tubular in shape,\nand it is very featureless.  There is a set of stairs that lead\nup, and the door leads out of the castle to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "west": {
           "to_room": 6512,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6514
         },
         "up": {
           "to_room": 6528,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -584,17 +617,18 @@
       "name": "A store room",
       "description": "There is a layer of dust on the floor at least 3 inches thick!  It is\nprobable that not many people have been in here for many months.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6513,
           "description": "A lighted area that looks like a well worn path.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 6527,
           "keyword": "trapdoor",
-          "flags": []
+          "flags": "1"
         }
       },
       "extra_descriptions": [
@@ -603,7 +637,6 @@
           "description": "After blowing all the dust off the floor, you notice a trapdoor!\n"
         }
       ],
-      "resets": [],
       "area": 6500
     },
     {
@@ -611,20 +644,21 @@
       "name": "Wine cellar",
       "description": "This room smells like wine, and you can only assume it used to be\na wine cellar at one time.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "up": {
           "to_room": 6526,
-          "flags": []
+          "flags": "1",
+          "key": -1
         },
         "down": {
           "to_room": 2065,
           "keyword": "floorboards boards",
-          "flags": []
+          "flags": "1",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -632,19 +666,20 @@
       "name": "Stairs in castle",
       "description": "The stairs continue to circle up and down here.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "up": {
           "to_room": 6529,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 6525,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -652,19 +687,20 @@
       "name": "Stairs",
       "description": "You are still circling around on the stairs.  You are starting to\nget dizzy from going around and around and around and around and\naround.  The stairs continue up and down.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "up": {
           "to_room": 6530,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 6528,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -672,19 +708,20 @@
       "name": "Top of stairs",
       "description": "You are at the top of the stairs in the castle.  There is an exit\nto the east, and the stairs lead down.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6531,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 6529,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -692,37 +729,38 @@
       "name": "Queen's waiting room",
       "description": "This is the Queen's waiting room.  Here the men literally\n'wait' for the queen.  You've heard that the queen really likes\nto get to 'know' her people, in the biblical sense.  The queen's\nbedroom is to the north, and you can see stairs to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6532,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "west": {
           "to_room": 6530,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
       "id": 6532,
       "name": "Bedroom",
-      "description": "This is the Queen's bedroom.  The bed is all ruffled, and there\nis a stack of dirty sheets piled in the corner.\nA note has been scrawled in lipstick on the mirror:\nI'm out looking for my birth control pills.\nWhy don't you slip into something comfortable while you're waiting?\n",
+      "description": "This is the Queen's bedroom.  The bed is all ruffled, and there\nis a stack of dirty sheets piled in the corner.\n\nA note has been scrawled in lipstick on the mirror:\n\n    I'm out looking for my birth control pills.\n    Why don't you slip into something comfortable while you're waiting?\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 6531,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -730,15 +768,15 @@
       "name": "Hospital",
       "description": "You are inside the Dwarven Hospital.  It smells like rubbing\nalcohol, and there is blood all over the walls.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 6519,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -746,15 +784,15 @@
       "name": "Granite Head's Bakery",
       "description": "The aroma coming from this room is sensuous.  You can almost taste\nthe pastries dissolving in your mouth.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6517,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -762,24 +800,26 @@
       "name": "Dark path",
       "description": "This path is very well worn, and there is an entrance to the mines to the\neast, while the path continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6504,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6541,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "west": {
           "to_room": 6503,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -787,20 +827,21 @@
       "name": "Mine entrance",
       "description": "The little path here leads down toward the mines, while the worn path\ncontinues to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "west": {
           "to_room": 6540,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "down": {
           "to_room": 6542,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -808,19 +849,20 @@
       "name": "Inside the mine",
       "description": "There are holes everywhere from the places that the workers blew\naway the rock to get to whatever they were looking for.  A path leads\ndown and up.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "up": {
           "to_room": 6541,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 6554,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -828,19 +870,20 @@
       "name": "Path in the mine",
       "description": "You are deep inside the mine, and you feel very uncomfortable.  The\npath continues to the east, and leads to the mineshaft to the west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6544,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6554,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -848,28 +891,31 @@
       "name": "Mine crossroad",
       "description": "You are at a crossroad in the mine.  There is a door to the north,\nand the path continues to the south, east, and west.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6546,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         },
         "east": {
           "to_room": 6545,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6551,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6543,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -877,15 +923,15 @@
       "name": "Coal Room",
       "description": "You are inside the storage area for the raw materials\nthat are found down here.  The room is very unsturdy as the\nsupports are very rickety.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "west": {
           "to_room": 6544,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -893,20 +939,21 @@
       "name": "Mine Maze",
       "description": "You have entered the maze of the mines.  To the east you\ncan see some inscriptions, and you can exit to the south.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6547,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6544,
           "keyword": "door",
-          "flags": []
+          "flags": "2",
+          "key": 6502
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -914,19 +961,20 @@
       "name": "Maze inscription",
       "description": "You are inside the maze, but not far enough in that you could get lost.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6548,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6546,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -934,19 +982,20 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6549,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 6547,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -954,19 +1003,20 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6550,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6548,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -974,19 +1024,20 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 6549,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6552,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -994,35 +1045,36 @@
       "name": "Mining equipment room",
       "description": "This is the storage room for equipment used by the\nDwarven miners.  It is very small, and you can tell that\nnot many miners actually use any equipment.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 6544,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
       "id": 6552,
       "name": "Solved the Maze.",
-      "description": "You have solved the maze.  You can tell by the last few moves\nthat there is no way that a dumb worker could have figured that\nout.  It seems pretty desolate here.  To the south is a bleak room.\nTo the north, you see the maze.  There is a sign above the south exit:\nThose who enter, plan on a timely death.\nEspecially if you're loyal to the queen.\n",
+      "description": "You have solved the maze.  You can tell by the last few moves\nthat there is no way that a dumb worker could have figured that\nout.  It seems pretty desolate here.  To the south is a bleak room.\nTo the north, you see the maze.  There is a sign above the south exit:\n\n    Those who enter, plan on a timely death.\n    Especially if you're loyal to the queen.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6550,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 6553,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -1030,15 +1082,15 @@
       "name": "The Mazekeeper's Room",
       "description": "You have entered the Mazekeeper's room.  There are pictures of\nthe Queen with darts thrown in it.  Spray-painted on the wall are\nthings like 'the queen shall suffer' and 'Catholics Rule'.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6552,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
@@ -1046,41 +1098,43 @@
       "name": "Bottom of mineshaft",
       "description": "You are at the bottom of the mineshaft.  The air here is very sooty, and\nit is very hard to breath.  The mineshaft leads up and east.\n",
       "sector_type": "inside",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6543,
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 6542,
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     },
     {
       "id": 6562,
       "name": "The mountains of the dwarven kingdom",
-      "description": "You are standing at the foot of the mountains of the dwarven kingdom, where\ndwarves and giants toil endlessly to pry gems and mithril from the mother\nearth.  Here lies the palace of the dwarven queen, and untold riches.\nBut beware, for the mines are said to be haunted by demon and spirit alike.\nThe dwarven kingdom lies to the east.\n",
+      "description": "You are standing at the foot of the mountains of the dwarven kingdom, where\ndwarves and giants toil endlessly to pry gems and mithril from the mother \nearth.  Here lies the palace of the dwarven queen, and untold riches.\nBut beware, for the mines are said to be haunted by demon and spirit alike.\nThe dwarven kingdom lies to the east.\n",
       "sector_type": "mountain",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 6500,
           "description": "The dwarven kingdom awaits!\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4000,
           "description": "You see the foothills of this mighty mountain range.\n",
-          "flags": []
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6500
     }
   ],
@@ -1088,179 +1142,1833 @@
     {
       "id": 6500,
       "name": "the dwarven guard",
-      "description": "A dwarven guard is here.\n"
+      "player_name": "oldstyle dwarf guard",
+      "long_description": "A dwarven guard is here.\n",
+      "description": "The guard looks very tough and mean.\n",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "D",
+      "alignment": 500,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6501,
       "name": "the dwarven worker",
-      "description": "A dwarven mining worker is here.\n"
+      "player_name": "oldstyle dwarf worker miner",
+      "long_description": "A dwarven mining worker is here.\n",
+      "description": "He is very dirty, and looks extremely over-worked.\n",
+      "race": "dwarf",
+      "act_flags": "AGL",
+      "affected_by": "0",
+      "alignment": 900,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 175,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6502,
       "name": "the wraith",
-      "description": "A wraith is awaiting your first move here.\n"
+      "player_name": "oldstyle wraith",
+      "long_description": "A wraith is awaiting your first move here.\n",
+      "description": "A black, almost transparent wraith.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "DF",
+      "alignment": -900,
+      "group": 0,
+      "level": 29,
+      "thac0": 0,
+      "ac": "6d12+778",
+      "hit_dice": "14d9+100",
+      "mana_dice": "2d12+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6503,
       "name": "the storekeeper",
-      "description": "There is the Hide & Tooth storekeeper standing here, waiting patiently.\n"
+      "player_name": "oldstyle storekeeper",
+      "long_description": "There is the Hide & Tooth storekeeper standing here, waiting patiently.\n",
+      "description": "The storekeeper is very rotund, but looks like a sharp guy.\n",
+      "race": "human",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 900,
+      "group": 0,
+      "level": 35,
+      "thac0": 0,
+      "ac": "10d10+1300",
+      "hit_dice": "17d9+100",
+      "mana_dice": "4d7+11",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 5000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6504,
       "name": "the baker",
-      "description": "Granite Head, the baker, is waiting for a customer here.\n"
+      "player_name": "oldstyle baker",
+      "long_description": "Granite Head, the baker, is waiting for a customer here.\n",
+      "description": "Granite Head is covered with flour and grains.\n",
+      "race": "human",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 900,
+      "group": 0,
+      "level": 35,
+      "thac0": 0,
+      "ac": "10d10+1300",
+      "hit_dice": "17d9+100",
+      "mana_dice": "4d7+11",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6505,
       "name": "the giant lizard",
-      "description": "A giant lizard is here.\n"
+      "player_name": "oldstyle lizard",
+      "long_description": "A giant lizard is here.\n",
+      "description": "This scaly creature looks like it is well adapted to it's underground\nhabitat.  He looks very powerful.\n",
+      "race": "lizard",
+      "act_flags": "AG",
+      "affected_by": "D",
+      "alignment": 100,
+      "group": 0,
+      "level": 18,
+      "thac0": 0,
+      "ac": "3d9+283",
+      "hit_dice": "9d9+100",
+      "mana_dice": "2d7+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 60,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6506,
       "name": "the giant",
-      "description": "A giant is here.\n"
+      "player_name": "oldstyle giant",
+      "long_description": "A giant is here.\n",
+      "description": "The giant is about 8 feet tall, with arms of steel, and looks very strong.\n",
+      "race": "giant",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6507,
       "name": "the dwarven miner",
-      "description": "A dwarven miner is here.\n"
+      "player_name": "oldstyle dwarf miner",
+      "long_description": "A dwarven miner is here.\n",
+      "description": "The mineworker is very tired, and very dirty, and he has bulging muscles.\n",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6508,
       "name": "the dwarven mine leader",
-      "description": "A dwarven mine leader is here.\n"
+      "player_name": "oldstyle dwarf leader",
+      "long_description": "A dwarven mine leader is here.\n",
+      "description": "The mine leader is very big and very strong.\n",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 21,
+      "thac0": 0,
+      "ac": "4d10+360",
+      "hit_dice": "10d9+100",
+      "mana_dice": "4d4+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6509,
       "name": "the dwarven doctor",
-      "description": "The dwarven doctor is here.\n"
+      "player_name": "oldstyle dwarf doctor",
+      "long_description": "The dwarven doctor is here.\n",
+      "description": "He is a very skilled surgeon, with hands of steel.\n",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "DH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 75,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6510,
       "name": "the dwarven peon",
-      "description": "A dwarven peon is awaiting help here.\n"
+      "player_name": "oldstyle dwarf peon",
+      "long_description": "A dwarven peon is awaiting help here.\n",
+      "description": "",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 3,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6511,
       "name": "the dwarf",
-      "description": "A grinning dwarf is here.\n"
+      "player_name": "oldstyle dwarf",
+      "long_description": "A grinning dwarf is here.\n",
+      "description": "",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 500,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 62,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6512,
       "name": "the unwanted son",
-      "description": "An unwanted son is here.  You feel sorry for the guy.\n"
+      "player_name": "oldstyle dwarf son",
+      "long_description": "An unwanted son is here.  You feel sorry for the guy.\n",
+      "description": "",
+      "race": "dwarf",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 250,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d6+110",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d8+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6513,
       "name": "the unwanted daughter",
-      "description": "An unwanted daughter is here.  You feel sorry for her.\n"
+      "player_name": "oldstyle dwarf daughter",
+      "long_description": "An unwanted daughter is here.  You feel sorry for her.\n",
+      "description": "",
+      "race": "dwarf",
+      "act_flags": "AG",
+      "affected_by": "0",
+      "alignment": 250,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6514,
       "name": "the barracks guard",
-      "description": "A barrack guard is here.\n"
+      "player_name": "oldstyle dwarf guard",
+      "long_description": "A barrack guard is here.\n",
+      "description": "",
+      "race": "dwarf",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 100,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6515,
       "name": "the man in waiting",
-      "description": "A man in waiting is here.  He looks nervous and unsure of himself.\n"
+      "player_name": "oldstyle man",
+      "long_description": "A man in waiting is here.  He looks nervous and unsure of himself.\n",
+      "description": "",
+      "race": "human",
+      "act_flags": "ABL",
+      "affected_by": "0",
+      "alignment": 300,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 348,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6516,
       "name": "the mazekeeper",
-      "description": "A mazekeeper is here.\n"
+      "player_name": "oldstyle mazekeeper",
+      "long_description": "A mazekeeper is here.\n",
+      "description": "He looks VERY tough.\n",
+      "race": "human",
+      "act_flags": "ABFL",
+      "affected_by": "H",
+      "alignment": -1000,
+      "group": 0,
+      "level": 29,
+      "thac0": 0,
+      "ac": "6d12+778",
+      "hit_dice": "14d9+100",
+      "mana_dice": "2d12+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 4000,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6517,
       "name": "the giant snake",
-      "description": "There is a giant snake here.\n"
+      "player_name": "oldstyle snake",
+      "long_description": "There is a giant snake here.\n",
+      "description": "",
+      "race": "snake",
+      "act_flags": "ABF",
+      "affected_by": "0",
+      "alignment": -1000,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     }
   ],
   "objects": [
     {
       "id": 6502,
       "name": "a deep green key",
-      "description": "A deep green key is on the floor."
+      "description": "A deep green key is on the floor.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6504,
       "name": "a hammer",
-      "description": "There is a dwarven hammer laying here."
+      "description": "There is a dwarven hammer laying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 30,
+      "cost": 880,
+      "condition": 100,
+      "values": [
+        4,
+        4,
+        4,
+        7,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6505,
       "name": "dwarven plate mail",
-      "description": "There is dwarven plate mail laying here."
+      "description": "There is dwarven plate mail laying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "weight": 40,
+      "cost": 2900,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6506,
       "name": "long, black stick",
-      "description": "There is a long, black stick lying here."
+      "description": "There is a long, black stick lying here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 4800,
+      "condition": 100,
+      "values": [
+        4,
+        10,
+        10,
+        23,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6507,
       "name": "long, black stick",
-      "description": "There is a long, black stick here."
+      "description": "There is a long, black stick here.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        50,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6508,
       "name": "dwarven club",
-      "description": "There is a dwarven club laying here."
+      "description": "There is a dwarven club laying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 510,
+      "condition": 100,
+      "values": [
+        4,
+        2,
+        6,
+        7,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6509,
       "name": "a two-handed dwarven axe",
-      "description": "A two-handed Dwarven axe is here."
+      "description": "A two-handed Dwarven axe is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 50,
+      "cost": 4100,
+      "condition": 100,
+      "values": [
+        5,
+        2,
+        7,
+        21,
+        32
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
       "id": 6510,
       "name": "a dwarven helmet",
-      "description": "A dwarven helmet is here."
+      "description": "A dwarven helmet is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 17,
+      "weight": 40,
+      "cost": 1450,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6511,
       "name": "a dwarven golden ring",
-      "description": "A pretty golden ring is here."
+      "description": "A pretty golden ring is here.",
+      "material": "oldstyle",
+      "item_type": "gem",
+      "extra_flags": 64,
+      "wear_flags": 3,
+      "weight": 10,
+      "cost": 460,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
       "id": 6512,
       "name": "dwarven gloves",
-      "description": "Thick dwarven gloves lay here."
+      "description": "Thick dwarven gloves lay here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 129,
+      "weight": 20,
+      "cost": 2000,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 1
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
       "id": 6513,
       "name": "a note",
-      "description": "A crumpled note is here."
+      "description": "A crumpled note is here.",
+      "material": "oldstyle",
+      "item_type": "furniture",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "note letter letters",
+          "description": "It seems to be a hot love letter from the Queen.  Unfortunately,\nit's not suitable for transmission across a public data network.\n"
+        }
+      ]
     },
     {
       "id": 6514,
       "name": "a castle key",
-      "description": "There is a key to Strangelove Castle here."
+      "description": "There is a key to Strangelove Castle here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6516,
       "name": "a mine key",
-      "description": "There is a key to the mines here."
+      "description": "There is a key to the mines here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6517,
       "name": "a chunk of coal",
-      "description": "There is a chunk of coal here."
+      "description": "There is a chunk of coal here.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": 524288,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6518,
       "name": "a mining pick",
-      "description": "There is a mining pick here."
+      "description": "There is a mining pick here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 256,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 240,
+      "condition": 100,
+      "values": [
+        4,
+        2,
+        3,
+        11,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
       "id": 6519,
       "name": "a box of birth control pills",
-      "description": "There is a box of birth control pills here."
+      "description": "There is a box of birth control pills here.",
+      "material": "oldstyle",
+      "item_type": "pill",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 300,
+      "condition": 100,
+      "values": [
+        20,
+        0,
+        0,
+        12,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "birth control pills pill",
+          "description": "They are in a circular container, and there are numbers corresponding\nto the day that they are to be taken.  You can tell they haven't been\nused for a while.\n"
+        }
+      ]
     },
     {
       "id": 6520,
       "name": "a map of Castle Strangelove",
-      "description": "A rolled up map is here."
+      "description": "A rolled up map is here.",
+      "material": "oldstyle",
+      "item_type": "map",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 500,
+      "condition": 100,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "map castle strangelove",
+          "description": ".\n* * * Castle Strangelove * * *       __________\n = = ==================== = =        \\ Queen's \\\n      \t\t\t              \\ Bedroom \\\n                                       \\_________\\\n                                                *\n                               __________    ____\\_____\n     North  Up                 \\  Top of \\    \\ Waiting \\\n        \\   |                   \\ Stairs  \\----\\  Room   \\\n          \\ |                    \\_________\\    \\_________\\\n  West ---- + ---- East             |\n            | \\                _____|____\n            |   \\              \\         \\\n          Down  South           \\ Stairs  \\    [] - You need the Castle Key\n                                 \\_________\\        to get beyond this point.\n                                    |               The Castle Key can be\n                               _____|____           found on the Grinning\n                               \\         \\          Dwarves in the Barracks.\n                                \\ Stairs  \\\n                                 \\_________\\    * - You need the Deep Green\n                                    |               Key to get beyond this\n                __________     _____|____           point.  This key can be\n                \\ Door to \\    \\ Inside  \\          found on the Wraith in\n                 \\ Castle  \\-[]-\\ Castle  \\         the wine cellar or on one\n                  \\_________\\    \\_________\\        of the Dwarven Guards on\n                           \\                        the Dark path.\n                         ____\\_____\n                         \\ Path to \\\n                          \\ Castle  \\\n                           \\_________\\\n                                    \\\n                   __________     ____\\_____\n                   \\ Door to \\    \\ Path to \\\n                    \\ Kingdom \\----\\ Castle  \\\n                     \\_________\\    \\_________\\\n                              \\\n                           To Dwarven\n                             Kingdom\n"
+        }
+      ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "D",
+      "arg1": 6527,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6524,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6505,
+      "arg2": 3,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6513,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6509,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6510,
+      "arg2": 3,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6512,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6525,
+      "arg2": 3,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6521,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6523,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6526,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6527,
+      "arg2": 4,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6540,
+      "arg2": 1,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6541,
+      "arg2": 3,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6544,
+      "arg2": 0,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6546,
+      "arg2": 2,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6531,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6532,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6505,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6502,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6505,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6540,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6502,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6540,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6506,
+      "arg2": 1,
+      "arg3": 6534,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6507,
+      "arg2": 2,
+      "arg3": 6513,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6507,
+      "arg2": 2,
+      "arg3": 6505,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6507,
+      "arg2": 2,
+      "arg3": 6503,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6507,
+      "arg2": 1,
+      "arg3": 6540,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6501,
+      "arg2": 6,
+      "arg3": 6503,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6501,
+      "arg2": 6,
+      "arg3": 6502,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6501,
+      "arg2": 6,
+      "arg3": 6501,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6502,
+      "arg2": 2,
+      "arg3": 6527,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6502,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6503,
+      "arg2": 1,
+      "arg3": 6516,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6510,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6511,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6512,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6504,
+      "arg2": 1,
+      "arg3": 6535,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 3000,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 3003,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 3009,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 3031,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6505,
+      "arg2": 2,
+      "arg3": 6515,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6506,
+      "arg2": 2,
+      "arg3": 6508,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6509,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6509,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6510,
+      "arg2": 10,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6511,
+      "arg2": 10,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6509,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6512,
+      "arg2": 10,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6509,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6505,
+      "arg2": 10,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6507,
+      "arg2": 4,
+      "arg3": 6543,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 6508,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6507,
+      "arg2": 4,
+      "arg3": 6543,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 6508,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6507,
+      "arg2": 4,
+      "arg3": 6542,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6508,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6508,
+      "arg2": 2,
+      "arg3": 6543,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6512,
+      "arg2": 10,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6510,
+      "arg2": 4,
+      "arg3": 6534,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 6510,
+      "arg2": 4,
+      "arg3": 6534,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 6514,
+      "arg2": 4,
+      "arg3": 6521,
+      "arg4": 4
+    },
+    {
+      "command": "E",
+      "arg1": 6509,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6514,
+      "arg2": 4,
+      "arg3": 6521,
+      "arg4": 4
+    },
+    {
+      "command": "E",
+      "arg1": 6509,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6521,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6521,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6523,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6523,
+      "arg4": 6
+    },
+    {
+      "command": "E",
+      "arg1": 6508,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 6514,
+      "arg2": 10,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6523,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6523,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6524,
+      "arg4": 6
+    },
+    {
+      "command": "O",
+      "arg1": 6513,
+      "arg2": 1,
+      "arg3": 6524,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6502,
+      "arg2": 2,
+      "arg3": 6524,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6511,
+      "arg2": 8,
+      "arg3": 6524,
+      "arg4": 6
+    },
+    {
+      "command": "G",
+      "arg1": 6520,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6512,
+      "arg2": 3,
+      "arg3": 6528,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6512,
+      "arg2": 3,
+      "arg3": 6529,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6513,
+      "arg2": 3,
+      "arg3": 6529,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6513,
+      "arg2": 3,
+      "arg3": 6530,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6515,
+      "arg2": 4,
+      "arg3": 6531,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 6515,
+      "arg2": 4,
+      "arg3": 6531,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 6509,
+      "arg2": 1,
+      "arg3": 6534,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 6506,
+      "arg2": 10,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6519,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6516,
+      "arg2": 1,
+      "arg3": 6553,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6519,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6517,
+      "arg2": 2,
+      "arg3": 6548,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6517,
+      "arg2": 2,
+      "arg3": 6549,
+      "arg4": 1
+    },
+    {
+      "command": "O",
+      "arg1": 6516,
+      "arg2": 1,
+      "arg3": 6532,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6517,
+      "arg2": 6,
+      "arg3": 6545,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 6518,
+      "arg2": 3,
+      "arg3": 6551,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6512,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6500,
+      "arg2": 10,
+      "arg3": 6512,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 6504,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6505,
+      "arg2": 2,
+      "arg3": 6520,
+      "arg4": 1
     }
   ],
   "specials": []

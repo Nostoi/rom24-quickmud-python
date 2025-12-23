@@ -1,17 +1,17 @@
 {
-  "area": {
-    "vnum": 3900,
-    "name": "Moria",
-    "filename": "moria.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Moria",
+  "vnum_range": {
+    "min": 3900,
+    "max": 4199
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 3900,
       "name": "West trail around Midgaard",
-      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the east the wall towers over you and to the west you see the\nforest of Haon-Dor. The trail leads north and south along the wall.\n",
+      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the east the wall towers over you and to the west you see the\nforest of Haon-Dor. The trail leads north and south along the wall. \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -29,19 +29,18 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3901,
       "name": "West trail around Midgaard",
-      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the east the wall towers over you and to the west you see the\nforest of Haon-Dor. The trail leads north and south along the wall.\n",
+      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the east the wall towers over you and to the west you see the\nforest of Haon-Dor. The trail leads north and south along the wall. \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
         "north": {
           "to_room": 3902,
-          "description": "To the north you notice the path makes a turn, following the City wall.\n",
+          "description": "To the north you notice the path makes a turn, following the City wall. \n",
           "flags": "0",
           "key": -1
         },
@@ -53,13 +52,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3902,
       "name": "Northwest corner of dusty trail.",
-      "description": "You are standing outside the northwestern corner of the city wall.\nThe trail leads east following the north wall and south towards the gate.\n",
+      "description": "You are standing outside the northwestern corner of the city wall.\nThe trail leads east following the north wall and south towards the gate.  \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -77,13 +75,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3903,
       "name": "Dusty trail along north wall.",
-      "description": "You are walking on the trail following the outside of Midgaard's\nnorthern wall.\n",
+      "description": "You are walking on the trail following the outside of Midgaard's\nnorthern wall.  \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -95,19 +92,18 @@
         },
         "west": {
           "to_room": 3902,
-          "description": "The dusty trail turns left around the corner of the wall, behind it Haon-Dor.\n",
+          "description": "The dusty trail turns left around the corner of the wall, behind it Haon-Dor. \n",
           "flags": "0",
           "key": -1
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3904,
       "name": "The long dusty trail following the north wall.",
-      "description": "You are just outside the northern gate of Midgaard.  You can continue along\nthe trail to the east or west, head onwards to the plains of the north, or\nenter Midgaard to the south.  You can just barely make out the buildings of\nMidgaard from here, the Temple of Mota looks impressive even from this\ndistance.\n",
+      "description": "You are just outside the northern gate of Midgaard.  You can continue along\nthe trail to the east or west, head onwards to the plains of the north, or\nenter Midgaard to the south.  You can just barely make out the buildings of\nMidgaard from here, the Temple of Mota looks impressive even from this\ndistance.  \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -119,7 +115,7 @@
         },
         "east": {
           "to_room": 3905,
-          "description": "The dusty trail is winding along the north wall of Midgaard.\n",
+          "description": "The dusty trail is winding along the north wall of Midgaard. \n",
           "flags": "0",
           "key": -1
         },
@@ -137,19 +133,18 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3905,
       "name": "Dusty trail along north wall.",
-      "description": "You are walking on the trail following the outside of Midgaard's\nnorthern wall.\n",
+      "description": "You are walking on the trail following the outside of Midgaard's\nnorthern wall.  \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
         "east": {
           "to_room": 3906,
-          "description": "The dusty trail turns right around the corner of the wall.\nYou notice some mountains in the distance.\n",
+          "description": "The dusty trail turns right around the corner of the wall. \nYou notice some mountains in the distance.\n",
           "flags": "0",
           "key": -1
         },
@@ -161,13 +156,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3906,
       "name": "Northeast corner of dusty trail.",
-      "description": "You are standing outside the northeastern corner of the city wall.\nThe trail leads west following the north wall and south towards the gate.\n",
+      "description": "You are standing outside the northeastern corner of the city wall.\nThe trail leads west following the north wall and south towards the gate.  \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -185,19 +179,18 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3907,
       "name": "East trail around Midgaard",
-      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the west the wall towers over you and far to the east you see\nsome mountains. The trail leads north and south along the wall.\n",
+      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the west the wall towers over you and far to the east you see\nsome mountains. The trail leads north and south along the wall. \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
         "north": {
           "to_room": 3906,
-          "description": "To the north you notice the path makes a turn, following the City wall.\n",
+          "description": "To the north you notice the path makes a turn, following the City wall. \n",
           "flags": "0",
           "key": -1
         },
@@ -209,13 +202,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 3908,
       "name": "East trail around Midgaard",
-      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the west the wall towers over you and far to the east you see\nsome mountains. The trail leads north and south along the wall.\n",
+      "description": "You are on a dusty trail following the outside wall of Midgaard.\nTo the west the wall towers over you and far to the east you see\nsome mountains. The trail leads north and south along the wall. \n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -233,7 +225,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -249,7 +240,7 @@
         },
         "east": {
           "to_room": 6562,
-          "description": "You see the mountains of the dwarven kingdom.\n",
+          "description": "You see the mountains of the dwarven kingdom. \n",
           "flags": "0"
         },
         "south": {
@@ -258,7 +249,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -278,7 +268,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -300,14 +289,13 @@
       "extra_descriptions": [
         {
           "keyword": "sign",
-          "description": "The sign says:\n/---------------------\\\n| The Mines of Moria! |\n|                     |\n| Four levels.        |\n|                     |\n| Watch for mages!    |\n|                     |\n\\---------------------/\n| |\n| |\n| |\n| |\n| |\n"
+          "description": "The sign says:\n\n        /---------------------\\\n        | The Mines of Moria! |\n        |                     |\n        | Four levels.        |\n        |                     |\n        | Watch for mages!    |\n        |                     |\n        \\---------------------/\n                 | |\n                 | |\n                 | |\n                 | |\n                 | |\n"
         },
         {
           "keyword": "bushes",
           "description": "Small crippled bushes desperately trying to grow south.\n"
         }
       ],
-      "resets": [],
       "area": 3900
     },
     {
@@ -329,16 +317,15 @@
       "extra_descriptions": [
         {
           "keyword": "tombstone",
-          "description": "The stone is inscribed with the unfortunate player's famous last words:\n\"What are you worrying about, it is just a small harmless snake\"\n"
+          "description": "The stone is inscribed with the unfortunate player's famous last words:\n\n  \"What are you worrying about, it is just a small harmless snake\"\n"
         }
       ],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4011,
       "name": "The tunnel",
-      "description": "You squeeze your way through a small, narrow tunnel. The sharp-edged rocks\nprotruding from the walls threaten to scratch and cut you.\nTo the south you sense a freshness in the air which is rather unusual in these\ndamp, stuffy tunnels. To the north the tunnel continues.\n",
+      "description": "You squeeze your way through a small, narrow tunnel. The sharp-edged rocks\nprotruding from the walls threaten to scratch and cut you. \nTo the south you sense a freshness in the air which is rather unusual in these\ndamp, stuffy tunnels. To the north the tunnel continues.\n",
       "sector_type": "forest",
       "flags": 0,
       "exits": {
@@ -352,7 +339,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -372,13 +358,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4013,
       "name": "The tunnel",
-      "description": "This tunnel, leading east-west, seems seldom used.  A thick layer of dust\ncovers the floor, making the air stuffy and dry.\n",
+      "description": "This tunnel, leading east-west, seems seldom used.  A thick layer of dust\ncovers the floor, making the air stuffy and dry. \n",
       "sector_type": "forest",
       "flags": 0,
       "exits": {
@@ -392,7 +377,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -420,7 +404,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -440,7 +423,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -464,7 +446,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -480,7 +461,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -505,7 +485,6 @@
           "description": "Some of the bones are human!\n"
         }
       ],
-      "resets": [],
       "area": 3900
     },
     {
@@ -525,7 +504,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -545,7 +523,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -565,7 +542,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -589,7 +565,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -609,7 +584,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -629,7 +603,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -649,7 +622,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -677,7 +649,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -701,7 +672,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -721,7 +691,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -741,13 +710,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4030,
       "name": "The light cave",
-      "description": "You are in a light cave, through a hole large above you, you see\nthe sky. A small tunnel to the south is the only way out.\n",
+      "description": "You are in a light cave, through a hole large above you, you see \nthe sky. A small tunnel to the south is the only way out.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -757,13 +725,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4031,
       "name": "The valley",
-      "description": "You are in a small valley, surrounded by hills and a mountain to\nthe south. In the mountain there is a cave.\n",
+      "description": "You are in a small valley, surrounded by hills and a mountain to \nthe south. In the mountain there is a cave.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -782,7 +749,6 @@
           "description": "Well it doesn't look nice, but it's the only way out.\n"
         }
       ],
-      "resets": [],
       "area": 3900
     },
     {
@@ -802,7 +768,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -826,7 +791,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -850,7 +814,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -870,7 +833,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -886,7 +848,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -906,7 +867,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -926,7 +886,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -946,7 +905,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -971,7 +929,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -987,7 +944,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1007,7 +963,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1027,7 +982,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1043,7 +997,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1063,7 +1016,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1083,7 +1035,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1103,7 +1054,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1123,7 +1073,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1147,7 +1096,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1163,7 +1111,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1183,7 +1130,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1203,7 +1149,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1223,7 +1168,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1243,13 +1187,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4060,
       "name": "The tunnel",
-      "description": "You are in a small tunnel, to the west the tunnel continues and\nto the east you see some light.\n",
+      "description": "You are in a small tunnel, to the west the tunnel continues and \nto the east you see some light.\n",
       "sector_type": "forest",
       "flags": 0,
       "exits": {
@@ -1263,7 +1206,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1283,7 +1225,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1303,7 +1244,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1323,7 +1263,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1343,7 +1282,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1363,7 +1301,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1387,7 +1324,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1403,7 +1339,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1423,7 +1358,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1447,7 +1381,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1467,7 +1400,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1491,7 +1423,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1515,7 +1446,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1531,7 +1461,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1551,7 +1480,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1571,7 +1499,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1591,7 +1518,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1611,7 +1537,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1635,7 +1560,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1655,7 +1579,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1675,7 +1598,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1699,7 +1621,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1719,7 +1640,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1743,7 +1663,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1767,7 +1686,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1783,7 +1701,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1803,7 +1720,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1823,13 +1739,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4113,
       "name": "The passage",
-      "description": "You are in a passage that leads towards the south. To the east\nyou see a tunnel.\n",
+      "description": "You are in a passage that leads towards the south. To the east \nyou see a tunnel.\n",
       "sector_type": "forest",
       "flags": 0,
       "exits": {
@@ -1847,13 +1762,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
       "id": 4114,
       "name": "The golden cave",
-      "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the north, to the west you see a dark\npassage.\n",
+      "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the north, to the west you see a dark \npassage.\n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -1867,7 +1781,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1887,7 +1800,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1907,7 +1819,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1923,7 +1834,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1943,7 +1853,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1967,7 +1876,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -1987,7 +1895,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2007,7 +1914,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2027,7 +1933,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2047,7 +1952,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2071,7 +1975,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2091,7 +1994,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2107,7 +2009,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2131,7 +2032,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2151,7 +2051,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2175,7 +2074,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2195,7 +2093,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2215,7 +2112,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2235,7 +2131,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2259,7 +2154,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2283,7 +2177,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2303,7 +2196,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2325,10 +2217,9 @@
       "extra_descriptions": [
         {
           "keyword": "inscription",
-          "description": "It says:\nYear 631 after the destruction of the dwarven realm.\nWe found the sword of the dwarven king, but it was guarded\nby a large green dragon. All but two died immediately as the\ndragon breathed poison gas; we are also going to die soon.\nTrather and Oralane\n"
+          "description": "It says:\n\n    Year 631 after the destruction of the dwarven realm.\n\n  We found the sword of the dwarven king, but it was guarded\nby a large green dragon. All but two died immediately as the\ndragon breathed poison gas; we are also going to die soon.\n\n       Trather and Oralane\n"
         }
       ],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2348,7 +2239,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2372,7 +2262,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2396,7 +2285,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2420,7 +2308,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2440,7 +2327,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2464,7 +2350,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2488,7 +2373,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2508,7 +2392,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2528,7 +2411,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2552,7 +2434,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2572,7 +2453,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     },
     {
@@ -2588,16 +2468,15 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 3900
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 4000,
       "name": "the huge python",
       "player_name": "python snake",
-      "long_description": "The huge python rears its head and hisses at you.\n",
+      "long_description": "The huge python rears its head and hisses at you. \n",
       "description": "It sways back and forth contemplating whether or not to eat you.\n",
       "race": "snake",
       "act_flags": "ABF",
@@ -3018,7 +2897,7 @@
       "name": "the orc",
       "player_name": "orc",
       "long_description": "An orc is here, looking for something (or perhaps someone) to eat.\n",
-      "description": "As you already know, orcs have quite a ravenous appetite.\nCare to be dinner?\n",
+      "description": "As you already know, orcs have quite a ravenous appetite.  \nCare to be dinner?\n",
       "race": "orc",
       "act_flags": "ACFGT",
       "affected_by": "0",
@@ -3122,7 +3001,7 @@
       "id": 4100,
       "name": "the Mage",
       "player_name": "mage",
-      "long_description": "A small intelligent looking mage is standing here. It looks like he\nknows his way with magic.\n",
+      "long_description": "A small intelligent looking mage is standing here. It looks like he\nknows his way with magic. \n",
       "description": "This guy can ace the SAT with his frontal lobe tied behind his back.\n",
       "race": "human",
       "act_flags": "ABCFR",
@@ -3791,11 +3670,11 @@
       "description": "A ring, with yellow and green ornamentation. It looks very old.",
       "material": "copper",
       "item_type": "treasure",
-      "extra_flags": "0",
-      "wear_flags": "AB",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 3,
+      "weight": 10,
+      "cost": 0,
+      "condition": 75,
       "values": [
         0,
         0,
@@ -3822,11 +3701,11 @@
       "description": "A halfway decayed corpse of a cartographer.",
       "material": "flesh",
       "item_type": "npc_corpse",
-      "extra_flags": "P",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 1000,
-      "condition": "0",
+      "extra_flags": 32768,
+      "wear_flags": 1,
+      "weight": 1000,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3848,11 +3727,11 @@
       "description": "A small pile of coins.",
       "material": "silver",
       "item_type": "money",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 5000,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 5000,
+      "cost": 0,
+      "condition": 100,
       "values": [
         200,
         3,
@@ -3869,16 +3748,16 @@
       "description": "A worn and rusty dagger is here.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 0,
-      "cost": 10,
-      "condition": "165",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 165,
+      "condition": 50,
       "values": [
-        0,
+        2,
         1,
         5,
-        0,
+        2,
         0
       ],
       "affects": [
@@ -3900,16 +3779,16 @@
       "description": "A coiled length of leather is here...looks like a nasty whip!",
       "material": "leather",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 3,
-      "cost": 30,
-      "condition": "240",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 30,
+      "cost": 240,
+      "condition": 90,
       "values": [
-        0,
+        7,
         1,
         7,
-        0,
+        4,
         0
       ],
       "affects": [
@@ -3926,17 +3805,17 @@
       "description": "An uprooted tree leans against the wall.",
       "material": "wood",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 14,
-      "cost": 250,
-      "condition": "780",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 250,
+      "cost": 780,
+      "condition": 90,
       "values": [
-        0,
+        4,
         2,
         9,
-        0,
-        0
+        8,
+        32
       ],
       "affects": [
         {
@@ -3957,11 +3836,11 @@
       "description": "A heap of smelly furs sit here.",
       "material": "fur",
       "item_type": "armor",
-      "extra_flags": "0",
-      "wear_flags": "AK",
-      "weight": 8,
-      "cost": 100,
-      "condition": "510",
+      "extra_flags": 0,
+      "wear_flags": 1025,
+      "weight": 100,
+      "cost": 510,
+      "condition": 75,
       "values": [
         5,
         6,
@@ -3988,15 +3867,15 @@
       "description": "A purple potion is here.",
       "material": "glass",
       "item_type": "potion",
-      "extra_flags": "0",
-      "wear_flags": "AO",
-      "weight": 11,
-      "cost": 10,
-      "condition": "720",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 720,
+      "condition": 90,
       "values": [
         13,
-        0,
-        0,
+        22,
+        78,
         0,
         0
       ],
@@ -4014,11 +3893,11 @@
       "description": "A metal helmet is here.",
       "material": "iron",
       "item_type": "armor",
-      "extra_flags": "G",
-      "wear_flags": "AE",
-      "weight": 5,
-      "cost": 40,
-      "condition": "650",
+      "extra_flags": 64,
+      "wear_flags": 17,
+      "weight": 40,
+      "cost": 650,
+      "condition": 90,
       "values": [
         4,
         4,
@@ -4040,11 +3919,11 @@
       "description": "A small mushroom is here.",
       "material": "food",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 0,
+      "condition": 90,
       "values": [
         2,
         2,
@@ -4066,16 +3945,16 @@
       "description": "A beautifully crafted dirk is lying here.",
       "material": "steel",
       "item_type": "weapon",
-      "extra_flags": "G",
-      "wear_flags": "AN",
-      "weight": 8,
-      "cost": 20,
-      "condition": "590",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "weight": 20,
+      "cost": 590,
+      "condition": 90,
       "values": [
-        0,
+        2,
         2,
         5,
-        0,
+        2,
         0
       ],
       "affects": [
@@ -4101,16 +3980,16 @@
       "description": "A razor-sharp war axe rests on the ground.",
       "material": "steel",
       "item_type": "weapon",
-      "extra_flags": "G",
-      "wear_flags": "AN",
-      "weight": 12,
-      "cost": 70,
-      "condition": "930",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "weight": 70,
+      "cost": 930,
+      "condition": 100,
       "values": [
-        0,
+        5,
         3,
         4,
-        0,
+        25,
         0
       ],
       "affects": [
@@ -4132,16 +4011,16 @@
       "description": "A well-polished broadsword sits here.",
       "material": "steel",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 6,
-      "cost": 80,
-      "condition": "550",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 80,
+      "cost": 550,
+      "condition": 90,
       "values": [
-        0,
+        1,
         1,
         10,
-        0,
+        25,
         0
       ],
       "affects": [],
@@ -4158,16 +4037,16 @@
       "description": "A flail with two heavy, spiked heads is here.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 3,
-      "cost": 70,
-      "condition": "290",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 70,
+      "cost": 290,
+      "condition": 75,
       "values": [
-        0,
+        6,
         1,
         7,
-        0,
+        27,
         0
       ],
       "affects": [
@@ -4193,16 +4072,16 @@
       "description": "A large iron mace with a wicked head rests on the ground.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 6,
-      "cost": 100,
-      "condition": "390",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 100,
+      "cost": 390,
+      "condition": 90,
       "values": [
-        0,
+        4,
         2,
         4,
-        0,
+        7,
         0
       ],
       "affects": [
@@ -4224,16 +4103,16 @@
       "description": "A curved sword with a heavy tip sits here.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 5,
-      "cost": 80,
-      "condition": "490",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 80,
+      "cost": 490,
+      "condition": 90,
       "values": [
-        0,
+        1,
         2,
         4,
-        0,
+        25,
         0
       ],
       "affects": [],
@@ -4250,17 +4129,17 @@
       "description": "A long polearm with a curved blade is here.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 10,
-      "cost": 120,
-      "condition": "520",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 120,
+      "cost": 520,
+      "condition": 75,
       "values": [
-        0,
+        8,
         2,
         6,
-        0,
-        0
+        3,
+        32
       ],
       "affects": [
         {
@@ -4281,17 +4160,17 @@
       "description": "An evil black demon blade is here.",
       "material": "adamantite",
       "item_type": "weapon",
-      "extra_flags": "GJL",
-      "wear_flags": "AN",
-      "weight": 11,
-      "cost": 80,
-      "condition": "940",
+      "extra_flags": 2624,
+      "wear_flags": 8193,
+      "weight": 80,
+      "cost": 940,
+      "condition": 100,
       "values": [
-        0,
+        1,
         3,
         4,
-        0,
-        0
+        21,
+        36
       ],
       "affects": [],
       "extra_descriptions": [
@@ -4307,11 +4186,11 @@
       "description": "Some gloves are here.  They look like the right equipment for fighting.",
       "material": "leather",
       "item_type": "armor",
-      "extra_flags": "G",
-      "wear_flags": "AH",
-      "weight": 7,
-      "cost": 10,
-      "condition": "730",
+      "extra_flags": 64,
+      "wear_flags": 129,
+      "weight": 10,
+      "cost": 730,
+      "condition": 90,
       "values": [
         1,
         3,
@@ -4337,14 +4216,14 @@
       "description": "A scroll which reads \"ysafg\", it looks very fragile and quite old.",
       "material": "parchment",
       "item_type": "scroll",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 7,
-      "cost": 10,
-      "condition": "840",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 840,
+      "condition": 50,
       "values": [
         10,
-        0,
+        58,
         0,
         0,
         0
@@ -4363,11 +4242,11 @@
       "description": "A green slime mold is here. It smells REAL bad.",
       "material": "food",
       "item_type": "food",
-      "extra_flags": "P",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 32768,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 0,
+      "condition": 90,
       "values": [
         24,
         24,
@@ -4389,11 +4268,11 @@
       "description": "A green slime mold is here. It smells REAL bad.",
       "material": "food",
       "item_type": "food",
-      "extra_flags": "P",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 32768,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 0,
+      "condition": 90,
       "values": [
         24,
         24,
@@ -4415,17 +4294,17 @@
       "description": "A long staff capped with iron leans against a wall.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 10,
-      "cost": 60,
-      "condition": "630",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 60,
+      "cost": 630,
+      "condition": 90,
       "values": [
-        0,
+        3,
         2,
         5,
-        0,
-        0
+        7,
+        32
       ],
       "affects": [
         {
@@ -4446,14 +4325,14 @@
       "description": "A thick black potion is here.",
       "material": "glass",
       "item_type": "potion",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 5,
-      "cost": 10,
-      "condition": "320",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 320,
+      "condition": 90,
       "values": [
         9,
-        0,
+        23,
         0,
         0,
         0
@@ -4472,11 +4351,11 @@
       "description": "A ancient heavy oak staff is here.",
       "material": "wood",
       "item_type": "staff",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 13,
-      "cost": 50,
-      "condition": "5400",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 50,
+      "cost": 5400,
+      "condition": 90,
       "values": [
         15,
         4,
@@ -4507,16 +4386,16 @@
       "description": "A light silver dagger is here.",
       "material": "silver",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 7,
-      "cost": 20,
-      "condition": "660",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 20,
+      "cost": 660,
+      "condition": 100,
       "values": [
-        0,
+        2,
         2,
         4,
-        0,
+        2,
         0
       ],
       "affects": [
@@ -4542,16 +4421,16 @@
       "description": "A heavy, spiked morning star is here.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 9,
-      "cost": 120,
-      "condition": "270",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 120,
+      "cost": 270,
+      "condition": 90,
       "values": [
-        0,
+        4,
         2,
         6,
-        0,
+        27,
         0
       ],
       "affects": [
@@ -4577,11 +4456,11 @@
       "description": "A rolled up map is here.",
       "material": "paper",
       "item_type": "map",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "100",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 100,
+      "condition": 50,
       "values": [
         1,
         0,
@@ -4593,7 +4472,7 @@
       "extra_descriptions": [
         {
           "keyword": "map moria second",
-          "description": ".\n= = =============== = =\nMaze--Maze\n|     |    (Map 1)\n|    Maze--Tunnel*\n|\nMaze--Maze--Maze--Maze\n|\nLarge--Large\nCave   Cave\n|       |\nLarge--Large--Tunnel--End of\nCave    Cave    |     Tunnel\n(Map 3)\n"
+          "description": ".\n    * * * MORIA - Map 2 * * *\n     = = =============== = =\n\nMaze--Maze\n |     |    (Map 1)\n |    Maze--Tunnel*\n |\nMaze--Maze--Maze--Maze\n              |\n     Large--Large\n     Cave   Cave\n      |       |\n     Large--Large--Tunnel--End of\n     Cave    Cave    |     Tunnel\n                   *Hole\n                  (Map 3)\n"
         }
       ]
     },
@@ -4603,11 +4482,11 @@
       "description": "A rolled up map is here.",
       "material": "paper",
       "item_type": "map",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "200",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 200,
+      "condition": 90,
       "values": [
         1,
         0,
@@ -4619,9 +4498,1010 @@
       "extra_descriptions": [
         {
           "keyword": "map moria third",
-          "description": ".\n(Map 1*)\nLong                     |\nTunnel----Tunnel----Tunnel--Tunnel--Tunnel--Tunnel\n|                   |\n|                  Gold--Gold\n|                  Cave  Cave\n|                   |      |\n|                  Gold--Gold---Passage\n|                  Cave  Cave      |\n|                   |           Passage--Tunnel--Tunnel--Tunnel\n|          Dark*---Gold            |\n|         Passage  Cave            |     Secret\n|                               Passage  Chamber\n|                      Hole        |       |\n|                        |      Passage  Secret\nLarge   Large   Large    Small       |     Chamber--Cave--Cave\nTunnel--Tunnel--Tunnel--Passage      |                |      |\n|                        |      Passage-----------Cave--Cave\n|                       Long\n|                      Tunnel\nWet    Small  Small       |\nTunnel--Maze---Maze   Inscription\n|       |      |         |\nWet    Small--Small-----Small\nTunnel  Maze   Maze      Maze\n|       |                |\n|      Wet    Wet      End of\nWater    Maze---Maze-----Tunnel\n|       |      |\nWater---Water  End of\nMaze*\n(Map 2)\n"
+          "description": ".\n                                                   (Map 1*)\n                             Long                     |\n        Tunnel----Tunnel----Tunnel--Tunnel--Tunnel--Tunnel\n          |                   |\n          |                  Gold--Gold\n          |                  Cave  Cave\n          |                   |      |\n          |                  Gold--Gold---Passage\n          |                  Cave  Cave      |\n          |                   |           Passage--Tunnel--Tunnel--Tunnel\n          |          Dark*---Gold            |\n          |         Passage  Cave            |     Secret\n          |                               Passage  Chamber\n          |                      Hole        |       |\n          |                        |      Passage  Secret\n        Large   Large   Large    Small       |     Chamber--Cave--Cave\n        Tunnel--Tunnel--Tunnel--Passage      |                |      |\n          |                        |      Passage-----------Cave--Cave\n          |                       Long\n          |                      Tunnel\n         Wet    Small  Small       |\n        Tunnel--Maze---Maze   Inscription\n          |       |      |         |\n         Wet    Small--Small-----Small\n        Tunnel  Maze   Maze      Maze\n          |       |                |\n          |      Wet    Wet      End of\n        Water    Maze---Maze-----Tunnel\n          |       |      |\n        Water---Water  End of\n                       Maze*\n                      (Map 2)\n"
         }
       ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 4000,
+      "arg2": 1,
+      "arg3": 4030,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 4001,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "P",
+      "arg1": 4002,
+      "arg2": -1,
+      "arg3": 4001,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 4154,
+      "arg2": 9,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4001,
+      "arg2": 2,
+      "arg3": 4025,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4001,
+      "arg2": 2,
+      "arg3": 4015,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4002,
+      "arg2": 3,
+      "arg3": 4023,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4002,
+      "arg2": 3,
+      "arg3": 4017,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4002,
+      "arg2": 3,
+      "arg3": 4020,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4021,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4003,
+      "arg2": 8,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4021,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3023,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4013,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3021,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3117,
+      "arg2": 10,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4013,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3023,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4027,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3021,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4003,
+      "arg2": 6,
+      "arg3": 4027,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3025,
+      "arg2": 8,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3117,
+      "arg2": 10,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4004,
+      "arg2": 3,
+      "arg3": 4015,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3029,
+      "arg2": 3,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4004,
+      "arg2": 3,
+      "arg3": 4028,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4004,
+      "arg2": 4,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4004,
+      "arg2": 3,
+      "arg3": 4028,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4005,
+      "arg2": 1,
+      "arg3": 4022,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4000,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3022,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3114,
+      "arg2": 9,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4057,
+      "arg2": 2,
+      "arg3": 4042,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 4058,
+      "arg2": 1,
+      "arg3": 4044,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4005,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 4006,
+      "arg2": 5,
+      "arg3": 12,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4050,
+      "arg2": 1,
+      "arg3": 4062,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4051,
+      "arg2": 3,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 4054,
+      "arg2": 4,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3116,
+      "arg2": 10,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4051,
+      "arg2": 4,
+      "arg3": 4070,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3027,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3072,
+      "arg2": 20,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4051,
+      "arg2": 4,
+      "arg3": 4050,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4056,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3077,
+      "arg2": 20,
+      "arg3": 10,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4051,
+      "arg2": 4,
+      "arg3": 4073,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4055,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3072,
+      "arg2": 20,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4051,
+      "arg2": 4,
+      "arg3": 4055,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4057,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3074,
+      "arg2": 20,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4052,
+      "arg2": 3,
+      "arg3": 4056,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3023,
+      "arg2": 20,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4052,
+      "arg2": 3,
+      "arg3": 4065,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3025,
+      "arg2": 20,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4052,
+      "arg2": 3,
+      "arg3": 4059,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3028,
+      "arg2": 29,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4053,
+      "arg2": 2,
+      "arg3": 4058,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4053,
+      "arg2": 2,
+      "arg3": 4068,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4054,
+      "arg2": 3,
+      "arg3": 4060,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4054,
+      "arg2": 3,
+      "arg3": 4053,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4054,
+      "arg2": 3,
+      "arg3": 4052,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4055,
+      "arg2": 2,
+      "arg3": 4064,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4058,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4050,
+      "arg2": 15,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4055,
+      "arg2": 2,
+      "arg3": 4071,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4059,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4050,
+      "arg2": 15,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4056,
+      "arg2": 2,
+      "arg3": 4067,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4004,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3097,
+      "arg2": 20,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4056,
+      "arg2": 2,
+      "arg3": 4057,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3026,
+      "arg2": 20,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 4052,
+      "arg2": 8,
+      "arg3": 4068,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 4052,
+      "arg2": 8,
+      "arg3": 4069,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 4052,
+      "arg2": 8,
+      "arg3": 4070,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 4052,
+      "arg2": 8,
+      "arg3": 4071,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4100,
+      "arg2": 1,
+      "arg3": 4114,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 4102,
+      "arg2": 4,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4155,
+      "arg2": 9,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3351,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4101,
+      "arg2": 1,
+      "arg3": 4122,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4100,
+      "arg2": 2,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4102,
+      "arg2": 2,
+      "arg3": 4111,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 4103,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4102,
+      "arg2": 2,
+      "arg3": 4111,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 4104,
+      "arg2": 3,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4102,
+      "arg2": 3,
+      "arg3": 4103,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 4103,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4103,
+      "arg2": 1,
+      "arg3": 4103,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4053,
+      "arg2": 4,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3068,
+      "arg2": 8,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3066,
+      "arg2": 8,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3069,
+      "arg2": 8,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4104,
+      "arg2": 3,
+      "arg3": 4124,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 4057,
+      "arg2": 8,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4104,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4105,
+      "arg2": 3,
+      "arg3": 4108,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 4106,
+      "arg2": 2,
+      "arg3": 4113,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 4105,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 4101,
+      "arg2": 3,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4107,
+      "arg2": 1,
+      "arg3": 4119,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3023,
+      "arg2": 10,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4104,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4150,
+      "arg2": 2,
+      "arg3": 4155,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4150,
+      "arg2": 2,
+      "arg3": 4170,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4151,
+      "arg2": 2,
+      "arg3": 4157,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4151,
+      "arg2": 2,
+      "arg3": 4159,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4152,
+      "arg2": 2,
+      "arg3": 4159,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4152,
+      "arg2": 2,
+      "arg3": 4155,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4153,
+      "arg2": 2,
+      "arg3": 4164,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4153,
+      "arg2": 2,
+      "arg3": 4170,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4154,
+      "arg2": 2,
+      "arg3": 4164,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4154,
+      "arg2": 2,
+      "arg3": 4157,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4155,
+      "arg2": 1,
+      "arg3": 4158,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4152,
+      "arg2": 3,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4156,
+      "arg2": 1,
+      "arg3": 4151,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 4105,
+      "arg2": 5,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4157,
+      "arg2": 2,
+      "arg3": 4167,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 3351,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4157,
+      "arg2": 2,
+      "arg3": 4167,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 4151,
+      "arg2": 3,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3351,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4158,
+      "arg2": 2,
+      "arg3": 4162,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4158,
+      "arg2": 2,
+      "arg3": 4169,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4159,
+      "arg2": 2,
+      "arg3": 4168,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4159,
+      "arg2": 2,
+      "arg3": 4153,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 4160,
+      "arg2": 2,
+      "arg3": 4160,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3045,
+      "arg2": 20,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 4055,
+      "arg2": 9,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 4150,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 4160,
+      "arg2": 2,
+      "arg3": 4161,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 3110,
+      "arg2": 20,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 3026,
+      "arg2": 20,
+      "arg3": 16,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 4000,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 4001,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 4053,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 4100,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 4102,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 4150,
+      "spec": "spec_breath_lightning"
+    },
+    {
+      "mob_vnum": 4151,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 4152,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 4153,
+      "spec": "spec_breath_frost"
+    },
+    {
+      "mob_vnum": 4154,
+      "spec": "spec_breath_acid"
+    },
+    {
+      "mob_vnum": 4155,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 4157,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 4158,
+      "spec": "spec_poison"
     }
   ]
 }

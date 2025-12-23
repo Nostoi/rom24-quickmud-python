@@ -7,7 +7,6 @@ from mud.models.character import Character
 from mud.models.constants import LEVEL_HERO
 from mud.models.classes import CLASS_TABLE, ClassType
 from mud.models.races import PcRaceType, list_playable_races
-from mud.persistence import save_character
 from mud.wiznet import WiznetFlag, wiznet
 
 BASE_XP_PER_LEVEL = 1000
@@ -199,4 +198,6 @@ def gain_exp(char: Character, amount: int) -> None:
             None,
             0,
         )
+        # Lazy import to avoid circular dependency
+        from mud.account.account_manager import save_character
         save_character(char)

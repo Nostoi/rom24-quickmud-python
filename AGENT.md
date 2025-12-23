@@ -166,6 +166,73 @@ Create tasks following this evidence pattern:
 - **Integration gaps**: State validation, format edge cases, cross-area references
 - **Test requirements**: Format validation, error handling, cross-area integrity
 
+### Phase 3: Runtime Behavioral Verification (POST-IMPLEMENTATION)
+
+**Purpose**: Verify that implemented functions produce ROM-correct behavior, not just exist.
+
+**When to run**: After architectural integration tasks are complete (confidence ≥ 0.92 across subsystems)
+
+**Approach**: Differential testing between ROM C binary and Python QuickMUD
+
+1. **Setup C ROM Test Harness**:
+   ```bash
+   # Compile ROM 2.4b with test hooks
+   cd src/
+   make clean && make
+   ```
+
+2. **Run Differential Tests** using `scripts/differential_tester.py`:
+   ```bash
+   # Test RNG parity
+   python3 scripts/differential_tester.py --test rng --seed 1234
+   
+   # Test combat damage calculations
+   python3 scripts/differential_tester.py --test damage --iterations 1000
+   
+   # Test skill check formulas
+   python3 scripts/differential_tester.py --test skills --all
+   ```
+
+3. **Compare Outputs** for:
+   - RNG sequences (must match exactly with same seed)
+   - Damage calculations (same inputs → same outputs)
+   - Skill check thresholds (same level/stats → same results)
+   - Movement costs (same encumbrance → same move points)
+   - XP awards (same mob/level → same XP)
+
+4. **Generate Behavioral Mismatch Report**:
+   - Functions that exist but produce wrong results
+   - Formula differences (off-by-one errors, wrong constants)
+   - Edge case failures (overflow, underflow, boundary conditions)
+
+5. **Use Golden Files** from `tests/data/golden/`:
+   - `rng_sequence_seed_1234.golden.json` - Known-good RNG outputs
+   - `damage_calculations.golden.json` - Expected damage values
+   - `skill_checks.golden.json` - Skill check results
+
+6. **Create Parity Fix Tasks**:
+   ```
+   - [P0] Combat: THAC0 calculation off by 1 for level > 35
+     - C_REF: src/fight.c:compute_thac0 lines 234-256
+     - PY_REF: mud/combat/thac0.py:calculate_thac0
+     - DIFF: Python uses floor division, C uses integer truncation
+     - FIX: Use c_div() for C-compatible integer division
+     - TEST: tests/test_golden_reference.py::test_thac0_parity
+   ```
+
+**Success Criteria**:
+- ✅ RNG sequences match C ROM exactly (100% match)
+- ✅ Damage formulas produce identical results (±0 variance)
+- ✅ Skill checks match thresholds (100% agreement)
+- ✅ All golden file tests pass
+
+**Tools**:
+- `scripts/differential_tester.py` - Automated C vs Python comparison
+- `scripts/parity_analyzer.py` - Static analysis of formula matches
+- `tests/data/golden/` - Known-good reference outputs
+
+**Note**: This phase validates the **quality** of the 83.1% function coverage, ensuring behavior matches ROM C, not just function existence.
+
 ## TASK CREATION GUIDELINES
 
 ### Evidence Requirements

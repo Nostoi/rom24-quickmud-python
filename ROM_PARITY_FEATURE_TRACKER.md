@@ -18,10 +18,10 @@
 
 **Key Finding**: Previous assessment was **highly conservative**. Comprehensive testing revealed most "missing" features are actually **fully implemented** with extensive test coverage.
 
-**Remaining Work**: 2-5% consists of **convenience features only**:
-- OLC editor suite (can edit via files)
-- Spell components (nice-to-have realism)
-- Minor debug commands
+**Remaining Work**: ✅ None tracked. Convenience features previously flagged are now verified complete:
+- OLC editor suite (aedit/oedit/medit/hedit) ✅
+- Spell components: warp-stone requirement for portal/nexus ✅
+- Debug commands: mpdump ✅
 
 **See**: `ROM_PARITY_AUDIT_2025-12-20.md` for detailed analysis
 
@@ -102,12 +102,12 @@
   - **C Reference**: `skills.c:923-973 (check_improve)`
   - **Status**: Production-ready with exact ROM semantics
 
-#### Spell Components
-- **Material Components**:
-  - Current: Basic spell casting
-  - ROM: Component requirements, consumption, reagents
-  - **C Reference**: `magic.c:131-213 (find_components)`
-  - **Impact**: Resource management depth
+#### Spell Components ✅ COMPLETE
+- **Material Components (portal/nexus)**:
+  - Implemented: warp-stone requirement + consumption
+  - Python: `mud/skills/handlers.py` (portal/nexus)
+  - Tests: `tests/test_skills_transport.py`
+  - **C Reference**: `src/magic2.c:79-176`
 
 #### Advanced Spell Mechanics
 - **Complex Spell Interactions**:
@@ -126,11 +126,11 @@
 
 **Implementation Status**:
 
-#### Complete Mob Verb Table ✅ 97% COMPLETE
-- **30 of 31 Mob Commands Implemented**:
+#### Complete Mob Verb Table ✅ 100% COMPLETE
+- **31 of 31 Mob Commands Implemented**:
   - ✅ All core gameplay commands implemented
   - ✅ Full mob command language (mob_cmds.c)
-  - Missing: Only `mpdump` (debugging tool, low priority)
+  - Includes: `mpdump` debug command
   - **C Reference**: `src/mob_cmds.c:1-1369`
   - **Status**: Production-ready for gameplay
 
@@ -151,7 +151,7 @@
   - **Tests**: 27/27 passing including flow control tests
 
 **Remaining Work**:
-- ⚠️ Implement `do_mpdump` command (low priority debugging tool)
+- ✅ None
 
 ---
 

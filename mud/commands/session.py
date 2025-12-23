@@ -21,24 +21,14 @@ def do_save(ch: Character, args: str) -> str:
 
     ROM Reference: src/act_comm.c lines 1533-1555 (do_save)
     """
-    # NPCs don't save
+    from mud.account.account_manager import save_character
+
     if getattr(ch, "is_npc", False):
         return "NPCs cannot save."
 
-    # Try to save the character
     try:
-        # Call character's save method if it exists
-        save_method = getattr(ch, "save", None)
-        if callable(save_method):
-            save_method()
-            return "Saving. Remember that ROM has automatic saving now."
-        else:
-            # Fallback: Try to get session and save through persistence
-            session = getattr(ch, "desc", None)
-            if session and hasattr(session, "save_character"):
-                session.save_character(ch)
-                return "Saving. Remember that ROM has automatic saving now."
-            return "Save failed - no save method available."
+        save_character(ch)
+        return "Saving. Remember that ROM has automatic saving now."
     except Exception as e:
         return f"Save failed: {e}"
 
@@ -49,43 +39,24 @@ def do_quit(ch: Character, args: str) -> str:
 
     ROM Reference: src/act_comm.c lines 1496-1531 (do_quit)
     """
-    # Can't quit while fighting
+    from mud.account.account_manager import save_character
+
     if ch.position == Position.FIGHTING:
         return "No way! You are fighting."
 
-    # Can't quit while position is too low
     if ch.position < Position.STUNNED:
         return "You're not DEAD yet."
 
-    # Save before quitting
     if not getattr(ch, "is_npc", False):
         try:
-            save_method = getattr(ch, "save", None)
-            if callable(save_method):
-                save_method()
-        except Exception:
-            pass  # Don't block quit on save failure
+            save_character(ch)
+        except Exception as exc:
+            print(f"[ERROR] Failed to save character on quit: {exc}")
 
-    # Get session and close it
-    session = getattr(ch, "desc", None)
-    if session:
-        # Send goodbye message
-        try:
-            send_method = getattr(session, "send", None)
-            if callable(send_method):
-                send_method("May your travels be safe.")
-        except Exception:
-            pass
-
-        # Close session
-        try:
-            close_method = getattr(session, "close", None)
-            if callable(close_method):
-                close_method()
-        except Exception:
-            pass
-
-    return ""  # Empty return since session is closing
+    # Set a flag to signal the connection handler to disconnect
+    setattr(ch, "_quit_requested", True)
+    
+    return "May your travels be safe.\n"
 
 
 def do_score(ch: Character, args: str) -> str:
@@ -126,18 +97,35 @@ def do_score(ch: Character, args: str) -> str:
 
     lines.append(f"You have {hp}/{max_hp} hit, {mana}/{max_mana} mana, {move}/{max_move} movement.")
 
-    # Stats
-    perm_str = getattr(ch, "perm_str", 13)
-    perm_int = getattr(ch, "perm_int", 13)
-    perm_wis = getattr(ch, "perm_wis", 13)
-    perm_dex = getattr(ch, "perm_dex", 13)
-    perm_con = getattr(ch, "perm_con", 13)
+    # Stats - mirroring ROM perm_stat[STAT_STR] through perm_stat[STAT_CON]
+    # ROM defines: STAT_STR=0, STAT_INT=1, STAT_WIS=2, STAT_DEX=3, STAT_CON=4
+    perm_stat = getattr(ch, "perm_stat", [13, 13, 13, 13, 13])
+    perm_str = perm_stat[0] if len(perm_stat) > 0 else 13
+    perm_int = perm_stat[1] if len(perm_stat) > 1 else 13
+    perm_wis = perm_stat[2] if len(perm_stat) > 2 else 13
+    perm_dex = perm_stat[3] if len(perm_stat) > 3 else 13
+    perm_con = perm_stat[4] if len(perm_stat) > 4 else 13
 
     lines.append(f"Str: {perm_str}  Int: {perm_int}  Wis: {perm_wis}  Dex: {perm_dex}  Con: {perm_con}")
 
-    # Armor class
-    armor = getattr(ch, "armor", 100)
-    lines.append(f"You are {_armor_class_description(armor)} armored.")
+    # Armor class - ROM displays individual ACs at level 25+ (src/act_info.c:1591-1650)
+    # armor is list[AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC] where indices 0-3
+    armor = getattr(ch, "armor", [100, 100, 100, 100])
+    # Ensure armor is a list (sometimes can be int)
+    if not isinstance(armor, list):
+        armor = [armor, armor, armor, armor]
+    
+    if level >= 25:
+        # High level: show all four armor types
+        ac_pierce = armor[0] if len(armor) > 0 else 100
+        ac_bash = armor[1] if len(armor) > 1 else 100
+        ac_slash = armor[2] if len(armor) > 2 else 100
+        ac_magic = armor[3] if len(armor) > 3 else 100
+        lines.append(f"Armor: pierce: {ac_pierce}  bash: {ac_bash}  slash: {ac_slash}  magic: {ac_magic}")
+    else:
+        # Low level: show generic description based on AC_SLASH (index 2)
+        ac_slash = armor[2] if len(armor) > 2 else 100
+        lines.append(f"You are {_armor_class_description(ac_slash)} armored.")
 
     # Hitroll and damroll
     hitroll = getattr(ch, "hitroll", 0)
@@ -210,13 +198,11 @@ def do_recall(ch: Character, args: str) -> str:
     recall_vnum = 3001
 
     try:
-        # Get world instance
-        from mud import world as world_module
-
-        world = world_module.WORLD
+        # Get world instance - use room_registry
+        from mud.registry import room_registry
 
         # Find recall room
-        recall_room = world.rooms.get(recall_vnum)
+        recall_room = room_registry.get(recall_vnum)
         if not recall_room:
             return "You cannot recall from here."
 

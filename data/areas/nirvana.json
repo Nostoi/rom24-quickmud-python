@@ -1,17 +1,17 @@
 {
-  "area": {
-    "vnum": 9000,
-    "name": "Nirvana",
-    "filename": "nirvana.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Nirvana",
+  "vnum_range": {
+    "min": 9000,
+    "max": 9099
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 9000,
       "name": "Entrance to the Plane of Nirvana",
-      "description": "You stand before the entrance to a plane of absolute balance and order.  It is\nequally hot and cold, equally light and dark, and made of equal parts of solid\nand liquid.\nThe plane extends to the west and east, while an exit lies downward.\n",
+      "description": "You stand before the entrance to a plane of absolute balance and order.  It is\nequally hot and cold, equally light and dark, and made of equal parts of solid\nand liquid.\n \nThe plane extends to the west and east, while an exit lies downward.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -35,7 +35,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -59,13 +58,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9002,
       "name": "The Plane of Nirvana",
-      "description": "You are on a western strech of the plane.  Boundaries to the east and west seem\nnonexistent.\n",
+      "description": "You are on a western strech of the plane.  Boundaries to the east and west seem \nnonexistent.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -83,13 +81,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9003,
       "name": "A Change in Direction",
-      "description": "Here, the plane seems to direct you to the north.  Also, the plane continues\nto the west.\n",
+      "description": "Here, the plane seems to direct you to the north.  Also, the plane continues \nto the west.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -107,7 +104,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -131,7 +127,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -155,7 +150,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -179,13 +173,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9007,
       "name": "In the Tower of Nirvana",
-      "description": "Entering the tower, there seems to be enough light to see by, but no source is\nvisible.  The hall continues to the east, while a door lies to the west.\n",
+      "description": "Entering the tower, there seems to be enough light to see by, but no source is \nvisible.  The hall continues to the east, while a door lies to the west.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -204,13 +197,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9008,
       "name": "A hallway in the Tower of Nirvana",
-      "description": "You are in a east-west hallway in the tower.  to the west, the hall continues\nand a door lies to the east.\n",
+      "description": "You are in a east-west hallway in the tower.  to the west, the hall continues \nand a door lies to the east.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -229,7 +221,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -253,7 +244,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -277,13 +267,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9011,
       "name": "An intersection in the Tower of Nirvana",
-      "description": "You are at an intersection where the east-west passage continues, but a large\npassage leads to the north.\n",
+      "description": "You are at an intersection where the east-west passage continues, but a large \npassage leads to the north.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -307,13 +296,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9012,
       "name": "At the door to the Tower of Nirvana",
-      "description": "You stand on the plane where a mighty door lies to the west.\nThe plane also continues north and southward.  There is a large sign on the\ndoor.\n",
+      "description": "You stand on the plane where a mighty door lies to the west.\nThe plane also continues north and southward.  There is a large sign on the \ndoor.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -340,16 +328,15 @@
       "extra_descriptions": [
         {
           "keyword": "sign",
-          "description": "The sign reads:\nWARNING\nOnly those brave of heart and high of level should\nenter the Tower of Nirvana.\n"
+          "description": "The sign reads:\n                     WARNING\nOnly those brave of heart and high of level should\nenter the Tower of Nirvana.\n"
         }
       ],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9013,
       "name": "At the door to the Tower of Nirvana",
-      "description": "The plane continue to the north and south, while a mighty door lies to the\neast.  There is a sign on the door.\n",
+      "description": "The plane continue to the north and south, while a mighty door lies to the \neast.  There is a sign on the door.\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {
@@ -375,10 +362,9 @@
       "extra_descriptions": [
         {
           "keyword": "sign",
-          "description": "The sign reads:\nWARNING!\nOnly those brave of heart and high of level\nshould attempt to enter the Tower of Nirvana.\n"
+          "description": "The sign reads:\n                  WARNING!\nOnly those brave of heart and high of level\nshould attempt to enter the Tower of Nirvana.\n"
         }
       ],
-      "resets": [],
       "area": 9000
     },
     {
@@ -402,7 +388,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -426,7 +411,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -444,7 +428,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -462,7 +445,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -486,7 +468,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -510,13 +491,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9020,
       "name": "The Lair of Primus",
-      "description": "You are in a large hall, with a massive pool of what appears to be pure energy\nin the center of the room.  Exits lead in all the cardinal directions.  From\nthe pool rises the master of the Plane of Nirvana....\n",
+      "description": "You are in a large hall, with a massive pool of what appears to be pure energy \nin the center of the room.  Exits lead in all the cardinal directions.  From \nthe pool rises the master of the Plane of Nirvana....\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -546,13 +526,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9021,
       "name": "A Tertian's lair",
-      "description": "Maybe coming here wasn't such a hot idea.  You feel very unwelcome here.\nExits lead north and south\n",
+      "description": "Maybe coming here wasn't such a hot idea.  You feel very unwelcome here.  \nExits lead north and south\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -570,13 +549,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9022,
       "name": "The office of a Quinton",
-      "description": "You have stumbled upon the office of a page to Primus.\nScrolls lie about the room along with many strange objects...you can't imagine\nwhat kind of creature would use them.  Exits lead in all the cardinal\ndirections.\n",
+      "description": "You have stumbled upon the office of a page to Primus.\nScrolls lie about the room along with many strange objects...you can't imagine \nwhat kind of creature would use them.  Exits lead in all the cardinal \ndirections.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -606,7 +584,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -630,7 +607,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -654,7 +630,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -678,13 +653,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9026,
       "name": "An intersection of passages",
-      "description": "You stand at an intersection.  Exits lead off to the east and south.\nA door lies to the north\n",
+      "description": "You stand at an intersection.  Exits lead off to the east and south. \nA door lies to the north\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -708,7 +682,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -732,7 +705,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -756,7 +728,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -780,7 +751,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -804,7 +774,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -834,7 +803,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -870,7 +838,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -888,7 +855,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -906,7 +872,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -942,13 +907,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9036,
       "name": "Lair of a Hexton",
-      "description": "You are in a room that is in complete disrepair.  Items are thrown throughout\nthe room making them worthless piles of junk.\nThe only exit is back south\n",
+      "description": "You are in a room that is in complete disrepair.  Items are thrown throughout \nthe room making them worthless piles of junk.\nThe only exit is back south\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -960,7 +924,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -978,13 +941,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9038,
       "name": "Office of a Secundus",
-      "description": "You are standing in a office of one of the Viceroys of the Plane of Nirvana.\nThe occupant doesn't look real thrilled with your presence.  The only exits is\nwest.\n",
+      "description": "You are standing in a office of one of the Viceroys of the Plane of Nirvana.  \nThe occupant doesn't look real thrilled with your presence.  The only exits is \nwest.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -996,7 +958,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1032,7 +993,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1050,13 +1010,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9041,
       "name": "Office of a Septon",
-      "description": "A neat and tidy room, it appear to be inhabited my a neatenss freak.  The only\nexit lies to the north.\n",
+      "description": "A neat and tidy room, it appear to be inhabited my a neatenss freak.  The only \nexit lies to the north.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1068,7 +1027,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1104,13 +1062,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9043,
       "name": "The Barracks",
-      "description": "A dusty room, with a almost untolerable odor, the barracks are being inspected\nby a Hexton and his personal enterage.\nThe only exit lies to the south.\n",
+      "description": "A dusty room, with a almost untolerable odor, the barracks are being inspected \nby a Hexton and his personal enterage.\nThe only exit lies to the south.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1122,13 +1079,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9044,
       "name": "The Commander's Post",
-      "description": "You have stumbled on to the office of the Commander of the forces in the Plane\nOf Nirvana.  The room is well furnished and a sense of courage and bravery\novertakes you as you enter the room.  The only exit lies to the north.\n",
+      "description": "You have stumbled on to the office of the Commander of the forces in the Plane \nOf Nirvana.  The room is well furnished and a sense of courage and bravery \novertakes you as you enter the room.  The only exit lies to the north.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1140,13 +1096,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9045,
       "name": "The chamber of the second Secundus",
-      "description": "This huge room is furnished with the finest, and a personal legion guards the\nSecundus. the only exit is to the east.\n",
+      "description": "This huge room is furnished with the finest, and a personal legion guards the \nSecundus. the only exit is to the east.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1158,13 +1113,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9046,
       "name": "A Passageway",
-      "description": "You are in a well lit passage.  A sense of forboding danger envelopes you.\nExits lead in all cardinal directions.\n",
+      "description": "You are in a well lit passage.  A sense of forboding danger envelopes you.  \nExits lead in all cardinal directions.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1194,13 +1148,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9047,
       "name": "Chamber of the Octon",
-      "description": "A small room, sparsely furnished, it leaves you with a sense of fear.  The\nonly exit is to the south\n",
+      "description": "A small room, sparsely furnished, it leaves you with a sense of fear.  The \nonly exit is to the south\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1212,13 +1165,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9048,
       "name": "Chamber of the Nonaton",
-      "description": "You have entered the chamber of the principal law and order overseers.  The\nonly exit lies to the north\n",
+      "description": "You have entered the chamber of the principal law and order overseers.  The \nonly exit lies to the north\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1230,13 +1182,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9049,
       "name": "End of the passageway",
-      "description": "You have reached the end of a long east-west passage.  The passage contiues to\nthe west, and rooms lie to the north, south, and east.\n",
+      "description": "You have reached the end of a long east-west passage.  The passage contiues to \nthe west, and rooms lie to the north, south, and east.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1266,13 +1217,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9050,
       "name": "Chamber of a Hexton",
-      "description": "You have entered the chamber of a Hexton.  Trophies adorn the walls, some of\nwhich are human. the only exit is to the south.\n",
+      "description": "You have entered the chamber of a Hexton.  Trophies adorn the walls, some of \nwhich are human. the only exit is to the south.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1284,13 +1234,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9051,
       "name": "Chamber of a Hexton",
-      "description": "You have entered a room where you are not very popular. The only exit lies\nnorthbound.\n",
+      "description": "You have entered a room where you are not very popular. The only exit lies \nnorthbound.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1302,13 +1251,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9052,
       "name": "Chamber of the Secudus",
-      "description": "A large canvernous room, this chamber serves as the sleeping quarters for the\nthird Secudus, Viceroy to Primus. The only exit lies to the west.\n",
+      "description": "A large canvernous room, this chamber serves as the sleeping quarters for the \nthird Secudus, Viceroy to Primus. The only exit lies to the west.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1320,7 +1268,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1356,7 +1303,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1374,7 +1320,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1392,13 +1337,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9056,
       "name": "A large room",
-      "description": "You have entered a room where you are not wanted.  The only exit lies to the\nsouth.\n",
+      "description": "You have entered a room where you are not wanted.  The only exit lies to the \nsouth.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1410,13 +1354,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9057,
       "name": "A room",
-      "description": "You have entered a room where there was obviously a hurried move going on.\nThe only exit lies to the north.\n",
+      "description": "You have entered a room where there was obviously a hurried move going on.  \nThe only exit lies to the north.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1428,13 +1371,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
       "id": 9058,
       "name": "Chamber of The First Secundus",
-      "description": "You have disturbed the rest of the First Viceroy to Primus the Prime, The\nSecundus.  He does not look like a happy camper. The only exit lies to the\neast.\n",
+      "description": "You have disturbed the rest of the First Viceroy to Primus the Prime, The \nSecundus.  He does not look like a happy camper. The only exit lies to the \neast.\n",
       "sector_type": "inside",
       "flags": 0,
       "exits": {
@@ -1446,7 +1388,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     },
     {
@@ -1482,11 +1423,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 9000
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 9000,
       "name": "the tridrone",
@@ -1915,17 +1855,17 @@
       "description": "THE long sword of Primus is here.",
       "material": "adamantite",
       "item_type": "weapon",
-      "extra_flags": "AGJK",
-      "wear_flags": "AN",
-      "weight": 39,
-      "cost": 400,
-      "condition": "8800",
+      "extra_flags": 1601,
+      "wear_flags": 8193,
+      "weight": 400,
+      "cost": 8800,
+      "condition": 100,
       "values": [
-        0,
+        1,
         5,
         6,
-        0,
-        0
+        3,
+        48
       ],
       "affects": [
         {
@@ -1950,11 +1890,11 @@
       "description": "A softly glowing white stone rests on the floor.",
       "material": "gem",
       "item_type": "warp_stone",
-      "extra_flags": "AT",
-      "wear_flags": "AO",
+      "extra_flags": 524289,
+      "wear_flags": 16385,
       "weight": 0,
-      "cost": 0,
-      "condition": "500",
+      "cost": 500,
+      "condition": 100,
       "values": [
         24,
         0,
@@ -1966,9 +1906,327 @@
       "extra_descriptions": [
         {
           "keyword": "moonstone moon stone white",
-          "description": "Looking into the smooth surface of this moonstone, you feel strangely at\npeace and balance with the world around you.\n"
+          "description": "Looking into the smooth surface of this moonstone, you feel strangely at \npeace and balance with the world around you.\n"
         }
       ]
     }
-  ]
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 9000,
+      "arg2": 10,
+      "arg3": 9002,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 9000,
+      "arg2": 10,
+      "arg3": 9013,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 9000,
+      "arg2": 10,
+      "arg3": 9029,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 9000,
+      "arg2": 10,
+      "arg3": 9027,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 9000,
+      "arg2": 10,
+      "arg3": 9003,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 9001,
+      "arg2": 9,
+      "arg3": 9001,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9001,
+      "arg2": 9,
+      "arg3": 9028,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9001,
+      "arg2": 9,
+      "arg3": 9012,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9011,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9031,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9038,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9045,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9058,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9002,
+      "arg2": 6,
+      "arg3": 9052,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9003,
+      "arg2": 1,
+      "arg3": 9055,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9004,
+      "arg2": 1,
+      "arg3": 9048,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 9001,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 9005,
+      "arg2": 4,
+      "arg3": 9040,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9005,
+      "arg2": 4,
+      "arg3": 9033,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9005,
+      "arg2": 4,
+      "arg3": 9054,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9005,
+      "arg2": 4,
+      "arg3": 9047,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9006,
+      "arg2": 2,
+      "arg3": 9041,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9006,
+      "arg2": 2,
+      "arg3": 9034,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9043,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9044,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9036,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9037,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9050,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9051,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9056,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9007,
+      "arg2": 8,
+      "arg3": 9057,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9008,
+      "arg2": 4,
+      "arg3": 9022,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9008,
+      "arg2": 4,
+      "arg3": 9016,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9008,
+      "arg2": 4,
+      "arg3": 9025,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9008,
+      "arg2": 4,
+      "arg3": 9017,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9009,
+      "arg2": 4,
+      "arg3": 9019,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9009,
+      "arg2": 4,
+      "arg3": 9024,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9009,
+      "arg2": 4,
+      "arg3": 9018,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9009,
+      "arg2": 4,
+      "arg3": 9021,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9010,
+      "arg2": 4,
+      "arg3": 9038,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9010,
+      "arg2": 4,
+      "arg3": 9045,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9010,
+      "arg2": 4,
+      "arg3": 9058,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9010,
+      "arg2": 4,
+      "arg3": 9052,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 9011,
+      "arg2": 1,
+      "arg3": 9020,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 9000,
+      "arg2": 2,
+      "arg3": 16,
+      "arg4": 0
+    }
+  ],
+  "specials": []
 }

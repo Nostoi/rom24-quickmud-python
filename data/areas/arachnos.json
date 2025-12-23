@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 6200,
-    "name": "Arachnos",
-    "filename": "arachnos.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Arachnos",
+  "vnum_range": {
+    "min": 6200,
+    "max": 6399
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 6200,
@@ -32,7 +32,6 @@
           "description": "The immense spider web moves softly.\n"
         }
       ],
-      "resets": [],
       "area": 6200
     },
     {
@@ -54,7 +53,6 @@
           "description": "The immense spider web moves softly.\n"
         }
       ],
-      "resets": [],
       "area": 6200
     },
     {
@@ -76,7 +74,6 @@
           "description": "The immense spider web moves softly.\n"
         }
       ],
-      "resets": [],
       "area": 6200
     },
     {
@@ -103,7 +100,6 @@
           "description": "The immense spider web moves softly.\n"
         }
       ],
-      "resets": [],
       "area": 6200
     },
     {
@@ -125,7 +121,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -157,7 +152,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -174,7 +168,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -191,7 +184,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -213,7 +205,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -235,7 +226,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -257,7 +247,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -279,7 +268,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -306,7 +294,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -328,7 +315,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -350,7 +336,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -372,7 +357,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -389,7 +373,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -411,7 +394,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -438,7 +420,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -455,7 +436,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -477,7 +457,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -499,7 +478,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -521,7 +499,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -543,7 +520,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -565,7 +541,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -587,7 +562,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -604,7 +578,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -631,7 +604,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -648,7 +620,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -675,7 +646,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -692,7 +662,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -714,7 +683,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -741,7 +709,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -758,7 +725,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -785,7 +751,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -802,7 +767,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -829,7 +793,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -851,7 +814,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -873,7 +835,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -890,7 +851,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -917,7 +877,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -934,7 +893,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -966,7 +924,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -983,7 +940,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1010,7 +966,6 @@
           "description": "An ordinary chair, well used, glued to the ground by spiderweb.\n"
         }
       ],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1032,7 +987,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1054,7 +1008,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1076,7 +1029,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1098,7 +1050,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1120,7 +1071,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1142,7 +1092,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1153,7 +1102,6 @@
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1175,7 +1123,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1197,7 +1144,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1219,7 +1165,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     },
     {
@@ -1236,11 +1181,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 6200
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 6301,
       "name": "the young spider",
@@ -1914,11 +1858,11 @@
       "description": "A white cone-shaped head ornament with religious symbols lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "FG",
-      "wear_flags": "AE",
-      "weight": 18,
-      "cost": 50,
-      "condition": "4600",
+      "extra_flags": 96,
+      "wear_flags": 17,
+      "weight": 50,
+      "cost": 4600,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -1944,11 +1888,11 @@
       "description": "A black visor sits here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "FG",
-      "wear_flags": "AE",
-      "weight": 17,
-      "cost": 50,
-      "condition": "4600",
+      "extra_flags": 96,
+      "wear_flags": 17,
+      "weight": 50,
+      "cost": 4600,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -1974,11 +1918,11 @@
       "description": "A big pile of coins is lying here.",
       "material": "oldstyle",
       "item_type": "money",
-      "extra_flags": "0",
-      "wear_flags": "A",
+      "extra_flags": 0,
+      "wear_flags": 1,
       "weight": 0,
       "cost": 0,
-      "condition": "0",
+      "condition": 100,
       "values": [
         500,
         20,
@@ -1995,16 +1939,16 @@
       "description": "A blue potion has been left here.",
       "material": "oldstyle",
       "item_type": "potion",
-      "extra_flags": "G",
-      "wear_flags": "A",
-      "weight": 10,
-      "cost": 20,
-      "condition": "700",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 700,
+      "condition": 100,
       "values": [
         15,
-        0,
-        0,
-        0,
+        26,
+        23,
+        23,
         0
       ],
       "affects": [],
@@ -2014,6 +1958,321 @@
           "description": "It has a nice sky blue colour and a smell like peppermint.\n"
         }
       ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 6319,
+      "arg2": 1,
+      "arg3": 6134,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6308,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6309,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6318,
+      "arg2": 3,
+      "arg3": 6134,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 6318,
+      "arg2": 3,
+      "arg3": 6134,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 6318,
+      "arg2": 3,
+      "arg3": 6134,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 6301,
+      "arg2": 8,
+      "arg3": 6301,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6301,
+      "arg2": 8,
+      "arg3": 6306,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6301,
+      "arg2": 8,
+      "arg3": 6306,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6301,
+      "arg2": 8,
+      "arg3": 6304,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6305,
+      "arg2": 1,
+      "arg3": 6303,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6310,
+      "arg2": 1,
+      "arg3": 6342,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6303,
+      "arg2": 1,
+      "arg3": 6313,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6308,
+      "arg2": 5,
+      "arg3": 6308,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 6308,
+      "arg2": 5,
+      "arg3": 6308,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 6308,
+      "arg2": 5,
+      "arg3": 6308,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 6308,
+      "arg2": 5,
+      "arg3": 6308,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 6308,
+      "arg2": 5,
+      "arg3": 6308,
+      "arg4": 5
+    },
+    {
+      "command": "M",
+      "arg1": 6309,
+      "arg2": 2,
+      "arg3": 6327,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6307,
+      "arg2": 4,
+      "arg3": 6335,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6307,
+      "arg2": 4,
+      "arg3": 6333,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 6304,
+      "arg2": 1,
+      "arg3": 6332,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6306,
+      "arg2": 3,
+      "arg3": 6321,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6306,
+      "arg2": 3,
+      "arg3": 6331,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6311,
+      "arg2": 1,
+      "arg3": 6373,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6315,
+      "arg2": 1,
+      "arg3": 6350,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6309,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6309,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6314,
+      "arg2": 1,
+      "arg3": 6399,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6303,
+      "arg2": 2,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 6304,
+      "arg2": 2,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6312,
+      "arg2": 1,
+      "arg3": 6370,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6309,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6313,
+      "arg2": 1,
+      "arg3": 6367,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6306,
+      "arg2": 3,
+      "arg3": 6330,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6302,
+      "arg2": 1,
+      "arg3": 6360,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 6304,
+      "arg2": 2,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 6316,
+      "arg2": 1,
+      "arg3": 6330,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 6317,
+      "arg2": 1,
+      "arg3": 6340,
+      "arg4": 1
+    },
+    {
+      "command": "D",
+      "arg1": 6392,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 6399,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 6302,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6314,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6316,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6317,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6318,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 6319,
+      "spec": "spec_poison"
     }
   ]
 }

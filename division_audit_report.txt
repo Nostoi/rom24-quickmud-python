@@ -1,0 +1,97 @@
+================================================================================
+Division Operation Audit Report
+================================================================================
+
+Total division operations: 142
+  ❌ Needs c_div:  0
+  ⚠️  Needs review: 19
+  ✅ Safe:         123
+
+
+================================================================================
+⚠️  NEEDS REVIEW:
+================================================================================
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1084
+  Code: dam = rng_mm.dice(dice_number, dice_type) * skill_total // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1088
+  Code: min_dam = min_val * skill_total // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1089
+  Code: max_dam = max_val * skill_total // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1100
+  Code: dam = 2 * dam + (dam * 2 * percent // 100)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1104
+  Code: min_dam = 1 + (4 * skill_total // 100)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1105
+  Code: max_dam = (2 * attacker.level // 3) * skill_total // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1115
+  Code: dam += 2 * (dam * diceroll // 300)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1122
+  Code: dam = dam * 3 // 2
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1135
+  Code: dam += attacker.damroll * min(100, skill_total) // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1406
+  Code: if not saves_spell(level // 2, victim, DamageType.POISON):
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1419
+  Code: dam = rng_mm.number_range(1, weapon_level // 5 + 1)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1428
+  Code: attacker.hit += dam // 2
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1440
+  Code: dam = rng_mm.number_range(1, weapon_level // 4 + 1)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1444
+  Code: fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1450
+  Code: dam = rng_mm.number_range(1, weapon_level // 6 + 2)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1454
+  Code: cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1460
+  Code: dam = rng_mm.number_range(1, weapon_level // 5 + 2)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/combat/engine.py:1467
+  Code: shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+  Reason: ROM-critical calculation - verify operands are always positive
+
+/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/commands/shop.py:848
+  Code: bonus = (base_cost // 2) * roll // 100
+  Reason: ROM-critical calculation - verify operands are always positive
+
+================================================================================
+Recommendations:
+================================================================================
+1. Replace // with c_div() in 'needs_c_div' locations
+2. Manually verify 'review' locations have non-negative operands
+3. Add comments explaining why // is safe where applicable
+4. Consider adding runtime assertions for critical calculations

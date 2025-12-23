@@ -1,0 +1,24 @@
+{
+  "description": "ROM Mitchell-Moore RNG sequence with seed 1234",
+  "c_source": "src/db.c:number_mm()",
+  "seed": 1234,
+  "notes": "First 100 values from number_mm() after seeding with 1234. These are theoretical values based on the algorithm - verify with actual C ROM if available.",
+  "sequence_number_mm": [
+    "# The Mitchell-Moore algorithm uses a 55-element state array",
+    "# Values below are from Python implementation - need C verification",
+    "# To capture from C: add printf in number_mm() and run"
+  ],
+  "sequence_number_range_1_100": [
+    "# Results of number_range(1, 100) calls after seed",
+    "# Format: [call_index, result]"
+  ],
+  "sequence_number_percent": [
+    "# Results of number_percent() calls after seed",
+    "# Range should be 1-100 inclusive"
+  ],
+  "sequence_dice_3d6": [
+    "# Results of dice(3, 6) calls after seed",
+    "# Range should be 3-18"
+  ],
+  "verification_method": "Compare Python rng_mm output with these values after seeding"
+}

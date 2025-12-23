@@ -44,15 +44,21 @@ def save_character(character: Character) -> None:
     try:
         session = SessionLocal()
         db_char = session.query(DBCharacter).filter_by(name=character.name).first()
+        if not db_char:
+            # Character doesn't exist in database - create it
+            # This handles cases where character was created via JSON or other means
+            print(f"[WARN] Character '{character.name}' not found in database, creating new record")
+            db_char = DBCharacter(name=character.name)
+            session.add(db_char)
+        
+        # Update all fields
         if db_char:
             db_char.level = character.level
             db_char.hp = character.hit
             db_char.race = int(character.race or 0)
             db_char.ch_class = int(character.ch_class or 0)
             pcdata = getattr(character, "pcdata", None)
-            true_sex_value = int(
-                getattr(pcdata, "true_sex", getattr(character, "sex", 0)) or 0
-            )
+            true_sex_value = int(getattr(pcdata, "true_sex", getattr(character, "sex", 0)) or 0)
             db_char.true_sex = true_sex_value
             db_char.sex = int(character.sex or true_sex_value or 0)
             db_char.alignment = int(character.alignment or 0)
@@ -67,6 +73,18 @@ def save_character(character: Character) -> None:
             db_char.vuln_flags = int(character.vuln_flags or 0)
             db_char.practice = int(character.practice or 0)
             db_char.train = int(character.train or 0)
+
+            # Save perm stats from pcdata (ROM src/handler.c stores perm_hit/perm_mana/perm_move)
+            if pcdata:
+                db_char.perm_hit = int(getattr(pcdata, "perm_hit", character.max_hit or 20))
+                db_char.perm_mana = int(getattr(pcdata, "perm_mana", character.max_mana or 100))
+                db_char.perm_move = int(getattr(pcdata, "perm_move", character.max_move or 100))
+            else:
+                # Fallback if no pcdata
+                db_char.perm_hit = int(character.max_hit or 20)
+                db_char.perm_mana = int(character.max_mana or 100)
+                db_char.perm_move = int(character.max_move or 100)
+
             db_char.default_weapon_vnum = int(character.default_weapon_vnum or 0)
             db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)
             db_char.creation_groups = json.dumps(list(getattr(character, "creation_groups", ())))

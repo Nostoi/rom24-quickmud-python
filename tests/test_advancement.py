@@ -171,7 +171,7 @@ def test_gain_exp_emits_levelup_messages(monkeypatch):
         saved["char"] = character
 
     monkeypatch.setattr("mud.advancement.wiznet", fake_wiznet)
-    monkeypatch.setattr("mud.advancement.save_character", fake_save)
+    monkeypatch.setattr("mud.account.account_manager.save_character", fake_save)
 
     base_points = 40
     char = Character(

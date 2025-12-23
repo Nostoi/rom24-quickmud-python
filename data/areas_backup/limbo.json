@@ -1,0 +1,136 @@
+{
+  "name": "Limbo",
+  "vnum_range": {
+    "min": 0,
+    "max": 99
+  },
+  "builders": [],
+  "rooms": [
+    {
+      "id": 1,
+      "name": "The Void",
+      "description": "You are floating in nothing.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    },
+    {
+      "id": 2,
+      "name": "Limbo",
+      "description": "You are floating in a formless void, detached from all sensation of physical\nmatter, surrounded by swirling glowing light, which fades into the relative\ndarkness around you without any trace of edges or shadow.\nThere is a \"No Tipping\" notice pinned to the darkness.\n",
+      "sector_type": "city",
+      "flags": [],
+      "exits": {
+        "up": {
+          "to_room": 3001,
+          "flags": []
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    }
+  ],
+  "mobiles": [],
+  "objects": [
+    {
+      "id": 1,
+      "name": "a silver coin",
+      "description": "One miserable silver coin."
+    },
+    {
+      "id": 2,
+      "name": "a gold coin",
+      "description": "One valuable gold coin."
+    },
+    {
+      "id": 3,
+      "name": "%d gold coins",
+      "description": "A pile of gold coins."
+    },
+    {
+      "id": 4,
+      "name": "%d silver coins",
+      "description": "A pile of silver coins."
+    },
+    {
+      "id": 5,
+      "name": "%d silver coins and %d gold coins",
+      "description": "A pile of coins."
+    },
+    {
+      "id": 10,
+      "name": "the corpse of %s",
+      "description": "The corpse of %s is lying here."
+    },
+    {
+      "id": 11,
+      "name": "the corpse of %s",
+      "description": "The corpse of %s is lying here."
+    },
+    {
+      "id": 12,
+      "name": "the head of %s",
+      "description": "The severed head of %s is lying here."
+    },
+    {
+      "id": 13,
+      "name": "the heart of %s",
+      "description": "The torn-out heart of %s is lying here."
+    },
+    {
+      "id": 14,
+      "name": "the arm of %s",
+      "description": "The sliced-off arm of %s is lying here."
+    },
+    {
+      "id": 15,
+      "name": "the leg of %s",
+      "description": "The sliced-off leg of %s is lying here."
+    },
+    {
+      "id": 16,
+      "name": "the guts of %s",
+      "description": "A steaming pile of %s's entrails is lying here."
+    },
+    {
+      "id": 17,
+      "name": "the brains of %s",
+      "description": "The splattered brains of %s are lying here."
+    },
+    {
+      "id": 20,
+      "name": "a Magic Mushroom",
+      "description": "A delicious magic mushroom is here."
+    },
+    {
+      "id": 21,
+      "name": "a bright ball of light",
+      "description": "A bright ball of light shimmers in the air."
+    },
+    {
+      "id": 22,
+      "name": "a magical spring",
+      "description": "A magical spring flows from the ground here."
+    },
+    {
+      "id": 23,
+      "name": "a floating disc",
+      "description": "A floating black disc hangs in the air."
+    },
+    {
+      "id": 25,
+      "name": "a shimmering gate",
+      "description": "A shimmering black gate rises from the ground, leading to parts unknown."
+    },
+    {
+      "id": 30,
+      "name": "a dummy object",
+      "description": "Dummy object is used for loading non-existent objects"
+    }
+  ],
+  "specials": []
+}

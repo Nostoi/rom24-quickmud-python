@@ -1355,7 +1355,7 @@ async def _run_character_creation_flow(
         train=selection.train_value(),
     )
     if not success:
-        await _send_line(conn, "Unable to create that character. Please choose another name.")
+        await _send_line(conn, "Unable to create that character. That name may already be taken.")
         return False
 
     announce_wiznet_new_player(
@@ -1588,6 +1588,11 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 try:
                     response = process_command(char, command)
                     await send_to_char(char, response)
+                    
+                    # Check if player requested quit
+                    if getattr(char, "_quit_requested", False):
+                        break
+                        
                 except Exception as exc:
                     print(f"[ERROR] Command processing failed for '{command}': {exc}")
                     await send_to_char(
