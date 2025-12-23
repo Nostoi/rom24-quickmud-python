@@ -16,7 +16,7 @@ def do_motd(char: Character, args: str) -> str:
     
     Just calls help motd.
     """
-    from mud.commands.help_cmd import do_help
+    from mud.commands.help import do_help
     return do_help(char, "motd")
 
 
@@ -26,7 +26,7 @@ def do_imotd(char: Character, args: str) -> str:
     
     ROM Reference: src/act_info.c do_imotd (line 636)
     """
-    from mud.commands.help_cmd import do_help
+    from mud.commands.help import do_help
     return do_help(char, "imotd")
 
 
@@ -36,7 +36,7 @@ def do_rules(char: Character, args: str) -> str:
     
     ROM Reference: src/act_info.c do_rules (line 641)
     """
-    from mud.commands.help_cmd import do_help
+    from mud.commands.help import do_help
     return do_help(char, "rules")
 
 
@@ -46,7 +46,7 @@ def do_story(char: Character, args: str) -> str:
     
     ROM Reference: src/act_info.c do_story (line 646)
     """
-    from mud.commands.help_cmd import do_help
+    from mud.commands.help import do_help
     return do_help(char, "story")
 
 
@@ -56,16 +56,18 @@ def do_socials(char: Character, args: str) -> str:
     
     ROM Reference: src/act_info.c do_socials (lines 606-625)
     """
-    from mud.social import social_registry
+    # Try to import socials from various locations
+    socials = []
     
-    socials = list(social_registry.keys()) if hasattr(social_registry, 'keys') else []
-    
-    if not socials:
-        # Try alternate location
+    try:
+        from mud.data.social_data import SOCIALS
+        socials = list(SOCIALS.keys())
+    except ImportError:
         try:
-            from mud.data.social_data import SOCIALS
-            socials = list(SOCIALS.keys())
-        except ImportError:
+            from mud import registry
+            soc_table = getattr(registry, "social_table", {})
+            socials = list(soc_table.keys())
+        except (ImportError, AttributeError):
             pass
     
     if not socials:
@@ -99,7 +101,11 @@ def do_skills(char: Character, args: str) -> str:
     if getattr(char, "is_npc", False):
         return ""
     
-    from mud.skills import skill_table
+    try:
+        from mud import registry
+        skill_table = getattr(registry, "skill_table", {})
+    except (ImportError, AttributeError):
+        return "Skills not available."
     
     level = getattr(char, "level", 1)
     char_class = getattr(char, "char_class", None)
@@ -177,7 +183,11 @@ def do_spells(char: Character, args: str) -> str:
     if getattr(char, "is_npc", False):
         return ""
     
-    from mud.skills import skill_table
+    try:
+        from mud import registry
+        skill_table = getattr(registry, "skill_table", {})
+    except (ImportError, AttributeError):
+        return "Spells not available."
     
     level = getattr(char, "level", 1)
     char_class = getattr(char, "char_class", None)

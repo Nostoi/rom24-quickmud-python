@@ -421,7 +421,7 @@ def do_pick(char: Character, args: str) -> str:
     
     Usage: pick <door/container/direction>
     """
-    from mud.rng.rng_mm import number_percent
+    from mud.utils.rng_mm import number_percent
     
     args = args.strip()
     

@@ -132,8 +132,7 @@ def do_recite(ch: Character, args: str) -> str:
     Attempts to cast the spells stored in a scroll. Success depends on the
     'scrolls' skill and character level. On failure, the scroll is still consumed.
     """
-    from mud.registry import character_registry
-    from mud.world.room_utils import find_char_in_room, find_obj_in_room
+    # Imports removed - function needs registry access for full implementation
 
     # Parse arguments: recite <scroll> [target]
     parts = args.split(None, 1)
@@ -235,10 +234,8 @@ def do_brandish(ch: Character, args: str) -> str:
     Brandishes the staff held in hand, casting its spell on all appropriate targets
     based on the spell's target type (offensive vs defensive). Consumes one charge.
     """
-    from mud.models.constants import WEAR_HOLD
-
     # Check if holding something
-    staff = ch.equipment.get("held")  # WEAR_HOLD
+    staff = getattr(ch, "equipment", {}).get("held")
     if not staff:
         return "You hold nothing in your hand."
 
@@ -355,10 +352,8 @@ def do_zap(ch: Character, args: str) -> str:
     Zaps a character or object with the wand held in hand. If no target is specified
     and you're fighting, zaps your current opponent. Consumes one charge.
     """
-    from mud.world.room_utils import find_char_in_room, find_obj_in_room
-
     # Check if holding something
-    wand = ch.equipment.get("held")  # WEAR_HOLD
+    wand = getattr(ch, "equipment", {}).get("held")
     if not wand:
         return "You hold nothing in your hand."
 

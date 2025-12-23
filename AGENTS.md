@@ -309,6 +309,9 @@ pytest -k "movement"
 # Run with coverage (CI requirement: ≥80%)
 pytest --cov=mud --cov-report=term --cov-fail-under=80
 
+# Test all commands (comprehensive command validation)
+python3 test_all_commands.py
+
 # Lint with ruff
 ruff check .
 ruff format --check .
@@ -317,11 +320,38 @@ ruff format --check .
 mypy mud/net/ansi.py mud/security/hash_utils.py --follow-imports=skip
 ```
 
-**Two Testing Levels**:
+**Three Testing Levels**:
 1. **Unit Tests** (`tests/test_*.py`) - Verify components work in isolation
 2. **Integration Tests** (`tests/integration/`) - Verify complete player workflows work
+3. **Command Tests** (`test_all_commands.py`) - Verify all 287 commands can be called without import/module errors
 
-**Always run both** when implementing new commands!
+**Always run all three** when implementing new commands!
+
+### Command Validation Script
+
+The `test_all_commands.py` script provides comprehensive command testing:
+
+```bash
+# Run comprehensive command test
+python3 test_all_commands.py
+
+# What it tests:
+#  - All 287 registered commands
+#  - Import resolution (no missing modules)
+#  - Command execution (no crashes)
+#  - Return type validation (all return strings)
+#  - Categorized error reporting
+
+# Expected results:
+#  ✅ 277/287 commands working (96.5%)
+#  ❌ 10 commands need game state (rooms, boards, etc.)
+```
+
+**Use this script to:**
+- Verify no import errors after adding new commands
+- Test commands work without starting the full MUD server
+- Catch broken imports before committing
+- Validate command parity is maintained
 
 ## Code Style Guidelines
 

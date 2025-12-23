@@ -717,7 +717,10 @@ def _object_decay_message(obj: ObjectData) -> str:
 def _broadcast_decay(obj: ObjectData, message: str) -> None:
     carrier = getattr(obj, "carried_by", None)
     if carrier is not None:
-        if getattr(carrier, "is_npc", False) and getattr(getattr(carrier, "pIndexData", None), "pShop", None) is not None:
+        if (
+            getattr(carrier, "is_npc", False)
+            and getattr(getattr(carrier, "pIndexData", None), "pShop", None) is not None
+        ):
             carrier.silver = int(getattr(carrier, "silver", 0)) + int(getattr(obj, "cost", 0)) // 5
         else:
             _send_to_char(carrier, message)
@@ -845,10 +848,9 @@ def obj_update() -> None:
                 should_spill = True
             elif int(getattr(obj, "wear_loc", -1)) == int(WearLocation.FLOAT):
                 should_spill = True
-            elif (
-                getattr(obj, "item_type", None) == ItemType.CONTAINER
-                and int(getattr(obj, "wear_flags", 0) or 0) & int(WearFlag.WEAR_FLOAT)
-            ):
+            elif getattr(obj, "item_type", None) == ItemType.CONTAINER and int(
+                getattr(obj, "wear_flags", 0) or 0
+            ) & int(WearFlag.WEAR_FLOAT):
                 should_spill = True
 
         if should_spill:
@@ -891,15 +893,11 @@ def weather_tick() -> None:
 
     messages: list[str] = []
     if weather.sky == SkyState.CLOUDLESS:
-        if weather.mmhg < 990 or (
-            weather.mmhg < 1010 and rng_mm.number_bits(2) == 0
-        ):
+        if weather.mmhg < 990 or (weather.mmhg < 1010 and rng_mm.number_bits(2) == 0):
             weather.sky = SkyState.CLOUDY
             messages.append("The sky is getting cloudy.\r\n")
     elif weather.sky == SkyState.CLOUDY:
-        if weather.mmhg < 970 or (
-            weather.mmhg < 990 and rng_mm.number_bits(2) == 0
-        ):
+        if weather.mmhg < 970 or (weather.mmhg < 990 and rng_mm.number_bits(2) == 0):
             weather.sky = SkyState.RAINING
             messages.append("It starts to rain.\r\n")
         elif weather.mmhg > 1030 and rng_mm.number_bits(2) == 0:
@@ -909,15 +907,11 @@ def weather_tick() -> None:
         if weather.mmhg < 970 and rng_mm.number_bits(2) == 0:
             weather.sky = SkyState.LIGHTNING
             messages.append("Lightning flashes in the sky.\r\n")
-        elif weather.mmhg > 1030 or (
-            weather.mmhg > 1010 and rng_mm.number_bits(2) == 0
-        ):
+        elif weather.mmhg > 1030 or (weather.mmhg > 1010 and rng_mm.number_bits(2) == 0):
             weather.sky = SkyState.CLOUDY
             messages.append("The rain stopped.\r\n")
     elif weather.sky == SkyState.LIGHTNING:
-        if weather.mmhg > 1010 or (
-            weather.mmhg > 990 and rng_mm.number_bits(2) == 0
-        ):
+        if weather.mmhg > 1010 or (weather.mmhg > 990 and rng_mm.number_bits(2) == 0):
             weather.sky = SkyState.RAINING
             messages.append("The lightning has stopped.\r\n")
     else:
@@ -1007,3 +1001,37 @@ def game_tick() -> None:
     aggressive_update()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()
+
+
+async def async_game_loop() -> None:
+    """Background task that drives the game tick continuously.
+
+    Runs at PULSE_PER_SECOND rate (default 4 Hz = 250ms per pulse).
+    This is the main heartbeat of the MUD that advances time, processes
+    combat, regeneration, weather, resets, and all timed events.
+
+    Mirroring ROM src/update.c:update_handler, this loop never terminates
+    except on server shutdown (CancelledError).
+    """
+    import asyncio
+    from mud.config import PULSE_PER_SECOND
+
+    # ROM standard: 4 pulses per second (250ms per pulse)
+    tick_interval = 1.0 / PULSE_PER_SECOND
+
+    while True:
+        try:
+            game_tick()  # Call existing synchronous tick function
+            await asyncio.sleep(tick_interval)
+        except asyncio.CancelledError:
+            # Server shutdown - clean exit
+            print("Game loop shutting down...")
+            break
+        except Exception as e:
+            # Log errors but don't crash the game loop
+            import traceback
+
+            print(f"Error in game loop: {e}")
+            traceback.print_exc()
+            # Back off on errors to prevent tight error loops
+            await asyncio.sleep(1.0)

@@ -48,11 +48,36 @@ def save_character(character: Character) -> None:
             # Character doesn't exist in database - create it
             # This handles cases where character was created via JSON or other means
             print(f"[WARN] Character '{character.name}' not found in database, creating new record")
-            db_char = DBCharacter(name=character.name)
+            
+            # CRITICAL: Try to find and link the player account
+            player_id = None
+            pcdata = getattr(character, "pcdata", None)
+            if pcdata:
+                account_name = getattr(pcdata, "account_name", None)
+                if account_name:
+                    player_account = session.query(PlayerAccount).filter_by(username=account_name).first()
+                    if player_account:
+                        player_id = player_account.id
+                        print(f"[INFO] Linked character '{character.name}' to account '{account_name}' (id={player_id})")
+                    else:
+                        print(f"[WARN] Could not find player account '{account_name}' for character '{character.name}'")
+            
+            db_char = DBCharacter(name=character.name, player_id=player_id)
             session.add(db_char)
         
         # Update all fields
         if db_char:
+            # Ensure player_id is set if we have account information
+            if not db_char.player_id:
+                pcdata = getattr(character, "pcdata", None)
+                if pcdata:
+                    account_name = getattr(pcdata, "account_name", None)
+                    if account_name:
+                        player_account = session.query(PlayerAccount).filter_by(username=account_name).first()
+                        if player_account:
+                            db_char.player_id = player_account.id
+                            print(f"[INFO] Fixed missing player_id for character '{character.name}' -> account '{account_name}'")
+            
             db_char.level = character.level
             db_char.hp = character.hit
             db_char.race = int(character.race or 0)
