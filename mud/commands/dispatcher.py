@@ -328,11 +328,23 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
         return head, tail
 
 
+ALIAS_BLOCKED_PREFIXES = ("alias", "una", "prefix")
+
+
 def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> tuple[str, bool]:
     """Expand the first token using per-character aliases, up to max_depth.
 
     Returns the expanded string and whether any alias substitution occurred.
+
+    ROM C parity: alias expansion is blocked for commands starting with
+    "alias", "una" (unalias), or "prefix" (src/alias.c:63-69).
     """
+    head, _ = _split_command_and_args(input_str)
+    if head:
+        lowered = head.lower()
+        for blocked in ALIAS_BLOCKED_PREFIXES:
+            if lowered.startswith(blocked):
+                return input_str, False
 
     s = input_str
     alias_used = False

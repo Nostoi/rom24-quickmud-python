@@ -59,18 +59,31 @@ def test_alias_substitution_exact_match():
 
 
 def test_alias_blocked_commands_in_dispatcher():
-    """Test that alias, unalias, prefix commands behavior in dispatcher.
+    """Test that alias, unalias, prefix commands bypass alias expansion.
 
-    ROM C blocks these commands from alias expansion at the interpret level.
-    Note: Current Python implementation expands aliases before command lookup.
-    This test verifies actual behavior - if parity is needed, add blocking.
+    ROM C (src/alias.c:63-69) blocks alias expansion for commands starting
+    with "alias", "una" (unalias), or "prefix".
     """
     char = setup_alias_test()
 
-    char.aliases["testalias"] = "look"
+    char.aliases["alias"] = "look"
+    char.aliases["una"] = "look"
+    char.aliases["prefix"] = "look"
+
+    result1, used1 = _expand_aliases(char, "alias")
+    assert used1 is False
+    assert result1 == "alias"
+
+    result2, used2 = _expand_aliases(char, "unalias foo")
+    assert used2 is False
+    assert result2 == "unalias foo"
+
+    result3, used3 = _expand_aliases(char, "prefix test")
+    assert used3 is False
+    assert result3 == "prefix test"
 
     result = process_command(char, "alias")
-    assert "testalias" in result or "No aliases" in result
+    assert "alias" in result.lower() or "No aliases" in result
 
 
 def test_alias_max_depth_protection():
