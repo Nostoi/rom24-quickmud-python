@@ -42,5 +42,17 @@ def websocketserver(host: str = "0.0.0.0", port: int = 8000):
     start_websocket(host=host, port=port)
 
 
+@cli.command()
+def sshserver(host: str = "0.0.0.0", port: int = 2222):
+    """Start the SSH server.
+
+    Players can connect with: ssh -p 2222 player@hostname
+    SSH credentials are ignored; authentication happens via MUD account login.
+    """
+    from mud.net.ssh_server import start_server as start_ssh
+
+    asyncio.run(start_ssh(host=host, port=port))
+
+
 if __name__ == "__main__":
     cli()

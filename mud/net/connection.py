@@ -32,20 +32,20 @@ from mud.account import (
 )
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
-from mud.commands.inventory import give_school_outfit
 from mud.commands.help import do_help
+from mud.commands.inventory import give_school_outfit
 from mud.config import get_qmconfig
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
 from mud.logging import log_game_event
-from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_LIMBO
+from mud.models.constants import ROOM_VNUM_LIMBO, CommFlag, PlayerFlag, Sex
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
-from mud.wiznet import WiznetFlag, wiznet
-from mud.skills.groups import get_group, list_groups
 from mud.security import bans
 from mud.security.bans import BanFlag
+from mud.skills.groups import get_group, list_groups
+from mud.wiznet import WiznetFlag, wiznet
 
 STAT_LABELS = ("Str", "Int", "Wis", "Dex", "Con")
 
@@ -67,8 +67,8 @@ RECONNECT_MESSAGE = "Reconnecting. Type replay to see missed tells."
 
 
 if TYPE_CHECKING:
-    from mud.models.character import Character
     from mud.account.account_service import ClassType, PcRaceType
+    from mud.models.character import Character
 
 
 def _format_three_column_table(entries: Iterable[tuple[str, str]]) -> list[str]:
@@ -89,7 +89,7 @@ def _format_name_columns(names: Iterable[str], *, width: int = 20) -> list[str]:
     return lines
 
 
-def _effective_trust(char: "Character") -> int:
+def _effective_trust(char: Character) -> int:
     """Mirror ROM's ``get_trust`` helper for wiznet broadcasts."""
 
     trust = getattr(char, "trust", 0)
@@ -105,7 +105,7 @@ def _sanitize_host(host: str | None, *, placeholder: str | None = None) -> str |
     return cleaned or placeholder
 
 
-def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
+def announce_wiznet_login(char: Character, host: str | None = None) -> None:
     """Broadcast a WIZ_LOGINS notice when *char* enters the game."""
 
     if not getattr(char, "name", None):
@@ -134,7 +134,7 @@ def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
     )
 
 
-def announce_wiznet_logout(char: "Character") -> None:
+def announce_wiznet_logout(char: Character) -> None:
     """Broadcast a WIZ_LOGINS notice when *char* leaves the game."""
 
     if not getattr(char, "name", None):
@@ -194,9 +194,7 @@ def announce_wiznet_new_player(
     )
 
 
-def _broadcast_reconnect_notifications(
-    char: "Character", host: str | None = None
-) -> None:
+def _broadcast_reconnect_notifications(char: Character, host: str | None = None) -> None:
     """Notify the room and wiznet listeners about a successful reconnect."""
 
     name = getattr(char, "name", None)
@@ -227,9 +225,7 @@ def _broadcast_reconnect_notifications(
     )
 
 
-def _announce_login_or_reconnect(
-    char: "Character", host: str | None, reconnecting: bool
-) -> bool:
+def _announce_login_or_reconnect(char: Character, host: str | None, reconnecting: bool) -> bool:
     """Dispatch wiznet announcements for fresh logins or reconnects."""
 
     note_reminder = False
@@ -242,7 +238,7 @@ def _announce_login_or_reconnect(
     return note_reminder
 
 
-def _stop_idling(char: "Character") -> None:
+def _stop_idling(char: Character) -> None:
     """Mirror ROM's ``stop_idling`` to pull players out of limbo on input."""
 
     if char is None:
@@ -510,7 +506,7 @@ def _apply_colour_preference(char: Character, enabled: bool) -> None:
     char.ansi_enabled = bool(enabled)
 
 
-def _is_new_player(char: "Character") -> bool:
+def _is_new_player(char: Character) -> bool:
     if getattr(char, "is_npc", False):
         return False
     try:
@@ -525,7 +521,7 @@ def _is_new_player(char: "Character") -> bool:
 
 
 def _apply_qmconfig_telnetga(
-    char: "Character",
+    char: Character,
     session: Session,
     connection: TelnetStream,
     *,
@@ -543,7 +539,7 @@ def _apply_qmconfig_telnetga(
     session.go_ahead_enabled = telnet_enabled
 
 
-def _has_permit_flag(char: "Character") -> bool:
+def _has_permit_flag(char: Character) -> bool:
     """Return ``True`` when *char* has the ROM PLR_PERMIT bit set."""
 
     act_flags = int(getattr(char, "act", 0) or 0)
@@ -559,7 +555,7 @@ async def _send_help_greeting(conn: TelnetStream) -> None:
     await conn.send_text(text, newline=True)
 
 
-def _resolve_help_text(char: "Character", topic: str, *, limit_first: bool = False) -> str | None:
+def _resolve_help_text(char: Character, topic: str, *, limit_first: bool = False) -> str | None:
     try:
         text = do_help(char, topic, limit_results=limit_first)
     except Exception as exc:  # pragma: no cover - defensive guard
@@ -573,7 +569,7 @@ def _resolve_help_text(char: "Character", topic: str, *, limit_first: bool = Fal
     return text
 
 
-async def _send_login_motd(char: "Character") -> None:
+async def _send_login_motd(char: Character) -> None:
     topics: list[str] = ["motd"]
     is_immortal_attr = getattr(char, "is_immortal", False)
     immortal = False
@@ -598,7 +594,7 @@ async def _send_login_motd(char: "Character") -> None:
             print(f"[ERROR] Failed to send help topic '{topic}' to {getattr(char, 'name', '?')}: {exc}")
 
 
-def _should_send_newbie_help(char: "Character") -> bool:
+def _should_send_newbie_help(char: Character) -> bool:
     if getattr(char, "is_npc", True):
         return False
     try:
@@ -609,7 +605,7 @@ def _should_send_newbie_help(char: "Character") -> bool:
     return not bool(getattr(char, "newbie_help_seen", False))
 
 
-async def _send_newbie_help(char: "Character") -> None:
+async def _send_newbie_help(char: Character) -> None:
     text = _resolve_help_text(char, "newbie info")
     if not text:
         return
@@ -618,7 +614,7 @@ async def _send_newbie_help(char: "Character") -> None:
         await send_to_char(char, text)
         await send_to_char(char, "")
     finally:
-        setattr(char, "newbie_help_seen", True)
+        char.newbie_help_seen = True
         try:
             save_character(char)
         except Exception as exc:  # pragma: no cover - defensive guard
@@ -677,12 +673,12 @@ async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
         await _send_line(conn, "Please answer Y or N.")
 
 
-async def _disconnect_session(session: Session) -> "Character" | None:
+async def _disconnect_session(session: Session) -> Character | None:
     """Disconnect an existing session so a new descriptor can take over."""
 
     old_conn = getattr(session, "connection", None)
     old_char = getattr(session, "character", None)
-    setattr(session, "_forced_disconnect", True)
+    session._forced_disconnect = True
 
     if old_conn is not None:
         try:
@@ -759,9 +755,7 @@ def _format_stats(stats: Iterable[int]) -> str:
     return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_account_login(
-    conn: TelnetStream, host_for_ban: str | None
-) -> tuple[PlayerAccount, str, bool] | None:
+async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[PlayerAccount, str, bool] | None:
     while True:
         submitted = await _prompt(conn, "Account: ")
         if submitted is None:
@@ -857,9 +851,7 @@ async def _run_account_login(
         return None
 
 
-async def _prompt_for_race(
-    conn: TelnetStream, help_character: object | None = None
-) -> "PcRaceType" | None:
+async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> PcRaceType | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
     await _send_line(conn, "What is your race? (help for more information)")
@@ -887,6 +879,7 @@ async def _prompt_for_race(
             return race
         await _send_line(conn, "That's not a valid race.")
 
+
 async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
     while True:
         response = await _prompt(conn, "Sex (M/F): ")
@@ -900,7 +893,7 @@ async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
         await _send_line(conn, "Please enter M or F.")
 
 
-async def _prompt_for_class(conn: TelnetStream) -> "ClassType" | None:
+async def _prompt_for_class(conn: TelnetStream) -> ClassType | None:
     classes = get_creation_classes()
     await _send_line(conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes))
     while True:
@@ -1036,9 +1029,7 @@ async def _run_customization_menu(
             if learned_groups:
                 for line in _format_three_column_table([("group", "cp")] * 3):
                     await _send_line(conn, line)
-                for line in _format_three_column_table(
-                    [(name, str(cost)) for name, cost in learned_groups]
-                ):
+                for line in _format_three_column_table([(name, str(cost)) for name, cost in learned_groups]):
                     await _send_line(conn, line)
             else:
                 await _send_line(conn, "You haven't purchased any groups yet.")
@@ -1049,9 +1040,7 @@ async def _run_customization_menu(
             if learned_skills:
                 for line in _format_three_column_table([("skill", "cp")] * 3):
                     await _send_line(conn, line)
-                for line in _format_three_column_table(
-                    [(name, str(cost)) for name, cost in learned_skills]
-                ):
+                for line in _format_three_column_table([(name, str(cost)) for name, cost in learned_skills]):
                     await _send_line(conn, line)
             else:
                 await _send_line(conn, "You haven't purchased any skills yet.")
@@ -1077,11 +1066,7 @@ async def _run_customization_menu(
 
             group_cost = selection.cost_for_group(argument)
             if group_cost is not None:
-                if (
-                    group_cost > 0
-                    and selection.creation_points + group_cost
-                    > selection.maximum_creation_points()
-                ):
+                if group_cost > 0 and selection.creation_points + group_cost > selection.maximum_creation_points():
                     await _send_line(conn, "You cannot take more than 300 creation points.")
                     await _send_menu_choice_help(fallback=True)
                     continue
@@ -1091,9 +1076,7 @@ async def _run_customization_menu(
                         f"{selection.display_group_name(argument)} group added.",
                     )
                     await _send_line(conn, f"Creation points: {selection.creation_points}")
-                    await _send_line(
-                        conn, f"Experience per level: {selection.experience_per_level()}"
-                    )
+                    await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                     await _send_menu_choice_help(fallback=True)
                     continue
                 await _send_line(conn, "Unable to add that group.")
@@ -1102,11 +1085,7 @@ async def _run_customization_menu(
 
             skill_cost = selection.cost_for_skill(argument)
             if skill_cost is not None:
-                if (
-                    skill_cost > 0
-                    and selection.creation_points + skill_cost
-                    > selection.maximum_creation_points()
-                ):
+                if skill_cost > 0 and selection.creation_points + skill_cost > selection.maximum_creation_points():
                     await _send_line(conn, "You cannot take more than 300 creation points.")
                     await _send_menu_choice_help(fallback=True)
                     continue
@@ -1116,9 +1095,7 @@ async def _run_customization_menu(
                         f"{selection.display_skill_name(argument)} skill added.",
                     )
                     await _send_line(conn, f"Creation points: {selection.creation_points}")
-                    await _send_line(
-                        conn, f"Experience per level: {selection.experience_per_level()}"
-                    )
+                    await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                     await _send_menu_choice_help(fallback=True)
                     continue
                 await _send_line(conn, "Unable to add that skill.")
@@ -1137,17 +1114,13 @@ async def _run_customization_menu(
             if selection.drop_group(argument):
                 await _send_line(conn, "Group dropped.")
                 await _send_line(conn, f"Creation points: {selection.creation_points}")
-                await _send_line(
-                    conn, f"Experience per level: {selection.experience_per_level()}"
-                )
+                await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                 await _send_menu_choice_help(fallback=True)
                 continue
             if selection.drop_skill(argument):
                 await _send_line(conn, "Skill dropped.")
                 await _send_line(conn, f"Creation points: {selection.creation_points}")
-                await _send_line(
-                    conn, f"Experience per level: {selection.experience_per_level()}"
-                )
+                await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                 await _send_menu_choice_help(fallback=True)
                 continue
             await _send_line(conn, "You haven't bought any such skill or group.")
@@ -1205,7 +1178,7 @@ async def _run_customization_menu(
         await _send_menu_choice_help(fallback=True)
 
 
-async def _prompt_for_stats(conn: TelnetStream, race: "PcRaceType") -> list[int] | None:
+async def _prompt_for_stats(conn: TelnetStream, race: PcRaceType) -> list[int] | None:
     while True:
         stats = roll_creation_stats(race)
         await _send_line(conn, "Rolled stats: " + _format_stats(stats))
@@ -1250,7 +1223,7 @@ async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
     return None
 
 
-async def _prompt_for_weapon(conn: TelnetStream, class_type: "ClassType") -> int | None:
+async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int | None:
     choices = get_weapon_choices(class_type)
     await _send_line(conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices))
     normalized = {choice.lower(): choice for choice in choices}
@@ -1374,15 +1347,11 @@ async def _select_character(
     *,
     permit_banned: bool = False,
     newbie_banned: bool = False,
-) -> tuple["Character", bool] | None:
+) -> tuple[Character, bool] | None:
     permit_bit = int(PlayerFlag.PERMIT)
     while True:
         all_characters = list_characters(account)
-        characters = (
-            list_characters(account, require_act_flags=permit_bit)
-            if permit_banned
-            else all_characters
-        )
+        characters = list_characters(account, require_act_flags=permit_bit) if permit_banned else all_characters
 
         if permit_banned and not characters:
             await _send_line(conn, "Your site has been banned from this mud.")
@@ -1423,7 +1392,7 @@ async def _select_character(
             if active_connection is not None:
                 decision = await _prompt_yes_no(
                     conn,
-                    f"That character is already playing. Reconnect? (Y/N) ",
+                    "That character is already playing. Reconnect? (Y/N) ",
                 )
                 if decision is None:
                     return None
@@ -1465,12 +1434,8 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
-    permit_banned = bool(
-        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT)
-    )
-    newbie_banned = bool(
-        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES)
-    )
+    permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
+    newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
     qmconfig = get_qmconfig()
 
     try:
@@ -1510,11 +1475,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         is_new_player = _is_new_player(char)
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
-        desired_colour = (
-            ansi_preference
-            if ansi_explicit
-            else (qmconfig.ansicolor if is_new_player else saved_colour)
-        )
+        desired_colour = ansi_preference if ansi_explicit else (qmconfig.ansicolor if is_new_player else saved_colour)
         _apply_colour_preference(char, desired_colour)
         conn.set_ansi(char.ansi_enabled)
 
@@ -1664,3 +1625,222 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             print(f"[ERROR] Failed to close connection: {exc}")
 
         print(f"[DISCONNECT] {addr} as {session.name if session else 'unknown'}")
+
+
+async def handle_connection_with_stream(
+    conn: TelnetStream,
+    host_for_ban: str | None,
+    *,
+    addr: str | None = None,
+    connection_type: str = "SSH",
+) -> None:
+    """Handle a connection using a pre-created stream object.
+
+    This allows SSH and other transport protocols to reuse the MUD connection
+    handling logic with their own stream implementations that match the
+    TelnetStream interface.
+
+    Args:
+        conn: A stream object with TelnetStream-compatible interface
+        host_for_ban: The client's host address for ban checking
+        addr: Optional address string for logging (defaults to conn.peer_host)
+        connection_type: Type of connection for logging (e.g., "SSH", "WebSocket")
+    """
+    session = None
+    char = None
+    account: PlayerAccount | None = None
+    username = ""
+    display_addr = addr or conn.peer_host or "unknown"
+
+    permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
+    newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
+    qmconfig = get_qmconfig()
+
+    try:
+        if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
+            await conn.send_line("Your site has been banned from this mud.")
+            return
+
+        await conn.negotiate()
+        if qmconfig.ansiprompt:
+            ansi_result = await _prompt_ansi_preference(conn)
+            if ansi_result is None:
+                return
+            ansi_preference, ansi_explicit = ansi_result
+        else:
+            ansi_preference = qmconfig.ansicolor
+            ansi_explicit = False
+        conn.set_ansi(ansi_preference)
+        await _send_help_greeting(conn)
+
+        login_result = await _run_account_login(conn, host_for_ban)
+        if not login_result:
+            return
+        account, username, was_reconnect = login_result
+
+        selection = await _select_character(
+            conn,
+            account,
+            username,
+            permit_banned=permit_banned,
+            newbie_banned=newbie_banned,
+        )
+        if selection is None:
+            return
+
+        char, forced_reconnect = selection
+        reconnecting = bool(was_reconnect or forced_reconnect)
+
+        is_new_player = _is_new_player(char)
+        saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
+        desired_colour = ansi_preference if ansi_explicit else (qmconfig.ansicolor if is_new_player else saved_colour)
+        _apply_colour_preference(char, desired_colour)
+        conn.set_ansi(char.ansi_enabled)
+
+        if char.room:
+            try:
+                char.room.add_character(char)
+            except Exception as exc:
+                print(f"[ERROR] Failed to add character to room: {exc}")
+
+        char.connection = conn
+        char.account_name = username
+        if reconnecting:
+            try:
+                char.timer = 0
+            except Exception:
+                pass
+
+        # Create a placeholder reader for Session (SSH doesn't use asyncio.StreamReader)
+        # Session needs a reader attribute but SSH handles input differently
+        placeholder_reader = asyncio.StreamReader()
+
+        session = Session(
+            name=char.name or "",
+            character=char,
+            reader=placeholder_reader,
+            connection=conn,
+            account_name=username,
+            ansi_enabled=conn.ansi_enabled,
+        )
+        SESSIONS[session.name] = session
+        char.desc = session
+        outfit_message: str | None = None
+        if is_new_player and give_school_outfit(char):
+            outfit_message = "You have been equipped by Mota."
+
+        # For non-telnet connections, disable go-ahead (telnet-specific)
+        session.go_ahead_enabled = False
+
+        print(f"[{connection_type}] [CONNECT] {display_addr} as {session.name}")
+
+        try:
+            if outfit_message:
+                await send_to_char(char, outfit_message)
+            if not reconnecting:
+                await _send_login_motd(char)
+                if _should_send_newbie_help(char):
+                    await _send_newbie_help(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
+
+        try:
+            if reconnecting:
+                await send_to_char(char, RECONNECT_MESSAGE)
+            note_reminder = _announce_login_or_reconnect(char, host_for_ban, reconnecting)
+            if reconnecting and note_reminder:
+                await send_to_char(
+                    char,
+                    "You have a note in progress. Type NWRITE to continue it.",
+                )
+        except Exception as exc:
+            print(f"[ERROR] Failed to announce wiznet login for {session.name}: {exc}")
+
+        try:
+            if char.room:
+                response = process_command(char, "look")
+                await send_to_char(char, response)
+            else:
+                await send_to_char(char, "You are floating in a void...")
+        except Exception as exc:
+            print(f"[ERROR] Failed to send initial look: {exc}")
+            await send_to_char(char, "Welcome to the world!")
+
+        while True:
+            try:
+                await conn.send_prompt("> ", go_ahead=False)
+                command = await _read_player_command(conn, session)
+                if command is None:
+                    break
+                _stop_idling(char)
+                if not command.strip():
+                    continue
+
+                try:
+                    response = process_command(char, command)
+                    await send_to_char(char, response)
+                except Exception as exc:
+                    print(f"[ERROR] Command processing failed for '{command}': {exc}")
+                    await send_to_char(
+                        char,
+                        "Sorry, there was an error processing that command.",
+                    )
+
+                while char and char.messages:
+                    try:
+                        msg = char.messages.pop(0)
+                        await send_to_char(char, msg)
+                    except Exception as exc:
+                        print(f"[ERROR] Failed to send message: {exc}")
+                        break
+
+            except asyncio.CancelledError:
+                break
+            except Exception as exc:
+                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}")
+                break
+
+    except Exception as exc:
+        print(f"[ERROR] {connection_type} handler error for {display_addr}: {exc}")
+    finally:
+        forced_disconnect = bool(session and getattr(session, "_forced_disconnect", False))
+        try:
+            if char and not forced_disconnect:
+                announce_wiznet_logout(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
+
+        try:
+            if char and not forced_disconnect:
+                save_character(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to save character: {exc}")
+
+        try:
+            if char and char.room and not forced_disconnect:
+                char.room.remove_character(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to remove character from room: {exc}")
+
+        if session and not forced_disconnect and session.name in SESSIONS:
+            SESSIONS.pop(session.name, None)
+
+        if char:
+            if not forced_disconnect:
+                char.desc = None
+                try:
+                    char.account_name = ""
+                except Exception:
+                    pass
+                if getattr(char, "connection", None) is conn:
+                    char.connection = None
+
+        if username and not forced_disconnect:
+            release_account(username)
+
+        try:
+            await conn.close()
+        except Exception as exc:
+            print(f"[ERROR] Failed to close connection: {exc}")
+
+        print(f"[{connection_type}] [DISCONNECT] {display_addr} as {session.name if session else 'unknown'}")

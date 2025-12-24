@@ -39,6 +39,7 @@ dependencies = [
     "fastapi>=0.68.0",
     "uvicorn>=0.15.0",
     "pytest-timeout>=2.1.0",
+    "asyncssh>=2.0",
 ]
 
 [project.optional-dependencies]

@@ -17,7 +17,6 @@ def _find_healer(char: Character) -> object | None:
             spec = getattr(proto, "spec_fun", "") or ""
             if spec.lower() == "spec_healer":
                 return mob
-            return mob
     return None
 
 

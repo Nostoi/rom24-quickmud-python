@@ -6,6 +6,7 @@ from mud.config import get_qmconfig, load_qmconfig
 from mud.db.migrations import run_migrations
 from mud.security import bans
 from mud.world.world_state import initialize_world
+from mud.game_tick_scheduler import start_game_tick_scheduler
 
 from .connection import handle_connection
 
@@ -35,8 +36,9 @@ async def start_server(host: str = "0.0.0.0", port: int = 4000, area_list: str =
     if sockets:
         addr = sockets[0].getsockname()
         print(f"Serving on {addr}")
-    async with server:
-        await server.serve_forever()
+
+    # Start shared game tick scheduler
+    await start_game_tick_scheduler()
 
 
 if __name__ == "__main__":

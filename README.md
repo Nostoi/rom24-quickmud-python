@@ -14,7 +14,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 ## ✨ Key Features
 
 - **🚀 Modern Python Architecture**: Fully async/await networking with SQLAlchemy ORM
-- **📡 Multi-User Telnet Server**: Handle hundreds of concurrent players
+- **📡 Multiple Connection Options**: Telnet, WebSocket, and SSH server support
 - **🗺️ JSON World Loading**: Easy-to-edit world data with 352+ room resets
 - **🏪 Complete Shop System**: Buy, sell, and list items with working economy
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
@@ -34,14 +34,43 @@ pip install quickmud
 
 Run a QuickMUD server:
 
+**Telnet Server (port 5000):**
 ```bash
-mud runserver
+python3 -m mud socketserver
+# or
+mud socketserver
 ```
 
-The server will start on `localhost:4000`. Connect with any telnet client:
-
+**WebSocket Server (port 8000):**
 ```bash
-telnet localhost 4000
+python3 -m mud websocketserver
+# or
+mud websocketserver
+```
+
+**SSH Server (port 2222):**
+```bash
+python3 -m mud sshserver
+# or
+mud sshserver
+```
+
+All servers provide:
+- ✓ Game tick running at 4 Hz
+- ✓ Time advancement
+- ✓ Mob AI active
+
+Connect to the server:
+
+**Via Telnet:**
+```bash
+telnet localhost 5000
+```
+
+**Via SSH:**
+```bash
+ssh -p 2222 player@localhost
+# Note: SSH username/password are ignored; MUD authentication happens after connection
 ```
 
 ## 🏗️ For Developers
@@ -79,7 +108,7 @@ python -m mud  # Start development server
 
 ## 🏛️ Architecture
 
-- **Async Networking**: Modern async/await telnet server
+- **Async Networking**: Modern async/await with Telnet, WebSocket, and SSH servers
 - **SQLAlchemy ORM**: Robust database layer with migrations
 - **JSON World Data**: Human-readable area files with full ROM compatibility
 - **Modular Design**: Clean separation of concerns (commands, world, networking)

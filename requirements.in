@@ -3,3 +3,4 @@ typer>=0.9
 python-dotenv>=1.0
 fastapi
 uvicorn
+asyncssh>=2.14.0
