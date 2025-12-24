@@ -37,7 +37,7 @@ from mud.commands.help import do_help
 from mud.config import get_qmconfig
 from mud.db.models import PlayerAccount
 from mud.loaders.help_loader import help_greeting
-from mud.logging import log_game_event
+from mud.game_logging import log_game_event
 from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_LIMBO
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
@@ -194,9 +194,7 @@ def announce_wiznet_new_player(
     )
 
 
-def _broadcast_reconnect_notifications(
-    char: "Character", host: str | None = None
-) -> None:
+def _broadcast_reconnect_notifications(char: "Character", host: str | None = None) -> None:
     """Notify the room and wiznet listeners about a successful reconnect."""
 
     name = getattr(char, "name", None)
@@ -227,9 +225,7 @@ def _broadcast_reconnect_notifications(
     )
 
 
-def _announce_login_or_reconnect(
-    char: "Character", host: str | None, reconnecting: bool
-) -> bool:
+def _announce_login_or_reconnect(char: "Character", host: str | None, reconnecting: bool) -> bool:
     """Dispatch wiznet announcements for fresh logins or reconnects."""
 
     note_reminder = False
@@ -298,6 +294,8 @@ class TelnetStream:
         self.ansi_enabled = True
         self.peer_host: str | None = None
         self._go_ahead_enabled = True
+        # Detect SSH connections - skip telnet protocol for them
+        self._is_ssh = bool(writer.get_extra_info("ssh_connection", False))
 
     def set_ansi(self, enabled: bool) -> None:
         self.ansi_enabled = bool(enabled)
@@ -317,27 +315,36 @@ class TelnetStream:
         self._buffer.clear()
 
     async def _send_option(self, command: int, option: int) -> None:
+        # Skip telnet options for SSH connections
+        if self._is_ssh:
+            return
         await self.flush()
         self.writer.write(bytes([TELNET_IAC, command, option]))
         await self.writer.drain()
 
     async def negotiate(self) -> None:
+        # Skip telnet negotiation for SSH connections
+        if self._is_ssh:
+            return
         await self.enable_echo()
         await self._send_option(TELNET_DO, TELNET_TELOPT_SUPPRESS_GA)
         await self._send_option(TELNET_WILL, TELNET_TELOPT_SUPPRESS_GA)
 
     async def disable_echo(self) -> None:
         if self._echo_enabled:
-            await self._send_option(TELNET_WILL, TELNET_TELOPT_ECHO)
+            if not self._is_ssh:
+                await self._send_option(TELNET_WILL, TELNET_TELOPT_ECHO)
             self._echo_enabled = False
 
     async def enable_echo(self) -> None:
         if not self._echo_enabled:
-            await self._send_option(TELNET_WONT, TELNET_TELOPT_ECHO)
+            if not self._is_ssh:
+                await self._send_option(TELNET_WONT, TELNET_TELOPT_ECHO)
             self._echo_enabled = True
         elif self._echo_enabled:
             # ensure initial negotiation sends explicit state
-            await self._send_option(TELNET_WONT, TELNET_TELOPT_ECHO)
+            if not self._is_ssh:
+                await self._send_option(TELNET_WONT, TELNET_TELOPT_ECHO)
 
     async def send_text(self, message: str, *, newline: bool = False) -> None:
         rendered = self._render(message)
@@ -370,7 +377,8 @@ class TelnetStream:
         use_ga = self._go_ahead_enabled if go_ahead is None else bool(go_ahead)
         if go_ahead is not None:
             self._go_ahead_enabled = use_ga
-        if use_ga:
+        # Skip telnet Go Ahead for SSH connections
+        if use_ga and not self._is_ssh:
             self.writer.write(bytes([TELNET_IAC, TELNET_GA]))
         await self.writer.drain()
 
@@ -396,7 +404,8 @@ class TelnetStream:
                     return None
                 break
 
-            if byte == TELNET_IAC:
+            # Skip telnet protocol handling for SSH connections
+            if byte == TELNET_IAC and not self._is_ssh:
                 command = await self._read_byte()
                 if command is None:
                     return None
@@ -759,9 +768,7 @@ def _format_stats(stats: Iterable[int]) -> str:
     return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_account_login(
-    conn: TelnetStream, host_for_ban: str | None
-) -> tuple[PlayerAccount, str, bool] | None:
+async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[PlayerAccount, str, bool] | None:
     while True:
         submitted = await _prompt(conn, "Account: ")
         if submitted is None:
@@ -857,9 +864,7 @@ async def _run_account_login(
         return None
 
 
-async def _prompt_for_race(
-    conn: TelnetStream, help_character: object | None = None
-) -> "PcRaceType" | None:
+async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> "PcRaceType" | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
     await _send_line(conn, "What is your race? (help for more information)")
@@ -886,6 +891,7 @@ async def _prompt_for_race(
         if race is not None:
             return race
         await _send_line(conn, "That's not a valid race.")
+
 
 async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
     while True:
@@ -1036,9 +1042,7 @@ async def _run_customization_menu(
             if learned_groups:
                 for line in _format_three_column_table([("group", "cp")] * 3):
                     await _send_line(conn, line)
-                for line in _format_three_column_table(
-                    [(name, str(cost)) for name, cost in learned_groups]
-                ):
+                for line in _format_three_column_table([(name, str(cost)) for name, cost in learned_groups]):
                     await _send_line(conn, line)
             else:
                 await _send_line(conn, "You haven't purchased any groups yet.")
@@ -1049,9 +1053,7 @@ async def _run_customization_menu(
             if learned_skills:
                 for line in _format_three_column_table([("skill", "cp")] * 3):
                     await _send_line(conn, line)
-                for line in _format_three_column_table(
-                    [(name, str(cost)) for name, cost in learned_skills]
-                ):
+                for line in _format_three_column_table([(name, str(cost)) for name, cost in learned_skills]):
                     await _send_line(conn, line)
             else:
                 await _send_line(conn, "You haven't purchased any skills yet.")
@@ -1077,11 +1079,7 @@ async def _run_customization_menu(
 
             group_cost = selection.cost_for_group(argument)
             if group_cost is not None:
-                if (
-                    group_cost > 0
-                    and selection.creation_points + group_cost
-                    > selection.maximum_creation_points()
-                ):
+                if group_cost > 0 and selection.creation_points + group_cost > selection.maximum_creation_points():
                     await _send_line(conn, "You cannot take more than 300 creation points.")
                     await _send_menu_choice_help(fallback=True)
                     continue
@@ -1091,9 +1089,7 @@ async def _run_customization_menu(
                         f"{selection.display_group_name(argument)} group added.",
                     )
                     await _send_line(conn, f"Creation points: {selection.creation_points}")
-                    await _send_line(
-                        conn, f"Experience per level: {selection.experience_per_level()}"
-                    )
+                    await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                     await _send_menu_choice_help(fallback=True)
                     continue
                 await _send_line(conn, "Unable to add that group.")
@@ -1102,11 +1098,7 @@ async def _run_customization_menu(
 
             skill_cost = selection.cost_for_skill(argument)
             if skill_cost is not None:
-                if (
-                    skill_cost > 0
-                    and selection.creation_points + skill_cost
-                    > selection.maximum_creation_points()
-                ):
+                if skill_cost > 0 and selection.creation_points + skill_cost > selection.maximum_creation_points():
                     await _send_line(conn, "You cannot take more than 300 creation points.")
                     await _send_menu_choice_help(fallback=True)
                     continue
@@ -1116,9 +1108,7 @@ async def _run_customization_menu(
                         f"{selection.display_skill_name(argument)} skill added.",
                     )
                     await _send_line(conn, f"Creation points: {selection.creation_points}")
-                    await _send_line(
-                        conn, f"Experience per level: {selection.experience_per_level()}"
-                    )
+                    await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                     await _send_menu_choice_help(fallback=True)
                     continue
                 await _send_line(conn, "Unable to add that skill.")
@@ -1137,17 +1127,13 @@ async def _run_customization_menu(
             if selection.drop_group(argument):
                 await _send_line(conn, "Group dropped.")
                 await _send_line(conn, f"Creation points: {selection.creation_points}")
-                await _send_line(
-                    conn, f"Experience per level: {selection.experience_per_level()}"
-                )
+                await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                 await _send_menu_choice_help(fallback=True)
                 continue
             if selection.drop_skill(argument):
                 await _send_line(conn, "Skill dropped.")
                 await _send_line(conn, f"Creation points: {selection.creation_points}")
-                await _send_line(
-                    conn, f"Experience per level: {selection.experience_per_level()}"
-                )
+                await _send_line(conn, f"Experience per level: {selection.experience_per_level()}")
                 await _send_menu_choice_help(fallback=True)
                 continue
             await _send_line(conn, "You haven't bought any such skill or group.")
@@ -1378,11 +1364,7 @@ async def _select_character(
     permit_bit = int(PlayerFlag.PERMIT)
     while True:
         all_characters = list_characters(account)
-        characters = (
-            list_characters(account, require_act_flags=permit_bit)
-            if permit_banned
-            else all_characters
-        )
+        characters = list_characters(account, require_act_flags=permit_bit) if permit_banned else all_characters
 
         if permit_banned and not characters:
             await _send_line(conn, "Your site has been banned from this mud.")
@@ -1465,12 +1447,8 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
-    permit_banned = bool(
-        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT)
-    )
-    newbie_banned = bool(
-        host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES)
-    )
+    permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
+    newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
     qmconfig = get_qmconfig()
 
     try:
@@ -1510,11 +1488,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         is_new_player = _is_new_player(char)
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
-        desired_colour = (
-            ansi_preference
-            if ansi_explicit
-            else (qmconfig.ansicolor if is_new_player else saved_colour)
-        )
+        desired_colour = ansi_preference if ansi_explicit else (qmconfig.ansicolor if is_new_player else saved_colour)
         _apply_colour_preference(char, desired_colour)
         conn.set_ansi(char.ansi_enabled)
 
