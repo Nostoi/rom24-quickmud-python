@@ -1574,35 +1574,28 @@ async def handle_connection_with_stream(
         # Main game loop
         while True:
             try:
-                await asyncio.sleep(0.1)
-                if not char or not char.room:
+                await conn.send_prompt("> ", go_ahead=session.go_ahead_enabled)
+                command = await _read_player_command(conn, session)
+                if command is None:
                     break
+                _stop_idling(char)
+                if not command.strip():
+                    continue
 
-                if session.command_queue:
-                    try:
-                        cmd = session.command_queue.pop(0)
-                        result = await interpret_command(char, cmd)
-                        if result and len(result) < 6000:
-                            await send_to_char(char, result)
-                        elif result:
-                            await send_to_char(
-                                char,
-                                "Sorry, there was an error processing that command.",
-                            )
-                    except Exception as exc:
-                        print(f"[ERROR] Command execution error: {exc}")
-                        await send_to_char(
-                            char,
-                            "Sorry, there was an error processing that command.",
-                        )
-
-                while char and char.messages:
-                    try:
-                        msg = char.messages.pop(0)
-                        await send_to_char(char, msg)
-                    except Exception as exc:
-                        print(f"[ERROR] Failed to send message: {exc}")
+                try:
+                    response = process_command(char, command)
+                    await send_to_char(char, response)
+                    
+                    # Check if player requested quit
+                    if getattr(char, "_quit_requested", False):
                         break
+                        
+                except Exception as exc:
+                    print(f"[ERROR] Command processing failed for '{command}': {exc}")
+                    await send_to_char(
+                        char,
+                        "Sorry, there was an error processing that command.",
+                    )
 
             except asyncio.CancelledError:
                 break
