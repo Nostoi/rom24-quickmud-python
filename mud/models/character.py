@@ -249,21 +249,32 @@ class SpellEffect:
 class Character:
     """Python representation of CHAR_DATA"""
 
+    # Core identity (ROM parity fields)
     name: str | None = None
+    id: int = 0  # Unique character ID (ROM: long id)
+    version: int = 0  # Character version (ROM: sh_int version)
+    valid: bool = True  # Validity flag (ROM: bool valid)
     account_name: str = ""
     short_descr: str | None = None
     long_descr: str | None = None
     description: str | None = None
     prompt: str | None = None
     prefix: str | None = None
+    
+    # Class/Race/Clan
     sex: int = 0
     ch_class: int = 0
     race: int = 0
     clan: int = 0
+    group: int = 0  # Group number for area repop (ROM: sh_int group)
+    
+    # Levels and trust
     level: int = 0
     trust: int = 0
     invis_level: int = 0
     incog_level: int = 0
+    
+    # Stats
     hit: int = 0
     max_hit: int = 0
     mana: int = 0
@@ -273,90 +284,125 @@ class Character:
     gold: int = 0
     silver: int = 0
     exp: int = 0
+    
+    # Flags
     act: int = 0
     affected_by: int = 0
+    
+    # Location
     position: int = Position.STANDING
-    room: Room | None = None
+    room: Room | None = None  # ROM: in_room
+    was_in_room: Room | None = None  # ROM: was_in_room
+    zone: object | None = None  # ROM: AREA_DATA *zone
+    
+    # Relationships
     master: Character | None = None
     leader: Character | None = None
     pet: "Character | None" = None
+    reply: Character | None = None  # ROM: reply target for tells
+    mprog_target: "Character | None" = None  # ROM: mob program target
+    
+    # Skills and training
     practice: int = 0
     train: int = 0
     skills: dict[str, int] = field(default_factory=dict)
+    
+    # Encumbrance
     carry_weight: int = 0
     carry_number: int = 0
+    
+    # Combat stats
     saving_throw: int = 0
     alignment: int = 0
     hitroll: int = 0
     damroll: int = 0
     wimpy: int = 0
+    
+    # Display/UI
     lines: int = DEFAULT_PAGE_LINES
     newbie_help_seen: bool = False
+    
+    # Time tracking
     played: int = 0
     logon: int = 0
+    timer: int = 0  # ROM: idle timer
+    
+    # Stats (permanent and temporary modifiers)
     perm_stat: list[int] = field(default_factory=list)
     mod_stat: list[int] = field(default_factory=list)
+    
+    # Body form and parts
     form: int = 0
     parts: int = 0
     size: int = 0
     material: str | None = None
     off_flags: int = 0
+    
     # ROM parity: immunity/resistance/vulnerability bitvectors (merc.h)
     imm_flags: int = 0
     res_flags: int = 0
     vuln_flags: int = 0
+    
+    # Damage and attack type
     damage: list[int] = field(default_factory=lambda: [0, 0, 0])
     dam_type: int = 0
     start_pos: int = 0
     default_pos: int = 0
+    
+    # Mob programs
     mprog_delay: int = 0
+    mob_programs: list[MobProgram] = field(default_factory=list)
+    spec_fun: str | None = None  # ROM: special function name
+    
+    # Custom fields (Python-specific)
     hometown_vnum: int = 0
     pcdata: PCData | None = None
-    inventory: list[Object] = field(default_factory=list)
-    equipment: dict[str, Object] = field(default_factory=dict)
+    gen_data: object | None = None  # ROM: GEN_DATA for character generation
+    inventory: list[Object] = field(default_factory=list)  # ROM: carrying
+    equipment: dict[str, Object] = field(default_factory=dict)  # ROM: on (worn items)
     messages: list[str] = field(default_factory=list)
     cooldowns: dict[str, int] = field(default_factory=dict)
     connection: object | None = None
-    desc: object | None = None
-    reply: Character | None = None
+    desc: object | None = None  # ROM: DESCRIPTOR_DATA
     is_admin: bool = False
-    # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
-    imc_permission: str = "Mort"
+    
+    # Communication and channels
+    imc_permission: str = "Mort"  # IMC permission level (Notset/None/Mort/Imm/Admin/Imp)
     muted_channels: set[str] = field(default_factory=set)
     imc_listen: set[str] = field(default_factory=set)
     banned_channels: set[str] = field(default_factory=set)
-    wiznet: int = 0
-    comm: int = 0
-    # Per-character admin logging flag mirroring ROM PLR_LOG
-    log_commands: bool = False
-    # Wait-state (pulses) applied by actions like movement (ROM WAIT_STATE)
-    wait: int = 0
-    # Daze (pulses) — separate action delay used by ROM combat
-    daze: int = 0
+    wiznet: int = 0  # ROM: wiznet flags
+    comm: int = 0  # ROM: comm flags
+    log_commands: bool = False  # Per-character admin logging flag mirroring ROM PLR_LOG
+    
+    # Wait state and delays
+    wait: int = 0  # Wait-state (pulses) applied by actions like movement (ROM WAIT_STATE)
+    daze: int = 0  # Daze (pulses) — separate action delay used by ROM combat
+    
     # Armor class per index [AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC]
     armor: list[int] = field(default_factory=lambda: [100, 100, 100, 100])
+    
     # Per-character command aliases: name -> expansion (pre-dispatch)
     aliases: dict[str, str] = field(default_factory=dict)
+    
     # Optional defense chances (percent) for parity-friendly tests
     shield_block_chance: int = 0
     parry_chance: int = 0
     dodge_chance: int = 0
+    
     # Combat skill levels (0-100) for multi-attack mechanics
     second_attack_skill: int = 0
     third_attack_skill: int = 0
+    enhanced_damage_skill: int = 0  # Enhanced damage skill level (0-100)
+    
     # Combat state - currently fighting target
     fighting: Character | None = None
-    timer: int = 0
-    was_in_room: Room | None = None
-    # Enhanced damage skill level (0-100)
-    enhanced_damage_skill: int = 0
+    
     # Character type flag
     is_npc: bool = True  # Default to NPC, set to False for PCs
-    # Mob program runtime state mirroring ROM's CHAR_DATA fields
-    mob_programs: list[MobProgram] = field(default_factory=list)
-    mprog_target: Character | None = None
-    # Active spell effects keyed by skill name for parity restores
-    spell_effects: dict[str, SpellEffect] = field(default_factory=dict)
+    
+    # Spell effects and character generation
+    spell_effects: dict[str, SpellEffect] = field(default_factory=dict)  # Active spell effects keyed by skill name
     default_weapon_vnum: int = 0
     creation_points: int = 0
     creation_groups: tuple[str, ...] = field(default_factory=tuple)
