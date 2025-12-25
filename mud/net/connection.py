@@ -1448,6 +1448,173 @@ async def _select_character(
         await _send_line(conn, "Failed to load that character. Please try again.")
 
 
+async def handle_connection_with_stream(
+    conn: TelnetStream,
+    host_for_ban: str | None = None,
+    connection_type: str = "Telnet",
+) -> None:
+    """
+    Handle a connection using a pre-created stream object (TelnetStream or SSHStream).
+    
+    This function is used by SSH and other connection types that create their own
+    stream wrapper before calling the connection handler.
+    
+    Args:
+        conn: Pre-created TelnetStream or SSHStream object
+        host_for_ban: IP address for ban checking (optional)
+        connection_type: Type of connection for logging (default: "Telnet")
+    """
+    session = None
+    char = None
+    account: PlayerAccount | None = None
+    username = ""
+    
+    # Set peer host if not already set
+    if host_for_ban and not conn.peer_host:
+        conn.peer_host = host_for_ban
+    
+    permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
+    newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
+    qmconfig = get_qmconfig()
+
+    try:
+        if host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.ALL):
+            await conn.send_line("Your site has been banned from this mud.")
+            return
+
+        await conn.negotiate()
+        if qmconfig.ansiprompt:
+            ansi_result = await _prompt_ansi_preference(conn)
+            if ansi_result is None:
+                return
+            ansi_preference, ansi_explicit = ansi_result
+        else:
+            ansi_preference = qmconfig.ansicolor
+            ansi_explicit = False
+        conn.set_ansi(ansi_preference)
+        await _send_help_greeting(conn)
+
+        login_result = await _run_account_login(conn, host_for_ban)
+        if not login_result:
+            return
+        account, username, was_reconnect = login_result
+
+        selection = await _select_character(
+            conn,
+            account,
+            username,
+            permit_banned=permit_banned,
+            newbie_banned=newbie_banned,
+        )
+        if selection is None:
+            return
+
+        char, is_creation = selection
+        if char is None:
+            return
+
+        if is_creation and not was_reconnect:
+            if account.id:
+                char.account_id = account.id
+                char.account_name = username
+            try:
+                save_character(char)
+            except Exception as exc:
+                print(f"[ERROR] Failed to save newly created character: {exc}")
+
+        char.connection = conn
+        char.desc = conn
+        session = Session(name=char.name, ansi_explicit=ansi_explicit, connection=conn)
+        SESSIONS[char.name] = session
+
+        print(f"[{connection_type}] {char.name} entered the game")
+        await _send_welcome(conn, char, is_creation, was_reconnect)
+
+        # Main game loop
+        while True:
+            try:
+                await asyncio.sleep(0.1)
+                if not char or not char.room:
+                    break
+
+                if session.command_queue:
+                    try:
+                        cmd = session.command_queue.pop(0)
+                        result = await interpret_command(char, cmd)
+                        if result and len(result) < 6000:
+                            await send_to_char(char, result)
+                        elif result:
+                            await send_to_char(
+                                char,
+                                "Sorry, there was an error processing that command.",
+                            )
+                    except Exception as exc:
+                        print(f"[ERROR] Command execution error: {exc}")
+                        await send_to_char(
+                            char,
+                            "Sorry, there was an error processing that command.",
+                        )
+
+                while char and char.messages:
+                    try:
+                        msg = char.messages.pop(0)
+                        await send_to_char(char, msg)
+                    except Exception as exc:
+                        print(f"[ERROR] Failed to send message: {exc}")
+                        break
+
+            except asyncio.CancelledError:
+                break
+            except Exception as exc:
+                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}")
+                break
+
+    except Exception as exc:
+        print(f"[ERROR] {connection_type} connection handler error: {exc}")
+    finally:
+        forced_disconnect = bool(session and getattr(session, "_forced_disconnect", False))
+        try:
+            if char and not forced_disconnect:
+                announce_wiznet_logout(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
+
+        try:
+            if char and not forced_disconnect:
+                save_character(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to save character: {exc}")
+
+        try:
+            if char and char.room and not forced_disconnect:
+                char.room.remove_character(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to remove character from room: {exc}")
+
+        if session and not forced_disconnect and session.name in SESSIONS:
+            SESSIONS.pop(session.name, None)
+
+        if char:
+            if not forced_disconnect:
+                char.desc = None
+                try:
+                    char.account_name = ""
+                except Exception:
+                    pass
+                if getattr(char, "connection", None) is conn:
+                    char.connection = None
+
+        if username and not forced_disconnect:
+            release_account(username)
+
+        try:
+            await conn.close()
+        except Exception as exc:
+            print(f"[ERROR] Failed to close connection: {exc}")
+
+        print(f"[{connection_type} DISCONNECT] {session.name if session else 'unknown'}")
+
+
 async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     addr = writer.get_extra_info("peername")
     host_for_ban: str | None = None
