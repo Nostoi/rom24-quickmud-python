@@ -24,8 +24,8 @@ env/
 # macOS system files
 .DS_Store
 
-# SQLite database
-mud.db
+# SQLite databases (all .db files)
+*.db
 
 # Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
