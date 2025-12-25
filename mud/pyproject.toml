@@ -10,6 +10,9 @@ python = "^3.10"
 sqlalchemy = ">=2.0,<3"
 typer = ">=0.9"
 python-dotenv = ">=1.0"
+fastapi = ">=0.68.0"
+uvicorn = ">=0.15.0"
+asyncssh = ">=2.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.0"
