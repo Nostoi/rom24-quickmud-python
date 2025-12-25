@@ -1524,7 +1524,18 @@ async def handle_connection_with_stream(
 
         char.connection = conn
         char.desc = conn
-        session = Session(name=char.name, ansi_explicit=ansi_explicit, connection=conn)
+        
+        # Create a mock StreamReader for SSH connections (Session requires it but SSH doesn't use it)
+        mock_reader = asyncio.StreamReader()
+        
+        session = Session(
+            name=char.name or "",
+            character=char,
+            reader=mock_reader,
+            connection=conn,
+            account_name=username,
+            ansi_enabled=conn.ansi_enabled,
+        )
         SESSIONS[char.name] = session
 
         print(f"[{connection_type}] {char.name} entered the game")
