@@ -1509,11 +1509,15 @@ async def handle_connection_with_stream(
         if selection is None:
             return
 
-        char, is_creation = selection
+        char, forced_reconnect = selection
+        reconnecting = bool(was_reconnect or forced_reconnect)
+        is_new_player = not bool(char.level)
+        
         if char is None:
             return
 
-        if is_creation and not was_reconnect:
+        # Only save if this is truly a new character creation
+        if is_new_player and not reconnecting:
             if account.id:
                 char.account_id = account.id
                 char.account_name = username
@@ -1537,28 +1541,36 @@ async def handle_connection_with_stream(
             ansi_enabled=conn.ansi_enabled,
         )
         SESSIONS[char.name] = session
+        
+        # Give starting outfit if new player
+        outfit_message: str | None = None
+        if is_new_player and give_school_outfit(char):
+            outfit_message = "You have been equipped by Mota."
 
         print(f"[{connection_type}] {char.name} entered the game")
         
         # Send welcome messages
         try:
-            if is_creation:
-                # New character - send MOTD and newbie help
-                await send_to_char(char, "Character created successfully!")
+            if outfit_message:
+                await send_to_char(char, outfit_message)
+            if not reconnecting:
+                await _send_login_motd(char)
                 if _should_send_newbie_help(char):
                     await _send_newbie_help(char)
-            elif was_reconnect:
+        except Exception as exc:
+            print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
+
+        try:
+            if reconnecting:
                 await send_to_char(char, RECONNECT_MESSAGE)
-            
-            # Announce login
-            note_reminder = _announce_login_or_reconnect(char, host_for_ban, was_reconnect)
-            if was_reconnect and note_reminder:
+            note_reminder = _announce_login_or_reconnect(char, host_for_ban, reconnecting)
+            if reconnecting and note_reminder:
                 await send_to_char(
                     char,
                     "You have a note in progress. Type NWRITE to continue it.",
                 )
         except Exception as exc:
-            print(f"[ERROR] Failed to send welcome messages for {session.name}: {exc}")
+            print(f"[ERROR] Failed to announce wiznet login for {session.name}: {exc}")
 
         # Send initial room look
         try:
