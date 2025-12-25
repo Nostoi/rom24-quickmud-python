@@ -1539,7 +1539,37 @@ async def handle_connection_with_stream(
         SESSIONS[char.name] = session
 
         print(f"[{connection_type}] {char.name} entered the game")
-        await _send_welcome(conn, char, is_creation, was_reconnect)
+        
+        # Send welcome messages
+        try:
+            if is_creation:
+                # New character - send MOTD and newbie help
+                await send_to_char(char, "Character created successfully!")
+                if _should_send_newbie_help(char):
+                    await _send_newbie_help(char)
+            elif was_reconnect:
+                await send_to_char(char, RECONNECT_MESSAGE)
+            
+            # Announce login
+            note_reminder = _announce_login_or_reconnect(char, host_for_ban, was_reconnect)
+            if was_reconnect and note_reminder:
+                await send_to_char(
+                    char,
+                    "You have a note in progress. Type NWRITE to continue it.",
+                )
+        except Exception as exc:
+            print(f"[ERROR] Failed to send welcome messages for {session.name}: {exc}")
+
+        # Send initial room look
+        try:
+            if char.room:
+                response = process_command(char, "look")
+                await send_to_char(char, response)
+            else:
+                await send_to_char(char, "You are floating in a void...")
+        except Exception as exc:
+            print(f"[ERROR] Failed to send initial look: {exc}")
+            await send_to_char(char, "Welcome to the world!")
 
         # Main game loop
         while True:
