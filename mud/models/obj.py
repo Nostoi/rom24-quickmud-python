@@ -59,9 +59,14 @@ obj_index_registry: dict[int, ObjIndex] = {}
 
 @dataclass
 class ObjectData:
-    """Python representation of OBJ_DATA"""
+    """Python representation of OBJ_DATA (ROM src/merc.h struct obj_data)"""
 
+    # Core properties
     item_type: int
+    valid: bool = True  # ROM: bool valid (object validity flag)
+    enchanted: bool = False  # ROM: bool enchanted (magical enhancement flag)
+    
+    # Flags and attributes
     extra_flags: int = 0
     wear_flags: int = 0
     wear_loc: int = 0
@@ -71,21 +76,29 @@ class ObjectData:
     condition: int = 0
     timer: int = 0
     value: list[int] = field(default_factory=lambda: [0] * 5)
+    
+    # Descriptive fields
     owner: str | None = None
     name: str | None = None
     short_descr: str | None = None
     description: str | None = None
     material: str | None = None
-    carried_by: Character | None = None
-    in_obj: ObjectData | None = None
-    contains: list[ObjectData] = field(default_factory=list)
-    extra_descr: list[ExtraDescr] = field(default_factory=list)
-    affected: list[Affect] = field(default_factory=list)
-    pIndexData: ObjIndex | None = None
-    in_room: Room | None = None
-    enchanted: bool = False
-    next_content: ObjectData | None = None
-    next: ObjectData | None = None
+    
+    # Relationships and containment
+    carried_by: Character | None = None  # ROM: CHAR_DATA *carried_by
+    in_obj: ObjectData | None = None  # ROM: OBJ_DATA *in_obj (container)
+    on: Character | None = None  # ROM: OBJ_DATA *on (worn on character - we use wear_loc + carried_by)
+    contains: list[ObjectData] = field(default_factory=list)  # ROM: OBJ_DATA *contains
+    extra_descr: list[ExtraDescr] = field(default_factory=list)  # ROM: EXTRA_DESCR_DATA *extra_descr
+    affected: list[Affect] = field(default_factory=list)  # ROM: AFFECT_DATA *affected
+    
+    # Index and location
+    pIndexData: ObjIndex | None = None  # ROM: OBJ_INDEX_DATA *pIndexData
+    in_room: Room | None = None  # ROM: ROOM_INDEX_DATA *in_room
+    
+    # Linked list pointers (Python uses lists but we keep for compatibility)
+    next_content: ObjectData | None = None  # ROM: OBJ_DATA *next_content
+    next: ObjectData | None = None  # ROM: OBJ_DATA *next
 
     def __repr__(self) -> str:
         return f"<ObjectData type={self.item_type} name={self.short_descr!r}>"

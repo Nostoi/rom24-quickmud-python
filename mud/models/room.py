@@ -38,25 +38,40 @@ class Exit:
 
 @dataclass
 class Room:
-    """Runtime room container built from area files."""
+    """Runtime room container built from area files (ROM ROOM_INDEX_DATA)."""
 
+    # Core properties
     vnum: int
     name: str | None = None
     description: str | None = None
-    owner: str | None = None
-    area: Area | None = None
-    room_flags: int = 0
-    light: int = 0
-    sector_type: int = 0
-    heal_rate: int = 100
-    mana_rate: int = 100
-    clan: int = 0
-    exits: list[Exit | None] = field(default_factory=lambda: [None] * len(Direction))
-    extra_descr: list[ExtraDescr] = field(default_factory=list)
-    resets: list[ResetJson] = field(default_factory=list)
-    people: list[Character | MobInstance] = field(default_factory=list)
-    contents: list[Object] = field(default_factory=list)
-    next: Room | None = None
+    owner: str | None = None  # ROM: char *owner
+    
+    # Area and location
+    area: Area | None = None  # ROM: AREA_DATA *area
+    
+    # Room attributes
+    room_flags: int = 0  # ROM: int room_flags
+    light: int = 0  # ROM: sh_int light
+    sector_type: int = 0  # ROM: sh_int sector_type
+    heal_rate: int = 100  # ROM: sh_int heal_rate
+    mana_rate: int = 100  # ROM: sh_int mana_rate
+    clan: int = 0  # ROM: sh_int clan
+    
+    # Exits and descriptions
+    exits: list[Exit | None] = field(default_factory=lambda: [None] * len(Direction))  # ROM: EXIT_DATA *exit[6]
+    extra_descr: list[ExtraDescr] = field(default_factory=list)  # ROM: EXTRA_DESCR_DATA *extra_descr
+    
+    # Resets (Python uses list; ROM uses linked list)
+    resets: list[ResetJson] = field(default_factory=list)  # Python: list of resets
+    reset_first: object | None = None  # ROM: RESET_DATA *reset_first (OLC)
+    reset_last: object | None = None  # ROM: RESET_DATA *reset_last (OLC)
+    
+    # Contents
+    people: list[Character | MobInstance] = field(default_factory=list)  # ROM: CHAR_DATA *people
+    contents: list[Object] = field(default_factory=list)  # ROM: OBJ_DATA *contents
+    
+    # Linked list pointer
+    next: Room | None = None  # ROM: ROOM_INDEX_DATA *next
 
     def __repr__(self) -> str:
         return f"<Room vnum={self.vnum} name={self.name!r}>"
