@@ -9,15 +9,23 @@ dist/
 build/
 *.egg-info/
 
-
-#Ignore vscode AI rules
-.github/instructions/codacy.instructions.md
+# Virtual environments
 venv/
+env/
+.venv/
+
+# Environment files (may contain sensitive data)
+.env
+.env.*
+
+# Agent logs
 .agent_logs/
-.DS_Store
-mud.db
-# Ignore macOS system file
+
+# macOS system files
 .DS_Store
 
-# Ignore SQLite database
+# SQLite database
 mud.db
+
+# Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
