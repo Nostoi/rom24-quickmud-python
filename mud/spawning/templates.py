@@ -285,6 +285,7 @@ class MobInstance:
     is_admin: bool = False
     is_npc: bool = True
     messages: list[str] = field(default_factory=list)
+    fighting: "Character | MobInstance | None" = None  # Combat target
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> MobInstance:

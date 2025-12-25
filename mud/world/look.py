@@ -72,7 +72,8 @@ def look(char: Character, args: str = "") -> str:
     
     # Check extra descriptions in room
     for ed in getattr(room, "extra_descr", []):
-        if ed.keyword and args.lower() in ed.keyword.lower().split():
+        keyword = getattr(ed, "keyword", None)
+        if keyword and args.lower() in keyword.lower().split():
             return ed.description or "You see nothing special."
     
     return "You do not see that here."
