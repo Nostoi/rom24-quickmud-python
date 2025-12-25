@@ -105,7 +105,7 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.1.1 (Production Ready)
+- **Version**: 2.1.2 (Production Ready)
 - **ROM 2.4b Parity**: 100% (227/227 behavioral tests passing)
 - **ROM C Function Coverage**: 96.1% (716/745 functions mapped)
 - **Test Coverage**: 1435/1436 tests passing (99.93% success rate)
