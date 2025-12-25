@@ -122,7 +122,8 @@ def test_frenzy_applies_bonuses_and_messages() -> None:
 
     assert target.hitroll == effect.hitroll_mod
     assert target.damroll == effect.damroll_mod
-    assert target.armor == [effect.ac_mod] * 4
+    # ROM initializes armor to [100,100,100,100], frenzy adds +20 penalty = [120,120,120,120]
+    assert target.armor == [100 + effect.ac_mod] * 4
     assert target.messages[-1] == "You are filled with holy wrath!"
     assert witness.messages[-1] == "Paladin gets a wild look in their eyes!"
 
@@ -296,7 +297,8 @@ def test_stone_skin_applies_ac_and_messages() -> None:
     assert effect is not None
     assert effect.duration == caster.level
     assert effect.level == caster.level
-    assert target.armor == [-40, -40, -40, -40]
+    # ROM initializes armor to [100,100,100,100], stone skin applies -40 = [60,60,60,60]
+    assert target.armor == [60, 60, 60, 60]
 
     assert target.messages[-1] == "Your skin turns to stone."
     room_message = "Sentinel's skin turns to stone."
@@ -364,10 +366,7 @@ def test_giant_strength_uses_override_item_level() -> None:
 
     override_level = 24
 
-    assert (
-        skill_handlers.giant_strength(caster, target, override_level=override_level)
-        is True
-    )
+    assert skill_handlers.giant_strength(caster, target, override_level=override_level) is True
 
     effect = target.spell_effects.get("giant strength")
     assert effect is not None
@@ -441,9 +440,7 @@ def test_haste_uses_override_item_level() -> None:
 
     override_level = 28
 
-    assert (
-        skill_handlers.haste(caster, target, override_level=override_level) is True
-    )
+    assert skill_handlers.haste(caster, target, override_level=override_level) is True
 
     effect = target.spell_effects.get("haste")
     assert effect is not None
@@ -487,9 +484,7 @@ def test_haste_dispels_slow_or_blocks_duplicates(monkeypatch) -> None:
         room.add_character(character)
         character.messages.clear()
 
-    target.apply_spell_effect(
-        SpellEffect(name="haste", duration=5, level=20, affect_flag=AffectFlag.HASTE)
-    )
+    target.apply_spell_effect(SpellEffect(name="haste", duration=5, level=20, affect_flag=AffectFlag.HASTE))
 
     assert skill_handlers.haste(caster, target) is False
     assert caster.messages[-1] == "Runner is already moving as fast as they can."
@@ -499,9 +494,7 @@ def test_haste_dispels_slow_or_blocks_duplicates(monkeypatch) -> None:
     target.messages.clear()
     witness.messages.clear()
 
-    target.apply_spell_effect(
-        SpellEffect(name="slow", duration=6, level=20, affect_flag=AffectFlag.SLOW)
-    )
+    target.apply_spell_effect(SpellEffect(name="slow", duration=6, level=20, affect_flag=AffectFlag.SLOW))
 
     rolls = iter([99, 0])
     monkeypatch.setattr(skill_handlers.rng_mm, "number_percent", lambda: next(rolls))
@@ -513,9 +506,7 @@ def test_haste_dispels_slow_or_blocks_duplicates(monkeypatch) -> None:
     assert caster.messages[-1] == slowed_message
     assert witness.messages[-1] == slowed_message
 
-    target.apply_spell_effect(
-        SpellEffect(name="slow", duration=6, level=20, affect_flag=AffectFlag.SLOW)
-    )
+    target.apply_spell_effect(SpellEffect(name="slow", duration=6, level=20, affect_flag=AffectFlag.SLOW))
     caster.messages.clear()
     target.messages.clear()
 

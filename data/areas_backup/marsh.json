@@ -1,0 +1,1314 @@
+{
+  "area": {
+    "vnum": 8300,
+    "name": "Marsh",
+    "filename": "marsh.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 8301,
+      "name": "Muddy Path",
+      "description": "This section of the path is slowly being drowned by the nearby swamp to the\nsouth, which is creeping slowly inland.  Several caved-in buildings sprawl\nhere, torn apart both by battle and the elements.\n",
+      "sector_type": "field",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 6125,
+          "description": "The path looks drier here.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8302,
+          "description": "A broken road leading southward into the marsh.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "swamp",
+          "description": "The swamp to the south even reaches as far as this point ... it makes the\nground and air about you moist and fetid.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8302,
+      "name": "Swamp's Edge",
+      "description": "Briars and marsh plants stick to your boots and clothes, and clouds cover the\nskies above the murky marsh, leaving the path before you dark and sinister.\nYou see some disturbances in the marsh, but after a few strangled screams,\nthe sounds stop.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8301,
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 8303,
+          "description": "To the east lies a series of bogs and shallows that look rather threatening.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8304,
+          "description": "You notice a large hill rising out of the marsh to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8303,
+      "name": "Marshy Forest",
+      "description": "This area is by no means a forest, but for those who dwell in these sparse\ntrees it is one.  Occasionally you see a whole humanoid form floating face down\nin the water, but mostly you only find pieces.  You hear a loud bellow in the\ndistance.  And feel fear creep into your heart.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8305,
+          "description": "Eastward is the thick bog of ooze...\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8302,
+          "description": "Westward lies the remanents of a broken and shattered roadway being swallowed\nby the marsh.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "pieces",
+          "description": "You see severed limbs and spongy intestines.\n"
+        },
+        {
+          "keyword": "humanoid corpse",
+          "description": "He looks mangled and shredded.  You see one large gash mark that looks\nlike it came from the claw of some huge beast.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8304,
+      "name": "On a hill.",
+      "description": "You stand atop a hill on the northwestern side of the evil swamp. Dark\nclouds whip around you and the wind raises its voice and assails you.\n",
+      "sector_type": "hills",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8302,
+          "description": "To the north lies a damp broken roadway.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 8309,
+          "description": "A dark pool congeals to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8310,
+          "description": "A gloomy path leads down the hill into the swamp.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8305,
+      "name": "An Oozing Bog",
+      "description": "You stand in an oozing quagmire.  A creaking beat fills the air,\naccompanied by groans and soughing of the air.  Several large winged\nbeasts flap over you and send chilling glares your way.  You feel out\nof place, and feel that the occupants of this realm will soon\nhave you for a feast.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8306,
+          "description": "Eastward lies a horde of disgusting looking monsters.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8303,
+          "description": "Westward lies a marshy area.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "beasts",
+          "description": "You see a large creature, possibly a demon, flapping heavily above you.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8306,
+      "name": "An Oozing Bog",
+      "description": "The ground here is soft and oozing.  You feel slimy water seeping into your\nboots.  Better stop and check for leeches when you get out of here.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 8305,
+          "description": "You see a large tree limb that looks easily moved.\n",
+          "keyword": "limb",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "limb",
+          "description": "The limb looks like it is attached to a trap door in the ground.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8307,
+      "name": "Swamp Thing's Lair",
+      "description": "A horrible swamp thing resides here.  Mutilated corpses suffuse the air with\nthe overwhelming stench of putrid flesh.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 8308,
+          "description": "A pool of quick sand lies to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "corpses",
+          "description": "You notice a note on one of the corpses reading:  'Best ye forget the temple,\nit is not for the likes of you...'\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8308,
+      "name": "Pool of Quick Sand",
+      "description": "You stand by a large oozing pool of quick sand.  Luckily only a complete\nklutz could not avoid it.  Dancing lights fly about you and one seems to\nbe taunting you towards the pool.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8307,
+          "description": "The swamp thing's lair.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8314,
+          "description": "A murky bog.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8309,
+          "description": "A dark pool lies to the west.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "quicksand",
+          "description": "It looks deadly to the foolish.\n"
+        },
+        {
+          "keyword": "lights ",
+          "description": "From the stories you have heard, you recognize them as will-o-wisps.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8309,
+      "name": "A Dark Pool.",
+      "description": "You stand beside a large dark pond.  The water boils not with heat, but with\nmotion, as if it is alive.  A creaking beat pulses through the air, leaving\nyou with a cold sweat and fear in your heart.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8308,
+          "description": "A large pool of quicksand lies to the east.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8311,
+          "description": "You see a cloud of darkness to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8304,
+          "description": "A hill rises out of the swamp to the east.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "pond",
+          "description": "It looks ALIVE ...\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8310,
+      "name": "Gloomy Path Through the Marsh.",
+      "description": "To the north lies a hill, shrouded in dark clouds, and to the south lies\na huge patch of vegetation.  You sense an evil presence and notice\na beast flying overhead to the south east, towards what looks to be a\nhuge fortress, half buried in the marsh.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8304,
+          "description": "To the north a hill protrudes from the marshes.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8312,
+          "description": "To the south a huge mass of vegetation seems to quiver with life.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "vegetation",
+          "description": "It looks sentient.\n"
+        },
+        {
+          "keyword": "fortress",
+          "description": "It is surrounded by walls nearly 20 meters high.  In a tall tower on the\nnortheast side, a window glows blue with magical energy.\n"
+        },
+        {
+          "keyword": "beast",
+          "description": "It looks to be a demon of some foul breed.\n"
+        },
+        {
+          "keyword": "clouds",
+          "description": "The clouds look dark and foreboding.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8311,
+      "name": "Cloud of Darkness.",
+      "description": "As you travel through this cloud of darkness, a fear such as you have never\nknown before assails you.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8309,
+          "description": "A dark pool lies to the north.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 8313,
+          "description": "An obelisk lies to the south.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8312,
+      "name": "Near Vegetation from Hell.",
+      "description": "You stand near some of the strangest plant life you have ever seen, a mixture\nof tumescent vegetables, evil-smelling fruit trees, and malignant ferns.\n",
+      "sector_type": "water_swim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8310,
+          "description": "To the north is a gloomy path through the marsh.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 8313,
+          "description": "Eastward is a large, black stone monolith.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "plant plants",
+          "description": "They look rather violent, and snap at you when you come near.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8313,
+      "name": "By the Monolith.",
+      "description": "You are standing near a monolith which protrudes some 20 feet from the\nmarsh into the air.  Its black obsidian surface shines darkly in the\nstrange, almost unearthly light that enters through the clouds above.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8311,
+          "description": "To the north is a cloud of darkest evil.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 8314,
+          "description": "Eastward lies a murky bog.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8312,
+          "description": "Near Vegetation from Hell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "monolith",
+          "description": "This huge monolith resembles nothing you have ever seen before.\nYou have a strong feeling not to go within.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8314,
+      "name": "Murky Bog.",
+      "description": "A murky bog surrounds you.  To the east a black monolith juts forth from the\nground.  Far to the north lies a huge pool of quicksand.  Snarls can be heard\nechoing as if from a great distance.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8308,
+          "description": "To the north lies a huge pool of quicksand.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 8315,
+          "description": "To the east the marsh turns into a small lake.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8313,
+          "description": "Westward a large monolith awaits adventurers.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "monolith",
+          "description": "This is a huge obsidian stone block stuck in the marsh.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8315,
+      "name": "Northern Lake Side.",
+      "description": "Floating on this boiling lake is not what you would consider an enjoyable\nexperience.  Many a creature bumps the bottom of your boat, and glares\nat you through unblinking eyes from the waters below.  The southern\nportion of the lake looks calm and serene compared to this wild place.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 8316,
+          "description": "The southern portion of the lake lies to the south.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8314,
+          "description": "To the west lies a murky bog.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8316,
+      "name": "Southern Lake Side.",
+      "description": "You are floating on a calm section of blue crystal water.  You feel much more\nat ease then you were before in this area.  Then a wave of fear passes over\nyou.  You are not alone.\n",
+      "sector_type": "water_noswim",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 8315,
+          "description": "Northern lake side.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8317,
+          "description": "To the west is a beach where your boat can land.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "north",
+          "description": "The way to the north seems to be impassable, due to the rough water and\nstrange wild life.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8317,
+      "name": "Beach",
+      "description": "You are on a sandy shore.  Marsh life creeps across the surface.  To the west\nlies an evil fortress.  You see figures walking along the battlements.\n",
+      "sector_type": "mountain",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8316,
+          "description": "To the east lies the southern portion of a small lake.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 8318,
+          "description": "The great gates.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "fortress",
+          "description": "It is hewn of black stone and heavily fortified.\n"
+        }
+      ],
+      "resets": [],
+      "area": 8300
+    },
+    {
+      "id": 8318,
+      "name": "Before the Great Gates.",
+      "description": "You stand before the gates of a huge fortress.  The drawbridge is up, the\ngates closed, and the portcullis down.  This place looks very dangerous,\nand you decide not to continue onward.\n",
+      "sector_type": "forest",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 8317,
+          "description": "To the east is a marshy beach.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": -1,
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 8300
+    }
+  ],
+  "mobs": [
+    {
+      "id": 8301,
+      "name": "a swamp troll",
+      "player_name": "oldstyle troll",
+      "long_description": "A swamp troll charges towards you.\n",
+      "description": "This huge behemoth towers to a height of 15 feet.  He sneers at you\nas he approaches and raises two black taloned claws to strike you.\n",
+      "race": "troll",
+      "act_flags": "ABCFG",
+      "affected_by": "0",
+      "alignment": -600,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "rest",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8302,
+      "name": "a green troll",
+      "player_name": "oldstyle troll",
+      "long_description": "A green troll attempts to get a hold on you.\n",
+      "description": "This big troll towers several feet over you.  He has a large spear\nwhich he seems to ply with utmost prowess.  He jabs his spear at you\nand cackles with glee.\n",
+      "race": "troll",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -400,
+      "group": 0,
+      "level": 14,
+      "thac0": 0,
+      "ac": "2d10+190",
+      "hit_dice": "7d9+100",
+      "mana_dice": "1d12+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 400,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8303,
+      "name": "an ogre",
+      "player_name": "oldstyle ogre",
+      "long_description": "An ogre stands here getting ready to beat in your face.\n",
+      "description": "This mean bastard looks like he could tear you limb from limb.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8304,
+      "name": "the Swamp Thing",
+      "player_name": "oldstyle thing",
+      "long_description": "The Swamp Thing shambles about here.  It seems hungry.\n",
+      "description": "The Swamp Thing has huge fists, which look like they could pound you flat.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -700,
+      "group": 0,
+      "level": 24,
+      "thac0": 0,
+      "ac": "5d10+500",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d10+6",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "rest",
+      "sex": "none",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8305,
+      "name": "a gnoll",
+      "player_name": "oldstyle gnoll",
+      "long_description": "There is a mean looking gnoll here.\n",
+      "description": "The Gnoll seems annoyed at your presence.\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 30,
+      "thac0": 0,
+      "ac": "6d12+853",
+      "hit_dice": "15d9+100",
+      "mana_dice": "4d6+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 1250,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8306,
+      "name": "a huge hairy beast",
+      "player_name": "oldstyle beast",
+      "long_description": "A huge hairy beast shambles towards you with death in his eyes.\n",
+      "description": "This huge beast stands about 20 feet in height and has huge green clawed\nappendages.\n",
+      "race": "human",
+      "act_flags": "ACFG",
+      "affected_by": "DF",
+      "alignment": -450,
+      "group": 0,
+      "level": 21,
+      "thac0": 0,
+      "ac": "4d10+360",
+      "hit_dice": "10d9+100",
+      "mana_dice": "4d4+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8307,
+      "name": "a rather small beast",
+      "player_name": "oldstyle beast",
+      "long_description": "A rather small beast cringes in terror as it notices you.\n",
+      "description": "This rather small beast looks like you could take it out with a single\nsword blow.\n",
+      "race": "human",
+      "act_flags": "ACGH",
+      "affected_by": "P",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8308,
+      "name": "the Will-O-Wisp",
+      "player_name": "oldstyle will will-o-wisp",
+      "long_description": "A Will-O-Wisp darts hear and there, making fun of you.\n",
+      "description": "This strange little creature seems very hard to keep your eyes on.\nYou stare as hard as you can at the glowing ball of floating light and\nare just able to notice a small pair of glowing eyes.\n",
+      "race": "human",
+      "act_flags": "ACGH",
+      "affected_by": "P",
+      "alignment": 0,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 150,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8309,
+      "name": "the monstrous snake",
+      "player_name": "oldstyle snake anaconda",
+      "long_description": "A monstrous snake slithers towards you, thinking 'breakfast'.\n",
+      "description": "This 10 meter anaconda looks rather hungry.\n",
+      "race": "snake",
+      "act_flags": "ACFGH",
+      "affected_by": "PQ",
+      "alignment": -100,
+      "group": 0,
+      "level": 16,
+      "thac0": 0,
+      "ac": "3d9+233",
+      "hit_dice": "8d9+100",
+      "mana_dice": "2d6+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 500,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8310,
+      "name": "a large snake",
+      "player_name": "oldstyle snake python",
+      "long_description": "A rather large python rests in a coil here.\n",
+      "description": "It's the largest Amazon python you have ever seen.\n",
+      "race": "snake",
+      "act_flags": "ACFGH",
+      "affected_by": "PQ",
+      "alignment": -100,
+      "group": 0,
+      "level": 11,
+      "thac0": 0,
+      "ac": "2d8+134",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d10+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8312,
+      "name": "the Marsh Hag",
+      "player_name": "oldstyle hag",
+      "long_description": "A Marsh Hag is here.\n",
+      "description": "Yech!  She manages to make even Smurfette look attractive.  That's ok,\nbecause she thinks you stink too, and she's about to do something about it.\n",
+      "race": "human",
+      "act_flags": "ACGS",
+      "affected_by": "DF",
+      "alignment": -200,
+      "group": 0,
+      "level": 9,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 8,
+      "offensive": "BEFJNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8313,
+      "name": "a Death Slaad",
+      "player_name": "oldstyle slaad",
+      "long_description": "A Death Slaad is standing here distraught.  He seems lost.\n",
+      "description": "This dark apparition stands a meager 13 feet in height.  Even in the dim\nswamp light, the blade of his scythe gleams.\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "DF",
+      "alignment": -200,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 700,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8314,
+      "name": "a marsh wolf",
+      "player_name": "oldstyle wolf",
+      "long_description": "A marsh wolf sniffs the ground has followed your scent.\n",
+      "description": "This wolf looks plump.  She probably ate a friend or two of yours who came\ninto the marsh.\n",
+      "race": "wolf",
+      "act_flags": "ACFG",
+      "affected_by": "0",
+      "alignment": -200,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "ENR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8318,
+      "name": "a shambling mound",
+      "player_name": "oldstyle mound shambling",
+      "long_description": "A heap of garbage shambles towards you.\n",
+      "description": "This grotesque pile of plant matter fills you with utmost horror.\n",
+      "race": "human",
+      "act_flags": "ACG",
+      "affected_by": "Q",
+      "alignment": -100,
+      "group": 0,
+      "level": 13,
+      "thac0": 0,
+      "ac": "2d10+170",
+      "hit_dice": "6d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8319,
+      "name": "the orc shaman",
+      "player_name": "oldstyle shaman orc",
+      "long_description": "An orc shaman stands before you holding a staff and wearing robes.\n",
+      "description": "This old orc has an array of bones stuck in his hair and strange symbols\npainted on his face and hands.\n",
+      "race": "human",
+      "act_flags": "ABCDFGQ",
+      "affected_by": "DF",
+      "alignment": -100,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "12d9+100",
+      "mana_dice": "2d4+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 7,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 17,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8320,
+      "name": "a marsh giant",
+      "player_name": "oldstyle giant",
+      "long_description": "A marsh giant stomps towards you.\n",
+      "description": "This huge monster of a man has green gnarly teeth and a BIG stick.\n",
+      "race": "giant",
+      "act_flags": "ABCDFG",
+      "affected_by": "DF",
+      "alignment": -100,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "7d9+100",
+      "mana_dice": "2d6+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
+      "offensive": "EFNR",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 600,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 8321,
+      "name": "a gargoyle",
+      "player_name": "oldstyle gargoyle",
+      "long_description": "A large gargoyle lands next to you, baring his fangs at you.\n",
+      "description": "This creepy fellow looks like he could use you as a meal.\n",
+      "race": "human",
+      "act_flags": "ABCDFG",
+      "affected_by": "DF",
+      "alignment": -100,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 8301,
+      "name": "a long spear",
+      "description": "A strange spear lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "J",
+      "wear_flags": "AN",
+      "weight": 11,
+      "cost": 100,
+      "condition": "1330",
+      "values": [
+        0,
+        1,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 1
+        },
+        {
+          "location": 19,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 8302,
+      "name": "a dark horned helmet",
+      "description": "A wicked looking horned helmet lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "J",
+      "wear_flags": "AE",
+      "weight": 10,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        6,
+        6,
+        5,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": -3
+        },
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "horns horn",
+          "description": "These horns appear to be made of adamantite."
+        }
+      ]
+    },
+    {
+      "id": 8303,
+      "name": "a suit of chainmail",
+      "description": "An old suit of chainmail lies here, corroded by the marsh.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "J",
+      "wear_flags": "AD",
+      "weight": 20,
+      "cost": 200,
+      "condition": "2700",
+      "values": [
+        5,
+        8,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 8306,
+      "name": "a huge, wicked-looking scythe",
+      "description": "An evil, wicked-looking scythe lies in the shadows.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "HJ",
+      "wear_flags": "AN",
+      "weight": 19,
+      "cost": 160,
+      "condition": "1770",
+      "values": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 8307,
+      "name": "a murky green potion",
+      "description": "A murky green potion lies here in the mud.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": "AB",
+      "wear_flags": "A",
+      "weight": 5,
+      "cost": 10,
+      "condition": "690",
+      "values": [
+        43,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion",
+          "description": "It looks really disgusting and doesn't smell very nice either."
+        }
+      ]
+    },
+    {
+      "id": 8308,
+      "name": "a rusty claymore",
+      "description": "A huge rusted sword lies in a pool of water.",
+      "material": "iron",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 100,
+      "condition": "3000",
+      "values": [
+        0,
+        4,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

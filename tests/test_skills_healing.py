@@ -42,7 +42,7 @@ def test_cure_disease_and_poison_remove_affects(
     for ch in (caster, target, observer):
         room.add_character(ch)
 
-    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 99)
 
     plague_effect = SpellEffect(
         name="plague",
@@ -71,10 +71,7 @@ def test_cure_disease_and_poison_remove_affects(
     assert skill_handlers.cure_poison(caster, target) is True
     assert not target.has_spell_effect("poison")
     assert not target.has_affect(AffectFlag.POISON)
-    assert any(
-        message == "A warm feeling runs through your body."
-        for message in target.messages
-    )
+    assert any(message == "A warm feeling runs through your body." for message in target.messages)
     assert "Patient looks much better." in observer.messages
 
 

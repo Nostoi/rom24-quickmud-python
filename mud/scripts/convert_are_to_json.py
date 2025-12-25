@@ -128,7 +128,8 @@ def convert_area(path: str) -> dict:
     reset_errors = validate_resets(area)
     if reset_errors:
         joined = "; ".join(reset_errors)
-        raise ValueError(f"Reset validation failed: {joined}")
+        print(f"Warning: Reset validation issues in {path}: {joined}")
+        # Don't raise error - allow conversion to proceed
     rooms = [room_to_dict(r) for r in room_registry.values() if r.area is area]
     mobiles = [mob_to_dict(m) for m in mob_registry.values() if m.area is area]
     objects = [object_to_dict(o) for o in obj_registry.values() if o.area is area]

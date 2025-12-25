@@ -1,0 +1,87 @@
+{
+  "description": "ROM combat damage calculation golden values",
+  "c_source": "src/fight.c:damage(), one_hit()",
+  "test_cases": [
+    {
+      "name": "basic_melee_hit",
+      "attacker": {
+        "level": 10,
+        "class": "warrior",
+        "damroll": 5,
+        "str": 18,
+        "weapon_dam_dice": "2d6"
+      },
+      "victim": {
+        "level": 10,
+        "armor": [0, 0, 0, 0],
+        "hit": 100
+      },
+      "expected_damage_range": [7, 17],
+      "notes": "Base 2d6 (2-12) + damroll 5 = 7-17"
+    },
+    {
+      "name": "enhanced_damage_skill",
+      "attacker": {
+        "level": 20,
+        "class": "warrior",
+        "damroll": 10,
+        "str": 20,
+        "weapon_dam_dice": "3d8",
+        "skills": { "enhanced damage": 100 }
+      },
+      "victim": {
+        "level": 15,
+        "armor": [-20, -20, -20, -20]
+      },
+      "expected_damage_range": [13, 34],
+      "notes": "Base 3d8 (3-24) + damroll 10, enhanced_damage adds up to 50%"
+    },
+    {
+      "name": "damage_resist_half",
+      "base_damage": 100,
+      "resist": true,
+      "immune": false,
+      "vulnerable": false,
+      "expected": 50,
+      "c_formula": "dam = dam / 2"
+    },
+    {
+      "name": "damage_immune_zero",
+      "base_damage": 100,
+      "resist": false,
+      "immune": true,
+      "vulnerable": false,
+      "expected": 0,
+      "c_formula": "dam = 0"
+    },
+    {
+      "name": "damage_vulnerable_150pct",
+      "base_damage": 100,
+      "resist": false,
+      "immune": false,
+      "vulnerable": true,
+      "expected": 150,
+      "c_formula": "dam += dam / 2"
+    },
+    {
+      "name": "thac0_level_10_warrior",
+      "level": 10,
+      "class": "warrior",
+      "thac0_00": 20,
+      "thac0_32": 0,
+      "expected_thac0": 14,
+      "c_formula": "ch->class == 0 ? 20 - level * 20 / 32 : ...",
+      "notes": "20 - (10 * 20 / 32) = 20 - 6 = 14 (C integer division)"
+    },
+    {
+      "name": "thac0_level_20_mage",
+      "level": 20,
+      "class": "mage",
+      "thac0_00": 20,
+      "thac0_32": 10,
+      "expected_thac0": 14,
+      "c_formula": "20 - level * (20-10) / 32 = 20 - 200/32 = 20 - 6 = 14"
+    }
+  ],
+  "verification": "Run combat scenarios with seeded RNG and compare damage values"
+}

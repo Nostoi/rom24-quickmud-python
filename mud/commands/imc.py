@@ -28,9 +28,7 @@ _PERMISSION_LEVELS: list[tuple[str, int]] = [
     ("Imp", 5),
 ]
 
-_PERMISSION_BY_NAME: dict[str, tuple[str, int]] = {
-    name.lower(): (name, rank) for name, rank in _PERMISSION_LEVELS
-}
+_PERMISSION_BY_NAME: dict[str, tuple[str, int]] = {name.lower(): (name, rank) for name, rank in _PERMISSION_LEVELS}
 
 _PERMISSION_BY_RANK: dict[int, str] = {rank: name for name, rank in _PERMISSION_LEVELS}
 
@@ -217,8 +215,7 @@ def try_imc_command(char: Any, command: str, argument: str) -> Optional[str]:
         (
             entry
             for entry in state.channels
-            if entry.local_name.lower() == command_lower
-            or entry.name.lower() == command_lower
+            if entry.local_name.lower() == command_lower or entry.name.lower() == command_lower
         ),
         None,
     )
@@ -257,9 +254,10 @@ def try_imc_command(char: Any, command: str, argument: str) -> Optional[str]:
             return f"~GFile logging disabled for {channel_name}.\r\n"
         updated_flags = channel.flags | IMCCHAN_LOG
         update_channel_flags(state, channel, updated_flags)
-        return (
-            f"~RFile logging enabled for {channel_name}, PLEASE don't forget to undo this when it isn't needed!\r\n"
-        )
+        return f"~RFile logging enabled for {channel_name}, PLEASE don't forget to undo this when it isn't needed!\r\n"
+
+    if not state.connection:
+        return "IMC channel messaging is not available right now.\r\n"
 
     if not _character_listens_to_channel(char, history_key):
         return (
@@ -349,14 +347,18 @@ def _select_social_template(
             if not template:
                 display = social.name or ""
                 return "", None, f"~YSocial ~W{display}~Y: Missing others_auto.\r\n"
-            victim = SimpleNamespace(name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud))
+            victim = SimpleNamespace(
+                name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud)
+            )
             return template, victim, None
 
         template = social.others_found
         if not template:
             display = social.name or ""
             return "", None, f"~YSocial ~W{display}~Y: Missing others_found.\r\n"
-        victim = SimpleNamespace(name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud))
+        victim = SimpleNamespace(
+            name=f"{target_name}@{target_mud}", sex=_resolve_remote_sex(state, target_name, target_mud)
+        )
         return template, victim, None
 
     template = social.others_no_arg

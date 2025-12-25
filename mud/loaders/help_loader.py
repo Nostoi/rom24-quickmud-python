@@ -57,8 +57,15 @@ def load_helps(tokenizer: BaseTokenizer, area: Area) -> None:
             raise ValueError("invalid #HELPS entry: level must be an integer") from exc
 
         keywords_part = parts[1] if len(parts) > 1 else ""
-        if keywords_part.endswith("~"):
-            keywords_part = keywords_part[:-1]
+
+        # Keywords can span multiple lines until tilde is found
+        while not keywords_part.endswith("~"):
+            next_line = tokenizer.next_line()
+            if next_line is None:
+                raise ValueError("unexpected EOF reading keyword list")
+            keywords_part += " " + next_line
+
+        keywords_part = keywords_part[:-1]  # Strip trailing ~
 
         if keywords_part == "$":
             break

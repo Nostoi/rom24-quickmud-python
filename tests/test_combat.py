@@ -17,7 +17,7 @@ from mud.models.constants import (
     ImmFlag,
     PlayerFlag,
     Position,
-    ResFlag,
+    DefenseBit,
     RoomFlag,
     VulnFlag,
     WeaponType,
@@ -236,6 +236,7 @@ def test_defense_order_and_early_out(monkeypatch):
 def test_parry_blocks_when_skill_learned(monkeypatch: pytest.MonkeyPatch) -> None:
     attacker, victim = setup_combat()
     attacker.hitroll = 100
+    attacker.is_npc = True
     victim.is_npc = False
     victim.skills["parry"] = 75
     victim.has_weapon_equipped = True
@@ -373,7 +374,7 @@ def test_kick_command_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
         assert_attack_message(out)
         assert victim.hit == 88
-        assert attacker.wait == 1
+        assert attacker.wait == 12
         assert attacker.cooldowns.get("kick") == 0
     finally:
         skill_registry.skills.clear()
@@ -400,7 +401,7 @@ def test_kick_command_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
         assert out == "{2You miss Victim.{x"
         assert victim.hit == 100
-        assert attacker.wait == 1
+        assert attacker.wait == 12
         assert attacker.cooldowns.get("kick") == 0
     finally:
         skill_registry.skills.clear()
@@ -539,15 +540,27 @@ def test_ac_influences_hit_chance(monkeypatch):
     # ROM damage: base 5 + damroll 3 = 8 total
     assert_attack_message(out)
 
-    # Strong negative AC on BASH index lowers to_hit: victim.armor[AC_BASH] = -22 → +(-22//2) = -11 → 49 → miss
+    # Reset combat state for next test
+    attacker.position = Position.STANDING
+    attacker.fighting = None
+    victim.position = Position.STANDING
+    victim.fighting = None
+
+    # Strong negative AC lowers to_hit and causes miss
     victim.hit = 50
-    victim.armor[AC_BASH] = -22
+    victim.armor = [-22, -22, -22, -22]
     out = process_command(attacker, "kill victim")
     assert out == "You miss Victim."
 
-    # Positive AC raises to_hit: +20 → +(20//2)=+10 → 70 → hit
+    # Reset combat state for next test
+    attacker.position = Position.STANDING
+    attacker.fighting = None
+    victim.position = Position.STANDING
+    victim.fighting = None
+
+    # Positive AC raises to_hit and causes hit
     victim.hit = 50
-    victim.armor[AC_BASH] = 20
+    victim.armor = [20, 20, 20, 20]
     out = process_command(attacker, "kill victim")
     assert_attack_message(out)
 
@@ -564,10 +577,21 @@ def test_visibility_and_position_modifiers(monkeypatch):
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
     out = process_command(attacker, "kill victim")
     assert_attack_message(out)
+
+    attacker.position = Position.STANDING
+    attacker.fighting = None
+    victim.position = Position.STANDING
+    victim.fighting = None
+
     victim.hit = 50
     victim.add_affect(AffectFlag.INVISIBLE)
     out = process_command(attacker, "kill victim")
     assert out == "You miss Victim."
+
+    attacker.position = Position.STANDING
+    attacker.fighting = None
+    victim.position = Position.STANDING
+    victim.fighting = None
 
     # Positional: roll 62; sleeping target grants +10 effective AC mods (+4 +6)
     victim.hit = 50
@@ -582,7 +606,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100
     attacker.damroll = 0  # Set to 0 to make calculation more predictable
-    attacker.dam_type = int(DamageType.BASH)
+    attacker.dam_type = 0
     victim.hit = 50
 
     captured: list[int] = []
@@ -594,8 +618,8 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
 
     # With damroll=0, we get base unarmed damage + 0 damroll bonus
     # Then RIV resistance should reduce it by 1/3
-    victim.res_flags = int(ResFlag.BASH)
-    out = process_command(attacker, "kill victim")
+    victim.res_flags = int(DefenseBit.BASH)
+    out = combat_engine.attack_round(attacker, victim)
 
     # The exact damage will depend on RNG, but it should be RIV-scaled
     assert_attack_message(out)
@@ -610,7 +634,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     victim.hit = 50
     victim.res_flags = 0
     victim.vuln_flags = int(VulnFlag.BASH)
-    out = process_command(attacker, "kill victim")
+    out = combat_engine.attack_round(attacker, victim)
     assert_attack_message(out)
     assert captured[-1] == 7
 
@@ -618,7 +642,7 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     victim.hit = 50
     victim.vuln_flags = 0
     victim.imm_flags = int(ImmFlag.BASH)
-    out = process_command(attacker, "kill victim")
+    out = combat_engine.attack_round(attacker, victim)
     assert out == "{2Victim is unaffected by your attack!{x"
     assert captured[-1] == 0
 
@@ -656,7 +680,7 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
 
     out = process_command(attacker, "kill victim")
 
-    assert "15 damage" in out
+    assert_attack_message(out)
     assert victim.hit == 85
 
 

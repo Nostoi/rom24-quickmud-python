@@ -4,48 +4,49 @@
     "min": 8600,
     "max": 8699
   },
-  "builders": [],
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 8600,
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -53,41 +54,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -95,41 +95,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -137,41 +136,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -179,41 +177,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 3050,
           "description": "You see an abandoned warehouse.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -221,41 +218,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -263,41 +259,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -305,41 +300,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -347,41 +341,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -389,41 +382,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -431,41 +423,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8630,
           "description": "You see the Road to Newfane.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -473,41 +464,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -515,41 +505,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8636,
           "description": "You see a road by a pond.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -557,41 +546,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -599,41 +587,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8632,
           "description": "You see a large dance hall.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -641,41 +628,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -683,41 +669,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8634,
           "description": "You see a small hall.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -725,41 +710,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -767,41 +751,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8600,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8610,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -809,41 +792,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8601,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -851,41 +833,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8602,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8612,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -893,41 +874,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8603,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -935,41 +915,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8638,
           "description": "You see a mountain ridge against the sky.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8614,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -977,41 +956,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8605,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1019,41 +997,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8623,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8620,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8606,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8616,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1061,41 +1038,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8628,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8621,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8607,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1103,41 +1079,40 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8625,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 8626,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8622,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8627,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 8608,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8618,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1145,21 +1120,20 @@
       "name": "Road to Newfane",
       "description": "You are on a gently curving north-south road.  On your east side a youthful\nriver sparkles blue and rushes in the sunlight.  On the west, green leaves and\ngreen ferns burst against the rich brown earth.  You feel the heat of your\nhealthy muscles as you travel swiftly down the well-paved road.\nYou may recall now if you like.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8631,
           "description": "You see a village square.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 8611,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1167,16 +1141,15 @@
       "name": "Newfane Village Square",
       "description": "You are on the lawn of the village square of Newfane, resting against an oak\nafter your vigorous journey.  The late spring breeze feels warm and sensuous\non your body.  An Ale is in progress: you spy more than a dozen fiddlers and\nhundreds of Morris Dancers dressed in white cotton and wearing colorful hats\nand bells.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 8630,
           "description": "You see the Road to Newfane.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1184,12 +1157,12 @@
       "name": "A Large Dance Hall",
       "description": "You are inside a large dance hall with a very polished, very slippery wooden\nfloor.  You see three long lines of dancers, alternating men and women, in\nsome sort of progressive country dance.  Two fiddlers, a flautist, and a\nharpsichord player provide the music.  You hear scattered screams of joy\nfrom the dancers.\nYou may recall now if you like.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "west": {
           "to_room": 8615,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [
@@ -1198,7 +1171,6 @@
           "description": "The dancers have been here all night and intend to dance until dawn.\n"
         }
       ],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1206,16 +1178,15 @@
       "name": "A Small Hall",
       "description": "You are inside a small hall with a rough wooden floor.  You see dozens of\npeople in the hall chasing one poor man who is yelling at the top of\nhis lungs.  Wait a minute.  These people are all holding hands and smiling!\nThe man in front is leading them in a spiral!  They're DANCING!  And you\nthought people didn't dance like this any more!\nYou may recall now if you like.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 8617,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1223,17 +1194,17 @@
       "name": "Road by a Pond",
       "description": "You are passing by a large pond, almost a small lake.  You notice a small\nwooden shack by the side of the road.\nYou may recall now if you like.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 8613,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 8637,
           "description": "You see a wooden church set back among the trees.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [
@@ -1242,7 +1213,6 @@
           "description": "The shack looks hand-made by an amateur.\n"
         }
       ],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1250,16 +1220,15 @@
       "name": "An Old Wooden Church",
       "description": "As you enter the hall, you see the largest crowd of people you've ever seen in\nyour life.  They're also the noisiest crowd you've ever heard, and as they\npress around you, the SWEATIEST crowd you've ever felt!  At the front of the\nhall, a group of musicians are playing 'Chorus Jig'.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 8636,
           "description": "You see a road by a pond.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1267,21 +1236,20 @@
       "name": "Mountain Road",
       "description": "You are following a road at the top of a mountain ridge with sky all around\nyou.  Distant valleys are spread out below you on both sides.  There are\nmany horsemen and horsewomen on this road, riding hell-for-leather out of\nsheer exhilaration.  You wish you had a horse!\nYou may recall now if you like.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "up": {
           "to_room": 8639,
           "description": "You see several acres of thickly planted, very young Yule Trees.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 8624,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1289,16 +1257,15 @@
       "name": "Yule Tree Farm",
       "description": "This is the Yule Tree Farm at the top of Mountain Road.  All around you,\nyoung Yule Trees saturate your senses with dark green needles and pine\nessence.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "down": {
           "to_room": 8638,
           "description": "You see a mountain ridge against the sky.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     },
     {
@@ -1306,10 +1273,9 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": [],
+      "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 8600
     }
   ],
@@ -1317,29 +1283,380 @@
     {
       "id": 8600,
       "name": "the keeper",
-      "description": "The keeper of the Morris equipment is here.\n"
+      "player_name": "oldstyle keeper",
+      "long_description": "The keeper of the Morris equipment is here.\n",
+      "description": "Her job is to set the level for this equipment.\n",
+      "race": "human",
+      "act_flags": "A",
+      "affected_by": "0",
+      "alignment": 1000,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 5,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     }
   ],
   "objects": [
     {
       "id": 8600,
       "name": "morris bells",
-      "description": "A set of leggings with a dozen brass bells sewn on has been left here."
+      "description": "A set of leggings with a dozen brass bells sewn on has been left here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 33,
+      "weight": 50,
+      "cost": 310,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "motto",
+          "description": "'Time on the ground is time wasted.'\n"
+        },
+        {
+          "keyword": "bells morris",
+          "description": "These are a set of sturdy leather leggings with small brass bells sewn on.\nThey look like the leggings worn by Morris dancers.  There is a motto tooled\ninto the leather.\n"
+        }
+      ]
     },
     {
       "id": 8601,
       "name": "a morris handkerchief",
-      "description": "A white handkerchief is here."
+      "description": "A white handkerchief is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 4097,
+      "weight": 50,
+      "cost": 310,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "handkerchief hankie kerchief",
+          "description": "This is a fine linen handkerchief used for ritual Morris dances.\n"
+        }
+      ]
     },
     {
       "id": 8602,
       "name": "a morris sash",
-      "description": "A white sash is here."
+      "description": "A white sash is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 2049,
+      "weight": 50,
+      "cost": 310,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sash",
+          "description": "This is a fine linen sash used for ritual Morris dances.\n"
+        }
+      ]
     },
     {
       "id": 8603,
       "name": "a morris staff",
-      "description": "A short, stout staff made of polished wood is here."
+      "description": "A short, stout staff made of polished wood is here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "weight": 50,
+      "cost": 1460,
+      "condition": 100,
+      "values": [
+        10,
+        4,
+        4,
+        72,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "stick staff",
+          "description": "Made from the wood of a Yule Tree, this staff is about one meter long and\nhighly polished.  It looks more like a ritual device than a weapon.\n"
+        }
+      ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "R",
+      "arg1": 8600,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8601,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8602,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8603,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8604,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8605,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8606,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8607,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8608,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8610,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8611,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8612,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8613,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8614,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8615,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8616,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8617,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8618,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8620,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8621,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8622,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8623,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8624,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8625,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8626,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8627,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "R",
+      "arg1": 8628,
+      "arg2": 6,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8600,
+      "arg2": 1,
+      "arg3": 8699,
+      "arg4": 1
+    },
+    {
+      "command": "O",
+      "arg1": 8600,
+      "arg2": 80,
+      "arg3": 8631,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 8601,
+      "arg2": 80,
+      "arg3": 8632,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 8601,
+      "arg2": 80,
+      "arg3": 8634,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 8602,
+      "arg2": 80,
+      "arg3": 8637,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 8603,
+      "arg2": 4,
+      "arg3": 8639,
+      "arg4": 0
     }
   ],
   "specials": []

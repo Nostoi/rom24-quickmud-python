@@ -122,8 +122,8 @@ def wiznet(
             sender_ch = sender_ch_or_flag
 
     for ch in list(character_registry):
-        # Skip sender
-        if ch == sender_ch:
+        # Skip sender (identity compare to avoid recursive __eq__ graphs)
+        if sender_ch is not None and ch is sender_ch:
             continue
 
         # ROM wiznet iterates descriptor_list, which only contains PCs.
@@ -133,6 +133,7 @@ def wiznet(
         if (
             getattr(ch, "desc", None) is None
             and getattr(ch, "connection", None) is None
+            and not hasattr(ch, "messages")
         ):
             continue
 

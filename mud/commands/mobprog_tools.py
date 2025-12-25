@@ -122,3 +122,43 @@ def do_mpstat(char: Character, args: str) -> str:
     body = _format_programs(programs)
     return ROM_NEWLINE.join([header, delay_line, *body]) + ROM_NEWLINE
 
+
+def do_mpdump(char: Character, args: str) -> str:
+    """Display mob program code by vnum (ROM ``mpdump``).
+
+    Mirrors ROM src/mob_cmds.c:do_mpdump - displays the actual program code
+    for debugging and inspection purposes.
+
+    Usage: mpdump <vnum>
+    """
+    vnum_str = (args or "").strip()
+    if not vnum_str:
+        return "Syntax: mpdump <program vnum>" + ROM_NEWLINE
+
+    try:
+        vnum = int(vnum_str)
+    except ValueError:
+        return "Invalid vnum - must be a number." + ROM_NEWLINE
+
+    # Search all loaded mobs for a program with this vnum
+    found_program: MobProgram | None = None
+    for character in list(character_registry):
+        if not getattr(character, "is_npc", False):
+            continue
+        programs = _resolve_programs(character)
+        for program in programs:
+            if getattr(program, "vnum", 0) == vnum:
+                found_program = program
+                break
+        if found_program:
+            break
+
+    if found_program is None:
+        return "No such MOBprogram." + ROM_NEWLINE
+
+    code = getattr(found_program, "code", None) or ""
+    if not code.strip():
+        return f"Program {vnum} has no code." + ROM_NEWLINE
+
+    # Return the code with proper line endings
+    return code.rstrip() + ROM_NEWLINE

@@ -347,7 +347,7 @@ def test_char_update_applies_conditions(monkeypatch):
     assert hero.pcdata.condition == [0, 0, 0, 0]
     assert hero.spell_effects == {}
     assert hero.messages == [
-        "You feel less protected.",
+        "You feel less protected.\n\r",
         "You are sober.",
         "You are thirsty.",
         "You are hungry.",
@@ -442,9 +442,7 @@ def test_char_update_auto_quits_linkdead(monkeypatch):
     room_registry[room.vnum] = room
     room_registry[limbo.vnum] = limbo
 
-    ghost = Character(
-        name="Ghost", level=10, is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48])
-    )
+    ghost = Character(name="Ghost", level=10, is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48]))
     ghost.timer = 31
     ghost.room = limbo
     ghost.was_in_room = room

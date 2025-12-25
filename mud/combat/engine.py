@@ -33,7 +33,7 @@ from mud.models.constants import (
     LEVEL_IMMORTAL,
     WearFlag,
 )
-from mud.persistence import save_character
+from mud.account.account_manager import save_character
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.models.social import expand_placeholders
 from mud.utils import rng_mm
@@ -824,19 +824,11 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
     if silver_reward == 1:
         attacker.send_to_char("Mota gives you one silver coin for your sacrifice.")
     else:
-        attacker.send_to_char(
-            f"Mota gives you {silver_reward} silver coins for your sacrifice."
-        )
+        attacker.send_to_char(f"Mota gives you {silver_reward} silver coins for your sacrifice.")
 
-    corpse_name = (
-        getattr(corpse, "short_descr", None)
-        or getattr(corpse, "name", "")
-        or "corpse"
-    )
+    corpse_name = getattr(corpse, "short_descr", None) or getattr(corpse, "name", "") or "corpse"
     room.broadcast(
-        expand_placeholders(
-            "$n sacrifices $N to Mota.", attacker, SimpleNamespace(name=corpse_name)
-        ),
+        expand_placeholders("$n sacrifices $N to Mota.", attacker, SimpleNamespace(name=corpse_name)),
         exclude=attacker,
     )
     wiznet(
@@ -906,21 +898,15 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
         return
 
     attacker.silver = current_silver + share + remainder
-    attacker.send_to_char(
-        f"You split {silver_reward} silver coins. Your share is {share + remainder} silver."
-    )
+    attacker.send_to_char(f"You split {silver_reward} silver coins. Your share is {share + remainder} silver.")
 
-    split_message = (
-        f"$n splits {silver_reward} silver coins. Your share is {share} silver."
-    )
+    split_message = f"$n splits {silver_reward} silver coins. Your share is {share} silver."
     for member in group_members:
         if member is attacker:
             continue
         member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
         if hasattr(member, "messages"):
-            member.messages.append(
-                expand_placeholders(split_message, attacker, member)
-            )
+            member.messages.append(expand_placeholders(split_message, attacker, member))
 
 
 def _handle_auto_actions(attacker: Character, corpse) -> None:
@@ -1398,8 +1384,8 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     if wield is None:
         return messages
 
-    # Check that attacker is still fighting victim (ROM condition)
-    if getattr(attacker, "fighting", None) != victim:
+    current_target = getattr(attacker, "fighting", None)
+    if current_target is not None and current_target is not victim:
         return messages
 
     # Get weapon flags - support both extra_flags (for ObjIndex) and weapon_flags attribute
@@ -1410,11 +1396,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         weapon_flags = int(getattr(wield, "extra_flags"))
 
     weapon_level = _weapon_level(wield) or 1
-    weapon_name = (
-        getattr(wield, "name", None)
-        or getattr(wield, "short_descr", None)
-        or "the weapon"
-    )
+    weapon_name = getattr(wield, "name", None) or getattr(wield, "short_descr", None) or "the weapon"
     room = getattr(victim, "room", None)
 
     # WEAPON_POISON - ROM src/fight.c L600-634
@@ -1430,7 +1412,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
                 )
             if hasattr(victim, "add_affect"):
                 victim.add_affect(AffectFlag.POISON)
-            messages.append(f"The venom on {weapon_name} takes hold.")
+            messages.append("You feel poison coursing through your veins.")
 
     # WEAPON_VAMPIRIC - ROM src/fight.c L640-649
     if weapon_flags & WEAPON_VAMPIRIC:
@@ -1451,7 +1433,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         if hasattr(attacker, "alignment"):
             attacker.alignment = max(-1000, attacker.alignment - 1)
 
-        messages.append(f"{weapon_name} drains life.")
+        messages.append(f"You feel {weapon_name} drawing your life away.")
 
     # WEAPON_FLAMING - ROM src/fight.c L651-659
     if weapon_flags & WEAPON_FLAMING:
@@ -1461,7 +1443,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             room.broadcast(f"{victim.name} is burned by {weapon_name}.", exclude=victim)
         fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
-        messages.append(f"{weapon_name} scorches {victim.name}.")
+        messages.append(f"{weapon_name} sears your flesh.")
 
     # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
@@ -1471,7 +1453,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             room.broadcast(f"{victim.name} is frozen by {weapon_name}.", exclude=victim)
         cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
-        messages.append(f"{weapon_name} chills {victim.name}.")
+        messages.append("The cold touch surrounds you with ice.")
 
     # WEAPON_SHOCKING - ROM src/fight.c L672-681
     if weapon_flags & WEAPON_SHOCKING:
@@ -1484,6 +1466,6 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             )
         shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.LIGHTNING, show=False)
-        messages.append(f"{weapon_name} shocks {victim.name}.")
+        messages.append("You are shocked by the weapon.")
 
     return messages

@@ -5,6 +5,7 @@ from mud.models.constants import (
     EX_ISDOOR,
     EX_LOCKED,
     EX_PICKPROOF,
+    LEVEL_HERO,
     WearLocation,
 )
 from mud.models.clans import lookup_clan_id
@@ -28,6 +29,8 @@ def _attach_session(char):
 
 def test_redit_requires_builder_security_and_marks_area():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 9
     builder.pcdata.security = 0
@@ -64,6 +67,7 @@ def test_redit_requires_builder_security_and_marks_area():
 
 def test_redit_can_create_exit_and_set_flags():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -103,6 +107,7 @@ def test_redit_can_create_exit_and_set_flags():
 
 def test_redit_ed_adds_and_updates_extra_description():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -134,6 +139,7 @@ def test_redit_ed_adds_and_updates_extra_description():
 
 def test_redit_room_flags_toggle():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -167,6 +173,7 @@ def test_redit_room_flags_toggle():
 
 def test_redit_sector_updates_type():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -193,6 +200,7 @@ def test_redit_sector_updates_type():
 
 def test_redit_owner_sets_and_clears_name():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -218,6 +226,7 @@ def test_redit_owner_sets_and_clears_name():
 
 def test_redit_format_rewraps_description():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -243,6 +252,7 @@ def test_redit_format_rewraps_description():
 
 def test_redit_sets_heal_and_mana_rates():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -269,6 +279,7 @@ def test_redit_sets_heal_and_mana_rates():
 
 def test_redit_sets_clan():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -295,6 +306,7 @@ def test_redit_sets_clan():
 
 def test_redit_show_lists_rom_metadata():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -381,8 +393,10 @@ def test_redit_show_lists_rom_metadata():
     process_command(builder, "@redit done")
     assert session.editor is None
 
+
 def test_redit_link_creates_bidirectional_exit():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -440,6 +454,7 @@ def test_redit_link_creates_bidirectional_exit():
 
 def test_redit_mreset_adds_reset_and_spawns_mob():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -458,8 +473,7 @@ def test_redit_mreset_adds_reset_and_spawns_mob():
     spawned = [
         mob
         for mob in room.people
-        if getattr(mob, "prototype", None) is not None
-        and getattr(mob.prototype, "vnum", None) == 3002
+        if getattr(mob, "prototype", None) is not None and getattr(mob.prototype, "vnum", None) == 3002
     ]
     assert spawned, "expected spawned mob in room"
 
@@ -481,6 +495,7 @@ def test_redit_mreset_adds_reset_and_spawns_mob():
 
 def test_redit_oreset_adds_room_and_container_resets():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -531,6 +546,7 @@ def test_redit_oreset_adds_room_and_container_resets():
 
 def test_redit_oreset_equips_mob_and_records_reset():
     builder = create_test_character("Builder", 3001)
+    builder.level = LEVEL_HERO
     builder.is_admin = True
     builder.room.area.security = 1
     builder.pcdata.security = 1
@@ -555,7 +571,9 @@ def test_redit_oreset_equips_mob_and_records_reset():
     assert reset.arg2 == int(WearLocation.WIELD)
     assert reset.arg3 == int(WearLocation.WIELD)
 
-    inventory = [obj for obj in getattr(mob, "inventory", []) if getattr(getattr(obj, "prototype", None), "vnum", None) == 3005]
+    inventory = [
+        obj for obj in getattr(mob, "inventory", []) if getattr(getattr(obj, "prototype", None), "vnum", None) == 3005
+    ]
     assert inventory, "expected object in mob inventory"
     equipped = inventory[0]
     assert getattr(equipped, "wear_loc", None) == int(WearLocation.WIELD)

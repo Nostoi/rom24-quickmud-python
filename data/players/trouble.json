@@ -24,7 +24,7 @@
   "practice": 0,
   "train": 0,
   "played": 0,
-  "lines": 0,
+  "lines": 22,
   "logon": 0,
   "prompt": null,
   "prefix": null,
@@ -41,10 +41,10 @@
   "last_level": 0,
   "position": 8,
   "armor": [
-    0,
-    0,
-    0,
-    0
+    100,
+    100,
+    100,
+    100
   ],
   "perm_stat": [
     0,
@@ -62,9 +62,9 @@
   ],
   "conditions": [
     0,
-    0,
-    0,
-    0
+    48,
+    48,
+    48
   ],
   "act": 524288,
   "affected_by": 0,

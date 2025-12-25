@@ -12,7 +12,7 @@ from mud.config import (
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, PlayerFlag, Sex
 from mud.net.session import SESSIONS
-from mud.persistence import save_character as save_player_file
+from mud.account.account_manager import save_character as save_player_file
 from mud.registry import room_registry
 from mud.security import bans
 from mud.security.bans import BanFlag, BanPermissionError

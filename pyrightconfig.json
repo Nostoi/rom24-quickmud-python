@@ -1,0 +1,11 @@
+{
+  "include": ["mud", "tests", "scripts"],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."]
+    }
+  ],
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false
+}

@@ -72,10 +72,38 @@ def convert_player(path: str | Path) -> PlayerJson:
     if "#END" not in nonempty:
         raise ValueError("invalid player file: missing #END footer")
 
+    # Track whether we're in the #PLAYER section or an #O (object) section
+    in_player_section = False
+    in_object_section = False
+
     for raw in lines:
         line = raw.strip()
         if not line:
             continue
+        # Track section transitions
+        if line == "#PLAYER":
+            in_player_section = True
+            in_object_section = False
+            continue
+        elif line == "#O":
+            in_player_section = False
+            in_object_section = True
+            continue
+        elif line == "#END":
+            in_player_section = False
+            in_object_section = False
+            continue
+        elif line == "End":
+            # End of current subsection; if we were in object section, stay out
+            # until we see another #PLAYER (unlikely) or continue to #END
+            if in_object_section:
+                in_object_section = False
+            continue
+
+        # Skip all content in object sections - we only care about player data
+        if in_object_section:
+            continue
+
         if line.startswith("Name "):
             name = line.split(" ", 1)[1].rstrip("~")
         elif line.startswith("Levl "):

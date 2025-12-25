@@ -1,0 +1,2836 @@
+{
+  "area": {
+    "vnum": 3400,
+    "name": "Chapel",
+    "filename": "chapel.are",
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 3405,
+      "name": "Inside the Chapel",
+      "description": "You are in a small, dark chapel.  The dark brown glass in the tiny windows\ndo not let much light through.  A few rows of worn wooden benches stand here.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3604,
+          "description": "The chapel door is made of dark wood.\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "down": {
+          "to_room": 3421,
+          "keyword": "altar",
+          "flags": "2",
+          "key": 3430
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "benches rows",
+          "description": "The benches are not of the comfortable kind.\n"
+        },
+        {
+          "keyword": "glass windows",
+          "description": "The windows must be meant to be dark.  At least they are completely clean.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3408,
+      "name": "Stairwell into Darkness",
+      "description": "You sense even more danger coming from below but are urged onward ...\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "west": {
+          "to_room": 3449,
+          "keyword": "door",
+          "flags": "1",
+          "key": 3411
+        },
+        "down": {
+          "to_room": 3450,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3409,
+      "name": "The Acolyte's Bedroom",
+      "description": "This is why you were not welcomed at the entrance by the tomb's faithful\nservants ... blood and gore is ankle deep in here.\nOh NO! the door shut behind you!  It's a trap!\nA bloodied corpse of an acolyte is lying here ...\nA bloodied corpse of an acolyte is lying here ...\nA bloodied corpse of an acolyte is lying here ...\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [
+        {
+          "keyword": "corpse corpses",
+          "description": "Mauled and torn apart ... throats were ripped out and guts spilled on the\nfloor ... you slip and land, planting yourself firmly in the slick wetness\nand splattering yourself with offal.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3410,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3415,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3411,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3411,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3410,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3412,
+      "name": "The Grand Hall of Kings",
+      "description": "You are at the west end of the Grand Hall of Kings.  There is a doorway to the\nsouth with something strange written above it.  Also on the floor are dried\nblood stains, but their color seems a little wrong.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3417,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3413,
+          "description": "A door to the south\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "door writing",
+          "description": "Above the door is some strange writing!  It is worn with age, but it refers\nto an ancient ruler named 'Shohan'.\n"
+        },
+        {
+          "keyword": "stain stains",
+          "description": "That's odd ... they seem a little GREEN.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3413,
+      "name": "The Shrine of Shohan",
+      "description": "BLOOD EVERYWHERE!\nThe walls are coated with blood, bits of bloody flesh lie at your feet,\nand torn clothing is scattered about.  It wouldn't disturb you in the least\nexcept that it is all FRESH!  What ever used to pass as an altar here,\nlies overturned and smashed.  Doors lead to the south and to the north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3412,
+          "keyword": "north",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3414,
+          "keyword": "south",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3414,
+      "name": "The Tomb of Shohan",
+      "description": "Once beautiful, this place has been turned into a slaughterhouse by the hands\nof evil beings ... even more blood and dead, rotting flesh.  This place looks\nlike the feeding grounds of beasts and monsters.  The overturned sarcophagus\nof the once powerful King Shohan lies here.  A door leads to the north and a\ndoorway has been hewn to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3413,
+          "keyword": "door north",
+          "flags": "1"
+        },
+        "east": {
+          "to_room": 3419,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "coffin sarcophagus",
+          "description": "Now destroyed ... there is writing on it: 'All hail the new king; we serve\nthe Roch'tar, the Undying One!  Those who decline his worship shall be\nslaughtered!'\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3415,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3420,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3416,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3410,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3416,
+      "name": "Entrance to the Lower Chambers",
+      "description": "You can tell that this area wasn't a part of the original construction.\nThe walls have been hewn by a mighty force look as though they were CLAWED.\nThe passage slopes upward here and also continues to the north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3415,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3418,
+          "keyword": "tunnel",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "walls",
+          "description": "Something BIG must have done this job!  There are traces of BLOOD in the\nclaw marks.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3417,
+      "name": "The Grand Hall of Kings",
+      "description": "This is the western wing of the Grand Hall of Kings.  Your only exits are to\nthe east and west in this gloomy hallway.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3422,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3412,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3418,
+      "name": "The Shrine of Cristis",
+      "description": "Different than the rest, this place has not been desecrated.  An altar still\nstands here and the walls show scenes from the life of Cristis the Kind,\na ruler of the outlying regions west of Midgaard.  There is a stone staircase\nleading down.  The Ghost of Cristis the Kind stands here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3419,
+          "flags": "0"
+        },
+        "down": {
+          "to_room": 3416,
+          "keyword": "staircase",
+          "flags": "1",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "ghost cristis",
+          "description": "His rest has been disturbed by evil creatures who have invaded his domain\nand grave.  He holds up a parchment for you to read:\nHello stranger and last hope for Midgaard and this tomb!\nThis is a plea for aid by a man long since dead from this Earth.\nThe forces of evil have taken control of this tomb and the\nKings of old need your aid to free us and deliver us to peace\nonce again.  I think that I alone have been able to appear and\ncommunicate with the mortal world.\nRoch'tar, the reincarnate Vampire, now rules these tombs.\nYou must find and defeat him and his minions!\nMay God bless you on your Quest!\n"
+        },
+        {
+          "keyword": "altar",
+          "description": "It stands 2 feet high with the remnants of candle-wax on top.  There is\nan inscription on the side:  'Praise the almighty Cristis the bringer of\ngood and justice to the world.  He who fought the evilest finally is at\npeace.  May the Gods remember him forever ...'\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3419,
+      "name": "The Tomb of Cristis",
+      "description": "Everything here has simply been destroyed.   Exits lead north and west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3418,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3414,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3420,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3425,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3415,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3421,
+      "name": "Entrance Chamber to the Grand Hall of Kings",
+      "description": "Whoever built this place must have been very rich indeed!  Though you did\nenter through a rather small door this place has enough room to hold several\nscore of people.  The floor has a beautifully woven carpet, and the walls are\ncovered in finely crafted tapestries. You can tell that these things must have\nbeen worth much but they have not lasted well throughout the ages.  Massive\ndoors lead off to the south and a large stone staircase leads up.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3422,
+          "description": "Finely polished oak doors stand to the south.\n",
+          "keyword": "oak",
+          "flags": "1",
+          "key": -1
+        },
+        "up": {
+          "to_room": 3405,
+          "description": "You see a large set of stone stairs leading upwards to a small stone door at\nthe top.\n",
+          "keyword": "stone trapdoor door",
+          "flags": "2",
+          "key": 3410
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "letters graffiti",
+          "description": "'Beware here all of man, because past here lies only death.'\nInsho'rkthon brsskra-lehsn Roch'tar\nBeneath, there are two criss-crossing scratchmarks in an X formation that\nlook like someone (or something) raked their claws across the wood.\n"
+        },
+        {
+          "keyword": "oak",
+          "description": "They're HUGE!  They are at least 12 feet tall and about 10 feet wide.\nIf not for one thing they would be perfectly preserved.  There appears\nto be some letters crudely scratched into the wood.\n"
+        },
+        {
+          "keyword": "staircase stairs",
+          "description": "Though quite cracked they do look very stable.\n"
+        },
+        {
+          "keyword": "tapestry tapestries",
+          "description": "The tapestries were woven into beautiful and exciting scenes of battles\nlong ago.  One on the left your shows the historic battle between Jubal the\nBenevolent and Hroth Kragen's forces that eventually Jubal's army won (of\ncourse).\n"
+        },
+        {
+          "keyword": "stone door trapdoor",
+          "description": "It's rather small and looks quite heavy but maybe with some kind of leverage\nyou could move it.  It has a queerly shaped hole that looks big enough\nfor an equally queerly shaped pole to fit inside.  If only you had it!\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3422,
+      "name": "The Grand Hall of Kings",
+      "description": "A long hallway stretches east and west.  On the southern side of the hall\nthere are many doors, each with the name of a king who has died and is\nentombed here.  The hallway is beautiful yet chilling.  Even though the area\nhas been kept well by acolytes, there remains a stench of the undead.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3421,
+          "keyword": "oak",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 3427,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3423,
+          "description": "The door has written above it: 'May all the lands thank Crotus the Victor.\nWithout his guidance this kingdom would not have stood.'\n",
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3417,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3423,
+      "name": "The Shrine of Crotus",
+      "description": "Mostly rubble, this place used to be the shrine of the famous king Crotus,\nwho saved the northern regions from being overrun by the goblin hordes of\n100 years ago.  If not for him, Midgaard of course would have eventually been\nconquered as well.  Though Crotus was a goodly king, it was rumored that he\nturned to the dark ways in his dying years ... and died an evil man.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3422,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3424,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3424,
+      "name": "The Tomb of Crotus",
+      "description": "A sarcophagus lies in the middle of the room and seems undisturbed.\nA hole has been knocked into the east wall.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3423,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3429,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3425,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3426,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3420,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3426,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3425,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3430,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3427,
+      "name": "The Grand Hall of Kings",
+      "description": "You are in the western part of the Grand Hall of Kings.  To the south is a\ndoor and to the east and west the hall continues.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3432,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3428,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3422,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3428,
+      "name": "The Shrine of Mitnar",
+      "description": "Mitnar was a gruesome beast of a man ... he loved battle ... and nothing\nelse.  Warriors did love Mitnar, and all fighting men honored him.\nOn the wall is depicted battle after battle after battle.\nA small opening has been shaped carefully to the east.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3427,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "east": {
+          "to_room": 3433,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3429,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3429,
+      "name": "The Tomb of Mitnar",
+      "description": "The wall paintings show men and women warriors alike bowing down to Mitnar,\nprisoners of war being put to the sword by Mitnar, and great heaps of gold\nand weapons under the feet of Mitnar.  Where his coffin was, there is now\nonly a rectangular blemish on the floor of the dusty room.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3428,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3424,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3430,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3435,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3431,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3426,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3431,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3430,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3436,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3432,
+      "name": "The Grand Hall of Kings",
+      "description": "You are still walking through the gloomy hallway.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3437,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3427,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3433,
+      "name": "The Shrine of Frath",
+      "description": "Little chunks of dried meat are spattered throughout this room.  The walls\nare covered in gore.  Almost as if they were painted ... ICK!  You can\nalmost make out the design!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3438,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3428,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3434,
+      "name": "The Tomb of Frath",
+      "description": "UGH!  The sarcophagus is opened up and the mummified body lies out in the\nopen, ripped to pieces.  Gnawed pieces of flesh and bone are strewn here.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "down": {
+          "to_room": 3439,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3435,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3440,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3436,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3430,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3436,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3435,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3441,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3431,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3437,
+      "name": "The Grand Hall of Kings",
+      "description": "You are at the western end of the Grand Hall of Kings.  There is a\ndoor leading north and the hallway continues west.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3409,
+          "keyword": "door",
+          "flags": "1",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3432,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3438,
+      "name": "The Shrine of Jubal",
+      "description": "This was once beautiful.  Now the huge tapestries have been torn down and the\ncarpeting pulled up ... the paintings on the ceiling are unreadable and the\naltar is crumbled.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3439,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3433,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3439,
+      "name": "The Tomb of Jubal",
+      "description": "The smell coming off of the opened sarcophagus is nauseating.  The floor is\nslightly crumpled and walls are raked ... but the worst part is the mummy ...\nJubal the Benevolent is missing his head!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3438,
+          "flags": "0"
+        },
+        "up": {
+          "to_room": 3434,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3440,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3445,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3441,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3435,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3441,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3440,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3446,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3436,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3442,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3447,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3443,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3443,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3442,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3444,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3444,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3443,
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3449,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3445,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3446,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3440,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3446,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3445,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3447,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3441,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3447,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3446,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3448,
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3442,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3448,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "This room has been totally hollowed out and smoothed, and a pit has been\ndrilled in the center of the floor.  There are extensive gruesome paintings\nof beasts and monsters terrorizing the countryside; vampires sucking the\nblood of beasts and humans alike.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3447,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "painting paintings mural",
+          "description": "There is a tiny painting of a vault in this mural ... and it seems to be a\nreflected picture of the vault ... the word in tiny print is 'rathcor'.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3449,
+      "name": "The Lower Chambers and Tombs of the Undead",
+      "description": "The stench of death is heavy in these caverns.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3408,
+          "keyword": "door",
+          "flags": "2",
+          "key": 3411
+        },
+        "west": {
+          "to_room": 3444,
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3450,
+      "name": "Entrance to the Forbidden Catacombs",
+      "description": "You have entered the forbidden catacombs.  This cave system must have been\nbuilt long ago.  The air is dank and smells of something dead ...  or maybe\nundead.  Enter here at your own risk ... something evil abides.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3451,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 3452,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3453,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3454,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 3408,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3451,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3455,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3450,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3452,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3461,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3450,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3453,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3450,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3454,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3450,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3455,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3456,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3451,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3456,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3455,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 3457,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3457,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3458,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3456,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3458,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3457,
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3472,
+          "description": "You see unfathomable blackness to the south ...\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3459,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3459,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3458,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 3460,
+          "description": "You see something's den.\n",
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3460,
+      "name": "Den of the Vampire",
+      "description": "Your mind whirls in the hideous madness of this place.  The stench\nis horrendous and dead bodies, sucked of life, lay all over.  One coffin\nlies in the center of the room ... waiting for YOU!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3459,
+          "description": "Too dark to tell.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 3475,
+          "description": "A jet black coffin ... who knows what lurks beneath.\n",
+          "keyword": "coffin",
+          "flags": "2",
+          "key": 3419
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3461,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3462,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3452,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3462,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3463,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3461,
+          "description": "Too dark too tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3463,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3462,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        },
+        "east": {
+          "to_room": 3464,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3464,
+      "name": "The Catacombs",
+      "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "east": {
+          "to_room": 3470,
+          "description": "There is a secret door here.",
+          "keyword": "secret",
+          "flags": "1",
+          "key": -1
+        },
+        "south": {
+          "to_room": 3465,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        },
+        "west": {
+          "to_room": 3463,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3465,
+      "name": "The Gilded Hallway",
+      "description": "Wow!  Although this hallway is quite filthy and dusty, it is noticeably\ndifferent than the rest of the catacombs ... but you don't feel safe yet.\nThe walls faintly show ancient detailed etchings in gold and silver of\nancient rituals ... not all of which seem pleasant.  The hallway continues\nnorth into the catacombs and further south as long as you can see.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3464,
+          "description": "The glow of your light reflects off the walls and you see the catacombs.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3466,
+          "description": "The glow of your light reflects off the walls ... the gilded hallway.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "etchings",
+          "description": "Beautiful yet disturbing, they urge you to move onward.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3466,
+      "name": "The Gilded Hallway",
+      "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3465,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3467,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "etchings",
+          "description": "Beautiful yet disturbing, they urge you to move onward.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3467,
+      "name": "The Gilded Hallway",
+      "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3466,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3468,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "etchings",
+          "description": "Beautiful yet disturbing, they urge you to move onward.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3468,
+      "name": "The Gilded Hallway",
+      "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3467,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        },
+        "south": {
+          "to_room": 3469,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "etchings",
+          "description": "Beautiful yet disturbing, they urge you to move onward.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3469,
+      "name": "The Gilded Hallway",
+      "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3468,
+          "description": "Your light reveals more of the hallway.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "etchings",
+          "description": "Beautiful yet disturbing, they urge you to move onward.\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3470,
+      "name": "A Secret Passageway",
+      "description": "A secret passage!  You wonder where it may lead!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "south": {
+          "to_room": 3471,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [
+        {
+          "keyword": "east secret door",
+          "description": "The door closed on you so softly that you didn't even notice!\n"
+        }
+      ],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3471,
+      "name": "A Secret Passageway",
+      "description": "A secret passage!  You wonder where it may lead!\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 3470,
+          "description": "Too dark to tell.\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3472,
+      "name": "The Short Way to Hell ...",
+      "description": "You fall ...\nhmm .... it's getting really HOT!\nYou fall ...\nyou fall ...\nSlowly you are cooking as you fall further ... your skin is burning and\nyour hair evaporates ...\nyou fall ...\nand fall ...\nand STOP...!!\nWelcome to HELL!\nBut even in Hell we give you another chance.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "north": {
+          "to_room": 10401,
+          "description": "The fires of hell grow hotter to the north...\n",
+          "flags": "0"
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    },
+    {
+      "id": 3475,
+      "name": "Inside the coffin",
+      "description": "You are inside a coffin.  It seems rather cramped in here.  You can climb\nup out of the coffin, or you can wait for here the real occupant to join you.\n",
+      "sector_type": "inside",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 3460,
+          "keyword": "lid coffin",
+          "flags": "1",
+          "key": 3419
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 3400
+    }
+  ],
+  "mobs": [
+    {
+      "id": 3400,
+      "name": "the bony skeleton",
+      "player_name": "oldstyle skeleton bony",
+      "long_description": "A bony skeleton is here.\n",
+      "description": "Brown bones with tufts of clothing still hanging from them.  This\nskeleton looks very mindless but still dangerous ...\n",
+      "race": "human",
+      "act_flags": "AF",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 1,
+      "thac0": 0,
+      "ac": "2d6+10",
+      "hit_dice": "0d9+100",
+      "mana_dice": "1d4+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3401,
+      "name": "the undead zombie",
+      "player_name": "oldstyle undead zombie",
+      "long_description": "An undead zombie sits here munching on something ...\n",
+      "description": "His body is totally white and slowly rotting away.  Each Zombie looks\nquite different from the next because they were, of course, once alive and\nhuman.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DF",
+      "alignment": -100,
+      "group": 0,
+      "level": 4,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "2d9+100",
+      "mana_dice": "1d5+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3402,
+      "name": "The ghoul",
+      "player_name": "oldstyle undead ghoul",
+      "long_description": "A ghoul is here staring at you hungrily.\n",
+      "description": "The ghoul no longer resembles the adventurer he once was.  Nonetheless\nhe looks like he hasn't forgot his fighting skills.\n",
+      "race": "human",
+      "act_flags": "AF",
+      "affected_by": "D",
+      "alignment": -500,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 7,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3403,
+      "name": "The wraith",
+      "player_name": "oldstyle undead wraith",
+      "long_description": "You spot a wraith advancing towards you from the shadows.\n",
+      "description": "The wraith no longer has a material form.  He is wearing a tattered\nblack robe which hides all but the darkness of his face and the glimmer\nin his eyes.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "BDF",
+      "alignment": -750,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 50,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3404,
+      "name": "The guardian vampire",
+      "player_name": "oldstyle undead guardian vampire",
+      "long_description": "A vampire is here hiding his face from your light source.\n",
+      "description": "The guardian vampire looks quite EVIL.  Just by looking at him the hair on your\narms raises. He looks mighty tough to be just a minor minion.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 28,
+      "thac0": 0,
+      "ac": "6d12+703",
+      "hit_dice": "14d9+100",
+      "mana_dice": "5d4+8",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 750,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3405,
+      "name": "the priest",
+      "player_name": "oldstyle priest",
+      "long_description": "A priest of God stands here solemnly speaking words of praise.\n",
+      "description": "Obviously a goodly man, you feel closer to God just by gazing upon this man.\nDressed in white, fine white hair, and a soft slightly wrinkled face ...\nthis man has a sacred beauty.  You see a halo around his head.\n",
+      "race": "human",
+      "act_flags": "ABLQ",
+      "affected_by": "DFH",
+      "alignment": 1000,
+      "group": 0,
+      "level": 15,
+      "thac0": 0,
+      "ac": "3d9+208",
+      "hit_dice": "15d9+100",
+      "mana_dice": "2d5+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 6,
+      "offensive": "EIKU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 20,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3406,
+      "name": "the Mi-Go",
+      "player_name": "oldstyle Mi-Go Fungi",
+      "long_description": "A Mi-Go is crawling here.\n",
+      "description": "Mi-Go, the Fungi from Yuggoth ... it is a pinkish being about five feet long;\nwith a crustaceous body bearing a vast pair of membranous wings and several\nsets of articulate limbs, body a sort of convoluted ellipsoid, covered with\nmultitudes of very small antennae, where a head would ordinarily be.  These\nbeings sometimes walk on all their legs and sometimes on the hind pair only.\n",
+      "race": "human",
+      "act_flags": "AF",
+      "affected_by": "0",
+      "alignment": -500,
+      "group": 0,
+      "level": 12,
+      "thac0": 0,
+      "ac": "2d10+150",
+      "hit_dice": "6d9+100",
+      "mana_dice": "1d10+3",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 32,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3407,
+      "name": "The nightgaunt",
+      "player_name": "oldstyle nightgaunt",
+      "long_description": "A nightgaunt is standing here\n",
+      "description": "... shocking and uncouth black thing with smooth, oily, skin, unpleasant horns\nthat curve inward toward each other, bat wings whose beating make no sound,\nugly prehensile paws, and a barbed tail that lashes disquietingly.  And worst\nof all, it makes absolutely no sound or speech and smiles not at all because\nit has no face, only a suggestive blackness where a face ought to be ...\n",
+      "race": "human",
+      "act_flags": "AFG",
+      "affected_by": "PQ",
+      "alignment": -1000,
+      "group": 0,
+      "level": 10,
+      "thac0": 0,
+      "ac": "2d7+121",
+      "hit_dice": "5d9+100",
+      "mana_dice": "2d4+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 7,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3408,
+      "name": "The hunting horror",
+      "player_name": "oldstyle hunting horror",
+      "long_description": "The hunting horror is here in wait of an unwary traveler.\n",
+      "description": "Serving Nyarlathotep and Roch'tar, these beings are hunting for victims.\nThey resemble enormous ropy black serpents or worms possessing bat-like or\numbrella-like wings.  Their forms continually shift and change, twitching\nand writhing, so it is hard to look at them.  They speak in great harsh\nvoices.  A hunting horror is HUGE, normally around 40 feet long.\n",
+      "race": "human",
+      "act_flags": "AF",
+      "affected_by": "DF",
+      "alignment": -1000,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 100,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3409,
+      "name": "some cave weeds",
+      "player_name": "oldstyle weeds",
+      "long_description": "Some weeds are creeping across the floor.\n",
+      "description": "Just some unpleasant looking vine-like growths ...\n",
+      "race": "human",
+      "act_flags": "ACF",
+      "affected_by": "DPQ",
+      "alignment": 0,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 4,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3410,
+      "name": "Snapper Joe",
+      "player_name": "oldstyle snapper joe",
+      "long_description": "Snapper Joe is standing here leering at you chillingly.\n",
+      "description": "What an ugly fiend! He is about 6'6'' and has mostly greenish skin with\nbright red hair. Half his face is burnt off and he has a perpetual smile.\nHe is called up from his service in hell in order to aid the Undying One.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "D",
+      "alignment": -750,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+333",
+      "hit_dice": "10d9+100",
+      "mana_dice": "2d8+5",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 111,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3411,
+      "name": "The X-ist flesh eater",
+      "player_name": "oldstyle X-ist eater",
+      "long_description": "An X-ist flesh eater is sitting here munching on some coffin remains\n",
+      "description": "A large hairy monstrous beast, the only LIVE thing you have seen down here.\nIt stands approximately 8 feet tall and hunches over to fit in this\nsmall room.  It has a pair of tremendous claws that it uses to rip and tear.\nIt has dog-like face except ... different.  Bright glowing eyes and a grimace\nlead you to believe that he knew that you were coming.\n",
+      "race": "human",
+      "act_flags": "ABF",
+      "affected_by": "D",
+      "alignment": -1000,
+      "group": 0,
+      "level": 17,
+      "thac0": 0,
+      "ac": "3d9+258",
+      "hit_dice": "8d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 78,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3412,
+      "name": "the spirit of King Crotus",
+      "player_name": "oldstyle spirit ghost king crotus",
+      "long_description": "The spirit of King Crotus is floating lazily above the floor.\n",
+      "description": "Floating above the ground here and looking a bit dead, he whispers\nsoftly into the air:\nThe forces of evil have unlocked my spirit as\nwell as one other.  Free me from this misery,\nanyone that can hear. The peace of the grave\ncalls me but I am blocked from its quiet.\n",
+      "race": "human",
+      "act_flags": "ABR",
+      "affected_by": "DF",
+      "alignment": 350,
+      "group": 0,
+      "level": 20,
+      "thac0": 0,
+      "ac": "3d9+308",
+      "hit_dice": "20d9+100",
+      "mana_dice": "3d4+4",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 3,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3413,
+      "name": "the rock slug",
+      "player_name": "oldstyle rock slug",
+      "long_description": "A rock slug is slowly creeping along, leaving a slime trail behind it.\n",
+      "description": "It is a large brownish slug.  Got any salt?  Didn't think so ...\n",
+      "race": "human",
+      "act_flags": "AC",
+      "affected_by": "0",
+      "alignment": 0,
+      "group": 0,
+      "level": 3,
+      "thac0": 0,
+      "ac": "2d6+35",
+      "hit_dice": "1d9+100",
+      "mana_dice": "1d6+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 0,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3414,
+      "name": "The mad etcher",
+      "player_name": "oldstyle etcher",
+      "long_description": "The mad etcher is sitting here babbling to himself and working on the wall.\n",
+      "description": "Quite insane, the mad etcher has been here for two decades.  His hair is\nwhite; he babbles nonsense to himself; a layer of dust covers his out-of-date\nclothing; and he seems to be working on the same portion of the wall near\nthe base ... oh and he seems quite blind.\nHe leers insanely at you and says 'heh heh what can I do for you children?\nPlease don't mind my wife, she is always like that ... hello dear can you\nmake some tea for our company?  Oh good!  Now sit right down will you?\nWould you like hot or cold tea?  Yes the weather is ...'\nAnd on he babbles ...\n",
+      "race": "human",
+      "act_flags": "AGR",
+      "affected_by": "A",
+      "alignment": 1000,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 8,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "sit",
+      "default_pos": "sit",
+      "sex": "male",
+      "wealth": 2,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3415,
+      "name": "The spectral etcher's wife",
+      "player_name": "oldstyle wife ghost specter",
+      "long_description": "The spectral wife of the etcher is very faintly floating here.\n",
+      "description": "You can barely make her out ... though it almost makes you vomit.\nShe is missing half her head.  The remaining half is smashed in horribly like\nshe took a nasty fall.  Her one damaged eye hangs on its own.  She smiles\ninsanely at you thru a broken jaw and missing teeth.  One hand of hers is\nresting on the shoulder of the etcher ... her husband.\n",
+      "race": "human",
+      "act_flags": "AB",
+      "affected_by": "Q",
+      "alignment": 1000,
+      "group": 0,
+      "level": 7,
+      "thac0": 0,
+      "ac": "2d6+85",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d8+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "female",
+      "wealth": 6,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    },
+    {
+      "id": 3416,
+      "name": "The half-decomposed body",
+      "player_name": "oldstyle body",
+      "long_description": "A half-decomposed body is lying in the corner here.\n",
+      "description": "YUK! It's ugly, disgusting ... it smells ... it also moves a bit!\n",
+      "race": "human",
+      "act_flags": "ACF",
+      "affected_by": "0",
+      "alignment": -350,
+      "group": 0,
+      "level": 6,
+      "thac0": 0,
+      "ac": "2d7+71",
+      "hit_dice": "3d9+100",
+      "mana_dice": "1d7+1",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 4,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
+    }
+  ],
+  "objects": [
+    {
+      "id": 3400,
+      "name": "a candlestick",
+      "description": "A pewter candlestick is standing here.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 50,
+      "condition": "50",
+      "values": [
+        0,
+        0,
+        24,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "candlestick",
+          "description": "It is a rather old-looking three-armed candlestick made from pewter.  Its\ncandles are a yellowish white colour.\n"
+        }
+      ]
+    },
+    {
+      "id": 3402,
+      "name": "a nightgaunt's tickler",
+      "description": "A nightgaunt's tickler has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "H",
+      "wear_flags": "AN",
+      "weight": 7,
+      "cost": 80,
+      "condition": "540",
+      "values": [
+        0,
+        2,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "tickler",
+          "description": "A horrid black mass of gooey tentacles obviously ripped from the corpse\nof a nightgaunt ... disgusting.\n"
+        }
+      ]
+    },
+    {
+      "id": 3403,
+      "name": "disgusting pinkish plasma webbing",
+      "description": "A pile of pink material is lying here",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "JL",
+      "wear_flags": "AD",
+      "weight": 10,
+      "cost": 100,
+      "condition": "1800",
+      "values": [
+        5,
+        5,
+        5,
+        4,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "plasma webbing",
+          "description": "Yuck, mossy and wet.  It looks like some sort of webbing.\n"
+        }
+      ]
+    },
+    {
+      "id": 3410,
+      "name": "a queerly shaped rod",
+      "description": "A queerly shaped rod is lying here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rod key",
+          "description": "This rod looks sort of octagonal, and sort of like a key and crowbar.  You\nrecognize that it will probably fit the lock at the entrance of the tombs.\n"
+        }
+      ]
+    },
+    {
+      "id": 3411,
+      "name": "a large black dirty key",
+      "description": "A large black dirty key is lying here",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 30,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "large black dirty key",
+          "description": "One of those traditional old lock type keys ... except huge, black and\nfilthy ... hmm ... like it has been buried for some time ...\n"
+        }
+      ]
+    },
+    {
+      "id": 3412,
+      "name": "the mummified head of Jubal the Benevolent",
+      "description": "The mummified head of Jubal the Benevolent is lolling back and forth.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "K",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 200,
+      "condition": "0",
+      "values": [
+        3,
+        0,
+        -1,
+        3,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "head jubal mummy",
+          "description": "ACK! It's half eaten away ... yet it is whole ... in fact I think it can be\nopened and closed ... is there something in its teeth!?!?!? ACK you do it!\n"
+        }
+      ]
+    },
+    {
+      "id": 3413,
+      "name": "a black marble ring",
+      "description": "A black marble ring is lying here on the ground.",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": "GK",
+      "wear_flags": "AB",
+      "weight": 3,
+      "cost": 20,
+      "condition": "26",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 1
+        },
+        {
+          "location": 14,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "black marble ring",
+          "description": "It is pitch black and has beautiful swirls characteristic of marble all\nthrough it.\n"
+        }
+      ]
+    },
+    {
+      "id": 3414,
+      "name": "a whisper thin rapier",
+      "description": "A rapier is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "B",
+      "wear_flags": "AN",
+      "weight": 16,
+      "cost": 40,
+      "condition": "3500",
+      "values": [
+        0,
+        4,
+        2,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "thin rapier",
+          "description": "It seems so thin that it would be useless but at the same time it looks deadly.\n"
+        }
+      ]
+    },
+    {
+      "id": 3415,
+      "name": "a stone sarcophagus",
+      "description": "A stone sarcophagus is sitting here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "0",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        400,
+        0,
+        3416,
+        400,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sarcophagus coffin",
+          "description": "A well crafted, if dusty and ancient, home for the afterworld, it seems\nto be able to be opened but needs a key.\n"
+        }
+      ]
+    },
+    {
+      "id": 3416,
+      "name": "a heavy iron key",
+      "description": "A heavy iron key is lying here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 40,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key iron heavy",
+          "description": "It looks to be a very heavy old iron key.\n"
+        }
+      ]
+    },
+    {
+      "id": 3417,
+      "name": "a wineflask",
+      "description": "A wineflask has been been left here.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": "0",
+      "wear_flags": "AO",
+      "weight": 0,
+      "cost": 10,
+      "condition": "400",
+      "values": [
+        30,
+        30,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "wineflask flask",
+          "description": "A nice leather wineflask that has somehow survived the ages in a coffin.\nThe wine should be nicely aged.\n"
+        }
+      ]
+    },
+    {
+      "id": 3418,
+      "name": "a mound of coins fit for a dead king",
+      "description": "You see a mound of coins fit for a dead king here",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 500,
+      "condition": "0",
+      "values": [
+        400,
+        8,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 3419,
+      "name": "key to the coffin",
+      "description": "The key to the coffin is lying here",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 30,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key",
+          "description": "Neat you have the key to the coffin...is is a soft orange color\nand burns in your hand a bit.\n"
+        }
+      ]
+    },
+    {
+      "id": 3420,
+      "name": "a hidden compartment in the room",
+      "description": "",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": "C",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        10,
+        0,
+        0,
+        10,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rathcor",
+          "description": "Ah HA!  A hidden compartment!\n"
+        }
+      ]
+    },
+    {
+      "id": 3421,
+      "name": "a rusty curved scimitar",
+      "description": "A sword has been left lying here",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "0",
+      "wear_flags": "AN",
+      "weight": 3,
+      "cost": 60,
+      "condition": "370",
+      "values": [
+        0,
+        2,
+        3,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rusty sword scimitar",
+          "description": "Very rusty and old...it has a wide blade and chunks missing from\nits cutting edge.\n"
+        }
+      ]
+    },
+    {
+      "id": 3422,
+      "name": "a piece of slime",
+      "description": "You step on a piece of slime...your foot squishes a bit",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        15,
+        15,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "slime piece",
+          "description": "ICK! This is a piece of slug-like brownish green slime...\nBlech!\n"
+        }
+      ]
+    },
+    {
+      "id": 3423,
+      "name": "an artist's smock",
+      "description": "An artist's smock is lying here on the floor.",
+      "material": "oldstyle",
+      "item_type": "clothing",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 0,
+      "cost": 70,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "smock",
+          "description": "It has paint and little shavings of different materials all over it.\nIt is very old an smells of paint, mildew, and rot.\n"
+        }
+      ]
+    },
+    {
+      "id": 3424,
+      "name": "a tightly rolled scroll",
+      "description": "A yellowing tightly rolled scroll is here",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": "G",
+      "wear_flags": "AO",
+      "weight": 8,
+      "cost": 50,
+      "condition": "1070",
+      "values": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "scroll tightly rolled",
+          "description": "It is tightly wound. The writing on the inside when opened up is very\nunreadable but the scroll has a seal on it with a grey :\n88\n88\n8888  8888\n88\n88\n"
+        }
+      ]
+    },
+    {
+      "id": 3425,
+      "name": "an auburn-colored orb",
+      "description": "An orb is here",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": "BG",
+      "wear_flags": "AO",
+      "weight": 15,
+      "cost": 100,
+      "condition": "4700",
+      "values": [
+        10,
+        2,
+        2,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "auburn orb",
+          "description": "You gaze into the orb and are almost lost in the swirling mists of color\ninside of this rare and beautiful object.\n"
+        }
+      ]
+    },
+    {
+      "id": 3426,
+      "name": "a bar of gold",
+      "description": "A bar of gold is lying here",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 30,
+      "condition": "1000",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "bar gold",
+          "description": "A nice little brick of gold...very dusty and old... it has some emblem\non it...The emblem is a large 'J'\n"
+        }
+      ]
+    },
+    {
+      "id": 3427,
+      "name": "a dark black cape",
+      "description": "A dark black cape is lying here",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "G",
+      "wear_flags": "AK",
+      "weight": 0,
+      "cost": 100,
+      "condition": "100",
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": 10
+        },
+        {
+          "location": 13,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "dark black cape",
+          "description": "The cape is gently flows and pulls in the light so evenly and perfectly\nthat the cape seems to be simply a void of blackness. It is quite beautiful\n"
+        }
+      ]
+    },
+    {
+      "id": 3428,
+      "name": "the pitch-black flaming longsword",
+      "description": "A pitch-black long swor here",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": "G",
+      "wear_flags": "AN",
+      "weight": 28,
+      "cost": 200,
+      "condition": "2200",
+      "values": [
+        0,
+        2,
+        12,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "flaming sword long longsword",
+          "description": "This sword is amazing! It almost wields itself! As you test it out, the\nflames seems to roar brighter as you go thru basic swordsman routines.\nit is obviously a great find!\n"
+        }
+      ]
+    },
+    {
+      "id": 3429,
+      "name": "a worn and dented breast plate",
+      "description": "A piece of armour is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": "0",
+      "wear_flags": "AD",
+      "weight": 15,
+      "cost": 500,
+      "condition": "2100",
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "breast dented plate worn",
+          "description": "Though this piece of armour is worn and dented it looks very usable.\n"
+        }
+      ]
+    },
+    {
+      "id": 3430,
+      "name": "a silver key",
+      "description": "You see a silver key here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key silver",
+          "description": "for the altar...\n"
+        }
+      ]
+    }
+  ]
+}

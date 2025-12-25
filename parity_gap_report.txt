@@ -1,0 +1,138 @@
+================================================================================
+ROM 2.4 C to Python Parity Analysis Report
+Generated: 2025-12-22T02:59:39.493621
+================================================================================
+
+## Function Coverage
+  Functions analyzed: 878
+  Functions matched:  105
+  Match rate:         12.0%
+
+  Missing critical functions:
+    - handler.c:affect_to_char
+    - handler.c:affect_remove
+    - handler.c:affect_strip
+    - handler.c:char_from_room
+    - handler.c:char_to_room
+    - handler.c:obj_to_char
+    - handler.c:obj_from_char
+    - update.c:weather_update
+    - update.c:aggr_update
+    - fight.c:violence_update
+    - fight.c:one_hit
+    - fight.c:damage
+    - fight.c:make_corpse
+    - fight.c:death_cry
+    - fight.c:raw_kill
+    - fight.c:group_gain
+    - fight.c:xp_compute
+    - fight.c:dam_message
+    - fight.c:disarm
+    - magic.c:say_spell
+    ... and 107 more
+
+## Formula Analysis
+  Formulas found:    7653
+  Formulas verified: 248
+
+## Constants
+  Constants matched:    6
+  Constants mismatched: 0
+
+## Edge Cases Identified (need testing)
+  - Modulo operation: recycle.c:535 'size == -1)
+    {
+        bug ("new_buf: buffer size %d too large.", size);' - verify uses c_mod for negative operands
+  - Potential C/Python division difference: recycle.c:582 'size == -1)
+            {                    /* overflow */
+                buffer->size = oldsize;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:54 'target == TARGET_CHAR)
+    {                            /* do the effect on a victim */
+        CHAR_DATA *victim = (CHAR_DATA *) vo;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:79 'chance = level / 4 + dam / 10;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:82 'chance = (chance - 25) / 2 + 25;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:84 'chance = (chance - 50) / 2 + 50;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:210 'target == TARGET_CHAR)
+    {                            /* whack a character */
+        CHAR_DATA *victim = (CHAR_DATA *) vo;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:256 'chance = level / 4 + dam / 10;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:259 'chance = (chance - 25) / 2 + 25;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:261 'chance = (chance - 50) / 2 + 50;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:314 'target == TARGET_CHAR)
+    {                            /* do the effect on a victim */
+        CHAR_DATA *victim = (CHAR_DATA *) vo;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:331 'duration = number_range (0, level / 10);' - verify negative number handling
+  - Potential C/Python division difference: effects.c:364 'chance = level / 4 + dam / 10;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:367 'chance = (chance - 25) / 2 + 25;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:369 'chance = (chance - 50) / 2 + 50;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:456 'target == TARGET_CHAR)
+    {                            /* do the effect on a victim */
+        CHAR_DATA *victim = (CHAR_DATA *) vo;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:473 'duration = level / 2;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:499 'chance = level / 4 + dam / 10;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:501 'chance = (chance - 25) / 2 + 25;' - verify negative number handling
+  - Potential C/Python division difference: effects.c:503 'chance = (chance - 50) / 2 + 50;' - verify negative number handling
+
+## Coverage Gaps
+  - C formula 'URANGE (5, chance, 95)' in effects.c:117 may be missing Python equivalent
+  - C formula 'URANGE (5, chance, 95)' in effects.c:282 may be missing Python equivalent
+  - C formula 'URANGE (5, chance, 95)' in effects.c:405 may be missing Python equivalent
+  - C formula 'URANGE (5, chance, 95)' in effects.c:519 may be missing Python equivalent
+  - C formula 'URANGE (5, chance, 95)' in effects.c:602 may be missing Python equivalent
+  - C formula 'vch = vch->next_in_room)
+        {
+            if (!saves_spell (plague.level - 2, vch, DAM_DISEASE)
+                && !IS_IMMORTAL (vch) &&
+                !IS_AFFECTED (vch, AFF_PLAGUE) && number_bits (6) == 0)
+            {
+                send_to_char ("You feel hot and feverish.\n\r", vch);' in handler.c:1603 may be missing Python equivalent
+  - C formula 'URANGE (0, skill, 100)' in handler.c:446 may be missing Python equivalent
+  - C formula 'URANGE (0, skill, 100)' in handler.c:515 may be missing Python equivalent
+  - C formula 'URANGE (3, ch->perm_stat[stat] + ch->mod_stat[stat], max)' in handler.c:872 may be missing Python equivalent
+  - C formula 'victim = ch->fighting) == NULL
+        || number_percent () > 2 * ch->level) return FALSE;' in special.c:1134 may be missing Python equivalent
+  - C formula 'desc == NULL
+                && ch->fighting == NULL && !IS_AFFECTED (ch, AFF_CHARM)
+                && number_percent () < 5)
+            {
+                act ("$n wanders on home.", ch, NULL, NULL, TO_ROOM);' in update.c:689 may be missing Python equivalent
+  - C formula 'vch = vch->next_in_room)
+            {
+                if (!saves_spell (plague.level - 2, vch, DAM_DISEASE)
+                    && !IS_IMMORTAL (vch)
+                    && !IS_AFFECTED (vch, AFF_PLAGUE) && number_bits (4) == 0)
+                {
+                    send_to_char ("You feel hot and feverish.\n\r", vch);' in update.c:830 may be missing Python equivalent
+  - C formula 'URANGE (0, condition + value, 48)' in update.c:377 may be missing Python equivalent
+  - C formula 'olevel = URANGE (0, to_mob->level - 2, LEVEL_HERO);' in olc_act.c:2139 may be missing Python equivalent
+  - C formula 'URANGE (0, to_mob->level - 2, LEVEL_HERO)' in olc_act.c:2139 may be missing Python equivalent
+  - C formula 'percent = number_percent ()) <= (skill / 8))
+                    dam = 2 * dam + (dam * 2 * percent / 100);' in fight.c:552 may be missing Python equivalent
+  - C formula 'class == 2) && (number_percent () < 3 * (ch->level / 2)))
+                send_to_char ("You snuck away safely.\n\r", ch);' in fight.c:3013 may be missing Python equivalent
+  - C formula 'URANGE (0, victim->level, MAX_LEVEL - 1)' in fight.c:1706 may be missing Python equivalent
+  - C formula 'URANGE (2, time_per_level, 12)' in fight.c:2019 may be missing Python equivalent
+  - C formula 'victim = get_char_world (ch, target_name)) == NULL
+        || victim == ch
+        || victim->in_room == NULL
+        || !can_see_room (ch, victim->in_room)
+        || IS_SET (victim->in_room->room_flags, ROOM_SAFE)
+        || IS_SET (victim->in_room->room_flags, ROOM_PRIVATE)
+        || IS_SET (victim->in_room->room_flags, ROOM_SOLITARY)
+        || IS_SET (victim->in_room->room_flags, ROOM_NO_RECALL)
+        || IS_SET (ch->in_room->room_flags, ROOM_NO_RECALL)
+        || victim->level >= level + 3 || (!IS_NPC (victim) && victim->level >= LEVEL_HERO)    /* NOT trust */
+        || (IS_NPC (victim) && IS_SET (victim->imm_flags, IMM_SUMMON))
+        || (IS_NPC (victim) && saves_spell (level, victim, DAM_NONE))
+        || (is_clan (victim) && !is_same_clan (ch, victim)))
+    {
+        send_to_char ("You failed.\n\r", ch);' in magic2.c:61 may be missing Python equivalent
+  ... and 95 more
+
+================================================================================
+Recommendations:
+1. Add differential tests for missing critical functions
+2. Verify edge cases with seeded RNG comparison
+3. Add golden file tests for constant values
+4. Run C binary alongside Python for behavioral comparison
+================================================================================

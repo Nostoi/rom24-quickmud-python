@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 8300,
-    "name": "Marsh",
-    "filename": "marsh.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Marsh",
+  "vnum_range": {
+    "min": 8300,
+    "max": 8399
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 8301,
@@ -34,7 +34,6 @@
           "description": "The swamp to the south even reaches as far as this point ... it makes the\nground and air about you moist and fetid.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -63,7 +62,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8300
     },
     {
@@ -96,7 +94,6 @@
           "description": "He looks mangled and shredded.  You see one large gash mark that looks\nlike it came from the claw of some huge beast.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -126,13 +123,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8300
     },
     {
       "id": 8305,
       "name": "An Oozing Bog",
-      "description": "You stand in an oozing quagmire.  A creaking beat fills the air,\naccompanied by groans and soughing of the air.  Several large winged\nbeasts flap over you and send chilling glares your way.  You feel out\nof place, and feel that the occupants of this realm will soon\nhave you for a feast.\n",
+      "description": "You stand in an oozing quagmire.  A creaking beat fills the air, \naccompanied by groans and soughing of the air.  Several large winged\nbeasts flap over you and send chilling glares your way.  You feel out\nof place, and feel that the occupants of this realm will soon \nhave you for a feast.\n",
       "sector_type": "mountain",
       "flags": 0,
       "exits": {
@@ -155,7 +151,6 @@
           "description": "You see a large creature, possibly a demon, flapping heavily above you.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -179,7 +174,6 @@
           "description": "The limb looks like it is attached to a trap door in the ground.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -202,7 +196,6 @@
           "description": "You notice a note on one of the corpses reading:  'Best ye forget the temple,\nit is not for the likes of you...'\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -241,7 +234,6 @@
           "description": "From the stories you have heard, you recognize them as will-o-wisps.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -276,13 +268,12 @@
           "description": "It looks ALIVE ...\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
       "id": 8310,
       "name": "Gloomy Path Through the Marsh.",
-      "description": "To the north lies a hill, shrouded in dark clouds, and to the south lies\na huge patch of vegetation.  You sense an evil presence and notice\na beast flying overhead to the south east, towards what looks to be a\nhuge fortress, half buried in the marsh.\n",
+      "description": "To the north lies a hill, shrouded in dark clouds, and to the south lies\na huge patch of vegetation.  You sense an evil presence and notice \na beast flying overhead to the south east, towards what looks to be a \nhuge fortress, half buried in the marsh.\n",
       "sector_type": "water_swim",
       "flags": 0,
       "exits": {
@@ -317,7 +308,6 @@
           "description": "The clouds look dark and foreboding.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -341,7 +331,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8300
     },
     {
@@ -370,13 +359,12 @@
           "description": "They look rather violent, and snap at you when you come near.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
       "id": 8313,
       "name": "By the Monolith.",
-      "description": "You are standing near a monolith which protrudes some 20 feet from the\nmarsh into the air.  Its black obsidian surface shines darkly in the\nstrange, almost unearthly light that enters through the clouds above.\n",
+      "description": "You are standing near a monolith which protrudes some 20 feet from the\nmarsh into the air.  Its black obsidian surface shines darkly in the \nstrange, almost unearthly light that enters through the clouds above.\n",
       "sector_type": "mountain",
       "flags": 0,
       "exits": {
@@ -405,7 +393,6 @@
           "description": "This huge monolith resembles nothing you have ever seen before.\nYou have a strong feeling not to go within.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -440,13 +427,12 @@
           "description": "This is a huge obsidian stone block stuck in the marsh.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
       "id": 8315,
       "name": "Northern Lake Side.",
-      "description": "Floating on this boiling lake is not what you would consider an enjoyable\nexperience.  Many a creature bumps the bottom of your boat, and glares\nat you through unblinking eyes from the waters below.  The southern\nportion of the lake looks calm and serene compared to this wild place.\n",
+      "description": "Floating on this boiling lake is not what you would consider an enjoyable \nexperience.  Many a creature bumps the bottom of your boat, and glares \nat you through unblinking eyes from the waters below.  The southern \nportion of the lake looks calm and serene compared to this wild place.\n",
       "sector_type": "water_noswim",
       "flags": 0,
       "exits": {
@@ -464,7 +450,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8300
     },
     {
@@ -493,7 +478,6 @@
           "description": "The way to the north seems to be impassable, due to the rough water and\nstrange wild life.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -522,7 +506,6 @@
           "description": "It is hewn of black stone and heavily fortified.\n"
         }
       ],
-      "resets": [],
       "area": 8300
     },
     {
@@ -545,17 +528,16 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 8300
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 8301,
       "name": "a swamp troll",
       "player_name": "oldstyle troll",
       "long_description": "A swamp troll charges towards you.\n",
-      "description": "This huge behemoth towers to a height of 15 feet.  He sneers at you\nas he approaches and raises two black taloned claws to strike you.\n",
+      "description": "This huge behemoth towers to a height of 15 feet.  He sneers at you \nas he approaches and raises two black taloned claws to strike you.\n",
       "race": "troll",
       "act_flags": "ABCFG",
       "affected_by": "0",
@@ -730,7 +712,7 @@
       "name": "a huge hairy beast",
       "player_name": "oldstyle beast",
       "long_description": "A huge hairy beast shambles towards you with death in his eyes.\n",
-      "description": "This huge beast stands about 20 feet in height and has huge green clawed\nappendages.\n",
+      "description": "This huge beast stands about 20 feet in height and has huge green clawed\nappendages. \n",
       "race": "human",
       "act_flags": "ACFG",
       "affected_by": "DF",
@@ -1153,17 +1135,17 @@
       "description": "A strange spear lies here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "J",
-      "wear_flags": "AN",
-      "weight": 11,
-      "cost": 100,
-      "condition": "1330",
+      "extra_flags": 512,
+      "wear_flags": 8193,
+      "weight": 100,
+      "cost": 1330,
+      "condition": 100,
       "values": [
-        0,
+        3,
         1,
         12,
-        0,
-        0
+        2,
+        32
       ],
       "affects": [
         {
@@ -1183,11 +1165,11 @@
       "description": "A wicked looking horned helmet lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "J",
-      "wear_flags": "AE",
-      "weight": 10,
-      "cost": 50,
-      "condition": "0",
+      "extra_flags": 512,
+      "wear_flags": 17,
+      "weight": 50,
+      "cost": 0,
+      "condition": 100,
       "values": [
         6,
         6,
@@ -1218,11 +1200,11 @@
       "description": "An old suit of chainmail lies here, corroded by the marsh.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "J",
-      "wear_flags": "AD",
-      "weight": 20,
-      "cost": 200,
-      "condition": "2700",
+      "extra_flags": 512,
+      "wear_flags": 9,
+      "weight": 200,
+      "cost": 2700,
+      "condition": 100,
       "values": [
         5,
         8,
@@ -1239,17 +1221,17 @@
       "description": "An evil, wicked-looking scythe lies in the shadows.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "HJ",
-      "wear_flags": "AN",
-      "weight": 19,
-      "cost": 160,
-      "condition": "1770",
+      "extra_flags": 640,
+      "wear_flags": 8193,
+      "weight": 160,
+      "cost": 1770,
+      "condition": 100,
       "values": [
-        0,
+        8,
         4,
         4,
-        0,
-        0
+        1,
+        32
       ],
       "affects": [
         {
@@ -1269,14 +1251,14 @@
       "description": "A murky green potion lies here in the mud.",
       "material": "oldstyle",
       "item_type": "potion",
-      "extra_flags": "AB",
-      "wear_flags": "A",
-      "weight": 5,
-      "cost": 10,
-      "condition": "690",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 690,
+      "condition": 100,
       "values": [
         43,
-        0,
+        23,
         0,
         0,
         0
@@ -1295,20 +1277,408 @@
       "description": "A huge rusted sword lies in a pool of water.",
       "material": "iron",
       "item_type": "weapon",
-      "extra_flags": "0",
-      "wear_flags": "AN",
-      "weight": 28,
-      "cost": 100,
-      "condition": "3000",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "weight": 100,
+      "cost": 3000,
+      "condition": 100,
       "values": [
-        0,
+        1,
         4,
         7,
-        0,
-        0
+        21,
+        32
       ],
       "affects": [],
       "extra_descriptions": []
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 8301,
+      "arg2": 2,
+      "arg3": 8303,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8301,
+      "arg2": 2,
+      "arg3": 8308,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8302,
+      "arg2": 6,
+      "arg3": 8303,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 8307,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8302,
+      "arg2": 6,
+      "arg3": 8304,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 8307,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8302,
+      "arg2": 6,
+      "arg3": 8306,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 8303,
+      "arg2": 3,
+      "arg3": 8303,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8303,
+      "arg2": 3,
+      "arg3": 8313,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8303,
+      "arg2": 3,
+      "arg3": 8307,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8304,
+      "arg2": 1,
+      "arg3": 8307,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8305,
+      "arg2": 2,
+      "arg3": 8306,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 8303,
+      "arg2": 20,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 8308,
+      "arg2": 20,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8306,
+      "arg2": 2,
+      "arg3": 8304,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8306,
+      "arg2": 2,
+      "arg3": 8310,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8307,
+      "arg2": 2,
+      "arg3": 8305,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8307,
+      "arg2": 2,
+      "arg3": 8313,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8308,
+      "arg2": 1,
+      "arg3": 8308,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8309,
+      "arg2": 2,
+      "arg3": 8305,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8309,
+      "arg2": 2,
+      "arg3": 8311,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8310,
+      "arg2": 2,
+      "arg3": 8304,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8310,
+      "arg2": 2,
+      "arg3": 8305,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8312,
+      "arg2": 2,
+      "arg3": 8310,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8312,
+      "arg2": 2,
+      "arg3": 8309,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8313,
+      "arg2": 1,
+      "arg3": 8310,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 8306,
+      "arg2": 1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 8302,
+      "arg2": 5,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8304,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8305,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8306,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8307,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8308,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8314,
+      "arg2": 6,
+      "arg3": 8309,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 8318,
+      "arg2": 2,
+      "arg3": 8312,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 8307,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8318,
+      "arg2": 2,
+      "arg3": 8312,
+      "arg4": 2
+    },
+    {
+      "command": "G",
+      "arg1": 8307,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8321,
+      "arg2": 2,
+      "arg3": 8318,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 8321,
+      "arg2": 2,
+      "arg3": 8318,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 8320,
+      "arg2": 5,
+      "arg3": 8307,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 8301,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8320,
+      "arg2": 5,
+      "arg3": 8309,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 8301,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8320,
+      "arg2": 5,
+      "arg3": 8311,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 8301,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8320,
+      "arg2": 5,
+      "arg3": 8313,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 8301,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 8307,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 8320,
+      "arg2": 5,
+      "arg3": 8315,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 8301,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 8302,
+      "arg2": 5,
+      "arg3": 6,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 8309,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 8310,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 8312,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 8313,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 8319,
+      "spec": "spec_cast_cleric"
     }
   ]
 }

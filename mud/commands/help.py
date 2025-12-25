@@ -71,7 +71,7 @@ def _normalize_topic(raw: str) -> str:
         if index >= length:
             break
         char = raw[index]
-        if char in {'"', "'", '%'}:
+        if char in {'"', "'", "%"}:
             terminator = char
             index += 1
         elif char == "(":
@@ -117,16 +117,18 @@ def _is_keyword_match(term: str, entry: HelpEntry) -> bool:
         return False
 
     parts = [segment for segment in term_lower.split() if segment]
+    tokens: list[str] = []
     for raw_keyword in entry.keywords:
-        tokens = [segment for segment in raw_keyword.lower().split() if segment]
-        if not tokens:
-            continue
+        tokens.extend(segment for segment in raw_keyword.lower().split() if segment)
 
-        if any(token.startswith(term_lower) for token in tokens):
-            return True
+    if not tokens:
+        return False
 
-        if parts and all(any(token.startswith(part) for token in tokens) for part in parts):
-            return True
+    if any(token.startswith(term_lower) for token in tokens):
+        return True
+
+    if parts and all(any(token.startswith(part) for token in tokens) for part in parts):
+        return True
 
     return False
 
@@ -236,9 +238,7 @@ def _suggest_command_topics(ch: Character, term: str) -> list[str]:
 
     if not suggestions and len(lookup) > 1:
         prefix = lookup[:2]
-        suggestions = [
-            cmd.name for cmd in COMMANDS if _visible(cmd) and cmd.name.startswith(prefix)
-        ]
+        suggestions = [cmd.name for cmd in COMMANDS if _visible(cmd) and cmd.name.startswith(prefix)]
 
     seen: set[str] = set()
     ordered: list[str] = []
@@ -287,6 +287,23 @@ def do_help(ch: Character, args: str, *, limit_results: bool = False) -> str:
 
     for candidate in help_entries:
         _consider(candidate)
+
+    # Check if topic is an exact command match - prefer command help over multi-keyword static help
+    # This ensures "help unalias" generates command help instead of returning generic "alias/unalias" help
+    if matches:
+        from mud.commands.dispatcher import resolve_command
+
+        exact_command = resolve_command(topic_lower, trust=trust)
+        if exact_command and (exact_command.name == topic_lower or topic_lower in exact_command.aliases):
+            # Check if matches contain multi-keyword help entries (e.g., "ALIAS UNALIAS")
+            has_multi_keyword = any(len(m.keywords) > 1 for m in matches)
+            if has_multi_keyword:
+                # Prefer command help for exact matches
+                command_help = _generate_command_help(ch, topic)
+                if command_help:
+                    if not _log_orphan_request(ch, topic):
+                        return _rom_lines(["No help on that word.", "That was rude!"])
+                    return command_help
 
     if matches:
         if limit_results:

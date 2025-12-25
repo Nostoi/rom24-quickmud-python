@@ -248,7 +248,10 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
     target.add_character(victim)
     character_registry.append(victim)
 
-    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda attacker, victim, dam_type: 10)
+    monkeypatch.setattr(
+        "mud.combat.engine.calculate_weapon_damage",
+        lambda attacker, victim, dam_type, **kwargs: 10,
+    )
     player.hitroll = 100
     attack_round(player, victim)
 

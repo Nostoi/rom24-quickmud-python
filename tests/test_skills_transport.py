@@ -66,10 +66,14 @@ def test_gate_moves_caster_and_pet_with_room_checks() -> None:
     assert pet.room is destination
 
     assert caster.messages[0] == "You step through a gate and vanish."
-    assert caster.messages[1] == "Hall of Mirrors\nPolished stone reflects endless images."
+    assert "Hall of Mirrors" in caster.messages[1]
+    assert "Polished stone reflects endless images." in caster.messages[1]
 
-    assert pet.messages[0] == "You step through a gate and vanish."
-    assert pet.messages[1] == "Hall of Mirrors\nPolished stone reflects endless images."
+    # Pet first sees the caster's departure broadcast, then its own gate message
+    assert pet.messages[0] == "Sorcerer steps through a gate and vanishes."
+    assert pet.messages[1] == "You step through a gate and vanish."
+    assert "Hall of Mirrors" in pet.messages[2]
+    assert "Polished stone reflects endless images." in pet.messages[2]
 
     assert observer.messages[-2:] == [
         "Sorcerer steps through a gate and vanishes.",
@@ -217,6 +221,32 @@ def test_portal_blocks_forbidden_destinations(portal_prototype: ObjIndex) -> Non
         _restore_room(destination.vnum, previous_destination)
 
 
+def test_portal_requires_warp_stone(portal_prototype: ObjIndex) -> None:
+    origin = _make_room(3110, "Portal Verge")
+    destination = _make_room(3111, "Arcane Reach")
+    previous_origin = room_registry.get(origin.vnum)
+    previous_destination = room_registry.get(destination.vnum)
+    try:
+        _register_room(origin)
+        _register_room(destination)
+
+        caster = Character(name="Invoker", level=45, is_npc=False)
+        target = Character(name="Scout", level=35, is_npc=False)
+
+        origin.add_character(caster)
+        destination.add_character(target)
+
+        caster.messages.clear()
+
+        result = skill_handlers.portal(caster, target)
+
+        assert result is None
+        assert caster.messages[-1] == "You lack the proper component for this spell."
+    finally:
+        _restore_room(origin.vnum, previous_origin)
+        _restore_room(destination.vnum, previous_destination)
+
+
 def test_nexus_creates_bidirectional_portals(portal_prototype: ObjIndex) -> None:
     origin = _make_room(3200, "Crystal Atrium")
     destination = _make_room(3201, "Moonlit Terrace")
@@ -262,6 +292,32 @@ def test_nexus_creates_bidirectional_portals(portal_prototype: ObjIndex) -> None
         ]
         assert observer.messages[-1] == "a shimmering portal rises up from the ground."
         assert target.messages[-1] == "a shimmering portal rises up from the ground."
+    finally:
+        _restore_room(origin.vnum, previous_origin)
+        _restore_room(destination.vnum, previous_destination)
+
+
+def test_nexus_requires_warp_stone(portal_prototype: ObjIndex) -> None:
+    origin = _make_room(3230, "Astral Gate")
+    destination = _make_room(3231, "Echoing Hollow")
+    previous_origin = room_registry.get(origin.vnum)
+    previous_destination = room_registry.get(destination.vnum)
+    try:
+        _register_room(origin)
+        _register_room(destination)
+
+        caster = Character(name="Archmage", level=50, is_npc=False)
+        target = Character(name="Sentinel", level=40, is_npc=False)
+
+        origin.add_character(caster)
+        destination.add_character(target)
+
+        caster.messages.clear()
+
+        portals = skill_handlers.nexus(caster, target)
+
+        assert portals == []
+        assert caster.messages[-1] == "You lack the proper component for this spell."
     finally:
         _restore_room(origin.vnum, previous_origin)
         _restore_room(destination.vnum, previous_destination)

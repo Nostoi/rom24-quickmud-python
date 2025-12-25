@@ -1,0 +1,445 @@
+{
+  "name": "Eddol",
+  "level": 1,
+  "race": 0,
+  "ch_class": 0,
+  "clan": 0,
+  "sex": 1,
+  "trust": 0,
+  "security": 0,
+  "invis_level": 0,
+  "incog_level": 0,
+  "hit": 100,
+  "max_hit": 100,
+  "mana": 100,
+  "max_mana": 100,
+  "move": 75,
+  "max_move": 100,
+  "perm_hit": 100,
+  "perm_mana": 100,
+  "perm_move": 100,
+  "gold": 0,
+  "silver": 0,
+  "exp": 0,
+  "practice": 5,
+  "train": 20,
+  "played": 0,
+  "lines": 22,
+  "logon": 0,
+  "prompt": "<%hhp %mm %vmv> ",
+  "prefix": null,
+  "title": null,
+  "bamfin": null,
+  "bamfout": null,
+  "saving_throw": 0,
+  "alignment": 750,
+  "hitroll": 0,
+  "damroll": 0,
+  "wimpy": 0,
+  "points": 0,
+  "true_sex": 1,
+  "last_level": 0,
+  "position": 8,
+  "armor": [
+    100,
+    100,
+    100,
+    100
+  ],
+  "perm_stat": [
+    14,
+    18,
+    17,
+    14,
+    15
+  ],
+  "mod_stat": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "conditions": [
+    0,
+    48,
+    48,
+    48
+  ],
+  "act": 589824,
+  "affected_by": 0,
+  "comm": 57344,
+  "wiznet": 0,
+  "log_commands": false,
+  "newbie_help_seen": true,
+  "room_vnum": 3702,
+  "inventory": [
+    {
+      "vnum": 3162,
+      "wear_slot": null,
+      "wear_loc": -1,
+      "level": 0,
+      "timer": 0,
+      "cost": 0,
+      "value": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "extra_flags": 0,
+      "condition": 500,
+      "enchanted": false,
+      "item_type": "map",
+      "contains": [],
+      "affects": []
+    }
+  ],
+  "equipment": {
+    "light": {
+      "vnum": 3716,
+      "wear_slot": "light",
+      "wear_loc": -1,
+      "level": 0,
+      "timer": 0,
+      "cost": 0,
+      "value": [
+        0,
+        0,
+        200,
+        0,
+        0
+      ],
+      "extra_flags": 65,
+      "condition": 380,
+      "enchanted": false,
+      "item_type": "light",
+      "contains": [],
+      "affects": []
+    },
+    "body": {
+      "vnum": 3703,
+      "wear_slot": "body",
+      "wear_loc": -1,
+      "level": 0,
+      "timer": 0,
+      "cost": 0,
+      "value": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "extra_flags": 1048576,
+      "condition": 144,
+      "enchanted": false,
+      "item_type": "armor",
+      "contains": [],
+      "affects": []
+    },
+    "wield": {
+      "vnum": 3701,
+      "wear_slot": "wield",
+      "wear_loc": -1,
+      "level": 0,
+      "timer": 0,
+      "cost": 0,
+      "value": [
+        0,
+        1,
+        4,
+        0,
+        0
+      ],
+      "extra_flags": 1048576,
+      "condition": 210,
+      "enchanted": false,
+      "item_type": "weapon",
+      "contains": [],
+      "affects": []
+    },
+    "shield": {
+      "vnum": 3704,
+      "wear_slot": "shield",
+      "wear_loc": -1,
+      "level": 0,
+      "timer": 0,
+      "cost": 0,
+      "value": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "extra_flags": 1048576,
+      "condition": 108,
+      "enchanted": false,
+      "item_type": "armor",
+      "contains": [],
+      "affects": []
+    }
+  },
+  "aliases": {},
+  "skills": {
+    "scrolls": 1,
+    "staves": 1,
+    "wands": 1,
+    "recall": 50,
+    "dagger": 40,
+    "lore": 1,
+    "calm": 1,
+    "charm person": 1,
+    "sleep": 1,
+    "acid blast": 1,
+    "burning hands": 1,
+    "chain lightning": 1,
+    "chill touch": 1,
+    "colour spray": 1,
+    "fireball": 1,
+    "lightning bolt": 1,
+    "magic missile": 1,
+    "shocking grasp": 1,
+    "detect evil": 1,
+    "detect good": 1,
+    "detect hidden": 1,
+    "detect invis": 1,
+    "detect magic": 1,
+    "detect poison": 1,
+    "farsight": 1,
+    "identify": 1,
+    "know alignment": 1,
+    "locate object": 1,
+    "giant strength": 1,
+    "haste": 1,
+    "infravision": 1,
+    "refresh": 1,
+    "invis": 1,
+    "mass invis": 1,
+    "ventriloquate": 1,
+    "blindness": 1,
+    "change sex": 1,
+    "curse": 1,
+    "energy drain": 1,
+    "plague": 1,
+    "poison": 1,
+    "slow": 1,
+    "weaken": 1,
+    "armor": 1,
+    "cancellation": 1,
+    "dispel magic": 1,
+    "fireproof": 1,
+    "protection evil": 1,
+    "protection good": 1,
+    "sanctuary": 1,
+    "shield": 1,
+    "stone skin": 1,
+    "fly": 1,
+    "gate": 1,
+    "nexus": 1,
+    "pass door": 1,
+    "portal": 1,
+    "summon": 1,
+    "teleport": 1,
+    "word of recall": 1,
+    "call lightning": 1,
+    "control weather": 1,
+    "faerie fire": 1,
+    "faerie fog": 1
+  },
+  "groups": [
+    "rom basics",
+    "mage basics",
+    "mage default",
+    "beguiling",
+    "combat",
+    "detection",
+    "enhancement",
+    "illusion",
+    "maladictions",
+    "protective",
+    "transportation",
+    "weather"
+  ],
+  "board": "general",
+  "last_notes": {},
+  "colours": {
+    "text": [
+      0,
+      7,
+      0
+    ],
+    "auction": [
+      1,
+      3,
+      0
+    ],
+    "auction_text": [
+      1,
+      7,
+      0
+    ],
+    "gossip": [
+      0,
+      5,
+      0
+    ],
+    "gossip_text": [
+      1,
+      5,
+      0
+    ],
+    "music": [
+      0,
+      1,
+      0
+    ],
+    "music_text": [
+      1,
+      1,
+      0
+    ],
+    "question": [
+      1,
+      3,
+      0
+    ],
+    "question_text": [
+      1,
+      7,
+      0
+    ],
+    "answer": [
+      1,
+      3,
+      0
+    ],
+    "answer_text": [
+      1,
+      7,
+      0
+    ],
+    "quote": [
+      0,
+      2,
+      0
+    ],
+    "quote_text": [
+      1,
+      2,
+      0
+    ],
+    "immtalk_text": [
+      0,
+      6,
+      0
+    ],
+    "immtalk_type": [
+      0,
+      3,
+      0
+    ],
+    "info": [
+      0,
+      3,
+      1
+    ],
+    "tell": [
+      0,
+      2,
+      0
+    ],
+    "tell_text": [
+      1,
+      2,
+      0
+    ],
+    "reply": [
+      0,
+      2,
+      0
+    ],
+    "reply_text": [
+      1,
+      2,
+      0
+    ],
+    "gtell_text": [
+      0,
+      2,
+      0
+    ],
+    "gtell_type": [
+      0,
+      1,
+      0
+    ],
+    "say": [
+      0,
+      2,
+      0
+    ],
+    "say_text": [
+      1,
+      2,
+      0
+    ],
+    "wiznet": [
+      0,
+      2,
+      0
+    ],
+    "room_title": [
+      0,
+      6,
+      0
+    ],
+    "room_text": [
+      0,
+      7,
+      0
+    ],
+    "room_exits": [
+      0,
+      2,
+      0
+    ],
+    "room_things": [
+      0,
+      6,
+      0
+    ],
+    "prompt": [
+      0,
+      6,
+      0
+    ],
+    "fight_death": [
+      0,
+      1,
+      0
+    ],
+    "fight_yhit": [
+      0,
+      2,
+      0
+    ],
+    "fight_ohit": [
+      0,
+      3,
+      0
+    ],
+    "fight_thit": [
+      0,
+      1,
+      0
+    ],
+    "fight_skill": [
+      0,
+      7,
+      0
+    ]
+  }
+}

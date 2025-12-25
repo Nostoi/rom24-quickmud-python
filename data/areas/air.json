@@ -4,33 +4,34 @@
     "min": 1000,
     "max": 1099
   },
-  "builders": [],
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 1001,
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the ground north of the city.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -38,31 +39,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above the inside wall of West Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -70,31 +70,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above the west gate of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -102,31 +101,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Wall Road.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -134,26 +132,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Wall Road.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -161,31 +158,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the ground north of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -193,36 +189,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above the magic shop.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -230,36 +225,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Main Street.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -267,36 +261,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above the Mage Guild Hall.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -304,31 +297,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Poor Alley.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -336,31 +328,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the ground north of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -368,36 +359,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above the bakery.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -405,36 +395,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Main Street.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -442,36 +431,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 20 meters above Armoury.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -479,31 +467,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Poor Alley.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -511,26 +498,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 10 meters above the temple spire of Midgaard\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -538,36 +524,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the Temple Square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 3057,
           "description": "More of the same\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -575,31 +560,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Market Square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -607,31 +591,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above Market and Commons.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -639,26 +622,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above ground, overlooking the Common Square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -666,26 +648,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above the ground just north of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -693,31 +674,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the west gate of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -725,31 +705,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above west gate of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -757,31 +736,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above wall road.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -789,26 +767,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above wall road.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -816,31 +793,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above the ground north of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -848,36 +824,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the magic shop.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -885,36 +860,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above main street.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -922,36 +896,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the mage guild.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -959,31 +932,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above poor alley.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -991,31 +963,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above the ground north of Midgaard.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "east": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1023,36 +994,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above bakery and cleric guild.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1060,36 +1030,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above main street.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1097,36 +1066,35 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 40 meters above the armoury.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1134,31 +1102,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above poor alley.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "east": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1166,31 +1133,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 30 meters above the temple spire.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "south": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "up": {
           "to_room": 7700,
           "description": "The rainbow leads onward and upward into the sky.\nIt looks safe to travel on.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1198,31 +1164,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above the temple square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1230,31 +1195,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above market square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1262,31 +1226,30 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above market square and commons square.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "south": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     },
     {
@@ -1294,26 +1257,25 @@
       "name": "In the air ...",
       "description": "You are flying!\nCurrently you are about 60 meters above commoners square and the dump.\nIt seems like you can see forever!\n",
       "sector_type": "air",
-      "flags": [],
+      "flags": 0,
       "exits": {
         "north": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "west": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         },
         "down": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": []
+          "flags": "0"
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 1000
     }
   ],
@@ -1321,19 +1283,130 @@
     {
       "id": 1000,
       "name": "A fairy dragon",
-      "description": "A fairy dragon is fluttering around here looking for something to do...\n"
+      "player_name": "oldstyle fairy dragon",
+      "long_description": "A fairy dragon is fluttering around here looking for something to do...\n",
+      "description": "It's a cute little multi-colored dragon...about 2 foot long.\nIt gracefully dances around your head.\n",
+      "race": "human",
+      "act_flags": "AGR",
+      "affected_by": "DE",
+      "alignment": 500,
+      "group": 0,
+      "level": 5,
+      "thac0": 0,
+      "ac": "2d7+46",
+      "hit_dice": "5d9+100",
+      "mana_dice": "1d5+0",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 8,
+      "offensive": "FU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "none",
+      "wealth": 1,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 1001,
       "name": "A griffin",
-      "description": "A large black winged griffin swoops into an attack.\n"
+      "player_name": "oldstyle griffin",
+      "long_description": "A large black winged griffin swoops into an attack.\n",
+      "description": "Golden maned and black all over.  It's quite a beautiful creature if not\nfor the fact it is hungry and is attacking you!\n",
+      "race": "human",
+      "act_flags": "AFG",
+      "affected_by": "0",
+      "alignment": 300,
+      "group": 0,
+      "level": 8,
+      "thac0": 0,
+      "ac": "2d7+96",
+      "hit_dice": "4d9+100",
+      "mana_dice": "1d7+2",
+      "damage_dice": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
+      "offensive": "EFNU",
+      "immune": "0",
+      "resist": "0",
+      "vuln": "0",
+      "start_pos": "stand",
+      "default_pos": "stand",
+      "sex": "male",
+      "wealth": 25,
+      "form": "0",
+      "parts": "0",
+      "size": "medium",
+      "material": "0"
     }
   ],
   "objects": [
     {
       "id": 1001,
       "name": "a red rose",
-      "description": "A red rose is lying on the ground."
+      "description": "A red rose is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": 0,
+      "wear_flags": 17,
+      "weight": 80,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rose",
+          "description": "It's a beautiful red rose, with a soft and romantic fragrance.\n"
+        }
+      ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1005,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1022,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1019,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1001,
+      "arg2": 3,
+      "arg3": 1034,
+      "arg4": 3
     }
   ],
   "specials": [

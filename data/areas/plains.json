@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 300,
-    "name": "Plains",
-    "filename": "plains.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Plains",
+  "vnum_range": {
+    "min": 300,
+    "max": 399
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 300,
@@ -41,7 +41,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -65,7 +64,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -89,7 +87,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -125,7 +122,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -149,7 +145,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -185,7 +180,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -215,7 +209,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -239,7 +232,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -263,7 +255,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -293,7 +284,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -323,7 +313,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -347,7 +336,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -377,7 +365,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -407,7 +394,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -419,7 +405,7 @@
       "exits": {
         "north": {
           "to_room": 5550,
-          "description": "You notice a sign saying : Stranger we welcome you to the\npeaceful city of Ofcol.\n",
+          "description": "You notice a sign saying : Stranger we welcome you to the\n                           peaceful city of Ofcol.\n",
           "flags": "0",
           "key": -1
         },
@@ -431,7 +417,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -469,10 +454,9 @@
       "extra_descriptions": [
         {
           "keyword": "sign",
-          "description": "The sign says:\nLoyal citizens of Midgaard.  These are the earthly remains of the\ntwo heretics 'Dim' and 'Gamma' of this world. Having forged them-\nselves to immortality, they called upon themselves the anger of the\nimplementators.  Let this be a lesson too all .....\n-- the Powers that Be.\n"
+          "description": "The sign says:\n\n  Loyal citizens of Midgaard.  These are the earthly remains of the\n  two heretics 'Dim' and 'Gamma' of this world. Having forged them-\n  selves to immortality, they called upon themselves the anger of the\n  implementators.  Let this be a lesson too all .....\n\n                                    -- the Powers that Be.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -496,7 +480,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -526,7 +509,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -556,7 +538,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -586,7 +567,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -622,7 +602,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -646,7 +625,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -676,7 +654,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -705,7 +682,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -750,7 +726,6 @@
           "description": "The mountains seems dark and all most alive, as they contrast against\nthe sky.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -774,7 +749,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -809,7 +783,6 @@
           "description": "The pool is crystal clear, but as you look into it you notice that\nyou can't see the bottom of it ... it must be pretty deep.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -833,7 +806,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -870,7 +842,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -894,7 +865,6 @@
           "description": "The hermit cooks here.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -918,7 +888,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -942,7 +911,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -966,7 +934,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -995,7 +962,6 @@
           "description": "The markers seems like normal stones, but the way they are\narranged makes you think there is something special about them.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1024,7 +990,6 @@
           "description": "The rock formations are made of 7 huge, monolith like stones, placed\nin a symbolic circle.\nYou notice it's possible to enter the ring.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1053,7 +1018,6 @@
           "description": "The rock formations are made of seven huge monolith placed in a circle.\nYou notice it's possible to enter the ring.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1077,7 +1041,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -1114,7 +1077,6 @@
           "description": "The stones of G'harne tower fifteen feet over you.\nThe giant stones are made of a material you haven't seen before.\nIt resembles black marble, but somehow feels different.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1147,7 +1109,6 @@
           "description": "You try to examine the substance closer, but must refrain from this\nas all you really want to do is puke.\nYou puke.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1164,7 +1125,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     },
     {
@@ -1193,7 +1153,6 @@
           "description": "You try to examine the substance closer, but must refrain from this\nas all you really want to do is puke.\nYou puke.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1222,7 +1181,6 @@
           "description": "BWADR! ...\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
@@ -1245,22 +1203,20 @@
           "description": "You puke.\n"
         }
       ],
-      "resets": [],
       "area": 300
     },
     {
       "id": 345,
       "name": "Steep slope",
-      "description": "You try to climb down the slope.\n>\nYou slip!\nYou fall and tumble.\nYou hit your head HARD.\nYou die.\nYou've fallen, and you can't get up!\n",
+      "description": "You try to climb down the slope.\n>\nYou slip!\nYou fall and tumble.\nYou hit your head HARD.\nYou die.\n\nYou've fallen, and you can't get up!\n",
       "sector_type": "field",
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 300
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 300,
       "name": "Aruncus the Druid",
@@ -1584,11 +1540,11 @@
       "description": "Some herbs are lying here, small green leaves and tiny pink flowers.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
       "cost": 10,
-      "condition": "10",
+      "condition": 100,
       "values": [
         1,
         1,
@@ -1607,14 +1563,14 @@
     {
       "id": 301,
       "name": "a small dusk of black gyvel",
-      "description": "Some black gyvel is lying here, dark green with black leaves and tiny\nblood red flowers.",
+      "description": "Some black gyvel is lying here, dark green with black leaves and tiny\n\nblood red flowers.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
       "cost": 10,
-      "condition": "10",
+      "condition": 100,
       "values": [
         1,
         1,
@@ -1636,11 +1592,11 @@
       "description": "Some poison ivy is growing here.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
       "values": [
         1,
         1,
@@ -1662,15 +1618,15 @@
       "description": "A small jar in a dark, red colour.",
       "material": "oldstyle",
       "item_type": "drink",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 20,
       "cost": 20,
-      "condition": "20",
+      "condition": 100,
       "values": [
         2,
         2,
-        0,
+        13,
         0,
         0
       ],
@@ -1688,11 +1644,11 @@
       "description": "A bunch of pretty wild flowers is here.",
       "material": "oldstyle",
       "item_type": "trash",
-      "extra_flags": "K",
-      "wear_flags": "AEO",
-      "weight": 0,
-      "cost": 10,
-      "condition": "0",
+      "extra_flags": 1024,
+      "wear_flags": 16401,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -1714,11 +1670,11 @@
       "description": "A strange looking amulet is lying here, half covered with dust.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "GH",
-      "wear_flags": "AC",
-      "weight": 0,
-      "cost": 10,
-      "condition": "1",
+      "extra_flags": 192,
+      "wear_flags": 5,
+      "weight": 10,
+      "cost": 1,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -1745,11 +1701,11 @@
       "description": "A staff with druidic marks have been left here.",
       "material": "oldstyle",
       "item_type": "trash",
-      "extra_flags": "0",
-      "wear_flags": "AO",
-      "weight": 0,
-      "cost": 40,
-      "condition": "10",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "weight": 40,
+      "cost": 10,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -1771,11 +1727,11 @@
       "description": "You see a deliciously looking rabbit roast.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 50,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 50,
+      "cost": 0,
+      "condition": 100,
       "values": [
         24,
         24,
@@ -1797,23 +1753,23 @@
       "description": "A strange template made of an exotic green metal is placed here",
       "material": "oldstyle",
       "item_type": "scroll",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 13,
-      "cost": 10,
-      "condition": "1870",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 1870,
+      "condition": 100,
       "values": [
         15,
-        0,
-        0,
-        0,
+        81,
+        4,
+        46,
         0
       ],
       "affects": [],
       "extra_descriptions": [
         {
           "keyword": "template scroll metal",
-          "description": "The template is made of an exotic green metal and looks\ncenturies old.\nInscripted upon is the words 'Ep ep fi'hur G'harne\nG'harne fhtagn Shudde-M'ell hyas Negg'h'\nAnd beneath the inscription you see horrifying death scenes depicted.\n"
+          "description": "The template is made of an exotic green metal and looks\ncenturies old.\nInscripted upon is the words 'Ep ep fi'hur G'harne\n                             G'harne fhtagn Shudde-M'ell hyas Negg'h'\nAnd beneath the inscription you see horrifying death scenes depicted.\n"
         }
       ]
     },
@@ -1823,16 +1779,16 @@
       "description": "A clear potion wrapped in leather is unnoticed placed here.",
       "material": "oldstyle",
       "item_type": "potion",
-      "extra_flags": "G",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "300",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 300,
+      "condition": 100,
       "values": [
         20,
-        0,
-        0,
-        0,
+        30,
+        33,
+        34,
         0
       ],
       "affects": [],
@@ -1853,14 +1809,14 @@
       "description": "An odd looking scroll is here.",
       "material": "oldstyle",
       "item_type": "scroll",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 2,
-      "cost": 10,
-      "condition": "640",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
+      "cost": 640,
+      "condition": 100,
       "values": [
         18,
-        0,
+        72,
         0,
         0,
         0
@@ -1876,6 +1832,147 @@
           "description": "The scroll is titled 'jhyfrdow' and looks very old.\nAs you examine it closer you notice primitive drawings of\nmen doing some kind of a ritual.\n"
         }
       ]
+    }
+  ],
+  "resets": [
+    {
+      "command": "O",
+      "arg1": 300,
+      "arg2": 10,
+      "arg3": 327,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 301,
+      "arg2": 10,
+      "arg3": 319,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 304,
+      "arg2": 3,
+      "arg3": 316,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 304,
+      "arg2": 3,
+      "arg3": 323,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 304,
+      "arg2": 3,
+      "arg3": 338,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 305,
+      "arg2": 1,
+      "arg3": 344,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 310,
+      "arg2": 5,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 311,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 309,
+      "arg2": 10,
+      "arg3": 324,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 309,
+      "arg2": 10,
+      "arg3": 318,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 309,
+      "arg2": 10,
+      "arg3": 334,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 300,
+      "arg2": 1,
+      "arg3": 323,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 308,
+      "arg2": 2,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 307,
+      "arg2": 2,
+      "arg3": 3,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 312,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 302,
+      "arg2": 10,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 301,
+      "arg2": 1,
+      "arg3": 331,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 303,
+      "arg2": 2,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 309,
+      "arg2": 30,
+      "arg3": 331,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 350,
+      "spec": "spec_cast_mage"
     }
   ]
 }

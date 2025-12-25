@@ -107,7 +107,7 @@ def test_weapon_vampiric_life_drain(mock_apply_damage, mock_number_range, attack
     mock_number_range.assert_called_once_with(1, 5)
 
     # Should apply negative damage to victim
-    mock_apply_damage.assert_called_once_with(attacker, victim, 4, DamageType.NEGATIVE)
+    mock_apply_damage.assert_called_once_with(attacker, victim, 4, DamageType.NEGATIVE, show=False)
 
     # Should heal attacker by half damage
     assert attacker.hit == 52  # 50 + 4//2
@@ -154,7 +154,7 @@ def test_weapon_flaming_fire_damage(mock_apply_damage, mock_number_range, attack
     mock_number_range.assert_called_once_with(1, 4)
 
     # Should apply fire damage
-    mock_apply_damage.assert_called_once_with(attacker, victim, 3, DamageType.FIRE)
+    mock_apply_damage.assert_called_once_with(attacker, victim, 3, DamageType.FIRE, show=False)
 
     # Should include fire message
     assert "test weapon sears your flesh." in messages
@@ -177,7 +177,7 @@ def test_weapon_frost_cold_damage(mock_apply_damage, mock_number_range, attacker
     mock_number_range.assert_called_once_with(1, 5)
 
     # Should apply cold damage
-    mock_apply_damage.assert_called_once_with(attacker, victim, 5, DamageType.COLD)
+    mock_apply_damage.assert_called_once_with(attacker, victim, 5, DamageType.COLD, show=False)
 
     # Should include cold message
     assert "The cold touch surrounds you with ice." in messages
@@ -200,7 +200,7 @@ def test_weapon_shocking_lightning_damage(mock_apply_damage, mock_number_range, 
     mock_number_range.assert_called_once_with(1, 6)
 
     # Should apply lightning damage
-    mock_apply_damage.assert_called_once_with(attacker, victim, 6, DamageType.LIGHTNING)
+    mock_apply_damage.assert_called_once_with(attacker, victim, 6, DamageType.LIGHTNING, show=False)
 
     # Should include lightning message
     assert "You are shocked by the weapon." in messages

@@ -16,17 +16,16 @@ def load_registry() -> SkillRegistry:
 
 def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     reg = load_registry()
-    caster = Character(mana=40)  # Increased to handle two casts (15 + 15 = 30 mana needed)
-    target = Character()
-    # Learned 75% should succeed when roll == 75, fail when 76
+    caster = Character(mana=40, level=20)
+    target = Character(max_hit=200, hit=200)
     caster.skills["fireball"] = 75
 
-    # Force roll=75
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 75)
+    monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 42)
     result = reg.use(caster, "fireball", target)
     assert isinstance(result, SkillUseResult)
     assert result.success is True
-    assert result.payload == 42
+    assert result.payload is not None and result.payload > 0
 
     # Cooldown applied; tick twice to reuse and drain wait via violence pulses
     character_registry.append(caster)

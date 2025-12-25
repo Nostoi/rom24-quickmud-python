@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 5200,
-    "name": "Thalos",
-    "filename": "thalos.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Thalos",
+  "vnum_range": {
+    "min": 5200,
+    "max": 5299
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 5200,
@@ -27,7 +27,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -59,7 +58,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -90,7 +88,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -122,7 +119,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -149,7 +145,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -171,7 +166,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -193,7 +187,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -220,7 +213,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -247,7 +239,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -271,7 +262,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -302,7 +292,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -333,7 +322,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -364,7 +352,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -394,7 +381,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -422,7 +408,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -446,7 +431,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -468,7 +452,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -494,7 +477,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -516,7 +498,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -533,7 +514,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -555,7 +535,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -572,7 +551,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -598,7 +576,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -619,7 +596,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -644,7 +620,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -666,7 +641,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -683,7 +657,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -700,7 +673,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -720,7 +692,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -737,7 +708,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -754,7 +724,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -775,7 +744,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -806,7 +774,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -826,7 +793,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -846,7 +812,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -863,7 +828,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -880,7 +844,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -906,7 +869,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -922,7 +884,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -943,7 +904,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -964,7 +924,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -989,7 +948,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1010,7 +968,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1036,7 +993,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1057,18 +1013,16 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
       "id": 5245,
       "name": "On the second floor",
-      "description": "The minute you step off onto this floor you realize it was a mistake.\nThe old rotted floorboards suddenly give way and you fall down, impaling\nyourself on jagged boards below.\nYou've fallen, and you can't get up!!!\n",
+      "description": "The minute you step off onto this floor you realize it was a mistake.\nThe old rotted floorboards suddenly give way and you fall down, impaling\nyourself on jagged boards below.\n\nYou've fallen, and you can't get up!!!\n",
       "sector_type": "city",
       "flags": 0,
       "exits": {},
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1085,7 +1039,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1102,7 +1055,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1119,13 +1071,12 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
       "id": 5250,
       "name": "The Temple of Thalos",
-      "description": "You stand within one of the most holy places in the realm. This\nstunning domed temple once housed the city's worshipers en masse.\nUnfortunately, it succumbed to the destruction brought on this city.\nLong benches lie toppled and the altar desecrated. Large chunks of stone\nhave fallen from the walls and roof, sending sunlight streaming in on\nyou. A few books lie about, conveying to you a holy message in a\nstrange tongue.\nWind gusts through the four archways and howls and screams can be\nheard from all parts of the city.\n",
+      "description": "You stand within one of the most holy places in the realm. This\nstunning domed temple once housed the city's worshipers en masse.\nUnfortunately, it succumbed to the destruction brought on this city.\nLong benches lie toppled and the altar desecrated. Large chunks of stone\nhave fallen from the walls and roof, sending sunlight streaming in on\nyou. A few books lie about, conveying to you a holy message in a\nstrange tongue.\n     Wind gusts through the four archways and howls and screams can be\nheard from all parts of the city.\n",
       "sector_type": "city",
       "flags": 0,
       "exits": {
@@ -1141,7 +1092,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1163,7 +1113,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1187,7 +1136,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1209,7 +1157,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1231,7 +1178,6 @@
           "description": "This extension to Thalos, along with the dwarf forest, is made by Hatchet for\nany Merc Mud.\ncopyright 1992\n"
         }
       ],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1257,7 +1203,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1279,7 +1224,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1301,7 +1245,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1328,7 +1271,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1350,7 +1292,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1372,7 +1313,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1394,7 +1334,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1416,7 +1355,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1438,7 +1376,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1460,7 +1397,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1482,7 +1418,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1504,7 +1439,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1540,7 +1474,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1569,7 +1502,6 @@
           "description": "Something is strange about these skeletons.  Upon further investigation, these\nskeletons appear illusionary.\n"
         }
       ],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1600,7 +1532,6 @@
           "description": "This cave along with the valley and dwarf forest is made by Hatchet for any\nMerc Mud.\ncopyright 1992\n"
         }
       ],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1629,7 +1560,6 @@
           "description": "Something is strange about these skeletons.  Upon further investigation, these\nskeletons appear illusionary.  In fact, through the skeletons, you see a\nsecret door!!\n"
         }
       ],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1651,7 +1581,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1673,7 +1602,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1700,7 +1628,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1722,7 +1649,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1744,7 +1670,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1766,7 +1691,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1788,7 +1712,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1810,7 +1733,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1834,7 +1756,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1856,7 +1777,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     },
     {
@@ -1873,11 +1793,10 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5200
     }
   ],
-  "mobs": [
+  "mobiles": [
     {
       "id": 5200,
       "name": "The mighty beholder",
@@ -2201,11 +2120,11 @@
       "description": "A vest made of mithril plates lies heaped on the floor.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AD",
-      "weight": 26,
-      "cost": 300,
-      "condition": "7600",
+      "extra_flags": 1088,
+      "wear_flags": 9,
+      "weight": 300,
+      "cost": 7600,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2231,11 +2150,11 @@
       "description": "Here lies a large mithril helm.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AE",
-      "weight": 27,
-      "cost": 100,
-      "condition": "3400",
+      "extra_flags": 1088,
+      "wear_flags": 17,
+      "weight": 100,
+      "cost": 3400,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2257,11 +2176,11 @@
       "description": "A pair of mithril gauntlets rests on the ground.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AH",
-      "weight": 25,
-      "cost": 100,
-      "condition": "2700",
+      "extra_flags": 1088,
+      "wear_flags": 129,
+      "weight": 100,
+      "cost": 2700,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2287,11 +2206,11 @@
       "description": "A set of mithril sleeves lies on the ground.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AI",
-      "weight": 25,
-      "cost": 100,
-      "condition": "2700",
+      "extra_flags": 1088,
+      "wear_flags": 257,
+      "weight": 100,
+      "cost": 2700,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2317,11 +2236,11 @@
       "description": "A pair of mithril boots stands has been left here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AG",
-      "weight": 25,
-      "cost": 60,
-      "condition": "3100",
+      "extra_flags": 1088,
+      "wear_flags": 65,
+      "weight": 60,
+      "cost": 3100,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2347,11 +2266,11 @@
       "description": "A set of mithril leggings lie here unattended.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AF",
-      "weight": 25,
-      "cost": 100,
-      "condition": "3100",
+      "extra_flags": 1088,
+      "wear_flags": 33,
+      "weight": 100,
+      "cost": 3100,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2377,11 +2296,11 @@
       "description": "A large iron girth lies at your feet.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GK",
-      "wear_flags": "AL",
-      "weight": 26,
-      "cost": 60,
-      "condition": "5200",
+      "extra_flags": 1088,
+      "wear_flags": 2049,
+      "weight": 60,
+      "cost": 5200,
+      "condition": 100,
       "values": [
         8,
         8,
@@ -2403,11 +2322,11 @@
       "description": "A battered iron breast plate lies here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "0",
-      "wear_flags": "AD",
-      "weight": 4,
-      "cost": 450,
-      "condition": "9100",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "weight": 450,
+      "cost": 9100,
+      "condition": 100,
       "values": [
         5,
         5,
@@ -2429,11 +2348,11 @@
       "description": "A small, but sturdy, iron shield has been left here.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GJ",
-      "wear_flags": "AJ",
-      "weight": 24,
-      "cost": 50,
-      "condition": "4400",
+      "extra_flags": 576,
+      "wear_flags": 513,
+      "weight": 50,
+      "cost": 4400,
+      "condition": 100,
       "values": [
         7,
         7,
@@ -2459,16 +2378,16 @@
       "description": "A jet black potion sits upright waiting to be taken.",
       "material": "oldstyle",
       "item_type": "potion",
-      "extra_flags": "FG",
-      "wear_flags": "A",
-      "weight": 11,
-      "cost": 50,
-      "condition": "880",
+      "extra_flags": 96,
+      "wear_flags": 1,
+      "weight": 50,
+      "cost": 880,
+      "condition": 100,
       "values": [
         16,
-        0,
-        0,
-        0,
+        4,
+        78,
+        53,
         0
       ],
       "affects": [],
@@ -2480,14 +2399,14 @@
       "description": "A small orange potion lies here.",
       "material": "oldstyle",
       "item_type": "potion",
-      "extra_flags": "FG",
-      "wear_flags": "A",
-      "weight": 4,
-      "cost": 100,
-      "condition": "400",
+      "extra_flags": 96,
+      "wear_flags": 1,
+      "weight": 100,
+      "cost": 400,
+      "condition": 100,
       "values": [
         20,
-        0,
+        32,
         0,
         0,
         0
@@ -2501,11 +2420,11 @@
       "description": "A smooth quartz ball lies here gleaming.",
       "material": "oldstyle",
       "item_type": "light",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 0,
-      "cost": 300,
-      "condition": "50",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 300,
+      "cost": 50,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2522,14 +2441,14 @@
       "description": "A worn and tattered scroll has been left here.",
       "material": "oldstyle",
       "item_type": "scroll",
-      "extra_flags": "G",
-      "wear_flags": "A",
-      "weight": 8,
-      "cost": 150,
-      "condition": "1280",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "weight": 150,
+      "cost": 1280,
+      "condition": 100,
       "values": [
         24,
-        0,
+        41,
         0,
         0,
         0
@@ -2543,16 +2462,16 @@
       "description": "A bound scroll of detection lies at your feet.",
       "material": "oldstyle",
       "item_type": "scroll",
-      "extra_flags": "G",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 150,
-      "condition": "500",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "weight": 150,
+      "cost": 500,
+      "condition": 100,
       "values": [
         15,
-        0,
-        0,
-        0,
+        30,
+        33,
+        34,
         0
       ],
       "affects": [],
@@ -2564,16 +2483,16 @@
       "description": "A brilliant silver flute glimmers from beneath a rock.",
       "material": "oldstyle",
       "item_type": "staff",
-      "extra_flags": "AG",
-      "wear_flags": "AO",
-      "weight": 9,
-      "cost": 10,
-      "condition": "3300",
+      "extra_flags": 65,
+      "wear_flags": 16385,
+      "weight": 10,
+      "cost": 3300,
+      "condition": 100,
       "values": [
         17,
         1,
         1,
-        0,
+        13,
         0
       ],
       "affects": [
@@ -2590,11 +2509,11 @@
       "description": "A demon-faced talisman glares at you angrily.",
       "material": "oldstyle",
       "item_type": "jewelry",
-      "extra_flags": "AG",
-      "wear_flags": "AC",
-      "weight": 0,
-      "cost": 110,
-      "condition": "0",
+      "extra_flags": 65,
+      "wear_flags": 5,
+      "weight": 110,
+      "cost": 0,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2620,11 +2539,11 @@
       "description": "A large chunk of venison sits here ready to be eaten.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 200,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 200,
+      "cost": 0,
+      "condition": 100,
       "values": [
         24,
         24,
@@ -2641,11 +2560,11 @@
       "description": "Some stagnant water lies in the bottom of the fountain.",
       "material": "oldstyle",
       "item_type": "fountain",
-      "extra_flags": "0",
-      "wear_flags": "0",
+      "extra_flags": 0,
+      "wear_flags": 0,
       "weight": 0,
       "cost": 0,
-      "condition": "0",
+      "condition": 100,
       "values": [
         10,
         10,
@@ -2662,17 +2581,17 @@
       "description": "A nice two-handed sword hangs on a hook in the wall.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "GK",
-      "wear_flags": "AN",
-      "weight": 26,
-      "cost": 240,
-      "condition": "3300",
+      "extra_flags": 1088,
+      "wear_flags": 8193,
+      "weight": 240,
+      "cost": 3300,
+      "condition": 100,
       "values": [
-        0,
+        1,
         2,
         12,
-        0,
-        0
+        25,
+        32
       ],
       "affects": [
         {
@@ -2692,11 +2611,11 @@
       "description": "A black silk robe lies heaped in one corner.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "0",
-      "wear_flags": "AK",
-      "weight": 5,
-      "cost": 60,
-      "condition": "410",
+      "extra_flags": 0,
+      "wear_flags": 1025,
+      "weight": 60,
+      "cost": 410,
+      "condition": 100,
       "values": [
         1,
         1,
@@ -2718,11 +2637,11 @@
       "description": "A beautiful dark green cloak has been dropped by someone.",
       "material": "oldstyle",
       "item_type": "armor",
-      "extra_flags": "GJ",
-      "wear_flags": "AC",
-      "weight": 20,
-      "cost": 120,
-      "condition": "1600",
+      "extra_flags": 576,
+      "wear_flags": 5,
+      "weight": 120,
+      "cost": 1600,
+      "condition": 100,
       "values": [
         7,
         7,
@@ -2744,11 +2663,11 @@
       "description": "A small, engraved ebony seal is here.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         30,
         0,
@@ -2765,14 +2684,14 @@
       "description": "A dirty, crumbling curved desk is here.",
       "material": "oldstyle",
       "item_type": "container",
-      "extra_flags": "0",
-      "wear_flags": "0",
+      "extra_flags": 0,
+      "wear_flags": 0,
       "weight": 0,
       "cost": 0,
-      "condition": "0",
+      "condition": 100,
       "values": [
         100,
-        0,
+        13,
         5224,
         100,
         100
@@ -2786,11 +2705,11 @@
       "description": "A small, engraved ivory seal lies here.",
       "material": "oldstyle",
       "item_type": "key",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 20,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 20,
+      "cost": 0,
+      "condition": 100,
       "values": [
         31,
         0,
@@ -2807,14 +2726,14 @@
       "description": "A broken glass cabinet is here.",
       "material": "oldstyle",
       "item_type": "container",
-      "extra_flags": "0",
-      "wear_flags": "0",
+      "extra_flags": 0,
+      "wear_flags": 0,
       "weight": 0,
       "cost": 0,
-      "condition": "0",
+      "condition": 100,
       "values": [
         500,
-        0,
+        13,
         5226,
         100,
         100
@@ -2828,11 +2747,11 @@
       "description": "A rotted arm floats lazily by your feet.",
       "material": "oldstyle",
       "item_type": "food",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
-      "cost": 200,
-      "condition": "0",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 200,
+      "cost": 0,
+      "condition": 100,
       "values": [
         50,
         50,
@@ -2849,11 +2768,11 @@
       "description": "A pale blue stone sits here.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2875,11 +2794,11 @@
       "description": "A pretty scarlet and blue stone has been dropped here.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2901,11 +2820,11 @@
       "description": "A small incandescent blue stone lies here.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2927,11 +2846,11 @@
       "description": "Someone has left a deep red stone here.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2953,11 +2872,11 @@
       "description": "A tiny pink stone lies at your feet.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "550",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 550,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -2979,11 +2898,11 @@
       "description": "This pearly white stone would probably sell for a good price.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 5,
-      "cost": 10,
-      "condition": "11",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 11,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3005,11 +2924,11 @@
       "description": "A stunning lavender and green stone rests on the ground.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 0,
-      "cost": 10,
-      "condition": "150",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 150,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3031,11 +2950,11 @@
       "description": "You can barely make out a dull grey stone on the ground.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "0",
-      "wear_flags": "A",
-      "weight": 0,
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "weight": 10,
       "cost": 10,
-      "condition": "10",
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3052,11 +2971,11 @@
       "description": "A bright pink and green stone has been left here.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 0,
-      "cost": 10,
-      "condition": "500",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 500,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3078,11 +2997,11 @@
       "description": "A odd clear stone lies at your feet.",
       "material": "oldstyle",
       "item_type": "gem",
-      "extra_flags": "G",
-      "wear_flags": "AQ",
-      "weight": 0,
-      "cost": 10,
-      "condition": "100",
+      "extra_flags": 64,
+      "wear_flags": 65537,
+      "weight": 10,
+      "cost": 100,
+      "condition": 100,
       "values": [
         0,
         0,
@@ -3104,16 +3023,16 @@
       "description": "A mandolin lies against the wall.",
       "material": "oldstyle",
       "item_type": "staff",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 9,
-      "cost": 100,
-      "condition": "2500",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 100,
+      "cost": 2500,
+      "condition": 100,
       "values": [
         13,
         3,
         3,
-        0,
+        23,
         0
       ],
       "affects": [],
@@ -3125,16 +3044,16 @@
       "description": "A battered golden harp has been tipped over.",
       "material": "oldstyle",
       "item_type": "staff",
-      "extra_flags": "G",
-      "wear_flags": "AO",
-      "weight": 7,
-      "cost": 500,
-      "condition": "2700",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "weight": 500,
+      "cost": 2700,
+      "condition": 100,
       "values": [
         18,
         1,
         1,
-        0,
+        6,
         0
       ],
       "affects": [
@@ -3151,16 +3070,16 @@
       "description": "A long slim dagger has been left here.",
       "material": "oldstyle",
       "item_type": "weapon",
-      "extra_flags": "G",
-      "wear_flags": "AN",
-      "weight": 8,
-      "cost": 10,
-      "condition": "590",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "weight": 10,
+      "cost": 590,
+      "condition": 100,
       "values": [
-        0,
+        2,
         2,
         5,
-        0,
+        11,
         0
       ],
       "affects": [
@@ -3174,6 +3093,658 @@
         }
       ],
       "extra_descriptions": []
+    }
+  ],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 5200,
+      "arg2": 1,
+      "arg3": 5250,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5208,
+      "arg2": 3,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5223,
+      "arg2": 10,
+      "arg3": 3,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5234,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5232,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5232,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5217,
+      "arg2": 2,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5236,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5237,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5240,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5241,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5218,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5250,
+      "arg2": 2,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5216,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5233,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5219,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5231,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5220,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5226,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5235,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5224,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5243,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5204,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5251,
+      "arg2": 2,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5201,
+      "arg2": 12,
+      "arg3": 5205,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5230,
+      "arg2": 1,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5252,
+      "arg2": -1,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 5228,
+      "arg2": 10,
+      "arg3": 5242,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 5219,
+      "arg2": 5,
+      "arg3": 5217,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 5220,
+      "arg2": 1,
+      "arg3": 5234,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 5207,
+      "arg2": 5,
+      "arg3": 5229,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5202,
+      "arg2": 1,
+      "arg3": 5229,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 5210,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5214,
+      "arg2": 4,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5203,
+      "arg2": 1,
+      "arg3": 5226,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 5215,
+      "arg2": 8,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 5239,
+      "arg2": 1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5204,
+      "arg2": 1,
+      "arg3": 5219,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 5218,
+      "arg2": 8,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 5211,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5205,
+      "arg2": 1,
+      "arg3": 5238,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5214,
+      "arg2": 4,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5206,
+      "arg2": 1,
+      "arg3": 5236,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5222,
+      "arg2": 8,
+      "arg3": 12,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5207,
+      "arg2": 4,
+      "arg3": 5232,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 5207,
+      "arg2": 4,
+      "arg3": 5217,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 5207,
+      "arg2": 4,
+      "arg3": 5227,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 5207,
+      "arg2": 4,
+      "arg3": 5244,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 5208,
+      "arg2": 8,
+      "arg3": 5247,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5221,
+      "arg2": 80,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5224,
+      "arg2": 8,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5200,
+      "arg2": 8,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5204,
+      "arg2": 8,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5208,
+      "arg2": 8,
+      "arg3": 5246,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5221,
+      "arg2": 80,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5226,
+      "arg2": 8,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5203,
+      "arg2": 8,
+      "arg3": 10,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5208,
+      "arg2": 8,
+      "arg3": 5248,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5221,
+      "arg2": 80,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5205,
+      "arg2": 8,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5206,
+      "arg2": 8,
+      "arg3": 13,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5208,
+      "arg2": 8,
+      "arg3": 5254,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5221,
+      "arg2": 80,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5201,
+      "arg2": 8,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 5202,
+      "arg2": 8,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 5225,
+      "arg2": 1,
+      "arg3": 5231,
+      "arg4": 0
+    },
+    {
+      "command": "P",
+      "arg1": 5215,
+      "arg2": 4,
+      "arg3": 5225,
+      "arg4": 1
+    },
+    {
+      "command": "P",
+      "arg1": 5216,
+      "arg2": 4,
+      "arg3": 5225,
+      "arg4": 1
+    },
+    {
+      "command": "O",
+      "arg1": 5227,
+      "arg2": 1,
+      "arg3": 5233,
+      "arg4": 0
+    },
+    {
+      "command": "P",
+      "arg1": 3105,
+      "arg2": 8,
+      "arg3": 5227,
+      "arg4": 1
+    },
+    {
+      "command": "D",
+      "arg1": 5267,
+      "arg2": 3,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 5268,
+      "arg2": 1,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 5270,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5110,
+      "arg2": 2,
+      "arg3": 5270,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5100,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5110,
+      "arg2": 2,
+      "arg3": 5270,
+      "arg4": 2
+    },
+    {
+      "command": "E",
+      "arg1": 5100,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5111,
+      "arg2": 2,
+      "arg3": 5267,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5100,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 5111,
+      "arg2": 2,
+      "arg3": 5272,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 5100,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 5200,
+      "spec": "spec_cast_mage"
     }
   ]
 }

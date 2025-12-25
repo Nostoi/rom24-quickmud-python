@@ -1,0 +1,442 @@
+{
+  "area": {
+    "vnum": 0,
+    "name": null,
+    "filename": null,
+    "min_level": 0,
+    "max_level": 0,
+    "builders": null
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "name": "The Void",
+      "description": "You are floating in nothing.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {},
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    },
+    {
+      "id": 2,
+      "name": "Limbo",
+      "description": "You are floating in a formless void, detached from all sensation of physical\nmatter, surrounded by swirling glowing light, which fades into the relative\ndarkness around you without any trace of edges or shadow.\nThere is a \"No Tipping\" notice pinned to the darkness.\n",
+      "sector_type": "city",
+      "flags": 0,
+      "exits": {
+        "up": {
+          "to_room": 3001,
+          "flags": "0",
+          "key": -1
+        }
+      },
+      "extra_descriptions": [],
+      "resets": [],
+      "area": 0
+    }
+  ],
+  "mobs": [],
+  "objects": [
+    {
+      "id": 1,
+      "name": "a silver coin",
+      "description": "One miserable silver coin.",
+      "material": "silver",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2,
+      "name": "a gold coin",
+      "description": "One valuable gold coin.",
+      "material": "gold",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 3,
+      "name": "%d gold coins",
+      "description": "A pile of gold coins.",
+      "material": "gold",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 4,
+      "name": "%d silver coins",
+      "description": "A pile of silver coins.",
+      "material": "silver",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 5,
+      "name": "%d silver coins and %d gold coins",
+      "description": "A pile of coins.",
+      "material": "gold",
+      "item_type": "money",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 10,
+      "name": "the corpse of %s",
+      "description": "The corpse of %s is lying here.",
+      "material": "meat",
+      "item_type": "npc_corpse",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 1000,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 11,
+      "name": "the corpse of %s",
+      "description": "The corpse of %s is lying here.",
+      "material": "meat",
+      "item_type": "pc_corpse",
+      "extra_flags": "O",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 1000,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 12,
+      "name": "the head of %s",
+      "description": "The severed head of %s is lying here.",
+      "material": "meat",
+      "item_type": "trash",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 13,
+      "name": "the heart of %s",
+      "description": "The torn-out heart of %s is lying here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        16,
+        16,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 14,
+      "name": "the arm of %s",
+      "description": "The sliced-off arm of %s is lying here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        20,
+        20,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 15,
+      "name": "the leg of %s",
+      "description": "The sliced-off leg of %s is lying here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 50,
+      "condition": "0",
+      "values": [
+        20,
+        20,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 16,
+      "name": "the guts of %s",
+      "description": "A steaming pile of %s's entrails is lying here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        5,
+        5,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 17,
+      "name": "the brains of %s",
+      "description": "The splattered brains of %s are lying here.",
+      "material": "meat",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 20,
+      "condition": "0",
+      "values": [
+        10,
+        10,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 20,
+      "name": "a Magic Mushroom",
+      "description": "A delicious magic mushroom is here.",
+      "material": "food",
+      "item_type": "food",
+      "extra_flags": "0",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 10,
+      "condition": "0",
+      "values": [
+        8,
+        8,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 21,
+      "name": "a bright ball of light",
+      "description": "A bright ball of light shimmers in the air.",
+      "material": "energy",
+      "item_type": "light",
+      "extra_flags": "A",
+      "wear_flags": "A",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 22,
+      "name": "a magical spring",
+      "description": "A magical spring flows from the ground here.",
+      "material": "water",
+      "item_type": "fountain",
+      "extra_flags": "G",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        100000,
+        100000,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 23,
+      "name": "a floating disc",
+      "description": "A floating black disc hangs in the air.",
+      "material": "energy",
+      "item_type": "container",
+      "extra_flags": "GMPUYZ",
+      "wear_flags": "AQ",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 25,
+      "name": "a shimmering gate",
+      "description": "A shimmering black gate rises from the ground, leading to parts unknown.",
+      "material": "shadow",
+      "item_type": "portal",
+      "extra_flags": "GOT",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 30,
+      "name": "a dummy object",
+      "description": "Dummy object is used for loading non-existent objects",
+      "material": "",
+      "item_type": "trash",
+      "extra_flags": "0",
+      "wear_flags": "0",
+      "weight": 0,
+      "cost": 0,
+      "condition": "0",
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    }
+  ]
+}

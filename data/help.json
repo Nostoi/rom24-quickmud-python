@@ -1,32 +1,593 @@
-[ 
+[
   {
     "level": -1,
     "keywords": [
-      "GREETING"
+      "RACE HELP",
+      "RACE",
+      "RACES"
     ],
-    "text": ".{WTHIS IS A MUD BASED ON.....{x\n\n{C                                ROM Version 2.4 beta{x\n\n               Original DikuMUD by Hans Staerfeldt, Katja Nyboe,\n               Tom Madsen, Michael Seifert, and Sebastian Hammer\n               Based on MERC 2.1 code by Hatchet, Furey, and Kahn\n               ROM 2.4 copyright (c) 1993-1998 Russ Taylor\n\nBy what name do you wish to be known?"
+    "text": "ROM has the following races for player characters:\n  Human  the standard race\n  Dwarf  good warriors and priests, cost 8 creation points\n  Elf    good thieves and mages, cost 5 creation points\n  Giant  huge, tough warriors, cost 6 creation points\n\nDifferent races have different starting statistics, and also different\nstat maximums for magic items and training.\n\nCreation points increase the amount of experience it takes to gain a level.\nFor more information, see the help files for each race (i.e. 'help dwarf')"
   },
   {
     "level": -1,
     "keywords": [
-      "MOTD"
+      "DWARF",
+      "DWARVES"
     ],
-    "text": "You are responsible for knowing the rules (type 'rules').  Ignorance of\n  the rules is no excuse.\n* Important commands: help, commands, news, notes\n* Use the delete command to erase unwanted characters"
+    "text": "Dwarves are short, stocky demi-humans, known for foul temper and great\nstamina.  Dwarves have high strength and constitution, but poor dexterity.\nThey are not as smart as humans, but are usually wiser due to their long \nlifespans.  Dwarves make excellent fighters and priests, but are very poor\nmages or thieves.  \n\nDwarves are very resistant to poison and disease, but cannot swim, and so\nare very vulnerable to drowning.  They recieve the berserk skill for free\n(if warriors), and can see in the dark with infravision."
   },
   {
-    "level": 52,
+    "level": -1,
     "keywords": [
-      "IMOTD"
+      "ELF",
+      "ELVES"
     ],
-    "text": "Welcome Immortal!\n\nYou are responsible for following the laws of immortal behavior. These can\nbe found by typing 'help laws' or 'help commandments'.\n\n* Excessive loading is not allowed, and is grounds for deletion.\n* Asking for promotion is grounds for instant deletion.\n* Type 'help jobs' to get some idea of what you should be doing."
+    "text": "Elves are slightly taller than humans, but have a much lighter build.  They\nlack the strength and stamina of the other races, but are for more agile,\nboth in body and mind.  Elves are superb mages and thieves, but have at\nbest fair talent as warriors or priests.\n\nElves resist charm spells most effectively, due to their magical nature.\nHowever, they are burned by the touch of iron, and so are barred from the\nuse of iron or steel in their adventuring careers.  Elves are notoriously \nhard to spot, and so elven warriors and thieves recieve the sneak and hiding\nautomatically. They may see in the dark with infravision."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HUMAN",
+      "HUMANS",
+      "MAN"
+    ],
+    "text": "Humans are the most common race in the world, and make up the majority of\nadventurers. Although they have no special talents like the other races,\nthey are more versitile, being skilled in all four classes. Humans may\nalso train their primary stat higher than any other race, and are able to\ngain more benefit from magical devices."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GIANT",
+      "GIANTS"
+    ],
+    "text": "Giants are the largest of the races, ranging from 9-12 feet in height.  They\nare stronger than any other race, and almost as durable as the dwarves.  \nThey aren't too bright, however, and their huge size makes them more clumsy\nthan the other races.  Giants make the best warriors of any race, but are\nill-suited for any other profession.\n\nGiants resist heat and cold with nary a mark, due to their huge mass.  However,\ntheir slow minds make them extremely vulnerable to mental attacks.  Giants,\ndue to their size and stamina, receive the fast healing and bash skills for\nfree. (Only giant warriors recive bash)."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "WANDS",
+      "STAVES",
+      "SCROLLS"
+    ],
+    "text": "Magical items require training to use properly.  If your character lacks the\nnecessary skill to use an item, he will fail, possibly destroying it.  The\nitem skills are as follows:\n\nscrolls\t\tThe reading of magical scrolls and books (see 'help recite')\nstaves\t\tThe use of staves and similar devices (see 'help brandish')\nwands\t\tThe use of wands and similar items (see 'help zap') "
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GROUP HEADER"
+    ],
+    "text": "The following skills and groups are available to your chacter:\n(this list may be seen again by typing list)"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GROUP HELP"
+    ],
+    "text": "The following commands are available:\nlist         display all groups and skills not yet bought\nlearned      show all groups and skills bought \npremise      brief explanation of creation points and skill groups\nadd <name>   buy a skill or group\ndrop <name>  discard a skill or group\ninfo <name>  list the skills or spells contained within a group\nhelp <name>  help on skills and groups, or other help topics\ndone\t     exit the character generation process"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MENU CHOICE"
+    ],
+    "text": "Choice (add,drop,list,help)?~\n\n-1 'GROUPS' 'INFO' 'PREMISE'~\nThe ROM skill system allows you to fully customize your new character, making\nhim or her skilled in the skills you choose.  But beware, the skills you pick\nat character creation are the only skills you will ever learn.  Skills are \npaid for with creation points, and the more creation points you have, the\nharder it is to gain a level.  Furthermore, higher-cost skills are harder to\npractice.\n\nSkill groups are like package deals for characters -- sets of skills or spells\nthat are closely related, and hence can be learned as a unit.  There is a \ndefault skill group for each class, which can be selected for a balanced \nselection of skills at a somewhat reduced cost.\n\nThe experience breakdown is as follows: \npoints   exp/level     points   exp/level\n40        1000         90        6000\n50        1500         100       8000\n60\t  2000         110      12000\n70        3000         120      16000 \n80        4000         130      24000\nThe table continues in a similar manner for higher point totals."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BASICS",
+      "ROM BASICS"
+    ],
+    "text": "The basic skills:\n\nEvery character starts with two skill groups, one for their class and a default\nset that all characters receive.  The default skills are:\n\nrecall  \tessential escape skill (see help recall)\nscrolls\t\treading of scrolls and other magical volumes\nstaves\t\tuse of magical staves\nwands\t\tuse of magical wands\n\nfor class defaults, check the classes themselves."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MAGE",
+      "MAGIC-USER",
+      "MAGE BASICS",
+      "MAGE DEFAULT"
+    ],
+    "text": "Mages specialize in the casting of spells, offensive ones in particular.\nMages have the highest-powered magic of any class, and are the only classes\nable to use the draconian and enchanting spell groups.  They are also very\nskilled at the use of magical items, though their combat skills are the \nweakest of any class.\n\nAll mages begin with skill in the dagger. Any other weapon skills must be\npurchased, at a very high rate.  The default skill selection for mages is\nas follows:\n\nskills:\nlore\t\tthe lore of magical items\n\nspell groups:\nbeguiling\tspells that control the mind\ncombat\t\toffensive magics, such as fireball and chill touch\ndetection\tinformational magics, such as detect magic and identify\nenhancement\tspells that maximize physical potential, such as haste\nillusion\tmagics for concealing and deceiving\nmaladictions\ta selection of curses fit for any witch\nprotective\tdefensive magics, ranging from armor to stone skin\ntransporation\tspells for getting from here to there\nweather\t\tspells for conjuring and mastering the elements"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CLERIC",
+      "CLERIC BASICS",
+      "CLERIC DEFAULT"
+    ],
+    "text": "Clerics are the most defensively orientated of all the classes.  Most of their\nspells focus on healing or defending the faithful, with their few combat spells\nbeing far less powerful than those of mages. However, clerics are the best \nclass by far at healing magics, and they posess an impressive area of\nprotective magics, as well as fair combat prowess.\n\nAll clerics begin with skill in the mace.  Other weapon or shield skills must\nbe purchased, many at a very dear cost.  The default skill selection for \nclerics is as follows:\n\nskills:\nflail\t\tthe proper use of flails\n\nspell groups:\nattack\t\ta selection of offensive magics\ncreation\tthe making of physical objects, such as food and water\ncurative\tspells that cure the sick and feeble of their ailments\nbenedictions\tpowerful magics that grant the blessings of the gods\ndetection\tinformational magics, such as detect magic and identify\nhealing\t\tspells for treating wounds, from scratches to death blows\nmaladictions\tan assortment of curses\nprotective\tdefensive magics, including the powerful sanctuary spell\ntransportation\tspells for getting from here to there\nweather         spells for conjuring and mastering the elements"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "THIEF",
+      "THIEF BASICS",
+      "THIEF DEFAULT"
+    ],
+    "text": "Thieves are a marginal class. They do few things better than any other class,\nbut have the widest range of skills available.  Thieves are specialists at\nthievery and covert actions, being capable of entering areas undetected where\nmore powerful adventurers would fear to tread.  They are better fighters than\nclerics, but lack the wide weapon selection of warriors.\n\nAll thieves begin with the dagger combat skill, and are learned in steal as \nwell.  Any other weapon skills must be purchased, unless the default selection\nis chosen.  This default skill package includes:\n\nskills:\nmace\t\tthe use of maces and other blunt weapons\nsword\t\tswordplay and fencing\nbackstab\tthe art of hitting your opponent by surprise\ndisarm\t\tused to deprive your opponent of his weapon\ndodge\t\tthe best way to take a punch is not to be there\nsecond attack\twith training, the skilled thief can hit twice as fast\ntrip\t\ta good way to introduce an opponent to the floor\nhide\t\tthe art of remaining undetected in a room\npeek\t\tused to look into a person's belongings\npick lock\ta useful skill for breaking and entering\nsneak\t\twith this skill, a thief can walk into a room undetected"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "WARRIOR",
+      "WARRIOR BASICS",
+      "WARRIOR DEFAULT"
+    ],
+    "text": "Warriors live for combat and the thrill of battle. They are the best fighters\nof all the classes, but lack the subtle skills of thieves and the magical\ntalents of mages and priests.  Warriors are best for those who don't mind\ntaking the direct approach, even when another method might be called for.\n\nWarriors begin with skill in the sword, and gain a second attack in combat.\nOther weapon skills may be purchased cheaply, or gained in the default skill\npackage, which includes the following:\n\nskills:\nweaponsmaster\tthis group provides knowledge of all weapon types\nshield block\tthe art of parrying with a shield\nbash\t\ta forceful rush with the body, designed to flatten your foes\nenhanced damage\tthis skill multiplies your damage in battle\nparry\t\tthe art of parrying with weapons\nrescue\t\tallows you to take the blows aimed for a companion\nthird attack\tallows the skilled warrior to land three blows in one round"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "EXOTIC",
+      "WEAPONS",
+      "WEAPON",
+      "WEAPONSMASTER",
+      "AXE",
+      "DAGGER",
+      "FLAIL",
+      "MACE",
+      "POLEARM",
+      "SPEAR",
+      "SWORD",
+      "WHIP"
+    ],
+    "text": "Each weapon skill applies to a specific group of armaments, and determines how\nwell a character fights with a particular weapon.  The weaponsmaster group\nprovides talent in all weapons (save exotics), from chair legs to halberds.\nIf the character has the parry skill as well, he can parry incoming attacks.\nThe chance of parrying is best if the character in question is skilled at \nboth his weapon and his opponent's.\n\nThe weapon skills consist of the following:\n\nweaponsmaster\tskill group of all weapons listed below (save exotic weaponry)\naxe\t\tthe use of axes, ranging from hand to great (but not halberds)\ndagger\t\tthe use of knives and daggers, and other stabbing weapons\nflail\t\tskill in ball-and-chain type weapons\nmace\t\tthis skill includes clubs and hammers as well as maces\npolearm\t\tthe use of pole weapons (except spears), including halberds\nspear\t\tthis skill covers both spears and staves, but not polearms\nsword\t\tthe warrior's standby, from rapier to claymore\nwhip\t\tthe use of whips, chains, and bullwhips\nexotic\t\tthe use of strange magical weapons\n\nThe exotic skill cannot be purchased, and is dependent solely upon level."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "SHIELD BLOCK"
+    ],
+    "text": "Shield block is a rather fancy name for the art of parrying with a shield.\nCharacters with no shield block skill will not be able to defend themselves\nwell with a shield.  All classes may learn shield block, but only warriors and\nclerics are good at it.  Beware, flails ignore shield blocking attempts, and\nwhips have an easier time getting around them.  Axes may split shields in two."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ATTACK"
+    ],
+    "text": "The attack spells are essentially powerful curses, fueled by divine energy\nrather than magical power (like the combat spells are). They are less powerful\nthan the combat spells, but can still deal out a stinging blow.  Mages and \nthieves cannot use this group.  The attack spell group consists of the \nfollowing spells:\n\ndemonfire\ta powerful, but very evil, spell\ndispel evil\ttorments evil foes\ndispel good\tcalls down unholy power on good creatures\nearthquake\tbrings the power of earth to bear against your foes\nflamestrike\tsends a column of flame from the heavens\nheat metal\theats metal equipment to searing tempatures\nray of truth\tsends forth a blinding ray of holy energy"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BEGUILING"
+    ],
+    "text": "This insideous spell group is used to invade the minds of others.  It consists\nof various charming magics, well suited for turning your foes to your cause.\nOnly mages and thieves have access to the beguiling magics, which consist of\nthe following:\n\ncalm            if successful, stops all fighting in the room\ncharm person\tturns an enemy into a trusted friend\nsleep\t\tputs a foe into enchanted slumber"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BENEDICTIONS"
+    ],
+    "text": "Benedictions are priestly spells, used to bestow divine favor upon your allies.\nThey are often restricted to those of like alignment.  Only clerics and \nwarriors may use these spells.  The benedictions spell group consists of the\nfollowing:\n\nbless\t\tbestows divine favor upon the target\ncalm\t\tif successful, stops all fighting in the room\nfrenzy\t\tputs the recipient into beserker rage\nholy word\taids your allies while calling divine wrath upon your foes\nremove curse\tremoves malevolent magic from players and items"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "COMBAT"
+    ],
+    "text": "These sorcerous spells are, in the words of one famous mage, just 'more ways to\ntoss energy around'.  They are the most powerful of the damaging spells, and\nconsidered an essential part of most wizards' collections. Clerics and thieves\ndo not have access to these spells.  In order of power, the combat spell group\ncontains the following magics:\n\nmagic missile\tsend a weak energy bolt into a foe\nchill touch\tweakens your enemy with a frigid grasp\nburning hands\tsends a blast of fire into your foe\nshocking grasp\tsends a powerful jolt into a foe\nlightning bolt\tsends forth a single bolt of lightning into an enemy\ncolour spray\tblasts your opponent with a rainbow spray, which may blind him\nfireball\ta powerful spell, great for burning your enemy to ashes\nacid blast\tsends forth a stream of acid to eradicate your foes\nchain lightning\tsends lightning bolts arcing through foes "
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CREATION"
+    ],
+    "text": "The creation spell group is used to create objects, of temporary or permanent\nduration.  Skill creators can travel without food or drink, and use their \npowers to create nourishment as required.  All classes may become learned in\nthis group, which contains these spells:\n\ncontinual light\tcreates an eternal light source\ncreate food\tproduces a nourishing mushroom\ncreate rose\tcreates a beautiful red rose\ncreate spring\tcalls forth a small but pure spring from the ground\ncreate water\tfills any available container with water\nfloating disc\tcreates a floating disc of force perfect for hauling treasure"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CURATIVE"
+    ],
+    "text": "The curative spells are used to heal various unpleasant conditions that can\nbefall an adventurer.   For healing of damage, see the healing spell group.\nCurative spells cannot be used by mages or thieves.\n\ncure blindness\trestored sight to the blind\ncure disease\theals the plague\ncure poison\tremoves the harmful effects of poison"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DETECTION"
+    ],
+    "text": "The detection spells have may uses, all related to gathering information. They\ncan be used to see hidden objects, give information about treasure, or even\nscry out the true nature of your foe.  All classes except warriors can use \ndetection spells.\n\ndetect evil\treveals the aura of evil monsters\ndetect good\tsimilar to above, only for good monsters\ndetect hidden\tshows the whereabouts of hidden foes\ndetect invis\tallows the caster to see the unseeable\ndetect magic\treveals magical auras to the caster\ndetect poison\tdetermines if food is safe to eat\nfarsight\tsearches for living beings near the caster\nidentify\tgives information about the nature of an object\nknow alignment\tdetermines the moral character of a monster or person\nlocate object\tfinds a specific item"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DRACONIAN"
+    ],
+    "text": "The Draconian spell group deals with the magic of dragons -- in this case, \nbringing forth the devastating power of their breath weapons upon your foes.\nOnly mages have the mental training necessary to cast these spells, and few\nof them ever reach the level of mastery required to use them.\n\nacid breath\t uses the black dragon's attack upon an enemy\nfire breath\t calls forth the flames of a red dragon\nfrost breath\t drains the life from a foe with the power a white dragon\ngas breath\t suffocates your enemies with poison gas\nlightning breath summons the electrical fury of a blue dragon "
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ENCHANTMENT"
+    ],
+    "text": "The enchantment spell group is used to imbue items with magical properties.\nCurrently, this spell group consists of enchant weapon and enchant armor, \nalthough more will be added in the future.  Only mages may enchant.\n\nenchant weapon\tincreases the hit and damage bonuses of a weapon\nenchant armor\tincreases the protective value of armor\nfireproof       shields items from the harmful effects of fire and acid\nrecharge\trestores power to a depleted wand or staff"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ENHANCEMENT"
+    ],
+    "text": "The enhancement spells improve upon the body's pontential, allowing feats of\nsuperhuman strength and speed.  However, these spells may often have harmful\neffects upon the recipient.\n\ngiant strength\tgrants increased strength\nhaste\t\tdoubles the speed of the target, but slows down healing\ninfravision\tallows monsters to be seen in the dark\nrefresh\t\trestores energy to tired adventurers"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HARMFUL"
+    ],
+    "text": "This spell group is the opposite of healing.  The harmful spells are designed\nto tear flesh from bone, rupture arteries, and generally turn the body against\nitself.  Only priests and warriors may use this spell group.\nIn order of power, the harmful spells are:\n\ncause light\tinflicts minor wounds on an enemy\ncause serious\tinflicts wounds on a foe\ncause critical  causes major damage to the target\nharm\t\tthe most deadly harmful spell"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HEALING"
+    ],
+    "text": "The healing spells are used to cure the wounds that adventurers inevitably\nsuffer in battle.  For curing other conditions, such as poison, see the\ncurative spell group.  Only warriors and priests have access to this group.\nIn order of power, the healing spells are:\n\ncure light\theals minor wounds\nrefresh\t\trestores vigor to a tired adventurer\ncure serious\theals wounds\ncure critical\tcloses all but the worst wounds\nheal\t\tthe most powerful healing spell\nmass healing\tcasts a heal spell on each player in the room"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ILLUSION"
+    ],
+    "text": "The illusions spells are dedicated to deception and trickery.  They can be\nused to mask appearances, or create distractions for the party.  Currently,\nthe illusion group is very small, but it will be expanded in the future.\nOnly thieves and mages can cast illusion spells, which consist of the \nfollowing:\n\ninvis\t\tturns the target invisible\nmass invis\tturns the caster's group invisible\nventriloquate\tallows the caster to put words in someone's mouth"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MALADICTIONS"
+    ],
+    "text": "Maladictions are a group of curses and other baneful spells, designed to\ncripple, inconvenience, or torture, rather than kill outright.  These spells\nmay be cast by any class.\n\nblindess\tstrikes the target blind\ncurse\t\tprevents recalling and weakens the target in combat\nenergy drain\tdrains experience and mana, while strengthening the caster\nplague\t\tcauses the target to suffer a slow, painful death from plague\npoison\t\tweaker than plague, but often fatal\nslow\t\tslows your enemies down, reducing their rate of attack\t\nweaken\t\tdrains the strength of the target"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PROTECTIVE"
+    ],
+    "text": "The protective spells are used to shield against harm, whether from spells or\nphysical attack.  They range from the weak armor spell to the sought-after\nsanctuary charm.  Also included in this group are several spells for dispeling\nhostile magics. Any class may use this group, which consists of the following \nspells:\n\narmor\t\tprovides the target with an extra layer of defense\ncancellation\ta powerful dispel, used for removing spells from friends\ndispel magic\tremoves spells from enemies, not as effective as cancel\nfireproof\tshields items from the harmful effects of fire and acid\nprotection evil\tprovides defense from the attacks of evil creatures\nprotection good protects from the attacks of good beings\nsanctuary\treduces all damage taken by the recipient by half\nshield\t\tputs a shimmering shield between you and your enemies\nstoneskin\tturns skin hard as stone, providing a huge armor boost"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "TRANSPORTATION"
+    ],
+    "text": "The transportation group is used for travel, whether by flight, magical\nteleportation, or walking through walls.  All classes may learn these spells,\nwhich are among the most useful in the game.\n\nfly\t\tallows the target to fly over nearly all obstacles\ngate\t\ttransports the caster to the target\nnexus\t\tforms a two-way portal to a far off destination\npass door\tallows the caster to walk through walls\nportal\t\tcreates a one-way portal to a destination\nsummon\t\ttransports the target to the caster\nteleport\tsends the target to a random location\nword of recall\ttransports the caster to safety in Midgaard"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "WEATHER"
+    ],
+    "text": "These spells allow the caster to manipulate local weather conditions, as well\nas summon fog clouds, lightning, or even electrical glows.  This group is\nusable by all classes.\n\ncall lightning\tsummons a huge bolt from the heavens, if the weather is right\ncontrol weather\tchanges the weather in the manner desired by the caster\nfaerie fire\tsurrounds the target in a glowing aura\nfaerie fog\treveals all hidden creatures in the room\nlightning bolt\tsends a bolt of electricity into the target\n\n(the weather command, unrelated to this group, shows local weather conditions)"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BACKSTAB"
+    ],
+    "text": "Backstab is the favored attack of  thieves, murderers, and other rogues.  It \ncan be used with any weapon type, but is most effective with piercing weapons.\nThe damage inflicted by a backstab is determined by the attacker's level, his\nweapon skill, his backstab skill, and the power of his opponent.\nOnly thieves may learn the backstab."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BASH"
+    ],
+    "text": "The bash skill is a warrior talent, a brute-force attack designed to knock\nyour foe to his knees.  Its success depends on many factors, including the\nbash rating, your weight, and the size of your opponent.  Bashing a dragon\nis not generally a wise idea."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "BERSERK"
+    ],
+    "text": "Only powerful warriors can master berserking, the ability to enter insane rage\nin combat.  Its effects are not altogether unlike the frenzy spell -- a huge\nsurge of combat prowess, coupled with a disregard for personal safety.  \nBerserking warriors are more resistant to the effects of magic."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DIRT",
+      "DIRT KICKING"
+    ],
+    "text": "Consider by some to be a cowardly skill, dirt kicking gives the clever \ncombatant a chance to blind his opponent by casting dirt into his eyes.  The\nblindness does not last long, but can provide an edge in combat.  Dexterity\nhelps in hitting or avoiding a dirt kick.  Only warriors and thieves may\nlearn this skill."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DISARM"
+    ],
+    "text": "Disarm is a somewhat showy and unreliable skill, designed to relieve your\nopponent of his weapon.  The best possible chance of disarming occurs when you\nare skilled both your own and your opponent's weapon. Only talented thieves\nand warriors may learn this skill."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DODGE"
+    ],
+    "text": "In the words of one wise warrior, 'the best way to block a blow is to not\nbe where it lands'.  The dodge skill honors this tradition, by improving the\ncharacter's natural agility to the point where many blows will miss the \ntarget. The chance of dodging is also affected by the dexterity of the\nattacker and the target.  Any class may learn dodging."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ENHANCED DAMAGE"
+    ],
+    "text": "Warriors and skilled thieves can become skilled enough in combat that they are\nable to inflict more damage than other classes.  Enhanced damage is checked\nfor with each hit, although with a low skill, the chance of receiving a bonus\nis very low indeed."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ENVENOM"
+    ],
+    "text": "The envenom skill is a cowardly skill practiced only by thieves, designed to\nwin a battle through alchemy and treachery rather than skill or strength.\nOr, put another way, it's a skill used by the smart to kill the foolish.\nFood, drink, and weapons may be envenomed, with varying effects. Poisoned\nfood or drink puts a mild poison spell on the consumer, and is unlikely to\nbe more than a minor inconvience (after all, the typical adventurer could\ndrink sewer water with only a trace of the runs).  A poisoned weapon, on\nthe other hand, can inflict serious damage on an opponent as the poison \nburns through his bloodstream.  But be careful, blade venom evaporates \nquickly and is rendered almost powerless by repeated blows in combat."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HAND TO HAND"
+    ],
+    "text": "Hand to hand combat is a rare skill in the lands of Midgaard.  Learning this\nstyle of fighting gives the player a weapon even when disarmed -- bare hands.\nTrained hand to hand experts are far more effective than many swordsmen.\nClerics and warriors are the best at this skill, although thieves and mages\nmay also learn it."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "KICK"
+    ],
+    "text": "Kicking allows the adventurer to receive an extra attack in combat, a powerful\nkick. However, a failed kick may throw an unwary fighter off balance.  Fighters\nand clerics are the most skilled at kicking, although thieves may also learn\nit."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PARRY"
+    ],
+    "text": "If at first you fail to dodge, block it.  Parry is useful for deflecting \nattacks, and is succesful more often than dodge.  Parry requires a weapon for\nfull success, the hand-to-hand skill may also be used, but results in reduced\ndamage instead of no damage.  The best chance of parrying occurs when the\ndefender is skilled in both his and his opponent's weapon type."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "RESCUE"
+    ],
+    "text": "A friend in need is a friend indeed.  And when in combat, a warrior with\nthe rescue skill is just the friend you need.  Rescue allows you to intercede\nin combat, protecting weaker characters from bodily harm. Hopefully the\nfavor will be returned.  Success in rescuing depends on the skill rating, as\nwell as a comparision of level, dexterity, and speed between the character and\nthe target. (note: you rescue a friend, not the monster)"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "TRIP"
+    ],
+    "text": "Back by popular demand.  Trip is a somewhat dastardly attack, and involves\nusing any one of a number of methods to bring your opponent down to the ground.\nTripping large monsters is generally not a good idea, and agile ones will\nfind the attack easy to avoid.  Thieves and warriors may learn trip."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "SECOND ATTACK"
+    ],
+    "text": "Training in second attack allows the character a chance at additional strikes\nin combat -- allow a 100% second attack does NOT guarantee 2 attacks every\nround.  Any class may learn this skill, although clerics and mages have a \nvery hard time with it."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "THIRD ATTACK"
+    ],
+    "text": "Training in third attack allows the character a chance at an additional strike\nin a combat, and increases the chance of a second attack as well.  Perfect\nthird attack does NOT assure three attacks per round.  Only warriors and highly\nskilled thieves may learn this skill."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HIDE",
+      "SNEAK"
+    ],
+    "text": "Hide and sneak are similar skills, both related to remaining undetected.\nHide has a very high chance of success, but only works for as long as the\ncharacter remains stationary.  Sneak may be used when moving (including to\nsneak by monsters), but has a lower chance of success.  Only warriors and\nthieves may learn these skills."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "FAST HEALING"
+    ],
+    "text": "The fast healing skill improves wound healing rates, whether walking, resting,\nor sleeping. It represents knowledge of healing herbs or just general \ntoughness and stamina.  Fast healing is checked every tick, and it is \npossible for it to fail.  All class may learn this skill, but mages find it\nvery difficult to master, due to their bookish lifestyle."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "LORE"
+    ],
+    "text": "Lore is a general skill, consisting of knowledge of myths and legends. Use\nof the lore skill gives a chance of obtaining information on an object,\nconcerning its power and uses.  It also may occasionally increase the value\nof an object, because more will be known about its worth.  All classes may\nlearn lore, although thieves are best at it, and warriors find it very hard\nto use."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HAGGLE",
+      "HAGGLING"
+    ],
+    "text": "Haggling is an indispensable skill to the trader.  It allows a character to\nmatch wits with a merchant, seeking to get a better price for merchandise,\nor to buy at the lowest possible cost.  Unfortunately, most merchants are \nalready very skilled at haggling, so the untrainined adventurer had best \nguard his treasure closely.  Thieves are natural masters at haggling, \nalthough other classes may learn it as well."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PEEK"
+    ],
+    "text": "The peek skill is useful for seeing what a player or monster is carrying,\nthe better to use the steal command with.  More intelligent characters are\nharder to peek at.  All characters may learn peek, but thieves are the most\ncommon practicioners."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PICK",
+      "PICK LOCK"
+    ],
+    "text": "Lock picking is one of the prime skills of thieves, allowing them to gain\naccess to many secured areas.  Lock picking chances are improved by  \nintelligence, and hindered by the difficulty of the lock. Other classes may\nlearn to pick locks, but they will never find it easy."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MEDITATION"
+    ],
+    "text": "This skill is similar to fast healing, but relies on the concentration and\nmantras to increase mana recovery when the character is sleeping or resting.\nThieves and warriors, with their troubled minds and violent attitudes, have\nmuch trouble learning to meditate."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "STEAL"
+    ],
+    "text": "Theft is the defining skill of the thief, and is only available to that class.\nIt allows items to be stolen from the inventory of monsters and characters,\nand even from shops!  But beware, shop keepers gaurd their merchandise \ncarefully, and attempting to steal from a character earns you a THIEF flag\nif you are caught (making you free game for killing)."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DETECT GOOD"
+    ],
+    "text": "Syntax: cast 'detect good'\n \nThis spell enables the caster to detect good characters, which will\nreveal a characteristic golden aura."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DISPEL GOOD"
+    ],
+    "text": "Syntax: cast 'dispel good' <victim>\n \nDispel good brings forth evil energies that inflict horrific torment on \nthe pure of heart.  Good-aligned characters use this dark magic at their\nperil."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "RECHARGE"
+    ],
+    "text": "Syntax: cast 'recharge' <item>\n\nThe recharge spell is used to restore energy to depleted wands and staves.\nFully exhausted items cannot be recharged, and the difficulty of the spell\nis proportional to the number of charges used.  Magic items can only be\nrecharged one time successfully."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "DEMONFIRE"
+    ],
+    "text": "Syntax: cast 'demonfire' <target>\n\nDemonfire is a spell of blackest evil, and as such can only be used by those\nwho follow the paths of darkness.  It conjures forth demonic spirits to \ninflict terrible wounds on the enemies of the caster."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "RAY OF TRUTH"
+    ],
+    "text": "Syntax: cast 'ray of truth' <target>\n\nRay of truth opens a portal to the planes of positive energy, bringing forth\na beam of light of sufficient purity to harm or or annihilate the servants\nof evil.  It cannot harm the pure of heart, and will turn and strike \ncasters who are tainted by evil."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PORTAL"
+    ],
+    "text": "Syntax: cast 'portal' <target>\n\nThe portal spell is similar to gate, but creates a lasting one-way portal\nto the target creature, instead of transporting the caster.  Portals are\nentered using 'enter' or 'go' command, as in 'go portal'.  Portals cannot\nbe made to certain destinations, nor used to escape from gate-proof rooms.\nPortal requires a special source of power to be used, unfortunately the\nsecret of this material component has been lost..."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "NEXUS"
+    ],
+    "text": "Syntax: cast 'nexus' <target>\n\nThis spell is virtually identical to portal (see 'help portal'), with the\nonly difference being that while portal creates a one-way gate, a nexus \nspell makes a two-sided gate.  It also lasts longer than the lower-powered\nportal spell.  Both spells require an additional power source, the secret\nof which has been lost..."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HEAT METAL"
+    ],
+    "text": "Syntax: cast 'heat metal' <target>\n\nHeat metal is a powerful clerical attack spell, with effects that vary \naccording to the armor of the victim.  It heats up the metal equipment\n(assumed to be all weapons and armor at this point in time) on the target,\ncausing him or her to drop them if possible, taking serious burns in the\nprocess (possibly fatal if the equipment is too heavy to remove easily).\nThis spell does no damage to creatures who are immune to fire."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HOLY WORD"
+    ],
+    "text": "Syntax: cast 'holy word'\n\nHoly word involves the invocation of the full power of a cleric's god, with\ndisasterous effects upon the enemies of the priest coupled with powerful\nblessings on the priest's allies.  All creatures of like alignment in the\nroom are blessed and filled with righteous divine wrath, while those of\nopposite morals (or both good and evil in the case of neutral priests)\nare struck down by holy (or unholy might) and cursed.  The cleric suffers\ngreatly from the strain of this spell, being left unable to move and \ndrained of vitality.  Experience loss is no longer associated with the spell."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "FRENZY"
+    ],
+    "text": "Syntax: cast 'frenzy' <target>\n\nThe frenzy spell fills the target with righteous fury, greatly increasing\nhis or her attack skill and damaging capacity.  Unfortunately, this divine\nwrath is coupled with a tendency to ignore threats to personal safety, \nmaking the character easier to hit.  Frenzy provides immunity to the calm\nspell (see 'help calm'), and may only be used on those of the caster's \nalignment."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CALM"
+    ],
+    "text": "Syntax: cast 'calm' \n\nOne of the most useful and often overlooked abilities of the master cleric is\nthe calm spell, which can put an end to all violence in a room.  Calmed\ncreatures will not attack of their own volition, and are at a disadvantage\nin combat as long as the spell soothes their minds.  The more violence \nactivity there is in a room, the harder the spell, and it is all or nothing --\neither all combat in the room is ended (with the exception of those who\nare immune to magic) or none is."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "HASTE"
+    ],
+    "text": "Syntax: cast 'haste' <target>\n\nThe haste spell increases the speed and agility of the recipient, allowing\nan extra attack (or even a backstab) in combat, and improving evasive\nabilities in combat.  However, it produces a great strain on the system,\nsuch that recuperative abilities are halved.  Haste is capable of negating\nthe slow spell. (see 'help slow')."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "SLOW"
+    ],
+    "text": "Syntax: cast 'slow' <target>\n\nDespite popular mythology, slow is not the opposite of haste, but is a spell\nwith it's own unique set of effects.  When cast on an unfortunate victim,\nit slows its movements, making it easier to hit and reducing its rate\nof attack.  The effect of slow also double movement costs and halve healing\nrates, due to reduced metabolism."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PLAGUE"
+    ],
+    "text": "Syntax: cast 'plague' <target>\n\nThe plague spell infests the target with a magical disease of great virulence,\nsapping its strength and causing horrific suffering, possibly leading to\ndeath.  It is a risky spell to use, as the contagion can spread like\nwildfire if the victim makes it to a populated area."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CREATE ROSE"
+    ],
+    "text": "Syntax: cast 'create rose'\n\nA romantic spell that creates a fragrant red rose, with utterly no game\nuse whatsoever."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PROTECTION GOOD",
+      "PROTECTION EVIL"
+    ],
+    "text": "Syntax: cast 'protection evil' <target>\n\tcast 'protection good' <target>\n\nThe protection spells reduce damage taken from attackers of the appropriate\nethos, and improve saving throws against all forms of magic. They may not\nbe cast on others, and one person cannot carry both defenses at the same\ntime."
   },
   {
     "level": 0,
     "keywords": [
-      "NEWBIE INFO",
-      "NEWBIE"
+      "GIANT STRENGTH"
     ],
-    "text": "Ah! Another mortal, seeking adventure.  You should go through mudschool first,\nto gain experience to face the trials outside.  Be sure to practice a weapon\nin the guild room, or your stay with us shall be very short indeed.  Type\n'equipment' to see what your are wielding, 'spells' to see your spells,\n'skills' to see your skills, and 'commands' for a list of commands. Help is\navailable on most commands and abilities.\n\nPlease type 'help rules' to see the Rules of ROM."
+    "text": "Syntax: cast 'giant strength' <character>\n \nThis spell increases the strength of the target character."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CHAIN LIGHTNING"
+    ],
+    "text": "Syntax : cast 'chain lightning' <target>\n\nChain lightning is a deadly spell, producing a powerful bolt of lightning\nthat arcs from target to target in the room, until its force is fully\nexpended.  Allies of the caster may be hit by this spell if they are members \nof a clan, while the caster himself will not be struck unless no other\nviable target remains.  Chain lightning is most effective when used on\ngroups of creatures."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "FARSIGHT"
+    ],
+    "text": "Syntax: cast 'farsight'\n\tcast 'farsight' <direction>\n\nThe farsight spell expands the caster's consciousness, allowing him or her\nto see far away beings like they were in the same room.  It takes intense\nconcentration, often leaving the caster helpless for several minutes.\nThe spell may be used for a general scan that reaches a short distance in\nall directions, or with a directional component to see creatures much\nfarther away."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MASS",
+      "HEALING"
+    ],
+    "text": "Syntax: cast 'mass healing' \n\nThe mass healing spell, as its name might suggest, performs a healing spell\non all players in the room.  It also throws in a refresh spell for good\nmeasure."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "FLOATING DISC"
+    ],
+    "text": "Syntax: cast 'floating disc'\n\nThis useful spell creates a floating field of force which follows the caser\naround, allowing him or her to pile treasure high with no fear of weight\npenalties.  It lasts no more than twice the casters level in hours, and\nusually less.  It can hold 10 pounds per level of the caster, with a \nmaximum of five pounds per item.  The spell requires an open float location\non the character, and the only way to remove the disc is to die or allow it\nto run out of energy."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "FIREPROOF"
+    ],
+    "text": "Syntax: cast 'fireproof' <object>\n\nThe fireproof spell creates a short-lived protective aura around an object,\nto protect it from the harmful effects of acid and flame.  Items protected\nby this spell are not harmed by acid, fire, or the heat metal spell.\nAlthough inexpensive to use, the spell's short duration makes it impractical\nfor protecting large numbers of objects."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ALIAS",
+      "UNALIAS"
+    ],
+    "text": "Syntax: alias\n\talias <word>\n\talias <word> <substitution>\n\tunalias <word>\n\nThe alias command allows limited shortening of command names.  At this time,\naliases cannot call other aliases, and cannot generate more than one command.\nAlias by itself lists your current aliases, Alias <word> lists the alias with \nthat name (if such exist), and alias with both a word and and argument \nproduces a new alias.  You cannot alias either alias or unalias to a new\ncommand.  Examples of use:\n\nalias gc get all corpse --> typing gc will equal typing 'get all corpse'\nalias ff cast 'fireball' --> ff orc will equal 'cast 'fireball' orc'\n\nOnly the first word on the line will be subsituted at this time."
   },
   {
     "level": 0,
@@ -242,13 +803,10 @@
     "level": 0,
     "keywords": [
       "NOTE",
-      "'NOTE",
-      "WRITE'",
-      "'NOTE",
-      "READ'",
+      "NOTE WRITE",
+      "NOTE READ",
       "BOARD",
-      "'NOTE",
-      "SYSTEM'",
+      "NOTE SYSTEM",
       "BOARDS"
     ],
     "text": "Syntax:\n\nboard [number|name]                     Shows or changes board.\nnote                                    Reads next note.\nnote read [number]                      Reads a certain note.\nnote remove <number>                    Removes a note written by you.\nnote list [number]                      Shows up to number notes.\nnote write                              Posts a note.\nnote catchup                            Marks all notes in this board read.\n\nThese commands are used for the new note system. Instead of just one board, \nthere are several, each with its special purpose. \n\nChanging between the boards is accomplished using the BOARD command. BOARD\nwithout any arguments gives you a list of all boards together with number of\nunread message. To change, type BOARD <number> or BOARD <name of the board>.\n\nTo read next unread note, type NOTE. To read a note with a specified number,\ntype NOTE READ <number>. Typing NOTE while in a board with no unread notes\nshifts you to the next board. Note that unlike the standard note system, a \nnote has the same number in NOTE LIST and NOTE READ.\n\nPosting a message is as simple as writing NOTE WRITE. You will be moved \ninto interactive mode, where all you see are prompts for the fields like \nTo:, From: etc. You will be automatically put AFK while writing a note.\n\nTo see the list of the notes in the current board, type NOTE LIST. Typing\nNOTE LIST <number> will list only <number> of the last notes in the area.\n\nYou can remove your own note by using NOTE REMOVE <number>. Implementors may\nremove other people's notes. Implementors can also select how many days\ntheir note is kept before being purged. Purging happens automatically at\nbootup. Purged notes are not deleted, but saved into a file.\n\nTo let only immortals see your note, address it to \"imm\". To let players of\na specific level and above, address it to that level (no other recipients may\nappear in that case).\n\nThis board system was created by Erwin S. Andreasen, erwin@pip.dknet.dk, aka\nPhunk/Drylock and is freely available. The general outlook was based on\nMystic Adventure's note system (mud.gel.ulaval.ca 4000)."
@@ -436,22 +994,6 @@
     ],
     "text": "Syntax: consider <character>\n\nCONSIDER tells you what your chances are of killing a character.\nOf course, it's only a rough estimate."
   },
-  {
-    "level": -1,
-    "keywords": [
-      "GROUP HEADER"
-    ],
-    "text": "The following skills and groups are available to your chacter:\n(this list may be seen again by typing list)"
-  },
-
-  {
-    "level": -1,
-    "keywords": [
-      "MENU CHOICE"
-    ],
-    "text": "Choice (add,drop,list,help)?"
-  },
-
   {
     "level": 0,
     "keywords": [
@@ -804,35 +1346,27 @@
   {
     "level": 0,
     "keywords": [
-      "'ACID",
-      "BLAST'",
-      "'BURNING",
-      "HANDS'",
-      "'COLOUR",
-      "SPRAY'",
+      "ACID BLAST",
+      "BURNING HANDS",
+      "COLOUR SPRAY",
       "FIREBALL",
-      "'LIGHTNING",
-      "BOLT'"
+      "LIGHTNING BOLT"
     ],
     "text": "  'MAGIC MISSILE' 'SHOCKING GRASP'~\nSyntax: cast 'acid blast'     <victim>\nSyntax: cast 'burning hands'  <victim>\nSyntax: cast 'colour spray'   <victim>\nSyntax: cast 'fireball'       <victim>\nSyntax: cast 'lightning bolt' <victim>\nSyntax: cast 'magic missile'  <victim>\nSyntax: cast 'shocking grasp' <victim>\n\nThese spells inflict damage on the victim.  The higher-level spells do\nmore damage."
   },
   {
     "level": 0,
     "keywords": [
-      "'CALL",
-      "LIGHTNING'"
+      "CALL LIGHTNING"
     ],
     "text": "Syntax: cast 'call lightning'\n\nThis spell works only out of doors, and only when the weather is bad.\nIt calls down lightning bolts from Mota."
   },
   {
     "level": 0,
     "keywords": [
-      "'CAUSE",
-      "LIGHT'",
-      "'CAUSE",
-      "SERIOUS'",
-      "'CAUSE",
-      "CRITICAL'",
+      "CAUSE LIGHT",
+      "CAUSE SERIOUS",
+      "CAUSE CRITICAL",
       "HARM"
     ],
     "text": "Syntax: cast 'cause light'    <victim>\nSyntax: cast 'cause serious'  <victim>\nSyntax: cast 'cause critical' <victim>\nSyntax: cast harm             <victim>\n\nThese spells inflict damage on the victim.  The higher-level spells do\nmore damage."
@@ -840,92 +1374,79 @@
   {
     "level": 53,
     "keywords": [
-      "'CHANGE",
-      "SEX'"
+      "CHANGE SEX"
     ],
     "text": "Syntax: cast 'change sex' <victim>\n\nThis spell changes the sex of the victim (temporarily)."
   },
   {
     "level": 0,
     "keywords": [
-      "'CHARM",
-      "PERSON'"
+      "CHARM PERSON"
     ],
     "text": "Syntax: cast 'charm person' <victim>\n\nThis spell, if successful, causes the victim to follow you and to take orders\nfrom you.  Use ORDER to order your charmed followers.\n\nYou are responsible for the actions of your followers.  Conversely, other\npeople who attack your followers will be penalized as if they attacked you."
   },
   {
     "level": 0,
     "keywords": [
-      "'CHILL",
-      "TOUCH'"
+      "CHILL TOUCH"
     ],
     "text": "Syntax: cast 'chill touch' <victim>\n\nThis spell inflicts damage on the victim and also reduces the victim's\nstrength by one."
   },
   {
     "level": 0,
     "keywords": [
-      "'CONTINUAL",
-      "LIGHT'"
+      "CONTINUAL LIGHT"
     ],
     "text": "Syntax: cast 'continual light'\nSyntax: cast 'continual light' <object>\n\nThis spell creates a ball of light, which you can hold as a light source.\nThe ball of light will last indefinitely. It may also be used on an object\nto give it an enchanted glow."
   },
   {
     "level": 0,
     "keywords": [
-      "'CONTROL",
-      "WEATHER'"
+      "CONTROL WEATHER"
     ],
     "text": "Syntax: cast 'control weather' better\nSyntax: cast 'control weather' worse\n\nThis spell makes the weather either better or worse."
   },
   {
     "level": 0,
     "keywords": [
-      "'CREATE",
-      "FOOD'"
+      "CREATE FOOD"
     ],
     "text": "Syntax: cast 'create food'\n\nThis spell creates a Magic Mushroom, which you or anyone else can eat."
   },
   {
     "level": 0,
     "keywords": [
-      "'CREATE",
-      "SPRING'"
+      "CREATE SPRING"
     ],
     "text": "Syntax: cast 'create spring'\n\nThis spell brings forth a magical spring from the ground, which has the\nsame properties as a fountain."
   },
   {
     "level": 0,
     "keywords": [
-      "'CREATE",
-      "WATER'"
+      "CREATE WATER"
     ],
     "text": "Syntax: cast 'create water' <drink-container>\n\nThis spell replenishes a drink container with water."
   },
   {
     "level": 0,
     "keywords": [
-      "'CURE",
-      "BLINDNESS'"
+      "CURE BLINDNESS"
     ],
     "text": "Syntax: cast 'cure blindness' <character>\n\nThis spell cures blindness in one so unfortunate."
   },
   {
     "level": 0,
     "keywords": [
-      "'CURE",
-      "POISON'"
+      "CURE POISON"
     ],
     "text": "Syntax: cast 'cure poison' <character>\n\nThis spell cures poison in one so unfortunate."
   },
   {
     "level": 0,
     "keywords": [
-      "'CURE",
-      "LIGHT'",
-      "'CURE",
-      "SERIOUS'",
-      "'CURE",
-      "CRITICAL'",
+      "CURE LIGHT",
+      "CURE SERIOUS",
+      "CURE CRITICAL",
       "HEAL"
     ],
     "text": "Syntax: cast 'cure light'    <character>\nSyntax: cast 'cure serious'  <character>\nSyntax: cast 'cure critical' <character>\nSyntax: cast 'heal'          <character>\n\nThese spells cure damage on the target character.  The higher-level spells\nheal more damage.\n\n(see 'help healer' for details on the heal command)"
@@ -940,56 +1461,49 @@
   {
     "level": 0,
     "keywords": [
-      "'DETECT",
-      "EVIL'"
+      "DETECT EVIL"
     ],
     "text": "Syntax: cast 'detect evil'\n\nThis spell enables the caster to detect evil characters, which will\nreveal a characteristic red aura."
   },
   {
     "level": 0,
     "keywords": [
-      "'DETECT",
-      "HIDDEN'"
+      "DETECT HIDDEN"
     ],
     "text": "Syntax: cast 'detect hidden'\n\nThis spell enables the caster to detect hidden creatures."
   },
   {
     "level": 0,
     "keywords": [
-      "'DETECT",
-      "INVIS'"
+      "DETECT INVIS"
     ],
     "text": "Syntax: cast 'detect invis'\n\nThis spell enables the caster to detect invisible objects and characters."
   },
   {
     "level": 0,
     "keywords": [
-      "'DETECT",
-      "MAGIC'"
+      "DETECT MAGIC"
     ],
     "text": "Syntax: cast 'detect magic'\n\nThis spell enables the caster to detect magical objects."
   },
   {
     "level": 0,
     "keywords": [
-      "'DETECT",
-      "POISON'"
+      "DETECT POISON"
     ],
     "text": "Syntax: cast 'detect poison' <object>\n\nThis spell detects the presence of poison in food or drink."
   },
   {
     "level": 0,
     "keywords": [
-      "'DISPEL",
-      "EVIL'"
+      "DISPEL EVIL"
     ],
     "text": "Syntax: cast 'dispel evil' <victim>\n\nThis spell invokes the wrath of Mota on an evil victim. It can be very\ndangerous for casters who are not pure of heart."
   },
   {
     "level": 0,
     "keywords": [
-      "'DISPEL",
-      "MAGIC'",
+      "DISPEL MAGIC",
       "CANCELLATION"
     ],
     "text": "Syntax: cast 'dispel magic' <character>\n        cast 'cancellation' <characte>\n \nBoth of these spells remove magical effects from the target.  Dispel magic\nhas a reduced chance of working, and is considering an attack spell.\nCancellation can only be used on allies, but is much more effective and does\nnot provoke attack.  Unfortunately, the spells do not discriminate between\nharmful and benign spells.\n \nThe chance of dispelling is based on the level of the spell. Permanent spells\n(such as mobile sanctuary) are much harder to remove.  Not all spells may\nbe dispelled, notable examples are poison and plague."
@@ -1004,40 +1518,35 @@
   {
     "level": 0,
     "keywords": [
-      "'ENCHANT",
-      "WEAPON'"
+      "ENCHANT WEAPON"
     ],
     "text": "Syntax: cast 'enchant weapon' <weapon>\n\nThis spell magically enchants a weapon, increasing its to-hit and to-dam\nbonuses by one or two points.  Multiple enchants may be cast, but as the\nweapon grows more and more powerful, it is more likely to be drained or\ndestroyed by the magic.  Also, every successful enchant increases the level\nof the weapon by one...and there is no turning back."
   },
   {
     "level": -1,
     "keywords": [
-      "'ENCHANT",
-      "ARMOR'"
+      "ENCHANT ARMOR"
     ],
     "text": "The enchant armor spell imbues armor with powerful protective magics. It is\nnot nearly as reliable as enchant weapon, being far more prone to destructive\neffects.  Each succesful enchant increases the plus of the armor by 1 or 2\npoints, and raises its level by one."
   },
   {
     "level": 0,
     "keywords": [
-      "'ENERGY",
-      "DRAIN'"
+      "ENERGY DRAIN"
     ],
     "text": "Syntax: cast 'energy drain' <victim>\n\nThis spell saps the experience points, mana, and movement points of its\ntarget."
   },
   {
     "level": 0,
     "keywords": [
-      "'FAERIE",
-      "FIRE'"
+      "FAERIE FIRE"
     ],
     "text": "Syntax: cast 'faerie fire' <victim>\n\nThis spell increases (makes worse) the armor class of its victim.  For each\nlevel of the caster, the victim's armor class is increased by two points."
   },
   {
     "level": 0,
     "keywords": [
-      "'FAERIE",
-      "FOG'"
+      "FAERIE FOG"
     ],
     "text": "Syntax: cast 'faerie fog'\n\nThis spell reveals all manner of invisible, hidden, and sneaking creatures in\nthe same room as you."
   },
@@ -1073,8 +1582,7 @@
     "level": 0,
     "keywords": [
       "INVIS",
-      "'MASS",
-      "INVIS'",
+      "MASS INVIS",
       "INVISIBLITY"
     ],
     "text": "Syntax: cast 'invisibility' <character>\nSyntax: cast 'invisibility' <object>\nSyntax: cast 'mass invis'\n\nThe INVIS spell makes the target character invisible.  Invisible characters\nwill become visible when they attack. It may also be cast on an object\nto render the object invisible.\n\nThe MASS INVIS spell makes all characters in the caster's group invisible,\nincluding the caster."
@@ -1082,24 +1590,21 @@
   {
     "level": 0,
     "keywords": [
-      "'KNOW",
-      "ALIGNMENT'"
+      "KNOW ALIGNMENT"
     ],
     "text": "Syntax: cast 'know alignment' <character>\n\nThis spell reveals the alignment of the target character."
   },
   {
     "level": 0,
     "keywords": [
-      "'LOCATE",
-      "OBJECT'"
+      "LOCATE OBJECT"
     ],
     "text": "Syntax: cast 'locate object' <name>\n\nThis spell reveals the location of all objects with the given name."
   },
   {
     "level": 0,
     "keywords": [
-      "'PASS",
-      "DOOR'"
+      "PASS DOOR"
     ],
     "text": "Syntax: cast 'pass door'\n\nThis spell enables the caster to pass through closed doors."
   },
@@ -1127,8 +1632,7 @@
   {
     "level": 0,
     "keywords": [
-      "'REMOVE",
-      "CURSE'"
+      "REMOVE CURSE"
     ],
     "text": "Syntax: cast 'remove curse' <character>\nSyntax: cast 'remove curse' <object>\n\nThis spell removes a curse from a character, and might possibly uncurse\na cursed object.  It may also be targeted on an object in the caster's\ninventory, in which case it's chance of success is significantly higher."
   },
@@ -1136,8 +1640,7 @@
     "level": 0,
     "keywords": [
       "SHIELD",
-      "'STONE",
-      "SKIN'"
+      "STONE SKIN"
     ],
     "text": "Syntax: cast shield\nSyntax: cast 'stone skin'\n\nThese spells protect the caster by decreasing (improving) the caster's armor\nclass.  SHIELD provides 20 points of armor.  STONE SKIN provides 40 points of\narmor."
   },
@@ -1179,33 +1682,228 @@
   {
     "level": 0,
     "keywords": [
-      "'WORD",
-      "OF",
-      "RECALL'"
+      "WORD OF RECALL"
     ],
     "text": "Syntax: cast 'word of recall'\n\nThis spell duplicates the built-in RECALL ability.  It is provided solely for\nMerc-based muds which wish to eliminate the built-in ability while still\nproviding the spell."
   },
   {
     "level": 0,
     "keywords": [
-      "'ACID",
-      "BREATH'",
-      "'FIRE",
-      "BREATH'",
-      "'FROST",
-      "BREATH'",
-      "'GAS",
-      "BREATH'",
-      "'LIGHTNING",
-      "BREATH'"
+      "ACID BREATH",
+      "FIRE BREATH",
+      "FROST BREATH",
+      "GAS BREATH",
+      "LIGHTNING BREATH"
     ],
     "text": "Syntax: cast 'acid breath'      <victim>\nSyntax: cast 'fire breath'      <victim>\nSyntax: cast 'frost breath'     <victim>\nSyntax: cast 'gas breath'\nSyntax: cast 'lightning breath' <victim>\n\nThese spells are for the use of dragons.  Acid, fire, frost, and lightning\ndamage one victim, whereas gas damages every PC in the room.  Fire and\nfrost can break objects, and acid can damage armor.\n\nHigh level mages may learn and cast these spells as well."
   },
   {
+    "level": -1,
     "keywords": [
-      "murder"
+      "NEWBIE",
+      "INFO"
     ],
-    "text": "Murder is a terrible crime.",
-    "level": 0
+    "text": "Ah! Another mortal, seeking adventure.  You should go through mudschool first,\nto gain experience to face the trials outside.  Be sure to practice a weapon\nin the guild room, or your stay with us shall be very short indeed.  Type\n'equipment' to see what your are wielding, 'spells' to see your spells,\n'skills' to see your skills, and 'commands' for a list of commands. Help is\navailable on most commands and abilities.\n\nPlease type 'help rules' to see the Rules of ROM."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "LAG"
+    ],
+    "text": "Twas dial-up, and the failing mudders did toil and struggle in the fray\nAll checksummed were the compressed files\nAnd the man pages, outdate\nBeware the Internet my son,\nThe noise that hangs, the lag that kills\nBeware the Usenet news, and shun the frivolous mud with frills\nSo took his his mudding client in hand\nLongtime the virtual foe he sought\nSo rested he by the T1s three and paused a while in swap\nAnd as in disk-drive swap he stayed,\nThe Internet, with lags of fame\nCame packetwise through the T1 line\nAnd error-checked as it came\nOne two one two and through and through, the mudding client went kill -9\nHe left it dead and with it's core he went a tracing back\nAnd hath thou slain the Internet?\nCome to my arms my disk-based bot!\nOh lag-free day, callooh callay, he chortled in his joy\nTwas dial-up, and the failing mudders did toil and struggle in the fray\nAll checksummed were the compressed files\nAnd the man pages, outdate."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "WIZLIST"
+    ],
+    "text": ".\n        ________            *********************           ________\n      /+_+_+_+_+_\\          ** The Gods of ROM **         /+_+_+_+_+_\\\n      \\__________/          *********************         \\__________/\n        |::XXXX|                                            |::XXXX|\n        |X::XXX|              Implementors [60]             |X::XXX|\n        |XX::XX|              *****************             |XX::XX|\n        |XXX::X|     \t\t\t\t            |XXX::X|\n        |XXXX::|                                            |XXXX::|\n        |::XXXX|                                            |::XXXX|\n        |X::XXX|                Creators [59]               |X::XXX|\n        |XX::XX|                *************               |XX::XX|\n        |XXXX::|         \t\t\t            |XXXX::|\n        |::XXXX|                                            |::XXXX|\n/<<>>\\/<<>>\\/<<>>\\/<<>>\\                            /<<>>\\/<<>>\\/<<>>\\/<<>>\\\n\\<<>>/\\<<>>/\\<<>>/\\<<>>/      Supremacies [58]      \\<<>>/\\<<>>/\\<<>>/\\<<>>/\n       |.  /  . |             ****************             |.  /  . |\n       | .//\\.  |            \t\t                   | .//\\.  |\n       |.  /  . |            \t\t                   |.  /  . |\n       | .//\\.  |                                          | .//\\.  |\n       |.  /  . |               Deities [57]               |.  /  . |\n       | .//\\.  |               ************               | .//\\.  |\n       |.  /  . |           \t\t      \t           |.  /  . |\n       | .//\\.  |                                          | .//\\.  |\n       | .//\\.  |                Gods [56]                 | .//\\.  |\n       |.  /  . |                *********                 |.  /  . |\n       | .//\\.  |              \t                           | .//\\.  |\n       | .//\\.  |                                          | .//\\.  |\n       |.  /\\ . |              Immortals [55]              |.  /  . |\n       | .//\\.  |              **************              | .//\\.  |\n       |.  /  . |              \t\t                   |.  /  . |\n       | .//\\.  |                                          | .//\\.  |\n       |.  /  . |               DemiGods [54]              |.  /  . |\n       | .//\\.  |               *************              | .//\\.  |\n       |.  /\\ . |                  \t  \t           |.  /  . |\n       |.  /  . |                                          |.  /  . |\n       | .//\\.  |               Angels [53]                | .//\\.  |\n       |.  /  . |               ***********                |.  /  . |\n       |.  /  . |             \t   \t                   |.  /  . |\n       | .//\\.  |             \t\t                   | .//\\.  |\n       | .//\\.  |                                          | .//\\.  |\n       |.  /  . |               Avatars [52]               |.  /  . |\n       | .//\\.  |               ************               | .//\\.  |\n       |.  /  . |                 \t                   |.  /  . |\n       |.  /  . |                  \t                   |.  /  . |\n        \\ //\\. /                                            \\ //\\. /\n         \\ /. /                                              \\ /. /\n          \\ //                                                \\ //\n           \\/                                                  \\/\n-By Liralen"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "ROM"
+    ],
+    "text": "ROM started in early February 1993, using Merc 1.0 code. In July of 1993,  \nROM II was started, eventually replacing the original ROM.  ROM was up for\na little over a year, after which the code (version 2.3) was released,\nand various other ROM muds were started, including Rivers of Mud under\na new management (Zump's ROM), at rom.org 9000.\n\nAlander's current project is Athen, the sequel to the ROM code. It can\nbe found on Rehobaom's Legacy, at hypercube.org 9000.\n\nThe following people contributed to the ROM flavor of the merc base code:\n\nSocials --\n    Kelsey and Liralen\n\nNew, Improved Valhalla --\n    Liralen\n\nPuff's new special proc and improved poofin/poofout code --\n    Seth\n\nMaps and map shop --\n    Ezra, Regnan (Olympus)\n\nNirvana zone --\n    Forstall (mobiles rewritten by Alander)\n\nMob Factory --\n    Pinkfloyd (originally written for ROM, mobiles rewritten by Alander)\n\nGeographically correct Midgaard (tm) --\n    Alander\n\nIdeas and playtesting --\n    Thousands of dedicated mudders around the world\n\nThe New Thalos area was donated by Onivel of Jedi, who was also the originator\nof the ASCII flags used in the zone files\n\nBeta testing --\n    Ken Blosser, Doug Araya, and Sherene Neil all helped with bugs reports\n    and suggestions, saving a lot of headaches\n\nBug reports --\n    Thanks to Shad Muegge, Jerome Despret, Phoenix, Will Hongach,\n    Erwin S. Andreasen, Adam Debus and especially Gary Turkington\n    (author of the ROM FAQ) for help spotting bugs\n\nROM 2.4 was developed during my time with Moosehead mud, and the release\nshares many of the features I wrote while I was there.  Additional code\nwas written by Seth Scott (the new poofin/poofout), and many contributions\nand ideas from the Merc list were used.  Portions of Rusty's work on\nMoosehead also remain.\n\nThe new features of 2.4 were largely produced in bull sessions with\nGabrielle Taylor and Brian Moore, without whom this release wouldn't\nhave happened.  In particular, the new privacy code, furniture, and\nwiznet are the results of Gabrielle's ideas.\n\nChanges to the standard diku mob and object format, as well as the changes\nto Merc 2.1 source code, were done by Alander over many a late night of\nhair-pulling. Hope you enjoy it.\n\n(my apologies if anyone was forgotten in this list)"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "IMMORTAL",
+      "IMMORT",
+      "GOD",
+      "WIZARD",
+      "WIZ"
+    ],
+    "text": "'Immortal' (often, simply, 'immort') refers to players who have reached\nthe highest attainable levels in the game.  Here, anyone of level 52\nor higher is an 'immortal.'  Immortals are capable of exceeding the\nusual game rules, in more drastic and pervasive ways as levels increase;\nexamples range from teleportation and invisibility to mortal sight to\ncreation of objects, removal of a player's privileges (channels,\nability to move, or even ability to log in), and ability to promote\nplayers to immortality.\n\nSince immortals can wreak havoc with game balance, they are (ideally)\na carefully-chosen and policed group.  An absolute rule of immortal\nbehavior is that no immortal can aid or assist any player without\nexplicit permission from the higher ranks; in other words, please\ndon't ask an immortal to help you kill a mob, gather EQ, etc, or\nyou'll likely be either politely or rudely refused, or referred to\nthis file.\n\nThe duties of immortals, and even the very reasons for their existence,\nare topics of continual and heated debate in various MUD forums, and are\nfraught with misconceptions, poor examples, and outrageous hypocrisies. :)"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "SOCIALS"
+    ],
+    "text": " \nThis is a complete list of socials for this MUD:\nCompiled originally by: Sara\naccuse       adjust      air          apologize     applaud     babble\nbark         bcatch      beckon       beer          bearhug     beg\nbird         bkiss       bleed        blink         blush       boast\nboggle       bonk        bounce       bow           brb         burp\ncackle       caress      charge       cheer         chuckle     clap\nclaw         collapse    comfort      comb          cough       cover\ncower        cringe      criticize    cry           cuddle      curse\ncurtsey      dance       daydream     drool         duck        embrace\nexplode      eyebrow     faint        fart          flare       flash\nflex         flinch      flip         flirt         flutter     fondle\nfrench       frown       fume         gasp          giggle      glare\ngoose        grimace     grin         groan         grope       grovel\ngrowl        grumble     hand         head          hiccup      highfive\nhop          howl        hug          hush          ignore      innocent\ninsane       judge       kiss         knee          laugh       lick\nlove         lust        massage      meditate      moan        moon\nmosh         mutter      nibble       nod           nudge       nuzzle\npant         passout     pat          peck          pie         pinch\npissed       plead       point        poke          ponder      pout\npray         propose     puke         punch         purr        ramble\nraspberry    rofl        roll         rub           ruffle      run\nscratch      scream      serenade     shake         shiver      shrug\nsigh         sing        slap         slobber       smile       smirk\nsnap         snarl       sneeze       snicker       sniff       snore\nsnort        snowball    snuggle      sob           spam        spank\nspit         squeal      squeeze      squirm        stare       stretch\nstrip        stroke      strut        sulk          swoon       tackle\ntease        thank       threaten     tickle        tip         tongue\ntwiddle      type        undress      view          wave        whine\nwhistle      wiggle      wince        wink          wonder      worry\nworship      yawn        yeehaw       yodel         rose\tlaces\ntank\t     starve\t aargh\t      homework\t    puff\tdiffer\nyae\t     lightbulb   voodoo       ogg\t    confused\tbeam\nbite\t     discodance  scuff        whap\t    lag\t\tchortle\nzerbert      twitch\n "
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MERC"
+    ],
+    "text": "This mud is based on Merc 2.1, created by Furey, Hatchet, and Kahn.  \nMerc 2.1 is available as Merc_21.tar.gz from ftp.tcp.com and \nftp.math.okstate.edu.\nE-mail to 'majordomo@webnexus.com' to join the merc mailing list.\n\nThanks to ...\n  ... Diku Mud for starting it all.\n  ... The Free Software Foundation and DJ Delorie for kick-ass tools.\n  ... Copper Mud and Alfa Mud for releasing their code and worlds.\n  ... Aod of Generic for ... well, everything.  You're a hoopy frood, Aod.\n  ... Alander for many ideas and contributions.\n  ... John Brothers of Silly for permission to use Silly code and worlds.\n  ... Zrin for administering the mailing list.\n  ... Abaddon for proofreading our comm.c.\n  ... Hind, Quin, Vic, Diavolo, Oleg, Trienne, and others for porting help.\n  ... Diavolo, Grodyn, Morgenes, and others for code and bug fixes.\n  ... Raff, Doctor, VampLestat, Nirrad, Tyrst, PinkF, Chris, Glop for worlds.\n  ... the players and imps of Mud Dome, Final Mud, Mud Lite, Vego Mud, Rivers\n      of Mud, Ruhr Mud, and Mystic Realms for bug reports, ideas, new code,\n      and hours of enjoyment.\n\nAlso see \"help ROM\" for information about the Rivers of Mud code base."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "MAP",
+      "MAPS"
+    ],
+    "text": "Thanks to Ezra for drawing the originals of several maps on ROM."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GREETING"
+    ],
+    "text": ".\nTHIS IS A MUD BASED ON.....\n\n                                ROM Version 2.4 beta\n\n               Original DikuMUD by Hans Staerfeldt, Katja Nyboe,\n               Tom Madsen, Michael Seifert, and Sebastian Hammer\n               Based on MERC 2.1 code by Hatchet, Furey, and Kahn\n               ROM 2.4 copyright (c) 1993-1998 Russ Taylor\n\nBy what name do you wish to be known? ~\n \n-1 MOTD~ \n* You are responsible for knowing the rules (type 'rules').  Ignorance of \n  the rules is no excuse.\n* Important commands: help, commands, news, notes\n* Use the delete command to erase unwanted characters\n  \n[Hit Return to continue]"
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "IMOTD"
+    ],
+    "text": "Welcome Immortal!\n\nYou are responsible for following the laws of immortal behavior. These can\nbe found by typing 'help laws' or 'help commandments'.\n\n* Excessive loading is not allowed, and is grounds for deletion.\n\n* Asking for promotion is grounds for instant deletion.\n\n* Type 'help jobs' to get some idea of what you should be doing.\n\n [Hit Return to continue]"
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "JOBS"
+    ],
+    "text": "This is a partial list of what a god of any given level should be doing. It is\nnot complete yet.\n\nAngels:(52-54)\nAngels and higher level gods may not assist mortals directly in any way.  \nAn Angel's main job is to help with quests (via switch), or possibly run\nsmall quest of their own -- but the rewards should be minimal.\n\nDeities:(55-56)\nDeities have two main roles: reimbursement and quest running.  Be skeptical\non reimburses, don't just hand out every piece of gear.  I suggest limiting\nreimbursements to 10 items at a time, and make sure that you do not load things\nat too high a level (new format items have hard-coded levels, so are not a\nproblem).  vnum and stat are useful for this.  You can draft Angels to help you\nrun a quest, and please note that quests should NOT have huge rewards -- the\nmain point should be to have fun.  Deities have no business trying to enforce\nrules -- the most you should do to a player is a NOCHANNEL or similar light\npunishment.\n\nGods:(57-59)\nGods can run quests just like Deities, and it's nice to do reimbursements too.\nHowever, the main role of a God is keeping the peace.  Gods can enforce (but\nnot create rules), using the various NOTELL-class commands, as well as deny,\npurge, freeze, and ban (but be careful with these commands!)  Gods are expected\nto help make the mud run more smoothly, power trips are strictly verbotten.\n\nNot fufilling the roles of your office can result in demotion or deletion."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PKILL",
+      "PKILLING",
+      "PKILLER",
+      "PLAYER KILLING",
+      "PSTEAL",
+      "PSTEALING",
+      "PLAYER STEALING"
+    ],
+    "text": "Player killing and player stealing are allowed to all clan members \n(including loners), provided the victim is is within 8 levels of the\ncharacter and is also in a clan.  This will flag you as a \"killer\" or\n\"thief\", allowing any character to attack, and also provoking action\nfrom the city guard."
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "COMMANDMENTS",
+      "LAWS",
+      "GOD RULES",
+      "GODS"
+    ],
+    "text": ".\n                         **********************\n                         ** The Rules of ROM **\n                         **********************\n \n1)  Do not kill mortals, do not kill mortals, do not kill mortals.\n    This includes transferring/summoning them to aggressive mobs.\n \n2)  Do not cheat for ANY mortal in ANY way, especially your own. \n    Unless of course you LIKE deletion. Yes this includes tanking,\n    healing/restoring, casting protection spells <armor, sanct>,    \n    and softening up or altering mobs.\n \n3)  Do not transfer or summon mobs to mortals or mortals to mobs.\n    They have legs, if they want to kill a mob, they can easilly\n    go there themselves.\n \n4)  DO NOT kill the shopkeepers for any reason at ALL.\n \n5)  DO NOT use reboot.  <--- Note, simple English.\n \n6)  Do not give out free equipment.  You don't need to win brownie\n    points with the mortals.  Quest are fine but handing out items\n    isn't.\n \n7)  A note on quests: Quests are a good thing, more or less, BUT \n    do not give out overly extravagant prizes.  Exercise some \n    common sense here folks.  Do not load items more than 4 levels\n    below their normal level (i.e. no level 5 ogre gauntlets).\n \n8)  Do not undermine the authority of a higher level god.  If you \n    see that someone has been frozen or nochannelled do not restore\n    their priveleges.  They are being punished for a reason.\n \n9)  Do not try to overrule each other.  \n \n10) Trusted mortals:  Do not use your god powers to help your mortal\n    character.  If you do, your trust will be taken away.\n"
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "RULES"
+    ],
+    "text": "These are the rules of ROM.  For other matters, use common sense.\n\n* Limited player stealing or player killing.\n\n* Your presence here is a privilege not a right. Obey any orders from gods, and\n  you will be fine.  Deletion does not require a reason, appeals are to be sent\n  to the implementors.\n \n* Sitting around idle with a client is hazardous to your health. If we catch\n  you doing it, you will lose half your playing time.\n\n* No multiple logins, multiple playing, or helping your own characters with \n  other characters you own -- by any arrangment.\n \n* No kill stealing.  This means you cannot attack a mob someone else is \n  fighting, unless they ask you to. Also avoid attacking fleeing mobs.\n\n* Cheating will not be tolerated.  This includes accepting favors from gods\n  and exploiting bugs. If you find a bug, report it, then do not use it.\n\n* Changes to these rules are at the discretion of the immortals, and may be\ndone without warning, notice, or even evidence of sanity. Walk softly,\nand carry a black stick."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "SUICIDE",
+      "DELETE"
+    ],
+    "text": "Use the delete command to erase unwanted characters, so the name will be\navailable for use.  This command must be typed twice to delete a character,\nand you cannot be forced to delete.  Typing delete with an argument will\nreturn your character to 'safe' status if you change your mind after the\nfirst delete."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "HEALER"
+    ],
+    "text": "The healer decided to grab a quick buck, and now charges for his heals.  Some\nservices are still free to players of level 10 or below, however.  To see\na full listing of the healer's services, type 'heal' at his residence. To\nreceive healing, bring plenty of money, and type 'heal <spell>'."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GAIN"
+    ],
+    "text": "The gain command is used to learn new skills, once the proper trainer has \nbeen found. (Check New Thalos) The following options can be used with gain:\n\ngain list:    list all groups and skills that can be learned\ngain points:  lower your creation points by 1 (costs two sessions)\ngain <name>:  add a skill or skill group, at the listed cost\ngain convert: turns 10 practices into one training session\n\nGain uses training sessions, not practices. (see 'help train')\nGained skills and groups do NOT increase your experience per level or total\nnumber of creation points. "
+  },
+  {
+    "level": 52,
+    "keywords": [
+      "CLONE"
+    ],
+    "text": "Syntax:\n  clone obj <object>\n  clone mob <mobile>\n  clone <name>\n\nThe clone command duplicates an object or mobile.  The level of item or mobile\nthat may be cloned depends on your level.  The target object or mob must be in\nthe same room as you, or in your posession.  Strung and set information is\npreserved by clone, as well as any spell effects and container contents or\nmobile inventory, except for items which are too high for you to clone.  \nStrung extended descriptions on objects are not kept, however."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "SKILLS",
+      "SPELLS"
+    ],
+    "text": "The skills and spells commands are used to display your character's list\nof available skills (or spells, as the case may be).  They are listed in\norder of level, with mana cost (for spells) or percentage (for skills)\nlisted where applicable."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "OUTFIT"
+    ],
+    "text": "The outfit command, usable by levels 5 and below, equips your character with\na new set of sub issue gear (banner, weapon, helmet, shield, and vest), \ncourtesy of the Mayor's warehouses.  Only empty equipment slots are affected."
+  },
+  {
+    "level": 0,
+    "keywords": [
+      "AUTO",
+      "AUTOLIST",
+      "AUTOLOOT",
+      "AUTOGOLD",
+      "AUTOSAC",
+      "AUTOEXIT",
+      "AUTOASSIST",
+      "AUTOSPLIT",
+      "AUTOALL"
+    ],
+    "text": "ROM uses various automatic actions to ease the boredom of always splitting\ngold and sacrificing corpses.  The commands are as follows:\n\nautolist  : list all automatic actions\nautoloot  : take all equipment from dead mobiles\nautogold  : take all gold from dead mobiles\nautosac\t  : sacrifice dead monsters (if autoloot is on, only empty corpes)\nautoexit  : display room exits upon entering a room\nautosplit : split up spoils from combat among your group members\nautoassit : makes you help group members in combat\nautoall   : turns all autos on or off at once\n\nTyping a command sets the action , typing it again removes it. Use\nautoall on|off to save yourself some keystrokes."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "CLAN"
+    ],
+    "text": "   A Clan is a collection of players, united to  follow and further\na common cause.   Each clan has rules and  regulations, to find out\nmore about clans and their 'beliefs' type \"help <clan name>\".  Only\nClan  members can kill or steal from other players.  To join a Clan\nyou  must be level 5 or above and level 25 or below.   Speak to the\nClan Leader about joining.  If you go Loner before level 25 you may \njoin a Clan later.\n   Joining  a  Clan is a dangerous step.   Many adventurers live to \nkill and torture others and chances are that your paths will cross.\nRemember, attacking or killing fellow clan members *IS* illegal except to \nmutiny your Clan leader.\n   Existing  Clans may buy  special rooms and  mobiles by acquiring \ndiamonds as payment.   To see room prices, type \"help prices\".  New\nClans  may be formed by  petitioning the immortals.   Please  remember that \ntheir word is final on all matters not covered by this help."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "PRICES",
+      "PRICE"
+    ],
+    "text": "New Clan Hall Rooms cost 50 diamonds.\nBoosting the mana or healing gains for a room costs 250 diamonds.\nBoth in the same room costs double.\nMaking the Healer or Store prices lower costs 1,000 diamonds."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "COUNT"
+    ],
+    "text": "The count command displays the number of people (that you can see) logged\ninto the mud.  It also displays the highest number observed that day, if\nit is higher."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "GATE"
+    ],
+    "text": "The gate spell is a powerful transportation magic that opens up a portal \nbetween your character and another person or creature somewhere else in the\nworld.  This portal will transport you and any pet you might have, but not\nother members of your group.  Monsters recieve a save against gate, and\nmonster or players more than 3 levels higher than you can not be gated to at \nall.  God rooms, private rooms, and no recall rooms cannot be gated to, and\nno recall rooms cannot be gated out of.  Finally, any god or hero is also \nimmune to gate, as well as in player who has no summon set.  Clan members \nmay not be gated to except by their fellow Clan members."
+  },
+  {
+    "level": -1,
+    "keywords": [
+      "AFFECTS",
+      "AFFECT"
+    ],
+    "text": "This command is used to show all the spells affecting your character. At\nlow levels, only the spell name will be displayed, at higher levels the\neffects and duration of the spell will also be shown.  Spell effects\nare no longer shown on score (this can be changed by using 'show' command)."
   }
 ]

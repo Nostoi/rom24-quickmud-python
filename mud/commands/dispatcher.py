@@ -7,7 +7,7 @@ from enum import Enum, auto
 
 from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
-from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, PlayerFlag, Position, AffectFlag
+from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, MAX_LEVEL, AffectFlag, PlayerFlag, Position
 from mud.models.social import social_registry
 from mud.net.session import Session
 from mud.wiznet import cmd_wiznet
@@ -21,22 +21,53 @@ from .admin_commands import (
     cmd_incognito,
     cmd_log,
     cmd_newlock,
-    cmd_qmconfig,
-    cmd_telnetga,
     cmd_permban,
+    cmd_qmconfig,
     cmd_spawn,
     cmd_teleport,
+    cmd_telnetga,
     cmd_unban,
     cmd_who,
     cmd_wizlock,
 )
 from .advancement import do_practice, do_train
 from .alias_cmds import do_alias, do_prefi, do_prefix, do_unalias
-from .build import cmd_redit, handle_redit_command
-from .combat import do_kick, do_kill, do_rescue
+from .build import (
+    cmd_aedit,
+    cmd_asave,
+    cmd_goto,
+    cmd_hedit,
+    cmd_hesave,
+    cmd_medit,
+    cmd_mstat,
+    cmd_oedit,
+    cmd_ostat,
+    cmd_redit,
+    cmd_rstat,
+    cmd_vlist,
+    handle_aedit_command,
+    handle_hedit_command,
+    handle_medit_command,
+    handle_oedit_command,
+    handle_redit_command,
+)
+from .combat import (
+    do_backstab,
+    do_bash,
+    do_berserk,
+    do_cast,
+    do_dirt,
+    do_disarm,
+    do_flee,
+    do_kick,
+    do_kill,
+    do_rescue,
+    do_surrender,
+    do_trip,
+)
 from .communication import (
-    do_auction,
     do_answer,
+    do_auction,
     do_clantalk,
     do_gossip,
     do_grats,
@@ -48,17 +79,64 @@ from .communication import (
     do_say,
     do_shout,
     do_tell,
+    do_emote,
+    do_pose,
+    do_yell,
+    do_cgossip,
+)
+from .consider import do_consider
+from .doors import do_close, do_lock, do_open, do_pick, do_unlock
+from .give import do_give
+from .group_commands import do_follow, do_group, do_gtell, do_order, do_split
+from .affects import do_affects
+from .compare import do_compare
+from .channels import do_channels
+from .liquids import do_fill, do_pour, do_empty
+from .murder import do_murder
+from .thief_skills import do_sneak, do_hide, do_visible, do_steal
+from .info_extended import do_examine, do_read, do_count, do_whois, do_worth, do_sit
+from .auto_settings import (
+    do_autolist, do_autoall, do_autoassist, do_autoexit, do_autogold,
+    do_autoloot, do_autosac, do_autosplit, do_brief, do_compact,
+    do_combine, do_colour, do_color, do_prompt,
+)
+from .misc_info import do_motd, do_imotd, do_rules, do_story, do_socials, do_skills, do_spells, do_rent
+from .obj_manipulation import do_put, do_remove, do_sacrifice, do_quaff
+from .player_info import do_scroll, do_show, do_play, do_info, do_hit, do_take
+from .player_config import do_noloot, do_nofollow, do_nosummon, do_delete, do_delet
+from .imm_commands import do_at, do_goto, do_transfer, do_force, do_peace
+from .imm_load import do_load, do_mload, do_oload, do_purge, do_restore, do_slay, do_sla
+from .imm_admin import do_advance, do_trust, do_freeze, do_snoop, do_switch, do_return
+from .imm_display import do_invis, do_wizinvis, do_incognito, do_poofin, do_poofout, do_echo, do_recho, do_zecho, do_pecho
+from .imm_punish import do_nochannels, do_noemote, do_noshout, do_notell, do_pardon, do_disconnect
+from .imm_search import do_vnum, do_mfind, do_ofind, do_slookup, do_owhere, do_mwhere, do_sockets, do_memory, do_clone, do_stat
+from .imm_server import do_reboot, do_shutdown, do_copyover, do_protect, do_violate, do_dump
+from .imm_set import do_set, do_mset, do_oset, do_rset, do_sset, do_string
+from .imm_emote import do_smote, do_pmote, do_gecho
+from .imm_olc import do_resets, do_alist, do_edit, do_mpedit
+from .typo_guards import do_qui, do_murde, do_reboo, do_shutdow, do_alia, do_colon
+from .misc_player import do_afk, do_replay, do_config, do_permit, do_peek, do_unread
+from .remaining_rom import (
+    do_wimpy, do_deaf, do_quiet, do_envenom, do_gain, do_groups, do_guild,
+    do_flag, do_mob, do_bs, do_go, do_junk, do_tap, do_teleport
 )
 from .healer import do_heal
 from .help import do_help, do_wizlist
-from .info import do_commands, do_wizhelp
 from .imc import do_imc, try_imc_command
+from .info import do_commands, do_wizhelp, do_who, do_areas, do_where, do_time, do_weather, do_credits, do_report
 from .inspection import do_exits, do_look, do_scan
 from .inventory import do_drop, do_equipment, do_get, do_inventory, do_outfit
-from .mobprog_tools import do_mpstat
+from .mobprog_tools import do_mpdump, do_mpstat
 from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
 from .notes import do_board, do_note
+from .position import do_rest, do_sleep, do_stand, do_wake
+from .session import do_quit, do_recall, do_save, do_score
+from .equipment import do_hold, do_wear, do_wield
+from .consumption import do_drink, do_eat
+from .character import do_password, do_title, do_description
+from .feedback import do_bug, do_idea, do_typo
 from .shop import do_buy, do_list, do_sell, do_value
+from .magic_items import do_recite, do_brandish, do_zap
 from .socials import perform_social
 
 CommandFunc = Callable[[Character, str], str]
@@ -135,6 +213,11 @@ COMMANDS: list[Command] = [
         show=False,
     ),
     Command("enter", do_enter, min_position=Position.STANDING),
+    # Position changes
+    Command("sleep", do_sleep, min_position=Position.SLEEPING),
+    Command("wake", do_wake, min_position=Position.SLEEPING),
+    Command("rest", do_rest, min_position=Position.SLEEPING),
+    Command("stand", do_stand, min_position=Position.SLEEPING),
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
     Command("exits", do_exits, aliases=("ex",), min_position=Position.RESTING),
@@ -148,8 +231,12 @@ COMMANDS: list[Command] = [
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("reply", do_reply, min_position=Position.RESTING),
     Command("shout", do_shout, min_position=Position.RESTING),
+    Command("yell", do_yell, min_position=Position.RESTING),
+    Command("emote", do_emote, min_position=Position.RESTING),
+    Command("pose", do_pose, min_position=Position.RESTING),
     Command("auction", do_auction, min_position=Position.RESTING),
     Command("gossip", do_gossip, min_position=Position.RESTING),
+    Command("cgossip", do_cgossip, min_position=Position.RESTING),
     Command("grats", do_grats, min_position=Position.RESTING),
     Command("quote", do_quote, min_position=Position.RESTING),
     Command("question", do_question, min_position=Position.RESTING),
@@ -167,8 +254,226 @@ COMMANDS: list[Command] = [
     Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING),
+    Command("flee", do_flee, min_position=Position.FIGHTING),
+    Command("backstab", do_backstab, aliases=("bs",), min_position=Position.STANDING),
+    Command("bash", do_bash, min_position=Position.FIGHTING),
+    Command("berserk", do_berserk, min_position=Position.FIGHTING),
+    Command("dirt", do_dirt, min_position=Position.FIGHTING),
+    Command("disarm", do_disarm, min_position=Position.FIGHTING),
+    Command("trip", do_trip, min_position=Position.FIGHTING),
+    Command("surrender", do_surrender, min_position=Position.FIGHTING),
+    Command("murder", do_murder, min_position=Position.FIGHTING),
+    Command("cast", do_cast, min_position=Position.RESTING),
+    Command("consider", do_consider, aliases=("con",), min_position=Position.RESTING),
+    # Group Commands
+    Command("follow", do_follow, min_position=Position.RESTING),
+    Command("group", do_group, min_position=Position.SLEEPING),
+    Command("gtell", do_gtell, aliases=("gt", ";"), min_position=Position.SLEEPING),
+    Command("split", do_split, min_position=Position.RESTING),
+    Command("order", do_order, min_position=Position.RESTING),
+    # Item Transfer
+    Command("give", do_give, min_position=Position.RESTING),
+    # Door Commands
+    Command("open", do_open, min_position=Position.RESTING),
+    Command("close", do_close, min_position=Position.RESTING),
+    Command("lock", do_lock, min_position=Position.RESTING),
+    Command("unlock", do_unlock, min_position=Position.RESTING),
+    Command("pick", do_pick, min_position=Position.RESTING),
+    # Magic Items
+    Command("recite", do_recite, min_position=Position.RESTING),
+    Command("brandish", do_brandish, min_position=Position.RESTING),
+    Command("zap", do_zap, min_position=Position.RESTING),
+    # Equipment
+    Command("wear", do_wear, min_position=Position.RESTING),
+    Command("wield", do_wield, min_position=Position.RESTING),
+    Command("hold", do_hold, min_position=Position.RESTING),
+    # Consumption
+    Command("eat", do_eat, min_position=Position.RESTING),
+    Command("drink", do_drink, min_position=Position.RESTING),
+    # Liquid Commands
+    Command("fill", do_fill, min_position=Position.RESTING),
+    Command("pour", do_pour, min_position=Position.RESTING),
+    Command("empty", do_empty, min_position=Position.RESTING),
+    # Session/Character Info
+    Command("save", do_save, min_position=Position.DEAD),
+    Command("quit", do_quit, min_position=Position.SLEEPING),
+    Command("score", do_score, min_position=Position.DEAD),
+    Command("recall", do_recall, min_position=Position.STANDING),
+    Command("password", do_password, min_position=Position.DEAD),
+    Command("title", do_title, min_position=Position.DEAD),
+    Command("description", do_description, min_position=Position.DEAD, aliases=("desc",)),
     # Info
     Command("scan", do_scan, min_position=Position.SLEEPING),
+    Command("who", do_who, min_position=Position.DEAD),
+    Command("areas", do_areas, min_position=Position.DEAD),
+    Command("where", do_where, min_position=Position.RESTING),
+    Command("time", do_time, min_position=Position.DEAD),
+    Command("weather", do_weather, min_position=Position.RESTING),
+    Command("credits", do_credits, min_position=Position.DEAD),
+    Command("report", do_report, min_position=Position.RESTING),
+    Command("affects", do_affects, min_position=Position.DEAD),
+    Command("compare", do_compare, min_position=Position.RESTING),
+    Command("channels", do_channels, min_position=Position.DEAD),
+    # P1 - Thief Skills
+    Command("sneak", do_sneak, min_position=Position.STANDING),
+    Command("hide", do_hide, min_position=Position.RESTING),
+    Command("visible", do_visible, min_position=Position.SLEEPING),
+    Command("steal", do_steal, min_position=Position.STANDING),
+    # P1 - Info Extended
+    Command("examine", do_examine, aliases=("exa",), min_position=Position.RESTING),
+    Command("read", do_read, min_position=Position.RESTING),
+    Command("count", do_count, min_position=Position.SLEEPING),
+    Command("whois", do_whois, min_position=Position.DEAD),
+    Command("worth", do_worth, min_position=Position.SLEEPING),
+    Command("sit", do_sit, min_position=Position.SLEEPING),
+    # P2 - Auto Settings
+    Command("autolist", do_autolist, min_position=Position.DEAD),
+    Command("autoall", do_autoall, min_position=Position.DEAD),
+    Command("autoassist", do_autoassist, min_position=Position.DEAD),
+    Command("autoexit", do_autoexit, min_position=Position.DEAD),
+    Command("autogold", do_autogold, min_position=Position.DEAD),
+    Command("autoloot", do_autoloot, min_position=Position.DEAD),
+    Command("autosac", do_autosac, min_position=Position.DEAD),
+    Command("autosplit", do_autosplit, min_position=Position.DEAD),
+    Command("brief", do_brief, min_position=Position.DEAD),
+    Command("compact", do_compact, min_position=Position.DEAD),
+    Command("combine", do_combine, min_position=Position.DEAD),
+    Command("colour", do_colour, min_position=Position.DEAD),
+    Command("color", do_color, min_position=Position.DEAD),
+    Command("prompt", do_prompt, min_position=Position.DEAD),
+    # P2 - Misc Info
+    Command("motd", do_motd, min_position=Position.DEAD),
+    Command("imotd", do_imotd, min_position=Position.DEAD, min_trust=LEVEL_HERO),
+    Command("rules", do_rules, min_position=Position.DEAD),
+    Command("story", do_story, min_position=Position.DEAD),
+    Command("socials", do_socials, min_position=Position.DEAD),
+    Command("skills", do_skills, min_position=Position.DEAD),
+    Command("spells", do_spells, min_position=Position.DEAD),
+    Command("rent", do_rent, min_position=Position.DEAD),
+    # Player Essential - Object Manipulation
+    Command("put", do_put, min_position=Position.RESTING),
+    Command("remove", do_remove, min_position=Position.RESTING),
+    Command("sacrifice", do_sacrifice, aliases=("sac",), min_position=Position.RESTING),
+    Command("quaff", do_quaff, min_position=Position.RESTING),
+    Command("take", do_take, min_position=Position.RESTING),
+    Command("hit", do_hit, min_position=Position.FIGHTING),
+    # Player Essential - Info
+    Command("scroll", do_scroll, min_position=Position.DEAD),
+    Command("show", do_show, min_position=Position.DEAD),
+    Command("play", do_play, min_position=Position.RESTING),
+    Command("info", do_info, min_position=Position.SLEEPING),
+    # Player Config
+    Command("noloot", do_noloot, min_position=Position.DEAD),
+    Command("nofollow", do_nofollow, min_position=Position.DEAD),
+    Command("nosummon", do_nosummon, min_position=Position.DEAD),
+    Command("delete", do_delete, min_position=Position.STANDING),
+    Command("delet", do_delet, min_position=Position.DEAD, show=False),
+    # Immortal Commands - Basic
+    Command("at", do_at, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("goto", do_goto, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("transfer", do_transfer, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("force", do_force, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("peace", do_peace, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Load/Purge
+    Command("load", do_load, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("mload", do_mload, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
+    Command("oload", do_oload, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
+    Command("purge", do_purge, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("restore", do_restore, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("slay", do_slay, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("sla", do_sla, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
+    # Immortal Commands - Admin
+    Command("advance", do_advance, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3),
+    Command("trust", do_trust, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3),
+    Command("freeze", do_freeze, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("snoop", do_snoop, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("switch", do_switch, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("return", do_return, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Display
+    Command("invis", do_invis, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("wizinvis", do_wizinvis, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("incognito", do_incognito, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("poofin", do_poofin, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("poofout", do_poofout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("echo", do_echo, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("recho", do_recho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("zecho", do_zecho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("pecho", do_pecho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Punishment
+    Command("nochannels", do_nochannels, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("noemote", do_noemote, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("noshout", do_noshout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("notell", do_notell, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("pardon", do_pardon, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("disconnect", do_disconnect, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Search/Info
+    Command("vnum", do_vnum, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("mfind", do_mfind, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("ofind", do_ofind, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("slookup", do_slookup, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("owhere", do_owhere, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("mwhere", do_mwhere, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("sockets", do_sockets, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("memory", do_memory, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("clone", do_clone, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("stat", do_stat, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Server Control
+    Command("reboot", do_reboot, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2),
+    Command("shutdown", do_shutdown, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2),
+    Command("copyover", do_copyover, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2),
+    Command("protect", do_protect, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("violate", do_violate, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("dump", do_dump, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2),
+    # Immortal Commands - Set/String
+    Command("set", do_set, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("mset", do_mset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("oset", do_oset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("rset", do_rset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("sset", do_sset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("string", do_string, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - Emotes
+    Command("smote", do_smote, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("pmote", do_pmote, min_position=Position.RESTING),
+    Command("gecho", do_gecho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Immortal Commands - OLC
+    Command("resets", do_resets, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("alist", do_alist, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("edit", do_edit, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("mpedit", do_mpedit, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Miscellaneous Player Commands
+    Command("afk", do_afk, min_position=Position.SLEEPING),
+    Command("replay", do_replay, min_position=Position.SLEEPING),
+    Command("config", do_config, min_position=Position.DEAD),
+    Command("permit", do_permit, min_position=Position.RESTING),
+    Command("peek", do_peek, min_position=Position.STANDING),
+    Command("unread", do_unread, min_position=Position.SLEEPING),
+    # Remaining ROM Commands
+    Command("wimpy", do_wimpy, min_position=Position.DEAD),
+    Command("deaf", do_deaf, min_position=Position.DEAD),
+    Command("quiet", do_quiet, min_position=Position.SLEEPING),
+    Command("envenom", do_envenom, min_position=Position.RESTING),
+    Command("gain", do_gain, min_position=Position.STANDING),
+    Command("groups", do_groups, min_position=Position.SLEEPING),
+    Command("guild", do_guild, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL - 2),
+    Command("flag", do_flag, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL - 2),
+    Command("mob", do_mob, min_position=Position.DEAD, show=False),
+    # Alias Commands
+    Command("bs", do_bs, min_position=Position.FIGHTING, show=False),
+    Command("go", do_go, min_position=Position.STANDING, show=False),
+    Command("junk", do_junk, min_position=Position.RESTING, show=False),
+    Command("tap", do_tap, min_position=Position.RESTING, show=False),
+    Command("teleport", do_teleport, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL - 1, show=False),
+    # Typo Guards
+    Command("qui", do_qui, min_position=Position.DEAD, show=False),
+    Command("murde", do_murde, min_position=Position.DEAD, show=False),
+    Command("reboo", do_reboo, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
+    Command("shutdow", do_shutdow, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
+    Command("alia", do_alia, min_position=Position.DEAD, show=False),
+    Command(":", do_colon, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    # Feedback
+    Command("bug", do_bug, min_position=Position.DEAD),
+    Command("idea", do_idea, min_position=Position.DEAD),
+    Command("typo", do_typo, min_position=Position.DEAD),
     # Shops
     Command("list", do_list, min_position=Position.RESTING),
     Command("buy", do_buy, min_position=Position.RESTING),
@@ -230,10 +535,41 @@ COMMANDS: list[Command] = [
         log_level=LogLevel.ALWAYS,
         min_trust=LEVEL_HERO,
     ),
-    Command("@redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
+    # OLC Commands - ROM style (no @ prefix)
+    Command("redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("aedit", cmd_aedit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("oedit", cmd_oedit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("medit", cmd_medit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("hedit", cmd_hedit, admin_only=True, min_trust=LEVEL_HERO),
+    Command("asave", cmd_asave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("hesave", cmd_hesave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("rstat", cmd_rstat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("ostat", cmd_ostat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("mstat", cmd_mstat, admin_only=True, min_trust=LEVEL_HERO),
+    Command("vlist", cmd_vlist, admin_only=True, min_trust=LEVEL_HERO),
+    # OLC Commands - Legacy @ prefix (aliases)
+    Command("@redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@aedit", cmd_aedit, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@oedit", cmd_oedit, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@medit", cmd_medit, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@hedit", cmd_hedit, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@asave", cmd_asave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO, show=False),
+    Command("@hesave", cmd_hesave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO, show=False),
+    Command("@rstat", cmd_rstat, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@ostat", cmd_ostat, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@mstat", cmd_mstat, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@goto", cmd_goto, admin_only=True, min_trust=LEVEL_HERO, show=False),
+    Command("@vlist", cmd_vlist, admin_only=True, min_trust=LEVEL_HERO, show=False),
     Command("wizlock", cmd_wizlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("newlock", cmd_newlock, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("wiznet", cmd_wiznet, min_trust=LEVEL_IMMORTAL),
+    Command(
+        "mpdump",
+        do_mpdump,
+        admin_only=True,
+        log_level=LogLevel.NEVER,
+        min_trust=LEVEL_HERO,
+    ),
     Command(
         "mpstat",
         do_mpstat,
@@ -362,8 +698,17 @@ def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> t
 
 def process_command(char: Character, input_str: str) -> str:
     session = getattr(char, "desc", None)
-    if isinstance(session, Session) and session.editor == "redit":
-        return handle_redit_command(char, session, input_str)
+    if isinstance(session, Session):
+        if session.editor == "redit":
+            return handle_redit_command(char, session, input_str)
+        if session.editor == "aedit":
+            return handle_aedit_command(char, session, input_str)
+        if session.editor == "oedit":
+            return handle_oedit_command(char, session, input_str)
+        if session.editor == "medit":
+            return handle_medit_command(char, session, input_str)
+        if session.editor == "hedit":
+            return handle_hedit_command(char, session, input_str)
 
     if not input_str.strip():
         return "What?"
@@ -411,6 +756,7 @@ def process_command(char: Character, input_str: str) -> str:
     if not cmd_name:
         return "What?"
     trust = _get_trust(char)
+    lowered_name = cmd_name.lower()
     command = resolve_command(cmd_name, trust=trust)
     if command and trust < command.min_trust:
         command = None
@@ -444,7 +790,9 @@ def process_command(char: Character, input_str: str) -> str:
             # Logging must never break command execution.
             pass
     if not command:
-        social = social_registry.get(cmd_name.lower())
+        if lowered_name == "immtalk" or cmd_name == ":":
+            return do_immtalk(char, arg_str)
+        social = social_registry.get(lowered_name)
         if social:
             return perform_social(char, cmd_name, arg_str)
         imc_response = try_imc_command(char, cmd_name, arg_str)

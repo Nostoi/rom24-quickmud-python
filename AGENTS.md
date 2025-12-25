@@ -1,243 +1,383 @@
-# AGENT.md — QuickMUD Port Parity Auditor (C/DOC/ARE aware)
+# QuickMUD Development Guide for AI Agents
 
-## ROLE
-You are the **Port Parity Auditor** for QuickMUD (ROM 2.4 → Python).
-Audit the **Python port** against the **ROM 2.4 C sources** and **official docs/data**. Discover missing or incorrect parts of the port, write tasks into the plan, append enforcement rules, optionally apply **tiny safe fixes**, validate, and commit — all **idempotently** with **small, reviewable diffs**. You MAY process multiple subsystems per run within batch limits.
+## 🚨 IMPORTANT: Command Parity Gap Discovered (Dec 2025)
 
----
+**Current Status**: 115/181 ROM commands implemented (63.5%)
 
-## ABSOLUTES
-- **Baseline = ROM 2.4 C** + ROM docs + canonical area/data files.
-- Parity must match ROM semantics and outputs:
-  - RNG `number_mm/percent/range`
-  - **C integer division/modulo** via `c_div/c_mod`
-  - AC sign/mapping; defense order; RIV scaling; wait/lag; tick cadence
-  - File formats; flag widths/bitmasks; save/load record layout & field order
-- **Evidence is mandatory** for every task:
-  - At least one **C** pointer (file:symbol or line range),
-  - For data formats, also a **DOC** pointer and an **ARE** (or player save) pointer.
-- **Never** propose future features (no “plugin(s)”, no DB migrations) or refactors not required by parity.
-- **Never** modify plan Sections **8. Future enhancements** or **10. Database integration roadmap**.
-- All edits must be **marker-bounded** and **idempotent**.
+**Critical Issue**: Previous "100% parity" claim was based on backend mechanics testing, not player-facing commands. Many essential commands are missing or broken.
+
+**See**: [Command Parity Reality Check](#️-command-parity-reality-check-december-2025) section below for details.
+
+**Action Items**:
+1. Review [COMMAND_PARITY_AUDIT.md](COMMAND_PARITY_AUDIT.md) - Full gap analysis
+2. Follow [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) - Phased roadmap
+3. Run `pytest tests/integration/` to see current state
+4. Implement P0 commands first (24 commands for basic gameplay)
 
 ---
 
-## FILES OF RECORD
-- **C sources (canonical)**: `src/**/*.c`, headers (`merc.h`, etc.) — e.g., `fight.c`, `interp.c`, `handler.c`, `act_move.c`, `act_obj.c`, `save.c`, `magic.c`, `tables.c`, `const.c`, `skills.c`, `comm.c`, `update.c`, `recycle.c`, `ban.c`, `act_wiz.c`, `socials.c`, `mob_prog.c`, `db.c`.
-- **ROM docs**: `doc/**` (e.g., `area.txt`, `Rom2.4.doc`).
-- **Legacy data**: `areas/*.are`, `/player/*` saves, `/imc/imc.*`.
-- **Python port**: `mud/**`
-- **Tests**: `tests/**` (goldens in `tests/data/**`)
-- **Plan**: `PYTHON_PORT_PLAN.md`
-- **Rules**: `port.instructions.md` (between `<!-- RULES-START -->` and `<!-- RULES-END -->`)
-- **CI**: `.github/workflows/**`
+## 🤖 Autonomous Mode (ENABLED)
+
+**When explicitly directed by user**, agent may enter autonomous task completion mode:
+
+### Activation Criteria
+- User explicitly says "start autonomous mode" or gives clear directive to "complete all tasks"
+- User specifies scope (P0 only, P0+P1, or all tasks)
+- User sets time limit and error handling policy
+
+### Autonomous Workflow
+1. ✅ Create comprehensive todo list from ARCHITECTURAL_TASKS.md
+2. 🔄 Execute tasks sequentially without waiting for approval
+3. 🔨 Fix errors immediately before proceeding to next task
+4. ✅ Run full test suite after each major task
+5. 📊 Run `scripts/test_data_gatherer.py` to verify ROM parity
+6. 📝 Update ARCHITECTURAL_TASKS.md and PROJECT_COMPLETION_STATUS.md
+7. 🎯 Stop at time limit or scope completion
+
+### Quality Gates (MANDATORY)
+- **After each task**: Run acceptance tests specified in ARCHITECTURAL_TASKS.md
+- **After each task**: Run full test suite (200+ tests) to catch regressions
+- **After all tasks**: Run `scripts/test_data_gatherer.py` for final parity verification
+- **On any test failure**: Fix immediately before proceeding
+
+### Stopping Conditions
+- All tasks in scope complete
+- Time limit reached
+- Unrecoverable error (after 3 fix attempts)
+- User interruption
+
+**Current Session**: Autonomous mode ACTIVE
+- **Scope**: P0 + P1 tasks (7 tasks)
+- **Time Limit**: 2 hours
+- **Error Policy**: Fix immediately
+- **Started**: 2025-12-19 13:30 CST
 
 ---
 
-## BATCH CONSTANTS
-```yaml
-MAX_DISCOVERY_SUBSYSTEMS: 5
-MAX_SUBSYSTEMS_PER_RUN: 5
-MAX_TASKS_PER_SUBSYSTEM: 5
-MAX_TINY_FIXES_PER_RUN: 3
-```
+## Specialized Agent Files
+
+QuickMUD uses specialized agent files for different types of work:
+
+### 1. **AGENT.md** - Architectural Analysis Agent
+- **Purpose**: Identify and fix architectural integration gaps
+- **Focus**: Subsystems with confidence < 0.92
+- **Output**: P0/P1 architectural tasks with ROM C evidence
+- **Use When**: Subsystems need structural improvements
+- **Status**: Primary agent for architectural work
+
+### 2. **FUNCTION_COMPLETION_AGENT.md** - Function Coverage Agent
+- **Purpose**: Implement remaining 57 unmapped utility functions
+- **Focus**: Helper functions, not architectural gaps
+- **Output**: Function implementations with ROM parity
+- **Use When**: Want to increase function coverage from 83.1% to 95%+
+- **Scope**: ~12 hours work for 57 functions
+- **Priority**: Optional (core ROM functionality already complete)
+
+### 3. **AGENT.EXECUTOR.md** - Task Execution Agent
+- **Purpose**: Execute tasks generated by AGENT.md
+- **Focus**: Implementation of specific P0/P1 tasks
+- **Output**: Code changes, tests, completion reports
+- **Use When**: Tasks are defined and ready for implementation
+- **Status**: Used for autonomous task completion
+
+### Agent Selection Guide
+
+| Goal | Use This Agent | Notes |
+|------|----------------|-------|
+| Fix subsystem integration issues | [AGENT.md](AGENT.md) | Start here for architectural work |
+| Implement missing helper functions | [FUNCTION_COMPLETION_AGENT.md](FUNCTION_COMPLETION_AGENT.md) | Optional, 57 low-priority functions |
+| Execute defined tasks autonomously | [AGENT.EXECUTOR.md](AGENT.EXECUTOR.md) | After tasks are generated |
+| Verify behavioral parity | [AGENT.md](AGENT.md) Phase 3 | Runtime differential testing |
+
+### When to Use FUNCTION_COMPLETION_AGENT.md
+
+✅ **Use when:**
+- Want to maximize function coverage (83.1% → 95%+)
+- Need mobprog helpers for complex mob behaviors
+- Want complete OLC helper utilities
+- Time available for ~12 hours of implementation work
+
+❌ **Skip when:**
+- Core ROM gameplay is priority (already 83.1% complete)
+- Prefer behavioral verification over function count
+- Limited time (runtime testing has higher ROI)
+
+The 57 remaining functions are utilities and helpers, not core ROM mechanics.
 
 ---
 
-## MARKERS & STRUCTURE (create if missing; update idempotently)
-Top of `PYTHON_PORT_PLAN.md`:
-```
-<!-- LAST-PROCESSED: INIT -->
-<!-- DO-NOT-SELECT-SECTIONS: 8,10 -->
+## Task Tracking (CRITICAL - READ FIRST!)
+
+QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate file when completing work.**
+
+### 1. TODO.md - High-Level Project Phases ✅ COMPLETE
+- **Purpose**: 14 major project steps (data models → networking → deployment)
+- **Status**: ALL STEPS COMPLETE - use for historical reference only
+- **DO NOT UPDATE** - this tracks completed infrastructure work
+
+### 2. ARCHITECTURAL_TASKS.md - ROM Parity Integration Tasks ✅ COMPLETE
+- **Purpose**: Architecture-level integration gaps identified by AGENT.md analysis
+- **Status**: ALL 7 P0/P1 tasks completed (2025-12-19)
+- **When to Update**: Historical reference only - DO NOT UPDATE
+- **Use Instead**: `ROM_PARITY_FEATURE_TRACKER.md` for remaining work
+- **Completed Tasks**:
+  - ✅ `[P0] Implement ROM LastObj/LastMob state tracking in reset_handler`
+  - ✅ `[P0] Integrate encumbrance limits with inventory management`
+  - ✅ `[P0] Complete help command dispatcher integration`
+  - ✅ `[P0] Implement cross-area reference validation`
+  - ✅ `[P1] Complete portal traversal with follower cascading`
+  - ✅ `[P1] Implement trust-based help topic filtering`
+  - ✅ `[P1] Complete format edge case error handling`
+
+**✅ LEGACY FILE** - Use `ROM_PARITY_FEATURE_TRACKER.md` for active work
+
+### 3. ROM_PARITY_FEATURE_TRACKER.md - Complete ROM Parity Feature List 🎯 PRIMARY
+- **Purpose**: Comprehensive tracking of ALL ROM 2.4b C features needed for 100% parity
+- **Status**: Single source of truth for remaining parity work
+- **When to Update**: When implementing any ROM parity features
+- **Coverage**: 100% feature mapping (advanced mechanics, not just basic functionality)
+- **Priority Levels**: P0-P3 matrix for implementation planning
+- **Features**: Detailed breakdown of every missing ROM feature with C references
+
+**🎯 PRIMARY SOURCE OF TRUTH** - **USE THIS FILE** for:
+- Identifying next parity work
+- Checking implementation status
+- Planning development roadmap
+- Tracking progress toward 100% ROM parity
+
+### 4. PROJECT_COMPLETION_STATUS.md - Subsystem Confidence Tracking
+- **Purpose**: Tracks 27 subsystems by confidence score (0.00-1.00)
+- **Updated By**: `scripts/test_data_gatherer.py` (automated) or manual analysis
+- **When to Update**: After major subsystem work or test additions
+- **Confidence Levels**:
+  - ✅ Complete: ≥0.80 (production-ready)
+  - ⚠️ Needs Work: <0.80 (incomplete)
+
+**Check this file** to identify which subsystems need attention.
+
+### Task Tracking Workflow
+
+**When starting work:**
+1. Check `ROM_PARITY_FEATURE_TRACKER.md` for specific parity features to implement
+2. Check `PROJECT_COMPLETION_STATUS.md` for subsystem confidence levels
+3. Use `CURRENT_STATUS_SUMMARY.md` for overall project overview
+
+**When completing work:**
+1. ✅ Mark features complete in `ROM_PARITY_FEATURE_TRACKER.md`
+2. Update subsystem confidence in `PROJECT_COMPLETION_STATUS.md` if applicable
+3. Run `pytest` to verify no regressions
+4. Update `CURRENT_STATUS_SUMMARY.md` for major milestones
+
+**Example completion format:**
+```markdown
+### 1. Reset System (confidence 0.38) - LastObj/LastMob State Tracking
+
+**✅ [P0] Implement ROM LastObj/LastMob state tracking in reset_handler** - COMPLETED 2025-12-19
+
+- **FILES**: `mud/spawning/reset_handler.py`, `mud/loaders/reset_loader.py`
+- **COMPLETED BY**: [Your completion notes here]
+- **TESTS ADDED**: `tests/test_reset_state_tracking.py` (15 tests)
+- **ACCEPTANCE**: ✅ `pytest tests/test_area_loader.py::test_midgaard_reset_validation` passes
 ```
 
-Coverage Matrix:
-```
-## System Inventory & Coverage Matrix
-<!-- COVERAGE-START -->
-| subsystem | status | evidence | tests |
-|---|---|---|---|
-<!-- COVERAGE-END -->
-```
+### Quick Reference: Which File to Update?
 
-Parity tasks:
-```
-## Parity Gaps & Corrections
-<!-- PARITY-GAPS-START -->
-<!-- AUDITED:  -->
-<!-- PARITY-GAPS-END -->
-```
-
-Subsystem delimiters:
-```
-<!-- SUBSYSTEM: <name> START -->
-...content...
-<!-- SUBSYSTEM: <name> END -->
-```
-
-Parity Map (recommended):
-```
-## C ↔ Python Parity Map
-<!-- PARITY-MAP-START -->
-| subsystem | C source (file:symbol) | Python target (file:symbol) |
-|---|---|---|
-<!-- PARITY-MAP-END -->
-```
-
-Aggregated P0 dashboard (optional):
-```
-## Next Actions (Aggregated P0s)
-<!-- NEXT-ACTIONS-START -->
-<!-- NEXT-ACTIONS-END -->
-```
+| Work Type | Update File |
+|-----------|-------------|
+| **ROM parity feature implementation** | `ROM_PARITY_FEATURE_TRACKER.md` 🎯 **PRIMARY** |
+| Subsystem confidence changed significantly | `PROJECT_COMPLETION_STATUS.md` |
+| Session summary or milestone | `CURRENT_STATUS_SUMMARY.md` |
+| Builder tools or OLC work | Individual completion reports (e.g., `BUILDER_TOOLS_COMPLETION.md`) |
+| Architectural integration (HISTORICAL) | `ARCHITECTURAL_TASKS.md` ✅ **COMPLETE** |
+| General todos (infrastructure) | `TODO.md` (rarely - mostly complete) |
 
 ---
 
-## CANONICAL SUBSYSTEM CATALOG (audit in this order)
-combat; skills_spells; affects_saves; command_interpreter; socials; channels; wiznet_imm;
-world_loader; resets; weather; time_daynight; movement_encumbrance; stats_position;
-shops_economy; boards_notes; help_system; mob_programs; npc_spec_funs; game_update_loop;
-persistence; login_account_nanny; networking_telnet; security_auth_bans; logging_admin; olc_builders;
-area_format_loader; imc_chat; player_save_format
+## ⚠️ Command Parity Reality Check (December 2025)
+
+### The Discovery
+
+**Previous Claim**: 100% ROM parity based on backend mechanics  
+**Reality**: **63.5% command coverage** (115/181 ROM commands implemented)
+
+**What Went Wrong**: Tests verified **backend mechanics** work, not **player-facing commands**
+
+### Critical Findings
+
+| Category | Status | Impact |
+|----------|--------|--------|
+| **Backend Mechanics** | ✅ 83.1% function coverage | Combat, movement, skills work |
+| **Player Commands** | ❌ 63.5% command coverage | Players get "Huh?" for basic actions |
+| **Unit Tests** | ✅ 1435+ tests passing | Components work in isolation |
+| **Integration Tests** | ❌ Most workflows broken | End-to-end player experience fails |
+
+**Example**: Follower mechanics are 100% tested and working, but `follow` command doesn't exist!
+
+### Missing Critical Commands (P0)
+
+**Cannot play without these**:
+- `consider <mob>` - Assess difficulty (CRITICAL)
+- `follow <target>` - Follow NPCs/players (CRITICAL)
+- `group <target>` - Form groups (CRITICAL)
+- `give <item> <target>` - Give items (CRITICAL for quests)
+- `look <target>` - **BROKEN** (ignores args, shows room instead of target)
+- `tell <mob>` - **BROKEN** (can't tell to mobs)
+- `open`/`close`/`lock`/`unlock` - Door interaction
+- `flee` - Escape combat
+- `rescue` - Protect group members
+
+### Reference Documents
+
+See these files for complete analysis and implementation plan:
+
+1. **[COMMAND_PARITY_AUDIT.md](COMMAND_PARITY_AUDIT.md)** - Full 181 command audit
+2. **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Phased implementation roadmap
+3. **[tests/integration/README.md](tests/integration/README.md)** - Integration test guide
+
+### Integration Test Framework
+
+**New test suite**: `tests/integration/` - Tests complete player workflows
+
+```bash
+# Run integration tests (shows what's actually broken)
+pytest tests/integration/ -v
+
+# Run only passing tests
+pytest tests/integration/ -v -m "not skip"
+
+# See progress tracking
+cat tests/integration/README.md
+```
+
+**Key insight**: Unit tests verify `can_see_character()` works. Integration tests verify `look mob` actually calls it.
+
+### Recommended Workflow for Command Implementation
+
+**Phase 1: Fix Immediate Bugs** (30 minutes)
+1. Fix `look <target>` - Edit `mud/commands/inspection.py` line 117
+2. Fix `tell <mob>` - Search for mobs in room, not just online players
+
+**Phase 2: Implement P0 Commands** (2-3 days)
+- See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap
+- Each command includes ROM C reference, time estimate, test cases
+
+**Phase 3: Run Integration Tests** (ongoing)
+```bash
+# After implementing each command
+pytest tests/integration/test_player_npc_interaction.py -v
+
+# Track progress
+pytest tests/integration/ --co  # See all tests
+pytest tests/integration/ -v    # Run all tests
+```
+
+### Success Criteria (Revised)
+
+| Milestone | Commands | Integration Tests | Player Experience |
+|-----------|----------|-------------------|-------------------|
+| **Current** | 115/181 (63.5%) | 2/26 passing | "Huh?" for basic actions |
+| **Phase 1** | 139/181 (75%) | 10/26 passing | Can play basic game |
+| **Phase 2** | 157/181 (85%) | 20/26 passing | Full combat/groups work |
+| **True 100%** | 181/181 (100%) | 26/26 passing | ROM C player experience |
+
+**Before claiming "100% parity"**:
+- [ ] All P0 commands implemented (24 commands)
+- [ ] All P1 commands implemented (18 commands)
+- [ ] Integration tests pass for complete player workflows
+- [ ] New player can: create char, visit shop, buy items, group up, fight mobs
+- [ ] No "Huh?" for common ROM commands
 
 ---
 
-## C/DOC/ARE-AWARE DISCOVERY (Phase 1)
-1) Rebuild the Coverage Matrix **from scratch** (catalog order). Status:
-   - `present_wired` — code exists, wired (dispatcher/tick), tests exist.
-   - `present_unwired` — code exists but not registered/hooked.
-   - `stub_or_partial` — TODO/NotImplemented/empty handlers/missing critical paths.
-   - `absent` — nothing substantive found.
-   Evidence cell should include **C** and **PY** pointers; for data subsystems include **DOC/ARE** where relevant.
-2) Replace content between `<!-- COVERAGE-START/END -->`.
-3) For each subsystem not `present_wired`, create/update a block:
+## Build/Lint/Test Commands
+```bash
+# Run all tests (200+ tests, ~16s)
+pytest
+
+# Run integration tests (end-to-end workflows)
+pytest tests/integration/ -v
+
+# Run single test file
+pytest tests/test_combat.py
+
+# Run specific test function
+pytest tests/test_combat.py::test_rescue_checks_group_permission
+
+# Run tests matching keyword
+pytest -k "movement"
+
+# Run with coverage (CI requirement: ≥80%)
+pytest --cov=mud --cov-report=term --cov-fail-under=80
+
+# Test all commands (comprehensive command validation)
+python3 test_all_commands.py
+
+# Lint with ruff
+ruff check .
+ruff format --check .
+
+# Type check with mypy (strict on specific modules)
+mypy mud/net/ansi.py mud/security/hash_utils.py --follow-imports=skip
 ```
-<!-- SUBSYSTEM: <name> START -->
-### <name> — Discovery Audit <YYYY-MM-DD>
-STATUS: <present_unwired|stub_or_partial|absent> (confidence X.XX)
-EVIDENCE:
-- C: <file.c>:<symbol or Lx-Ly>
-- PY: <file.py>:<symbol or Lx-Ly>
-- DOC: <doc/area.txt §section or Rom2.4.doc p.N>   (if data format)
-- ARE/PLAYER: <areas/foo.are §SECTION | /player/arthur>  (if data format)
-- Hook: <dispatcher/tick/registry present|missing>
-RISKS: choose among [RNG, c_div/c_mod, AC mapping, defense_order, RIV, tick_cadence, file_formats, flags, indexing, lag_wait, side_effects]
-TASKS (max 5 this run):
-- [P0] Wire entry points … — acceptance: dispatcher/tick/registry assertions
-- [P0] Minimal end-to-end test … — acceptance: pytest passes golden derived from C/DOC
-- [P1] Parity invariants … — acceptance: AC sign / C-division holds
-- [P2] Coverage ≥80% for this subsystem
-NOTES: 2–5 bullets (must include at least one C-side note; for data, include DOC/ARE notes)
-<!-- SUBSYSTEM: <name> END -->
+
+**Three Testing Levels**:
+1. **Unit Tests** (`tests/test_*.py`) - Verify components work in isolation
+2. **Integration Tests** (`tests/integration/`) - Verify complete player workflows work
+3. **Command Tests** (`test_all_commands.py`) - Verify all 287 commands can be called without import/module errors
+
+**Always run all three** when implementing new commands!
+
+### Command Validation Script
+
+The `test_all_commands.py` script provides comprehensive command testing:
+
+```bash
+# Run comprehensive command test
+python3 test_all_commands.py
+
+# What it tests:
+#  - All 287 registered commands
+#  - Import resolution (no missing modules)
+#  - Command execution (no crashes)
+#  - Return type validation (all return strings)
+#  - Categorized error reporting
+
+# Expected results:
+#  ✅ 277/287 commands working (96.5%)
+#  ❌ 10 commands need game state (rooms, boards, etc.)
 ```
-4) Update `<!-- AUDITED: ... -->` (no duplicates).
-5) Append any new RULES to `port.instructions.md` (no duplicates).
-6) **Short-circuit** after `MAX_DISCOVERY_SUBSYSTEMS` problematic subsystems and commit.
 
----
+**Use this script to:**
+- Verify no import errors after adding new commands
+- Test commands work without starting the full MUD server
+- Catch broken imports before committing
+- Validate command parity is maintained
 
-## PER-SUBSYSTEM PARITY AUDIT (Phase 2)
-A) SELECT  
-- Build candidates not fully satisfied; choose up to `MAX_SUBSYSTEMS_PER_RUN` by:
-  1) most open `[P0]` tasks, then  
-  2) earliest in catalog order.  
-- Skip the subsystem equal to `<!-- LAST-PROCESSED: ... -->`.
+## Code Style Guidelines
 
-B) EVIDENCE  
-- Record:
-  - completion_plan: ✅/❌
-  - implementation_status: full | partial | absent
-  - correctness_status: passes | suspect | fails | unknown
-  - confidence: 0.00–1.00
-  - key_risks
-- **Mandatory**: at least one **C** and one **PY** pointer; for data, also **DOC** and **ARE/PLAYER** pointers.
+**Imports:** `from __future__ import annotations` first; stdlib, third-party, local (alphabetical within groups)  
+**Types:** Strict annotations throughout; use `TYPE_CHECKING` guard for circular imports  
+**Naming:** `snake_case` functions/vars, `PascalCase` classes, `UPPER_CASE` constants, `_prefix` for private  
+**Docstrings:** Required for public functions; include ROM C source references for parity code  
+**Error handling:** Defensive programming with try/except; specific exceptions where possible  
+**Formatting:** Line length 120 (ruff/black), double quotes, 4-space indent
 
-C) TASK SYNTHESIS  
-- For each selected subsystem, create **1–MAX_TASKS_PER_SUBSYSTEM** atomic tasks with:
-  - title, rationale, files, tests, acceptance_criteria, priority (P0/P1/P2), estimate (S/M/L), risk (low/med/high)
-  - **Mandatory references**: include **C** (+ **DOC** + **ARE/PLAYER** if data).
-  - Prefer golden tests derived from C semantics or doc tables.
+## ROM Parity Rules (CRITICAL)
+- **RNG:** Use `rng_mm.number_*` family, NEVER `random.*` in combat/affects  
+- **Math:** Use `c_div`/`c_mod` for C integer semantics, NEVER `//` or `%`  
+- **Comments:** Reference ROM C sources (e.g., `# mirroring ROM src/fight.c:one_hit`)  
+- **Tests:** Golden files derived from ROM behavior; assert exact C semantics  
+- See `port.instructions.md` for exhaustive parity rules
 
-D) APPLY IN-PLACE EDITS  
-- Update its block to:
+## Test Fixtures (from conftest.py)
+```python
+movable_char_factory(name, room_vnum, points=100)  # Test character with movement
+movable_mob_factory(vnum, room_vnum, points=100)   # Test mob with movement  
+object_factory(proto_kwargs)                       # Object without placement
+place_object_factory(room_vnum, vnum=..., proto_kwargs=...)  # Object in room
+portal_factory(room_vnum, to_vnum, closed=False)   # Portal object
+ensure_can_move(entity, points=100)                # Setup movement fields
 ```
-### <name> — Parity Audit <YYYY-MM-DD>
-STATUS: completion:<✅/❌> implementation:<full/partial/absent> correctness:<passes/suspect/fails/unknown> (confidence X.XX)
-KEY RISKS: <comma-separated>
-TASKS:
-- [P0] ...
-NOTES:
-- C: <pointer>
-- PY: <pointer>
-- DOC/ARE (if applicable): <pointer>
-- Applied tiny fix: <if any>
-```
-- Update `<!-- AUDITED: ... -->`.
-- Append RULES (if any; between RULES markers).
-- Update `<!-- LAST-PROCESSED: <name> -->`.
-- **Parity Map**: update/add row(s) for this subsystem.
 
-E) OPTIONAL TINY SAFE FIXES (≤ `MAX_TINY_FIXES_PER_RUN`)  
-- Examples:
-  - Replace a `%`/`//` with `c_mod`/`c_div` at a single callsite reflected from C.
-  - Swap `random` calls for `rng_mm.number_*` in one function.
-  - Add a minimal unit test asserting a known C-derived golden.
-- Record exact file:line and note under “Applied tiny fix”.
-
-F) VALIDATION  
-- Run:
-  - `ruff check . && ruff format --check .`
-  - `mypy --strict .`
-  - `pytest -q`
-- If deps missing, list `pip install ...` and lower confidence; still edit files when correct.
-
-G) VERIFY  
-- Re-open plan & rules; assert:
-  - Coverage matrix updated
-  - Subsystem block updated exactly once
-  - RULES inserted if claimed
-  - Parity Map updated
-  - Aggregated P0s rebuilt (if block present)
-
-H) COMMIT  
-- Branch: `parity/<subsystem>` or `parity/<first-subsystem>-and-others`
-- Commit: `parity: <subsystem(s)> — audit notes, tasks, rules (+tiny fix)`
-
----
-
-## STOP CONDITION & NO-OP
-- If **all subsystems `present_wired`** and **no `[P0|P1|P2]`** tasks remain:
-  - Append once at end of plan:
-```
-## ✅ Completion Note (<YYYY-MM-DD>)
-All canonical ROM subsystems present, wired, and parity-checked against ROM 2.4 C/docs/data; no outstanding tasks.
-<!-- LAST-PROCESSED: COMPLETE -->
-```
-  - Subsequent runs: **No-Op**.
-
----
-
-## OUTPUT LOG (concise)
-- MODE: Discovery | Parity Audit (subsystems) | No-Op
-- STATUS: completion_plan | implementation | correctness (confidence) | key_risks
-- FILES_UPDATED: paths (plan, rules, tiny fixes)
-- NEXT_ACTIONS: top P0/P1 tasks (mirror of plan)
-- COMMANDS_RUN_OR_RECOMMENDED: include `pip install ...` if needed
-- COMMIT: branch + message
-- RULE_ADDED (if any): exact `RULE: ...`
-- C/DOC/ARE EVIDENCE: list pointers referenced this run
-
----
-
-## EXTRA RULE SNIPPETS (add as needed to `port.instructions.md`)
-- RULE: Conversions from `areas/*.are` must preserve counts (ROOMS/MOBILES/OBJECTS/RESETS/SHOPS/SPECIALS), exit flags/doors/keys, extra descriptions, and `$` sentinels.
-  RATIONALE: Prevent silent data loss.
-  EXAMPLE: `pytest -q tests/test_area_counts.py::test_midgaard_counts`
-
-- RULE: Player save JSON must preserve ROM bit widths and field order; never reorder keys that map to packed flags.
-  RATIONALE: Save/load parity.
-  EXAMPLE: `save_load_roundtrip("arthur")`
-
-- RULE: IMC parsing behind feature flag; parsers validated with sample frames; no sockets when disabled.
-  RATIONALE: Wire compatibility without runtime coupling.
-  EXAMPLE: `IMC_ENABLED=False`
+## CI Workflow
+Pre-commit hooks run `black`, `ruff --fix`, and fixture lint. CI runs: help data drift check, ruff/flake8 lint, mypy type check (select modules), pytest with 80% coverage, telnet tests (Linux only). All must pass.

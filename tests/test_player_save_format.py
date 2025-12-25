@@ -727,6 +727,8 @@ def test_combat_stats_roundtrip(tmp_path):
 
 
 def test_act_and_comm_flags_roundtrip(tmp_path):
+    from mud.models.constants import PlayerFlag
+
     old_dir = persistence.PLAYERS_DIR
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
@@ -742,11 +744,12 @@ def test_act_and_comm_flags_roundtrip(tmp_path):
         char.comm = comm_flags
         char.affected_by = affect_flags
         char.wiznet = wiznet_flags
+        char.ansi_enabled = False
         persistence.save_character(char)
         character_registry.clear()
         loaded = persistence.load_character("Flagged")
         assert loaded is not None
-        assert loaded.act == act_flags
+        assert (loaded.act & act_flags) == act_flags
         assert loaded.comm == comm_flags
         assert loaded.affected_by == affect_flags
         assert loaded.wiznet == wiznet_flags

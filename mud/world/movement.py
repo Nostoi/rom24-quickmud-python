@@ -49,13 +49,11 @@ def _coerce_sector_type(raw: object) -> Sector:
         try:
             numeric = int(raw)
         except (TypeError, ValueError):
-            numeric = 0
+            numeric = int(Sector.MOUNTAIN)
 
     max_index = int(Sector.MAX) - 1
-    if numeric < 0:
-        numeric = 0
-    elif numeric > max_index:
-        numeric = max_index
+    if numeric < 0 or numeric > max_index:
+        numeric = int(Sector.MOUNTAIN)
 
     return Sector(numeric)
 
@@ -502,17 +500,12 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
         return "It doesn't seem to go anywhere."
 
     dest_flags = int(getattr(destination, "room_flags", 0) or 0)
-    if (
-        char.is_npc
-        and bool(getattr(char, "act", 0) & int(ActFlag.AGGRESSIVE))
-        and dest_flags & int(RoomFlag.ROOM_LAW)
-    ):
+    if char.is_npc and bool(getattr(char, "act", 0) & int(ActFlag.AGGRESSIVE)) and dest_flags & int(RoomFlag.ROOM_LAW):
         return "Something prevents you from leaving..."
 
     portal_name = (
-        (getattr(proto, "short_descr", "") or getattr(proto, "name", "") or getattr(portal, "short_descr", "")).strip()
-        or "portal"
-    )
+        getattr(proto, "short_descr", "") or getattr(proto, "name", "") or getattr(portal, "short_descr", "")
+    ).strip() or "portal"
 
     char_name = char.name or "someone"
     uses_normal_exit = bool(gate_flags & int(PortalFlag.NORMAL_EXIT))
@@ -530,9 +523,7 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
 
     if not _is_follow:
         arrival_message = (
-            f"{char_name} has arrived."
-            if uses_normal_exit
-            else f"{char_name} has arrived through {portal_name}."
+            f"{char_name} has arrived." if uses_normal_exit else f"{char_name} has arrived through {portal_name}."
         )
         broadcast_room(destination, arrival_message, exclude=char)
 

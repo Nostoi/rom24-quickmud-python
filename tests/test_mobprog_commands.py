@@ -8,7 +8,7 @@ from mud import mob_cmds
 from mud.commands.dispatcher import process_command
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import LEVEL_HERO
+from mud.models.constants import LEVEL_HERO, ItemType
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -272,6 +272,42 @@ def test_mpstat_lists_mob_programs():
     assert any("Phrase [hello]" in line for line in lines)
 
 
+def test_mpdump_returns_program_code():
+    _, room, _ = _setup_area()
+
+    mob_proto = MobIndex(vnum=2200, short_descr="scripted sentinel")
+    mob_program = MobProgram(
+        trig_type=int(Trigger.GREET),
+        trig_phrase="hello",
+        vnum=5200,
+        code="say hello\nmob echo hi",
+    )
+    mob_proto.mprogs.append(mob_program)
+    mob_registry[mob_proto.vnum] = mob_proto
+
+    guardian = Character(name="Guardian", is_npc=True)
+    guardian.prototype = mob_proto
+    room.add_character(guardian)
+    character_registry.append(guardian)
+
+    immortal = Character(name="Aria", is_npc=False, level=LEVEL_HERO)
+    immortal.is_admin = True
+
+    output = process_command(immortal, "mpdump 5200")
+
+    assert "say hello" in output
+    assert "mob echo hi" in output
+
+
+def test_mpdump_reports_missing_program():
+    immortal = Character(name="Aria", is_npc=False, level=LEVEL_HERO)
+    immortal.is_admin = True
+
+    output = process_command(immortal, "mpdump 9999")
+
+    assert output == "No such MOBprogram." + ROM_NEWLINE
+
+
 def test_mpgforce_forces_room_members(monkeypatch):
     _, room, _ = _setup_area()
 
@@ -466,8 +502,18 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
 
 def test_mpjunk_removes_equipped_items_and_nested_contents():
     mob = Character(name="Janitor", is_npc=True)
-    container_proto = ObjIndex(vnum=7400, short_descr="a battered bin", name="bin")
-    scrap_proto = ObjIndex(vnum=7401, short_descr="a scrap", name="scrap")
+    container_proto = ObjIndex(
+        vnum=7400,
+        short_descr="a battered bin",
+        name="bin",
+        item_type=int(ItemType.CONTAINER),
+    )
+    scrap_proto = ObjIndex(
+        vnum=7401,
+        short_descr="a scrap",
+        name="scrap",
+        item_type=int(ItemType.TRASH),
+    )
     container = Object(instance_id=None, prototype=container_proto)
     nested = Object(instance_id=None, prototype=scrap_proto)
     container.contained_items.append(nested)

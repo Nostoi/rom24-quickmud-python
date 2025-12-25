@@ -542,3 +542,424 @@ def do_surrender(char: Character, args: str) -> str:
             multi_hit(opponent, char)
 
     return "You surrender."
+
+
+def do_flee(char: Character, args: str) -> str:
+    """
+    Flee from combat.
+
+    ROM Reference: src/fight.c lines 800-900 (do_flee)
+    """
+    opponent = getattr(char, "fighting", None)
+    if opponent is None:
+        return "You aren't fighting anyone."
+
+    # Can't flee if position too low
+    if char.position < Position.FIGHTING:
+        return "You can't flee in your current state."
+
+    # Check wait state
+    if int(getattr(char, "wait", 0) or 0) > 0:
+        char.messages.append("You are still recovering.")
+        return "You are still recovering."
+
+    # Set wait state for flee attempt
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+
+    # Success chance based on dexterity
+    if hasattr(char, "get_curr_stat"):
+        dex = char.get_curr_stat(Stat.DEX)
+    else:
+        dex = 13  # Default dex
+    
+    if dex is None:
+        dex = 13
+    
+    chance = 50 + (dex - 13) * 5  # Base 50%, +/- 5% per dex point
+
+    # Reduce chance if badly hurt
+    hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, max(1, int(getattr(char, "max_hit", 1) or 1)))
+    if hp_percent < 30:
+        chance -= 25
+
+    roll = rng_mm.number_percent()
+    if roll > chance:
+        return "PANIC! You couldn't escape!"
+
+    # Find a random exit
+    room = getattr(char, "room", None)
+    if not room:
+        return "PANIC! You couldn't escape!"
+
+    exits = getattr(room, "exits", {})
+    valid_exits = []
+
+    for direction, exit_data in exits.items():
+        if exit_data:
+            # Handle both dict-style and Exit object style
+            if hasattr(exit_data, 'exit_info'):
+                # Exit object
+                closed = bool(getattr(exit_data, 'exit_info', 0) & 1)  # EX_ISDOOR and closed
+                to_room = getattr(exit_data, 'to_room', None)
+            elif isinstance(exit_data, dict):
+                # Dict style
+                closed = exit_data.get("closed", False)
+                to_room = exit_data.get("to_room")
+            else:
+                continue
+            
+            if not closed and to_room:
+                valid_exits.append((direction, to_room))
+
+    if not valid_exits:
+        return "PANIC! You couldn't escape!"
+
+    # Pick random exit
+    direction, to_room = valid_exits[rng_mm.number_range(0, len(valid_exits) - 1)]
+
+    # Move character
+    messages = []
+    messages.append(f"You flee from combat!")
+
+    # Notify others in room
+    for other in getattr(room, "characters", []):
+        if other != char:
+            try:
+                desc = getattr(other, "desc", None)
+                if desc and hasattr(desc, "send"):
+                    desc.send(f"{char.name} has fled!")
+            except Exception:
+                pass
+
+    # Stop fighting
+    stop_fighting(char, True)
+
+    # Move to new room
+    try:
+        from mud.registry import room_registry
+
+        new_room = room_registry.get(to_room)
+
+        if new_room:
+            if room and hasattr(room, "characters") and char in room.characters:
+                room.characters.remove(char)
+
+            char.room = new_room
+            new_room.characters.append(char)
+
+            # Show new room
+            from mud.commands.inspection import do_look
+
+            room_desc = do_look(char, "")
+            messages.append(room_desc)
+    except Exception as e:
+        messages.append(f"Flee failed: {e}")
+
+    # Lose some movement
+    char.move = max(0, char.move - c_div(char.max_move, 10))
+
+    return "\n".join(messages)
+
+
+def do_cast(char: Character, args: str) -> str:
+    """
+    Cast a spell.
+
+    ROM Reference: src/magic.c lines 50-150 (do_cast)
+    """
+    args = args.strip()
+
+    if not args:
+        return "Cast which what where?"
+
+    # Parse spell name and target
+    parts = args.split(None, 1)
+    spell_name = parts[0].lower()
+    target_name = parts[1] if len(parts) > 1 else ""
+
+    # Check if character knows the spell
+    skills = getattr(char, "skills", {})
+    if spell_name not in skills:
+        return "You don't know any spells of that name."
+
+    spell_level = skills.get(spell_name, 0)
+    if spell_level <= 0:
+        return "You don't know that spell well enough."
+
+    # Check position
+    if char.position < Position.FIGHTING:
+        return "You can't concentrate enough."
+
+    # Check mana
+    # Spell mana cost is typically level-based
+    char_level = int(getattr(char, "level", 1) or 1)
+    mana_cost = max(5, char_level)  # Simple cost formula
+
+    if getattr(char, "mana", 0) < mana_cost:
+        return "You don't have enough mana."
+
+    # Check wait state
+    if int(getattr(char, "wait", 0) or 0) > 0:
+        char.messages.append("You are still recovering.")
+        return "You are still recovering."
+
+    # Try to cast
+    try:
+        from mud.skills import skill_registry
+
+        skill = skill_registry.get(spell_name)
+    except (ImportError, KeyError):
+        return f"The spell '{spell_name}' is not implemented yet."
+
+    # Determine target
+    target = char  # Default to self
+    if target_name:
+        # Try to find target in room
+        room = getattr(char, "room", None)
+        if room:
+            target_lower = target_name.lower()
+            for candidate in getattr(room, "characters", []):
+                candidate_name = getattr(candidate, "name", "").lower()
+                if target_lower in candidate_name:
+                    target = candidate
+                    break
+
+    # Deduct mana
+    char.mana -= mana_cost
+
+    # Set lag
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+
+    # Try to cast the spell
+    roll = rng_mm.number_percent()
+    success = roll <= spell_level
+
+    if not success:
+        char.mana = max(0, char.mana - c_div(mana_cost, 2))  # Lose half mana on failure
+        return "You lost your concentration."
+
+    # Execute spell
+    try:
+        spell_func = getattr(skill, "handler", None)
+        if spell_func and callable(spell_func):
+            result = spell_func(char, target, spell_level)
+            skill_registry._check_improve(char, skill, spell_name, success)
+            return result if result else f"You cast {spell_name}."
+        else:
+            return f"The spell '{spell_name}' is not fully implemented yet."
+    except Exception as e:
+        return f"Spell cast failed: {e}"
+
+
+def do_dirt(char: Character, args: str) -> str:
+    """
+    Kick dirt in opponent's eyes to blind them.
+    
+    ROM Reference: src/fight.c do_dirt (lines 2489-2640)
+    """
+    target_name = (args or "").strip()
+    
+    # Check if character has the skill
+    skill_level = char.skills.get("dirt kicking", 0)
+    if skill_level == 0:
+        return "You get your feet dirty."
+    
+    # Find target
+    if not target_name:
+        victim = getattr(char, "fighting", None)
+        if victim is None:
+            return "But you aren't in combat!"
+    else:
+        victim = _find_room_target(char, target_name)
+        if victim is None:
+            return "They aren't here."
+    
+    # Check if already blinded
+    victim_affected = getattr(victim, "affected_by", 0)
+    if victim_affected & AffectFlag.BLIND:
+        return "They're already blinded."
+    
+    if victim is char:
+        return "Very funny."
+    
+    # Safety checks
+    safety_msg = _kill_safety_message(char, victim)
+    if safety_msg:
+        return safety_msg
+    
+    # Calculate chance
+    chance = skill_level
+    char_dex = skill_handlers._coerce_int(getattr(char, "perm_stat", [13]*5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13)
+    victim_dex = skill_handlers._coerce_int(getattr(victim, "perm_stat", [13]*5)[1] if isinstance(getattr(victim, "perm_stat", []), list) else 13)
+    chance += char_dex - 2 * victim_dex
+    
+    # Level modifier
+    char_level = skill_handlers._coerce_int(getattr(char, "level", 1))
+    victim_level = skill_handlers._coerce_int(getattr(victim, "level", 1))
+    chance += (char_level - victim_level) * 2
+    
+    # Roll
+    if rng_mm.number_percent() < chance:
+        # Success - blind the victim
+        victim.affected_by = victim_affected | AffectFlag.BLIND
+        skill_registry._apply_wait_state(char, get_pulse_violence())
+        
+        # Start combat if not already fighting
+        if not getattr(char, "fighting", None):
+            char.fighting = victim
+        if not getattr(victim, "fighting", None):
+            victim.fighting = char
+        
+        check_killer(char, victim)
+        return f"You kick dirt into {getattr(victim, 'name', 'their')} eyes!"
+    else:
+        skill_registry._apply_wait_state(char, get_pulse_violence())
+        return "You kick dirt but miss their eyes."
+
+
+def do_trip(char: Character, args: str) -> str:
+    """
+    Trip opponent to knock them down.
+    
+    ROM Reference: src/fight.c do_trip (lines 2641-2760)
+    """
+    target_name = (args or "").strip()
+    
+    # Check if character has the skill
+    skill_level = char.skills.get("trip", 0)
+    if skill_level == 0:
+        return "Tripping? What's that?"
+    
+    # Find target
+    if not target_name:
+        victim = getattr(char, "fighting", None)
+        if victim is None:
+            return "But you aren't fighting anyone!"
+    else:
+        victim = _find_room_target(char, target_name)
+        if victim is None:
+            return "They aren't here."
+    
+    # Safety checks
+    safety_msg = _kill_safety_message(char, victim)
+    if safety_msg:
+        return safety_msg
+    
+    # Can't trip flying targets
+    victim_affected = getattr(victim, "affected_by", 0)
+    if victim_affected & AffectFlag.FLYING:
+        return "Their feet aren't on the ground."
+    
+    # Can't trip someone already down
+    victim_pos = getattr(victim, "position", Position.STANDING)
+    if victim_pos < Position.FIGHTING:
+        return "They are already down."
+    
+    if victim is char:
+        skill_registry._apply_wait_state(char, get_pulse_violence() * 2)
+        return "You fall flat on your face!"
+    
+    # Calculate chance
+    chance = skill_level
+    
+    # Size modifier
+    char_size = skill_handlers._coerce_int(getattr(char, "size", 2))
+    victim_size = skill_handlers._coerce_int(getattr(victim, "size", 2))
+    if char_size < victim_size:
+        chance += (char_size - victim_size) * 10
+    
+    # Dex modifier
+    char_dex = skill_handlers._coerce_int(getattr(char, "perm_stat", [13]*5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13)
+    victim_dex = skill_handlers._coerce_int(getattr(victim, "perm_stat", [13]*5)[1] if isinstance(getattr(victim, "perm_stat", []), list) else 13)
+    chance += char_dex - victim_dex * 3 // 2
+    
+    # Level modifier
+    char_level = skill_handlers._coerce_int(getattr(char, "level", 1))
+    victim_level = skill_handlers._coerce_int(getattr(victim, "level", 1))
+    chance += (char_level - victim_level) * 2
+    
+    # Roll
+    if rng_mm.number_percent() < chance:
+        # Success
+        victim.position = Position.RESTING
+        skill_registry._apply_wait_state(char, get_pulse_violence())
+        skill_registry._apply_wait_state(victim, get_pulse_violence() * 2)
+        
+        # Damage
+        damage_amt = rng_mm.number_range(2, 2 + 2 * victim_size + skill_level // 20)
+        apply_damage(char, victim, damage_amt, DamageType.BASH)
+        
+        check_killer(char, victim)
+        return f"You trip {getattr(victim, 'name', 'them')} and they go down!"
+    else:
+        skill_registry._apply_wait_state(char, get_pulse_violence())
+        return "You try to trip them but miss."
+
+
+def do_disarm(char: Character, args: str) -> str:
+    """
+    Attempt to disarm opponent's weapon.
+    
+    ROM Reference: src/fight.c do_disarm (lines 3145-3220)
+    """
+    # Check if character has the skill
+    skill_level = char.skills.get("disarm", 0)
+    if skill_level == 0:
+        return "You don't know how to disarm opponents."
+    
+    # Must be fighting
+    victim = getattr(char, "fighting", None)
+    if victim is None:
+        return "You aren't fighting anyone."
+    
+    # Victim must be wielding a weapon
+    victim_equipped = getattr(victim, "equipped", {})
+    victim_weapon = victim_equipped.get("wield") or victim_equipped.get("main_hand")
+    if victim_weapon is None:
+        return "Your opponent is not wielding a weapon."
+    
+    # Attacker should have weapon (or hand-to-hand skill)
+    char_equipped = getattr(char, "equipped", {})
+    char_weapon = char_equipped.get("wield") or char_equipped.get("main_hand")
+    hth_skill = char.skills.get("hand to hand", 0)
+    
+    if char_weapon is None and hth_skill == 0:
+        return "You must wield a weapon to disarm."
+    
+    # Calculate chance
+    if char_weapon is None:
+        chance = skill_level * hth_skill // 150
+    else:
+        chance = skill_level
+    
+    # Dex vs Str
+    char_dex = skill_handlers._coerce_int(getattr(char, "perm_stat", [13]*5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13)
+    victim_str = skill_handlers._coerce_int(getattr(victim, "perm_stat", [13]*5)[0] if isinstance(getattr(victim, "perm_stat", []), list) else 13)
+    chance += char_dex - 2 * victim_str
+    
+    # Level modifier
+    char_level = skill_handlers._coerce_int(getattr(char, "level", 1))
+    victim_level = skill_handlers._coerce_int(getattr(victim, "level", 1))
+    chance += (char_level - victim_level) * 2
+    
+    skill_registry._apply_wait_state(char, get_pulse_violence())
+    
+    # Roll
+    if rng_mm.number_percent() < chance:
+        # Success - remove weapon from victim
+        if "wield" in victim_equipped:
+            del victim_equipped["wield"]
+        elif "main_hand" in victim_equipped:
+            del victim_equipped["main_hand"]
+        
+        # Drop to room
+        victim_room = getattr(victim, "room", None)
+        if victim_room and hasattr(victim_room, "contents"):
+            victim_room.contents.append(victim_weapon)
+            victim_weapon.in_room = victim_room
+        
+        check_killer(char, victim)
+        return f"You disarm {getattr(victim, 'name', 'them')}!"
+    else:
+        return f"You fail to disarm {getattr(victim, 'name', 'them')}."
+
