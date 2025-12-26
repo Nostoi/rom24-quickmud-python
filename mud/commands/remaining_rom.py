@@ -550,3 +550,22 @@ def _send_to_char(char: Character, message: str) -> None:
     if not hasattr(char, "output_buffer"):
         char.output_buffer = []
     char.output_buffer.append(message)
+
+
+def do_qmread(char: Character, args: str) -> str:
+    """
+    QuickMUD config file read command.
+    
+    ROM Reference: src/interp.h declares do_qmread but never implements it.
+    This is a stub for ROM command parity.
+    
+    Usage: qmread
+    
+    Note: In ROM QuickMUD, this was planned to read qmconfig.rc but was
+    never fully implemented. The qmconfig command handles config reading.
+    """
+    trust = get_trust(char)
+    if trust < MAX_LEVEL:
+        return "Huh?"
+    
+    return "QMConfig settings can be viewed with 'qmconfig' command."

@@ -118,7 +118,7 @@ from .typo_guards import do_qui, do_murde, do_reboo, do_shutdow, do_alia, do_col
 from .misc_player import do_afk, do_replay, do_config, do_permit, do_peek, do_unread
 from .remaining_rom import (
     do_wimpy, do_deaf, do_quiet, do_envenom, do_gain, do_groups, do_guild,
-    do_flag, do_mob, do_bs, do_go, do_junk, do_tap, do_teleport
+    do_flag, do_mob, do_bs, do_go, do_junk, do_tap, do_teleport, do_qmread
 )
 from .healer import do_heal
 from .help import do_help, do_wizlist
@@ -243,6 +243,7 @@ COMMANDS: list[Command] = [
     Command("answer", do_answer, min_position=Position.RESTING),
     Command("music", do_music, min_position=Position.RESTING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
+    Command("clantalk", do_clantalk, min_position=Position.SLEEPING),  # ROM alias
     Command(
         "immtalk",
         do_immtalk,
@@ -395,6 +396,8 @@ COMMANDS: list[Command] = [
     Command("incognito", do_incognito, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("poofin", do_poofin, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("poofout", do_poofout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("bamfin", do_poofin, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),  # ROM alias
+    Command("bamfout", do_poofout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),  # ROM alias
     Command("echo", do_echo, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("recho", do_recho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("zecho", do_zecho, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
@@ -439,6 +442,7 @@ COMMANDS: list[Command] = [
     Command("resets", do_resets, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("alist", do_alist, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("edit", do_edit, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command("olc", do_edit, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),  # ROM alias for edit
     Command("mpedit", do_mpedit, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     # Miscellaneous Player Commands
     Command("afk", do_afk, min_position=Position.SLEEPING),
@@ -534,6 +538,12 @@ COMMANDS: list[Command] = [
         admin_only=True,
         log_level=LogLevel.ALWAYS,
         min_trust=LEVEL_HERO,
+    ),
+    Command(
+        "qmread",
+        do_qmread,
+        admin_only=True,
+        min_trust=MAX_LEVEL,
     ),
     # OLC Commands - ROM style (no @ prefix)
     Command("redit", cmd_redit, admin_only=True, min_trust=LEVEL_HERO),
