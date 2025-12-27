@@ -1,0 +1,428 @@
+# Character/Player Parity Test Plan
+
+**Status:** In Progress  
+**Last Updated:** December 27, 2025  
+**Completion:** 129/~280 tests (46%)
+
+---
+
+## Current Coverage (129 tests)
+
+### ✅ Completed Test Areas
+
+| File | Tests | Coverage |
+|------|-------|----------|
+| test_player_auto_settings.py | 19 | Auto-settings (autoloot, autogold, autosac, autosplit, autoassist, autoexit), display toggles (brief, compact, combine, colour, prompt) |
+| test_player_conditions.py | 16 | Hunger, thirst, drunk, full conditions |
+| test_player_flags.py | 13 | KILLER, THIEF flags, flag interactions |
+| test_player_info_commands.py | 20 | score, whois, worth commands |
+| test_player_prompt.py | 7 | Prompt toggle, custom prompts, default prompts |
+| test_player_title_description.py | 15 | Title editing (45-char limit), description editing |
+| test_player_wimpy.py | 7 | Wimpy settings, bounds, retroactive clamping |
+| test_auto_sequences.py (integration) | 10 | End-to-end auto-setting workflows |
+| test_player_save_format.py | 0 | **EMPTY - Needs implementation** |
+| **TOTAL** | **129** | |
+
+---
+
+## 🎯 Priority 1: Critical Gameplay Tests (75 tests)
+
+These tests cover core ROM mechanics essential for gameplay.
+
+### 1. Equipment System (30 tests) - test_player_equipment.py
+
+**ROM Reference:** src/act_obj.c, src/handler.c
+
+#### Wear/Remove/Wield (12 tests)
+- [ ] test_wear_armor_to_body_slot
+- [ ] test_wear_helmet_to_head_slot
+- [ ] test_wear_boots_to_feet_slot
+- [ ] test_wear_gloves_to_hands_slot
+- [ ] test_wear_shield_to_shield_slot
+- [ ] test_wield_weapon_to_wield_slot
+- [ ] test_remove_worn_item
+- [ ] test_wear_rejects_wrong_slot_type
+- [ ] test_cannot_wear_when_slot_occupied
+- [ ] test_dual_wield_requires_secondary_slot
+- [ ] test_remove_updates_equipment_list
+- [ ] test_wear_item_not_in_inventory
+
+#### Equipment Slots (8 tests)
+- [ ] test_equipment_slots_initialized_empty
+- [ ] test_get_equipped_item_by_slot
+- [ ] test_all_equipment_slots_available
+- [ ] test_light_slot_separate_from_hold
+- [ ] test_about_body_slot_for_cloaks
+- [ ] test_neck_slots_allow_two_items
+- [ ] test_finger_slots_allow_two_rings
+- [ ] test_wrist_slots_allow_two_bracelets
+
+#### Encumbrance & Limits (10 tests)
+- [ ] test_carry_weight_calculated_from_inventory
+- [ ] test_carry_weight_includes_equipped_items
+- [ ] test_carry_weight_limit_based_on_strength
+- [ ] test_cannot_pick_up_when_overweight
+- [ ] test_carry_number_counts_items
+- [ ] test_carry_number_limit_based_on_dexterity
+- [ ] test_cannot_pick_up_when_too_many_items
+- [ ] test_container_weight_multiplier
+- [ ] test_nested_container_weight_calculation
+- [ ] test_equipment_affects_carry_capacity
+
+**ROM C References:**
+- `src/act_obj.c:do_wear` (lines 1120-1350)
+- `src/act_obj.c:do_remove` (lines 1352-1420)
+- `src/handler.c:get_carry_weight` (lines 2100-2150)
+
+---
+
+### 2. Stats & Attributes (20 tests) - test_player_stats.py
+
+**ROM Reference:** src/act_info.c, src/handler.c
+
+#### Permanent Stats (8 tests)
+- [ ] test_perm_stat_defaults_to_13
+- [ ] test_perm_stat_initialized_on_creation
+- [ ] test_perm_stat_str_affects_damage
+- [ ] test_perm_stat_int_affects_mana
+- [ ] test_perm_stat_wis_affects_practice_gain
+- [ ] test_perm_stat_dex_affects_ac
+- [ ] test_perm_stat_con_affects_hp
+- [ ] test_perm_stat_bounds_3_to_25
+
+#### Modified Stats (7 tests)
+- [ ] test_mod_stat_temporary_bonus
+- [ ] test_mod_stat_from_spell_effect
+- [ ] test_mod_stat_from_equipment
+- [ ] test_mod_stat_stacks_with_perm_stat
+- [ ] test_mod_stat_expires_with_affect
+- [ ] test_mod_stat_negative_penalty
+- [ ] test_mod_stat_bounds_respected
+
+#### Stat Effects (5 tests)
+- [ ] test_strength_affects_hitroll
+- [ ] test_strength_affects_damroll
+- [ ] test_dexterity_affects_armor_class
+- [ ] test_intelligence_affects_max_mana
+- [ ] test_constitution_affects_max_hp
+
+**ROM C References:**
+- `src/handler.c:get_curr_stat` (lines 1850-1900)
+- `src/const.c:str_app` (strength application table)
+- `src/const.c:dex_app` (dexterity application table)
+
+---
+
+### 3. Combat Attributes (15 tests) - test_player_combat_attributes.py
+
+**ROM Reference:** src/fight.c, src/handler.c
+
+#### Hitroll/Damroll (6 tests)
+- [ ] test_hitroll_default_zero
+- [ ] test_hitroll_from_equipment
+- [ ] test_hitroll_from_strength
+- [ ] test_damroll_default_zero
+- [ ] test_damroll_from_equipment
+- [ ] test_damroll_from_strength
+
+#### Armor Class (6 tests)
+- [ ] test_ac_default_100_defenseless
+- [ ] test_ac_improved_by_armor
+- [ ] test_ac_four_types_pierce_bash_slash_magic
+- [ ] test_ac_from_dexterity
+- [ ] test_ac_natural_for_mobs
+- [ ] test_ac_display_below_25_generic
+
+#### Saving Throws (3 tests)
+- [ ] test_saving_throw_defaults
+- [ ] test_saving_throw_vs_spell
+- [ ] test_saving_throw_vs_breath
+
+**ROM C References:**
+- `src/fight.c:one_hit` (lines 1200-1400) - uses hitroll/damroll
+- `src/handler.c:get_ac` (lines 1950-2000)
+- `src/magic.c:saves_spell` (lines 150-200)
+
+---
+
+### 4. Save/Load Persistence (10 tests) - test_player_save_format.py
+
+**ROM Reference:** src/save.c
+
+#### Save Functionality (5 tests)
+- [ ] test_save_character_creates_file
+- [ ] test_save_preserves_level_and_exp
+- [ ] test_save_preserves_stats
+- [ ] test_save_preserves_flags
+- [ ] test_save_preserves_inventory
+
+#### Load Functionality (5 tests)
+- [ ] test_load_character_from_file
+- [ ] test_load_restores_exact_stats
+- [ ] test_load_restores_equipment
+- [ ] test_load_restores_skills
+- [ ] test_load_handles_missing_fields_gracefully
+
+**ROM C References:**
+- `src/save.c:save_char_obj` (lines 50-500)
+- `src/save.c:load_char_obj` (lines 550-1200)
+
+---
+
+## 🎯 Priority 2: Important ROM Parity (75 tests)
+
+### 5. Character Creation (15 tests) - test_player_creation.py
+
+**ROM Reference:** src/comm.c (nanny), src/class.c, src/race.c
+
+#### Creation Flow (8 tests)
+- [ ] test_new_character_starts_at_level_1
+- [ ] test_select_race_from_available_races
+- [ ] test_select_class_from_available_classes
+- [ ] test_starting_stats_by_race
+- [ ] test_starting_stats_by_class
+- [ ] test_creation_points_allocation
+- [ ] test_creation_groups_selection
+- [ ] test_starting_skills_by_class
+
+#### Starting Equipment (7 tests)
+- [ ] test_starting_gold_by_class
+- [ ] test_starting_weapon_warrior
+- [ ] test_starting_weapon_thief
+- [ ] test_starting_weapon_cleric
+- [ ] test_starting_weapon_mage
+- [ ] test_starting_armor_equipped
+- [ ] test_map_item_given_to_newbies
+
+**ROM C References:**
+- `src/comm.c:nanny` (character creation state machine, lines 500-1500)
+- `src/class.c:class_table`
+- `src/race.c:race_table`
+
+---
+
+### 6. Affect Flags (20 tests) - test_player_affect_flags.py
+
+**ROM Reference:** src/magic.c, src/handler.c
+
+#### Common Affects (12 tests)
+- [ ] test_affect_blind_prevents_sight
+- [ ] test_affect_invisible_hides_character
+- [ ] test_affect_detect_evil_shows_evil_aura
+- [ ] test_affect_detect_invis_sees_invisible
+- [ ] test_affect_detect_magic_shows_magic_aura
+- [ ] test_affect_detect_hidden_reveals_hidden
+- [ ] test_affect_sanctuary_reduces_damage
+- [ ] test_affect_fly_allows_flight
+- [ ] test_affect_pass_door_ignores_doors
+- [ ] test_affect_haste_extra_attack
+- [ ] test_affect_slow_reduces_attacks
+- [ ] test_affect_charm_prevents_commands
+
+#### Affect Management (8 tests)
+- [ ] test_add_affect_to_character
+- [ ] test_remove_affect_from_character
+- [ ] test_affect_duration_decrements
+- [ ] test_affect_expires_after_duration
+- [ ] test_multiple_affects_stack
+- [ ] test_affect_modifies_stats
+- [ ] test_affect_modifies_armor_class
+- [ ] test_dispel_magic_removes_affects
+
+**ROM C References:**
+- `src/magic.c:spell_functions` (affect-granting spells)
+- `src/handler.c:affect_to_char` (lines 900-950)
+- `src/handler.c:affect_remove` (lines 960-1000)
+- `src/update.c:affect_update` (lines 400-450)
+
+---
+
+### 7. Skills & Spells (15 tests) - test_player_skills_spells.py
+
+**ROM Reference:** src/skills.c, src/magic.c
+
+#### Skill Learning (8 tests)
+- [ ] test_skill_defaults_to_zero
+- [ ] test_practice_improves_skill
+- [ ] test_practice_costs_practice_points
+- [ ] test_skill_max_75_for_learnable
+- [ ] test_skill_max_100_for_specialized
+- [ ] test_cannot_practice_without_points
+- [ ] test_skill_improvement_from_use
+- [ ] test_train_converts_to_stats_or_hp_mana_move
+
+#### Spell Costs (7 tests)
+- [ ] test_spell_costs_mana
+- [ ] test_insufficient_mana_prevents_cast
+- [ ] test_spell_mana_cost_by_level
+- [ ] test_practice_point_gain_on_level
+- [ ] test_train_point_gain_on_level
+- [ ] test_skill_groups_unlock_multiple_skills
+- [ ] test_default_skills_by_class
+
+**ROM C References:**
+- `src/act_info.c:do_practice` (lines 1100-1250)
+- `src/act_wiz.c:do_train` (lines 2100-2300)
+- `src/magic.c:mana_cost` (lines 100-130)
+
+---
+
+### 8. Communication Flags Expansion (10 tests) - Expand test_player_auto_settings.py
+
+**ROM Reference:** src/act_comm.c
+
+#### Missing Comm Flags (10 tests)
+- [ ] test_comm_quiet_suppresses_all_channels
+- [ ] test_comm_deaf_blocks_incoming_tells
+- [ ] test_comm_afk_marks_player_away
+- [ ] test_comm_nowiz_blocks_wiznet
+- [ ] test_comm_noauction_blocks_auction_channel
+- [ ] test_comm_nogossip_blocks_gossip_channel
+- [ ] test_comm_noquestion_blocks_question_channel
+- [ ] test_comm_nomusic_blocks_music_channel
+- [ ] test_comm_noemote_prevents_emotes
+- [ ] test_comm_notell_blocks_tells
+
+**ROM C References:**
+- `src/act_comm.c:do_deaf` (lines 300-320)
+- `src/act_comm.c:do_quiet` (lines 340-360)
+
+---
+
+## 🎯 Priority 3: Advanced Features (40 tests)
+
+### 9. Player Mechanics (15 tests) - test_player_mechanics.py
+
+**ROM Reference:** src/act_move.c, src/fight.c
+
+#### Recall (5 tests)
+- [ ] test_recall_returns_to_hometown
+- [ ] test_recall_costs_movement
+- [ ] test_recall_blocked_in_combat
+- [ ] test_recall_blocked_in_no_recall_room
+- [ ] test_recall_moves_equipment_and_inventory
+
+#### Death & Resurrection (5 tests)
+- [ ] test_death_creates_corpse
+- [ ] test_death_clears_killer_flag_after_time
+- [ ] test_death_sends_to_recall_room
+- [ ] test_death_equipment_in_corpse
+- [ ] test_resurrection_restores_hp
+
+#### Hometown (5 tests)
+- [ ] test_hometown_set_on_creation
+- [ ] test_hometown_determines_recall_point
+- [ ] test_hometown_vnum_stored
+- [ ] test_hometown_affects_starting_location
+- [ ] test_hometown_persists_through_save
+
+**ROM C References:**
+- `src/act_move.c:do_recall` (lines 800-900)
+- `src/fight.c:raw_kill` (lines 2800-3000)
+
+---
+
+### 10. Resistance Flags (15 tests) - test_player_resistance_flags.py
+
+**ROM Reference:** src/fight.c, src/magic.c
+
+#### Immunity Flags (5 tests)
+- [ ] test_imm_summon_prevents_summon_spell
+- [ ] test_imm_charm_prevents_charm_spell
+- [ ] test_imm_magic_blocks_offensive_spells
+- [ ] test_imm_weapon_blocks_physical_damage
+- [ ] test_imm_bash_blocks_bash_attacks
+
+#### Resistance Flags (5 tests)
+- [ ] test_res_fire_reduces_fire_damage
+- [ ] test_res_cold_reduces_cold_damage
+- [ ] test_res_lightning_reduces_lightning_damage
+- [ ] test_res_acid_reduces_acid_damage
+- [ ] test_res_poison_reduces_poison_damage
+
+#### Vulnerability Flags (5 tests)
+- [ ] test_vuln_fire_increases_fire_damage
+- [ ] test_vuln_cold_increases_cold_damage
+- [ ] test_vuln_lightning_increases_lightning_damage
+- [ ] test_vuln_iron_increases_iron_weapon_damage
+- [ ] test_vuln_wood_increases_wood_weapon_damage
+
+**ROM C References:**
+- `src/fight.c:damage` (lines 1500-1800) - applies resist/vuln
+- `src/magic.c:check_immune` (lines 200-250)
+
+---
+
+### 11. Experience & Advancement Integration (10 tests)
+
+**Note:** test_advancement.py already exists. Need to verify coverage.
+
+#### Review Existing Coverage
+- [ ] Audit test_advancement.py for completeness
+- [ ] Add missing exp gain tests if needed
+- [ ] Add missing level-up tests if needed
+- [ ] Add missing train/practice point calculation tests
+
+---
+
+## 📋 Implementation Schedule
+
+### Phase 1: Critical Tests (Week 1)
+- Day 1-2: Equipment System (30 tests)
+- Day 3: Stats & Attributes (20 tests)
+- Day 4: Combat Attributes (15 tests)
+- Day 5: Save/Load Persistence (10 tests)
+
+**Total:** 75 tests, ~40 hours
+
+### Phase 2: Important Parity (Week 2)
+- Day 1: Character Creation (15 tests)
+- Day 2-3: Affect Flags (20 tests)
+- Day 3-4: Skills & Spells (15 tests)
+- Day 5: Communication Flags (10 tests)
+
+**Total:** 75 tests, ~35 hours
+
+### Phase 3: Advanced Features (Week 3)
+- Day 1-2: Player Mechanics (15 tests)
+- Day 3: Resistance Flags (15 tests)
+- Day 4-5: Review & Integration Tests
+
+**Total:** 40 tests, ~20 hours
+
+---
+
+## Success Criteria
+
+### Completion Metrics
+- [ ] All Priority 1 tests implemented (75 tests)
+- [ ] All Priority 2 tests implemented (75 tests)
+- [ ] All Priority 3 tests implemented (40 tests)
+- [ ] All 280+ character tests passing
+- [ ] Integration tests cover key workflows
+- [ ] No regressions in existing tests
+
+### ROM Parity Verification
+- [ ] All character attributes match ROM C behavior
+- [ ] Flag operations match ROM C bit manipulation
+- [ ] Save/load format compatible with ROM C files
+- [ ] Combat calculations match ROM C formulas
+- [ ] Skill/spell mechanics match ROM C implementation
+
+---
+
+## Next Steps After Character Tests
+
+See **ROM_PARITY_TEST_PLAN.md** for comprehensive testing roadmap including:
+- Mob tests
+- Combat system tests
+- Magic system tests
+- Object tests
+- Room/Area tests
+- Command parity tests
+
+---
+
+**Last Updated:** December 27, 2025  
+**Current Focus:** Implementing Priority 1 Critical Tests  
+**Completion Target:** 280+ tests (100% character coverage)

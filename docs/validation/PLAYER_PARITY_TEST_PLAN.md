@@ -1,4 +1,4 @@
-# Player/Character Parity Test Plan
+/# Player/Character Parity Test Plan
 
 **Purpose**: Comprehensive testing strategy for ROM 2.4b player-specific behavior parity  
 **Status**: Planning Document - Research Phase Complete  

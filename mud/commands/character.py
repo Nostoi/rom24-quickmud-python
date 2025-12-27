@@ -78,7 +78,9 @@ def do_title(ch: Character, args: str) -> str:
 
     # Set the title
     try:
-        ch.title = args
+        pcdata = getattr(ch, "pcdata", None)
+        if pcdata:
+            pcdata.title = args
         return "Ok."
     except Exception as e:
         return f"Error setting title: {e}"

@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.1] - 2025-12-27
+
+### Added
+
+- **Comprehensive Test Planning Documentation**:
+  - Created `docs/validation/MOB_PARITY_TEST_PLAN.md` - Complete testing strategy for ROM 2.4b mob behaviors
+    - 22 spec_fun behaviors (guards, dragons, casters, thieves)
+    - 30+ ACT flag behaviors (aggressive, wimpy, scavenger, sentinel)
+    - Damage modifiers (immunities, resistances, vulnerabilities)
+    - Mob memory and tracking systems
+    - Group assist mechanics
+    - Wandering/movement AI
+  - Created `docs/validation/PLAYER_PARITY_TEST_PLAN.md` - Complete testing strategy for player-specific behaviors
+    - Information display commands (score, worth, whois)
+    - Auto-settings (autoassist, autoloot, autogold, autosac, autosplit)
+    - Conditions system (hunger, thirst, drunk, full)
+    - Player flags and reputation (KILLER, THIEF)
+    - Prompt customization
+    - Title/description management
+    - Trust/security levels
+    - Player visibility states (AFK, wizinvis, incognito)
+- **Claude Desktop Skill Support**:
+  - Added `SKILL.md` - Comprehensive skill documentation for AI assistants
+  - Added `.claude/skills/skill-creator/` - Anthropic's skill-creator tool
+    - Skill validation scripts
+    - Skill packaging utilities
+    - Best practices documentation
+
+### Changed
+
+- **Test Organization**: Created clear roadmap for implementing 180+ behavioral tests
+  - 6 major mob test areas (P0-P3 priority matrix)
+  - 8 major player test areas (P0-P3 priority matrix)
+  - 4-phase implementation roadmap for each
+  - Complete test templates with ROM C references
+
+### Documentation
+
+- Documented 100+ specific test cases with ROM C source references
+- Added implementation effort estimates and player impact assessments
+- Created comprehensive testing guides for future development
+
 ## [2.3.0] - 2025-12-26
 
 ### Added

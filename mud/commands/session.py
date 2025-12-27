@@ -55,7 +55,7 @@ def do_quit(ch: Character, args: str) -> str:
 
     # Set a flag to signal the connection handler to disconnect
     setattr(ch, "_quit_requested", True)
-    
+
     return "May your travels be safe.\n"
 
 
@@ -114,7 +114,7 @@ def do_score(ch: Character, args: str) -> str:
     # Ensure armor is a list (sometimes can be int)
     if not isinstance(armor, list):
         armor = [armor, armor, armor, armor]
-    
+
     if level >= 25:
         # High level: show all four armor types
         ac_pierce = armor[0] if len(armor) > 0 else 100
@@ -134,7 +134,11 @@ def do_score(ch: Character, args: str) -> str:
 
     # Position
     position = ch.position
-    lines.append(f"You are {position.name.lower()}.")
+    try:
+        pos_enum = Position(position)
+        lines.append(f"You are {pos_enum.name.lower()}.")
+    except ValueError:
+        lines.append(f"You are standing.")
 
     # Carrying
     carry_weight = getattr(ch, "carry_weight", 0)

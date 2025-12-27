@@ -365,6 +365,11 @@ python3 test_all_commands.py
 ## ROM Parity Rules (CRITICAL)
 - **RNG:** Use `rng_mm.number_*` family, NEVER `random.*` in combat/affects  
 - **Math:** Use `c_div`/`c_mod` for C integer semantics, NEVER `//` or `%`  
+- **Enums:** ALWAYS use `PlayerFlag`/`CommFlag`/etc enums, NEVER hardcode flag values
+  - **Wrong:** `PLR_AUTOLOOT = 0x00000800` (bit 11)
+  - **Correct:** `PlayerFlag.AUTOLOOT` (1 << 4 = 0x0010, bit 4)
+  - **Why:** ROM C enum values use bit shifts; hardcoded hex values will be wrong
+  - **Note:** `PlayerFlag.COLOUR` is in `act` field, NOT `comm` field
 - **Comments:** Reference ROM C sources (e.g., `# mirroring ROM src/fight.c:one_hit`)  
 - **Tests:** Golden files derived from ROM behavior; assert exact C semantics  
 - See `port.instructions.md` for exhaustive parity rules
