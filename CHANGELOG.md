@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2025-12-27
+
+### Added
+
+- **GitHub Release Creator Skill**: Comprehensive Claude Desktop skill for automated release management
+  - Added `.claude/skills/github-release-creator/` with complete release automation tooling
+  - Python script for automated release creation (`create_release.py`)
+  - Shell scripts for release validation and creation
+  - Changelog extraction utilities
+  - Complete documentation with usage examples and workflows
+  - GitHub CLI integration for professional release management
+  - Support for semantic versioning, draft releases, and pre-releases
+
 ## [2.3.1] - 2025-12-27
 
 ### Added
