@@ -535,6 +535,11 @@ def apply_damage(
     old_pos = victim.position
     victim.hit -= damage
 
+    # Trigger HP percent mobprog (ROM Reference: src/fight.c:1094-1136)
+    victim_is_npc = getattr(victim, "is_npc", False)
+    if victim_is_npc and victim.hit > 0:
+        mobprog.mp_hprct_trigger(victim, attacker)
+
     # Immortals don't die (ROM IS_IMMORTAL check)
     if not victim.is_npc and victim.is_immortal() and victim.hit < 1:
         victim.hit = 1

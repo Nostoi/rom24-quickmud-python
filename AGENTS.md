@@ -119,7 +119,7 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 - **Purpose**: Architecture-level integration gaps identified by AGENT.md analysis
 - **Status**: ALL 7 P0/P1 tasks completed (2025-12-19)
 - **When to Update**: Historical reference only - DO NOT UPDATE
-- **Use Instead**: `ROM_PARITY_FEATURE_TRACKER.md` for remaining work
+- **Use Instead**: `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for remaining work
 - **Completed Tasks**:
   - ✅ `[P0] Implement ROM LastObj/LastMob state tracking in reset_handler`
   - ✅ `[P0] Integrate encumbrance limits with inventory management`
@@ -129,9 +129,9 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
   - ✅ `[P1] Implement trust-based help topic filtering`
   - ✅ `[P1] Complete format edge case error handling`
 
-**✅ LEGACY FILE** - Use `ROM_PARITY_FEATURE_TRACKER.md` for active work
+**✅ LEGACY FILE** - Use `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for active work
 
-### 3. ROM_PARITY_FEATURE_TRACKER.md - Complete ROM Parity Feature List 🎯 PRIMARY
+### 3. docs/parity/ROM_PARITY_FEATURE_TRACKER.md - Complete ROM Parity Feature List 🎯 PRIMARY
 - **Purpose**: Comprehensive tracking of ALL ROM 2.4b C features needed for 100% parity
 - **Status**: Single source of truth for remaining parity work
 - **When to Update**: When implementing any ROM parity features
@@ -158,12 +158,12 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 ### Task Tracking Workflow
 
 **When starting work:**
-1. Check `ROM_PARITY_FEATURE_TRACKER.md` for specific parity features to implement
+1. Check `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for specific parity features to implement
 2. Check `PROJECT_COMPLETION_STATUS.md` for subsystem confidence levels
 3. Use `CURRENT_STATUS_SUMMARY.md` for overall project overview
 
 **When completing work:**
-1. ✅ Mark features complete in `ROM_PARITY_FEATURE_TRACKER.md`
+1. ✅ Mark features complete in `docs/parity/ROM_PARITY_FEATURE_TRACKER.md`
 2. Update subsystem confidence in `PROJECT_COMPLETION_STATUS.md` if applicable
 3. Run `pytest` to verify no regressions
 4. Update `CURRENT_STATUS_SUMMARY.md` for major milestones
@@ -184,7 +184,7 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 
 | Work Type | Update File |
 |-----------|-------------|
-| **ROM parity feature implementation** | `ROM_PARITY_FEATURE_TRACKER.md` 🎯 **PRIMARY** |
+| **ROM parity feature implementation** | `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` 🎯 **PRIMARY** |
 | Subsystem confidence changed significantly | `PROJECT_COMPLETION_STATUS.md` |
 | Session summary or milestone | `CURRENT_STATUS_SUMMARY.md` |
 | Builder tools or OLC work | Individual completion reports (e.g., `BUILDER_TOOLS_COMPLETION.md`) |

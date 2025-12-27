@@ -16,3 +16,9 @@ repos:
         language: system
         files: ^tests/.*\.py$
         pass_filenames: false
+      - id: validate-area-parity
+        name: Validate ROM .are and JSON area file parity
+        entry: python3 scripts/validate_area_parity.py
+        language: system
+        pass_filenames: false
+        files: ^(area/.*\.are|data/areas/.*\.json)$

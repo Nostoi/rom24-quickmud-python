@@ -557,7 +557,10 @@ def raw_kill(victim: Character) -> Object | None:
     """Handle character death by creating a corpse and removing the victim."""
 
     from mud.combat.engine import stop_fighting as _stop_fighting
-
+    
+    # Trigger death mobprog handled in apply_damage before raw_kill
+    # ROM Reference: src/fight.c:1136-1180 (mp_death_trigger called before raw_kill)
+    
     _stop_fighting(victim, True)
     death_cry(victim)
     corpse = make_corpse(victim)

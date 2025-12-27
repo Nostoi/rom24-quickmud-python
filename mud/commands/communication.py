@@ -9,6 +9,7 @@ from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
+from mud.mobprog import mp_speech_trigger
 
 if TYPE_CHECKING:
     from mud.net.session import Session

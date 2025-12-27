@@ -133,8 +133,12 @@ def do_give(char: Character, args: str) -> str:
     obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
     victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "them")
     
-    # Trigger bribe mobprog if NPC and has trigger
-    # (Mobprog triggering would go here)
+    # Trigger give mobprog if NPC and has trigger
+    # ROM Reference: src/act_obj.c:841-842
+    victim_is_npc = getattr(victim, "is_npc", False)
+    if victim_is_npc:
+        from mud.mobprog import mp_give_trigger
+        mp_give_trigger(victim, char, obj)
     
     return f"You give {obj_name} to {victim_name}."
 

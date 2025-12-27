@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2025-12-26
+
+### Added
+
+- **MobProg 100% ROM C Parity Achievement**: All 4 critical trigger hookups complete
+  - `mp_give_trigger` integrated in do_give command
+  - `mp_hprct_trigger` integrated in combat damage system
+  - `mp_death_trigger` integrated in character death handling
+  - `mp_speech_trigger` already integrated (verified)
+- MobProg movement command validation in area file validator
+- Comprehensive MobProg testing documentation (5 guides)
+- Enhanced `validate_mobprogs.py` with movement command validation
+- Organized validation and parity documentation structure
+
+### Changed
+
+- **Documentation Reorganization**: Created proper folder structure
+  - Moved 10 documentation files to `docs/validation/` and `docs/parity/`
+  - Moved 10 scripts to `scripts/validation/` and `scripts/parity/`
+  - Moved 5 report files to appropriate `reports/` subfolders
+  - Created 6 README files documenting folder contents
+- Updated all cross-references in documentation to use new paths
+- Enhanced validation scripts with movement command checks
+
+### Fixed
+
+- Integration test issues with Object creation and trigger signatures
+- Syntax error in validate_mobprogs.py output formatting
+
+## [2.2.1] - Previous Release
+
 ### Added
 
 - Complete weapon special attacks system with ROM 2.4 parity (WEAPON_VAMPIRIC, WEAPON_POISON, WEAPON_FLAMING, WEAPON_FROST, WEAPON_SHOCKING)

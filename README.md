@@ -1,10 +1,10 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![PyPI version](https://badge.fury.io/py/quickmud.svg)](https://badge.fury.io/py/quickmud)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](https://github.com/avinson/rom24-quickmud)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-1435%2F1436%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
-[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-100%25-success.svg)](ROM_PARITY_FEATURE_TRACKER.md)
+[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-100%25-success.svg)](docs/parity/ROM_PARITY_FEATURE_TRACKER.md)
 [![Function Coverage](https://img.shields.io/badge/ROM%20C%20Functions-96.1%25-blue.svg)](FUNCTION_MAPPING.md)
 
 **QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking, JSON world data, and **100% ROM 2.4b behavioral parity**.
@@ -259,7 +259,7 @@ For developers interested in extending QuickMUD beyond ROM 2.4b:
 
 ### 📚 For Contributors
 
-See [ROM_PARITY_FEATURE_TRACKER.md](ROM_PARITY_FEATURE_TRACKER.md) for detailed feature status and [AGENTS.md](AGENTS.md) for AI-assisted development workflows.
+See [ROM_PARITY_FEATURE_TRACKER.md](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) for detailed feature status and [AGENTS.md](AGENTS.md) for AI-assisted development workflows.
 
 **Development Guidelines**:
 
