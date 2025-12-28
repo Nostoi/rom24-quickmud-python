@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.constants import ItemType, Position, WearLocation
+from mud.models.constants import ItemType, Position, WearFlag, WearLocation
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -45,12 +45,13 @@ def do_wear(ch: Character, args: str) -> str:
 
     # Determine where this can be worn
     wear_flags = getattr(obj, "wear_flags", 0)
-    item_type = getattr(obj, "item_type", ItemType.TRASH)
+    item_type_str = getattr(obj, "item_type", None)
+    item_type = int(item_type_str) if item_type_str else ItemType.TRASH
 
     # Weapons and held items should use wield/hold
     if item_type == ItemType.WEAPON:
         return "You need to wield weapons, not wear them."
-    if wear_flags & WearLocation.WEAR_HOLD:
+    if wear_flags & WearFlag.HOLD:
         return "You need to hold that, not wear it."
 
     # Find appropriate wear location
@@ -73,7 +74,7 @@ def do_wear(ch: Character, args: str) -> str:
     obj.wear_loc = wear_loc
 
     # Remove from inventory
-    inventory = getattr(ch, "carrying", [])
+    inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
 
@@ -105,8 +106,9 @@ def do_wield(ch: Character, args: str) -> str:
     if ch.position < Position.SLEEPING:
         return "You can't do that right now."
 
-    # Check if it's a weapon
-    item_type = getattr(obj, "item_type", ItemType.TRASH)
+    # Check if it's a weapon (item_type is stored as string, enum value is int)
+    item_type_str = getattr(obj, "item_type", None)
+    item_type = int(item_type_str) if item_type_str else ItemType.TRASH
     if item_type != ItemType.WEAPON:
         return "You can't wield that."
 
@@ -137,7 +139,7 @@ def do_wield(ch: Character, args: str) -> str:
     obj.wear_loc = wear_loc
 
     # Remove from inventory
-    inventory = getattr(ch, "carrying", [])
+    inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
 
@@ -171,12 +173,12 @@ def do_hold(ch: Character, args: str) -> str:
 
     # Check if it can be held
     wear_flags = getattr(obj, "wear_flags", 0)
-    if not (wear_flags & WearLocation.WEAR_HOLD):
+    if not (wear_flags & WearFlag.HOLD):
         return "You can't hold that."
 
     # Check if hold slot is occupied
     equipment = getattr(ch, "equipment", {})
-    wear_loc = WearLocation.WEAR_HOLD
+    wear_loc = WearLocation.HOLD
 
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
@@ -191,14 +193,15 @@ def do_hold(ch: Character, args: str) -> str:
     obj.wear_loc = wear_loc
 
     # Remove from inventory
-    inventory = getattr(ch, "carrying", [])
+    inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
 
     obj_name = getattr(obj, "short_descr", "something")
 
-    # Special message for lights
-    item_type = getattr(obj, "item_type", ItemType.TRASH)
+    # Special message for lights (item_type is stored as string)
+    item_type_str = getattr(obj, "item_type", None)
+    item_type = int(item_type_str) if item_type_str else ItemType.TRASH
     if item_type == ItemType.LIGHT:
         return f"You hold {obj_name} as your light."
 
@@ -207,7 +210,7 @@ def do_hold(ch: Character, args: str) -> str:
 
 def _wear_all(ch: Character) -> str:
     """Wear all wearable items in inventory."""
-    inventory = getattr(ch, "carrying", [])
+    inventory = getattr(ch, "inventory", [])
     if not inventory:
         return "You are not carrying anything."
 
@@ -218,12 +221,13 @@ def _wear_all(ch: Character) -> str:
             continue
 
         # Skip weapons and held items
-        item_type = getattr(obj, "item_type", ItemType.TRASH)
+        item_type_str = getattr(obj, "item_type", None)
+        item_type = int(item_type_str) if item_type_str else ItemType.TRASH
         wear_flags = getattr(obj, "wear_flags", 0)
 
         if item_type == ItemType.WEAPON:
             continue
-        if wear_flags & WearLocation.WEAR_HOLD:
+        if wear_flags & WearFlag.HOLD:
             continue
 
         # Try to wear it
@@ -255,39 +259,40 @@ def _wear_all(ch: Character) -> str:
 def _get_wear_location(obj: Object, wear_flags: int) -> WearLocation | None:
     """Determine which slot an item should be worn in."""
     # Priority order for wear locations (from ROM)
-    if wear_flags & WearLocation.WEAR_FINGER:
-        return WearLocation.WEAR_FINGER
-    if wear_flags & WearLocation.WEAR_NECK:
-        return WearLocation.WEAR_NECK
-    if wear_flags & WearLocation.WEAR_BODY:
-        return WearLocation.WEAR_BODY
-    if wear_flags & WearLocation.WEAR_HEAD:
-        return WearLocation.WEAR_HEAD
-    if wear_flags & WearLocation.WEAR_LEGS:
-        return WearLocation.WEAR_LEGS
-    if wear_flags & WearLocation.WEAR_FEET:
-        return WearLocation.WEAR_FEET
-    if wear_flags & WearLocation.WEAR_HANDS:
-        return WearLocation.WEAR_HANDS
-    if wear_flags & WearLocation.WEAR_ARMS:
-        return WearLocation.WEAR_ARMS
-    if wear_flags & WearLocation.WEAR_ABOUT:
-        return WearLocation.WEAR_ABOUT
-    if wear_flags & WearLocation.WEAR_WAIST:
-        return WearLocation.WEAR_WAIST
-    if wear_flags & WearLocation.WEAR_WRIST:
-        return WearLocation.WEAR_WRIST
-    if wear_flags & WearLocation.WEAR_SHIELD:
-        return WearLocation.WEAR_SHIELD
-    if wear_flags & WearLocation.WEAR_FLOAT:
-        return WearLocation.WEAR_FLOAT
+    # Check WearFlag bits and return corresponding WearLocation slot
+    if wear_flags & WearFlag.WEAR_FINGER:
+        return WearLocation.FINGER_L  # Will need multi-slot handling later
+    if wear_flags & WearFlag.WEAR_NECK:
+        return WearLocation.NECK_1
+    if wear_flags & WearFlag.WEAR_BODY:
+        return WearLocation.BODY
+    if wear_flags & WearFlag.WEAR_HEAD:
+        return WearLocation.HEAD
+    if wear_flags & WearFlag.WEAR_LEGS:
+        return WearLocation.LEGS
+    if wear_flags & WearFlag.WEAR_FEET:
+        return WearLocation.FEET
+    if wear_flags & WearFlag.WEAR_HANDS:
+        return WearLocation.HANDS
+    if wear_flags & WearFlag.WEAR_ARMS:
+        return WearLocation.ARMS
+    if wear_flags & WearFlag.WEAR_ABOUT:
+        return WearLocation.ABOUT
+    if wear_flags & WearFlag.WEAR_WAIST:
+        return WearLocation.WAIST
+    if wear_flags & WearFlag.WEAR_WRIST:
+        return WearLocation.WRIST_L  # Will need multi-slot handling later
+    if wear_flags & WearFlag.WEAR_SHIELD:
+        return WearLocation.SHIELD
+    if wear_flags & WearFlag.WEAR_FLOAT:
+        return WearLocation.FLOAT
 
     return None
 
 
 def _find_obj_inventory(ch: Character, name: str) -> Object | None:
     """Find an object in character's inventory by name."""
-    inventory = getattr(ch, "carrying", [])
+    inventory = getattr(ch, "inventory", [])
     if not inventory or not name:
         return None
 
