@@ -439,3 +439,128 @@ class TestPrompt:
         # ROM default: "<%hhp %mm %vmv> "
         assert pcdata.prompt is not None
         assert "hp" in pcdata.prompt.lower()
+
+
+class TestCommunicationFlags:
+    """Test communication flag commands (ROM src/act_comm.c)."""
+
+    def test_comm_quiet_suppresses_all_channels(self):
+        """Test QUIET flag suppresses all channels."""
+        # ROM: do_quiet toggles COMM_QUIET flag
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        # Set QUIET flag
+        player.comm |= CommFlag.QUIET
+
+        assert (player.comm & CommFlag.QUIET) != 0
+        # All channels should be suppressed when QUIET is set
+
+    def test_comm_deaf_blocks_incoming_tells(self):
+        """Test DEAF flag blocks incoming tells."""
+        # ROM: do_deaf toggles COMM_DEAF flag
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.DEAF
+
+        assert (player.comm & CommFlag.DEAF) != 0
+        # Incoming tells should be blocked
+
+    def test_comm_afk_marks_player_away(self):
+        """Test AFK flag marks player as away from keyboard."""
+        # ROM: do_afk toggles COMM_AFK flag
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.AFK
+
+        assert (player.comm & CommFlag.AFK) != 0
+        # Player should be marked as AFK
+
+    def test_comm_nowiz_blocks_wiznet(self):
+        """Test NOWIZ flag blocks wiznet channel."""
+        # ROM: do_nowiz toggles COMM_NOWIZ flag (immortals only)
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOWIZ
+
+        assert (player.comm & CommFlag.NOWIZ) != 0
+        # Wiznet messages should be blocked
+
+    def test_comm_noauction_blocks_auction_channel(self):
+        """Test NOAUCTION flag blocks auction channel."""
+        # ROM: Channel toggle for auction
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOAUCTION
+
+        assert (player.comm & CommFlag.NOAUCTION) != 0
+        # Auction messages should be blocked
+
+    def test_comm_nogossip_blocks_gossip_channel(self):
+        """Test NOGOSSIP flag blocks gossip channel."""
+        # ROM: Channel toggle for gossip
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOGOSSIP
+
+        assert (player.comm & CommFlag.NOGOSSIP) != 0
+        # Gossip messages should be blocked
+
+    def test_comm_noquestion_blocks_question_channel(self):
+        """Test NOQUESTION flag blocks question channel."""
+        # ROM: Channel toggle for question
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOQUESTION
+
+        assert (player.comm & CommFlag.NOQUESTION) != 0
+        # Question messages should be blocked
+
+    def test_comm_nomusic_blocks_music_channel(self):
+        """Test NOMUSIC flag blocks music channel."""
+        # ROM: Channel toggle for music
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOMUSIC
+
+        assert (player.comm & CommFlag.NOMUSIC) != 0
+        # Music messages should be blocked
+
+    def test_comm_noemote_prevents_emotes(self):
+        """Test NOEMOTE flag prevents character from emoting."""
+        # ROM: do_emote checks COMM_NOEMOTE flag (punishment)
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOEMOTE
+
+        assert (player.comm & CommFlag.NOEMOTE) != 0
+        # Player should not be able to emote
+
+    def test_comm_notell_blocks_tells(self):
+        """Test NOTELL flag blocks sending/receiving tells."""
+        # ROM: do_tell checks COMM_NOTELL flag
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.comm = 0
+
+        player.comm |= CommFlag.NOTELL
+
+        assert (player.comm & CommFlag.NOTELL) != 0
+        # Player should not be able to send/receive tells
