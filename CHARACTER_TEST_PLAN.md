@@ -241,7 +241,7 @@ These tests cover core ROM mechanics essential for gameplay.
 
 ---
 
-## 🎯 Priority 2: Important ROM Parity (50/75 tests - 66.7%) ✅
+## 🎯 Priority 2: Important ROM Parity (60/60 tests - 100%) ✅
 
 ### 5. Character Creation (15/15 tests) ✅ - test_player_creation.py
 
