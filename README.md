@@ -1,6 +1,6 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.3.1-blue.svg)](https://github.com/avinson/rom24-quickmud)
+[![Version](https://img.shields.io/badge/version-2.4.2-blue.svg)](https://github.com/avinson/rom24-quickmud)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-1555%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
