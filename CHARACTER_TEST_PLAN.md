@@ -1,12 +1,12 @@
 # Character/Player Parity Test Plan
 
-**Status:** Phase 1 Complete ✅  
+**Status:** Phase 2 Complete ✅  
 **Last Updated:** December 27, 2025  
-**Completion:** 183/~280 tests (65.4%)
+**Completion:** 233/~280 tests (83.2%)
 
 ---
 
-## Current Coverage (183 tests)
+## Current Coverage (233 tests)
 
 ### ✅ Completed Test Areas
 
@@ -20,11 +20,14 @@
 | test_player_title_description.py | 15 | Title editing (45-char limit), description editing |
 | test_player_wimpy.py | 7 | Wimpy settings, bounds, retroactive clamping |
 | test_auto_sequences.py (integration) | 10 | End-to-end auto-setting workflows |
-| **test_player_equipment.py** | **29** | **✅ NEW: Wear/Remove/Wield, Equipment slots, Encumbrance** |
-| **test_player_stats.py** | **20** | **✅ NEW: perm_stat, mod_stat, get_curr_stat, bounds** |
-| **test_player_combat_attributes.py** | **15** | **✅ NEW: hitroll, damroll, armor class (4 AC types)** |
+| **test_player_equipment.py** | **29** | **✅ Phase 1: Wear/Remove/Wield, Equipment slots, Encumbrance** |
+| **test_player_stats.py** | **20** | **✅ Phase 1: perm_stat, mod_stat, get_curr_stat, bounds** |
+| **test_player_combat_attributes.py** | **15** | **✅ Phase 1: hitroll, damroll, armor class (4 AC types)** |
 | test_player_save_format.py | 22 | Character save/load persistence, field serialization |
-| **TOTAL** | **183** | **+64 tests from Phase 1** |
+| **test_player_creation.py** | **15** | **✅ Phase 2: Race/class selection, stats, starting equipment** |
+| **test_player_affect_flags.py** | **20** | **✅ Phase 2: Spell affects, buffs/debuffs, affect management** |
+| **test_player_skills_spells.py** | **15** | **✅ Phase 2: Skill learning, practice, spell casting** |
+| **TOTAL** | **233** | **+114 tests from Phases 1 \u0026 2** |
 
 ---
 
@@ -235,30 +238,32 @@ These tests cover core ROM mechanics essential for gameplay.
 
 ---
 
-## 🎯 Priority 2: Important ROM Parity (75 tests)
+## 🎯 Priority 2: Important ROM Parity (50/75 tests - 66.7%) ✅
 
-### 5. Character Creation (15 tests) - test_player_creation.py
+### 5. Character Creation (15/15 tests) ✅ - test_player_creation.py
 
 **ROM Reference:** src/comm.c (nanny), src/class.c, src/race.c
 
-#### Creation Flow (8 tests)
-- [ ] test_new_character_starts_at_level_1
-- [ ] test_select_race_from_available_races
-- [ ] test_select_class_from_available_classes
-- [ ] test_starting_stats_by_race
-- [ ] test_starting_stats_by_class
-- [ ] test_creation_points_allocation
-- [ ] test_creation_groups_selection
-- [ ] test_starting_skills_by_class
+**Status:** COMPLETE - All tests passing
 
-#### Starting Equipment (7 tests)
-- [ ] test_starting_gold_by_class
-- [ ] test_starting_weapon_warrior
-- [ ] test_starting_weapon_thief
-- [ ] test_starting_weapon_cleric
-- [ ] test_starting_weapon_mage
-- [ ] test_starting_armor_equipped
-- [ ] test_map_item_given_to_newbies
+#### Creation Flow (8 tests) ✅
+- [x] test_new_character_starts_at_level_1
+- [x] test_select_race_from_available_races
+- [x] test_select_class_from_available_classes
+- [x] test_starting_stats_by_race
+- [x] test_starting_stats_by_class
+- [x] test_creation_points_allocation
+- [x] test_creation_groups_selection
+- [x] test_starting_skills_by_class
+
+#### Starting Equipment (7 tests) ✅
+- [x] test_starting_gold_by_class
+- [x] test_starting_weapon_warrior
+- [x] test_starting_weapon_thief
+- [x] test_starting_weapon_cleric
+- [x] test_starting_weapon_mage
+- [x] test_starting_armor_equipped
+- [x] test_map_item_given_to_newbies
 
 **ROM C References:**
 - `src/comm.c:nanny` (character creation state machine, lines 500-1500)
@@ -267,33 +272,35 @@ These tests cover core ROM mechanics essential for gameplay.
 
 ---
 
-### 6. Affect Flags (20 tests) - test_player_affect_flags.py
+### 6. Affect Flags (20/20 tests) ✅ - test_player_affect_flags.py
 
 **ROM Reference:** src/magic.c, src/handler.c
 
-#### Common Affects (12 tests)
-- [ ] test_affect_blind_prevents_sight
-- [ ] test_affect_invisible_hides_character
-- [ ] test_affect_detect_evil_shows_evil_aura
-- [ ] test_affect_detect_invis_sees_invisible
-- [ ] test_affect_detect_magic_shows_magic_aura
-- [ ] test_affect_detect_hidden_reveals_hidden
-- [ ] test_affect_sanctuary_reduces_damage
-- [ ] test_affect_fly_allows_flight
-- [ ] test_affect_pass_door_ignores_doors
-- [ ] test_affect_haste_extra_attack
-- [ ] test_affect_slow_reduces_attacks
-- [ ] test_affect_charm_prevents_commands
+**Status:** COMPLETE - All tests passing
 
-#### Affect Management (8 tests)
-- [ ] test_add_affect_to_character
-- [ ] test_remove_affect_from_character
-- [ ] test_affect_duration_decrements
-- [ ] test_affect_expires_after_duration
-- [ ] test_multiple_affects_stack
-- [ ] test_affect_modifies_stats
-- [ ] test_affect_modifies_armor_class
-- [ ] test_dispel_magic_removes_affects
+#### Common Affects (12 tests) ✅
+- [x] test_affect_blind_prevents_sight
+- [x] test_affect_invisible_hides_character
+- [x] test_affect_detect_evil_shows_evil_aura
+- [x] test_affect_detect_invis_sees_invisible
+- [x] test_affect_detect_magic_shows_magic_aura
+- [x] test_affect_detect_hidden_reveals_hidden
+- [x] test_affect_sanctuary_reduces_damage
+- [x] test_affect_fly_allows_flight
+- [x] test_affect_pass_door_ignores_doors
+- [x] test_affect_haste_extra_attack
+- [x] test_affect_slow_reduces_attacks
+- [x] test_affect_charm_prevents_commands
+
+#### Affect Management (8 tests) ✅
+- [x] test_add_affect_to_character
+- [x] test_remove_affect_from_character
+- [x] test_affect_duration_decrements
+- [x] test_affect_expires_after_duration
+- [x] test_multiple_affects_stack
+- [x] test_affect_modifies_stats
+- [x] test_affect_modifies_armor_class
+- [x] test_dispel_magic_removes_affects
 
 **ROM C References:**
 - `src/magic.c:spell_functions` (affect-granting spells)
@@ -490,5 +497,24 @@ See **ROM_PARITY_TEST_PLAN.md** for comprehensive testing roadmap including:
 ---
 
 **Last Updated:** December 27, 2025  
-**Current Focus:** Implementing Priority 1 Critical Tests  
+**Current Focus:** Phase 2 Complete! Moving to Phase 3 (Optional Advanced Features)  
 **Completion Target:** 280+ tests (100% character coverage)
+
+---
+
+## Recent Milestones
+
+### ✅ Phase 2 Complete (December 27, 2025)
+
+**Added 50 new tests across 3 test suites:**
+
+1. **test_player_creation.py (15 tests)** - Character creation flow and starting equipment
+2. **test_player_affect_flags.py (20 tests)** - Spell affects and affect management
+3. **test_player_skills_spells.py (15 tests)** - Skill learning and spell casting
+
+**Total Progress:**
+- Phase 1: 64 tests (Equipment, Stats, Combat)
+- Phase 2: 50 tests (Creation, Affects, Skills)
+- **Combined: 233 player tests (83.2% of target coverage)**
+
+**No regressions:** All 233 tests passing in 30.74 seconds
