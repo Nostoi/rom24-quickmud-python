@@ -7,7 +7,7 @@ ROM Reference: src/act_obj.c
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import ItemType, Position
+from mud.models.constants import ExtraFlag, ItemType, Position
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
 
 
@@ -191,6 +191,7 @@ def do_remove(char: Character, args: str) -> str:
     Remove a worn item.
 
     ROM Reference: src/act_obj.c do_remove (lines 1740-1763)
+                   src/handler.c remove_obj (lines 1372-1392)
 
     Usage: remove <item>
     """
@@ -208,6 +209,12 @@ def do_remove(char: Character, args: str) -> str:
     wear_loc = getattr(obj, "wear_loc", -1)
     if wear_loc == -1:
         return "You aren't wearing that."
+
+    # Check NOREMOVE flag (cursed items) - ROM src/handler.c:1382-1386
+    extra_flags = getattr(obj, "extra_flags", 0)
+    if extra_flags & ExtraFlag.NOREMOVE:
+        obj_name = getattr(obj, "short_descr", "it")
+        return f"You can't remove {obj_name}."
 
     # Remove the item
     _remove_obj(char, obj)

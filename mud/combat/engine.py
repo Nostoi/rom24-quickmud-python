@@ -307,6 +307,11 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
         return results
 
+    # ROM src/fight.c:90 - Check for assist after first attack
+    from mud.combat.assist import check_assist
+
+    check_assist(attacker, victim)
+
     # ROM allows only a single strike for backstab.
     if _normalize_dt(dt) == "backstab":
         return results
@@ -475,6 +480,7 @@ def apply_damage(
 
     Handles:
     - Defense checks (parry, dodge, shield_block) - ROM checks these AFTER hit but BEFORE damage
+    - Damage type resistance/vulnerability (ROM fight.c:804-816)
     - Damage application and hit point reduction
     - Position updates based on remaining hit points
     - Fighting state management (set_fighting, stop_fighting)
@@ -503,6 +509,24 @@ def apply_damage(
             return f"{victim.name} parries your attack."
         if check_dodge(attacker, victim):
             return f"{victim.name} dodges your attack."
+
+    # Apply damage type resistance/vulnerability modifiers (ROM fight.c:804-816)
+    # This must happen AFTER defense checks but BEFORE damage application
+    if dam_type is not None:
+        IS_IMMUNE = 1
+        IS_RESISTANT = 2
+        IS_VULNERABLE = 3
+
+        immune_check = _riv_check(victim, dam_type)
+        if immune_check == IS_IMMUNE:
+            immune = True
+            damage = 0
+        elif immune_check == IS_RESISTANT:
+            # ROM: dam -= dam / 3 (reduces damage by 33%)
+            damage -= c_div(damage, 3)
+        elif immune_check == IS_VULNERABLE:
+            # ROM: dam += dam / 2 (increases damage by 50%)
+            damage += c_div(damage, 2)
 
     message_bundle: DamageMessages | None = None
     if show:

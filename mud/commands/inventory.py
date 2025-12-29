@@ -1,7 +1,9 @@
 from collections.abc import Iterable
 
+from mud.ai import _can_loot
 from mud.models.character import Character
 from mud.models.constants import (
+    ItemType,
     OBJ_VNUM_MAP,
     OBJ_VNUM_SCHOOL_BANNER,
     OBJ_VNUM_SCHOOL_SHIELD,
@@ -137,6 +139,12 @@ def do_get(char: Character, args: str) -> str:
     for obj in list(char.room.contents):
         obj_name = (obj.short_descr or obj.name or "").lower()
         if name in obj_name:
+            # ROM src/act_obj.c:61-89 - Check corpse looting permission
+            item_type = int(getattr(obj, "item_type", 0) or 0)
+            if item_type in (int(ItemType.CORPSE_PC), int(ItemType.CORPSE_NPC)):
+                if not _can_loot(char, obj):
+                    return "You cannot loot that corpse."
+
             obj_number = _get_obj_number(obj)
             obj_weight = _get_obj_weight(obj)
 

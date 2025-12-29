@@ -18,7 +18,7 @@ import pytest
 
 from mud.commands.equipment import do_hold, do_wear, do_wield
 from mud.commands.obj_manipulation import do_remove
-from mud.models.constants import ItemType, WearFlag, WearLocation
+from mud.models.constants import ExtraFlag, ItemType, WearFlag, WearLocation
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -429,3 +429,252 @@ class TestEncumbranceAndLimits:
 
         equipped_weight = sum(getattr(obj.prototype, "weight", 0) for obj in player.equipment.values())
         assert equipped_weight == 200
+
+
+class TestAlignmentRestrictionsAndCursedItems:
+    """
+    Test ROM alignment-based equipment restrictions and cursed item mechanics.
+
+    ROM Reference: src/handler.c:1765-1777 (equip_char), src/handler.c:1382-1386 (remove_obj)
+    """
+
+    def test_good_character_cannot_wear_anti_good_items(self):
+        """Good characters (alignment >= 350) should be blocked from ANTI_GOOD items."""
+        player = create_test_character("GoodTest", 3001)
+        player.alignment = 400  # Good alignment (>= 350)
+
+        # Create anti-good armor
+        proto = ObjIndex(
+            vnum=99990,
+            name="evil armor",
+            short_descr="a suit of evil armor",
+            description="Evil armor",
+            item_type=int(ItemType.ARMOR),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WEAR_BODY),
+            extra_flags=int(ExtraFlag.ANTI_GOOD),  # ANTI_GOOD flag
+            weight=50,
+            value=[10, 0, 0, 0, 0],
+        )
+        armor = Object(instance_id=None, prototype=proto)
+        armor.item_type = str(ItemType.ARMOR)
+        armor.wear_flags = proto.wear_flags
+        armor.extra_flags = proto.extra_flags
+
+        player.inventory = [armor]
+
+        result = do_wear(player, "evil")
+
+        assert "zapped" in result.lower()
+        assert WearLocation.BODY not in player.equipment or player.equipment[WearLocation.BODY] != armor
+
+    def test_evil_character_cannot_wear_anti_evil_items(self):
+        """Evil characters (alignment <= -350) should be blocked from ANTI_EVIL items."""
+        player = create_test_character("EvilTest", 3001)
+        player.alignment = -400  # Evil alignment (<= -350)
+
+        # Create anti-evil armor
+        proto = ObjIndex(
+            vnum=99989,
+            name="holy armor",
+            short_descr="a suit of holy armor",
+            description="Holy armor",
+            item_type=int(ItemType.ARMOR),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WEAR_BODY),
+            extra_flags=int(ExtraFlag.ANTI_EVIL),  # ANTI_EVIL flag
+            weight=50,
+            value=[10, 0, 0, 0, 0],
+        )
+        armor = Object(instance_id=None, prototype=proto)
+        armor.item_type = str(ItemType.ARMOR)
+        armor.wear_flags = proto.wear_flags
+        armor.extra_flags = proto.extra_flags
+
+        player.inventory = [armor]
+
+        result = do_wear(player, "holy")
+
+        assert "zapped" in result.lower()
+        assert WearLocation.BODY not in player.equipment or player.equipment[WearLocation.BODY] != armor
+
+    def test_neutral_character_cannot_wear_anti_neutral_items(self):
+        """Neutral characters (-350 < alignment < 350) should be blocked from ANTI_NEUTRAL items."""
+        player = create_test_character("NeutralTest", 3001)
+        player.alignment = 0  # Neutral alignment
+
+        # Create anti-neutral armor
+        proto = ObjIndex(
+            vnum=99988,
+            name="extreme armor",
+            short_descr="armor of extremes",
+            description="Extreme armor",
+            item_type=int(ItemType.ARMOR),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WEAR_BODY),
+            extra_flags=int(ExtraFlag.ANTI_NEUTRAL),  # ANTI_NEUTRAL flag
+            weight=50,
+            value=[10, 0, 0, 0, 0],
+        )
+        armor = Object(instance_id=None, prototype=proto)
+        armor.item_type = str(ItemType.ARMOR)
+        armor.wear_flags = proto.wear_flags
+        armor.extra_flags = proto.extra_flags
+
+        player.inventory = [armor]
+
+        result = do_wear(player, "extreme")
+
+        assert "zapped" in result.lower()
+        assert WearLocation.BODY not in player.equipment or player.equipment[WearLocation.BODY] != armor
+
+    def test_good_character_can_wear_anti_evil_items(self):
+        """Good characters should be able to wear ANTI_EVIL items."""
+        player = create_test_character("GoodWearTest", 3001)
+        player.alignment = 500  # Good alignment
+        player.perm_stat = [18, 13, 13, 13, 13]  # STR for wielding
+
+        proto = ObjIndex(
+            vnum=99987,
+            name="holy sword",
+            short_descr="a holy sword",
+            description="A holy sword",
+            item_type=int(ItemType.WEAPON),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WIELD),
+            extra_flags=int(ExtraFlag.ANTI_EVIL),  # ANTI_EVIL flag
+            weight=30,
+            value=[0, 2, 5, 0, 0],
+        )
+        weapon = Object(instance_id=None, prototype=proto)
+        weapon.item_type = str(ItemType.WEAPON)
+        weapon.wear_flags = proto.wear_flags
+        weapon.extra_flags = proto.extra_flags
+
+        player.inventory = [weapon]
+
+        result = do_wield(player, "holy")
+
+        assert "wield" in result.lower()
+        assert "zapped" not in result.lower()
+        assert player.equipment.get(WearLocation.WIELD) == weapon
+
+    def test_evil_character_can_wear_anti_good_items(self):
+        """Evil characters should be able to wear ANTI_GOOD items."""
+        player = create_test_character("EvilWearTest", 3001)
+        player.alignment = -500  # Evil alignment
+        player.perm_stat = [18, 13, 13, 13, 13]  # STR for wielding
+
+        proto = ObjIndex(
+            vnum=99986,
+            name="cursed blade",
+            short_descr="a cursed blade",
+            description="A cursed blade",
+            item_type=int(ItemType.WEAPON),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WIELD),
+            extra_flags=int(ExtraFlag.ANTI_GOOD),  # ANTI_GOOD flag
+            weight=30,
+            value=[0, 2, 5, 0, 0],
+        )
+        weapon = Object(instance_id=None, prototype=proto)
+        weapon.item_type = str(ItemType.WEAPON)
+        weapon.wear_flags = proto.wear_flags
+        weapon.extra_flags = proto.extra_flags
+
+        player.inventory = [weapon]
+
+        result = do_wield(player, "cursed")
+
+        assert "wield" in result.lower()
+        assert "zapped" not in result.lower()
+        assert player.equipment.get(WearLocation.WIELD) == weapon
+
+    def test_cursed_items_cannot_be_removed(self):
+        """Items with NOREMOVE flag (cursed) cannot be removed normally."""
+        player = create_test_character("CursedTest", 3001)
+
+        # Create cursed ring
+        proto = ObjIndex(
+            vnum=99985,
+            name="cursed ring",
+            short_descr="a cursed ring",
+            description="A cursed ring",
+            item_type=int(ItemType.ARMOR),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WEAR_FINGER),
+            extra_flags=int(ExtraFlag.NOREMOVE),  # NOREMOVE flag (cursed)
+            weight=1,
+            value=[5, 0, 0, 0, 0],
+        )
+        ring = Object(instance_id=None, prototype=proto)
+        ring.item_type = str(ItemType.ARMOR)
+        ring.wear_flags = proto.wear_flags
+        ring.extra_flags = proto.extra_flags
+
+        # Equip the cursed ring
+        player.equipment = {WearLocation.FINGER_L: ring}
+        ring.worn_by = player
+        ring.wear_loc = WearLocation.FINGER_L
+        player.inventory = []
+
+        result = do_remove(player, "cursed")
+
+        assert "can't remove" in result.lower()
+        # Ring should still be equipped
+        assert player.equipment.get(WearLocation.FINGER_L) == ring
+
+    def test_normal_items_can_be_removed(self):
+        """Normal items without NOREMOVE flag can be removed."""
+        player = create_test_character("RemoveTest", 3001)
+
+        proto = ObjIndex(
+            vnum=99984,
+            name="normal ring",
+            short_descr="a normal ring",
+            description="A normal ring",
+            item_type=int(ItemType.ARMOR),
+            wear_flags=int(WearFlag.TAKE | WearFlag.WEAR_FINGER),
+            extra_flags=0,  # No NOREMOVE flag
+            weight=1,
+            value=[5, 0, 0, 0, 0],
+        )
+        ring = Object(instance_id=None, prototype=proto)
+        ring.item_type = str(ItemType.ARMOR)
+        ring.wear_flags = proto.wear_flags
+        ring.extra_flags = proto.extra_flags
+
+        # Equip the ring
+        player.equipment = {WearLocation.FINGER_L: ring}
+        ring.worn_by = player
+        ring.wear_loc = WearLocation.FINGER_L
+        player.inventory = []
+
+        result = do_remove(player, "normal")
+
+        assert "stop using" in result.lower()
+        # Ring should be in inventory, not equipped
+        assert WearLocation.FINGER_L not in player.equipment or player.equipment[WearLocation.FINGER_L] is None
+        assert ring in player.inventory
+
+    def test_alignment_restriction_on_hold_command(self):
+        """Hold command should also check alignment restrictions."""
+        player = create_test_character("HoldTest", 3001)
+        player.alignment = 400  # Good alignment
+
+        proto = ObjIndex(
+            vnum=99983,
+            name="evil torch",
+            short_descr="an evil torch",
+            description="An evil torch",
+            item_type=int(ItemType.LIGHT),
+            wear_flags=int(WearFlag.TAKE | WearFlag.HOLD),
+            extra_flags=int(ExtraFlag.ANTI_GOOD),  # ANTI_GOOD flag
+            weight=5,
+            value=[0, 0, 100, 0, 0],  # value[2] is light duration
+        )
+        light = Object(instance_id=None, prototype=proto)
+        light.item_type = str(ItemType.LIGHT)
+        light.wear_flags = proto.wear_flags
+        light.extra_flags = proto.extra_flags
+
+        player.inventory = [light]
+
+        result = do_hold(player, "evil")
+
+        assert "zapped" in result.lower()
+        assert WearLocation.HOLD not in player.equipment or player.equipment[WearLocation.HOLD] != light

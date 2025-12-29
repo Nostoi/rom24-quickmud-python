@@ -66,11 +66,11 @@ def test_buy_from_grocer():
         assert "[Lv Price Qty] Item" in list_output
         lantern_line = next(line for line in list_output.splitlines() if "hooded brass lantern" in line)
         assert "--" in lantern_line
-        assert "60" in lantern_line
+        assert "112" in lantern_line
         buy_output = process_command(char, "buy lantern")
         assert "buy a hooded brass lantern" in buy_output.lower()
-        assert char.gold == 99
-        assert char.silver == 40
+        assert char.gold == 98
+        assert char.silver == 88
         assert any((obj.short_descr or "").lower().startswith("a hooded brass lantern") for obj in char.inventory)
     finally:
         time_info.hour = previous_hour

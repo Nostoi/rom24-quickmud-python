@@ -90,7 +90,10 @@ def _check_immune(victim: Character, dam_type: int) -> int:
         immune = IS_IMMUNE
     elif (victim.res_flags & bit) and immune != IS_IMMUNE:
         immune = IS_RESISTANT
-    elif victim.vuln_flags & bit:
+
+    # ROM C handler.c:306-314 - vuln check runs AFTER imm/res checks
+    # This is NOT elif - it runs independently to allow downgrading immunity
+    if victim.vuln_flags & bit:
         if immune == IS_IMMUNE:
             immune = IS_RESISTANT
         elif immune == IS_RESISTANT:
@@ -126,10 +129,7 @@ def saves_spell(level: int, victim: Character, dam_type: int) -> bool:
         save -= 2
 
     # Not NPC → apply fMana reduction if class gains mana
-    if (
-        not victim.is_npc
-        and FMANA_BY_CLASS.get(victim.ch_class, False)
-    ):
+    if not victim.is_npc and FMANA_BY_CLASS.get(victim.ch_class, False):
         save = c_div(9 * save, 10)
 
     save = urange(5, save, 95)

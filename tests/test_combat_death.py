@@ -721,3 +721,150 @@ def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:
     assert victim.fighting is None
     assert victim.room is not None
     assert victim.room.vnum == ROOM_VNUM_ALTAR
+
+
+def test_corpse_looting_owner_can_loot_own_corpse(movable_char_factory) -> None:
+    """Test that owner can loot their own corpse (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    ch = movable_char_factory("Owner", 3001)
+    room = ch.room
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=ch.name, short_descr="corpse of Owner"
+    )
+    room.add_object(corpse)
+
+    result = do_get(ch, "corpse")
+    assert "You pick up" in result
+
+
+def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
+    """Test that non-owner cannot loot someone else's corpse (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    owner = movable_char_factory("Owner", 3001)
+    thief = movable_char_factory("Thief", 3001)
+    room = owner.room
+
+    owner.group = None
+    thief.group = None
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
+    )
+    room.add_object(corpse)
+
+    result = do_get(thief, "corpse")
+    assert "You cannot loot that corpse" in result
+
+
+def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
+    """Test that group members can loot each other's corpses (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    owner = movable_char_factory("Owner", 3001)
+    friend = movable_char_factory("Friend", 3001)
+    room = owner.room
+
+    owner.group = 1
+    friend.group = 1
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
+    )
+    room.add_object(corpse)
+
+    result = do_get(friend, "corpse")
+    assert "You pick up" in result
+
+
+def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> None:
+    """Test that PLR_CANLOOT flag allows anyone to loot (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    owner = movable_char_factory("Owner", 3001)
+    thief = movable_char_factory("Thief", 3001)
+    room = owner.room
+
+    owner.act |= int(PlayerFlag.CANLOOT)
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
+    )
+    room.add_object(corpse)
+
+    result = do_get(thief, "corpse")
+    assert "You pick up" in result
+
+
+def test_corpse_looting_no_owner_allows_looting(movable_char_factory) -> None:
+    """Test that corpses without owner can be looted by anyone (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    ch = movable_char_factory("Anyone", 3001)
+    room = ch.room
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Someone")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=None, short_descr="corpse of Someone"
+    )
+    room.add_object(corpse)
+
+    result = do_get(ch, "corpse")
+    assert "You pick up" in result
+
+
+def test_corpse_looting_npc_corpse_always_lootable(movable_char_factory) -> None:
+    """Test that NPC corpses are always lootable (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    ch = movable_char_factory("Player", 3001)
+    room = ch.room
+
+    proto = ObjIndex(vnum=10, short_descr="corpse of an orc")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_NPC), pIndexData=proto, owner="Someone", short_descr="corpse of an orc"
+    )
+    room.add_object(corpse)
+
+    result = do_get(ch, "corpse")
+    assert "You pick up" in result
+
+
+def test_corpse_looting_immortal_can_loot_anything(movable_char_factory) -> None:
+    """Test that immortals can loot any corpse (ROM src/act_obj.c:61-89)."""
+    from mud.commands.inventory import do_get
+    from mud.models.obj import ObjectData, ObjIndex
+
+    _ensure_world()
+    owner = movable_char_factory("Owner", 3001)
+    immortal = movable_char_factory("Immortal", 3001)
+    room = owner.room
+
+    immortal.is_immortal = lambda: True
+
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
+    corpse = ObjectData(
+        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
+    )
+    room.add_object(corpse)
+
+    result = do_get(immortal, "corpse")
+    assert "You pick up" in result

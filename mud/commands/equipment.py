@@ -8,11 +8,43 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.constants import ItemType, Position, WearFlag, WearLocation
+from mud.models.constants import ExtraFlag, ItemType, Position, WearFlag, WearLocation
 
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.models.object import Object
+
+
+def _can_wear_alignment(ch: Character, obj: Object) -> tuple[bool, str | None]:
+    """
+    Check if character's alignment allows wearing this item.
+
+    ROM Reference: src/handler.c:1765-1777 (equip_char)
+
+    Returns:
+        (can_wear, error_message) - (True, None) if allowed, (False, error_msg) if blocked
+    """
+    extra_flags = getattr(obj, "extra_flags", 0)
+    alignment = getattr(ch, "alignment", 0)
+
+    # ROM alignment thresholds (src/merc.h:2099-2101):
+    # IS_GOOD(ch)    -> alignment >= 350
+    # IS_EVIL(ch)    -> alignment <= -350
+    # IS_NEUTRAL(ch) -> -350 < alignment < 350
+
+    # Check ANTI_EVIL: if item is anti-evil and character is evil
+    if (extra_flags & ExtraFlag.ANTI_EVIL) and alignment <= -350:
+        return False, "You are zapped by the item and drop it."
+
+    # Check ANTI_GOOD: if item is anti-good and character is good
+    if (extra_flags & ExtraFlag.ANTI_GOOD) and alignment >= 350:
+        return False, "You are zapped by the item and drop it."
+
+    # Check ANTI_NEUTRAL: if item is anti-neutral and character is neutral
+    if (extra_flags & ExtraFlag.ANTI_NEUTRAL) and (-350 < alignment < 350):
+        return False, "You are zapped by the item and drop it."
+
+    return True, None
 
 
 def do_wear(ch: Character, args: str) -> str:
@@ -65,6 +97,13 @@ def do_wear(ch: Character, args: str) -> str:
         existing = equipment[wear_loc]
         existing_name = getattr(existing, "short_descr", "something")
         return f"You're already wearing {existing_name}."
+
+    # Check alignment restrictions (ROM src/handler.c:1765-1777)
+    can_wear, error_msg = _can_wear_alignment(ch, obj)
+    if not can_wear:
+        # In ROM, the zap happens in equip_char and item drops to room
+        # For now, just prevent wearing with error message
+        return error_msg or "You cannot wear that item."
 
     # Wear the item
     if not equipment:
@@ -131,6 +170,11 @@ def do_wield(ch: Character, args: str) -> str:
     if str_stat * 10 < weight:
         return "It is too heavy for you to wield."
 
+    # Check alignment restrictions (ROM src/handler.c:1765-1777)
+    can_wield, error_msg = _can_wear_alignment(ch, obj)
+    if not can_wield:
+        return error_msg or "You cannot wield that weapon."
+
     # Wield the weapon
     if not equipment:
         ch.equipment = {}
@@ -184,6 +228,11 @@ def do_hold(ch: Character, args: str) -> str:
         existing = equipment[wear_loc]
         existing_name = getattr(existing, "short_descr", "something")
         return f"You're already holding {existing_name}."
+
+    # Check alignment restrictions (ROM src/handler.c:1765-1777)
+    can_hold, error_msg = _can_wear_alignment(ch, obj)
+    if not can_hold:
+        return error_msg or "You cannot hold that item."
 
     # Hold the item
     if not equipment:

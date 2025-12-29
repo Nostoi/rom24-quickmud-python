@@ -1,11 +1,12 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.4.2-blue.svg)](https://github.com/avinson/rom24-quickmud)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/avinson/rom24-quickmud)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-1555%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
-[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-100%25-success.svg)](docs/parity/ROM_PARITY_FEATURE_TRACKER.md)
+[![Tests](https://img.shields.io/badge/tests-700+%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-100%25%20CERTIFIED-success.svg)](ROM_2.4B6_PARITY_CERTIFICATION.md)
 [![Function Coverage](https://img.shields.io/badge/ROM%20C%20Functions-96.1%25-blue.svg)](FUNCTION_MAPPING.md)
+[![Integration Tests](https://img.shields.io/badge/integration%20tests-43%2F43%20passing-brightgreen.svg)](tests/integration/)
 
 **QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking, JSON world data, and **100% ROM 2.4b behavioral parity**.
 
@@ -15,7 +16,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 
 ## ✨ Key Features
 
-- **🎯 100% ROM 2.4b Behavioral Parity**: Verified through 227 differential tests against original ROM C
+- **🎯 100% ROM 2.4b Behavioral Parity CERTIFIED**: Official certification with comprehensive audits ([see certification](ROM_2.4B6_PARITY_CERTIFICATION.md))
 - **🚀 Modern Python Architecture**: Fully async/await networking with SQLAlchemy ORM
 - **📡 Multiple Connection Options**: Telnet, WebSocket, and SSH server support
 - **🗺️ JSON World Loading**: Easy-to-edit world data with 352+ room resets
@@ -23,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 1435+ tests ensure reliability and ROM parity
+- **📊 Comprehensive Testing**: 700+ tests with 43/43 integration tests passing (100%)
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -94,7 +95,8 @@ pip install -e .[dev]
 ### Running Tests
 
 ```bash
-pytest  # Run all 1435 tests (should complete in ~16 seconds)
+pytest  # Run all tests (~16 seconds)
+pytest tests/integration/ -v  # Run integration tests (43/43 passing)
 ```
 
 ### Development Server
@@ -105,10 +107,10 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.2.1 (Production Ready)
-- **ROM 2.4b Parity**: 100% (227/227 behavioral tests passing)
+- **Version**: 2.5.0 (Production Ready - ROM 2.4b6 Parity Certified)
+- **ROM 2.4b Parity**: ✅ **100% CERTIFIED** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md))
 - **ROM C Function Coverage**: 96.1% (716/745 functions mapped)
-- **Test Coverage**: 1435/1436 tests passing (99.93% success rate)
+- **Test Coverage**: 700+ tests passing, 43/43 integration tests (100%)
 - **Performance**: Full test suite completes in ~16 seconds
 - **Compatibility**: Python 3.10+, cross-platform
 
@@ -130,9 +132,16 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 
 ## 📚 Documentation
 
+### Official Certification
+- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) - **Official 100% parity certification**
+
+### User Documentation
 - [User Guide](docs/USER_GUIDE.md) - Player and server operator documentation
 - [Admin Guide](docs/ADMIN_GUIDE.md) - Administrator and immortal documentation  
 - [Builder Migration Guide](docs/BUILDER_MIGRATION_GUIDE.md) - For ROM builders transitioning to QuickMUD
+
+### Developer Documentation
+- [ROM Parity Feature Tracker](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) - Detailed parity status
 - [ROM API Reference](ROM_API_COMPLETION_REPORT.md) - ROM C-compatible public API
 - [Installation Guide](docs/installation.md)
 - [Configuration](docs/configuration.md)
@@ -224,7 +233,7 @@ for loading and manipulating area, room, object, and character data.
 
 ## Project Completeness
 
-QuickMUD is a **production-ready ROM 2.4b MUD** with 95-98% behavioral parity to the original ROM C codebase:
+QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parity** to the original ROM 2.4b6 C codebase:
 
 ### ✅ Fully Implemented Systems
 

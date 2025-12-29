@@ -117,3 +117,8 @@ def aggressive_update() -> None:
                 continue
 
             multi_hit(mob, victim)
+
+            # ROM src/fight.c:90 - Check for assist after combat starts
+            from mud.combat.assist import check_assist
+
+            check_assist(mob, victim)

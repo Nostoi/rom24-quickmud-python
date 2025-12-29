@@ -685,7 +685,7 @@ class WeaponFlag(IntFlag):
     FROST = 1 << 1  # (B) - cold damage
     VAMPIRIC = 1 << 2  # (C) - life drain
     SHARP = 1 << 3  # (D) - critical hits
-    VORPAL = 1 << 4  # (E) - decapitation
+    VORPAL = 1 << 4  # (E) - prevents envenoming (no combat effect in ROM 2.4b6)
     TWO_HANDS = 1 << 5  # (F) - two-handed weapon
     SHOCKING = 1 << 6  # (G) - lightning damage
     POISON = 1 << 7  # (H) - poison effects
