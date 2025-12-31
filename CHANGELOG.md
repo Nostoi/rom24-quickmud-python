@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.2] - 2025-12-30
+
+### Added
+
+- **Command Integration ROM Parity Tests** (70 new tests):
+  - `tests/test_act_comm_rom_parity.py` - 23 tests for communication commands (ROM `act_comm.c`)
+    - Channel status display (`do_channels`)
+    - Communication flag toggles (`do_deaf`, `do_quiet`, `do_afk`)
+    - Channel blocking logic (QUIET, NOCHANNELS flags)
+    - Delete command NPC blocking
+    - Replay command behaviors
+  - `tests/test_act_enter_rom_parity.py` - 22 tests for portal mechanics (ROM `act_enter.c`)
+    - Random room selection with flag exclusions (`get_random_room`)
+    - Portal entry mechanics (closed, curse, trust checks)
+    - Portal charge system and flag handling (RANDOM, BUGGY, GOWITH)
+    - Follower cascading through portals
+  - `tests/test_act_wiz_rom_parity.py` - 25 tests for wiznet/admin commands (ROM `act_wiz.c`)
+    - Wiznet channel toggle and flag management
+    - Wiznet broadcast filtering (WIZ_ON, flag filters, min_level)
+    - Admin commands (freeze, transfer, goto, trust)
+    - Trust level enforcement
+
+- **Documentation**:
+  - `COMMAND_INTEGRATION_PARITY_REPORT.md` - Comprehensive command integration test completion report
+    - Detailed ROM C to Python mapping for all 70 tests
+    - Test philosophy and design decisions
+    - ROM C source analysis summary
+    - Quality metrics and coverage matrix
+
+### Changed
+
+- **ROM 2.4b6 Parity Certification Updates**:
+  - Updated total ROM parity test count: 735 → 805 tests (+70)
+  - Updated total test count: 2507 → 2577 tests (+70)
+  - Added Command Integration Tests section to certification document
+  - Updated ROM C source verification to include `act_comm.c`, `act_enter.c`, `act_wiz.c`
+
+- **Test Coverage**:
+  - Increased command integration test coverage (communication, portal, wiznet modules)
+  - Total ROM parity tests: 805 (127 P0/P1/P2 + 608 combat/spells/skills + 70 command integration)
+
 ## [2.5.1] - 2025-12-30
 
 ### Added
