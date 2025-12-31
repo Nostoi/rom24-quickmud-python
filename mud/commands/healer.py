@@ -21,16 +21,16 @@ def _find_healer(char: Character) -> object | None:
 
 
 PRICE_GOLD = {
-    "light": 10,
-    "serious": 15,
-    "critical": 25,
-    "heal": 50,
-    "blindness": 20,
-    "disease": 15,
-    "poison": 25,
-    "uncurse": 50,
-    "refresh": 5,
-    "mana": 10,
+    "light": 10,  # ROM healer.c:88: cost = 1000 (10 gold)
+    "serious": 16,  # ROM healer.c:96: cost = 1600 (16 gold) - NOTE: Display says 15g but actual cost is 16g!
+    "critical": 25,  # ROM healer.c:104: cost = 2500 (25 gold)
+    "heal": 50,  # ROM healer.c:112: cost = 5000 (50 gold)
+    "blindness": 20,  # ROM healer.c:120: cost = 2000 (20 gold)
+    "disease": 15,  # ROM healer.c:128: cost = 1500 (15 gold)
+    "poison": 25,  # ROM healer.c:136: cost = 2500 (25 gold)
+    "uncurse": 50,  # ROM healer.c:144: cost = 5000 (50 gold)
+    "refresh": 5,  # ROM healer.c:161: cost = 500 (5 gold)
+    "mana": 10,  # ROM healer.c:152: cost = 1000 (10 gold)
 }
 
 

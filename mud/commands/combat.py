@@ -246,14 +246,17 @@ def do_rescue(char: Character, args: str) -> str:
 
 
 def _find_room_target(char: Character, name: str) -> Character | None:
+    """Find a character in the same room by name.
+
+    ROM Reference: src/act_info.c get_char_room()
+    Note: ROM allows finding self - individual commands check victim == ch.
+    """
     room = getattr(char, "room", None)
     if room is None or not name:
         return None
 
     lowered = name.lower()
     for candidate in getattr(room, "people", []) or []:
-        if candidate is char:
-            continue
         candidate_name = getattr(candidate, "name", "") or ""
         if lowered in candidate_name.lower():
             return candidate
@@ -797,51 +800,22 @@ def do_dirt(char: Character, args: str) -> str:
         if victim is None:
             return "They aren't here."
 
-    # Check if already blinded
+    # Match ROM safety/validation gates in the command layer.
+    if victim is char:
+        return "Very funny."
+
     victim_affected = getattr(victim, "affected_by", 0)
     if victim_affected & AffectFlag.BLIND:
         return "They're already blinded."
 
-    if victim is char:
-        return "Very funny."
-
-    # Safety checks
     safety_msg = _kill_safety_message(char, victim)
     if safety_msg:
         return safety_msg
 
-    # Calculate chance
-    chance = skill_level
-    char_dex = skill_handlers._coerce_int(
-        getattr(char, "perm_stat", [13] * 5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13
-    )
-    victim_dex = skill_handlers._coerce_int(
-        getattr(victim, "perm_stat", [13] * 5)[1] if isinstance(getattr(victim, "perm_stat", []), list) else 13
-    )
-    chance += char_dex - 2 * victim_dex
-
-    # Level modifier
-    char_level = skill_handlers._coerce_int(getattr(char, "level", 1))
-    victim_level = skill_handlers._coerce_int(getattr(victim, "level", 1))
-    chance += (char_level - victim_level) * 2
-
-    # Roll
-    if rng_mm.number_percent() < chance:
-        # Success - blind the victim
-        victim.affected_by = victim_affected | AffectFlag.BLIND
-        skill_registry._apply_wait_state(char, get_pulse_violence())
-
-        # Start combat if not already fighting
-        if not getattr(char, "fighting", None):
-            char.fighting = victim
-        if not getattr(victim, "fighting", None):
-            victim.fighting = char
-
-        check_killer(char, victim)
-        return f"You kick dirt into {getattr(victim, 'name', 'their')} eyes!"
-    else:
-        skill_registry._apply_wait_state(char, get_pulse_violence())
-        return "You kick dirt but miss their eyes."
+    # Delegate parity math/effects to the skill handler.
+    result = skill_handlers.dirt_kicking(char, target=victim)
+    check_killer(char, victim)
+    return result
 
 
 def do_trip(char: Character, args: str) -> str:
@@ -943,57 +917,21 @@ def do_disarm(char: Character, args: str) -> str:
     if victim is None:
         return "You aren't fighting anyone."
 
+    # Attacker must have a weapon, or meet ROM hand-to-hand / NPC OFF_DISARM exception.
+    caster_weapon = get_wielded_weapon(char)
+    hth_skill = char.skills.get("hand to hand", 0)
+    if caster_weapon is None and hth_skill == 0:
+        return "You must wield a weapon to disarm."
+
     # Victim must be wielding a weapon
-    victim_equipped = getattr(victim, "equipped", {})
-    victim_weapon = victim_equipped.get("wield") or victim_equipped.get("main_hand")
+    victim_weapon = get_wielded_weapon(victim)
     if victim_weapon is None:
         return "Your opponent is not wielding a weapon."
 
-    # Attacker should have weapon (or hand-to-hand skill)
-    char_equipped = getattr(char, "equipped", {})
-    char_weapon = char_equipped.get("wield") or char_equipped.get("main_hand")
-    hth_skill = char.skills.get("hand to hand", 0)
+    success = skill_handlers.disarm(char, target=victim)
+    check_killer(char, victim)
 
-    if char_weapon is None and hth_skill == 0:
-        return "You must wield a weapon to disarm."
-
-    # Calculate chance
-    if char_weapon is None:
-        chance = skill_level * hth_skill // 150
-    else:
-        chance = skill_level
-
-    # Dex vs Str
-    char_dex = skill_handlers._coerce_int(
-        getattr(char, "perm_stat", [13] * 5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13
-    )
-    victim_str = skill_handlers._coerce_int(
-        getattr(victim, "perm_stat", [13] * 5)[0] if isinstance(getattr(victim, "perm_stat", []), list) else 13
-    )
-    chance += char_dex - 2 * victim_str
-
-    # Level modifier
-    char_level = skill_handlers._coerce_int(getattr(char, "level", 1))
-    victim_level = skill_handlers._coerce_int(getattr(victim, "level", 1))
-    chance += (char_level - victim_level) * 2
-
-    skill_registry._apply_wait_state(char, get_pulse_violence())
-
-    # Roll
-    if rng_mm.number_percent() < chance:
-        # Success - remove weapon from victim
-        if "wield" in victim_equipped:
-            del victim_equipped["wield"]
-        elif "main_hand" in victim_equipped:
-            del victim_equipped["main_hand"]
-
-        # Drop to room
-        victim_room = getattr(victim, "room", None)
-        if victim_room and hasattr(victim_room, "contents"):
-            victim_room.contents.append(victim_weapon)
-            victim_weapon.in_room = victim_room
-
-        check_killer(char, victim)
-        return f"You disarm {getattr(victim, 'name', 'them')}!"
-    else:
-        return f"You fail to disarm {getattr(victim, 'name', 'them')}."
+    victim_name = getattr(victim, "name", "them")
+    if success:
+        return f"You disarm {victim_name}!"
+    return f"You fail to disarm {victim_name}."

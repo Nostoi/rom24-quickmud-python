@@ -410,7 +410,14 @@ def apply_resets(area: Area) -> None:
                 last_reset_succeeded = False
                 continue
 
-            if global_limit > 0 and mob_counts.get(mob_vnum, 0) >= global_limit:
+            # ROM parity: Check global limit using pMobIndex->count (ROM db.c:1704)
+            proto = mob_registry.get(mob_vnum)
+            proto_count = getattr(proto, "count", 0) if proto else 0
+            logging.debug(
+                f"M reset global limit check: mob_vnum={mob_vnum}, proto_count={proto_count}, global_limit={global_limit}"
+            )
+            if global_limit > 0 and proto_count >= global_limit:
+                logging.debug(f"M reset SKIPPED due to global limit: {proto_count} >= {global_limit}")
                 last_mob = None
                 last_obj = None
                 last_reset_succeeded = False
@@ -470,15 +477,17 @@ def apply_resets(area: Area) -> None:
             proto = getattr(mob, "prototype", None)
             if proto is not None and hasattr(proto, "count"):
                 proto.count = mob_counts[mob_vnum]
+
+            # ROM parity: Apply level fuzzing to mob (ROM db.c:1735)
+            # ROM C: pMob->level = URANGE(0, pMob->level - 2, LEVEL_HERO);
             try:
                 mob_level = int(getattr(mob, "level", 0) or 0)
             except Exception:
                 mob_level = 0
             hero_cap = max(0, LEVEL_HERO - 1)
-            base_level = max(0, mob_level - 2)
-            if base_level > hero_cap:
-                base_level = hero_cap
-            last_mob_level = base_level
+            fuzzed_level = max(0, min(mob_level - 2, hero_cap))
+            mob.level = fuzzed_level
+            last_mob_level = fuzzed_level
             last_mob = mob
             last_obj = None
             last_reset_succeeded = True
@@ -579,7 +588,8 @@ def apply_resets(area: Area) -> None:
                 if rev_exits and rev_idx < len(rev_exits):
                     rev_exit = rev_exits[rev_idx]
                     if rev_exit is not None:
-                        rev_exit.exit_info = int(getattr(rev_exit, "rs_flags", 0) or 0)
+                        rev_exit.rs_flags = base_flags
+                        rev_exit.exit_info = base_flags
         elif cmd == "G":
             if not last_reset_succeeded:
                 continue

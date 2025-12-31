@@ -198,10 +198,12 @@ def hit_gain(character: Character) -> int:
     gain = gain * getattr(room, "heal_rate", 100) // 100
 
     furniture = getattr(character, "on", None)
-    if furniture is not None and getattr(furniture, "item_type", None) == ItemType.FURNITURE:
-        values = getattr(furniture, "value", [100, 100, 100, 100, 100])
-        if len(values) > 3:
-            gain = gain * int(values[3]) // 100
+    if furniture is not None:
+        item_type = getattr(furniture.prototype, "item_type", None)
+        if item_type == ItemType.FURNITURE or item_type == int(ItemType.FURNITURE):
+            values = getattr(furniture, "value", [100, 100, 100, 100, 100])
+            if len(values) > 3:
+                gain = gain * int(values[3]) // 100
 
     if _has_affect(character, AffectFlag.POISON):
         gain //= 4
@@ -262,13 +264,15 @@ def mana_gain(character: Character) -> int:
             if character.pcdata.condition[Condition.THIRST] == 0:
                 gain //= 2
 
-    gain = gain * getattr(room, "mana_rate", 100) // 100
+    gain = gain * getattr(room, "heal_rate", 100) // 100
 
     furniture = getattr(character, "on", None)
-    if furniture is not None and getattr(furniture, "item_type", None) == ItemType.FURNITURE:
-        values = getattr(furniture, "value", [100, 100, 100, 100, 100])
-        if len(values) > 4:
-            gain = gain * int(values[4]) // 100
+    if furniture is not None:
+        item_type = getattr(furniture.prototype, "item_type", None)
+        if item_type == ItemType.FURNITURE or item_type == int(ItemType.FURNITURE):
+            values = getattr(furniture, "value", [100, 100, 100, 100, 100])
+            if len(values) > 3:
+                gain = gain * int(values[3]) // 100
 
     if _has_affect(character, AffectFlag.POISON):
         gain //= 4
@@ -307,10 +311,12 @@ def move_gain(character: Character) -> int:
     gain = gain * getattr(room, "heal_rate", 100) // 100
 
     furniture = getattr(character, "on", None)
-    if furniture is not None and getattr(furniture, "item_type", None) == ItemType.FURNITURE:
-        values = getattr(furniture, "value", [100, 100, 100, 100, 100])
-        if len(values) > 3:
-            gain = gain * int(values[3]) // 100
+    if furniture is not None:
+        item_type = getattr(furniture.prototype, "item_type", None)
+        if item_type == ItemType.FURNITURE or item_type == int(ItemType.FURNITURE):
+            values = getattr(furniture, "value", [100, 100, 100, 100, 100])
+            if len(values) > 3:
+                gain = gain * int(values[3]) // 100
 
     if _has_affect(character, AffectFlag.POISON):
         gain //= 4

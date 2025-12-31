@@ -216,3 +216,55 @@ class TestWeaponProficienciesNotInHandlers:
             or not callable(getattr(handlers, weapon, None))
             or "return 42" not in str(getattr(handlers, weapon, ""))
         )
+
+
+class TestMagicItemSkillsNotInHandlers:
+    """Verify magic item skills are passive (no handler functions, used by commands)."""
+
+    def test_staves_not_in_handlers(self):
+        """Verify staves is passive skill used by brandish command.
+
+        ROM Reference: src/magic.c:3733-3821 (do_brandish uses gsn_staves)
+        Python: mud/commands/magic_items.py:225-281 (do_brandish)
+
+        The 'staves' skill is a passive proficiency that affects success rate
+        when using the 'brandish' command with staff items. It should either
+        not exist in handlers or be a redirect stub to the brandish command.
+        """
+        from mud.skills import handlers
+
+        # staves skill should either not exist or be a redirect stub
+        if hasattr(handlers, "staves"):
+            staves_func = getattr(handlers, "staves")
+            # If it exists, it should be a redirect stub
+            assert callable(staves_func), "staves should be callable if present"
+            # Call it to verify it redirects to brandish command
+            result = staves_func(None, None)
+            assert isinstance(result, dict), "staves should return dict"
+            assert result.get("success") is False, "staves should not succeed directly"
+            assert "brandish" in result.get("message", "").lower(), "staves should mention brandish command"
+        # If it doesn't exist, that's also correct (passive skill)
+
+    def test_wands_not_in_handlers(self):
+        """Verify wands is passive skill used by zap command.
+
+        ROM Reference: src/magic.c:3825-3910 (do_zap uses gsn_wands)
+        Python: mud/commands/magic_items.py:343-418 (do_zap)
+
+        The 'wands' skill is a passive proficiency that affects success rate
+        when using the 'zap' command with wand items. It should either not
+        exist in handlers or be a redirect stub to the zap command.
+        """
+        from mud.skills import handlers
+
+        # wands skill should either not exist or be a redirect stub
+        if hasattr(handlers, "wands"):
+            wands_func = getattr(handlers, "wands")
+            # If it exists, it should be a redirect stub
+            assert callable(wands_func), "wands should be callable if present"
+            # Call it to verify it redirects to zap command
+            result = wands_func(None, None)
+            assert isinstance(result, dict), "wands should return dict"
+            assert result.get("success") is False, "wands should not succeed directly"
+            assert "zap" in result.get("message", "").lower(), "wands should mention zap command"
+        # If it doesn't exist, that's also correct (passive skill)

@@ -152,8 +152,7 @@ def do_recite(ch: Character, args: str) -> str:
     if not scroll:
         return "You do not have that scroll."
 
-    # Check if it's actually a scroll
-    if scroll.item_type != ItemType.ITEM_SCROLL:
+    if scroll.item_type != ItemType.SCROLL:
         return "You can recite only scrolls."
 
     # Check level requirement

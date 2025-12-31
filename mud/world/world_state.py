@@ -15,9 +15,6 @@ from mud.spawning.reset_handler import apply_resets
 
 from .linking import link_exits
 
-# Global skill registry for world initialization
-skill_registry = None
-
 _wizlock_enabled = False
 _newlock_enabled = False
 
@@ -159,18 +156,15 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     # Load skills registry from JSON
     from pathlib import Path
 
-    from mud.skills.registry import SkillRegistry
+    from mud.skills.registry import skill_registry as global_skill_registry
 
     skills_path = Path("data/skills.json")
     if skills_path.exists():
         try:
-            global skill_registry
-            skill_registry = SkillRegistry()
-            skill_registry.load(skills_path)
-            print(f"✅ Loaded {len(skill_registry.skills)} skills from {skills_path}")
+            global_skill_registry.load(skills_path)
+            print(f"✅ Loaded {len(global_skill_registry.skills)} skills from {skills_path}")
         except Exception as e:
             print(f"Warning: Failed to load skills from {skills_path}: {e}")
-            skill_registry = None
 
     # Load shops from JSON (needed for shopkeeper detection in resets)
     import json

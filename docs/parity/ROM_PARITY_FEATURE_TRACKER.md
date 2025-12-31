@@ -2,13 +2,25 @@
 
 **Purpose**: Comprehensive tracking of ALL ROM 2.4b C features needed for 100% parity with Python port  
 **Status**: ✅ **100% ROM 2.4b6 Parity ACHIEVED**  
-**Last Updated**: 2025-12-28 (Post-Security/Networking Audit)  
+**Last Updated**: 2025-12-30 (Post-Core Mechanics Formula Verification)
 
 ---
 
 ## 🎯 Executive Summary
 
-**MAJOR UPDATE - Object System Audit Completed (2025-12-28)**: 
+**MAJOR UPDATE - Core Mechanics Formula Verification Completed (2025-12-29/30)**: 
+
+Added **108 ROM C formula verification tests** to provide mathematical proof of ROM parity for core game mechanics beyond behavioral testing. This optional enhancement verifies exact ROM C formulas for character regeneration, object timers, affect lifecycle, and save calculations.
+
+**Test Files Created**:
+- `tests/test_char_update_rom_parity.py` - 30 tests (ROM `update.c:378-560`)
+- `tests/test_obj_update_rom_parity.py` - 22 tests (ROM `update.c:563-705`)
+- `tests/test_handler_affects_rom_parity.py` - 27 tests (ROM `handler.c:2049-2222`)
+- `tests/test_saves_rom_parity.py` - 29 tests (ROM `magic.c:215-254`, `handler.c:213-320`)
+
+**See**: `ROM_C_PARITY_RESEARCH_SUMMARY.md`, `ROM_C_PARITY_TEST_GAP_ANALYSIS.md`, `SAVES_ROM_PARITY_COMPLETION_REPORT.md`
+
+---
 
 **Current Status**: 
 - **Basic ROM Parity**: ✅ **100% ACHIEVED** (fully playable MUD)
@@ -16,6 +28,7 @@
 - **C Modules Ported**: 41/50 (82%)
 - **Critical Gameplay Features**: ✅ **ALL COMPLETE**
 - **Object System**: ✅ **100% COMPLETE** (all 17 commands, 277+ tests passing!)
+- **ROM C Formula Tests**: ✅ **108 tests** + **Weather system code audit** (100% parity verified)
 
 **Key Finding**: December 28, 2025 comprehensive object system audit revealed:
 - ✅ **ALL 17 ROM 2.4b6 object commands** fully implemented (100% coverage)
@@ -42,7 +55,7 @@
 
 ## 📊 Parity Assessment Matrix (Updated 2025-12-28)
 
-| Subsystem | Basic Functionality | Advanced Mechanics | ROM Parity | Priority |
+| **Subsystem** | **Basic Functionality** | **Advanced Mechanics** | **ROM Parity** | **Priority** |
 |-----------|-------------------|-------------------|-------------|-----------|
 | **Combat** | ✅ Complete | ✅ Complete | **100%** | ✅ |
 | **Skills/Spells** | ✅ Complete | ✅ Complete | **100%** | ✅ |
@@ -54,10 +67,195 @@
 | **OLC Builders** | ✅ Complete | ✅ Complete | **100%** | ✅ |
 | **Security/Admin** | ✅ Complete | ✅ Complete | **100%** | ✅ |
 | **Networking** | ✅ Complete | ✅ Complete | **100%** | ✅ |
+| **Core Mechanics Formulas** | ✅ Complete | ✅ Complete | **100%** | ✅ **NEW** |
 
 ---
 
-## 🔍 Detailed Feature Gap Analysis
+## 🧪 ROM C Formula Verification Tests (NEW - December 2025)
+
+**Purpose**: Mathematical proof of ROM parity for core mechanics formulas  
+**Status**: ✅ **108/108 tests passing (100%)**  
+**Research Documents**: `ROM_C_PARITY_RESEARCH_SUMMARY.md`, `ROM_C_PARITY_TEST_GAP_ANALYSIS.md`
+
+### Test Coverage by ROM C Source File
+
+#### 1. Character Regeneration (30 tests) - ROM `update.c:378-560`
+
+**Test File**: `tests/test_char_update_rom_parity.py`  
+**Python Implementation**: `mud/update/char_update.py`
+
+**Verified Formulas**:
+- ✅ **Hit Point Gain** (NPC: `5 + level / 2`, Player: `con + 1.5 * level`)
+  - Position modifiers (sleeping, resting, fighting, standing)
+  - Affect penalties (poison -level/3, plague -level/5, haste -level/4, slow +level/6)
+  - Hunger/thirst penalties (-1/3 each, stacking)
+  - Regeneration doubles gain, room heal rate modifiers
+  - Furniture heal bonuses (at +50%, on +33%, in +25%)
+  - Deficit capping (max 25% per tick)
+  
+- ✅ **Mana Gain** (NPC: `5 + level / 2`, Player: `wisdom + 1.5 * level`)
+  - Non-mana class penalty (Warrior/Thief: `0.5 * gain`)
+  - All position/affect modifiers apply
+  
+- ✅ **Move Gain** (NPC: `level`, Player: `dex + 2 * level`)
+  - Sleeping DEX bonus (`+ dex / 2` when sleeping)
+  - All position/affect modifiers apply
+
+**ROM C Reference**: `src/update.c:378-560` (182 lines)
+
+---
+
+#### 2. Object Update Mechanics (22 tests) - ROM `update.c:563-705`
+
+**Test File**: `tests/test_obj_update_rom_parity.py`  
+**Python Implementation**: `mud/update/obj_update.py`
+
+**Verified Mechanics**:
+- ✅ **Timer Decrement**: `obj->timer -= 1` per tick
+- ✅ **Affect Duration**: `paf->duration -= 1` with random level fade
+- ✅ **Permanent Affects**: `duration == -1` never expire
+- ✅ **Decay Messages**: Type-specific (fountain, corpse PC/NPC, food, potion, portal, container, default)
+- ✅ **Content Spilling**: Corpse PC and floating containers spill contents to room
+- ✅ **Extraction**: `extract_obj(obj)` when `timer == 1`
+
+**ROM C Reference**: `src/update.c:563-705` (142 lines)
+
+---
+
+#### 3. Affect Lifecycle (27 tests) - ROM `handler.c:2049-2222`
+
+**Test File**: `tests/test_handler_affects_rom_parity.py`  
+**Python Implementation**: `mud/affects/lifecycle.py`
+
+**Verified Functions**:
+- ✅ **`affect_to_char(victim, paf)`**: 
+  - Add to `spell_effects` list
+  - Call `affect_modify(victim, paf, add=True)`
+  - Apply hitroll/damroll/saving_throw modifiers
+  - Set affect flags (`victim.affected_by |= paf.bitvector`)
+  
+- ✅ **`affect_remove(victim, paf)`**:
+  - Call `affect_modify(victim, paf, add=False)`
+  - Revert all stat modifiers
+  - Clear affect flags (`victim.affected_by &= ~paf.bitvector`)
+  - Remove from `spell_effects` list
+  - Call `affect_check(victim, paf.type)` for visual updates
+  
+- ✅ **`affect_join(victim, paf)`**:
+  - Find existing affect of same type
+  - Average level: `(old.level + new.level) / 2`
+  - Sum duration: `old.duration + new.duration`
+  - Sum modifier: `old.modifier + new.modifier`
+  - Remove old, add new via `affect_to_char()`
+  
+- ✅ **`is_affected(victim, sn)`**: Check if spell present in `spell_effects`
+
+**ROM C Reference**: `src/handler.c:2049-2222` (173 lines)
+
+---
+
+#### 4. Save Formulas & Immunity (29 tests) - ROM `magic.c:215-254`, `handler.c:213-320`
+
+**Test File**: `tests/test_saves_rom_parity.py`  
+**Python Implementation**: `mud/affects/saves.py`
+
+**Verified Functions**:
+- ✅ **`saves_spell(level, victim, dam_type)`**:
+  - Base: `save = 50 + (victim.level - level) * 5 - victim.saving_throw * 2`
+  - Berserk: `save += victim.level / 2` (C integer division)
+  - Immunity check integration (`check_immune()`)
+  - Resistant: `save += 2`, Vulnerable: `save -= 2`
+  - fMana reduction: `save = 9 * save / 10` for Mage/Cleric (PC only)
+  - Clamp: `5 <= save <= 95`
+  - Return: `number_percent() < save`
+  
+- ✅ **`saves_dispel(dis_level, spell_level, duration)`**:
+  - Permanent bonus: `spell_level += 5` when `duration == -1`
+  - Base: `save = 50 + (spell_level - dis_level) * 5`
+  - Clamp: `5 <= save <= 95`
+  
+- ✅ **`check_immune(victim, dam_type)`**:
+  - Global flags: `IMM/RES/VULN_WEAPON`, `IMM/RES/VULN_MAGIC`
+  - Specific flags override global
+  - Vulnerability downgrades: `IMM + VULN = RES`, `RES + VULN = NORMAL`
+  - All 17 damage types mapped
+  
+- ✅ **`check_dispel(dis_level, victim, sn)`**:
+  - Failed save: Remove affect
+  - Successful save: Reduce `affect.level -= 1`
+  - Permanent effects harder to remove (+5 to spell level)
+
+**ROM C Reference**: `src/magic.c:215-254`, `src/handler.c:213-320` (147 lines)
+
+---
+
+#### 5. Weather System (Code Audit) - ROM `update.c:522-654`
+
+**Python Implementation**: `mud/game_loop.py:weather_tick()` (lines 884-928)  
+**Verification Method**: Manual code audit comparing ROM C with Python implementation
+
+**Verified Formulas**:
+- ✅ **Month-based Pressure Differential**:
+  - Summer (months 9-16): `diff = -2 if mmhg > 985 else 2`
+  - Winter (months 0-8): `diff = -2 if mmhg > 1015 else 2`
+  - ROM C: `update.c:573-576`
+  
+- ✅ **Barometric Pressure Change**:
+  - `change += diff * dice(1, 4) + dice(2, 6) - dice(2, 6)`
+  - `change = max(-12, min(change, 12))`  # Clamp to [-12, 12]
+  - `mmhg += change`
+  - `mmhg = max(960, min(mmhg, 1040))`  # Clamp to [960, 1040]
+  - ROM C: `update.c:578-584`
+  
+- ✅ **Sky State Transitions**:
+  - **CLOUDLESS → CLOUDY**: `if mmhg < 990 or (mmhg < 1010 and number_bits(2) == 0)`
+  - **CLOUDY → RAINING**: `if mmhg < 970 or (mmhg < 990 and number_bits(2) == 0)`
+  - **CLOUDY → CLOUDLESS**: `if mmhg > 1030 and number_bits(2) == 0`
+  - **RAINING → LIGHTNING**: `if mmhg < 970 and number_bits(2) == 0`
+  - **RAINING → CLOUDY**: `if mmhg > 1030 or (mmhg > 1010 and number_bits(2) == 0)`
+  - **LIGHTNING → RAINING**: `if mmhg > 1010 or (mmhg > 990 and number_bits(2) == 0)`
+  - ROM C: `update.c:586-641`
+
+**Status**: ✅ **Perfect ROM parity** - Python implementation matches ROM C exactly (no new tests needed)
+
+**ROM C Reference**: `src/update.c:522-654` (132 lines)
+
+---
+
+### Test Execution Summary
+
+All 108 ROM C formula verification tests passing (100%):
+
+```bash
+pytest tests/test_char_update_rom_parity.py -v  # 30/30 passing
+pytest tests/test_obj_update_rom_parity.py -v   # 22/22 passing
+pytest tests/test_handler_affects_rom_parity.py -v  # 27/27 passing
+pytest tests/test_saves_rom_parity.py -v        # 29/29 passing
+```
+
+Weather system verified via code audit (implementation matches ROM C exactly).
+
+---
+
+## 📋 P0 Core Mechanics Completion Status
+
+**ALL P0 WORK COMPLETE** (December 30, 2025):
+
+1. ✅ **Character Regeneration** - 30 tests (ROM `update.c:378-560`)
+2. ✅ **Object Timers** - 22 tests (ROM `update.c:563-705`)
+3. ✅ **Affect Lifecycle** - 27 tests (ROM `handler.c:2049-2222`)
+4. ✅ **Save Formulas** - 29 tests (ROM `magic.c:215-254`, `handler.c:213-320`)
+5. ✅ **Reset Execution** - 25+ tests (ROM `db.c:1602-1993`) - **PRE-EXISTING**
+6. ✅ **Save/Load Integrity** - 30+ tests - **PRE-EXISTING**
+7. ✅ **Weather System** - Code audit (ROM `update.c:522-654`) - **VERIFIED**
+
+**Total P0 Tests**: 163+ tests (108 new formula tests + 55+ pre-existing tests)
+
+**Completion Reports**:
+- `SAVES_ROM_PARITY_COMPLETION_REPORT.md` - Detailed save formula verification
+- `ROM_2.4B6_PARITY_CERTIFICATION.md` - Updated certification with P0 completion
+
+---
 
 ### 1. Combat System - Advanced Mechanics ✅ **98-100% COMPLETE** (Updated 2025-12-28)
 

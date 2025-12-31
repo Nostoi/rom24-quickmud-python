@@ -1354,7 +1354,7 @@ def bless(caster: Character, target: Character | None = None) -> bool:
     if target is None:
         raise ValueError("bless requires a target")
 
-    if target.position == Position.FIGHTING:
+    if target.position == Position.FIGHTING or target.has_spell_effect("bless"):
         return False
 
     level = max(getattr(caster, "level", 0), 0)
@@ -1890,31 +1890,29 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
             if level <= 0:
                 break
 
-        if found or level <= 0:
-            continue
+        if not found:
+            if last_victim is caster:
+                broadcast_room(
+                    room,
+                    "The bolt seems to have fizzled out.",
+                    exclude=caster,
+                )
+                _send_to_char(caster, "The bolt grounds out through your body.")
+                break
 
-        if last_victim is caster:
+            last_victim = caster
             broadcast_room(
                 room,
-                "The bolt seems to have fizzled out.",
+                f"The bolt arcs to {caster_name}...whoops!",
                 exclude=caster,
             )
-            _send_to_char(caster, "The bolt grounds out through your body.")
-            break
-
-        last_victim = caster
-        broadcast_room(
-            room,
-            f"The bolt arcs to {caster_name}...whoops!",
-            exclude=caster,
-        )
-        _send_to_char(caster, "You are struck by your own lightning!")
-        damage = rng_mm.dice(level, 6)
-        if saves_spell(level, caster, DamageType.LIGHTNING):
-            damage = c_div(damage, 3)
-        apply_damage(caster, caster, damage, DamageType.LIGHTNING, dt="chain lightning")
-        any_hit = any_hit or damage > 0
-        level -= 4
+            _send_to_char(caster, "You are struck by your own lightning!")
+            damage = rng_mm.dice(level, 6)
+            if saves_spell(level, caster, DamageType.LIGHTNING):
+                damage = c_div(damage, 3)
+            apply_damage(caster, caster, damage, DamageType.LIGHTNING, dt="chain lightning")
+            any_hit = any_hit or damage > 0
+            level -= 4
 
     return any_hit
 
@@ -3100,7 +3098,11 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
         victim_weapon.wear_loc = int(WearLocation.NONE)
 
     drop_room = getattr(victim, "room", None)
-    if drop_room is not None and hasattr(drop_room, "add_object"):
+
+    # ROM src/fight.c:2258-2265 - ITEM_NODROP/ITEM_INVENTORY keep weapon on victim.
+    if extra_flags & (int(ExtraFlag.NODROP) | int(ExtraFlag.INVENTORY)):
+        victim.add_object(victim_weapon)
+    elif drop_room is not None and hasattr(drop_room, "add_object"):
         drop_room.add_object(victim_weapon)
     else:
         victim.add_object(victim_weapon)
