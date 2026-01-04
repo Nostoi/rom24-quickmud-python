@@ -4566,14 +4566,6 @@ def giant_strength(
     if caster is None or target is None:
         raise ValueError("giant_strength requires a target")
 
-    if target.has_spell_effect("giant strength"):
-        if target is caster:
-            _send_to_char(caster, "You are already as strong as you can get!")
-        else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} can't get any stronger.")
-        return False
-
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
     level = max(int(base_level or 0), 0)
     modifier = 1

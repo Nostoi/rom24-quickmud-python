@@ -142,6 +142,12 @@ def do_say(char: Character, args: str) -> str:
 
 
 def do_tell(char: Character, args: str) -> str:
+    """
+    Tell a character something privately.
+
+    ROM Reference: src/act_comm.c do_tell
+    ROM behavior: Can tell to PCs anywhere, but NPCs only in same room.
+    """
     if "tell" in char.banned_channels:
         return "You are banned from tell."
     if _has_comm_flag(char, CommFlag.NOCHANNELS):
@@ -156,12 +162,17 @@ def do_tell(char: Character, args: str) -> str:
         target_name, message = args.split(None, 1)
     except ValueError:
         return "Tell whom what?"
-    target = next(
-        (c for c in character_registry if c.name and c.name.lower() == target_name.lower()),
-        None,
-    )
+
+    from mud.world.char_find import get_char_world
+
+    target = get_char_world(char, target_name)
     if not target:
         return "They aren't here."
+
+    if getattr(target, "is_npc", False):
+        if getattr(target, "room", None) != getattr(char, "room", None):
+            return "They aren't here."
+
     error = _validate_tell_target(char, target)
     if error:
         return error

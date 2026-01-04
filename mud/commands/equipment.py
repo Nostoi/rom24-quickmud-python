@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.handler import equip_char, unequip_char
 from mud.models.constants import ExtraFlag, ItemType, Position, WearFlag, WearLocation
 
 if TYPE_CHECKING:
@@ -75,19 +76,74 @@ def do_wear(ch: Character, args: str) -> str:
     if ch.position < Position.SLEEPING:
         return "You can't do that right now."
 
-    # Determine where this can be worn
-    wear_flags = getattr(obj, "wear_flags", 0)
-    item_type_str = getattr(obj, "item_type", None)
+    # Check level restriction (ROM src/act_obj.c:1405-1413)
+    obj_level = getattr(obj.prototype, "level", 0)
+    char_level = getattr(ch, "level", 1)
+    if char_level < obj_level:
+        return f"You must be level {obj_level} to use this object."
+
+    # Determine where this can be worn (read from prototype)
+    wear_flags = getattr(obj.prototype, "wear_flags", 0)
+    wear_flags = int(wear_flags) if wear_flags else 0
+    item_type_str = getattr(obj.prototype, "item_type", None)
     item_type = int(item_type_str) if item_type_str else ItemType.TRASH
 
-    # Weapons and held items should use wield/hold
     if item_type == ItemType.WEAPON:
         return "You need to wield weapons, not wear them."
+
+    if wear_flags & WearFlag.WEAR_SHIELD:
+        from mud.models.constants import WeaponFlag
+
+        equipment = getattr(ch, "equipment", {})
+        wield_loc = int(WearLocation.WIELD)
+        if wield_loc in equipment and equipment[wield_loc] is not None:
+            weapon = equipment[wield_loc]
+            weapon_flags = getattr(weapon.prototype, "value", [0, 0, 0, 0, 0])
+            if len(weapon_flags) > 4:
+                weapon_flag_val = weapon_flags[4]
+                if weapon_flag_val & WeaponFlag.TWO_HANDS:
+                    return "Your hands are tied up with your weapon!"
+
+    # Check if item has HOLD flag - if so, use hold logic (ROM lines 1670-1677)
     if wear_flags & WearFlag.HOLD:
-        return "You need to hold that, not wear it."
+        # Check if hold slot is occupied
+        equipment = getattr(ch, "equipment", {})
+        hold_loc = int(WearLocation.HOLD)
+
+        if hold_loc in equipment and equipment[hold_loc] is not None:
+            existing = equipment[hold_loc]
+            existing_name = getattr(existing, "short_descr", "something")
+            return f"You're already holding {existing_name}."
+
+        # Check alignment restrictions
+        can_hold, error_msg = _can_wear_alignment(ch, obj)
+        if not can_hold:
+            return error_msg or "You cannot hold that item."
+
+        # Hold the item
+        if not equipment:
+            ch.equipment = {}
+        ch.equipment[hold_loc] = obj
+        obj.worn_by = ch
+
+        # Remove from inventory
+        inventory = getattr(ch, "inventory", [])
+        if obj in inventory:
+            inventory.remove(obj)
+
+        # Apply equipment bonuses
+        equip_char(ch, obj, hold_loc)
+
+        obj_name = getattr(obj, "short_descr", "something")
+
+        # Special message for lights (ROM src/act_obj.c:1676)
+        if item_type == ItemType.LIGHT:
+            return f"You hold {obj_name} as your light."
+
+        return f"You hold {obj_name} in your hand."
 
     # Find appropriate wear location
-    wear_loc = _get_wear_location(obj, wear_flags)
+    wear_loc = _get_wear_location(obj, wear_flags, ch)
     if not wear_loc:
         return "You can't wear that."
 
@@ -110,12 +166,14 @@ def do_wear(ch: Character, args: str) -> str:
         ch.equipment = {}
     ch.equipment[wear_loc] = obj
     obj.worn_by = ch
-    obj.wear_loc = wear_loc
 
     # Remove from inventory
     inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
+
+    # Apply equipment bonuses (ROM src/handler.c:equip_char)
+    equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
     return f"You wear {obj_name}."
@@ -145,8 +203,14 @@ def do_wield(ch: Character, args: str) -> str:
     if ch.position < Position.SLEEPING:
         return "You can't do that right now."
 
-    # Check if it's a weapon (item_type is stored as string, enum value is int)
-    item_type_str = getattr(obj, "item_type", None)
+    # Check level restriction (ROM src/act_obj.c:1405-1413)
+    obj_level = getattr(obj.prototype, "level", 0)
+    char_level = getattr(ch, "level", 1)
+    if char_level < obj_level:
+        return f"You must be level {obj_level} to use this object."
+
+    # Check if it's a weapon (read from prototype)
+    item_type_str = getattr(obj.prototype, "item_type", None)
     item_type = int(item_type_str) if item_type_str else ItemType.TRASH
     if item_type != ItemType.WEAPON:
         return "You can't wield that."
@@ -161,10 +225,16 @@ def do_wield(ch: Character, args: str) -> str:
         return f"You're already wielding {existing_name}."
 
     # Check strength requirement (weapon weight)
-    weight = getattr(obj, "weight", 0)
-    str_stat = (
-        ch.get_curr_stat(getattr(ch, "Stat", type("Stat", (), {"STR": 0})).STR) if hasattr(ch, "get_curr_stat") else 13
-    )
+    weight = getattr(obj.prototype, "weight", 0)
+
+    # Get character strength (default to 13 if stat system not available)
+    str_stat = 13
+    if hasattr(ch, "get_curr_stat"):
+        from mud.models.constants import Stat
+
+        stat_value = ch.get_curr_stat(Stat.STR)
+        if stat_value is not None:
+            str_stat = stat_value
 
     # ROM formula: need STR >= weight / 10
     if str_stat * 10 < weight:
@@ -175,17 +245,29 @@ def do_wield(ch: Character, args: str) -> str:
     if not can_wield:
         return error_msg or "You cannot wield that weapon."
 
+    from mud.models.constants import WeaponFlag
+
+    weapon_flags = getattr(obj.prototype, "value", [0, 0, 0, 0, 0])
+    if len(weapon_flags) > 4:
+        weapon_flag_val = weapon_flags[4]
+        if weapon_flag_val & WeaponFlag.TWO_HANDS:
+            shield_loc = int(WearLocation.SHIELD)
+            if shield_loc in equipment and equipment[shield_loc] is not None:
+                return "You need two hands free for that weapon!"
+
     # Wield the weapon
     if not equipment:
         ch.equipment = {}
     ch.equipment[wear_loc] = obj
     obj.worn_by = ch
-    obj.wear_loc = wear_loc
 
     # Remove from inventory
     inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
+
+    # Apply equipment bonuses (ROM src/handler.c:equip_char)
+    equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
     return f"You wield {obj_name}."
@@ -215,8 +297,15 @@ def do_hold(ch: Character, args: str) -> str:
     if ch.position < Position.SLEEPING:
         return "You can't do that right now."
 
-    # Check if it can be held
-    wear_flags = getattr(obj, "wear_flags", 0)
+    # Check level restriction (ROM src/act_obj.c:1405-1413)
+    obj_level = getattr(obj.prototype, "level", 0)
+    char_level = getattr(ch, "level", 1)
+    if char_level < obj_level:
+        return f"You must be level {obj_level} to use this object."
+
+    # Check if it can be held (read from prototype)
+    wear_flags = getattr(obj.prototype, "wear_flags", 0)
+    wear_flags = int(wear_flags) if wear_flags else 0  # Convert string to int if needed
     if not (wear_flags & WearFlag.HOLD):
         return "You can't hold that."
 
@@ -239,17 +328,19 @@ def do_hold(ch: Character, args: str) -> str:
         ch.equipment = {}
     ch.equipment[wear_loc] = obj
     obj.worn_by = ch
-    obj.wear_loc = wear_loc
 
     # Remove from inventory
     inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
 
+    # Apply equipment bonuses (ROM src/handler.c:equip_char)
+    equip_char(ch, obj, wear_loc)
+
     obj_name = getattr(obj, "short_descr", "something")
 
-    # Special message for lights (item_type is stored as string)
-    item_type_str = getattr(obj, "item_type", None)
+    # Special message for lights (read from prototype)
+    item_type_str = getattr(obj.prototype, "item_type", None)
     item_type = int(item_type_str) if item_type_str else ItemType.TRASH
     if item_type == ItemType.LIGHT:
         return f"You hold {obj_name} as your light."
@@ -269,10 +360,11 @@ def _wear_all(ch: Character) -> str:
         if getattr(obj, "worn_by", None):
             continue
 
-        # Skip weapons and held items
-        item_type_str = getattr(obj, "item_type", None)
+        # Skip weapons and held items (read from prototype)
+        item_type_str = getattr(obj.prototype, "item_type", None)
         item_type = int(item_type_str) if item_type_str else ItemType.TRASH
-        wear_flags = getattr(obj, "wear_flags", 0)
+        wear_flags = getattr(obj.prototype, "wear_flags", 0)
+        wear_flags = int(wear_flags) if wear_flags else 0  # Convert string to int if needed
 
         if item_type == ItemType.WEAPON:
             continue
@@ -280,7 +372,7 @@ def _wear_all(ch: Character) -> str:
             continue
 
         # Try to wear it
-        wear_loc = _get_wear_location(obj, wear_flags)
+        wear_loc = _get_wear_location(obj, wear_flags, ch)
         if not wear_loc:
             continue
 
@@ -293,8 +385,10 @@ def _wear_all(ch: Character) -> str:
             ch.equipment = {}
         ch.equipment[wear_loc] = obj
         obj.worn_by = ch
-        obj.wear_loc = wear_loc
         inventory.remove(obj)
+
+        # Apply equipment bonuses (ROM src/handler.c:equip_char)
+        equip_char(ch, obj, wear_loc)
 
         obj_name = getattr(obj, "short_descr", "something")
         messages.append(f"You wear {obj_name}.")
@@ -305,14 +399,45 @@ def _wear_all(ch: Character) -> str:
     return "\n".join(messages)
 
 
-def _get_wear_location(obj: Object, wear_flags: int) -> WearLocation | None:
-    """Determine which slot an item should be worn in."""
+def _get_wear_location(obj: Object, wear_flags: int, ch: Character | None = None) -> WearLocation | None:
+    """
+    Determine which slot an item should be worn in.
+
+    ROM Reference: src/act_obj.c:wear_obj() lines 1425-1670
+
+    For multi-slot items (rings, neck, wrists), checks which slots are occupied
+    and returns the first available slot.
+    """
+    equipment = getattr(ch, "equipment", {}) if ch else {}
+
     # Priority order for wear locations (from ROM)
     # Check WearFlag bits and return corresponding WearLocation slot
+
+    # Multi-slot: Finger (FINGER_L, FINGER_R)
     if wear_flags & WearFlag.WEAR_FINGER:
-        return WearLocation.FINGER_L  # Will need multi-slot handling later
+        if int(WearLocation.FINGER_L) not in equipment:
+            return WearLocation.FINGER_L
+        if int(WearLocation.FINGER_R) not in equipment:
+            return WearLocation.FINGER_R
+        return None  # Both slots occupied
+
+    # Multi-slot: Neck (NECK_1, NECK_2)
     if wear_flags & WearFlag.WEAR_NECK:
-        return WearLocation.NECK_1
+        if int(WearLocation.NECK_1) not in equipment:
+            return WearLocation.NECK_1
+        if int(WearLocation.NECK_2) not in equipment:
+            return WearLocation.NECK_2
+        return None  # Both slots occupied
+
+    # Multi-slot: Wrist (WRIST_L, WRIST_R)
+    if wear_flags & WearFlag.WEAR_WRIST:
+        if int(WearLocation.WRIST_L) not in equipment:
+            return WearLocation.WRIST_L
+        if int(WearLocation.WRIST_R) not in equipment:
+            return WearLocation.WRIST_R
+        return None  # Both slots occupied
+
+    # Single-slot items
     if wear_flags & WearFlag.WEAR_BODY:
         return WearLocation.BODY
     if wear_flags & WearFlag.WEAR_HEAD:
@@ -329,8 +454,6 @@ def _get_wear_location(obj: Object, wear_flags: int) -> WearLocation | None:
         return WearLocation.ABOUT
     if wear_flags & WearFlag.WEAR_WAIST:
         return WearLocation.WAIST
-    if wear_flags & WearFlag.WEAR_WRIST:
-        return WearLocation.WRIST_L  # Will need multi-slot handling later
     if wear_flags & WearFlag.WEAR_SHIELD:
         return WearLocation.SHIELD
     if wear_flags & WearFlag.WEAR_FLOAT:

@@ -278,7 +278,86 @@ flags -= PlayerFlag.AUTOLOOT   # Don't subtract
 
 ---
 
-### 8. Testing Commands Without Required Fields
+### 8. Assuming ROM C Constant Values Without Verification
+
+**Severity:** HIGH - Can break entire command functionality
+
+**Problem:**
+Assuming ROM C constant values (like `WEAR_NONE`, `MAX_LEVEL`, etc.) without checking the actual ROM C source files. Even if a constant seems "obvious" (like WEAR_NONE = 0), ROM C might use a different value.
+
+**Example (WRONG):**
+```python
+# DON'T ASSUME
+wear_loc = getattr(obj, "wear_loc", None)
+if wear_loc is not None and wear_loc != 0:  # Assumed WEAR_NONE = 0
+    continue  # Filter out equipped items
+
+# This filtered ALL inventory items because WEAR_NONE is actually -1!
+```
+
+**Why This Fails:**
+ROM C defines constants in header files, and they may use non-obvious values:
+```c
+// src/merc.h line 1336
+#define WEAR_NONE     -1   // NOT 0!
+#define WEAR_LIGHT     0
+#define WEAR_FINGER_L  1
+```
+
+**Correct Approach:**
+```python
+# ALWAYS check ROM C source first
+from mud.models.constants import WearLocation
+
+# Use the enum (which has the correct ROM C value)
+wear_loc = getattr(obj, "wear_loc", None)
+if wear_loc is not None and wear_loc != WearLocation.NONE:  # -1
+    continue
+
+# Or use the constant directly
+if wear_loc is not None and wear_loc != -1:  # ROM C merc.h:1336
+    continue
+```
+
+**How to Verify Constants:**
+```bash
+# Search ROM C header files for constant definitions
+grep -n "WEAR_NONE\|MAX_LEVEL\|PULSE_" src/merc.h src/mud.h
+
+# Example findings:
+# src/merc.h:1336:#define WEAR_NONE     -1
+# src/merc.h:91:#define MAX_LEVEL      60
+# src/merc.h:1072:#define PULSE_VIOLENCE (2 * PULSE_PER_SECOND)
+```
+
+**Common Constants to Verify:**
+| Constant | Assumed Value | Actual ROM C Value | File |
+|----------|---------------|-------------------|------|
+| `WEAR_NONE` | 0 | **-1** | src/merc.h:1336 |
+| `MAX_LEVEL` | 100 | **60** | src/merc.h:91 |
+| `PULSE_VIOLENCE` | 4 | **8** (2*4) | src/merc.h:1072 |
+| `PULSE_MOBILE` | 16 | **16** | src/merc.h:1073 |
+
+**Debugging Tips:**
+When integration tests show "Nothing" or empty results unexpectedly:
+1. Add debug prints to trace filtering logic
+2. Check what values objects/characters actually have
+3. Grep ROM C source for constant definitions
+4. Verify QuickMUD enum matches ROM C value
+
+**Real Bug Example (January 7, 2026):**
+`do_inventory` showed "Nothing.\n" for all inventory because:
+- Objects had `wear_loc = -1` (correct)
+- Filter checked `wear_loc != 0` (wrong!)
+- All inventory objects were filtered out
+- Fix: Changed to `wear_loc != -1` (ROM C merc.h:1336)
+- Result: 13/13 integration tests passed
+
+**Fixed In:** January 7, 2026 - WEAR_NONE constant mismatch in do_inventory
+
+---
+
+### 9. Testing Commands Without Required Fields
 
 **Severity:** LOW - Tests fail unexpectedly
 

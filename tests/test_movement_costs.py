@@ -6,14 +6,18 @@ from mud.world import move_character as move
 
 
 def setup_world_at(vnum_from: int, vnum_to: int) -> tuple:
+    from mud.models.room import Exit
+    from mud.models.constants import Direction
+
     initialize_world("area/area.lst")
     time_info.sunlight = Sunlight.LIGHT
     ch = create_test_character("Walker", vnum_from)
-    # Ensure a simple north exit exists in test data
     room_from = room_registry[vnum_from]
     room_to = room_registry[vnum_to]
     room_from.sector_type = int(Sector.CITY)
     room_to.sector_type = int(Sector.FOREST)
+    north_idx = Direction.NORTH.value
+    room_from.exits[north_idx] = Exit(to_room=room_to, vnum=vnum_to)
     ch.move = 20
     return ch, room_from, room_to
 

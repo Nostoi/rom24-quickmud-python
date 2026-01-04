@@ -188,9 +188,17 @@ def do_practice(char: Character, args: str) -> str:
     new_value = min(adept, current + increment)
     char.skills[skill_key] = new_value
 
+    # ROM C parity: Send messages to both char and room (src/act_info.c:2767-2777)
     if new_value >= adept:
-        return f"You are now learned at {skill.name}."
-    return f"You practice {skill.name}."
+        char.messages.append(f"You are now learned at {skill.name}.")
+        if char.room:
+            char.room.broadcast(f"{char.name} is now learned at {skill.name}.", exclude=char)
+    else:
+        char.messages.append(f"You practice {skill.name}.")
+        if char.room:
+            char.room.broadcast(f"{char.name} practices {skill.name}.", exclude=char)
+
+    return ""
 
 
 def do_train(char: Character, args: str) -> str:

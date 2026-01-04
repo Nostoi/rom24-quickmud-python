@@ -145,7 +145,9 @@ def _is_floating_slot(slot: str | None, obj: Object) -> bool:
 
 
 def _format_corpse_labels(corpse: Object, name: str) -> None:
-    short_template = getattr(corpse.prototype, "short_descr", None) or getattr(corpse, "short_descr", "the corpse of %s")
+    short_template = getattr(corpse.prototype, "short_descr", None) or getattr(
+        corpse, "short_descr", "the corpse of %s"
+    )
     desc_template = getattr(corpse.prototype, "description", None) or getattr(
         corpse, "description", "The corpse of %s is lying here."
     )
@@ -216,11 +218,7 @@ def _broadcast_neighbor_cry(victim: Character) -> None:
     if room is None:
         return
 
-    message = (
-        "You hear something's death cry."
-        if getattr(victim, "is_npc", False)
-        else "You hear someone's death cry."
-    )
+    message = "You hear something's death cry." if getattr(victim, "is_npc", False) else "You hear someone's death cry."
 
     for exit_data in getattr(room, "exits", []) or []:
         if exit_data is None:
@@ -341,7 +339,7 @@ def death_cry(victim: Character) -> None:
 def _fallback_corpse(vnum: int, *, item_type: ItemType) -> Object:
     """Return a minimal corpse object when the real prototype is missing."""
 
-    proto = ObjIndex(vnum=vnum, short_descr="a corpse", description="The corpse of someone lies here.")
+    proto = ObjIndex(vnum=vnum, short_descr="the corpse of %s", description="The corpse of %s is lying here.")
     proto.item_type = int(item_type)
     corpse = Object(instance_id=None, prototype=proto)
     corpse.item_type = int(item_type)
@@ -366,19 +364,6 @@ def _strip_inventory(victim: Character) -> list[tuple[Object, bool]]:
         obj.wear_loc = int(WearLocation.NONE)
         items.append((obj, was_floating))
     return items
-
-
-def _set_corpse_coins(corpse: Object, gold: int, silver: int) -> None:
-    """Persist coin totals on the corpse and mirror into ``value[0:2]``."""
-
-    corpse.gold = gold
-    corpse.silver = silver
-    values = list(getattr(corpse, "value", []) or [])
-    while len(values) < 2:
-        values.append(0)
-    values[0] = gold
-    values[1] = silver
-    corpse.value = values
 
 
 def _handle_corpse_item(
@@ -445,9 +430,18 @@ def make_corpse(victim: Character) -> Object | None:
 
     gold = max(0, int(getattr(victim, "gold", 0) or 0))
     silver = max(0, int(getattr(victim, "silver", 0) or 0))
-    _set_corpse_coins(corpse, gold, silver)
-    victim.gold = max(0, int(getattr(victim, "gold", 0) or 0) - gold)
-    victim.silver = max(0, int(getattr(victim, "silver", 0) or 0) - silver)
+
+    # ROM C fight.c:1473-1478 - Create money object inside corpse
+    if gold > 0 or silver > 0:
+        from mud.handler import create_money
+
+        money_obj = create_money(gold, silver)
+        if money_obj:
+            corpse.contained_items.append(money_obj)
+            money_obj.location = None  # Inside corpse, not in room
+
+    victim.gold = 0
+    victim.silver = 0
 
     if not is_npc:
         _clear_player_flag(victim, PlayerFlag.CANLOOT)
@@ -557,16 +551,18 @@ def raw_kill(victim: Character) -> Object | None:
     """Handle character death by creating a corpse and removing the victim."""
 
     from mud.combat.engine import stop_fighting as _stop_fighting
-    
+    from mud.characters.follow import die_follower
+
     # Trigger death mobprog handled in apply_damage before raw_kill
     # ROM Reference: src/fight.c:1136-1180 (mp_death_trigger called before raw_kill)
-    
+
+    _nuke_pets(victim, room=getattr(victim, "room", None))
+    die_follower(victim)
     _stop_fighting(victim, True)
     death_cry(victim)
     corpse = make_corpse(victim)
 
     room = getattr(victim, "room", None)
-    _nuke_pets(victim, room)
     if room is not None:
         room.remove_character(victim)
 

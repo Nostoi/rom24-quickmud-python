@@ -129,6 +129,21 @@ def number_bits(width: int) -> int:
     return number_mm() & ((1 << width) - 1)
 
 
+def number_door() -> int:
+    """Return random door direction 0-5 (ROM db.c:3541).
+
+    ROM C implementation:
+        while ((door = number_mm() & (8 - 1)) > 5);
+        return door;
+
+    Returns value in range 0-5 (NORTH, EAST, SOUTH, WEST, UP, DOWN).
+    """
+    door = number_mm() & (8 - 1)
+    while door > 5:
+        door = number_mm() & (8 - 1)
+    return door
+
+
 def dice(number: int, size: int) -> int:
     if size == 0:
         return 0

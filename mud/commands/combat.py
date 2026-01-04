@@ -21,6 +21,7 @@ from mud.models.constants import (
 )
 from mud.skills import skill_registry
 from mud.utils import rng_mm
+from mud.world.vision import can_see_character
 
 
 def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
@@ -99,6 +100,9 @@ def do_kill(char: Character, args: str) -> str:
 
     victim = _find_room_target(char, target_name)
     if victim is None:
+        return "They aren't here."
+
+    if not can_see_character(char, victim):
         return "They aren't here."
 
     if victim is char:
@@ -195,6 +199,9 @@ def do_rescue(char: Character, args: str) -> str:
     if victim is None:
         return "They aren't here."
 
+    if not can_see_character(char, victim):
+        return "They aren't here."
+
     if victim is char:
         return "What about fleeing instead?"
 
@@ -282,6 +289,9 @@ def do_backstab(char: Character, args: str) -> str:
 
     victim = _find_room_target(char, target_name)
     if victim is None:
+        return "They aren't here."
+
+    if not can_see_character(char, victim):
         return "They aren't here."
 
     if victim is char:

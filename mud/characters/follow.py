@@ -67,4 +67,18 @@ def stop_follower(follower: "Character") -> None:
     follower.leader = None
 
 
-__all__ = ["add_follower", "stop_follower"]
+def die_follower(char: "Character") -> None:
+    """Stop all followers when character dies.
+
+    ROM Reference: src/handler.c die_follower
+    Mirrors ROM behavior: when character dies, all their followers stop following.
+    """
+    from mud.models.character import character_registry
+
+    for follower in list(character_registry):
+        master = getattr(follower, "master", None)
+        if master is char:
+            stop_follower(follower)
+
+
+__all__ = ["add_follower", "stop_follower", "die_follower"]

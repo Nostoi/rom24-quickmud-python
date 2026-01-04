@@ -246,11 +246,7 @@ def can_see_room(char: Character, room: Room) -> bool:
         return False
 
     if room_is_dark(room):
-        if not (
-            _has_holylight(char)
-            or char.is_immortal()
-            or bool(char.affected_by & _VISIBILITY_AFFECTS)
-        ):
+        if not (_has_holylight(char) or char.is_immortal() or bool(char.affected_by & _VISIBILITY_AFFECTS)):
             return False
 
     flags = int(getattr(room, "room_flags", 0) or 0)
@@ -312,8 +308,10 @@ def can_see_object(observer: Character | None, obj: Any) -> bool:
 
 
 def describe_character(observer: Character, target: Character | None) -> str:
-    """Return a ROM-style ``PERS`` description for ``target``."""
+    """Return a ROM-style ``PERS`` description for ``target`` with affect auras.
 
+    ROM Parity: Mirrors ROM src/act_info.c show_char_to_char_0 affect indicators.
+    """
     if target is None:
         return "someone"
 
@@ -329,4 +327,16 @@ def describe_character(observer: Character, target: Character | None) -> str:
     if not name:
         return "someone"
 
-    return str(name).strip() or "someone"
+    base_name = str(name).strip() or "someone"
+
+    prefixes = []
+    if hasattr(target, "has_affect"):
+        if target.has_affect(AffectFlag.SANCTUARY):
+            prefixes.append("(White Aura)")
+        if target.has_affect(AffectFlag.FAERIE_FIRE):
+            prefixes.append("(Pink Aura)")
+
+    if prefixes:
+        return " ".join(prefixes) + " " + base_name
+
+    return base_name

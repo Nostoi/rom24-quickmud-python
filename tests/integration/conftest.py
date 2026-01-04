@@ -4,6 +4,7 @@ Integration test framework for player workflows.
 These tests simulate complete player scenarios to ensure end-to-end
 functionality beyond unit testing of individual components.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -16,11 +17,7 @@ from mud.registry import room_registry
 def test_room():
     """Create a basic test room"""
     room = Room(
-        vnum=1000,
-        name="Test Room",
-        description="A room for testing player interactions.",
-        room_flags=0,
-        sector_type=0
+        vnum=1000, name="Test Room", description="A room for testing player interactions.", room_flags=0, sector_type=0
     )
     room.people = []  # Initialize people list
     room.contents = []  # Initialize contents list
@@ -29,9 +26,11 @@ def test_room():
     room_registry.pop(1000, None)
 
 
-@pytest.fixture  
+@pytest.fixture
 def test_player(test_room):
     """Create a test player character"""
+    from mud.models.character import character_registry
+
     char = Character(
         name="TestPlayer",
         level=5,
@@ -42,9 +41,12 @@ def test_player(test_room):
         is_npc=False,
     )
     test_room.people.append(char)
+    character_registry.append(char)  # Add to registry so game_tick() processes it
     yield char
     if char in test_room.people:
         test_room.people.remove(char)
+    if char in character_registry:
+        character_registry.remove(char)
 
 
 @pytest.fixture
@@ -61,9 +63,9 @@ def test_mob(test_room):
         max_hit=50,
     )
     test_room.people.append(mob)
-    
+
     yield mob
-    
+
     if mob in test_room.people:
         test_room.people.remove(mob)
 

@@ -3,10 +3,10 @@
 [![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/avinson/rom24-quickmud)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-700+%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-1435%2F1436%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-100%25%20CERTIFIED-success.svg)](ROM_2.4B6_PARITY_CERTIFICATION.md)
 [![Function Coverage](https://img.shields.io/badge/ROM%20C%20Functions-96.1%25-blue.svg)](FUNCTION_MAPPING.md)
-[![Integration Tests](https://img.shields.io/badge/integration%20tests-43%2F43%20passing-brightgreen.svg)](tests/integration/)
+[![Integration Tests](https://img.shields.io/badge/integration%20tests-688%2F701%20passing-brightgreen.svg)](tests/integration/)
 
 **QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking, JSON world data, and **100% ROM 2.4b behavioral parity**.
 
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 700+ tests with 43/43 integration tests passing (100%)
+- **📊 Comprehensive Testing**: 1435+ tests with 688/701 integration tests passing (98.1%)
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -96,7 +96,7 @@ pip install -e .[dev]
 
 ```bash
 pytest  # Run all tests (~16 seconds)
-pytest tests/integration/ -v  # Run integration tests (43/43 passing)
+pytest tests/integration/ -v  # Run integration tests (688/701 passing)
 ```
 
 ### Development Server
@@ -110,8 +110,8 @@ python -m mud  # Start development server
 - **Version**: 2.5.0 (Production Ready - ROM 2.4b6 Parity Certified)
 - **ROM 2.4b Parity**: ✅ **100% CERTIFIED** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md))
 - **ROM C Function Coverage**: 96.1% (716/745 functions mapped)
-- **Test Coverage**: 700+ tests passing, 43/43 integration tests (100%)
-- **Performance**: Full test suite completes in ~16 seconds
+- **Test Coverage**: 1435/1436 tests passing (99.93%), 688/701 integration tests (98.1%)
+- **Performance**: Full test suite completes in ~75 seconds
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture

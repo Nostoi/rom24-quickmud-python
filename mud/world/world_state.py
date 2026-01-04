@@ -179,7 +179,6 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
                 shops_data = json.load(f)
             shop_registry.clear()
             for shop_data in shops_data:
-                # Convert string buy_types back to int list for compatibility
                 buy_types = []
                 for bt in shop_data.get("buy_types", []):
                     if isinstance(bt, str):
@@ -188,7 +187,7 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
                         try:
                             buy_types.append(ItemType[bt.upper()].value)
                         except (KeyError, AttributeError):
-                            buy_types.append(0)  # unknown type
+                            buy_types.append(0)
                     else:
                         buy_types.append(bt)
 
@@ -203,6 +202,18 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
             print(f"✅ Loaded {len(shop_registry)} shops from {shops_path}")
         except Exception as e:
             print(f"Warning: Failed to load shops from {shops_path}: {e}")
+
+    from mud.loaders.social_loader import load_socials
+
+    socials_path = Path("data/socials.json")
+    if socials_path.exists():
+        try:
+            load_socials(str(socials_path))
+            from mud.models.social import social_registry
+
+            print(f"✅ Loaded {len(social_registry)} socials from {socials_path}")
+        except Exception as e:
+            print(f"Warning: Failed to load socials from {socials_path}: {e}")
 
     if area_list_path:
         if use_json:

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from mud.math.c_compat import c_div
 from mud.models.constants import (
+    ActFlag,
     AffectFlag,
     CommFlag,
     DEFAULT_PAGE_LINES,
@@ -246,6 +247,37 @@ class SpellEffect:
 
 
 @dataclass
+class AffectData:
+    """ROM C AFFECT_DATA structure for spell affects.
+
+    ROM Reference: src/merc.h lines 648-659
+
+    This is the proper ROM C affect structure used for detailed spell effects.
+    Each affect can modify a specific location (stat, AC, hitroll, etc.) and
+    optionally set affect bitvector flags.
+
+    Fields:
+        type: Spell SN (skill_table index)
+        level: Caster level
+        duration: Hours (-1 = permanent)
+        location: APPLY_STR, APPLY_AC, APPLY_HITROLL, etc.
+        modifier: +/- value for the location
+        bitvector: AFF_BLIND, AFF_INVISIBLE, etc.
+        where: TO_AFFECTS, TO_OBJECT, TO_IMMUNE, etc. (ROM 2.4b6)
+        valid: Validity flag (for cleanup)
+    """
+
+    type: int  # Spell SN (skill_table index)
+    level: int  # Caster level
+    duration: int  # Hours (-1 = permanent)
+    location: int  # APPLY_STR, APPLY_AC, APPLY_HITROLL, etc.
+    modifier: int  # +/- value
+    bitvector: int  # AFF_BLIND, AFF_INVISIBLE, etc.
+    where: int = 0  # TO_AFFECTS (0), TO_OBJECT (1), TO_IMMUNE (2), etc.
+    valid: bool = True  # Validity flag
+
+
+@dataclass
 class Character:
     """Python representation of CHAR_DATA"""
 
@@ -293,7 +325,9 @@ class Character:
     position: int = Position.STANDING
     room: Room | None = None  # ROM: in_room
     was_in_room: Room | None = None  # ROM: was_in_room
-    zone: object | None = None  # ROM: AREA_DATA *zone
+    zone: object | None = None  # ROM: AREA_DATA *zone (mob's home area)
+    home_room_vnum: int = 0  # ROM: vnum of mob's spawn room (for home return)
+    home_area: object | None = None  # ROM: redundant with zone, but set by reset_handler
 
     # Relationships
     master: Character | None = None
@@ -403,7 +437,10 @@ class Character:
     is_npc: bool = True  # Default to NPC, set to False for PCs
 
     # Spell effects and character generation
-    spell_effects: dict[str, SpellEffect] = field(default_factory=dict)  # Active spell effects keyed by skill name
+    spell_effects: dict[str, SpellEffect] = field(
+        default_factory=dict
+    )  # Active spell effects keyed by skill name (legacy)
+    affected: list[AffectData] = field(default_factory=list)  # ROM C AFFECT_DATA linked list (proper ROM parity)
     default_weapon_vnum: int = 0
     creation_points: int = 0
     creation_groups: tuple[str, ...] = field(default_factory=tuple)
@@ -480,6 +517,11 @@ class Character:
         """Return True when the character has the provided COMM bit set."""
 
         return bool(self._comm_value() & int(flag))
+
+    def has_act_flag(self, flag: ActFlag) -> bool:
+        """Return True when the character has the provided ACT bit set."""
+        act_value = getattr(self, "act", 0) or 0
+        return bool(int(act_value) & int(flag))
 
     def set_comm_flag(self, flag: CommFlag) -> None:
         """Set the provided COMM bit."""
@@ -662,7 +704,95 @@ class Character:
                 self.sex = max(0, min(new_sex, int(Sex.EITHER)))
 
         self.spell_effects[combined.name] = combined
+
+        # ALSO populate ch.affected list for ROM C parity (do_affects command)
+        # This allows do_affects to show spell effects using ROM C behavior
+        self._sync_spell_effect_to_affected(combined)
+
         return True
+
+    def _sync_spell_effect_to_affected(self, effect: SpellEffect) -> None:
+        """
+        Convert a SpellEffect to AffectData entries in ch.affected list.
+
+        This maintains ROM C parity for the do_affects command while preserving
+        QuickMUD's SpellEffect system.
+        """
+        # Map ROM C APPLY_* constants
+        APPLY_AC = 17
+        APPLY_HITROLL = 18
+        APPLY_DAMROLL = 19
+        APPLY_SAVES = 20
+
+        # Get bitvector from affect_flag
+        bitvector = int(effect.affect_flag) if effect.affect_flag else 0
+
+        # Create AffectData for each modifier (ROM C allows multiple affects per spell)
+        # Use spell name as type (temporary until proper skill_table SN mapping available)
+        spell_type = effect.name
+
+        # AC modifier
+        if effect.ac_mod:
+            affect = AffectData(
+                type=spell_type,  # type: ignore - temporarily using string instead of int SN
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_AC,
+                modifier=effect.ac_mod,
+                bitvector=bitvector,
+            )
+            self.affected.append(affect)
+
+        # Hitroll modifier
+        if effect.hitroll_mod:
+            affect = AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_HITROLL,
+                modifier=effect.hitroll_mod,
+                bitvector=bitvector,
+            )
+            self.affected.append(affect)
+
+        # Damroll modifier
+        if effect.damroll_mod:
+            affect = AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_DAMROLL,
+                modifier=effect.damroll_mod,
+                bitvector=bitvector,
+            )
+            self.affected.append(affect)
+
+        # Saving throw modifier
+        if effect.saving_throw_mod:
+            affect = AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_SAVES,
+                modifier=effect.saving_throw_mod,
+                bitvector=bitvector,
+            )
+            self.affected.append(affect)
+
+        # Stat modifiers (APPLY_STR=1, APPLY_DEX=2, APPLY_INT=3, APPLY_WIS=4, APPLY_CON=5)
+        if effect.stat_modifiers:
+            for stat, modifier in effect.stat_modifiers.items():
+                stat_int = int(stat)  # Stat enum to int
+                if stat_int >= 0 and stat_int <= 5:  # STR through CON
+                    affect = AffectData(
+                        type=spell_type,  # type: ignore
+                        level=effect.level,
+                        duration=effect.duration,
+                        location=stat_int + 1,  # APPLY_STR=1, APPLY_DEX=2, etc.
+                        modifier=modifier,
+                        bitvector=bitvector,
+                    )
+                    self.affected.append(affect)
 
     def remove_spell_effect(self, name: str) -> SpellEffect | None:
         """Remove a spell effect and restore stat changes."""
@@ -697,7 +827,53 @@ class Character:
             except (ValueError, TypeError):
                 self.sex = max(0, min(new_sex, int(Sex.EITHER)))
 
+        # ALSO remove from ch.affected list for ROM C parity
+        self.affected = [
+            paf
+            for paf in self.affected
+            if paf.type != name  # type: ignore - type is temporarily string (spell name)
+        ]
+
         return effect
+
+    def affect_to_char(self, affect: AffectData) -> None:
+        """
+        Add a ROM C AFFECT_DATA to the character's affected list.
+
+        ROM Reference: src/handler.c affect_to_char (lines 2607-2623)
+
+        This is the proper ROM C way to add spell affects. The affect is added
+        to the ch.affected linked list and the bitvector is applied to ch.affected_by.
+
+        Args:
+            affect: AffectData structure with spell information
+        """
+        # Apply the bitvector to character's affected_by field
+        if affect.bitvector:
+            self.affected_by = getattr(self, "affected_by", 0) | affect.bitvector
+
+        # Add to affected list (ROM C linked list)
+        self.affected.append(affect)
+
+    def affect_remove(self, affect: AffectData) -> None:
+        """
+        Remove a ROM C AFFECT_DATA from the character's affected list.
+
+        ROM Reference: src/handler.c affect_remove (lines 2625-2653)
+
+        Args:
+            affect: AffectData structure to remove
+        """
+        try:
+            self.affected.remove(affect)
+        except ValueError:
+            pass  # Affect not in list
+
+        # Remove bitvector if no other affects use it
+        if affect.bitvector:
+            still_has_bitvector = any(paf.bitvector & affect.bitvector for paf in self.affected)
+            if not still_has_bitvector:
+                self.affected_by = getattr(self, "affected_by", 0) & ~affect.bitvector
 
 
 # END affects_saves

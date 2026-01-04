@@ -16,7 +16,8 @@ from mud.models.constants import (
     EX_CLOSED,
 )
 from mud.models.obj import ObjectData
-from mud.models.room import Exit, Room, room_registry
+from mud.models.room import Exit, Room
+from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.world.movement import move_character
 
@@ -209,14 +210,20 @@ def _room_contents(room: Room | None) -> Iterable[ObjectData]:
 
 
 def _take_object(mob: Character, obj: ObjectData) -> None:
-    room = getattr(obj, "in_room", None) or getattr(mob, "room", None)
+    room = getattr(obj, "in_room", None) or getattr(obj, "location", None) or getattr(mob, "room", None)
     if room is not None:
         contents = getattr(room, "contents", None)
         if isinstance(contents, list) and obj in contents:
             contents.remove(obj)
-    obj.in_room = None
-    obj.in_obj = None
-    obj.carried_by = mob
+
+    if hasattr(obj, "in_room"):
+        obj.in_room = None
+    if hasattr(obj, "location"):
+        obj.location = None
+    if hasattr(obj, "in_obj"):
+        obj.in_obj = None
+    if hasattr(obj, "carried_by"):
+        obj.carried_by = mob
 
     inventory = getattr(mob, "inventory", None)
     if isinstance(inventory, list) and obj not in inventory:
@@ -280,9 +287,8 @@ def _maybe_wander(mob: Character, room: Room) -> None:
     if rng_mm.number_bits(3) != 0:
         return
 
-    door = rng_mm.number_bits(5)
-    if door > int(Direction.DOWN):
-        return
+    # ROM C mob_cmds.c:1274 uses number_door() for random direction
+    door = rng_mm.number_door()
 
     exit_obj = _valid_exit(room, door)
     if exit_obj is None:

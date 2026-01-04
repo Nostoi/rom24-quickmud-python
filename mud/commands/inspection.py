@@ -117,9 +117,9 @@ def do_scan(char: Character, args: str = "") -> str:
 def do_look(char: Character, args: str = "") -> str:
     """
     Look at room, character, object, or direction.
-    
+
     ROM Reference: src/act_info.c do_look
-    
+
     Usage:
     - look (show room)
     - look <character> (examine character)
@@ -131,11 +131,149 @@ def do_look(char: Character, args: str = "") -> str:
 
 
 def do_exits(char: Character, args: str = "") -> str:
-    """List obvious exits from the current room (ROM-style)."""
-    room = char.room
-    if not room or not getattr(room, "exits", None):
+    """
+    List obvious exits from the current room (ROM-style).
+
+    ROM Reference: src/act_info.c do_exits (lines 1393-1451)
+
+    Supports:
+    - exits (detailed format with room names)
+    - exits auto (compact format for auto-exit display)
+
+    Features:
+    - Blindness check (blind characters see nothing)
+    - Closed door hiding (exits with closed doors are hidden)
+    - Room permission checks (forbidden rooms hidden)
+    - Immortal extras (room vnums in header and per exit)
+    - Dark room handling ("Too dark to tell" message)
+    - Auto-exit mode (compact format: [Exits: north south])
+
+    NOTE: Unlike movement commands, do_exits shows dark rooms as "Too dark to tell"
+    rather than hiding them entirely. ROM C can_see_room() does NOT check darkness,
+    only permission flags (handler.c lines 2590-2611).
+    """
+    from mud.models.constants import AffectFlag, EX_CLOSED, MAX_LEVEL, RoomFlag
+    from mud.world.vision import room_is_dark
+
+    # ROM: check_blind - blind characters cannot see exits
+    # ROM C: if (IS_AFFECTED (ch, AFF_BLIND)) { send_to_char ("You can't see a thing!\n\r", ch); return FALSE; }
+    if char.has_affect(AffectFlag.BLIND):
+        return "You can't see a thing!"
+
+    if not char.room:
         return "Obvious exits: none."
-    dirs = [dir_names[type(list(dir_names.keys())[0])(i)] for i, ex in enumerate(room.exits) if ex]
-    if not dirs:
-        return "Obvious exits: none."
-    return f"Obvious exits: {' '.join(dirs)}."
+
+    # ROM: fAuto = !str_cmp (argument, "auto")
+    auto_mode = args.strip().lower() == "auto"
+
+    # Build header based on mode and immortal status
+    if auto_mode:
+        # ROM: sprintf (buf, "{o[Exits:")
+        output = "{o[Exits:"
+    elif char.is_immortal():
+        # ROM: sprintf (buf, "Obvious exits from room %d:\n\r", ch->in_room->vnum)
+        output = f"Obvious exits from room {char.room.vnum}:\n"
+    else:
+        # ROM: sprintf (buf, "Obvious exits:\n\r")
+        output = "Obvious exits:\n"
+
+    # Iterate through all 6 directions (N, E, S, W, U, D)
+    # ROM: for (door = 0; door <= 5; door++)
+    exits = getattr(char.room, "exits", None)
+    if not exits:
+        if auto_mode:
+            return "{o[Exits: none]{x\n"
+        else:
+            return output + "None.\n"
+
+    found_exits = []
+
+    # Helper function: ROM C can_see_room (handler.c lines 2590-2611)
+    # Note: This does NOT check darkness, only permission flags
+    def _can_see_room_permissions(room) -> bool:
+        """Check if character has permission to see room (no darkness check)."""
+        flags = int(getattr(room, "room_flags", 0) or 0)
+        trust = char.trust if char.trust else char.level
+
+        if flags & int(RoomFlag.ROOM_IMP_ONLY) and trust < MAX_LEVEL:
+            return False
+        if flags & int(RoomFlag.ROOM_GODS_ONLY) and not char.is_immortal():
+            return False
+        if flags & int(RoomFlag.ROOM_HEROES_ONLY) and not char.is_immortal():
+            return False
+        if flags & int(RoomFlag.ROOM_NEWBIES_ONLY) and trust > 5 and not char.is_immortal():
+            return False
+
+        room_clan = int(getattr(room, "clan", 0) or 0)
+        char_clan = int(getattr(char, "clan", 0) or 0)
+        if room_clan and not char.is_immortal() and room_clan != char_clan:
+            return False
+
+        return True
+
+    for direction in (Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN):
+        door_idx = int(direction)
+
+        # Get exit for this direction
+        if isinstance(exits, dict):
+            pexit = exits.get(door_idx) or exits.get(direction)
+        elif 0 <= door_idx < len(exits):
+            pexit = exits[door_idx]
+        else:
+            pexit = None
+
+        # ROM: Check exit validity and visibility
+        # if ((pexit = ch->in_room->exit[door]) != NULL
+        #     && pexit->u1.to_room != NULL
+        #     && can_see_room (ch, pexit->u1.to_room)  <-- ONLY checks permissions, NOT darkness
+        #     && !IS_SET (pexit->exit_info, EX_CLOSED))
+        if (
+            pexit is not None
+            and pexit.to_room is not None
+            and _can_see_room_permissions(pexit.to_room)  # Permission check only
+            and not (pexit.exit_info & EX_CLOSED)
+        ):
+            dir_name = dir_names[direction]
+
+            if auto_mode:
+                # ROM: strcat (buf, " "); strcat (buf, dir_name[door]);
+                found_exits.append(dir_name)
+            else:
+                # ROM: sprintf (buf + strlen (buf), "%-5s - %s",
+                #              capitalize (dir_name[door]),
+                #              room_is_dark (pexit->u1.to_room)
+                #              ? "Too dark to tell" : pexit->u1.to_room->name)
+                dir_capitalized = dir_name.capitalize()
+
+                # Check if target room is dark (SEPARATE from permission check)
+                if room_is_dark(pexit.to_room):
+                    room_desc = "Too dark to tell"
+                else:
+                    room_desc = pexit.to_room.name or "Unknown"
+
+                exit_line = f"{dir_capitalized:5s} - {room_desc}"
+
+                # ROM: if (IS_IMMORTAL (ch))
+                #          sprintf (buf + strlen (buf), " (room %d)\n\r", pexit->u1.to_room->vnum)
+                if char.is_immortal():
+                    exit_line += f" (room {pexit.to_room.vnum})"
+
+                found_exits.append(exit_line)
+
+    # Format output based on mode
+    if auto_mode:
+        # ROM: if (!found) strcat (buf, fAuto ? " none" : "None.\n\r")
+        if found_exits:
+            output += " " + " ".join(found_exits)
+        else:
+            output += " none"
+        # ROM: if (fAuto) strcat (buf, "]{x\n\r")
+        output += "]{x\n"
+    else:
+        if found_exits:
+            output += "\n".join(found_exits) + "\n"
+        else:
+            # ROM: "None.\n\r"
+            output += "None.\n"
+
+    return output

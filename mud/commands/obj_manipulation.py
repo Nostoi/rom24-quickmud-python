@@ -6,6 +6,7 @@ ROM Reference: src/act_obj.c
 
 from __future__ import annotations
 
+from mud.handler import unequip_char
 from mud.models.character import Character
 from mud.models.constants import ExtraFlag, ItemType, Position
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
@@ -194,11 +195,41 @@ def do_remove(char: Character, args: str) -> str:
                    src/handler.c remove_obj (lines 1372-1392)
 
     Usage: remove <item>
+           remove all
     """
     if not args or not args.strip():
         return "Remove what?"
 
     item_name = args.strip().split()[0]
+
+    # Handle "remove all"
+    if item_name.lower() == "all":
+        equipment = getattr(char, "equipment", {})
+        if not equipment:
+            return "You aren't wearing anything."
+
+        # Get all equipped items (copy to avoid modification during iteration)
+        equipped_items = list(equipment.values())
+        removed_count = 0
+
+        for obj in equipped_items:
+            # Check NOREMOVE flag (cursed items)
+            extra_flags = getattr(obj, "extra_flags", 0)
+            if extra_flags & ExtraFlag.NOREMOVE:
+                obj_name = getattr(obj, "short_descr", "it")
+                # Continue removing other items even if one is cursed
+                continue
+
+            # Remove the item
+            _remove_obj(char, obj)
+            removed_count += 1
+
+        if removed_count == 0:
+            return "You can't remove any of your equipment."
+        elif removed_count == 1:
+            return "You stop using your equipment."
+        else:
+            return f"You stop using {removed_count} items."
 
     # Find worn item
     obj = get_obj_wear(char, item_name)
@@ -442,12 +473,14 @@ def _obj_to_obj(obj, container) -> None:
 
 
 def _remove_obj(char: Character, obj) -> None:
-    """Remove worn object from character."""
+    """
+    Remove worn object from character.
+
+    ROM Reference: src/handler.c:unequip_char (lines 1804-1877)
+    """
     wear_loc = getattr(obj, "wear_loc", -1)
     if wear_loc == -1:
         return
-
-    obj.wear_loc = -1  # WEAR_NONE
 
     # Remove from equipment dict
     equipment = getattr(char, "equipment", {})
@@ -457,6 +490,9 @@ def _remove_obj(char: Character, obj) -> None:
             if equipped_obj == obj:
                 del equipment[slot]
                 break
+
+    # Apply ROM unequip logic (revert AC bonuses, affects, etc.)
+    unequip_char(char, obj)
 
     # Move to inventory (Character model uses 'inventory', not 'carrying')
     inventory = getattr(char, "inventory", None)

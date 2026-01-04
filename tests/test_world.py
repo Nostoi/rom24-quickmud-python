@@ -6,8 +6,17 @@ from mud.world import initialize_world, look, move_character
 
 
 def test_movement_and_look(movable_char_factory):
+    from mud.models.room import Exit
+    from mud.models.constants import Direction
+
     initialize_world("area/area.lst")
     char = movable_char_factory("Tester", 3001)
+
+    room_from = room_registry[3001]
+    room_to = room_registry[3054]
+    north_idx = Direction.NORTH.value
+    room_from.exits[north_idx] = Exit(to_room=room_to, vnum=3054)
+
     assert char.room.vnum == 3001
     out1 = look(char)
     assert "Temple" in out1

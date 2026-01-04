@@ -5,7 +5,7 @@ from __future__ import annotations
 # ============================================================================
 # This JSON-based persistence system is kept for backward compatibility only.
 # All new code should use mud.account.account_manager for database persistence.
-# 
+#
 # Migration status: All active save_character() calls now use database version.
 # ============================================================================
 
@@ -225,6 +225,63 @@ class ObjectSave:
 
 
 @dataclass
+class PetAffectSave:
+    """Serializable snapshot of a pet's affect (ROM save.c:fwrite_pet lines 511-521)."""
+
+    skill_name: str
+    where: int = 0
+    level: int = 0
+    duration: int = 0
+    modifier: int = 0
+    location: int = 0
+    bitvector: int = 0
+
+
+@dataclass
+class PetSave:
+    """Serializable snapshot of a pet/follower (ROM save.c:fwrite_pet lines 449-523).
+
+    Mirrors ROM C's fwrite_pet() behavior:
+    - Saves mob vnum, stats, position, affects
+    - Does NOT save pet inventory (pets can't carry items in ROM)
+    - Used for charmed mobs that follow player
+
+    ROM C Reference: src/save.c:449-523 (fwrite_pet)
+    """
+
+    vnum: int
+    name: str
+    short_descr: str | None = None
+    long_descr: str | None = None
+    description: str | None = None
+    race: str | None = None
+    clan: str | None = None
+    sex: int = 0
+    level: int | None = None
+    hit: int = 0
+    max_hit: int = 0
+    mana: int = 0
+    max_mana: int = 0
+    move: int = 0
+    max_move: int = 0
+    gold: int = 0
+    silver: int = 0
+    exp: int = 0
+    act: int | None = None
+    affected_by: int | None = None
+    comm: int | None = None
+    position: int = 0
+    saving_throw: int | None = None
+    alignment: int | None = None
+    hitroll: int | None = None
+    damroll: int | None = None
+    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    perm_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
+    affects: list[PetAffectSave] = field(default_factory=list)
+
+
+@dataclass
 class PlayerSave:
     """Serializable snapshot of a player's state."""
 
@@ -289,6 +346,7 @@ class PlayerSave:
     board: str = DEFAULT_BOARD_NAME
     last_notes: dict[str, float] = field(default_factory=dict)
     colours: dict[str, list[int]] = field(default_factory=dict)
+    pet: PetSave | None = None  # ROM save.c pet persistence (fwrite_pet/fread_pet)
 
 
 _SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
@@ -404,6 +462,258 @@ def _deserialize_object(snapshot: ObjectSave) -> Any:
             obj.contained_items.append(child)
 
     return obj
+
+
+def _serialize_pet(pet: Character) -> PetSave | None:
+    """Serialize a pet/follower to PetSave (ROM save.c:fwrite_pet lines 449-523).
+
+    Args:
+        pet: Character object representing the pet/follower
+
+    Returns:
+        PetSave object or None if pet has no mob_index
+
+    ROM C Reference: src/save.c:449-523 (fwrite_pet)
+    """
+    from mud.models.mob import MobIndex
+    from mud.skills.registry import skill_registry
+
+    mob_index = getattr(pet, "prototype", None)
+    if mob_index is None or not isinstance(mob_index, MobIndex):
+        return None
+
+    # Serialize pet affects (ROM save.c lines 511-521)
+    pet_affects: list[PetAffectSave] = []
+    for affect in getattr(pet, "affected", []) or []:
+        affect_type = getattr(affect, "type", -1)
+        if affect_type < 0:
+            continue
+
+        # Lookup skill name by searching registry
+        skill_name = ""
+        for name, skill in skill_registry.skills.items():
+            if hasattr(skill, "slot") and skill.slot == affect_type:
+                skill_name = name
+                break
+        pet_affects.append(
+            PetAffectSave(
+                skill_name=skill_name,
+                where=_safe_int(getattr(affect, "where", 0)),
+                level=_safe_int(getattr(affect, "level", 0)),
+                duration=_safe_int(getattr(affect, "duration", 0)),
+                modifier=_safe_int(getattr(affect, "modifier", 0)),
+                location=_safe_int(getattr(affect, "location", 0)),
+                bitvector=_safe_int(getattr(affect, "bitvector", 0)),
+            )
+        )
+
+    # Only save fields that differ from prototype (ROM C pattern)
+    pet_race = None
+    if getattr(pet, "race", None) != mob_index.race:
+        from mud.models.races import race_table
+
+        pet_race = race_table[pet.race].name if pet.race < len(race_table) else None
+
+    pet_clan = None
+    if getattr(pet, "clan", 0):
+        from mud.models.clans import clan_table
+
+        pet_clan = clan_table[pet.clan].name if pet.clan in clan_table else None
+
+    # Convert POS_FIGHTING to POS_STANDING for save (ROM C line 506)
+    from mud.models.constants import Position
+
+    position = pet.position
+    if position == int(Position.FIGHTING):
+        position = int(Position.STANDING)
+
+    # MobInstance doesn't store descriptions (they're on prototype)
+    # So we only save if custom descriptions were somehow set
+    pet_short = getattr(pet, "short_descr", None)
+    pet_long = getattr(pet, "long_descr", None)
+    pet_desc = getattr(pet, "description", None)
+
+    return PetSave(
+        vnum=mob_index.vnum,
+        name=pet.name,
+        short_descr=pet_short if pet_short != mob_index.short_descr else None,
+        long_descr=pet_long if pet_long != mob_index.long_descr else None,
+        description=pet_desc if pet_desc != mob_index.description else None,
+        race=pet_race,
+        clan=pet_clan,
+        sex=pet.sex,
+        level=pet.level if pet.level != mob_index.level else None,
+        hit=pet.hit,
+        max_hit=pet.max_hit,
+        mana=pet.mana,
+        max_mana=pet.max_mana,
+        move=pet.move,
+        max_move=pet.max_move,
+        gold=pet.gold if pet.gold > 0 else 0,
+        silver=pet.silver if pet.silver > 0 else 0,
+        exp=getattr(pet, "exp", 0),
+        act=pet.act if pet.act != mob_index.act else None,
+        affected_by=pet.affected_by if pet.affected_by != mob_index.affected_by else None,
+        comm=pet.comm if pet.comm != 0 else None,
+        position=position,
+        saving_throw=getattr(pet, "saving_throw", 0),
+        alignment=pet.alignment if pet.alignment != mob_index.alignment else None,
+        hitroll=pet.hitroll if pet.hitroll != mob_index.hitroll else None,
+        damroll=pet.damroll if pet.damroll != mob_index.damage[2] else None,  # DICE_BONUS index
+        armor=_normalize_int_list(pet.armor, 4),
+        perm_stat=_normalize_int_list(pet.perm_stat, 5),
+        mod_stat=_normalize_int_list(getattr(pet, "mod_stat", [0] * 5), 5),
+        affects=pet_affects,
+    )
+
+
+def _deserialize_pet(snapshot: PetSave | dict, owner: Character) -> Character | None:
+    """Deserialize a PetSave to Character (ROM save.c:fread_pet lines 1406-1595).
+
+    Args:
+        snapshot: PetSave object or dict containing pet data
+        owner: Character who owns the pet
+
+    Returns:
+        Character object representing the pet or None if vnum invalid
+
+    ROM C Reference: src/save.c:1406-1595 (fread_pet)
+    """
+    from mud.spawning.mob_spawner import spawn_mob
+    from mud.skills.registry import skill_registry
+    from mud.models.obj import Affect
+
+    # ROM C constant: #define MOB_VNUM_FIDO 3006 (src/merc.h)
+    MOB_VNUM_FIDO = 3006
+
+    # Convert dict to dataclass if needed
+    if isinstance(snapshot, dict):
+        snapshot = dataclass_from_dict(PetSave, snapshot)
+
+    # Create mob from vnum (ROM save.c lines 1412-1425)
+    pet = spawn_mob(snapshot.vnum)
+    if pet is None:
+        # Fallback to Fido if vnum invalid (ROM C pattern)
+        pet = spawn_mob(MOB_VNUM_FIDO)
+        if pet is None:
+            return None
+
+    # Restore basic fields
+    pet.name = snapshot.name
+    # MobInstance doesn't have short_descr/long_descr/description as instance attrs
+    # (they're on prototype), but if we saved custom ones, restore them
+    if snapshot.short_descr is not None:
+        setattr(pet, "short_descr", snapshot.short_descr)
+    if snapshot.long_descr is not None:
+        setattr(pet, "long_descr", snapshot.long_descr)
+    if snapshot.description is not None:
+        setattr(pet, "description", snapshot.description)
+
+    # Restore race
+    if snapshot.race is not None:
+        from mud.models.races import race_lookup
+
+        pet.race = race_lookup(snapshot.race)
+
+    # Restore clan
+    if snapshot.clan is not None:
+        from mud.models.clans import lookup_clan_id
+
+        setattr(pet, "clan", lookup_clan_id(snapshot.clan))
+
+    pet.sex = snapshot.sex
+    if snapshot.level is not None:
+        pet.level = snapshot.level
+
+    # Restore HMV (hit/mana/move)
+    pet.hit = snapshot.hit if hasattr(pet, "hit") else snapshot.hit
+    pet.max_hit = snapshot.max_hit
+    pet.mana = snapshot.mana
+    pet.max_mana = snapshot.max_mana
+    pet.move = snapshot.move
+    pet.max_move = snapshot.max_move
+
+    pet.gold = snapshot.gold
+    pet.silver = snapshot.silver
+    setattr(pet, "exp", snapshot.exp)
+
+    if snapshot.act is not None:
+        pet.act = snapshot.act
+    if snapshot.affected_by is not None:
+        pet.affected_by = snapshot.affected_by
+    if snapshot.comm is not None:
+        pet.comm = snapshot.comm
+
+    pet.position = snapshot.position
+
+    if snapshot.saving_throw is not None:
+        setattr(pet, "saving_throw", snapshot.saving_throw)
+    if snapshot.alignment is not None:
+        pet.alignment = snapshot.alignment
+    if snapshot.hitroll is not None:
+        pet.hitroll = snapshot.hitroll
+    if snapshot.damroll is not None:
+        pet.damroll = snapshot.damroll
+
+    pet.armor = list(snapshot.armor)  # Convert tuple to list if needed
+    pet.perm_stat = list(snapshot.perm_stat)
+    # MobInstance might not have mod_stat
+    setattr(pet, "mod_stat", list(snapshot.mod_stat))
+
+    # Restore affects (ROM save.c lines 1464-1552)
+    pet_affects = []
+    for affect_dict in snapshot.affects:
+        # Convert dict to PetAffectSave if needed
+        if isinstance(affect_dict, dict):
+            affect_save = dataclass_from_dict(PetAffectSave, affect_dict)
+        else:
+            affect_save = affect_dict
+
+        # Lookup skill by name
+        skill_num = -1
+        for name, skill in skill_registry.skills.items():
+            if name == affect_save.skill_name and hasattr(skill, "slot"):
+                skill_num = skill.slot
+                break
+
+        if skill_num < 0:
+            continue
+
+        # Check for duplicate affects (ROM C check_pet_affected pattern)
+        # This prevents affect stacking bugs when loading pets
+        duplicate = False
+        prototype = getattr(pet, "prototype", None)
+        if prototype:
+            for existing in getattr(prototype, "affected", []) or []:
+                if (
+                    existing.type == skill_num
+                    and existing.location == affect_save.location
+                    and existing.modifier == affect_save.modifier
+                ):
+                    duplicate = True
+                    break
+
+        if not duplicate:
+            pet_affects.append(
+                Affect(
+                    type=skill_num,
+                    where=affect_save.where,
+                    level=affect_save.level,
+                    duration=affect_save.duration,
+                    location=affect_save.location,
+                    modifier=affect_save.modifier,
+                    bitvector=affect_save.bitvector,
+                )
+            )
+
+    # Store affects on pet (MobInstance doesn't have affected by default)
+    setattr(pet, "affected", pet_affects)
+
+    # Set owner relationship (MobInstance might not have master/leader by default)
+    setattr(pet, "master", owner)
+    setattr(pet, "leader", owner)
+
+    return pet
 
 
 def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
@@ -614,6 +924,7 @@ def save_character(char: Character) -> None:
         board=getattr(pcdata, "board_name", DEFAULT_BOARD_NAME) or DEFAULT_BOARD_NAME,
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
         colours=colour_table,
+        pet=_serialize_pet(char.pet) if getattr(char, "pet", None) else None,  # ROM save.c fwrite_pet
     )
     path = PLAYERS_DIR / f"{char_name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -746,6 +1057,21 @@ def load_character(name: str) -> Character | None:
     _apply_colour_table(pcdata, getattr(data, "colours", {}))
     char.pcdata = pcdata
     char.log_commands = bool(getattr(data, "log_commands", False))
+
+    # Restore pet (ROM save.c fread_pet)
+    pet_data = getattr(data, "pet", None)
+    if pet_data is not None:
+        # Convert dict to PetSave dataclass
+        if isinstance(pet_data, dict):
+            pet_save = dataclass_from_dict(PetSave, pet_data)
+        else:
+            pet_save = pet_data
+
+        pet = _deserialize_pet(pet_save, char)
+        if pet is not None:
+            char.pet = pet
+            # Pet automatically added to room when char enters world
+
     character_registry.append(char)
     return char
 

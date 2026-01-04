@@ -34,6 +34,8 @@ def cmd_who(char: Character, args: str) -> str:
 
 
 def cmd_teleport(char: Character, args: str) -> str:
+    if char.level < 52:
+        return "You don't have permission to use this command."
     if not args.isdigit() or int(args) not in room_registry:
         return "Invalid room."
     target = room_registry[int(args)]

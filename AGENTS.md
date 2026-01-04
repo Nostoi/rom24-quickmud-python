@@ -1,49 +1,340 @@
 # QuickMUD Development Guide for AI Agents
 
-## 🎯 CURRENT FOCUS: Optional ROM C Parity Test Enhancements (Dec 2025)
+## 🚨 MANDATORY ROM PARITY POLICY (CRITICAL - READ FIRST!)
 
-**Project Status**: ✅ **100% ROM 2.4b6 Functional Parity Achieved** - Production ready
+**QuickMUD is a ROM 2.4b6 faithful port. 100% ROM parity is NON-NEGOTIABLE.**
 
-### Recent Completion (December 29, 2025)
-- ✅ **100% Spell Test Coverage** - All 97 spells have ROM parity tests (375 tests)
-- ✅ **100% Skill Coverage** - All 37 skills tested (254+ tests, 89 ROM parity tests)
-- ✅ **100% Command Parity** - All 255 ROM commands implemented (43/43 integration tests)
-- ✅ **100% Combat Skills** - All 8 active combat skills have ROM parity tests (104 tests)
-- ✅ **ROM C Source Audit** - Complete analysis of all 43 C files for parity test coverage
+### ROM Parity Requirements (BLOCKING)
 
-### Optional Enhancements Available
+1. **NO DEFERRING IMPLEMENTATION** ❌
+   - When ROM C functions are discovered missing/partial during audits, they MUST be implemented immediately
+   - **NEVER** mark functions as "P2 - Optional" or "deferred" just because they seem non-critical
+   - **NEVER** move on to next ROM C file when current file has incomplete functions
+   - **Example violation**: "effects.c functions are stubs, implementation deferred P2" ❌ WRONG
 
-**Two comprehensive research documents created**:
+2. **INTEGRATION TESTS ARE MANDATORY** ✅
+   - Every new function implementation REQUIRES integration tests
+   - Integration tests MUST verify ROM C behavioral parity (not just code coverage)
+   - Tests MUST be created BEFORE marking implementation complete
+   - **Example**: Implementing `acid_effect()` requires integration test verifying object destruction
 
-1. **ROM_C_PARITY_TEST_GAP_ANALYSIS.md** - Complete C file audit
-   - Analyzed all 43 ROM C source files and 15 header files
-   - Identified 5 core mechanics files partially tested (update.c, handler.c, effects.c, db.c, save.c)
-   - Provides priority matrix and effort estimates (~160 tests, 10-15 hours)
-   - **Status**: Optional quality enhancement, NOT a functional gap
+3. **AUDIT COMPLETION CRITERIA** ✅
+   - ROM C file audit is NOT complete until:
+     - ✅ All functional functions implemented (100%, not 75%)
+     - ✅ Integration tests passing for all implemented functions
+     - ✅ Behavioral verification confirms ROM C parity
+   - **Example**: save.c is at 75% (6/8 functions) - NOT COMPLETE until 100%
 
-2. **ROM_C_PARITY_RESEARCH_SUMMARY.md** - Executive summary with recommendations
-   - Current coverage: 5/43 C files fully tested (combat, spells, skills)
-   - Gap identified: Core mechanics (weather, affects, resets) lack formula verification
-   - Recommendation: Accept current state (all features work) OR add P0 tests (10-15 hours)
-   - **Status**: Research complete, decision point for future work
+4. **PRIORITY OVERRIDE** 🚨
+   - ROM parity gaps discovered during audits are ALWAYS P0 (CRITICAL)
+   - Complete current ROM C file to 100% BEFORE starting next file
+   - No exceptions for "environmental flavor" or "convenience features"
 
-### Why These Are Optional
+### Current ROM Parity Status (January 8, 2026)
 
-**Current QuickMUD State**:
-- ✅ **100% functional parity** - All ROM 2.4b6 features work correctly
-- ✅ **1830+ tests passing** (99.93% success rate)
-- ✅ **43/43 integration tests** (100% pass rate)
-- ✅ **526 ROM parity tests** for combat/spells/skills
+✅ **do_time 100% COMPLETE!** 🎉
+- **Status**: Boot time and system time display implemented (P3 optional feature complete)
+- **Integration Tests**: 12/12 passing (100%) - ALL tests passing, no xfails!
+- **Features**: Game time, boot timestamp, system timestamp (ROM C lines 1771-1798)
+- **Bug Fixes (Previous Session)**: 
+  - ✅ do_time ordinal suffix (11st→11th, 12nd→12th, 13rd→13rd)
+  - ✅ do_time day name cycling (off-by-one error fixed)
+  - ✅ Boot time display (ROM C ctime format)
+  - ✅ System time display (current timestamp)
+- See: [SESSION_SUMMARY_2026-01-08_DO_TIME_100_PERCENT_COMPLETE.md](SESSION_SUMMARY_2026-01-08_DO_TIME_100_PERCENT_COMPLETE.md)
 
-**What's Missing**:
-- Formula-level verification for core mechanics (weather, regeneration, affects, resets)
-- **Not a functional gap** - these systems work, just lack explicit ROM C formula tests
+✅ **act_info.c P0 COMMANDS - 4/4 COMPLETE!** 🎉
+- **Status**: ALL critical information display commands 100% ROM C parity!
+- **Commands**: do_score, do_look, do_who, do_help
+- **Integration Tests**: 56/56 passing (100%)
+- See: [ACT_INFO_C_AUDIT.md](docs/parity/ACT_INFO_C_AUDIT.md)
 
-**When to Add P0 Tests**:
-- Long-term maintenance is critical
-- Multiple developers will work on codebase
-- Want mathematical proof of ROM parity for all systems
-- Have 10-15 hours available
+✅ **effects.c - 5/5 functions COMPLETE!** 🎉
+- Status: All environmental damage functions fully implemented with ROM C parity
+- Impact: Object destruction, armor degradation, container dumping all working
+- Integration Tests: 23/23 passing (100%)
+- See: [EFFECTS_C_AUDIT.md](docs/parity/EFFECTS_C_AUDIT.md)
+
+✅ **save.c - 8/8 functions COMPLETE!** 🎉
+- Status: Pet persistence fully implemented (fwrite_pet, fread_pet)
+- Impact: Charmed mobs persist through logout/login correctly
+- Integration Tests: 8/8 passing (100%)
+- See: [SAVE_C_AUDIT.md](docs/parity/SAVE_C_AUDIT.md)
+
+---
+
+## 🎯 CURRENT FOCUS: Complete ROM Parity Gaps (January 2026)
+
+**Project Status**: 🎉 **ALL P0 CRITICAL COMMANDS COMPLETE!** - Ready for P1 work
+
+### 🎉 Recent Major Completions (January 3-6, 2026)
+
+**✅ SIX ROM C FILES 100% COMPLETE! 🎉🎉🎉🎉🎉🎉**
+
+1. **handler.c** (74/74 functions) - Character/object manipulation
+2. **db.c** (44/44 functions) - World loading/bootstrap  
+3. **save.c** (8/8 functions) - Player persistence
+4. **effects.c** (5/5 functions) - Environmental damage system
+5. **act_info.c P0** (4/4 commands) - Core information display ✨ **NEW!** ✨
+
+**✅ act_info.c P0 COMMANDS 100% COMPLETE!** (4/4 commands, 56/56 integration tests passing)
+- ALL critical information display commands verified with ROM C parity
+- do_score: 13 gaps fixed, 9/9 tests passing
+- do_look: 7 gaps fixed, 9/9 tests passing
+- do_who: 11 gaps fixed, 20/20 tests passing
+- do_help: 0 gaps (already excellent!), 18/18 tests passing
+- See: [ACT_INFO_C_AUDIT.md](docs/parity/ACT_INFO_C_AUDIT.md), [SESSION_SUMMARY_2026-01-06_DO_HELP_100_PERCENT_PARITY.md](SESSION_SUMMARY_2026-01-06_DO_HELP_100_PERCENT_PARITY.md)
+
+**Overall ROM C Audit Progress**: 35% audited (14/43 files complete)
+
+📄 **Recent Session Reports**: 
+  - [SESSION_SUMMARY_2026-01-06_DO_HELP_100_PERCENT_PARITY.md](SESSION_SUMMARY_2026-01-06_DO_HELP_100_PERCENT_PARITY.md) ✨ **NEW!** ✨
+  - [SESSION_SUMMARY_2026-01-06_DO_WHO_100_PERCENT_PARITY.md](SESSION_SUMMARY_2026-01-06_DO_WHO_100_PERCENT_PARITY.md)
+  - [SESSION_SUMMARY_2026-01-05_DB_C_100_PERCENT_PARITY.md](SESSION_SUMMARY_2026-01-05_DB_C_100_PERCENT_PARITY.md)
+  - [SESSION_SUMMARY_2026-01-04_HANDLER_C_100_PERCENT_COMPLETION.md](SESSION_SUMMARY_2026-01-04_HANDLER_C_100_PERCENT_COMPLETION.md)
+
+### 🚀 START HERE: Next Recommended Work
+
+**⚠️ MANDATORY PREREQUISITE**: Read [docs/ROM_PARITY_VERIFICATION_GUIDE.md](docs/ROM_PARITY_VERIFICATION_GUIDE.md) before starting ANY integration test work!
+
+**🎉 ALL P0 CRITICAL COMMANDS COMPLETE!**
+
+All 4 P0 critical commands now have 100% ROM C parity with comprehensive integration tests. Ready to move to P1 (important) commands!
+
+✅ **P1 Batch 1-5 COMPLETE!** (January 8, 2026)
+- ✅ do_compare (10/10 tests) - 100% ROM parity
+- ✅ do_time (12/12 tests) - 100% ROM parity (boot/system time complete!)
+- ✅ do_where (13/13 tests) - 100% ROM parity (Mode 2 complete!)
+
+**Integration Test Status**: 688/701 passing (98.1%)
+
+---
+
+### Next Priority: Continue act_info.c P2 Commands (RECOMMENDED)
+
+**Status**: 🟢 **Ready to Start P2 Commands** (24/24 P1 commands complete!)
+
+**Current Focus**: Complete remaining P2 configuration and character commands
+
+**P2 Command Candidates** (Nice to Have - Next Priority):
+
+Since ALL P1 commands are now complete (24/24 = 100%), the recommended next step is to continue with P2 commands to achieve 100% act_info.c coverage.
+
+**Next Batch Recommendation: Character Commands (3 functions)**
+
+These are player-facing customization commands that affect gameplay experience:
+
+1. **do_title** (lines 2547-2577, 31 lines) - Set character title
+   - Estimated: 2-3 hours (audit + gaps + tests)
+   - Priority: MEDIUM (player customization)
+   - Current Status: 3 moderate gaps found (see CHARACTER_COMMANDS_AUDIT.md)
+   - **Gaps**: Missing Level validation, missing Title length validation (45 chars), missing Escape code check
+
+2. **do_description** (lines 2579-2656, 78 lines) - Set character description
+   - Estimated: 2-3 hours (audit + gaps + tests)
+   - Priority: MEDIUM (player customization)
+   - Current Status: 1 moderate gap found (see CHARACTER_COMMANDS_AUDIT.md)
+   - **Gap**: Missing string editor integration (ROM C uses string_append)
+
+3. **set_title** (helper, lines 2519-2545, 27 lines) - Set title helper
+   - Estimated: 1 hour (audit + gap + tests)
+   - Priority: LOW (helper function)
+   - Current Status: 1 moderate gap found (see HELPER_FUNCTIONS_AUDIT.md)
+   - **Gap**: Missing spacing logic (ROM C adds space before title if missing)
+
+**Alternative: Missing Functions (2 functions - P3)**
+
+If you want to achieve 100% act_info.c function coverage instead:
+
+1. **do_imotd** (lines 636-639, 4 lines) - Show immortal MOTD
+   - Estimated: 30 minutes (simple wrapper command)
+   - Priority: LOW (immortal-only, cosmetic)
+
+2. **do_telnetga** (lines 2927-2943, 17 lines) - Toggle telnet GA
+   - Estimated: 1 hour (telnet protocol option)
+   - Priority: LOW (protocol-specific, rarely used)
+
+**Recommended Approach**: Complete Character Commands batch first (more player-facing), then decide if missing functions are worth implementing.
+
+**Total Estimated Effort**: 6-8 hours for Character Commands batch
+
+---
+
+### Previous Completion (December 31, 2025 - January 1, 2026)
+
+**✅ Spell Affects Persistence Integration Tests:**
+- ✅ 18/21 tests passing (85% coverage) - P1 system complete!
+- ✅ Fixed stat modifier stacking bug in `giant_strength()`
+- ✅ Implemented sanctuary visual indicators ("White Aura" prefix)
+
+**✅ Mob AI Integration Tests:**
+- ✅ 14/15 tests passing (93.3% coverage) - P2 system complete!
+- ✅ Wandering, scavenging, aggressive, wimpy, charmed behaviors
+- ✅ Home return, mob assist, indoor/outdoor restrictions
+
+### Previous Completion (December 30, 2025)
+
+**✅ Bug Fixes & Game Loop Verification:**
+- ✅ Fixed PULSE_MOBILE frequency bug (mobs were moving 16x too fast)
+- ✅ Fixed violence_tick() integration (combat now progresses correctly)
+- ✅ Fixed tell command character lookup (now uses ROM's get_char_world)
+- ✅ Fixed socials system loading (244 socials now work)
+- ✅ Created ROM parity verification methodology and documentation
+
+**✅ Documentation & Tracking Systems:**
+- ✅ **[ROM Parity Verification Guide](docs/ROM_PARITY_VERIFICATION_GUIDE.md)** - How to verify ROM parity (REQUIRED READING)
+- ✅ **[Integration Test Coverage Tracker](docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md)** - 21 gameplay systems, 100% P0/P1 complete
+- ✅ **[ROM C Subsystem Audit Tracker](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)** - 43 ROM C files, 56% audited
+
+### Current Work Focus (Primary Track)
+
+**🎯 Integration Test Coverage for Audited Files (Priority: HIGH)**
+
+Current Status: ✅ **ROM C Audits Complete** (13/43 files audited, 33% overall)
+
+**Completed Audits**:
+- ✅ **handler.c** - 100% complete (74/74 functions)
+- ✅ **db.c** - 100% complete (44/44 functions)
+- ✅ **save.c** - 100% complete (8/8 functions) 🎉
+- ✅ **effects.c** - 100% complete (5/5 functions implemented!) 🎉
+- ✅ **act_info.c P0** - 100% complete (4/4 commands) 🎉
+
+**Current Priority**: Proceed to act_info.c P1 commands (do_exits, do_examine, do_affects, do_worth)
+
+**What Is ROM C Subsystem Auditing?**
+- Systematic verification of QuickMUD functions against ROM C source files
+- Ensures all ROM behaviors are implemented (not just major features)
+- Identifies missing edge cases, formula differences, and integration gaps
+
+**Recent Success Stories**:
+- ✅ handler.c: Fixed 3 critical container weight bugs during audit
+- ✅ db.c: Achieved 100% parity with all 44 functional functions
+- ✅ save.c: 100% complete with pet persistence (8/8 functions)
+- ✅ **effects.c: 100% ROM C parity achieved - all 5 environmental damage functions complete!** 🎉
+
+**Next Priority Work**:
+1. **Next ROM C audit**: act_info.c, act_comm.c, or act_move.c
+
+**See**: [ROM C Subsystem Audit Tracker](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md) for detailed status
+
+---
+
+**🔄 Track 2: Integration Test Coverage (Status: 100% P0/P1 COMPLETE)**
+
+Current Status: ✅ **100% P0/P1 Coverage COMPLETE** (19/21 systems, 2 P3 remain)
+
+**What Are Integration Tests?**
+- Tests that verify complete gameplay workflows through `game_tick()` integration
+- Different from unit tests (which test functions in isolation)
+- Critical for catching silent failures (like combat/mobile bugs we fixed)
+
+**Remaining Work (Optional P3 systems)**:
+1. **OLC Builders** (P3 - Optional, 1-2 days) - Admin tool integration tests
+2. **Admin Commands** (P3 - Optional, 1 day) - Admin command integration tests
+
+**New Work (Recommended Next Steps)**:
+1. **Next ROM C audit** (P1 - Recommended) - act_info.c, act_comm.c, or act_move.c
+
+**See**: [Integration Test Coverage Tracker](docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md) for detailed status
+
+### ⚠️ MANDATORY: Read ROM Parity Guide First
+
+**BEFORE starting ANY integration test or audit work:**
+
+✅ **MUST READ**: [docs/ROM_PARITY_VERIFICATION_GUIDE.md](docs/ROM_PARITY_VERIFICATION_GUIDE.md)
+
+**Why This Is Critical:**
+- Explains the 3 levels of ROM parity verification
+- Documents common pitfalls (integer division, RNG, pulse timing)
+- Provides systematic verification methodology
+- Contains case studies from bugs we just fixed
+
+**Failure to read this guide = high risk of creating tests that pass but miss ROM parity violations**
+
+---
+
+### 📋 ROM C Audit Workflow (Based on handler.c Success)
+
+**Proven methodology from handler.c 100% completion:**
+
+#### Phase 1: Initial Audit (Day 1)
+1. **Read ROM C source file** (e.g., `src/effects.c`)
+2. **Create audit document** (e.g., `docs/parity/EFFECTS_C_AUDIT.md`)
+3. **List ALL functions** in ROM C file with line numbers
+4. **Search QuickMUD** for existing implementations:
+   ```bash
+   grep -r "function_name" mud --include="*.py"
+   ```
+5. **Categorize functions** (implemented, partial, missing, N/A)
+
+#### Phase 2: Verification (Day 2-3)
+1. **For each implemented function**:
+   - Read ROM C source line-by-line
+   - Verify QuickMUD implementation matches ROM C logic
+   - Check for edge cases, formula differences, missing checks
+   - Mark as ✅ Audited or ⚠️ Partial (with notes)
+
+2. **Document findings**:
+   - Bugs discovered (like container weight issues)
+   - Missing functions
+   - Partial implementations needing completion
+
+#### Phase 3: Implementation (Day 4-5)
+1. **Implement missing functions** in batches:
+   - Group by category (similar to handler.c utility/money/character functions)
+   - Add ROM C source references in docstrings
+   - **NEVER use stubs or TODO comments** - implement full ROM C behavior
+   - Test imports after each batch
+
+2. **Fix bugs discovered** during audit
+
+3. **Update documentation** as you go
+
+4. **🚨 CRITICAL**: Create integration tests for ALL new functions
+   - Integration tests MUST accompany implementation (not deferred)
+   - Tests MUST verify ROM C behavioral parity
+   - Example: `acid_effect()` test must verify object destruction
+
+#### Phase 4: Integration Tests (Day 6-7) 🚨 MANDATORY
+
+**This phase is NON-NEGOTIABLE and CANNOT be deferred!**
+
+1. **Create integration test file** (e.g., `tests/integration/test_environmental_effects.py`)
+2. **Write comprehensive test scenarios**:
+   - Test ROM C behavioral parity (not just code coverage)
+   - Verify object destruction, equipment degradation, etc.
+   - Test edge cases (container dumping, probability calculations)
+   - Verify special messages for different object types
+3. **Run tests and verify all pass**
+4. **Document test coverage** in audit document
+
+**Integration Test Requirements**:
+- ✅ MUST test complete workflows (not just function calls)
+- ✅ MUST verify ROM C formulas and probability calculations
+- ✅ MUST test edge cases and error conditions
+- ✅ MUST verify all messages and output match ROM behavior
+- ✅ MUST use `game_tick()` integration where applicable
+
+#### Phase 5: Completion (Day 8)
+1. **Verify all functions import successfully**
+2. **Run test suite** to catch regressions
+3. **Verify integration tests passing** (100%)
+4. **Update audit document** to 100% complete
+5. **Update ROM C Subsystem Audit Tracker**
+6. **Create session summary**
+
+**Success Criteria**:
+- ✅ All ROM C functions accounted for (implemented, N/A, or documented as missing)
+- ✅ Audit document shows 100% coverage
+- ✅ All new functions have ROM C source references
+- ✅ Test suite passes (or same failures as before)
+- ✅ Integration tests passing (100%) for all new implementations
+
+**See handler.c and effects.c completion** for reference:
+- [HANDLER_C_AUDIT.md](docs/parity/HANDLER_C_AUDIT.md) - 100% complete audit
+- [SESSION_SUMMARY_2026-01-04_HANDLER_C_100_PERCENT_COMPLETION.md](SESSION_SUMMARY_2026-01-04_HANDLER_C_100_PERCENT_COMPLETION.md)
+- [EFFECTS_C_AUDIT.md](docs/parity/EFFECTS_C_AUDIT.md) - 100% complete audit ✨ **NEW!** ✨
+- [SESSION_SUMMARY_2026-01-05_EFFECTS_C_100_PERCENT_COMPLETE.md](SESSION_SUMMARY_2026-01-05_EFFECTS_C_100_PERCENT_COMPLETE.md)
 
 ---
 
@@ -146,7 +437,7 @@ The 57 remaining functions are utilities and helpers, not core ROM mechanics.
 
 ## Task Tracking (CRITICAL - READ FIRST!)
 
-QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate file when completing work.**
+QuickMUD uses **FIVE** task tracking systems. **ALWAYS update the appropriate file when completing work.**
 
 ### 1. TODO.md - High-Level Project Phases ✅ COMPLETE
 - **Purpose**: 14 major project steps (data models → networking → deployment)
@@ -169,7 +460,7 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 
 **✅ LEGACY FILE** - Use `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for active work
 
-### 3. docs/parity/ROM_PARITY_FEATURE_TRACKER.md - Complete ROM Parity Feature List 🎯 PRIMARY
+### 3. docs/parity/ROM_PARITY_FEATURE_TRACKER.md - Complete ROM Parity Feature List
 - **Purpose**: Comprehensive tracking of ALL ROM 2.4b C features needed for 100% parity
 - **Status**: Single source of truth for remaining parity work
 - **When to Update**: When implementing any ROM parity features
@@ -177,13 +468,35 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 - **Priority Levels**: P0-P3 matrix for implementation planning
 - **Features**: Detailed breakdown of every missing ROM feature with C references
 
-**🎯 PRIMARY SOURCE OF TRUTH** - **USE THIS FILE** for:
-- Identifying next parity work
-- Checking implementation status
-- Planning development roadmap
-- Tracking progress toward 100% ROM parity
+**Use this file for**: Identifying next parity work, checking implementation status, planning development roadmap
 
-### 4. PROJECT_COMPLETION_STATUS.md - Subsystem Confidence Tracking
+### 4. docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md - Integration Test Status 🎯 ACTIVE WORK
+- **Purpose**: Track integration test coverage for all 21 gameplay systems
+- **Status**: ✅ **100% P0/P1 complete** (19/21 systems complete, 2 P3 remain)
+- **When to Update**: When adding integration tests for any gameplay system
+- **Priority**: HIGH - Integration tests catch silent failures (violence tick, mobile frequency bugs)
+- **Next Work**: P3 systems (OLC Builders, Admin Commands) are optional
+
+**🎯 CURRENT PRIORITY** - **USE THIS FILE** for:
+- Planning next integration test work
+- Tracking test coverage by system
+- Identifying which workflows need end-to-end verification
+- Understanding integration vs unit test requirements
+
+### 5. docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md - ROM C Source Audit Status 🔍 ACTIVE WORK
+- **Purpose**: Track audit status of all 43 ROM 2.4b6 C source files
+- **Status**: ⚠️ **56% audited** (8 audited, 23 partial, 8 not audited, 4 N/A)
+- **When to Update**: When auditing any ROM C source file against QuickMUD implementation
+- **Priority**: MEDIUM - Systematic verification ensures no missing edge cases
+- **Next Work**: P1 files need ~5-7 days audit (handler.c, save.c, effects.c)
+
+**🔍 SYSTEMATIC VERIFICATION** - **USE THIS FILE** for:
+- Planning next ROM C audit work
+- Tracking which files have been verified
+- Identifying missing functions and edge cases
+- Understanding ROM C coverage by subsystem
+
+### 6. PROJECT_COMPLETION_STATUS.md - Subsystem Confidence Tracking
 - **Purpose**: Tracks 27 subsystems by confidence score (0.00-1.00)
 - **Updated By**: `scripts/test_data_gatherer.py` (automated) or manual analysis
 - **When to Update**: After major subsystem work or test additions
@@ -195,16 +508,32 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 
 ### Task Tracking Workflow
 
+**⚠️ BEFORE STARTING ANY INTEGRATION TEST OR AUDIT WORK:**
+
+**MANDATORY PREREQUISITE**: Read [docs/ROM_PARITY_VERIFICATION_GUIDE.md](docs/ROM_PARITY_VERIFICATION_GUIDE.md)
+
+This guide explains:
+- The 3 levels of ROM parity verification (code structure, behavioral, integration)
+- Common pitfalls (integer division, RNG, pulse timing, enum hardcoding)
+- Systematic verification methodology
+- Case studies from actual bugs (violence tick, PULSE_MOBILE)
+
+**Failure to read this guide WILL result in tests that pass but miss ROM parity violations.**
+
 **When starting work:**
-1. Check `ROM_C_PARITY_RESEARCH_SUMMARY.md` for optional enhancement opportunities
-2. Check `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for specific parity features to implement
-3. Check `PROJECT_COMPLETION_STATUS.md` for subsystem confidence levels
+1. ✅ **MUST READ**: `docs/ROM_PARITY_VERIFICATION_GUIDE.md` (if doing integration tests or audits)
+2. Check `docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md` for integration test priorities
+3. Check `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` for ROM C audit priorities
+4. Check `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` for specific parity features to implement
+5. Check `PROJECT_COMPLETION_STATUS.md` for subsystem confidence levels
 
 **When completing work:**
-1. ✅ Mark features complete in `docs/parity/ROM_PARITY_FEATURE_TRACKER.md`
-2. Update subsystem confidence in `PROJECT_COMPLETION_STATUS.md` if applicable
-3. Run `pytest` to verify no regressions
-4. Update `CURRENT_STATUS_SUMMARY.md` for major milestones
+1. ✅ Update integration test status in `docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md`
+2. ✅ Update ROM C audit status in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`
+3. ✅ Mark features complete in `docs/parity/ROM_PARITY_FEATURE_TRACKER.md`
+4. Update subsystem confidence in `PROJECT_COMPLETION_STATUS.md` if applicable
+5. Run `pytest` to verify no regressions
+6. Update session summary documentation
 
 **Example completion format:**
 ```markdown
@@ -222,7 +551,8 @@ QuickMUD uses **THREE** task tracking systems. **ALWAYS update the appropriate f
 
 | Work Type | Update File |
 |-----------|-------------|
-| **ROM C parity test enhancements (OPTIONAL)** | See research docs: `ROM_C_PARITY_RESEARCH_SUMMARY.md`, `ROM_C_PARITY_TEST_GAP_ANALYSIS.md` 📋 **DECISION POINT** |
+| **Integration test work** | `docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md` 🎯 **ACTIVE PRIORITY** |
+| **ROM C subsystem audits** | `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` 🔍 **ACTIVE PRIORITY** |
 | **ROM parity feature implementation** | `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` 🎯 **PRIMARY** |
 | Subsystem confidence changed significantly | `PROJECT_COMPLETION_STATUS.md` |
 | Session summary or milestone | `CURRENT_STATUS_SUMMARY.md` |

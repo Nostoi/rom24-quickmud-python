@@ -153,8 +153,13 @@ def test_raw_kill_awards_group_xp_and_creates_corpse(monkeypatch: pytest.MonkeyP
     corpse_candidates = [obj for obj in new_objects if getattr(obj, "item_type", None) == int(ItemType.CORPSE_NPC)]
     assert len(corpse_candidates) == 1
     corpse = corpse_candidates[0]
-    assert corpse.gold == 12
-    assert corpse.silver == 3
+
+    # ROM parity: money stored as object inside corpse
+    money_objects = [obj for obj in corpse.contained_items if obj.item_type == ItemType.MONEY]
+    assert len(money_objects) == 1, "Corpse should contain 1 money object"
+    money = money_objects[0]
+    assert money.value[1] == 12  # gold in value[1]
+    assert money.value[0] == 3  # silver in value[0]
     assert loot in corpse.contained_items
 
     assert attacker.exp == base_attacker_exp + 100
@@ -201,8 +206,7 @@ def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> 
 
     new_objects = [obj for obj in room.contents if id(obj) not in existing_ids]
     corpse = next(obj for obj in new_objects if getattr(obj, "item_type", None) == int(ItemType.CORPSE_NPC))
-    assert corpse.gold == 0
-    assert corpse.silver == 0
+    # Money was auto-looted, so corpse should be empty (no money objects)
     assert corpse.contained_items == []
 
     assert any("got toasted by Attacker" in message for message in immortal.messages)

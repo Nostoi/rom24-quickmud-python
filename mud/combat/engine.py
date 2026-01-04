@@ -499,6 +499,20 @@ def apply_damage(
     if victim.position == Position.DEAD:
         return "Already dead."
 
+    # Set up fighting state BEFORE defense checks (ROM parity: src/fight.c:damage sets fighting before parry/dodge)
+    if victim != attacker:
+        if victim.position > Position.STUNNED:
+            if victim.fighting is None:
+                set_fighting(victim, attacker)
+                if getattr(victim, "is_npc", False):
+                    mobprog.mp_kill_trigger(victim, attacker)
+            if getattr(victim, "timer", 0) <= 4:
+                victim.position = Position.FIGHTING
+
+        if victim.position > Position.STUNNED:
+            if attacker.fighting is None:
+                set_fighting(attacker, victim)
+
     # Check for parry, dodge, and shield block following C src/fight.c:damage() order
     # These are checked AFTER hit determination but BEFORE damage application
     # Order is critical: shield_block → parry → dodge (per ROM C src/fight.c:one_hit)
@@ -532,23 +546,6 @@ def apply_damage(
     if show:
         message_bundle = dam_message(attacker, victim, damage, dt, immune)
         _dispatch_damage_messages(attacker, victim, message_bundle)
-
-    # Set up fighting state if not already fighting
-    if victim != attacker:
-        # Victim starts fighting back if able
-        if victim.position > Position.STUNNED:
-            if victim.fighting is None:
-                set_fighting(victim, attacker)
-                if getattr(victim, "is_npc", False):
-                    mobprog.mp_kill_trigger(victim, attacker)
-            # Update victim to fighting position if timer allows
-            if getattr(victim, "timer", 0) <= 4:
-                victim.position = Position.FIGHTING
-
-        # Attacker starts fighting if not already
-        if victim.position > Position.STUNNED:
-            if attacker.fighting is None:
-                set_fighting(attacker, victim)
 
     if damage <= 0:
         if message_bundle and message_bundle.attacker:
@@ -752,30 +749,53 @@ def _object_has_wear_flag(obj, flag: WearFlag) -> bool:
 
 
 def _transfer_corpse_coins(attacker: Character, corpse) -> bool:
-    """Move coins from *corpse* to *attacker*, returning True when any moved."""
+    """Extract gold/silver from money objects and add to attacker's purse.
 
-    try:
-        gold = int(getattr(corpse, "gold", 0) or 0)
-    except (TypeError, ValueError):
-        gold = 0
-    try:
-        silver = int(getattr(corpse, "silver", 0) or 0)
-    except (TypeError, ValueError):
-        silver = 0
+    ROM Reference: src/fight.c auto_loot handles money extraction.
+    QuickMUD uses actual money objects (ItemType.MONEY) instead of corpse attributes.
+    Money objects may already be in attacker's inventory if AUTOLOOT moved them.
+    """
+    from mud.models.constants import ItemType
 
-    if gold == 0 and silver == 0:
+    contained = list(getattr(corpse, "contained_items", []) or [])
+    attacker_inv = list(getattr(attacker, "inventory", []) or [])
+
+    money_in_corpse = [obj for obj in contained if getattr(obj, "item_type", None) == int(ItemType.MONEY)]
+    money_in_inventory = [obj for obj in attacker_inv if getattr(obj, "item_type", None) == int(ItemType.MONEY)]
+
+    all_money_objects = money_in_corpse + money_in_inventory
+
+    if not all_money_objects:
         return False
 
-    attacker.gold = int(getattr(attacker, "gold", 0) or 0) + gold
-    attacker.silver = int(getattr(attacker, "silver", 0) or 0) + silver
-    corpse.gold = 0
-    corpse.silver = 0
-    values = list(getattr(corpse, "value", []) or [])
-    if len(values) < 2:
-        values.extend([0] * (2 - len(values)))
-    values[0] = 0
-    values[1] = 0
-    corpse.value = values
+    total_gold = 0
+    total_silver = 0
+
+    for money_obj in all_money_objects:
+        values = list(getattr(money_obj, "value", [0, 0]) or [0, 0])
+        while len(values) < 2:
+            values.append(0)
+
+        silver = int(values[0] or 0)
+        gold = int(values[1] or 0)
+
+        total_silver += silver
+        total_gold += gold
+
+        if money_obj in money_in_corpse:
+            try:
+                corpse.contained_items.remove(money_obj)
+            except (AttributeError, ValueError):
+                pass
+        else:
+            try:
+                attacker.remove_object(money_obj)
+            except (AttributeError, ValueError):
+                pass
+
+    attacker.gold = int(getattr(attacker, "gold", 0) or 0) + total_gold
+    attacker.silver = int(getattr(attacker, "silver", 0) or 0) + total_silver
+
     return True
 
 

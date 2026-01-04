@@ -83,6 +83,12 @@ def _seed_weather_state() -> WeatherState:
 
 weather = _seed_weather_state()
 
+# Track boot time for do_time command (ROM C: extern char str_boot_time[])
+# Initialized at module load time (when server starts)
+from datetime import datetime
+
+boot_time = datetime.now()
+
 _TO_OBJECT = 1
 _TO_WEAPON = 2
 
@@ -653,24 +659,163 @@ def _obj_to_char(obj: ObjectData, character: Character) -> None:
     obj.in_obj = None
 
 
+def _get_weight_mult(obj: ObjectData) -> int:
+    """Get container weight multiplier (WEIGHT_MULT macro from ROM C handler.c).
+
+    Returns value[4] for containers (weight reduction percentage), 100 otherwise.
+    ROM C Reference: handler.c WEIGHT_MULT macro
+    """
+    from mud.models.constants import ItemType
+
+    # Get item type
+    item_type = getattr(obj, "item_type", None)
+    if item_type is None:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            item_type = getattr(proto, "item_type", None)
+
+    # Only containers have weight multipliers
+    if item_type != ItemType.CONTAINER:
+        return 100
+
+    # Get value[4] (weight multiplier) - prefer instance value, fallback to prototype
+    # Get value[4] (weight multiplier) - prefer instance value, fallback to prototype
+    # Note: 0 is valid (weightless bag), but [0,0,0,0,0] default means "use prototype"
+    values = getattr(obj, "value", None)
+    mult = None
+
+    # Check instance value - but only if it's not the default [0,0,0,0,0]
+    if values and len(values) >= 5:
+        if values != [0, 0, 0, 0, 0] or sum(values) != 0:
+            mult = values[4]
+
+    # Fall back to prototype if instance has default values
+    if mult is None:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            proto_values = getattr(proto, "value", None)
+            if proto_values and len(proto_values) >= 5:
+                mult = proto_values[4]
+
+    try:
+        mult_int = int(mult if mult is not None else 100)
+        return mult_int if mult_int >= 0 else 100
+    except (TypeError, ValueError, IndexError):
+        return 100
+
+
+def _get_obj_number_recursive(obj: ObjectData) -> int:
+    """Count how many items recursively (ROM C get_obj_number).
+
+    ROM C Reference: handler.c:2488-2503
+    """
+    from mud.models.constants import ItemType
+
+    # Get item type
+    item_type = getattr(obj, "item_type", None)
+    if item_type is None:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            item_type = getattr(proto, "item_type", None)
+
+    # ROM C: containers, money, gems, jewelry don't count
+    if item_type in (ItemType.CONTAINER, ItemType.MONEY, ItemType.GEM):
+        number = 0
+    else:
+        number = 1
+
+    # Add contents recursively (support both Object.contained_items and ObjectData.contains)
+    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    for contained in contains:
+        number += _get_obj_number_recursive(contained)
+
+    return number
+
+
+def _get_obj_weight_recursive(obj: ObjectData) -> int:
+    """Get object weight including contents with WEIGHT_MULT applied.
+
+    ROM C Reference: handler.c:2509-2519 get_obj_weight
+    """
+    # Get base weight
+    weight = getattr(obj, "weight", 0)
+    if weight == 0:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            weight = getattr(proto, "weight", 0)
+
+    # Add contents weight with multiplier (support both Object.contained_items and ObjectData.contains)
+    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    for contained in contains:
+        weight += _get_obj_weight_recursive(contained) * _get_weight_mult(obj) // 100
+
+    return weight
+
+
 def _obj_to_obj(obj: ObjectData, container: ObjectData) -> None:
-    contents = getattr(container, "contains", None)
+    """Add object to container and update carrier weights.
+
+    ROM C Reference: handler.c:1968-1989 obj_to_obj
+    """
+    # Support both Object.contained_items and ObjectData.contains
+    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
     if isinstance(contents, list):
         contents.append(obj)
     obj.in_obj = container
     obj.in_room = None
     obj.carried_by = None
 
+    # ROM C handler.c:1978-1986 - Update carrier weights for nested containers
+    obj_number = _get_obj_number_recursive(obj)
+    obj_weight = _get_obj_weight_recursive(obj)
+
+    current_container = container
+    while current_container is not None:
+        carrier = getattr(current_container, "carried_by", None)
+        if carrier is not None:
+            # Update carrier's carry counts
+            carry_number = getattr(carrier, "carry_number", 0)
+            carry_weight = getattr(carrier, "carry_weight", 0)
+
+            carrier.carry_number = carry_number + obj_number
+            carrier.carry_weight = carry_weight + (obj_weight * _get_weight_mult(current_container) // 100)
+
+        # Move up container hierarchy
+        current_container = getattr(current_container, "in_obj", None)
+
 
 def _obj_from_obj(obj: ObjectData) -> None:
+    """Remove object from container and update carrier weights.
+
+    ROM C Reference: handler.c:1996-2044 obj_from_obj
+    """
     container = getattr(obj, "in_obj", None)
     if container is None:
         return
 
-    contents = getattr(container, "contains", None)
+    # Support both Object.contained_items and ObjectData.contains
+    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
     if isinstance(contents, list) and obj in contents:
         contents.remove(obj)
     obj.in_obj = None
+
+    # ROM C handler.c:2033-2041 - Update carrier weights for nested containers
+    obj_number = _get_obj_number_recursive(obj)
+    obj_weight = _get_obj_weight_recursive(obj)
+
+    current_container = container
+    while current_container is not None:
+        carrier = getattr(current_container, "carried_by", None)
+        if carrier is not None:
+            # Update carrier's carry counts
+            carry_number = getattr(carrier, "carry_number", 0)
+            carry_weight = getattr(carrier, "carry_weight", 0)
+
+            carrier.carry_number = carry_number - obj_number
+            carrier.carry_weight = carry_weight - (obj_weight * _get_weight_mult(current_container) // 100)
+
+        # Move up container hierarchy
+        current_container = getattr(current_container, "in_obj", None)
 
 
 def _extract_obj(obj: ObjectData) -> None:
@@ -947,15 +1092,21 @@ _pulse_counter = 0
 # Countdown counters mirror ROM's --pulse_X <= 0 semantics so cadence shifts
 # (e.g., TIME_SCALE changes) take effect immediately after the next pulse.
 _point_counter = get_pulse_tick()
-_violence_counter = get_pulse_violence()
 _area_counter = get_pulse_area()
 _music_counter = get_pulse_music()
+_mobile_counter = 0  # Will be initialized on first tick
 
 
 def violence_tick() -> None:
-    """Consume wait/daze counters once per pulse for all characters."""
+    """Process combat rounds and consume wait/daze counters.
+
+    Mirrors ROM src/fight.c:violence_update which iterates all characters,
+    checks if they're fighting, and calls multi_hit() to process combat rounds.
+    """
+    from mud.combat.engine import multi_hit, stop_fighting
 
     for ch in list(character_registry):
+        # Consume wait/daze timers every pulse (ROM behavior)
         wait = int(getattr(ch, "wait", 0) or 0)
         if wait > 0:
             ch.wait = wait - 1
@@ -969,19 +1120,31 @@ def violence_tick() -> None:
             else:
                 ch.daze = max(0, daze)
 
+        # Process combat rounds (ROM src/fight.c:72-96)
+        victim = getattr(ch, "fighting", None)
+        if victim is None or getattr(ch, "room", None) is None:
+            continue
+
+        # If awake and in same room, fight! Otherwise stop fighting
+        if ch.is_awake() and getattr(ch, "room", None) == getattr(victim, "room", None):
+            multi_hit(ch, victim, dt=None)
+        else:
+            stop_fighting(ch, both=False)
+
 
 def game_tick() -> None:
     """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter, _point_counter, _violence_counter, _area_counter, _music_counter
+    global _pulse_counter, _point_counter, _area_counter, _music_counter, _mobile_counter
     _pulse_counter += 1
+
+    # Initialize _mobile_counter on first tick
+    if _mobile_counter == 0:
+        from mud.config import get_pulse_mobile
+
+        _mobile_counter = get_pulse_mobile()
 
     # Consume wait/daze every pulse before evaluating cadence counters.
     violence_tick()
-
-    # Track pulses for future violence update hooks (combat rounds, etc.).
-    _violence_counter -= 1
-    if _violence_counter <= 0:
-        _violence_counter = get_pulse_violence()
 
     # Point pulses drive time/weather/regen updates.
     _point_counter -= 1
@@ -998,12 +1161,21 @@ def game_tick() -> None:
     if _area_counter <= 0:
         _area_counter = get_pulse_area()
         reset_tick()
+
     _music_counter -= 1
     if _music_counter <= 0:
         _music_counter = get_pulse_music()
         song_update()
+
+    # Mobile update runs on PULSE_MOBILE cadence (ROM parity)
+    _mobile_counter -= 1
+    if _mobile_counter <= 0:
+        from mud.config import get_pulse_mobile
+
+        _mobile_counter = get_pulse_mobile()
+        mobile_update()
+
     event_tick()
-    mobile_update()
     aggressive_update()
     # Invoke NPC special functions after resets to mirror ROM's update cadence
     run_npc_specs()

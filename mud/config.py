@@ -93,6 +93,24 @@ def get_pulse_music() -> int:
     return max(1, base // scale)
 
 
+def get_pulse_mobile() -> int:
+    """Return pulses per mobile update (ROM PULSE_MOBILE).
+
+    ROM defines PULSE_MOBILE = 4 * PULSE_PER_SECOND. Apply TIME_SCALE like
+    other cadence helpers so tests can speed up mobile updates deterministically.
+    """
+
+    scale = max(1, int(os.getenv("TIME_SCALE", os.getenv("MUD_TIME_SCALE", "1")) or 1))
+    try:
+        from mud import config as _cfg
+
+        scale = max(scale, int(getattr(_cfg, "TIME_SCALE", 1)))
+    except Exception:
+        pass
+    base = 4 * PULSE_PER_SECOND
+    return max(1, base // scale)
+
+
 # Feature flags
 COMBAT_USE_THAC0: bool = False
 

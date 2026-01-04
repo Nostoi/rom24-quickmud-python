@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from mud.models.object import Object
 
 if TYPE_CHECKING:
-    from mud.models.character import Character
+    from mud.models.character import Character, SpellEffect
     from mud.models.mob import MobIndex, MobProgram
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
@@ -39,6 +39,7 @@ from mud.utils import rng_mm
 
 
 _DICE_RE = re.compile(r"^(\d+)d(\d+)(?:\+(-?\d+))?$")
+
 
 def _parse_flags(raw: object, enum_type):
     """Return an IntFlag from ROM letter strings, IntFlag, or int."""
@@ -286,6 +287,8 @@ class MobInstance:
     is_npc: bool = True
     messages: list[str] = field(default_factory=list)
     fighting: "Character | MobInstance | None" = None  # Combat target
+    pcdata: None = None  # NPCs don't have pcdata (player-specific data)
+    spell_effects: dict[str, "SpellEffect"] = field(default_factory=dict)  # Active spell effects
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> MobInstance:
@@ -341,9 +344,7 @@ class MobInstance:
         form = _parse_int(getattr(proto, "form", 0))
         parts = _parse_int(getattr(proto, "parts", 0))
         material = getattr(proto, "material", None)
-        damage_tuple = _parse_dice(
-            getattr(proto, "damage", (0, 0, 0)), getattr(proto, "damage_dice", "")
-        )
+        damage_tuple = _parse_dice(getattr(proto, "damage", (0, 0, 0)), getattr(proto, "damage_dice", ""))
         dam_type_value = _parse_damage_type(getattr(proto, "dam_type", 0), getattr(proto, "damage_type", 0))
         if dam_type_value == 0:
             roll = rng_mm.number_range(1, 3)
@@ -433,9 +434,40 @@ class MobInstance:
         obj.carried_by = self
         obj.location = None
 
+    def remove_object(self, obj: Object) -> None:
+        if obj in self.inventory:
+            self.inventory.remove(obj)
+        self.carry_number = max(0, self.carry_number - 1)
+
     def equip(self, obj: Object, slot: int) -> None:  # stub
         self.add_to_inventory(obj)
         obj.wear_loc = slot
+
+    def get_curr_stat(self, stat: int) -> int:
+        """
+        Get current stat value for mob.
+
+        ROM Parity: Mirrors Character.get_curr_stat() for mobs
+        Mobs only have perm_stat (no mod_stat), clamped to ROM 0..25 range.
+        """
+        if not hasattr(self, "perm_stat") or not self.perm_stat:
+            return 13
+
+        idx = int(stat)
+        if idx < 0 or idx >= len(self.perm_stat):
+            return 13
+
+        return max(0, min(25, self.perm_stat[idx]))
+
+    @property
+    def hit(self) -> int:
+        """Alias for current_hp to match Character interface."""
+        return self.current_hp
+
+    @hit.setter
+    def hit(self, value: int) -> None:
+        """Alias for current_hp to match Character interface."""
+        self.current_hp = value
 
     def has_act_flag(self, flag: ActFlag) -> bool:
         act_bits = getattr(self, "act", 0)
@@ -458,6 +490,43 @@ class MobInstance:
         except Exception:
             return False
         return bool(getattr(self, "affected_by", 0) & bit)
+
+    def add_affect(self, flag, **kwargs) -> None:
+        """Apply an affect flag (simplified version for MobInstance)."""
+        try:
+            bit = int(flag)
+        except Exception:
+            return
+        self.affected_by |= bit
+
+    def apply_spell_effect(self, effect: "SpellEffect") -> bool:
+        """Apply spell effect to mob (simplified version matching Character interface)."""
+        from dataclasses import replace
+        from mud.math.c_compat import c_div
+
+        existing = self.spell_effects.get(effect.name)
+        combined = replace(effect)
+        combined.stat_modifiers = dict(combined.stat_modifiers or {})
+        combined.sex_delta = int(getattr(combined, "sex_delta", 0) or 0)
+
+        if existing is not None:
+            combined.level = c_div(combined.level + existing.level, 2)
+            combined.duration += existing.duration
+            combined.hitroll_mod += existing.hitroll_mod
+            combined.damroll_mod += existing.damroll_mod
+            if combined.affect_flag is None:
+                combined.affect_flag = existing.affect_flag
+
+        # Apply stat modifications
+        if combined.hitroll_mod:
+            self.hitroll += combined.hitroll_mod
+        if combined.damroll_mod:
+            self.damroll += combined.damroll_mod
+        if combined.affect_flag is not None:
+            self.add_affect(combined.affect_flag)
+
+        self.spell_effects[combined.name] = combined
+        return True
 
     def is_immortal(self) -> bool:
         return False

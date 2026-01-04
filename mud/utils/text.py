@@ -32,12 +32,7 @@ def format_rom_string(text: str | None) -> str:
             idx += 1
             continue
         if ch == ")":
-            if (
-                len(xbuf) >= 3
-                and xbuf[-1] == " "
-                and xbuf[-2] == " "
-                and xbuf[-3] in ".?!"
-            ):
+            if len(xbuf) >= 3 and xbuf[-1] == " " and xbuf[-2] == " " and xbuf[-3] in ".?!":
                 xbuf[-2] = ")"
                 xbuf[-1] = " "
                 xbuf.append(" ")
@@ -47,12 +42,7 @@ def format_rom_string(text: str | None) -> str:
             continue
         if ch in ".?!":
             skip_quote = False
-            if (
-                len(xbuf) >= 3
-                and xbuf[-1] == " "
-                and xbuf[-2] == " "
-                and xbuf[-3] in ".?!"
-            ):
+            if len(xbuf) >= 3 and xbuf[-1] == " " and xbuf[-2] == " " and xbuf[-3] in ".?!":
                 xbuf[-2] = ch
                 if next_char != '"':
                     xbuf[-1] = " "
@@ -113,3 +103,51 @@ def format_rom_string(text: str | None) -> str:
     if not formatted.endswith("\n"):
         formatted += "\n"
     return formatted
+
+
+def smash_tilde(text: str) -> str:
+    """Replace '~' with '-' for file safety (ROM db.c:3663).
+
+    ROM uses '~' as an end-of-string marker in disk files.
+    This function prevents players from injecting tildes into strings
+    that will be saved to disk, which would corrupt the save files.
+
+    ROM C implementation (src/db.c:3663-3672):
+        void smash_tilde (char *str)
+        {
+            for (; *str != '\0'; str++)
+            {
+                if (*str == '~')
+                    *str = '-';
+            }
+            return;
+        }
+
+    Args:
+        text: String potentially containing '~' characters
+
+    Returns:
+        String with all '~' replaced by '-'
+    """
+    return text.replace("~", "-")
+
+
+def smash_dollar(text: str) -> str:
+    """Replace '$' with 'S' for mobprog security (ROM db.c:3677).
+
+    ROM uses '$' for variable substitution in mobprogs ($n, $r, etc.).
+    This function prevents players from injecting mobprog variables
+    into strings that will be processed by the mobprog interpreter.
+
+    ROM C implementation:
+        for (; *str != '\0'; str++)
+            if (*str == '$')
+                *str = 'S';
+
+    Args:
+        text: String potentially containing '$' characters
+
+    Returns:
+        String with all '$' replaced by 'S'
+    """
+    return text.replace("$", "S")

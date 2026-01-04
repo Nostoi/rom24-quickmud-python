@@ -2,6 +2,7 @@
 
 from mud.math.c_compat import c_div
 from mud.characters.follow import add_follower
+from mud.handler import deduct_cost
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     ActFlag,
@@ -429,28 +430,6 @@ def _set_character_total_wealth(char: Character, total: int) -> None:
     char.silver = total % 100
 
 
-def _deduct_character_cost(char: Character, cost: int) -> None:
-    """Remove silver-denominated ``cost`` mirroring ROM ``deduct_cost``."""
-
-    cost = max(int(cost), 0)
-    current_silver = int(getattr(char, "silver", 0) or 0)
-    current_gold = int(getattr(char, "gold", 0) or 0)
-
-    silver = current_silver if current_silver < cost else cost
-    gold = 0
-    if silver < cost:
-        gold = (cost - silver + 99) // 100
-        silver = cost - 100 * gold
-
-    char.gold = current_gold - gold
-    char.silver = current_silver - silver
-
-    if char.gold < 0:
-        char.gold = 0
-    if char.silver < 0:
-        char.silver = 0
-
-
 def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
     """Compute ROM-like shop price for an object.
 
@@ -587,7 +566,7 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
         base_description = f"{base_description}\n"
     pet.description = f"{base_description}A neck tag says 'I belong to {owner_name}'.\n"
 
-    _deduct_character_cost(char, cost)
+    deduct_cost(char, cost)
 
     character_registry.append(pet)
     current_room = room
@@ -753,7 +732,7 @@ def do_buy(char: Character, args: str) -> str:
     if _character_total_wealth(char) < total_cost:
         return "You can't afford that."
 
-    _deduct_character_cost(char, total_cost)
+    deduct_cost(char, total_cost)
     _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)
 
     purchased_items: list[Object] = []

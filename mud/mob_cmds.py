@@ -176,11 +176,39 @@ def _find_obj_here(ch: Character, token: str) -> Object | None:
     return None
 
 
-def _extract_character(victim: Character) -> None:
-    """Remove a character from the world, mirroring ROM extract_char."""
+def _extract_character(victim: Character, fPull: bool = True) -> None:
+    """Remove a character from the world, mirroring ROM extract_char.
 
+    ROM Reference: src/handler.c:2103-2180 (extract_char)
+
+    Args:
+        victim: Character to extract from the game
+        fPull: If True, completely remove. If False, send to death room (clan hall)
+    """
+    from mud.characters.follow import die_follower
+    from mud.combat.death import _nuke_pets
+    from mud.combat.engine import stop_fighting
+    from mud.game_loop import _extract_obj
     from mud.models.character import character_registry
 
+    # ROM C handler.c:2115 - Remove pets
+    _nuke_pets(victim, room=getattr(victim, "room", None))
+    if hasattr(victim, "pet"):
+        victim.pet = None
+
+    # ROM C handler.c:2118-2119 - Handle followers (only if fPull)
+    if fPull:
+        die_follower(victim)
+
+    # ROM C handler.c:2121 - Stop all fighting
+    stop_fighting(victim, both=True)
+
+    # ROM C handler.c:2123-2127 - Extract all inventory
+    inventory = getattr(victim, "inventory", [])
+    for obj in list(inventory):  # Copy list to safely modify during iteration
+        _extract_obj(obj)
+
+    # ROM C handler.c:2129-2130 - Remove from room
     room = getattr(victim, "room", None)
     if room is not None:
         remover = getattr(room, "remove_character", None)
@@ -196,10 +224,29 @@ def _extract_character(victim: Character) -> None:
                 area.nplayer = max(0, current - 1)
             if getattr(victim, "room", None) is room:
                 victim.room = None
+
+    # ROM C handler.c:2132-2137 - If not pulling, send to death room (clan hall)
+    # QuickMUD doesn't have clan halls, so we skip this
+
+    # ROM C handler.c:2139-2140 - Decrement prototype count for NPCs
+    # Python doesn't track prototype counts like ROM C, skip
+
+    # ROM C handler.c:2142-2146 - Handle switched characters (do_return)
+    # QuickMUD doesn't have character switching, skip
+
+    # ROM C handler.c:2148-2154 - Clear reply and mobprog target references
+    for other in list(character_registry):
+        if other == victim:
+            continue
+        if getattr(other, "reply", None) == victim:
+            other.reply = None
+        # Note: mobprog_target handling would go here if needed
+
+    # ROM C handler.c:2156-2175 - Remove from character_list
     try:
         character_registry.remove(victim)
     except ValueError:
-        pass
+        pass  # Already removed or never added
 
 
 def _get_room_by_vnum(vnum: int) -> Room | None:
@@ -259,6 +306,7 @@ def do_mpat(ch: Character, argument: str) -> None:
         return
     _move_to_room(ch, destination)
     from mud.commands.dispatcher import process_command
+
     process_command(ch, command.strip())
     from mud.models.character import character_registry
 
@@ -551,9 +599,7 @@ def _transfer_character(ch: Character, victim: Character, dest: Room) -> None:
         victim.room = dest
 
 
-def _find_object_for_transfer(
-    ch: Character, token: str
-) -> tuple[Object | None, str | tuple[str, str] | None]:
+def _find_object_for_transfer(ch: Character, token: str) -> tuple[Object | None, str | tuple[str, str] | None]:
     room = getattr(ch, "room", None)
     for obj in list(getattr(room, "contents", []) or []):
         if _match_object(obj, token):
@@ -569,9 +615,7 @@ def _find_object_for_transfer(
     return None, None
 
 
-def _remove_object_from_source(
-    ch: Character, obj: Object, source: str | tuple[str, str] | None
-) -> None:
+def _remove_object_from_source(ch: Character, obj: Object, source: str | tuple[str, str] | None) -> None:
     if source == "room":
         room = getattr(ch, "room", None)
         contents = getattr(room, "contents", None)
