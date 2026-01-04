@@ -31,7 +31,7 @@ def loadtestuser():
 
 
 @cli.command()
-def socketserver(host: str = "0.0.0.0", port: int = 5000):
+def socketserver(host: str = "0.0.0.0", port: int = 5001):
     """Start the telnet server."""
     asyncio.run(start_telnet(host=host, port=port))
 

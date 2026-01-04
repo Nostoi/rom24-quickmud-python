@@ -39,12 +39,14 @@ pip install quickmud
 
 Run a QuickMUD server:
 
-**Telnet Server (port 5000):**
+**Telnet Server (port 5001):**
 ```bash
 python3 -m mud socketserver
 # or
 mud socketserver
 ```
+
+> **⚠️ macOS Users:** Port 5000 is used by macOS AirPlay Receiver (Monterey+). QuickMUD defaults to port 5001 to avoid conflicts. To use a different port: `python3 -m mud socketserver --port 4000`
 
 **WebSocket Server (port 8000):**
 ```bash
@@ -69,7 +71,7 @@ Connect to the server:
 
 **Via Telnet:**
 ```bash
-telnet localhost 5000
+telnet localhost 5001
 ```
 
 **Via SSH:**
@@ -210,7 +212,7 @@ Build and run the Python server with Docker:
 
 ```bash
 docker build -t quickmud .
-docker run -p 5000:5000 quickmud
+docker run -p 5001:5001 quickmud
 ```
 
 Or use docker-compose to rebuild on changes and mount the repository:
@@ -222,7 +224,7 @@ docker-compose up
 Connect via:
 
 ```bash
-telnet localhost 5000
+telnet localhost 5001
 ```
 
 ## Data Models

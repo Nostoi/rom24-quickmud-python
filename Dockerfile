@@ -19,6 +19,6 @@ COPY . .
 # package directory, so we provide our own setup.py.
 COPY setup.py ./
 RUN pip install -e .
-EXPOSE 5000
+EXPOSE 5001
 
 CMD ["mud", "runserver"]

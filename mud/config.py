@@ -12,7 +12,7 @@ load_dotenv()
 
 # Configuration for servers
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///mud.db")
-PORT = int(os.getenv("PORT", 5000))
+PORT = int(os.getenv("PORT", 5001))
 HOST = os.getenv("HOST", "0.0.0.0")
 
 # Comma separated list of allowed CORS origins

@@ -2,7 +2,7 @@ services:
   mud:
     build: .
     ports:
-      - "${PORT:-5000}:${PORT:-5000}"
+      - "${PORT:-5001}:${PORT:-5001}"
     env_file:
       - .env
     volumes:
