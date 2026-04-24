@@ -170,9 +170,9 @@ class TestNewPlayerWorkflow:
         )
         quest_item = Object(instance_id=999, prototype=quest_proto)
         
-        if not hasattr(test_player, 'carrying'):
-            test_player.carrying = []
-        test_player.carrying.append(quest_item)
+        if not hasattr(test_player, "inventory"):
+            test_player.inventory = []
+        test_player.inventory.append(quest_item)
         quest_item.carried_by = test_player
         
         # Give quest item to NPC
