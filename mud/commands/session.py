@@ -330,84 +330,89 @@ def do_recall(ch: Character, args: str) -> str:
     """
     Recall to temple (safe room).
 
-    ROM Reference: src/act_move.c lines 1234-1299 (do_recall)
+    ROM Reference: src/act_move.c lines 1563-1628 (do_recall)
     """
-    # Can't recall while fighting
+    from mud.combat.engine import stop_fighting
+    from mud.models.constants import AffectFlag, RoomFlag, ROOM_VNUM_TEMPLE
+    from mud.registry import room_registry
+    from mud.utils.rng_mm import number_percent
+
+    # NPCs can't recall unless they're pets (ROM C lines 1569-1573).
+    # ROM uses IS_NPC + IS_AFFECTED(AFF_CHARM); the QuickMUD analogue is an NPC
+    # that has a master (i.e. it's been charmed/owned).
+    if ch.is_npc and getattr(ch, "master", None) is None:
+        return ""  # ROM returns silently (src/act_move.c:1569-1573)
+
+    # Message to room FIRST (ROM C line 1575)
+    if ch.room:
+        ch.room.broadcast(f"{ch.name} prays for transportation!", exclude=ch)
+
+    # Get recall room (ROM C lines 1577-1581)
+    recall_room = room_registry.get(ROOM_VNUM_TEMPLE)
+    if not recall_room:
+        return "You are completely lost."
+
+    # Already in temple check (ROM C lines 1583-1584)
+    if ch.room == recall_room:
+        return ""  # Silent return like ROM C
+
+    # Check ROOM_NO_RECALL flag or AFF_CURSE (ROM C lines 1586-1591)
+    room_flags = getattr(ch.room, "room_flags", 0)
+    if (room_flags & RoomFlag.ROOM_NO_RECALL) or ch.has_affect(AffectFlag.CURSE):
+        return "Mota has forsaken you."
+
+    # Combat recall logic (ROM C lines 1593-1615)
     if ch.position == Position.FIGHTING:
-        return "You can't recall while fighting!"
+        # Get recall skill level (ROM C line 1597)
+        skill = ch.skills.get("recall", 0)
 
-    # Can't recall if stunned or worse
-    if ch.position < Position.STUNNED:
-        return "You are hurt too badly to do that."
+        # 80% skill check (ROM C line 1599)
+        if number_percent() < 80 * skill // 100:
+            # TODO: check_improve(ch, gsn_recall, FALSE, 6) - ROM C line 1601
+            ch.wait = max(ch.wait, 4)  # WAIT_STATE(ch, 4) - ROM C line 1602
+            return "You failed!."  # ROM C line 1603 (note the period after !)
 
-    # Get recall room (typically vnum 3001 - Temple of Mota)
-    recall_vnum = 3001
+        # Calculate exp loss (ROM C line 1608)
+        lose = 25 if ch.desc is not None else 50
+        ch.exp -= lose
+        # TODO: check_improve(ch, gsn_recall, TRUE, 4) - ROM C line 1610
+        # TODO: stop_fighting(ch, TRUE) - ROM C line 1613
+        stop_fighting(ch, True)
 
-    try:
-        # Get world instance - use room_registry
-        from mud.registry import room_registry
+        recall_msg = f"You recall from combat!  You lose {lose} exps."
+    else:
+        recall_msg = ""
 
-        # Find recall room
-        recall_room = room_registry.get(recall_vnum)
-        if not recall_room:
-            return "You cannot recall from here."
+    # Movement cost: half current movement (ROM C line 1617)
+    ch.move //= 2
 
-        # Check if already in recall room
-        if ch.room == recall_room:
-            return "You are already in the temple!"
+    # Departure message (ROM C line 1618)
+    if ch.room:
+        ch.room.broadcast(f"{ch.name} disappears.", exclude=ch)
 
-        # Move cost (10% of max movement)
-        max_move = getattr(ch, "max_move", 100)
-        cost = max(1, max_move // 10)
+    # Move character (ROM C lines 1619-1620).
+    # Room model exposes the canonical occupant list as `people`
+    # (mud/models/room.py — mirrors ROM ROOM_INDEX_DATA::people).
+    old_room = ch.room
+    if old_room and ch in old_room.people:
+        old_room.people.remove(ch)
+    ch.room = recall_room
+    if ch not in recall_room.people:
+        recall_room.people.append(ch)
 
-        if ch.move < cost:
-            return "You don't have enough movement points."
+    # Arrival message (ROM C line 1621)
+    recall_room.broadcast(f"{ch.name} appears in the room.", exclude=ch)
 
-        # Pay movement cost
-        ch.move -= cost
+    # Show room to character (ROM C line 1622)
+    from mud.commands.inspection import do_look
 
-        # Send messages
-        old_room = ch.room
-        result_messages = []
+    room_desc = do_look(ch, "auto")
 
-        # Message to old room
-        if old_room:
-            for other in old_room.characters:
-                if other != ch:
-                    try:
-                        desc = getattr(other, "desc", None)
-                        if desc and hasattr(desc, "send"):
-                            desc.send(f"{ch.name} prays for transportation!")
-                    except Exception:
-                        pass
+    # Pet recursion (ROM C lines 1624-1625)
+    if ch.pet is not None:
+        do_recall(ch.pet, "")
 
-        # Move character
-        if old_room and old_room in getattr(ch, "room", None).__class__.__mro__:
-            old_room.characters.remove(ch)
-
-        ch.room = recall_room
-        recall_room.characters.append(ch)
-
-        # Message to character
-        result_messages.append("You pray for transportation!")
-
-        # Message to new room
-        for other in recall_room.characters:
-            if other != ch:
-                try:
-                    desc = getattr(other, "desc", None)
-                    if desc and hasattr(desc, "send"):
-                        desc.send(f"{ch.name} appears in the room!")
-                except Exception:
-                    pass
-
-        # Show room to character
-        from mud.commands.inspection import do_look
-
-        room_desc = do_look(ch, "")
-        result_messages.append(room_desc)
-
-        return "\n".join(result_messages)
-
-    except Exception as e:
-        return f"Recall failed: {e}"
+    # Return messages
+    if recall_msg:
+        return f"{recall_msg}\n{room_desc}"
+    return room_desc

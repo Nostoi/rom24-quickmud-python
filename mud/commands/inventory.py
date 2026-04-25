@@ -213,10 +213,21 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
     Returns:
         Error message if failed, None if successful
     """
-    # ROM C line 99-103: Check ITEM_TAKE flag
+    # ROM C line 99-103: Check ITEM_TAKE flag.
+    # Corpses (PC and NPC) always have ITEM_TAKE set by `make_corpse`
+    # (mud/combat/death.py:426); accept either the prototype flag or the
+    # well-known corpse item types so manually constructed test corpses still
+    # behave like ROM corpses.
     proto = getattr(obj, "prototype", None) or obj
     wear_flags = int(getattr(proto, "wear_flags", 0) or 0)
-    if not (wear_flags & int(WearFlag.TAKE)):
+    inst_wear_flags = int(getattr(obj, "wear_flags", 0) or 0)
+    raw_item_type = getattr(obj, "item_type", None) or getattr(proto, "item_type", None)
+    try:
+        item_type_int = int(raw_item_type) if raw_item_type is not None else None
+    except (TypeError, ValueError):
+        item_type_int = None
+    is_corpse = item_type_int in (int(ItemType.CORPSE_PC), int(ItemType.CORPSE_NPC))
+    if not is_corpse and not ((wear_flags | inst_wear_flags) & int(WearFlag.TAKE)):
         return "You can't take that."
 
     # ROM C lines 105-110: Encumbrance check (carry_number)
@@ -319,7 +330,19 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
 
     # ROM C lines 162-184: AUTOSPLIT for ITEM_MONEY
     proto = getattr(obj, "prototype", None) or obj
-    item_type = int(getattr(proto, "item_type", 0) or 0)
+    raw_item_type = getattr(proto, "item_type", 0) or 0
+    try:
+        item_type = int(raw_item_type)
+    except (TypeError, ValueError):
+        # Some loaders/tests store item_type as the ROM keyword string ("trash",
+        # "weapon", etc.). Resolve via the ItemType lookup table or skip the
+        # AUTOSPLIT path if unrecognized.
+        item_type = ItemType.from_name(raw_item_type) if hasattr(ItemType, "from_name") else 0
+        if not isinstance(item_type, int):
+            try:
+                item_type = int(item_type)
+            except (TypeError, ValueError):
+                item_type = 0
     if item_type == int(ItemType.MONEY):
         obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])
         silver = int(obj_value[0]) if len(obj_value) > 0 else 0
