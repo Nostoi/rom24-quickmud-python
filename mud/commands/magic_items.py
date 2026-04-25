@@ -12,6 +12,28 @@ from mud.math.c_compat import c_div
 from mud.models.constants import ItemType
 from mud.utils import rng_mm
 from mud.skills.registry import check_improve
+from mud.world.char_find import get_char_room as _get_char_room
+from mud.world.obj_find import get_obj_here as _get_obj_here
+
+
+def find_char_in_room(room, name, ch):
+    """ROM `get_char_room` analogue scoped by the actor's current room."""
+
+    return _get_char_room(ch, name)
+
+
+def find_obj_in_room(room, name):
+    """ROM `get_obj_here` analogue scoped to the supplied room.
+
+    QuickMUD's `get_obj_here` takes the actor as its first argument so that
+    it can walk the room contents. When only the room is in hand we wrap it
+    in a minimal stand-in that exposes `.room`.
+    """
+
+    if room is None:
+        return None
+    actor = type("_RoomLookup", (), {"room": room})()
+    return _get_obj_here(actor, name)
 
 
 def _skill_percent(character, name: str) -> int:
@@ -178,7 +200,7 @@ def do_recite(ch: Character, args: str) -> str:
 
     # Room messages
     if ch.room:
-        for other in ch.room.characters:
+        for other in ch.room.people:
             if other != ch:
                 other.messages.append(f"{ch.name} recites {scroll.short_descr}.")
 
@@ -259,7 +281,7 @@ def do_brandish(ch: Character, args: str) -> str:
 
     # Room messages
     if ch.room:
-        for other in ch.room.characters:
+        for other in ch.room.people:
             if other != ch:
                 other.messages.append(f"{ch.name} brandishes {staff.short_descr}.")
 
@@ -274,7 +296,7 @@ def do_brandish(ch: Character, args: str) -> str:
         # Failed
         ch.messages.append(f"You fail to invoke {staff.short_descr}.")
         if ch.room:
-            for other in ch.room.characters:
+            for other in ch.room.people:
                 if other != ch:
                     other.messages.append("...and nothing happens.")
         check_improve(ch, "staves", False, 2)
@@ -290,7 +312,7 @@ def do_brandish(ch: Character, args: str) -> str:
             target_type = SKILL_TARGET_MAP.get(skill.target, SkillTarget.TAR_IGNORE)
 
             # Cast on all valid targets in room
-            for vch in list(ch.room.characters):
+            for vch in list(ch.room.people):
                 # Determine if this character is a valid target
                 should_target = False
 
@@ -328,7 +350,7 @@ def do_brandish(ch: Character, args: str) -> str:
         # If no charges left, destroy staff
         if staff.value[2] <= 0:
             if ch.room:
-                for other in ch.room.characters:
+                for other in ch.room.people:
                     if other != ch:
                         other.messages.append(f"{ch.name}'s {staff.short_descr} blazes bright and is gone.")
             ch.messages.append(f"Your {staff.short_descr} blazes bright and is gone.")
@@ -393,7 +415,7 @@ def do_zap(ch: Character, args: str) -> str:
     # Room messages
     if victim:
         if ch.room:
-            for other in ch.room.characters:
+            for other in ch.room.people:
                 if other != ch and other != victim:
                     other.messages.append(f"{ch.name} zaps {victim.name} with {wand.short_descr}.")
         ch.messages.append(f"You zap {victim.name} with {wand.short_descr}.")
@@ -402,7 +424,7 @@ def do_zap(ch: Character, args: str) -> str:
     else:
         # Zapping object
         if ch.room:
-            for other in ch.room.characters:
+            for other in ch.room.people:
                 if other != ch:
                     obj_name = target_obj.short_descr if target_obj else "something"
                     other.messages.append(f"{ch.name} zaps {obj_name} with {wand.short_descr}.")
@@ -418,7 +440,7 @@ def do_zap(ch: Character, args: str) -> str:
         # Failed
         ch.messages.append(f"Your efforts with {wand.short_descr} produce only smoke and sparks.")
         if ch.room:
-            for other in ch.room.characters:
+            for other in ch.room.people:
                 if other != ch:
                     other.messages.append(f"{ch.name}'s efforts with {wand.short_descr} produce only smoke and sparks.")
         check_improve(ch, "wands", False, 2)
@@ -438,7 +460,7 @@ def do_zap(ch: Character, args: str) -> str:
         # If no charges left, destroy wand
         if wand.value[2] <= 0:
             if ch.room:
-                for other in ch.room.characters:
+                for other in ch.room.people:
                     if other != ch:
                         other.messages.append(f"{ch.name}'s {wand.short_descr} explodes into fragments.")
             ch.messages.append(f"Your {wand.short_descr} explodes into fragments.")

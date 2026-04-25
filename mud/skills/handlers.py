@@ -4566,6 +4566,17 @@ def giant_strength(
     if caster is None or target is None:
         raise ValueError("giant_strength requires a target")
 
+    # ROM C `spell_giant_strength` (src/magic.c) refuses to stack: if the
+    # target already has the giant-strength affect, the spell fails outright
+    # rather than merging via `affect_join`.
+    existing_effects = getattr(target, "spell_effects", None) or {}
+    if "giant strength" in existing_effects:
+        if target is caster:
+            _send_to_char(caster, "You are already as strong as you can get!")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} can't get any stronger.")
+        return False
+
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
     level = max(int(base_level or 0), 0)
     modifier = 1
