@@ -230,9 +230,8 @@ def test_cannot_wear_two_shields(test_character, object_factory):
     process_command(char, "wear iron")
     result = process_command(char, "wear bronze")
 
-    assert "already" in result.lower() or "wearing" in result.lower(), f"Should reject second shield, got: {result}"
-    assert shield1.wear_loc == int(WearLocation.SHIELD), "First shield still worn"
-    assert shield2.wear_loc == int(WearLocation.NONE), "Second shield not worn"
+    assert "wear" in result.lower() or "shield" in result.lower(), f"Should confirm wear, got: {result}"
+    assert int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is shield2, "Second shield should replace first"
 
 
 def test_wear_all_wears_multiple_items(test_character, object_factory):
@@ -655,3 +654,475 @@ def test_wear_finger_items_allows_two(test_character, object_factory):
 
     worn_items = [item for item in char.equipment.values() if item in (ring1, ring2)]
     assert len(worn_items) == 2, "Should be able to wear both rings"
+
+
+def test_wear_replace_removes_old_item_to_inventory(test_character, object_factory):
+    """
+    Test: Wearing an item in an occupied slot replaces the old one back to inventory.
+
+    ROM Parity: Mirrors ROM src/act_obj.c:remove_obj() then equip_char() sequence
+
+    Given: Character wearing armor on body
+    When: Character wears different armor on body
+    Then: Old armor returns to inventory, new armor is equipped
+    """
+    char = test_character
+
+    from mud.commands.equipment import do_wear
+
+    armor1 = object_factory(
+        {
+            "vnum": 1030,
+            "name": "leather armor",
+            "short_descr": "leather armor",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_BODY),
+            "value": [5, 0, 0, 0],
+        }
+    )
+    armor2 = object_factory(
+        {
+            "vnum": 1031,
+            "name": "plate mail",
+            "short_descr": "plate mail",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_BODY),
+            "value": [10, 0, 0, 0],
+        }
+    )
+    char.add_object(armor1)
+    do_wear(char, "leather")
+    assert int(WearLocation.BODY) in char.equipment, "Body should be equipped"
+
+    char.add_object(armor2)
+    result = do_wear(char, "plate")
+
+    assert "wear" in result.lower(), f"Should confirm wearing, got: {result}"
+    assert char.equipment.get(int(WearLocation.BODY)) is armor2, "New armor should be on body"
+    assert armor1 in char.inventory, "Old armor should return to inventory"
+    assert armor2 not in char.inventory, "New armor should be removed from inventory"
+
+
+def test_wear_multislot_replace_makes_room(test_character, object_factory):
+    """
+    Test: Wearing a ring when both finger slots are full replaces the first ring.
+
+    ROM Parity: Mirrors ROM src/act_obj.c:1427-1431 finger replace logic
+
+    Given: Character wearing two rings (both finger slots full)
+    When: Character wears a third ring
+    Then: First ring is replaced, returns to inventory, new ring worn
+    """
+    char = test_character
+
+    from mud.commands.equipment import do_wear
+
+    ring1 = object_factory(
+        {
+            "vnum": 1040,
+            "name": "ruby ring",
+            "short_descr": "a ruby ring",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_FINGER),
+            "value": [1, 0, 0, 0],
+        }
+    )
+    ring2 = object_factory(
+        {
+            "vnum": 1041,
+            "name": "emerald ring",
+            "short_descr": "an emerald ring",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_FINGER),
+            "value": [1, 0, 0, 0],
+        }
+    )
+    ring3 = object_factory(
+        {
+            "vnum": 1042,
+            "name": "sapphire ring",
+            "short_descr": "a sapphire ring",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_FINGER),
+            "value": [1, 0, 0, 0],
+        }
+    )
+    char.add_object(ring1)
+    char.add_object(ring2)
+    do_wear(char, "ruby")
+    do_wear(char, "emerald")
+
+    char.add_object(ring3)
+    result = do_wear(char, "sapphire")
+
+    assert "finger" in result.lower(), f"Should confirm ring wearing, got: {result}"
+    assert ring1 in char.inventory, "First ring should return to inventory"
+    assert ring2 in char.equipment.values(), "Second ring should still be on finger"
+    assert ring3 in char.equipment.values(), "Third ring should be on finger"
+
+
+def test_wield_replaces_old_weapon(test_character, object_factory):
+    """
+    Test: Wielding a weapon when one is already wielded replaces it.
+
+    ROM Parity: Mirrors ROM src/act_obj.c:1620 remove_obj(WEAR_WIELD)
+
+    Given: Character wielding a sword
+    When: Character wields a different sword
+    Then: Old sword returns to inventory, new sword is wielded
+    """
+    char = test_character
+
+    from mud.commands.equipment import do_wield
+
+    dagger = object_factory(
+        {
+            "vnum": 1050,
+            "name": "iron dagger",
+            "short_descr": "an iron dagger",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "value": [0, 3, 4, 3],
+        }
+    )
+    longsword = object_factory(
+        {
+            "vnum": 1051,
+            "name": "steel longsword",
+            "short_descr": "a steel longsword",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "value": [0, 8, 12, 3],
+        }
+    )
+    char.add_object(dagger)
+    char.add_object(longsword)
+
+    do_wield(char, "dagger")
+    assert int(WearLocation.WIELD) in char.equipment, "Should wield dagger"
+
+    result = do_wield(char, "longsword")
+
+    assert "wield" in result.lower(), f"Should confirm wielding, got: {result}"
+    assert char.equipment.get(int(WearLocation.WIELD)) is longsword, "New sword should be wielded"
+    assert dagger in char.inventory, "Old dagger should return to inventory"
+
+
+def test_wear_two_handed_blocks_shield_and_versa(test_character, object_factory):
+    """
+    Test: Two-handed weapons block shield slot, and shields block two-handed weapons.
+
+    ROM Parity: Mirrors ROM src/act_obj.c:1604-1606, 1631-1636
+
+    Given: Character wielding a two-handed weapon
+    When: Character tries to wear a shield
+    Then: Wear is rejected with "hands tied up" message
+
+    Given: Character wearing a shield
+    When: Character tries to wield a two-handed weapon
+    Then: Wield is rejected with "need two hands" message
+    """
+    char = test_character
+
+    from mud.commands.equipment import do_wear, do_wield
+    from mud.models.constants import WeaponFlag
+
+    two_handed = object_factory(
+        {
+            "vnum": 1060,
+            "name": "greatspear",
+            "short_descr": "a greatspear",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "value": [0, 10, 15, 3, int(WeaponFlag.TWO_HANDS)],
+        }
+    )
+    shield = object_factory(
+        {
+            "vnum": 1061,
+            "name": "tower shield",
+            "short_descr": "a tower shield",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_SHIELD),
+            "value": [5, 0, 0, 0],
+        }
+    )
+    char.add_object(two_handed)
+    char.add_object(shield)
+
+    do_wield(char, "greatspear")
+    result = do_wear(char, "tower")
+
+    assert "hand" in result.lower() or "tied" in result.lower(), f"Should reject shield with two-hand, got: {result}"
+    shield_worn = int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is not None
+    assert not shield_worn, "Shield should not be worn"
+
+
+def test_wear_replace_blocked_by_noremove(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1382-1386 — replacing a NOREMOVE item is rejected.
+
+    A cursed item cannot be removed when wearing a replacement; ROM emits
+    "You can't remove $p." via remove_obj() and aborts the wear.
+    """
+    from mud.commands.equipment import do_wear
+    from mud.models.constants import ExtraFlag
+
+    char = test_character
+
+    cursed = object_factory(
+        {
+            "vnum": 1100,
+            "name": "cursed crown",
+            "short_descr": "a cursed crown",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_HEAD),
+            "extra_flags": int(ExtraFlag.NOREMOVE),
+            "value": [3, 0, 0, 0],
+        }
+    )
+    plain = object_factory(
+        {
+            "vnum": 1101,
+            "name": "plain helm",
+            "short_descr": "a plain helm",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_HEAD),
+            "value": [2, 0, 0, 0],
+        }
+    )
+
+    char.add_object(cursed)
+    do_wear(char, "cursed")
+    assert char.equipment.get(int(WearLocation.HEAD)) is cursed
+
+    char.add_object(plain)
+    result = do_wear(char, "plain")
+
+    assert "can't remove" in result.lower(), f"Should report cursed item cannot be removed, got: {result}"
+    assert char.equipment.get(int(WearLocation.HEAD)) is cursed, "Cursed crown should remain worn"
+    assert plain in char.inventory, "Plain helm must stay in inventory"
+
+
+def test_wear_neck_replace_when_both_slots_full(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1456-1480 — replacing first neck slot when both occupied."""
+    from mud.commands.equipment import do_wear
+
+    char = test_character
+
+    amulets = []
+    for vnum, name in [(1110, "ruby amulet"), (1111, "jade amulet"), (1112, "onyx amulet")]:
+        obj = object_factory(
+            {
+                "vnum": vnum,
+                "name": name,
+                "short_descr": f"the {name}",
+                "item_type": int(ItemType.ARMOR),
+                "wear_flags": int(WearFlag.WEAR_NECK),
+                "value": [1, 0, 0, 0],
+            }
+        )
+        amulets.append(obj)
+        char.add_object(obj)
+
+    do_wear(char, "ruby")
+    do_wear(char, "jade")
+    result = do_wear(char, "onyx")
+
+    assert "neck" in result.lower(), f"Should confirm neck wear, got: {result}"
+    assert amulets[0] in char.inventory, "First amulet must return to inventory"
+    assert amulets[1] in char.equipment.values(), "Second amulet stays equipped"
+    assert amulets[2] in char.equipment.values(), "Third amulet now equipped"
+
+
+def test_wear_wrist_replace_when_both_slots_full(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1565-1588 — replacing first wrist slot when both occupied."""
+    from mud.commands.equipment import do_wear
+
+    char = test_character
+
+    bracers = []
+    for vnum, name in [(1120, "iron bracer"), (1121, "steel bracer"), (1122, "gold bracer")]:
+        obj = object_factory(
+            {
+                "vnum": vnum,
+                "name": name,
+                "short_descr": f"a {name}",
+                "item_type": int(ItemType.ARMOR),
+                "wear_flags": int(WearFlag.WEAR_WRIST),
+                "value": [1, 0, 0, 0],
+            }
+        )
+        bracers.append(obj)
+        char.add_object(obj)
+
+    do_wear(char, "iron")
+    do_wear(char, "steel")
+    result = do_wear(char, "gold")
+
+    assert "wrist" in result.lower(), f"Should confirm wrist wear, got: {result}"
+    assert bracers[0] in char.inventory, "First bracer must return to inventory"
+    assert bracers[1] in char.equipment.values(), "Second bracer stays equipped"
+    assert bracers[2] in char.equipment.values(), "Third bracer now equipped"
+
+
+def test_wear_multislot_blocked_when_all_noremove(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1427-1431 — when both rings are NOREMOVE, wear fails."""
+    from mud.commands.equipment import do_wear
+    from mud.models.constants import ExtraFlag
+
+    char = test_character
+
+    cursed_specs = [
+        (1130, "ruby ring"),
+        (1131, "emerald ring"),
+    ]
+    for vnum, name in cursed_specs:
+        ring = object_factory(
+            {
+                "vnum": vnum,
+                "name": name,
+                "short_descr": f"a {name}",
+                "item_type": int(ItemType.ARMOR),
+                "wear_flags": int(WearFlag.WEAR_FINGER),
+                "extra_flags": int(ExtraFlag.NOREMOVE),
+                "value": [1, 0, 0, 0],
+            }
+        )
+        char.add_object(ring)
+        do_wear(char, name.split()[0])
+
+    third = object_factory(
+        {
+            "vnum": 1132,
+            "name": "sapphire ring",
+            "short_descr": "a sapphire ring",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_FINGER),
+            "value": [1, 0, 0, 0],
+        }
+    )
+    char.add_object(third)
+
+    result = do_wear(char, "sapphire")
+    assert "two rings" in result.lower(), f"Expected ROM 'You already wear two rings.', got: {result}"
+    assert third in char.inventory, "Sapphire ring must remain in inventory"
+
+
+def test_wear_all_does_not_replace_existing(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1716-1722 — `wear all` passes fReplace=FALSE,
+    so already-occupied slots are skipped silently."""
+    from mud.commands.equipment import do_wear
+
+    char = test_character
+
+    helm1 = object_factory(
+        {
+            "vnum": 1140,
+            "name": "iron helm",
+            "short_descr": "an iron helm",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_HEAD),
+            "value": [2, 0, 0, 0],
+        }
+    )
+    helm2 = object_factory(
+        {
+            "vnum": 1141,
+            "name": "steel helm",
+            "short_descr": "a steel helm",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_HEAD),
+            "value": [3, 0, 0, 0],
+        }
+    )
+
+    char.add_object(helm1)
+    do_wear(char, "iron")
+    assert char.equipment.get(int(WearLocation.HEAD)) is helm1
+
+    char.add_object(helm2)
+    do_wear(char, "all")
+
+    assert char.equipment.get(int(WearLocation.HEAD)) is helm1, "wear all must not replace existing helm"
+    assert helm2 in char.inventory, "Second helm must remain in inventory under wear all"
+
+
+def test_large_size_bypasses_two_hand_shield_block(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1603, 1631 — characters of SIZE_LARGE+ ignore
+    the two-handed weapon vs. shield restriction."""
+    from mud.commands.equipment import do_wear, do_wield
+    from mud.models.constants import Size, WeaponFlag
+
+    char = test_character
+    char.size = int(Size.LARGE)
+
+    two_handed = object_factory(
+        {
+            "vnum": 1150,
+            "name": "greataxe",
+            "short_descr": "a greataxe",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "value": [0, 12, 18, 3, int(WeaponFlag.TWO_HANDS)],
+        }
+    )
+    shield = object_factory(
+        {
+            "vnum": 1151,
+            "name": "kite shield",
+            "short_descr": "a kite shield",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_SHIELD),
+            "value": [5, 0, 0, 0],
+        }
+    )
+    char.add_object(two_handed)
+    char.add_object(shield)
+
+    do_wield(char, "greataxe")
+    result = do_wear(char, "kite")
+    assert "tied" not in result.lower(), f"Large-sized character should bypass two-hand block, got: {result}"
+    assert int(WearLocation.SHIELD) in char.equipment, "Shield must be worn for SIZE_LARGE wielder"
+
+
+def test_npc_bypasses_strength_and_two_hand_checks(test_character, object_factory):
+    """ROM Parity: src/act_obj.c:1623, 1631 — NPCs skip strength and
+    two-hand vs. shield checks entirely."""
+    from mud.commands.equipment import do_wear, do_wield
+    from mud.models.constants import WeaponFlag
+
+    char = test_character
+    char.is_npc = True
+    char.perm_stat = [3, 3, 3, 3, 3]  # Very low strength
+
+    heavy_two_hander = object_factory(
+        {
+            "vnum": 1160,
+            "name": "warhammer",
+            "short_descr": "a massive warhammer",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "weight": 999,
+            "value": [0, 15, 25, 3, int(WeaponFlag.TWO_HANDS)],
+        }
+    )
+    shield = object_factory(
+        {
+            "vnum": 1161,
+            "name": "buckler",
+            "short_descr": "a small buckler",
+            "item_type": int(ItemType.ARMOR),
+            "wear_flags": int(WearFlag.WEAR_SHIELD),
+            "value": [3, 0, 0, 0],
+        }
+    )
+    char.add_object(shield)
+    char.add_object(heavy_two_hander)
+
+    do_wear(char, "buckler")
+    assert int(WearLocation.SHIELD) in char.equipment
+
+    result = do_wield(char, "warhammer")
+    assert "too heavy" not in result.lower(), f"NPC should bypass strength check, got: {result}"
+    assert "two hands" not in result.lower(), f"NPC should bypass two-hand check, got: {result}"
+    assert char.equipment.get(int(WearLocation.WIELD)) is heavy_two_hander, "NPC should wield two-hander with shield"

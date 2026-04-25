@@ -222,8 +222,16 @@ def _get_liquid_name(liquid_type: int) -> str:
 
 
 def _find_obj_inventory(ch: Character, name: str) -> Object | None:
-    """Find an object in character's inventory by name."""
-    inventory = getattr(ch, "carrying", [])
+    """Find an object in character's inventory by name.
+
+    ROM Reference: src/handler.c get_obj_carry — searches `ch->carrying`.
+    QuickMUD stores the carrying list on `Character.inventory` (see
+    `mud/models/character.py:396`). Previous code read `ch.carrying` which
+    does not exist, so every `do_eat`/`do_drink` lookup failed.
+    """
+    inventory = getattr(ch, "inventory", None)
+    if inventory is None:
+        inventory = getattr(ch, "carrying", [])
     if not inventory or not name:
         return None
 
@@ -243,8 +251,14 @@ def _find_obj_inventory(ch: Character, name: str) -> Object | None:
 
 
 def _destroy_object(ch: Character, obj: Object) -> None:
-    """Remove an object from character's inventory and destroy it."""
-    inventory = getattr(ch, "carrying", [])
+    """Remove an object from character's inventory and destroy it.
+
+    NOTE: ROM uses `extract_obj` which also unlinks from object_registry.
+    See ACT_OBJ_C_CONSUMABLES_AUDIT.md for the gap.
+    """
+    inventory = getattr(ch, "inventory", None)
+    if inventory is None:
+        inventory = getattr(ch, "carrying", [])
     if obj in inventory:
         inventory.remove(obj)
 

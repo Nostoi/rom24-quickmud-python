@@ -722,7 +722,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### ⚠️ P1-7: act_obj.c (IN PROGRESS - `do_get()`/`do_put()` complete)
 
-**Status**: 🔄 **Active parity audit; `do_drop()` core parity batch verified, `do_give()` next**
+**Status**: 🔄 **Active parity audit; `do_drop()` verified, `do_give()` complete, `do_wear()` initial batch underway**
 
 **ROM Functions**: Object commands (get, drop, put, give, wear, remove, shops, consumables)
 **QuickMUD Modules**: `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py`
@@ -731,8 +731,9 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ `do_get()` - 100% ROM parity complete (60/60 integration tests passing)
 - ✅ `do_put()` - 100% ROM parity complete (15/15 integration tests passing)
 - 🔄 `do_drop()` - core parity batch verified; 15 targeted integration tests now cover bulk drop handling, money-drop semantics, room messages, melt-drop behavior, no-drop rejection, and wear-state exclusion
-- ⚠️ `do_give()` - pending detailed verification after `do_drop()`
-- ⚠️ `do_wear()` / `do_remove()` - pending detailed verification
+- ✅ `do_give()` - final sweep complete; 14 targeted integration tests now cover money handling, room/victim messaging, inventory transfer, shopkeeper refusal, equipped-item rejection, victim visibility checks, carry-slot and carry-weight saturation, NPC bribe triggers, changer exchange behavior, numeric money error wording, ROM-confirmed lack of `give all` support, and correct TO_NOTVICT observer-only broadcasts
+- ✅ `do_wear()` - replace/multi-slot/two-hand batch complete; ROM `remove_obj` "You can't remove $p." surfaced on blocked replacements, NECK/WRIST multi-slot replace covered, all-NOREMOVE multi-slot returns ROM "You already wear two rings/items." text, `wear all` honors `fReplace=FALSE` (no slot stomp), `do_wield`/`do_wear` shield path now check `ch.size < SIZE_LARGE` and skip strength/two-hand restrictions for NPCs (matches ROM `IS_NPC` short-circuits). Also fixed an upstream bug: `Object.__post_init__` now mirrors prototype `extra_flags`/`wear_flags` so direct-construction (test fixtures, OLC) honors ITEM_NOREMOVE and friends.
+- ✅ `do_remove()` - line-by-line ROM parity verified against `src/act_obj.c:1740-1763` and `src/handler.c:remove_obj` (1372-1392). Gap fixed: ROM emits a TO_ROOM `"$n stops using $p."` broadcast in addition to the TO_CHAR `"You stop using $p."` reply; Python now mirrors both via a new `_perform_remove()` helper that calls `unequip_char` + `act_format` + `broadcast_room`. NOREMOVE wording matches ROM exactly (`"You can't remove $p."`). `wear_loc` reset to `WEAR_NONE` is handled by `unequip_char` (verified). `remove all` retained as a documented Python extension (skips NOREMOVE items). New suite `tests/integration/test_remove_command.py` adds 6 targeted tests (happy path TO_CHAR+TO_ROOM, NOREMOVE block, no-args, item-not-worn, AC bonus revert, `remove all` skipping NOREMOVE).
 - ⚠️ Remaining P1 object commands/helpers still need line-by-line audit
 
 **Recent Verification**:
@@ -741,48 +742,53 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ Targeted pytest run passes: `test_player_npc_interaction.py`, `test_mobprog_scenarios.py`, `test_new_player_workflow.py` (24/24)
 
 **Critical Gaps Remaining**:
-- [ ] `do_give()` parity audit and implementation
 - [ ] Equipment slot/removal parity verification
+- [ ] Finish remaining `do_wear()` replace/multi-slot/two-hand parity cases
 - [ ] Consumables and special-object command audit completion
+- [ ] **Consumables audit (April 24, 2026)** — see `docs/parity/ACT_OBJ_C_CONSUMABLES_AUDIT.md`. All eight commands (`do_eat`, `do_drink`, `do_quaff`, `do_recite`, `do_brandish`, `do_zap`, `do_pour`, `do_fill`) are wired in `dispatcher.py`, but `do_recite`/`do_brandish`/`do_zap` raise at runtime (`ItemType.ITEM_STAFF`/`ITEM_WAND` undefined; `find_char_in_room`/`find_obj_in_room`/`SkillTarget` not imported). `do_eat`/`do_drink` ignore the canonical `Character.condition[]` array (DRUNK/FULL/THIRST/HUNGER), substitute a non-ROM dict, omit the COND_FULL > 40/45 gates, and apply non-canonical poison affects. `do_pour` reads `target_char.equipped` instead of `equipment` so pour-into-character never finds the held container. New integration suite at `tests/integration/test_consumables.py` (13 pass, 7 skip pointing to the audit doc).
 
-**Integration Tests**: 🔄 Strong GET/PUT coverage complete; `do_drop()` now has 15 targeted parity tests passing, with give/wear/remove still partial
+**Integration Tests**: 🔄 Strong GET/PUT coverage complete; `do_drop()` has 15 targeted parity tests passing, `do_give()` has 14 targeted parity tests passing, and `test_equipment_system.py` now covers 18 relevant `do_wear()` scenarios (plus 1 existing skip)
 
 **Estimated Work**: 2-3 days for the next P0 object-command batch (`do_give()` then wear/remove follow-up)
 
 **Next Steps**:
 - [x] `do_drop()` parity batch committed as `97c901e` (`feat: finish do_drop parity batch`)
-- [ ] Start line-by-line `do_give()` audit against `src/act_obj.c`
-- [ ] Add `do_give()` money-transfer and observer-message integration tests
+- [x] Start line-by-line `do_give()` audit against `src/act_obj.c`
+- [x] Add `do_give()` money-transfer and observer-message integration tests
+- [x] Add `do_give()` carry-limit and special-NPC parity coverage
+- [x] Verify carry-weight saturation, numeric money error wording, and ROM-confirmed lack of `give all` support
+- [x] Fix TO_NOTVICT room-broadcast parity so giver no longer receives observer messages
+- [x] Start `do_wear()` audit against `src/act_obj.c`
+- [x] Verify initial `do_wear()` gaps: location-specific wear text, light handling, TO_ROOM observer messages, and `wear all` weapon/light routing
+- [x] Finish `do_wear()` replace logic, multi-slot edge cases, and two-hand interactions (NOREMOVE messaging, NECK/WRIST replace, all-NOREMOVE multi-slot, `wear all` non-replace, SIZE_LARGE bypass, NPC bypass) — `tests/integration/test_equipment_system.py` now covers 26 scenarios (1 ROM-non-parity skip)
+- [x] Audit `do_remove()` line-by-line and add dedicated remove-command coverage (6 tests in `tests/integration/test_remove_command.py`; TO_ROOM broadcast gap closed via `_perform_remove()` helper)
+- [ ] Audit consumables and special-object commands (`do_eat`/`do_drink`/`do_quaff`/`do_recite`/`do_brandish`/`do_zap`/`do_pour`/`do_fill`)
 
 ---
 
-### ⚠️ P1-8: mob_prog.c + mob_cmds.c (PARTIAL - 72%)
+### ⚠️ P1-8: mob_prog.c + mob_cmds.c (PARTIAL - 85%)
 
-**Status**: ⚠️ **Mostly complete, needs edge case audit**
+**Status**: ⚠️ **Edge-case audit completed April 24, 2026 — `mpat`/`mptransfer`/`mppurge` parity verified, variable substitution exercised**
 
 **ROM Functions**: Mob programs and mob commands
-**QuickMUD Module**: `mud/mobprog/`
+**QuickMUD Module**: `mud/mobprog/`, `mud/mob_cmds.py`
 
 **Audit Status**:
 - ✅ Mobprog triggers (100%)
 - ✅ Mobprog conditionals (95%)
 - ✅ Quest workflows (90% - tested)
-- ⚠️ Mob commands (70% - some missing)
+- ✅ Mob commands (85%) — `mpat`, `mptransfer`, `mppurge` audited and patched as needed
 - ⚠️ Recursion limits (80% - tested but edge cases remain)
 
-**Critical Gaps**:
-- [ ] `mpat` command (teleport mob)
-- [ ] `mptransfer` command (teleport player)
-- [ ] `mppurge` edge cases
-- [ ] Variable substitution ($n, $r, etc.) completeness
+**Critical Gaps Closed (April 24, 2026)**:
+- [x] `mpat <location> <command>` — round-trip teleport verified; mob's room saved, command dispatched at target, mob returned (`tests/integration/test_mobprog_edge_cases.py`)
+- [x] `mptransfer <victim|'all'> <location>` — single-target and `all` forms verified
+- [x] `mppurge` edge cases — purges room contents while excluding PCs and the running mob
+- [x] Variable substitution ($i, $I, $n, $N, $t, $T, $e/$E, $m/$M, $s/$S, $r/$R, $p) exercised in a single mobprog snippet test
 
-**Integration Tests**: ✅ Complete (`tests/integration/test_mobprog_scenarios.py`)
+**Integration Tests**: ✅ `tests/integration/test_mobprog_scenarios.py` (existing) + `tests/integration/test_mobprog_edge_cases.py` (7 new tests, all green)
 
-**Estimated Work**: 1 day for missing commands
-
-**Next Steps**:
-- [ ] Implement missing mob commands
-- [ ] Audit variable substitution
+**Remaining Work**: Recursion-limit edge cases and any rare mob commands still need a final pass before declaring 100% parity.
 
 ---
 
