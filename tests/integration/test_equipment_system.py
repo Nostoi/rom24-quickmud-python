@@ -896,9 +896,13 @@ def test_wear_replace_blocked_by_noremove(test_character, object_factory):
     assert char.equipment.get(int(WearLocation.HEAD)) is cursed
 
     char.add_object(plain)
-    result = do_wear(char, "plain")
+    char.messages.clear()
+    do_wear(char, "plain")
 
-    assert "can't remove" in result.lower(), f"Should report cursed item cannot be removed, got: {result}"
+    # ROM act_obj.c:1382-1386 — remove_obj emits "You can't remove $p." via
+    # act(TO_CHAR), which lands in `char.messages` here.
+    sent = " ".join(char.messages).lower()
+    assert "can't remove" in sent, f"Should report cursed item cannot be removed, got messages: {char.messages}"
     assert char.equipment.get(int(WearLocation.HEAD)) is cursed, "Cursed crown should remain worn"
     assert plain in char.inventory, "Plain helm must stay in inventory"
 

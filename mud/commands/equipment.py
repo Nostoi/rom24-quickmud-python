@@ -18,6 +18,33 @@ if TYPE_CHECKING:
     from mud.models.object import Object
 
 
+# ROM str_app wield column for STR 0..25.
+# Source: src/const.c:728 str_app[26], fourth field (wield).
+# Max wieldable weight = _STR_WIELD[STR] * 10 (ROM src/act_obj.c:1624-1625).
+_STR_WIELD = (
+    0,   1,  2,  3,  4,  5,  6,  7,  8,  9,
+    10, 11, 12, 13, 14, 15, 16, 22, 25, 30,
+    35, 40, 45, 50, 55, 60,
+)
+
+
+def _str_wield_max(str_stat: int) -> int:
+    """Return ROM str_app[STR].wield * 10 — the max wieldable weight."""
+    idx = max(0, min(25, int(str_stat)))
+    return _STR_WIELD[idx] * 10
+
+
+def _broadcast_level_fail(ch: Character, obj: Object) -> None:
+    """ROM act_obj.c:1410-1411 — emit TO_ROOM observer message for level-too-low."""
+    obj_name = getattr(obj, "short_descr", "something")
+    ch_name = getattr(ch, "name", "Someone")
+    broadcast_room(
+        getattr(ch, "room", None),
+        f"{ch_name} tries to use {obj_name}, but is too inexperienced.",
+        exclude=ch,
+    )
+
+
 def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
     """Remove an equipped object, returning it to inventory.
 
@@ -34,8 +61,8 @@ def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
     if extra_flags & ExtraFlag.NOREMOVE:
         # ROM act("You can't remove $p.", ch, obj, NULL, TO_CHAR);
         obj_name = getattr(obj, "short_descr", "it")
-        if hasattr(ch, "send") and callable(ch.send):
-            ch.send(f"You can't remove {obj_name}.\n")
+        if hasattr(ch, "send_to_char"):
+            ch.send_to_char(f"You can't remove {obj_name}.")
         return False
 
     unequip_char(ch, obj)
@@ -48,10 +75,9 @@ def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
     room_msg = f"{getattr(ch, 'name', 'Someone')} stops using {obj_name}."
     char_msg = f"You stop using {obj_name}."
 
-    from mud.net.protocol import broadcast_room
     broadcast_room(getattr(ch, "room", None), room_msg, exclude=ch)
-    if hasattr(ch, "send") and callable(ch.send):
-        ch.send(char_msg + "\n")
+    if hasattr(ch, "send_to_char"):
+        ch.send_to_char(char_msg)
 
     return True
 
@@ -120,6 +146,7 @@ def do_wear(ch: Character, args: str) -> str:
     obj_level = getattr(obj.prototype, "level", 0)
     char_level = getattr(ch, "level", 1)
     if char_level < obj_level:
+        _broadcast_level_fail(ch, obj)
         return f"You must be level {obj_level} to use this object."
 
     # Determine where this can be worn (read from prototype)
@@ -178,11 +205,22 @@ def do_wear(ch: Character, args: str) -> str:
         equip_char(ch, obj, hold_loc)
 
         obj_name = getattr(obj, "short_descr", "something")
+        ch_name = getattr(ch, "name", "Someone")
 
-        # Special message for lights (ROM src/act_obj.c:1676)
+        # ROM act_obj.c:1415-1423 (LIGHT branch) vs 1670-1677 (HOLD branch).
         if item_type == ItemType.LIGHT:
-            return f"You hold {obj_name} as your light."
+            broadcast_room(
+                getattr(ch, "room", None),
+                f"{ch_name} lights {obj_name} and holds it.",
+                exclude=ch,
+            )
+            return f"You light {obj_name} and hold it."
 
+        broadcast_room(
+            getattr(ch, "room", None),
+            f"{ch_name} holds {obj_name} in their hand.",
+            exclude=ch,
+        )
         return f"You hold {obj_name} in your hand."
 
     # Find appropriate wear location
@@ -200,8 +238,9 @@ def do_wear(ch: Character, args: str) -> str:
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
         if not _unequip_to_inventory(ch, existing):
-            existing_name = getattr(existing, "short_descr", "it")
-            return f"You can't remove {existing_name}."
+            # _unequip_to_inventory already emits "You can't remove $p." via ch.send.
+            # Returning empty string avoids ROM-divergent duplicate output.
+            return ""
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_wear, error_msg = _can_wear_alignment(ch, obj)
@@ -227,8 +266,6 @@ def do_wear(ch: Character, args: str) -> str:
     # ROM-style location-specific messages (src/act_obj.c:1435-1612)
     obj_name = getattr(obj, "short_descr", "something")
     room_template, char_template = _wear_location_messages(wear_loc)
-    from mud.utils.act import act_format
-    from mud.net.protocol import broadcast_room
     room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
     broadcast_room(getattr(ch, "room", None), room_message, exclude=ch)
     return char_template.format(obj_name=obj_name)
@@ -262,6 +299,7 @@ def do_wield(ch: Character, args: str) -> str:
     obj_level = getattr(obj.prototype, "level", 0)
     char_level = getattr(ch, "level", 1)
     if char_level < obj_level:
+        _broadcast_level_fail(ch, obj)
         return f"You must be level {obj_level} to use this object."
 
     # Check if it's a weapon (read from prototype)
@@ -277,10 +315,12 @@ def do_wield(ch: Character, args: str) -> str:
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
         if not _unequip_to_inventory(ch, existing):
-            existing_name = getattr(existing, "short_descr", "it")
-            return f"You can't remove {existing_name}."
+            # _unequip_to_inventory already emits "You can't remove $p." via ch.send.
+            # Returning empty string avoids ROM-divergent duplicate output.
+            return ""
 
-    # ROM src/act_obj.c:1623 — strength check skipped for NPCs.
+    # ROM src/act_obj.c:1623-1629 — strength check skipped for NPCs.
+    # Max wieldable weight is `str_app[STR].wield * 10` (lookup table, not raw STR).
     is_npc = bool(getattr(ch, "is_npc", False))
     if not is_npc:
         weight = getattr(obj.prototype, "weight", 0)
@@ -291,7 +331,7 @@ def do_wield(ch: Character, args: str) -> str:
             stat_value = ch.get_curr_stat(Stat.STR)
             if stat_value is not None:
                 str_stat = stat_value
-        if str_stat * 10 < weight:
+        if weight > _str_wield_max(str_stat):
             return "It is too heavy for you to wield."
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
@@ -327,7 +367,39 @@ def do_wield(ch: Character, args: str) -> str:
     equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
+    # ROM act_obj.c:1639 — TO_ROOM "$n wields $p."
+    ch_name = getattr(ch, "name", "Someone")
+    broadcast_room(getattr(ch, "room", None), f"{ch_name} wields {obj_name}.", exclude=ch)
+
+    # ROM act_obj.c:1643-1665 — weapon-skill flavor message (skip for hand-to-hand).
+    flavor = _weapon_skill_flavor(ch, obj)
+    if flavor:
+        return f"You wield {obj_name}.\n{flavor}"
     return f"You wield {obj_name}."
+
+
+def _weapon_skill_flavor(ch: Character, obj: Object) -> str | None:
+    """ROM act_obj.c:1643-1665 — seven-tier weapon-skill flavor on wield."""
+    from mud.combat.engine import HAND_TO_HAND_SKILL, get_weapon_skill, get_weapon_sn
+
+    sn = get_weapon_sn(ch, obj)
+    if sn is None or sn == HAND_TO_HAND_SKILL:
+        return None
+    skill = get_weapon_skill(ch, sn)
+    obj_name = getattr(obj, "short_descr", "it")
+    if skill >= 100:
+        return f"{obj_name} feels like a part of you!"
+    if skill > 85:
+        return f"You feel quite confident with {obj_name}."
+    if skill > 70:
+        return f"You are skilled with {obj_name}."
+    if skill > 50:
+        return f"Your skill with {obj_name} is adequate."
+    if skill > 25:
+        return f"{obj_name} feels a little clumsy in your hands."
+    if skill > 1:
+        return f"You fumble and almost drop {obj_name}."
+    return f"You don't even know which end is up on {obj_name}."
 
 
 def do_hold(ch: Character, args: str) -> str:
@@ -358,6 +430,7 @@ def do_hold(ch: Character, args: str) -> str:
     obj_level = getattr(obj.prototype, "level", 0)
     char_level = getattr(ch, "level", 1)
     if char_level < obj_level:
+        _broadcast_level_fail(ch, obj)
         return f"You must be level {obj_level} to use this object."
 
     # Check if it can be held (read from prototype)
@@ -395,18 +468,35 @@ def do_hold(ch: Character, args: str) -> str:
     equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
+    ch_name = getattr(ch, "name", "Someone")
 
-    # Special message for lights (read from prototype)
+    # ROM act_obj.c:1415-1423 (LIGHT) vs 1670-1677 (HOLD).
     item_type_str = getattr(obj.prototype, "item_type", None)
     item_type = int(item_type_str) if item_type_str else ItemType.TRASH
     if item_type == ItemType.LIGHT:
-        return f"You hold {obj_name} as your light."
+        broadcast_room(
+            getattr(ch, "room", None),
+            f"{ch_name} lights {obj_name} and holds it.",
+            exclude=ch,
+        )
+        return f"You light {obj_name} and hold it."
 
+    broadcast_room(
+        getattr(ch, "room", None),
+        f"{ch_name} holds {obj_name} in their hand.",
+        exclude=ch,
+    )
     return f"You hold {obj_name} in your hand."
 
 
 def _wear_all(ch: Character) -> str:
-    """Wear all wearable items in inventory."""
+    """Wear all wearable items in inventory.
+
+    ROM Reference: src/act_obj.c:1716-1721 — only iterate `wear_loc == WEAR_NONE`
+    items the character can see (`can_see_obj`).
+    """
+    from mud.world.vision import can_see_object
+
     inventory = getattr(ch, "inventory", [])
     if not inventory:
         return "You are not carrying anything."
@@ -415,6 +505,9 @@ def _wear_all(ch: Character) -> str:
     for obj in list(inventory):  # Copy list since we modify it
         # Skip already worn items
         if getattr(obj, "worn_by", None):
+            continue
+        # ROM act_obj.c:1719 — skip items the character can't see.
+        if not can_see_object(ch, obj):
             continue
 
         # Skip weapons and held items (read from prototype)
