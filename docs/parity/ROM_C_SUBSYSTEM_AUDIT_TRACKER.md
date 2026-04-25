@@ -747,7 +747,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 **Integration Tests**: 🔄 Strong GET/PUT coverage complete; `do_drop()` now has 15 targeted parity tests passing, with give/wear/remove still partial
 
-**Estimated Work**: 2-3 days for next P0 command batch (`do_drop()` then `do_give()`)
+**Estimated Work**: 2-3 days for the next P0 object-command batch (`do_give()` then wear/remove follow-up)
 
 **Next Steps**:
 - [x] `do_drop()` parity batch committed as `97c901e` (`feat: finish do_drop parity batch`)
