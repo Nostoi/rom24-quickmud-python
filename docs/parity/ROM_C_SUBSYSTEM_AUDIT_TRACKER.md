@@ -67,7 +67,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Commands** | | | | | |
 | `act_comm.c` | P0 | ✅ **Audited** | `mud/commands/communication.py`, `mud/commands/group_commands.py`, `mud/commands/channels.py` | **100% P0-P1** | ✅ **100% P0-P1 COMPLETE!** Jan 8 - All critical gaps fixed (yell, order, gtell) - 34/36 functions verified - See ACT_COMM_C_AUDIT.md |
 | `act_info.c` | P1 | ✅ **COMPLETE!** | `mud/commands/info.py`, `mud/commands/character.py`, `mud/commands/auto_settings.py`, `mud/commands/misc_info.py` | **100%** | **🎉🎉🎉 FULL PARITY - ALL 38 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 8 - 273/273 integration tests - See ACT_INFO_C_AUDIT.md |
-| `act_obj.c` | P1 | 🔄 **IN PROGRESS** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **~60%** | 🔄 `do_get()` + `do_put()` now 100% parity; stale inventory-field test cleanup verified Apr 23, 2026; next target is `do_drop()` - See ACT_OBJ_C_AUDIT.md |
+| `act_obj.c` | P1 | 🔄 **IN PROGRESS** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **~60%** | 🔄 `do_get()` + `do_put()` now 100% parity; `do_drop()` audit active with first 5 integration tests passing on Apr 23, 2026 - See ACT_OBJ_C_AUDIT.md |
 | `act_wiz.c` | P2 | ⚠️ Partial | `mud/commands/admin.py` | 40% | Admin commands basic |
 | `interp.c` | P0 | ⚠️ Partial | `mud/commands/dispatcher.py` | 80% | Command dispatch works |
 | **Database & World** | | | | | |
@@ -722,7 +722,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### ⚠️ P1-7: act_obj.c (IN PROGRESS - `do_get()`/`do_put()` complete)
 
-**Status**: 🔄 **Active parity audit; next command is `do_drop()`**
+**Status**: 🔄 **Active parity audit; `do_drop()` core parity batch verified, `do_give()` next**
 
 **ROM Functions**: Object commands (get, drop, put, give, wear, remove, shops, consumables)
 **QuickMUD Modules**: `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py`
@@ -730,7 +730,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 **Audit Status**:
 - ✅ `do_get()` - 100% ROM parity complete (60/60 integration tests passing)
 - ✅ `do_put()` - 100% ROM parity complete (15/15 integration tests passing)
-- 🔄 `do_drop()` - next audit target; preliminary gap list exists, implementation not started
+- 🔄 `do_drop()` - core parity batch verified; 15 targeted integration tests now cover bulk drop handling, money-drop semantics, room messages, melt-drop behavior, no-drop rejection, and wear-state exclusion
 - ⚠️ `do_give()` - pending detailed verification after `do_drop()`
 - ⚠️ `do_wear()` / `do_remove()` - pending detailed verification
 - ⚠️ Remaining P1 object commands/helpers still need line-by-line audit
@@ -741,19 +741,19 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ Targeted pytest run passes: `test_player_npc_interaction.py`, `test_mobprog_scenarios.py`, `test_new_player_workflow.py` (24/24)
 
 **Critical Gaps Remaining**:
-- [ ] `do_drop()` parity audit and implementation
+- [ ] Stage and land the verified `do_drop()` parity batch
 - [ ] `do_give()` parity audit and implementation
 - [ ] Equipment slot/removal parity verification
 - [ ] Consumables and special-object command audit completion
 
-**Integration Tests**: 🔄 Strong GET/PUT coverage complete; drop/give/wear/remove coverage still partial
+**Integration Tests**: 🔄 Strong GET/PUT coverage complete; `do_drop()` now has 15 targeted parity tests passing, with give/wear/remove still partial
 
 **Estimated Work**: 2-3 days for next P0 command batch (`do_drop()` then `do_give()`)
 
 **Next Steps**:
-- [ ] Audit ROM `do_drop()` against `mud/commands/inventory.py`
-- [ ] Add failing `do_drop()` integration tests for each confirmed gap
-- [ ] Implement minimal fixes and re-run targeted parity tests
+- [ ] Stage and commit the `do_drop()` parity batch after targeted verification
+- [ ] Start line-by-line `do_give()` audit against `src/act_obj.c`
+- [ ] Add `do_give()` money-transfer and observer-message integration tests
 
 ---
 

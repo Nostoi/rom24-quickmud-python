@@ -2,7 +2,7 @@
 
 ## 🚀 QUICK START (New Session - Start Here!)
 
-**Last Session**: April 23, 2026 - stale `test_player.carrying` cleanup complete; next priority is `do_drop()` audit
+**Last Session**: April 24, 2026 - `do_drop()` parity batch verified; 15 targeted integration tests passing
 
 **Current Status**: ✅ **do_get() AND do_put() COMMANDS 100% COMPLETE!** 🎉
 - ✅ **do_get()**: 13/13 gaps fixed (60/60 tests passing)
@@ -25,6 +25,8 @@
 **Integration Tests**: 782/791 passing (98.9%) (+15 new tests from PUT-001, PUT-002, PUT-003)
 
 **Targeted Cleanup Complete**: ✅ Replaced deprecated `.carrying` usage with `.inventory` in 3 integration files; `pytest tests/integration/test_player_npc_interaction.py tests/integration/test_mobprog_scenarios.py tests/integration/test_new_player_workflow.py -v` now passes 24/24 tests
+
+**`do_drop()` Progress**: ✅ Core ROM parity batch verified - `drop all`, `drop all.type`, money-drop handling, TO_ROOM messages, ITEM_MELT_DROP dissolve behavior, no-drop rejection, and wear-state exclusion are now covered by `tests/integration/test_drop_command.py` (15/15 passing)
 
 ---
 
@@ -65,15 +67,19 @@ tests/integration/test_new_player_workflow.py (2 instances)
 **Impact**: Estimated 8-10 gaps identified  
 **Priority**: MEDIUM (continue act_obj.c systematic audit)
 
-**ROM C Reference**: `src/act_obj.c` lines 85-161 (do_drop function)
+**ROM C Reference**: `src/act_obj.c` lines 496-657 (do_drop function)
 
-**Known Missing Features** (from preliminary analysis):
-- ❌ "drop all" support (CRITICAL - breaks core gameplay)
-- ❌ "drop all.type" support (CRITICAL)
-- ❌ AUTOSPLIT for money objects (CRITICAL - same as GET-001)
-- ❌ TO_ROOM act() messages (observers see drops)
-- ❌ Pit timer handling (donation pit logic)
-- ❌ Money consolidation (multiple money objects → single pile)
+**Current Verified Status**:
+- ✅ `drop all` support implemented and passing integration tests
+- ✅ `drop all.type` support implemented and passing integration tests
+- ✅ Numeric gold-drop money consolidation implemented and passing integration tests
+- ✅ Numeric silver / `coins` handling implemented and passing integration tests
+- ✅ ITEM_MELT_DROP dissolve behavior implemented and passing integration tests
+- ✅ Melt-drop observer smoke message implemented and passing integration tests
+- ✅ TO_ROOM observer message parity for standard drops explicitly verified
+- ✅ Money-drop error paths verified (`silver`, `gold`, invalid keyword, insufficient funds)
+- ✅ Wear-state exclusion and unmatched `drop all.type` messaging verified
+- ✅ No-drop / cursed-item rejection verified
 
 **Audit Steps** (follow handler.c methodology):
 1. **Read ROM C** `src/act_obj.c` lines 85-161 (do_drop)
@@ -85,25 +91,27 @@ tests/integration/test_new_player_workflow.py (2 instances)
 7. **Create integration tests** for each gap (MANDATORY)
 8. **Update documentation** with completion status
 
-**Expected Gaps**:
-- DROP-001: "drop all" and "drop all.type" support (CRITICAL)
-- DROP-002: AUTOSPLIT for money objects (CRITICAL)
-- DROP-003: TO_ROOM act() messages (IMPORTANT)
-- DROP-004: Pit timer handling (IMPORTANT)
-- DROP-005: Money consolidation logic (IMPORTANT)
-- DROP-006: Argument parsing (one_argument) (IMPORTANT)
-- DROP-007: Visibility checks (can_see_object) (IMPORTANT)
-- DROP-008: ITEM_TAKE flag validation (IMPORTANT)
+**Remaining Work**:
+- Stage and commit the verified `do_drop()` parity batch
+- Sync any deeper audit narrative in `docs/parity/ACT_OBJ_C_AUDIT.md` if that document is being tracked in this branch
+- Move to `do_give()` once the `do_drop()` batch is landed
 
-**Integration Test Plan** (8-12 tests estimated):
-- `test_drop_single_object` - Basic drop functionality
-- `test_drop_all_from_inventory` - "drop all" support
-- `test_drop_all_type_from_inventory` - "drop all.sword"
-- `test_drop_money_autosplits` - Money AUTOSPLIT integration
-- `test_drop_broadcasts_to_room` - TO_ROOM messages
-- `test_drop_in_pit_assigns_timer` - Pit timer logic
-- `test_drop_consolidates_money` - Money pile consolidation
-- `test_drop_nontakeable_blocked` - Can't drop cursed items
+**Integration Test Progress**:
+- ✅ `test_drop_all_moves_all_unequipped_inventory_items_to_room`
+- ✅ `test_drop_all_type_only_drops_matching_inventory_items`
+- ✅ `test_drop_numeric_gold_consolidates_existing_room_money`
+- ✅ `test_drop_melt_drop_item_dissolves_instead_of_remaining_in_room`
+- ✅ `test_drop_melt_drop_item_broadcasts_smoke_message_to_room`
+- ✅ `test_drop_single_object_broadcasts_to_room`
+- ✅ `test_drop_nodrop_item_is_rejected`
+- ✅ `test_drop_numeric_gold_rejects_insufficient_funds`
+- ✅ `test_drop_numeric_silver_creates_money_pile`
+- ✅ `test_drop_numeric_coins_uses_silver_path`
+- ✅ `test_drop_numeric_silver_rejects_insufficient_funds`
+- ✅ `test_drop_numeric_invalid_money_keyword_is_rejected`
+- ✅ `test_drop_money_broadcasts_some_coins_to_room`
+- ✅ `test_drop_all_ignores_equipped_items`
+- ✅ `test_drop_all_type_without_match_returns_rom_message`
 
 ---
 
@@ -216,7 +224,7 @@ tests/integration/test_new_player_workflow.py (2 instances)
 | **Option 3: Audit do_give()** | 1 day | 5-8 gaps | LOW | ⚠️ After do_drop() |
 | **Option 4: Complete act_obj.c** | 3-5 days | 26-38 gaps | HIGH | ⚠️ Long-term goal |
 
-**Recommendation**: Option 1 is complete. Start **Option 2** now: audit `do_drop()` for ROM C parity, then continue with `do_give()`.
+**Recommendation**: The verified `do_drop()` batch is ready to stage and commit. After that lands, move to `do_give()` as the next act_obj.c parity target.
 
 ---
 
@@ -363,58 +371,73 @@ tests/integration/test_new_player_workflow.py (2 instances)
 
 **⚠️ MANDATORY PREREQUISITE**: Read [docs/ROM_PARITY_VERIFICATION_GUIDE.md](docs/ROM_PARITY_VERIFICATION_GUIDE.md) before starting ANY integration test work!
 
-**🎯 NEXT PRIORITY: Audit `do_drop()` (act_obj.c P0 Commands)**
+**🎯 NEXT PRIORITY: Land `do_drop()` parity batch, then audit `do_give()`**
 
-**Current Status**: `do_get()` ✅ COMPLETE, `do_put()` ✅ COMPLETE, stale inventory-field test cleanup ✅ COMPLETE
+**Current Status**: `do_get()` ✅ COMPLETE, `do_put()` ✅ COMPLETE, `do_drop()` core parity batch ✅ VERIFIED, stale inventory-field test cleanup ✅ COMPLETE
 
-### Immediate Next Task: `do_drop()` audit and gap implementation
+### Immediate Next Task: Commit `do_drop()` parity batch and move to `do_give()`
 
-**Command**: `do_drop()`  
+**Command**: `do_give()`  
 **Priority**: 🚨 **P0 CRITICAL**  
 **Estimated Effort**: 1-2 days  
-**ROM C Reference**: `src/act_obj.c` lines 496-657
+**ROM C Reference**: `src/act_obj.c` lines 709-788
 
-**Known Gaps to Verify/Implement**:
+**`do_drop()` Verified Coverage**:
 1. `drop all` support
 2. `drop all.type` support
-3. AUTOSPLIT for money objects
-4. TO_ROOM observer messages
-5. Pit timer handling
-6. Money consolidation logic
-7. Argument parsing parity
-8. Visibility and item validation checks
+3. Money consolidation logic
+4. Numeric money handling for `gold`, `silver`, `coin`, `coins`
+5. TO_ROOM observer messages
+6. ITEM_MELT_DROP dissolve behavior
+7. Argument parsing and error text coverage
+8. Visibility and wearable-item exclusion checks
+9. No-drop / cursed-item validation
 
-**Expected Integration Tests** (8-12 tests):
-- `test_drop_single_object`
-- `test_drop_all_from_inventory`
-- `test_drop_all_type_from_inventory`
-- `test_drop_money_autosplits`
-- `test_drop_broadcasts_to_room`
-- `test_drop_in_pit_assigns_timer`
-- `test_drop_consolidates_money`
-- `test_drop_nontakeable_blocked`
+**Next `do_give()` Gaps to Verify/Implement**:
+1. Money transfer handling (`silver`, `gold`)
+2. TO_ROOM observer messages
+3. NPC reaction / mobprog hooks
+4. Validation and error-path parity
+5. Any `give all` or multi-object divergences vs ROM
+
+**Verified `do_drop()` Integration Tests** (15 tests):
+- `test_drop_single_object_broadcasts_to_room`
+- `test_drop_all_moves_all_unequipped_inventory_items_to_room`
+- `test_drop_all_type_only_drops_matching_inventory_items`
+- `test_drop_numeric_gold_consolidates_existing_room_money`
+- `test_drop_numeric_silver_creates_money_pile`
+- `test_drop_numeric_coins_uses_silver_path`
+- `test_drop_numeric_gold_rejects_insufficient_funds`
+- `test_drop_numeric_silver_rejects_insufficient_funds`
+- `test_drop_numeric_invalid_money_keyword_is_rejected`
+- `test_drop_money_broadcasts_some_coins_to_room`
+- `test_drop_nodrop_item_is_rejected`
+- `test_drop_all_ignores_equipped_items`
+- `test_drop_all_type_without_match_returns_rom_message`
+- `test_drop_melt_drop_item_dissolves_instead_of_remaining_in_room`
+- `test_drop_melt_drop_item_broadcasts_smoke_message_to_room`
 
 **Implementation Notes**:
-- Audit ROM C first, then compare against `mud/commands/inventory.py::do_drop()`
-- Document each verified gap in `docs/parity/ACT_OBJ_C_AUDIT.md`
+- Stage the verified `do_drop()` batch after targeted test confirmation
+- Audit ROM C first, then compare against `mud/commands/give.py`
+- Document each verified `do_give()` gap in `docs/parity/ACT_OBJ_C_AUDIT.md`
 - Implement in parity order: failing test first, minimal fix, verify targeted tests
-- Keep `AGENTS.md` and tracker docs current as each drop gap closes
+- Keep `AGENTS.md` and tracker docs current as each give-gap closes
 
 **Success Criteria**:
-- ✅ `do_drop()` gaps identified and documented against ROM C
-- ✅ Missing ROM behavior implemented with integration coverage
-- ✅ New `do_drop()` tests pass
+- ✅ `do_drop()` parity batch verified with integration coverage
+- ✅ `tests/integration/test_drop_command.py` passes 15/15
 - ✅ No regressions in existing GET/PUT coverage
 
 **Files to Modify**:
-- `mud/commands/inventory.py`
-- `tests/integration/` drop-focused test module(s)
+- `mud/commands/give.py`
+- `tests/integration/` give-focused test module(s)
 - `docs/parity/ACT_OBJ_C_AUDIT.md`
 
-**After `do_drop()` Completion**:
+**After `do_give()` Audit Starts**:
 - Update `docs/parity/ACT_OBJ_C_AUDIT.md` and project trackers
-- Create session summary document
-- Move to `do_give()` or the next remaining P0 object-command gap
+- Create session summary document when the batch lands
+- Continue through the remaining P0 object-command gaps
 
 ---
 
