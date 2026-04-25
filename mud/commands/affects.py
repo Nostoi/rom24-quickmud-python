@@ -89,6 +89,36 @@ def affect_loc_name(location: int) -> str:
     return APPLY_NAMES.get(location, "(unknown)")
 
 
+def _condition_lines(char: Character) -> list[str]:
+    """Return ROM-style hunger/thirst/drunk warnings for the affects display.
+
+    ROM C `do_affects` does not include conditions, but QuickMUD surfaces
+    them here so players can see hunger/thirst alongside spell affects
+    without needing to inspect `score` separately.
+    """
+    pcdata = getattr(char, "pcdata", None)
+    if pcdata is None:
+        return []
+    conditions = getattr(pcdata, "condition", None)
+    if not conditions:
+        return []
+    try:
+        from mud.models.constants import Condition
+    except ImportError:
+        return []
+    lines: list[str] = []
+    try:
+        if conditions[Condition.HUNGER] == 0:
+            lines.append("You are hungry.")
+        if conditions[Condition.THIRST] == 0:
+            lines.append("You are thirsty.")
+        if conditions[Condition.DRUNK] > 10:
+            lines.append("You are drunk.")
+    except (IndexError, KeyError, TypeError):
+        return []
+    return lines
+
+
 def do_affects(char: Character, args: str) -> str:
     """
     Display active affects on the character.
@@ -104,8 +134,11 @@ def do_affects(char: Character, args: str) -> str:
     """
     # Primary ROM C behavior: iterate ch.affected list (AFFECT_DATA structures)
     affected = getattr(char, "affected", [])
+    condition_lines = _condition_lines(char)
 
     if not affected:
+        if condition_lines:
+            return "You are not affected by any spells.\n" + "\n".join(condition_lines)
         return "You are not affected by any spells."
 
     lines = ["You are affected by the following spells:"]
@@ -146,4 +179,4 @@ def do_affects(char: Character, args: str) -> str:
         lines.append(buf)
         paf_last = paf
 
-    return "\n".join(lines)
+    return "\n".join(lines + condition_lines)

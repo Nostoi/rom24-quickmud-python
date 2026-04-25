@@ -331,10 +331,12 @@ def _compute_object_level(obj: object, mob: object) -> int | None:
     except Exception:
         mob_level = 0
 
-    base_level = max(0, mob_level - 2)
+    # ROM C `create_object` calls `number_fuzzy(LastMob->level)` directly
+    # (`src/db.c:reset_room` G/E branches). The mob's level was already
+    # decremented by 2 in the M-reset path (`mob.level = mob_proto.level - 2`),
+    # so we must NOT subtract another 2 here — that double-fuzzes the loot.
     hero_cap = max(0, LEVEL_HERO - 1)
-    if base_level > hero_cap:
-        base_level = hero_cap
+    base_level = max(0, min(mob_level, hero_cap))
 
     fuzzed = rng_mm.number_fuzzy(base_level)
     if fuzzed > hero_cap:
@@ -581,15 +583,12 @@ def apply_resets(area: Area) -> None:
 
             exit_obj.rs_flags = base_flags
             exit_obj.exit_info = base_flags
-            to_room = getattr(exit_obj, "to_room", None)
-            rev_idx = _REVERSE_DIR.get(door)
-            if to_room is not None and rev_idx is not None:
-                rev_exits = getattr(to_room, "exits", None)
-                if rev_exits and rev_idx < len(rev_exits):
-                    rev_exit = rev_exits[rev_idx]
-                    if rev_exit is not None:
-                        rev_exit.rs_flags = base_flags
-                        rev_exit.exit_info = base_flags
+            # ROM C `reset_room` D-reset only mutates the forward exit; the
+            # reverse exit retains its own rs_flags/exit_info untouched
+            # (`src/db.c:reset_room` 'D' branch). Mirroring onto the reverse
+            # side would clobber direction-specific flags like EX_PICKPROOF
+            # and would also incorrectly upgrade a non-door reverse exit
+            # into a door.
         elif cmd == "G":
             if not last_reset_succeeded:
                 continue
