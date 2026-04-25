@@ -82,7 +82,7 @@ tests/integration/test_new_player_workflow.py (2 instances)
 - ✅ No-drop / cursed-item rejection verified
 
 **Audit Steps** (follow handler.c methodology):
-1. **Read ROM C** `src/act_obj.c` lines 85-161 (do_drop)
+1. **Read ROM C** `src/act_obj.c` lines 496-657 (do_drop)
 2. **Read QuickMUD** `mud/commands/inventory.py` do_drop() function
 3. **Line-by-line comparison** - identify all behavioral differences
 4. **Document gaps** in `docs/parity/ACT_OBJ_C_AUDIT.md` (create DROP-001, DROP-002, etc.)
@@ -92,9 +92,9 @@ tests/integration/test_new_player_workflow.py (2 instances)
 8. **Update documentation** with completion status
 
 **Remaining Work**:
-- Stage and commit the verified `do_drop()` parity batch
+- ✅ Verified `do_drop()` parity batch committed as `97c901e` (`feat: finish do_drop parity batch`)
 - Sync any deeper audit narrative in `docs/parity/ACT_OBJ_C_AUDIT.md` if that document is being tracked in this branch
-- Move to `do_give()` once the `do_drop()` batch is landed
+- Move to `do_give()` as the next act_obj.c parity target
 
 **Integration Test Progress**:
 - ✅ `test_drop_all_moves_all_unequipped_inventory_items_to_room`

@@ -741,7 +741,6 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ Targeted pytest run passes: `test_player_npc_interaction.py`, `test_mobprog_scenarios.py`, `test_new_player_workflow.py` (24/24)
 
 **Critical Gaps Remaining**:
-- [ ] Stage and land the verified `do_drop()` parity batch
 - [ ] `do_give()` parity audit and implementation
 - [ ] Equipment slot/removal parity verification
 - [ ] Consumables and special-object command audit completion
@@ -751,7 +750,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 **Estimated Work**: 2-3 days for next P0 command batch (`do_drop()` then `do_give()`)
 
 **Next Steps**:
-- [ ] Stage and commit the `do_drop()` parity batch after targeted verification
+- [x] `do_drop()` parity batch committed as `97c901e` (`feat: finish do_drop parity batch`)
 - [ ] Start line-by-line `do_give()` audit against `src/act_obj.c`
 - [ ] Add `do_give()` money-transfer and observer-message integration tests
 
