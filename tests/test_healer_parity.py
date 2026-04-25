@@ -41,9 +41,11 @@ def test_healer_pricing_parity():
     char, healer = setup_healer_test()
 
     # Test pricing matches ROM C healer.c costs
+    # ROM healer.c:96 charges 1600 silver (16 gold) for "serious" even
+    # though the display says "15 gold" — match the actual ROM cost.
     expected_costs = {
         "light": 10,
-        "serious": 15,
+        "serious": 16,
         "critical": 25,
         "heal": 50,
         "refresh": 5,

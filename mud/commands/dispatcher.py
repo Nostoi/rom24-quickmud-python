@@ -96,9 +96,21 @@ from .murder import do_murder
 from .thief_skills import do_sneak, do_hide, do_visible, do_steal
 from .info_extended import do_examine, do_read, do_count, do_whois, do_worth, do_sit
 from .auto_settings import (
-    do_autolist, do_autoall, do_autoassist, do_autoexit, do_autogold,
-    do_autoloot, do_autosac, do_autosplit, do_brief, do_compact,
-    do_combine, do_colour, do_color, do_prompt,
+    do_autolist,
+    do_autoall,
+    do_autoassist,
+    do_autoexit,
+    do_autogold,
+    do_autoloot,
+    do_autosac,
+    do_autosplit,
+    do_brief,
+    do_compact,
+    do_combine,
+    do_colour,
+    do_color,
+    do_prompt,
+    do_telnetga,
 )
 from .misc_info import do_motd, do_imotd, do_rules, do_story, do_socials, do_skills, do_spells, do_rent
 from .obj_manipulation import do_put, do_remove, do_sacrifice, do_quaff
@@ -107,9 +119,30 @@ from .player_config import do_noloot, do_nofollow, do_nosummon, do_delete, do_de
 from .imm_commands import do_at, do_goto, do_transfer, do_force, do_peace
 from .imm_load import do_load, do_mload, do_oload, do_purge, do_restore, do_slay, do_sla
 from .imm_admin import do_advance, do_trust, do_freeze, do_snoop, do_switch, do_return
-from .imm_display import do_invis, do_wizinvis, do_incognito, do_poofin, do_poofout, do_echo, do_recho, do_zecho, do_pecho
+from .imm_display import (
+    do_invis,
+    do_wizinvis,
+    do_incognito,
+    do_poofin,
+    do_poofout,
+    do_echo,
+    do_recho,
+    do_zecho,
+    do_pecho,
+)
 from .imm_punish import do_nochannels, do_noemote, do_noshout, do_notell, do_pardon, do_disconnect
-from .imm_search import do_vnum, do_mfind, do_ofind, do_slookup, do_owhere, do_mwhere, do_sockets, do_memory, do_clone, do_stat
+from .imm_search import (
+    do_vnum,
+    do_mfind,
+    do_ofind,
+    do_slookup,
+    do_owhere,
+    do_mwhere,
+    do_sockets,
+    do_memory,
+    do_clone,
+    do_stat,
+)
 from .imm_server import do_reboot, do_shutdown, do_copyover, do_protect, do_violate, do_dump
 from .imm_set import do_set, do_mset, do_oset, do_rset, do_sset, do_string
 from .imm_emote import do_smote, do_pmote, do_gecho
@@ -117,8 +150,21 @@ from .imm_olc import do_resets, do_alist, do_edit, do_mpedit
 from .typo_guards import do_qui, do_murde, do_reboo, do_shutdow, do_alia, do_colon
 from .misc_player import do_afk, do_replay, do_config, do_permit, do_peek, do_unread
 from .remaining_rom import (
-    do_wimpy, do_deaf, do_quiet, do_envenom, do_gain, do_groups, do_guild,
-    do_flag, do_mob, do_bs, do_go, do_junk, do_tap, do_teleport, do_qmread
+    do_wimpy,
+    do_deaf,
+    do_quiet,
+    do_envenom,
+    do_gain,
+    do_groups,
+    do_guild,
+    do_flag,
+    do_mob,
+    do_bs,
+    do_go,
+    do_junk,
+    do_tap,
+    do_teleport,
+    do_qmread,
 )
 from .healer import do_heal
 from .help import do_help, do_wizlist
@@ -494,7 +540,7 @@ COMMANDS: list[Command] = [
     Command("commands", do_commands, min_position=Position.DEAD),
     Command("wizlist", do_wizlist, min_position=Position.DEAD),
     Command("help", do_help, min_position=Position.DEAD),
-    Command("telnetga", cmd_telnetga, min_position=Position.DEAD),
+    Command("telnetga", do_telnetga, min_position=Position.DEAD),
     # IMC and aliasing
     Command("imc", do_imc, min_position=Position.DEAD),
     Command("alias", do_alias, min_position=Position.DEAD),
@@ -841,7 +887,10 @@ def run_test_session() -> list[str]:
     from mud.world import create_test_character, initialize_world
 
     initialize_world("area/area.lst")
-    char = create_test_character("Tester", 3001)
+    # Start in Temple Square (3005) so the scripted "north" walk has a
+    # destination — Temple of Mota (3001) has no north exit in the loaded
+    # area data.
+    char = create_test_character("Tester", 3005)
     # Ensure sufficient movement points for the scripted walk
     char.move = char.max_move = 100
     sword = spawn_object(3022)
