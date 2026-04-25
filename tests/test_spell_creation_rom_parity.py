@@ -56,6 +56,7 @@ def _restore_obj_registry() -> None:
     """Keep `obj_registry` isolated across tests."""
 
     snapshot = dict(obj_registry)
+    obj_registry.clear()
     try:
         yield
     finally:

@@ -45,51 +45,34 @@ This document tracks the cleanup of failures that pre-date the 2026-04-24 do_wea
 
 ---
 
-## Remaining clusters (queued)
+## Final state after PR #121
 
-Running tally after the fixes above. Re-run pytest to refresh.
+**62 → 9 failures** (3328 passing, 18 skipped). The remaining 9 are individually-investigated bugs that don't share a root cause cluster — they need real subsystem work, not test cleanup.
 
-### Inventory / encumbrance secondary
-- `tests/integration/test_architectural_parity.py::test_inventory_limits_block_pickup_and_movement` — duplicate of the encumbrance pattern but constructs `ObjIndex(weight=5)` via `Object()` directly without `wear_flags`. Same fix as the encumbrance cluster.
+### Remaining (need subsystem-level fixes, not test fixes)
 
-### `tests/test_commands.py` (5 fail) — process_command sequencing, abbreviations, scan command
-- `ValueError` on command sequence likely a regression in dispatcher abbreviation handling.
-- Three `do_scan` tests likely failing due to missing/stale scan output formatter; confirm against `tests/test_scan_lists_adjacent_characters_rom_style` golden output.
+- `tests/test_area_exits.py::test_midgaard_room_3001_exits_and_keys` — JSON data gap. Room 3001 in `data/areas/midgaard.json` is missing the north (→3054), south (→3005, present), and up (→3700) exits that exist in the legacy `area/midgaard.are`. Need to regenerate the JSON or backfill the exits.
+- `tests/integration/test_spell_affects_persistence.py::TestSpellAffectStacking::test_stat_modifiers_stack_from_same_spell` — Test expects `giant_strength` to stack on recast, but ROM `src/magic2.c` blocks the recast (the guard added in this branch matches ROM). The test asserts non-ROM behavior — needs to be rewritten to assert "second cast is refused" once we confirm ROM intent.
+- `tests/test_combat.py::test_visibility_and_position_modifiers` — Needs a one_hit hitroll review against `src/fight.c`.
+- `tests/test_game_loop.py::test_mobile_update_returns_home_when_out_of_zone` — Mobile update home-return logic (`mob_update`/`do_get_in`).
+- `tests/test_mobprog_triggers.py::test_event_hooks_fire_rom_triggers` — mob_prog event hook dispatch.
+- `tests/test_skill_combat_rom_parity.py::TestDisarmRomParity::test_disarm_success_drops_weapon_to_room` — `do_disarm` is not actually unequipping the weapon (test sees the sword still in `equipment.values()`).
+- `tests/test_skills.py::test_fire_breath_hits_room_targets` — `fire_breath` ROOM target dispatch missing.
 
-### `tests/test_spec_funs.py` (5 fail) — guard / spec_cast cleric|mage|undead|judge
-- All five reference `SkillTarget` / spec-proc registries that may have moved during the act_obj refactor.
+### Fixed in cluster batches above (62 → 10)
 
-### `tests/test_spawning.py` (4 fail) — door reset reverse rs_flags, equip level scaling
-- Door reset: likely the same `Object.item_type` proto-sync issue surfacing in reset_handler. Verify after the latest item_type sync change is in place.
-- Equip level scaling: re-check `lastmob_level` propagation through `OnAreaResetEntry`.
-
-### `tests/integration/test_recall_train_commands.py` (already fixed) ✅
-
-### Quaff / scroll / wand / staff & food (`spell_creation_rom_parity`, `practice`, `skills_buffs`)
-- See `docs/parity/ACT_OBJ_C_CONSUMABLES_AUDIT.md` — the spell-cast/charge wiring is still incomplete; these tests are blocked on that work.
-
-### MOTD / login / connection (2 fail) — `test_connection_motd.py`
-- Likely ROM-immortal vs mortal MOTD selection; small fix.
-
-### Other one-off failures
-- `test_world.py::test_area_list_requires_sentinel`
-- `test_help_system.py::test_help_missing_topic_logs_request`
-- `test_healer_parity.py::test_healer_pricing_parity`
-- `test_game_loop.py::test_mobile_update_returns_home_when_out_of_zone`
-- `test_combat.py::test_visibility_and_position_modifiers`
-- `test_skills.py::test_fire_breath_hits_room_targets`
-- `test_skill_combat_rom_parity.py::test_disarm_success_drops_weapon_to_room`
-- `test_mobprog_triggers.py::test_event_hooks_fire_rom_triggers`
-- `test_player_conditions.py::test_hungry_shows_in_affects`, `test_thirsty_shows_in_affects`
-- `test_player_info_commands.py::test_score_shows_hitroll_damroll`
-- `test_advancement.py::test_practice_requires_trainer_and_caps`, `test_practice_applies_int_based_gain`
-- `test_area_exits.py::test_midgaard_room_3001_exits_and_keys`
-- `test_rom_api.py::test_show_skill_cmds_displays_skills`
-- `test_scripted_session.py::test_scripted_session_transcript`
-- `test_group_combat.py::test_aoe_damage_hits_whole_group`
-- `test_mob_ai.py::test_scavenger_prefers_valuable_items`
-
-These need individual investigation; they don't share an obvious root-cause cluster.
+| Cluster | -Δ | Notes |
+|---|---|---|
+| Door / portal commands | 7 | `_has_key`, item_type proto-sync, NOCLOSE test rewrite |
+| Recall / train | 3 | `room.people`, NPC short-circuit, `master` charm check |
+| Encumbrance | 3 | `WearFlag.TAKE`, "You get $p." wording, AUTOSPLIT cast |
+| Corpse looting | 7 | TAKE exemption for corpses, wording |
+| spec_funs / commands | 10 | NOSHOUT clear, scan formatting, dispatcher |
+| spawning / practice / conditions | 6 | D-reset (no mirror), level scaling, hunger/thirst |
+| score / motd | 3 | hitroll/damroll display, login MOTD |
+| magic_items / giant_strength / d_reset | 5 | room.people refs, already-affected guard, D-reset test |
+| help / world / healer / scripted | 4 | various |
+| spell_creation / inventory limits | 3 | obj_registry isolation, WearFlag.TAKE |
 
 ---
 
