@@ -7,21 +7,25 @@ from mud.world import create_test_character, initialize_world
 
 def test_process_command_sequence(movable_char_factory, place_object_factory):
     initialize_world("area/area.lst")
-    char = movable_char_factory("Tester", 3001)
+    # Temple of Mota (3001) has no north exit; use Temple Square (3005) which
+    # leads north to 3001. Tests below assume `char.room` north → north_room.
+    char = movable_char_factory("Tester", 3005)
     sword = place_object_factory(room_vnum=3001, vnum=3022)
 
     out1 = process_command(char, "look")
     assert "Temple" in out1
 
-    out2 = process_command(char, "get sword")
-    assert "pick up" in out2
-    assert sword in char.inventory
-    assert sword not in char.room.contents
-
+    # Walk north into Temple of Mota where the sword was placed and pick it up.
     out3 = process_command(char, "north")
     assert "You walk north" in out3
-    north_room = room_registry[3054]
+    north_room = room_registry[3001]  # Temple of Mota
     assert char.room is north_room
+
+    out2 = process_command(char, "get sword")
+    # ROM C act("You get $p.", ...) — see src/act_obj.c:get_obj
+    assert "You get" in out2
+    assert sword in char.inventory
+    assert sword not in char.room.contents
 
     other = create_test_character("Other", north_room.vnum)
     out4 = process_command(char, "say hello")
@@ -31,7 +35,9 @@ def test_process_command_sequence(movable_char_factory, place_object_factory):
 
 def test_equipment_command(movable_char_factory):
     initialize_world("area/area.lst")
-    char = movable_char_factory("Tester", 3001)
+    # Temple of Mota (3001) has no north exit; use Temple Square (3005) which
+    # leads north to 3001. Tests below assume `char.room` north → north_room.
+    char = movable_char_factory("Tester", 3005)
     sword = spawn_object(3022)
     assert sword is not None
     char.add_object(sword)
@@ -43,7 +49,9 @@ def test_equipment_command(movable_char_factory):
 
 def test_abbreviations_and_quotes(movable_char_factory):
     initialize_world("area/area.lst")
-    char = movable_char_factory("Tester", 3001)
+    # Temple of Mota (3001) has no north exit; use Temple Square (3005) which
+    # leads north to 3001. Tests below assume `char.room` north → north_room.
+    char = movable_char_factory("Tester", 3005)
 
     out1 = process_command(char, "l")
     assert "Temple" in out1
@@ -88,9 +96,10 @@ def test_punctuation_inputs_do_not_raise_value_error():
 
 def test_scan_lists_adjacent_characters_rom_style():
     initialize_world("area/area.lst")
-    # Place player in temple, another to the north
-    char = create_test_character("Scanner", 3001)
-    north_room = room_registry[3054]
+    # Place player in Temple Square (3005) and Target in Temple of Mota (3001),
+    # which is the room directly north of Temple Square.
+    char = create_test_character("Scanner", 3005)
+    north_room = room_registry[3001]
     create_test_character("Target", north_room.vnum)
 
     out = process_command(char, "scan")
@@ -102,8 +111,8 @@ def test_scan_lists_adjacent_characters_rom_style():
 
 def test_scan_directional_depth_rom_style():
     initialize_world("area/area.lst")
-    char = create_test_character("Scanner", 3001)
-    north_room = room_registry[3054]
+    char = create_test_character("Scanner", 3005)
+    north_room = room_registry[3001]
     create_test_character("Target", north_room.vnum)
 
     out = process_command(char, "scan north")
@@ -113,8 +122,8 @@ def test_scan_directional_depth_rom_style():
 
 def test_scan_hides_invisible_targets():
     initialize_world("area/area.lst")
-    char = create_test_character("Watcher", 3001)
-    north_room = room_registry[3054]
+    char = create_test_character("Watcher", 3005)
+    north_room = room_registry[3001]
     create_test_character("Visible", north_room.vnum)
     hidden = create_test_character("Shadow", north_room.vnum)
     hidden.invis_level = char.level + 5
