@@ -158,20 +158,9 @@ def do_wear(ch: Character, args: str) -> str:
     if item_type == ItemType.WEAPON:
         return "You need to wield weapons, not wear them."
 
-    if wear_flags & WearFlag.WEAR_SHIELD:
-        from mud.models.constants import WeaponFlag
-
-        equipment = getattr(ch, "equipment", {})
-        wield_loc = int(WearLocation.WIELD)
-        if wield_loc in equipment and equipment[wield_loc] is not None:
-            weapon = equipment[wield_loc]
-            weapon_flags = getattr(weapon.prototype, "value", [0, 0, 0, 0, 0])
-            ch_size = int(getattr(ch, "size", 0) or 0)
-            from mud.models.constants import Size
-            if len(weapon_flags) > 4 and ch_size < int(Size.LARGE):
-                weapon_flag_val = weapon_flags[4]
-                if weapon_flag_val & WeaponFlag.TWO_HANDS:
-                    return "Your hands are tied up with your weapon!"
+    # ROM act_obj.c:1595-1614: SHIELD branch removes the existing shield FIRST
+    # then performs the two-hand-weapon check. Implemented below after the
+    # generic slot-remove (search "WEAR-009 SHIELD post-check").
 
     # Check if item has HOLD flag - if so, use hold logic (ROM lines 1670-1677)
     if wear_flags & WearFlag.HOLD:
@@ -241,6 +230,22 @@ def do_wear(ch: Character, args: str) -> str:
             # _unequip_to_inventory already emits "You can't remove $p." via ch.send.
             # Returning empty string avoids ROM-divergent duplicate output.
             return ""
+
+    # WEAR-009 SHIELD post-check: ROM src/act_obj.c:1602-1608 — after the
+    # existing shield has been removed, refuse if the wielded weapon is
+    # two-handed and the wearer is smaller than SIZE_LARGE. ROM intentionally
+    # leaves the player shieldless in this case; we mirror that.
+    if wear_loc == int(WearLocation.SHIELD):
+        from mud.models.constants import Size, WeaponFlag
+
+        wield_loc = int(WearLocation.WIELD)
+        weapon = equipment.get(wield_loc) if equipment else None
+        if weapon is not None:
+            weapon_flags = getattr(weapon.prototype, "value", [0, 0, 0, 0, 0])
+            ch_size = int(getattr(ch, "size", 0) or 0)
+            if len(weapon_flags) > 4 and ch_size < int(Size.LARGE):
+                if weapon_flags[4] & WeaponFlag.TWO_HANDS:
+                    return "Your hands are tied up with your weapon!"
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_wear, error_msg = _can_wear_alignment(ch, obj)

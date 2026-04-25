@@ -1278,7 +1278,7 @@ Python target: `mud/commands/equipment.py`.
 | ~~WEAR-006~~ | 1429-1431, 1458-1460, 1567-1569 | equipment.py:489-514 | ~~Multi-slot replace only attempts removal on the first occupied slot.~~ **VERIFIED NOT A BUG** on re-read: ROM's `&&` short-circuit means R removal only runs when L removal returned FALSE (locked). Python's "try L; on failure try R" matches that exactly. | closed |
 | WEAR-007 | 1719 | equipment.py:415-453 | `wear all` iterates inventory without `can_see_obj(ch, obj)` filtering. | open |
 | WEAR-008 | 1382-1386 | equipment.py:36-39 + 202-204 | NOREMOVE failure path emits `"You can't remove $p."` twice. | open |
-| WEAR-009 | 1599-1608 | equipment.py:134-147 | SHIELD branch checks two-hand weapon BEFORE the slot remove attempt. ROM removes shield first, then checks; on failure the old shield is gone and the new one isn't equipped. **Deferred** — Python's pre-check is intentionally safer (no shield lost on rejected swap). | deferred |
+| WEAR-009 | 1599-1608 | equipment.py:134-147 | SHIELD branch checks two-hand weapon BEFORE the slot remove attempt. ROM removes shield first, then checks; on failure the old shield is gone and the new one isn't equipped. **Fixed** — Python now mirrors ROM order per PARITY-not-IMPROVEMENT directive (player loses shield on rejected swap, matching ROM). | closed |
 
 ### Methodology
 

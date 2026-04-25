@@ -435,8 +435,18 @@ class MobInstance:
         obj.location = None
 
     def remove_object(self, obj: Object) -> None:
+        # ROM src/handler.c obj_from_char: unequip first if worn, then strip
+        # from carried list. Mirror that here so disarm/remove paths actually
+        # clear the equipment slot.
         if obj in self.inventory:
             self.inventory.remove(obj)
+        else:
+            equipment = getattr(self, "equipment", None)
+            if isinstance(equipment, dict):
+                for slot, eq in list(equipment.items()):
+                    if eq is obj:
+                        del equipment[slot]
+                        break
         self.carry_number = max(0, self.carry_number - 1)
 
     def equip(self, obj: Object, slot: int) -> None:  # stub

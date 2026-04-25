@@ -24,7 +24,14 @@
         "up": {
           "to_room": 3700,
           "description": "You see the entrance to Mud School.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": 0
+        },
+        "north": {
+          "to_room": 3054,
+          "description": "At the northern end of the temple hall is a statue and a huge altar.\n",
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
