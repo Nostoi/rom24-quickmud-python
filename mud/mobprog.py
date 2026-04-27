@@ -1471,11 +1471,14 @@ def mp_greet_trigger(ch: Character) -> None:
         if not programs:
             continue
         default_pos = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
-        if any(int(getattr(prog, "trig_type", 0) or 0) & int(Trigger.GREET) for prog in programs):
-            if getattr(mob, "position", default_pos) == default_pos and _can_see(mob, ch):
-                if mp_percent_trigger(mob, ch, trigger=Trigger.GREET):
-                    continue
-        if any(int(getattr(prog, "trig_type", 0) or 0) & int(Trigger.GRALL) for prog in programs):
+        has_greet = any(int(getattr(prog, "trig_type", 0) or 0) & int(Trigger.GREET) for prog in programs)
+        has_grall = any(int(getattr(prog, "trig_type", 0) or 0) & int(Trigger.GRALL) for prog in programs)
+        # mirroring ROM src/mob_prog.c:1340-1345 — GREET is exclusive with GRALL.
+        # When the mob is awake, can see the entrant, and has a GREET trigger,
+        # only GREET is attempted; GRALL is reserved for the busy/blind path.
+        if has_greet and getattr(mob, "position", default_pos) == default_pos and _can_see(mob, ch):
+            mp_percent_trigger(mob, ch, trigger=Trigger.GREET)
+        elif has_grall:
             mp_percent_trigger(mob, ch, trigger=Trigger.GRALL)
 
 

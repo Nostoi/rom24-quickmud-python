@@ -62,7 +62,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 | Gap ID         | Severity   | ROM ref                  | Python ref                | Status   |
 |----------------|------------|--------------------------|---------------------------|----------|
 | MOBPROG-001    | CRITICAL   | `mob_prog.c:399`         | `mobprog.py:727-755`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
-| MOBPROG-002    | CRITICAL   | `mob_prog.c:1340-1346`   | `mobprog.py:1469-1485`    | 🔄 OPEN  |
+| MOBPROG-002    | CRITICAL   | `mob_prog.c:1340-1346`   | `mobprog.py:1469-1485`    | ✅ FIXED — `tests/integration/test_mobprog_greet_trigger.py` |
 | MOBPROG-003    | IMPORTANT  | `mob_prog.c:631-648`     | `mobprog.py:1012-1024`    | 🔄 OPEN  |
 | MOBPROG-004    | IMPORTANT  | `mob_prog.c:601-609`     | `mobprog.py:967-992`      | 🔄 OPEN  |
 | MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | 🔄 OPEN  |

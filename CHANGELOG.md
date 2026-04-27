@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-002: `mp_greet_trigger` no longer falls through to GRALL after a
+  failed GREET percent roll. Mirrors ROM `src/mob_prog.c:1340-1345` where the
+  GREET / GRALL branches are exclusive — a mob that is awake, can see the
+  entrant, and has a GREET trigger only attempts GREET; GRALL is reserved for
+  the busy/blind path. Integration coverage at
+  `tests/integration/test_mobprog_greet_trigger.py`.
 - MOBPROG-001: `_cmd_eval` `objexists` now walks `mud.models.obj.object_registry`
   (mirroring ROM `get_obj_world`, `src/mob_prog.c:399`) instead of only the
   current room and same-room carriers. Mob programs that gate on
