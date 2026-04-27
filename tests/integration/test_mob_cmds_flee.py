@@ -119,3 +119,42 @@ class TestMpFleeRandomDoor:
             f"only directions {chosen!r} ever chosen across 30 seeds; expected"
             " random_door() to distribute across multiple exits."
         )
+
+
+class TestMpFleeNoMobRoomFlag:
+    """MOBCMD-009: ROM ``src/mob_cmds.c:1277-1280`` skips an exit whose
+    destination has ``ROOM_NO_MOB`` set when the fleeing character is an
+    NPC. Python had been ignoring the flag, so a scripted NPC could flee
+    into a NO_MOB room.
+    """
+
+    def test_npc_does_not_flee_into_no_mob_room(self):
+        from mud.models.constants import RoomFlag
+        from mud.utils import rng_mm
+
+        # Provide a single valid exit (north) whose dest is NO_MOB. With the
+        # fix in place all 6 attempts must skip it; without the fix the mob
+        # ends up in dst on the first attempt.
+        moved = 0
+        for seed in range(1, 50):
+            src = Room(vnum=9710, name="No-Mob Flee Source")
+            dst = Room(vnum=9711, name="No-Mob Dest")
+            dst.room_flags = int(RoomFlag.ROOM_NO_MOB)
+            src.exits[int(Direction.NORTH)] = Exit(to_room=dst)
+
+            mob = Character(name="NpcFleer", is_npc=True)
+            mob.position = Position.STANDING
+            mob.level = 30
+            src.add_character(mob)
+
+            rng_mm.seed_mm(seed)
+            do_mpflee(mob, "")
+
+            if mob.room is dst:
+                moved += 1
+
+        assert moved == 0, (
+            f"NPC fled into a ROOM_NO_MOB room on {moved} of 50 seeds; ROM"
+            " src/mob_cmds.c:1277-1280 skips exits whose dest is ROOM_NO_MOB"
+            " when the fleeing character is an NPC."
+        )

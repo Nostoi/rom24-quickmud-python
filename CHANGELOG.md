@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-009: `do_mpflee` now respects `ROOM_NO_MOB` on a candidate
+  destination when the fleeing character is an NPC, mirroring ROM
+  `src/mob_cmds.c:1277-1280`. Previously script-driven NPC flees would
+  pour mobs into rooms flagged NO_MOB. Integration coverage at
+  `tests/integration/test_mob_cmds_flee.py::TestMpFleeNoMobRoomFlag`.
 - MOBCMD-006: `do_mpoload` now validates the optional level argument
   against ROM's `level < 0 || level > get_trust(ch)` check
   (`src/mob_cmds.c:575-580`) and refuses to spawn the object when out of

@@ -1267,12 +1267,13 @@ def do_mpflee(ch: Character, argument: str) -> None:
     was_in = getattr(ch, "room", None)
     if was_in is None:
         return
-    from mud.models.constants import EX_CLOSED
+    from mud.models.constants import EX_CLOSED, RoomFlag
     from mud.world.movement import move_character
 
     _DIR_NAMES = ("north", "east", "south", "west", "up", "down")
 
     exits = list(getattr(was_in, "exits", []) or [])
+    is_npc = bool(getattr(ch, "is_npc", False))
     # mirroring ROM src/mob_cmds.c:1272-1286 — 6 random_door() attempts
     for _ in range(6):
         door = rng_mm.number_door()
@@ -1285,6 +1286,12 @@ def do_mpflee(ch: Character, argument: str) -> None:
             continue
         target_room = getattr(exit_obj, "to_room", None)
         if target_room is None:
+            continue
+        # mirroring ROM src/mob_cmds.c:1277-1280 — NPCs skip exits whose dest
+        # is flagged ROOM_NO_MOB.
+        if is_npc and (
+            int(getattr(target_room, "room_flags", 0) or 0) & int(RoomFlag.ROOM_NO_MOB)
+        ):
             continue
         # mirroring ROM src/mob_cmds.c:1283 — `move_char(ch, door, FALSE)`
         move_character(ch, _DIR_NAMES[door])
