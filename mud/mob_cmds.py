@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from enum import IntEnum
@@ -8,6 +9,20 @@ from typing import TYPE_CHECKING
 from mud.characters import is_same_group
 from mud.skills.registry import skill_registry
 from mud.utils import rng_mm
+
+logger = logging.getLogger(__name__)
+
+
+def _bug(message: str, ch: Character) -> None:
+    """Emit a ROM-style ``bug()`` warning naming the script mob's vnum.
+
+    Mirrors the ROM ``bug("MpFoo - <reason> from vnum %d.", vnum)`` pattern
+    used throughout ``src/mob_cmds.c`` for script authoring errors.
+    """
+
+    proto = getattr(ch, "prototype", None)
+    vnum = int(getattr(proto, "vnum", 0) or 0) if getattr(ch, "is_npc", False) else 0
+    logger.warning("%s from vnum %d.", message, vnum)
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -1182,10 +1197,18 @@ def do_mpdamage(ch: Character, argument: str) -> None:
     if len(parts) < 3:
         return
     target_token, min_raw, max_raw, *rest = parts
+    # mirroring ROM src/mob_cmds.c:1101-1116 — non-numeric min/max bugs and
+    # returns. Emit a ROM-style warning so script authoring errors surface
+    # rather than silently disappearing.
     try:
         low = int(min_raw)
+    except ValueError:
+        _bug("MpDamage - Bad damage min", ch)
+        return
+    try:
         high = int(max_raw)
     except ValueError:
+        _bug("MpDamage - Bad damage max", ch)
         return
     if low > high:
         low, high = high, low

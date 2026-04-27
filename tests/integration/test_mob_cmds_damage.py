@@ -80,3 +80,42 @@ class TestMpDamageCallsDamagePipeline:
         # ROM ensures damage <= victim.hit, so post-damage hit cannot be
         # strictly negative for a previously-positive victim.
         assert victim.hit >= 0, f"safe-form mpdamage drove hit to {victim.hit}; ROM caps at victim->hit."
+
+
+class TestMpDamageNonNumericArgsBugLog:
+    """MOBCMD-013: ROM ``src/mob_cmds.c:1101-1116`` calls ``bug(...)`` and
+    returns when the min or max argument is not numeric. Python silently
+    returned, swallowing what is a script authoring error.
+    """
+
+    def test_non_numeric_min_emits_bug_log(self, script_mob, victim, caplog):
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="mud.mob_cmds"):
+            do_mpdamage(script_mob, "Victim notanumber 100")
+
+        assert any(
+            "MpDamage" in record.message and "min" in record.message.lower()
+            for record in caplog.records
+        ), (
+            f"expected an MpDamage bug log for the non-numeric min arg; got"
+            f" {[r.message for r in caplog.records]!r}. ROM"
+            " src/mob_cmds.c:1105-1107 calls bug() and returns."
+        )
+        assert victim.hit == 50, "non-numeric min must abort before damage"
+
+    def test_non_numeric_max_emits_bug_log(self, script_mob, victim, caplog):
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="mud.mob_cmds"):
+            do_mpdamage(script_mob, "Victim 10 notanumber")
+
+        assert any(
+            "MpDamage" in record.message and "max" in record.message.lower()
+            for record in caplog.records
+        ), (
+            f"expected an MpDamage bug log for the non-numeric max arg; got"
+            f" {[r.message for r in caplog.records]!r}. ROM"
+            " src/mob_cmds.c:1113-1115 calls bug() and returns."
+        )
+        assert victim.hit == 50, "non-numeric max must abort before damage"

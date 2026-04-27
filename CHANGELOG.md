@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-013: `do_mpdamage` now emits a ROM-style `bug()` warning via
+  Python's `logging` module when the min or max argument is non-numeric,
+  mirroring ROM `src/mob_cmds.c:1105-1107` + `1113-1115`. Previously the
+  function silently returned, swallowing what is a script-authoring
+  error. A new module-local `_bug()` helper in `mud/mob_cmds.py` mirrors
+  ROM's `bug("Mp... - <reason> from vnum %d.", vnum)` pattern; expect
+  this helper to be reused as further `mob_cmds` gaps are closed.
+  Integration coverage at
+  `tests/integration/test_mob_cmds_damage.py::TestMpDamageNonNumericArgsBugLog`.
 - MOBCMD-009: `do_mpflee` now respects `ROOM_NO_MOB` on a candidate
   destination when the fleeing character is an NPC, mirroring ROM
   `src/mob_cmds.c:1277-1280`. Previously script-driven NPC flees would
