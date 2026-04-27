@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-002: `do_mpassist` now enforces ROM `src/mob_cmds.c:393`'s full
+  guard set — `victim == ch`, `ch->fighting != NULL`, and
+  `victim->fighting == NULL`. Previously only the third clause was
+  checked, so a script mob already in a fight could be redirected onto a
+  new target via `mob assist`, and a script mob could nonsensically
+  assist itself. Integration coverage at
+  `tests/integration/test_mob_cmds_assist.py`.
 - MOBCMD-001: `do_mpkill` now refuses when the script mob is charmed
   (`AffectFlag.CHARM`) and the chosen victim is its master, mirroring ROM
   `src/mob_cmds.c:364-369`. Previously a charmed mob scripted to

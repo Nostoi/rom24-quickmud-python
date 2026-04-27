@@ -1010,15 +1010,22 @@ def do_mpkill(ch: Character, argument: str) -> None:
 
 
 def do_mpassist(ch: Character, argument: str) -> None:
+    # mirroring ROM src/mob_cmds.c:380-398
     ally = _find_char_in_room(ch, argument.strip())
     if ally is None:
+        return
+    # mirroring ROM src/mob_cmds.c:393 —
+    # `victim == ch || ch->fighting != NULL || victim->fighting == NULL`
+    if ally is ch:
+        return
+    if getattr(ch, "fighting", None) is not None:
         return
     target = getattr(ally, "fighting", None)
     if target is None:
         return
-    from mud.combat import multi_hit
+    from mud import combat
 
-    multi_hit(ch, target)
+    combat.multi_hit(ch, target)
 
 
 def _match_object(obj: Object, token: str) -> bool:
