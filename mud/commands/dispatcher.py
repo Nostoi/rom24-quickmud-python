@@ -94,7 +94,7 @@ from .channels import do_channels
 from .liquids import do_fill, do_pour, do_empty
 from .murder import do_murder
 from .thief_skills import do_sneak, do_hide, do_visible, do_steal
-from .info_extended import do_examine, do_read, do_count, do_whois, do_worth, do_sit
+from .info_extended import do_examine, do_read, do_count, do_whois, do_worth
 from .auto_settings import (
     do_autolist,
     do_autoall,
@@ -175,7 +175,7 @@ from .inventory import do_drop, do_equipment, do_get, do_inventory, do_outfit
 from .mobprog_tools import do_mpdump, do_mpstat
 from .movement import do_down, do_east, do_enter, do_north, do_south, do_up, do_west
 from .notes import do_board, do_note
-from .position import do_rest, do_sleep, do_stand, do_wake
+from .position import do_rest, do_sit, do_sleep, do_stand, do_wake
 from .session import do_quit, do_recall, do_save, do_score
 from .equipment import do_hold, do_wear, do_wield
 from .consumption import do_drink, do_eat

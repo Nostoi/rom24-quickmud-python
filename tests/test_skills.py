@@ -907,6 +907,25 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(skill_handlers, "saves_spell", fake_saves)
 
+    # Wrap fire_effect to record dispatch calls per target — the only way to
+    # observe ROM's room/char dispatch fan-out from spell_fire_breath
+    # (src/magic2.c) without coupling to internal damage state.
+    real_fire_effect = magic_effects.fire_effect
+
+    def recording_fire_effect(target_obj, level, damage, target_type):
+        bucket = target_obj.__dict__.setdefault("last_spell_effects", [])
+        bucket.append(
+            {
+                "effect": "fire",
+                "level": level,
+                "damage": damage,
+                "target": magic_effects._normalize_target(target_type),
+            }
+        )
+        return real_fire_effect(target_obj, level, damage, target_type)
+
+    monkeypatch.setattr(skill_handlers, "fire_effect", recording_fire_effect)
+
     result = reg.use(caster, "fire breath", target)
 
     assert isinstance(result, SkillUseResult)
@@ -921,7 +940,7 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.lag == max(1, skill.lag)
 
     room_effects = getattr(room, "last_spell_effects", [])
-    assert {"effect": "fire", "level": 40, "damage": 101, "target": magic_effects.SpellTarget.ROOM} in room_effects
+    assert {"effect": "fire", "level": 40, "damage": 101, "target": magic_effects.SpellTarget.TARGET_ROOM} in room_effects
 
     target_effects = getattr(target, "last_spell_effects", [])
     assert target_effects
@@ -929,7 +948,7 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
         "effect": "fire",
         "level": 40,
         "damage": 202,
-        "target": magic_effects.SpellTarget.CHAR,
+        "target": magic_effects.SpellTarget.TARGET_CHAR,
     }
 
     bystander_effects = getattr(bystander, "last_spell_effects", [])
@@ -937,5 +956,5 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
         "effect": "fire",
         "level": 10,
         "damage": 25,
-        "target": magic_effects.SpellTarget.CHAR,
+        "target": magic_effects.SpellTarget.TARGET_CHAR,
     } in bystander_effects

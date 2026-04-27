@@ -97,7 +97,8 @@ def _move_followers(
             and bool(getattr(follower, "act", 0) & int(ActFlag.AGGRESSIVE))
         ):
             if hasattr(leader, "send_to_char"):
-                leader.send_to_char("You can't bring that follower into the city.")
+                follower_name = getattr(follower, "name", None) or "someone"
+                leader.send_to_char(f"You can't bring {follower_name} into the city.")
             if hasattr(follower, "send_to_char"):
                 follower.send_to_char("You aren't allowed in the city.")
             continue
@@ -414,7 +415,7 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     current_room.remove_character(char)
     target_room.add_character(char)
     if show_movement:
-        broadcast_room(target_room, f"{char_name} arrives.", exclude=char)
+        broadcast_room(target_room, f"{char_name} has arrived.", exclude=char)
 
     _auto_look(char)
 

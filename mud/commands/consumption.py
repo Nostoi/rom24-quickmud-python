@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.constants import ItemType, Position
+from mud.models.constants import AffectFlag, ItemType, Position
+from mud.net.protocol import broadcast_room
+from mud.utils.act import act_format
+from mud.utils.rng_mm import number_fuzzy
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -19,8 +22,15 @@ def do_eat(ch: Character, args: str) -> str:
     """
     Consume food to restore hunger.
 
-    ROM Reference: src/act_obj.c lines 343-430 (do_eat)
+    ROM Reference: src/act_obj.c lines 1284-1365 (do_eat)
+
+    condition list indices (ROM merc.h):
+        COND_DRUNK = 0, COND_FULL = 1, COND_THIRST = 2, COND_HUNGER = 3
     """
+    # ROM constants for condition list indices
+    _COND_FULL = 1
+    _COND_HUNGER = 3
+
     args = args.strip()
 
     if not args:
@@ -31,54 +41,105 @@ def do_eat(ch: Character, args: str) -> str:
     if not obj:
         return "You do not have that item."
 
-    # Check if it's food
-    item_type = getattr(obj, "item_type", ItemType.TRASH)
-    if item_type != ItemType.FOOD:
-        return "That's not edible."
+    # Normalize item_type to int for comparison (obj.item_type may be int or enum)
+    item_type_raw = getattr(obj, "item_type", int(ItemType.TRASH))
+    item_type_int = int(item_type_raw) if item_type_raw is not None else int(ItemType.TRASH)
 
-    # Check position
-    if ch.position < Position.RESTING:
-        return "You can't do that right now."
+    # EAT-002: IS_IMMORTAL bypass — type-check and fullness-check skipped for immortals
+    # ROM src/act_obj.c:1302-1315
+    if not ch.is_immortal():
+        # EAT-001/EAT-002: accept FOOD or PILL; reject everything else
+        # ROM src/act_obj.c:1304
+        if item_type_int != int(ItemType.FOOD) and item_type_int != int(ItemType.PILL):
+            return "That's not edible."
 
-    # Eat the food
+        # EAT-003: fullness pre-check for mortal PCs (list-based condition)
+        # ROM src/act_obj.c:1310-1314  COND_FULL index = 1
+        if not getattr(ch, "is_npc", True):
+            condition = getattr(ch, "condition", None)
+            if isinstance(condition, list) and len(condition) > _COND_FULL:
+                if condition[_COND_FULL] > 40:
+                    return "You are too full to eat more."
+
+    # EAT-004: TO_ROOM broadcast fires before TO_CHAR
+    # ROM src/act_obj.c:1317
+    room = getattr(ch, "room", None) or getattr(ch, "location", None)
+    if room is not None:
+        room_message = act_format("$n eats $p.", recipient=None, actor=ch, arg1=obj)
+        broadcast_room(room, room_message, exclude=ch)
+
     obj_name = getattr(obj, "short_descr", "something")
     messages = [f"You eat {obj_name}."]
 
-    # Restore hunger (if character has condition tracking)
-    if hasattr(ch, "condition") and isinstance(getattr(ch, "condition", None), dict):
-        food_value = getattr(obj, "value", [0, 0, 0, 0])
-        if isinstance(food_value, list) and len(food_value) > 0:
-            hunger_gain = food_value[0] if food_value[0] > 0 else 5
-            ch.condition["hunger"] = min(48, ch.condition.get("hunger", 0) + hunger_gain)
+    # EAT-001: PILL path — cast spells then extract (no hunger/poison logic)
+    # ROM src/act_obj.c:1356-1360
+    if item_type_int == int(ItemType.PILL):
+        from mud.commands.obj_manipulation import _obj_cast_spell
 
-            if ch.condition["hunger"] >= 40:
-                messages.append("You are full.")
+        obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])
+        spell_level = obj_value[0] if len(obj_value) > 0 else 1
+        for i in range(1, 4):
+            if len(obj_value) > i and obj_value[i]:
+                _obj_cast_spell(obj_value[i], spell_level, ch, ch, None)
+        _destroy_object(ch, obj)
+        return "\n".join(messages)
 
-    # Check for poison
-    if hasattr(obj, "value") and isinstance(obj.value, list) and len(obj.value) > 3:
-        if obj.value[3] != 0:  # Poisoned food
+    # FOOD path (and immortal eating non-food falls through to extract below)
+    if item_type_int == int(ItemType.FOOD):
+        # Restore full/hunger conditions for non-NPC PCs
+        # ROM src/act_obj.c:1324-1334  (gain_condition uses list indices)
+        if not getattr(ch, "is_npc", True):
+            condition = getattr(ch, "condition", None)
+            if isinstance(condition, list) and len(condition) > _COND_HUNGER:
+                food_value = getattr(obj, "value", [0, 0, 0, 0, 0])
+                old_hunger = condition[_COND_HUNGER]
+                if isinstance(food_value, list):
+                    # value[0] = full gain, value[1] = hunger gain (ROM gain_condition calls)
+                    if len(food_value) > 0 and food_value[0]:
+                        condition[_COND_FULL] = min(48, condition[_COND_FULL] + food_value[0])
+                    if len(food_value) > 1 and food_value[1]:
+                        condition[_COND_HUNGER] = min(48, condition[_COND_HUNGER] + food_value[1])
+                new_hunger = condition[_COND_HUNGER]
+                if old_hunger == 0 and new_hunger > 0:
+                    messages.append("You are no longer hungry.")
+                elif condition[_COND_FULL] > 40:
+                    messages.append("You are full.")
+
+        # EAT-005: poison affect with ROM-correct fields
+        # ROM src/act_obj.c:1337-1353
+        obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])
+        if isinstance(obj_value, list) and len(obj_value) > 3 and obj_value[3] != 0:
+            # Poison TO_ROOM: "$n chokes and gags." (ROM src/act_obj.c:1342)
+            if room is not None:
+                choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
+                broadcast_room(room, choke_msg, exclude=ch)
             messages.append("You choke and gag.")
-            messages.append("You feel poison coursing through your veins.")
 
-            # Apply poison effect
+            # EAT-005: apply poison flag; store ROM-correct affect metadata on ch.affects
+            # ROM af: level=number_fuzzy(value[0]), duration=2*value[0], location=APPLY_NONE=0, modifier=0
             if hasattr(ch, "add_affect"):
-                from mud.models.constants import AffectFlag
+                level_val = obj_value[0] if obj_value[0] else 1
+                # add_affect(AffectFlag) sets ch.affected_by |= flag
+                ch.add_affect(AffectFlag.POISON)
+                # Store full ROM affect metadata for game_loop poison tick
+                affects_list = getattr(ch, "affects", None)
+                if affects_list is None:
+                    affects_list = []
+                    ch.affects = affects_list
+                affects_list.append(
+                    {
+                        "where": "affects",
+                        "type": "poison",
+                        "level": number_fuzzy(level_val),
+                        "duration": 2 * level_val,
+                        "location": 0,   # APPLY_NONE
+                        "modifier": 0,
+                        "bitvector": int(AffectFlag.POISON),
+                    }
+                )
 
-                # Create poison affect
-                try:
-                    ch.add_affect(
-                        {
-                            "type": "poison",
-                            "duration": 3,
-                            "modifier": -2,
-                            "location": "strength",
-                            "bitvector": int(AffectFlag.POISON),
-                        }
-                    )
-                except Exception:
-                    pass  # Poison application failed
-
-    # Destroy the food object
+    # Destroy the object (food, pill already returned, or immortal-non-food)
+    # ROM src/act_obj.c:1363
     _destroy_object(ch, obj)
 
     return "\n".join(messages)
@@ -88,137 +149,158 @@ def do_drink(ch: Character, args: str) -> str:
     """
     Drink from a container or fountain.
 
-    ROM Reference: src/act_obj.c lines 432-590 (do_drink)
+    ROM Reference: src/act_obj.c lines 1161-1280 (do_drink)
+
+    DRINK-001: empty arg scans room for ITEM_FOUNTAIN before "Drink what?"
+    DRINK-002: drunk pre-check (condition[DRUNK] > 10) fires after lookup
+    DRINK-003: non-empty arg uses get_obj_here (inventory + room)
+    DRINK-004: condition is list[int] via pcdata; use gain_condition()
+    DRINK-005: liq_table affect values drive amount / gain_condition
+    DRINK-006: post-condition feedback messages (drunk/full/thirst)
+    DRINK-007: act() TO_ROOM and TO_CHAR broadcast messages
+    DRINK-008: poison affect with ROM-correct fields (duration=3*amount)
+    DRINK-009: immortal bypasses "too full" check
     """
+    from mud.characters.conditions import gain_condition
+    from mud.models.constants import Condition, LIQUID_TABLE
+    from mud.world.obj_find import get_obj_here
+
     args = args.strip()
 
-    if not args:
-        return "Drink what?"
-
-    # Check for fountain in room first
     room = getattr(ch, "room", None)
-    if args.lower() in ["fountain", "from fountain"]:
-        if room:
-            # Look for fountain object in room
-            for obj in getattr(room, "objects", []):
-                item_type = getattr(obj, "item_type", ItemType.TRASH)
-                if item_type == ItemType.FOUNTAIN:
-                    return _drink_from_fountain(ch, obj)
-        return "You can't find a fountain here."
 
-    # Find object in inventory
-    obj = _find_obj_inventory(ch, args)
-    if not obj:
-        return "You do not have that item."
+    # DRINK-001: empty arg — scan room for first FOUNTAIN; else "Drink what?"
+    # ROM src/act_obj.c:1170-1182
+    if not args:
+        obj = None
+        for candidate in getattr(room, "contents", []):
+            ctype = int(getattr(candidate, "item_type", 0))
+            if ctype == int(ItemType.FOUNTAIN):
+                obj = candidate
+                break
+        if obj is None:
+            return "Drink what?"
+    else:
+        # DRINK-003: use get_obj_here (room first, then inventory, then equipment)
+        # ROM src/act_obj.c:1186-1190
+        obj = get_obj_here(ch, args)
+        if obj is None:
+            return "You can't find it."
 
-    # Check if it's drinkable
-    item_type = getattr(obj, "item_type", ItemType.TRASH)
-    if item_type not in (ItemType.DRINK_CON, ItemType.FOUNTAIN):
+    # DRINK-002: drunk pre-check — must be before type-switch
+    # ROM src/act_obj.c:1193-1197
+    is_npc = getattr(ch, "is_npc", True)
+    if not is_npc:
+        pcdata = getattr(ch, "pcdata", None)
+        cond = getattr(pcdata, "condition", None) if pcdata else None
+        if isinstance(cond, list) and len(cond) > int(Condition.DRUNK):
+            if cond[int(Condition.DRUNK)] > 10:
+                return "You fail to reach your mouth.  *Hic*"
+
+    # Dispatch by item_type
+    # ROM src/act_obj.c:1199-1230
+    item_type_int = int(getattr(obj, "item_type", 0))
+    value = getattr(obj, "value", [0, 0, 0, 0, 0])
+    if not isinstance(value, list):
+        value = [0, 0, 0, 0, 0]
+
+    if item_type_int == int(ItemType.FOUNTAIN):
+        # ROM: amount = liq_affect[4] * 3; no value decrement
+        liquid_idx = value[2] if len(value) > 2 else 0
+        if liquid_idx < 0:
+            liquid_idx = 0
+        liq = LIQUID_TABLE[liquid_idx] if liquid_idx < len(LIQUID_TABLE) else LIQUID_TABLE[0]
+        amount = liq.ssize * 3
+
+    elif item_type_int == int(ItemType.DRINK_CON):
+        # ROM: check empty, then amount = min(ssize, value[1])
+        if len(value) < 2 or value[1] <= 0:
+            return "It is already empty."
+        liquid_idx = value[2] if len(value) > 2 else 0
+        if liquid_idx < 0:
+            liquid_idx = 0
+        liq = LIQUID_TABLE[liquid_idx] if liquid_idx < len(LIQUID_TABLE) else LIQUID_TABLE[0]
+        amount = min(liq.ssize, value[1])
+
+    else:
         return "You can't drink from that."
 
-    # Check position
-    if ch.position < Position.RESTING:
-        return "You can't do that right now."
+    # DRINK-009: immortal bypasses fullness check
+    # ROM src/act_obj.c:1231-1236
+    if not is_npc:
+        pcdata = getattr(ch, "pcdata", None)
+        cond = getattr(pcdata, "condition", None) if pcdata else None
+        if not ch.is_immortal() and isinstance(cond, list) and len(cond) > int(Condition.FULL):
+            if cond[int(Condition.FULL)] > 45:
+                return "You're too full to drink more."
 
-    # Check if empty
-    value = getattr(obj, "value", [0, 0, 0, 0])
-    if not isinstance(value, list) or len(value) < 2:
-        return "It is empty."
+    # DRINK-007: TO_ROOM and TO_CHAR act() messages
+    # ROM src/act_obj.c:1238-1241
+    obj_short = getattr(obj, "short_descr", "something")
+    if room is not None:
+        room_msg = act_format(
+            "$n drinks $T from $p.",
+            recipient=None,
+            actor=ch,
+            arg1=obj,
+            arg2=liq.name,
+        )
+        broadcast_room(room, room_msg, exclude=ch)
 
-    quantity = value[1] if len(value) > 1 else 0
-    if quantity <= 0:
-        return "It is empty."
+    messages = [f"You drink {liq.name} from {obj_short}."]
 
-    # Drink from it
-    obj_name = getattr(obj, "short_descr", "something")
-    liquid_type = value[2] if len(value) > 2 else 0
-    liquid_name = _get_liquid_name(liquid_type)
+    # DRINK-005: gain_condition using liq_table affect values
+    # ROM src/act_obj.c:1243-1250
+    gain_condition(ch, Condition.DRUNK,  amount * liq.proof  // 36)
+    gain_condition(ch, Condition.FULL,   amount * liq.full   // 4)
+    gain_condition(ch, Condition.THIRST, amount * liq.thirst // 10)
+    gain_condition(ch, Condition.HUNGER, amount * liq.food   // 2)
 
-    messages = [f"You drink {liquid_name} from {obj_name}."]
+    # DRINK-006: post-condition feedback messages
+    # ROM src/act_obj.c:1252-1257
+    if not is_npc:
+        pcdata = getattr(ch, "pcdata", None)
+        cond = getattr(pcdata, "condition", None) if pcdata else None
+        if isinstance(cond, list):
+            if len(cond) > int(Condition.DRUNK) and cond[int(Condition.DRUNK)] > 10:
+                messages.append("You feel drunk.")
+            if len(cond) > int(Condition.FULL) and cond[int(Condition.FULL)] > 40:
+                messages.append("You are full.")
+            if len(cond) > int(Condition.THIRST) and cond[int(Condition.THIRST)] > 40:
+                messages.append("Your thirst is quenched.")
 
-    # Restore thirst
-    if hasattr(ch, "condition") and isinstance(getattr(ch, "condition", None), dict):
-        thirst_value = 10  # Standard drink amount
-        ch.condition["thirst"] = min(48, ch.condition.get("thirst", 0) + thirst_value)
-
-        if ch.condition["thirst"] >= 40:
-            messages.append("You do not feel thirsty.")
-
-    # Reduce quantity in container
-    if item_type == ItemType.DRINK_CON:
-        value[1] = max(0, value[1] - 1)
-        if value[1] <= 0:
-            messages.append(f"{obj_name.capitalize()} is now empty.")
-
-    # Check for poison
-    if len(value) > 3 and value[3] != 0:  # Poisoned drink
-        messages.append("You choke and gag.")
-        messages.append("You feel poison coursing through your veins.")
-
-        # Apply poison effect
-        if hasattr(ch, "add_affect"):
-            from mud.models.constants import AffectFlag
-
-            try:
-                ch.add_affect(
-                    {
-                        "type": "poison",
-                        "duration": 3,
-                        "modifier": -2,
-                        "location": "strength",
-                        "bitvector": int(AffectFlag.POISON),
-                    }
-                )
-            except Exception:
-                pass
-
-    return "\n".join(messages)
-
-
-def _drink_from_fountain(ch: Character, fountain: Object) -> str:
-    """Drink from a fountain object."""
-    value = getattr(fountain, "value", [0, 0, 0, 0])
-    liquid_type = value[2] if len(value) > 2 else 0
-    liquid_name = _get_liquid_name(liquid_type)
-
-    messages = [f"You drink {liquid_name} from the fountain."]
-
-    # Restore thirst
-    if hasattr(ch, "condition") and isinstance(getattr(ch, "condition", None), dict):
-        ch.condition["thirst"] = min(48, ch.condition.get("thirst", 0) + 10)
-
-        if ch.condition["thirst"] >= 40:
-            messages.append("You do not feel thirsty.")
-
-    # Check for poison (fountains can be poisoned)
+    # DRINK-008: poison affect with ROM-correct fields
+    # ROM src/act_obj.c:1259-1274
     if len(value) > 3 and value[3] != 0:
+        if room is not None:
+            choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
+            broadcast_room(room, choke_msg, exclude=ch)
         messages.append("You choke and gag.")
-        messages.append("You feel poison coursing through your veins.")
+
+        if hasattr(ch, "add_affect"):
+            ch.add_affect(AffectFlag.POISON)
+            affects_list = getattr(ch, "affects", None)
+            if affects_list is None:
+                affects_list = []
+                ch.affects = affects_list
+            affects_list.append(
+                {
+                    "where": "affects",
+                    "type": "poison",
+                    "level": number_fuzzy(amount),
+                    "duration": 3 * amount,
+                    "location": 0,    # APPLY_NONE
+                    "modifier": 0,
+                    "bitvector": int(AffectFlag.POISON),
+                }
+            )
+
+    # DRINK-005: decrement container only (not fountain); only if value[0] > 0
+    # ROM src/act_obj.c:1276-1277
+    if item_type_int == int(ItemType.DRINK_CON) and len(value) > 0 and value[0] > 0:
+        value[1] -= amount
 
     return "\n".join(messages)
-
-
-def _get_liquid_name(liquid_type: int) -> str:
-    """Get the name of a liquid type."""
-    liquids = {
-        0: "water",
-        1: "beer",
-        2: "red wine",
-        3: "ale",
-        4: "dark ale",
-        5: "whisky",
-        6: "lemonade",
-        7: "firebreather",
-        8: "local specialty",
-        9: "slime mold juice",
-        10: "milk",
-        11: "tea",
-        12: "coffee",
-        13: "blood",
-        14: "salt water",
-        15: "coke",
-    }
-    return liquids.get(liquid_type, "water")
 
 
 def _find_obj_inventory(ch: Character, name: str) -> Object | None:

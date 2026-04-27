@@ -1514,27 +1514,31 @@ async def handle_connection_with_stream(
 
         char, forced_reconnect = selection
         reconnecting = bool(was_reconnect or forced_reconnect)
-        is_new_player = not bool(char.level)
-        
+
         if char is None:
             return
 
-        # Only save if this is truly a new character creation
-        if is_new_player and not reconnecting:
-            if account.id:
-                char.account_id = account.id
-                char.account_name = username
+        is_new_player = _is_new_player(char)
+        saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
+        desired_colour = ansi_preference if ansi_explicit else (qmconfig.ansicolor if is_new_player else saved_colour)
+        _apply_colour_preference(char, desired_colour)
+        conn.set_ansi(char.ansi_enabled)
+
+        if char.room:
             try:
-                save_character(char)
+                char.room.add_character(char)
             except Exception as exc:
-                print(f"[ERROR] Failed to save newly created character: {exc}")
+                print(f"[ERROR] Failed to add character to room: {exc}")
 
         char.connection = conn
-        char.desc = conn
-        
-        # Create a mock StreamReader for SSH connections (Session requires it but SSH doesn't use it)
+        char.account_name = username
+        if reconnecting:
+            try:
+                char.timer = 0
+            except Exception:
+                pass
+
         mock_reader = asyncio.StreamReader()
-        
         session = Session(
             name=char.name or "",
             character=char,
@@ -1543,12 +1547,20 @@ async def handle_connection_with_stream(
             account_name=username,
             ansi_enabled=conn.ansi_enabled,
         )
-        SESSIONS[char.name] = session
-        
-        # Give starting outfit if new player
+        SESSIONS[session.name] = session
+        char.desc = session
+
         outfit_message: str | None = None
         if is_new_player and give_school_outfit(char):
             outfit_message = "You have been equipped by Mota."
+
+        _apply_qmconfig_telnetga(
+            char,
+            session,
+            conn,
+            default_enabled=qmconfig.telnetga,
+            is_new_player=is_new_player,
+        )
 
         print(f"[{connection_type}] {char.name} entered the game")
         
@@ -1577,6 +1589,8 @@ async def handle_connection_with_stream(
 
         # Send initial room look
         try:
+            if hasattr(conn, "set_in_game"):
+                conn.set_in_game(char)
             if char.room:
                 response = process_command(char, "look")
                 await send_to_char(char, response)
@@ -1611,6 +1625,14 @@ async def handle_connection_with_stream(
                         char,
                         "Sorry, there was an error processing that command.",
                     )
+
+                while char and char.messages:
+                    try:
+                        msg = char.messages.pop(0)
+                        await send_to_char(char, msg)
+                    except Exception as exc:
+                        print(f"[ERROR] Failed to send message: {exc}")
+                        break
 
             except asyncio.CancelledError:
                 break

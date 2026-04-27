@@ -64,6 +64,8 @@ from mud.models.constants import (
     WeaponFlag,
     WeaponType,
     WearLocation,
+    ATTACK_TABLE,
+    attack_damage_type,
 )
 from mud.models.obj import Affect, ObjectData
 from mud.models.object import Object
@@ -3704,7 +3706,9 @@ def envenom(
                 obj.value = values
                 check_improve(caster, "envenom", True, 4)
 
-            # ROM L894: WAIT_STATE
+            # ROM L894: WAIT_STATE(ch, skill_table[gsn_envenom].beats)
+            beats = _skill_beats("envenom")
+            caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
             return {"success": True, "message": "", "poisoned_food": True}
 
         # ROM L898-902: failure
@@ -3712,6 +3716,9 @@ def envenom(
         if values[3] == 0:
             check_improve(caster, "envenom", False, 4)
 
+        # ROM L901: WAIT_STATE(ch, skill_table[gsn_envenom].beats)
+        beats = _skill_beats("envenom")
+        caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
         return {"success": False, "message": f"You fail to poison {short_descr}.", "poisoned_food": False}
 
     # ROM L905-959: poison weapon
@@ -3744,13 +3751,22 @@ def envenom(
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             return {"success": False, "message": f"You can't seem to envenom {short_descr}."}
 
-        # ROM L920-925: check for edged weapon
+        # ROM L920-925: check for edged weapon (rejects value[3] < 0 OR bash damage type)
         values = list(getattr(obj, "value", [0, 0, 0, 0]))
         while len(values) < 4:
             values.append(0)
 
         weapon_attack_type = int(values[3] if len(values) > 3 else 0)
-        if weapon_attack_type < 0:
+        # ROM L920-925: rejects negative index OR attack_table[value[3]].damage == DAM_BASH.
+        # Compare the raw damage field (not the mapped enum) — ROM's DAM_NONE (-1) at
+        # index 0 is NOT DAM_BASH and must pass through; attack_damage_type() folds
+        # DAM_NONE into BASH for combat fallback, which would over-reject here.
+        attack_raw_damage = (
+            ATTACK_TABLE[weapon_attack_type].damage
+            if 0 <= weapon_attack_type < len(ATTACK_TABLE)
+            else None
+        )
+        if weapon_attack_type < 0 or attack_raw_damage == int(DamageType.BASH):
             return {"success": False, "message": "You can only envenom edged weapons."}
 
         # ROM L927-931: check if already poisoned
@@ -3791,11 +3807,17 @@ def envenom(
             _send_to_char(caster, f"You coat {short_descr} with venom.")
             check_improve(caster, "envenom", True, 3)
 
+            # ROM L949: WAIT_STATE(ch, skill_table[gsn_envenom].beats)
+            beats = _skill_beats("envenom")
+            caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
             return {"success": True, "message": "", "poisoned_weapon": True}
 
         # ROM L952-958: failure
         short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
         check_improve(caster, "envenom", False, 3)
+        # ROM L956: WAIT_STATE(ch, skill_table[gsn_envenom].beats)
+        beats = _skill_beats("envenom")
+        caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
         return {"success": False, "message": f"You fail to envenom {short_descr}.", "poisoned_weapon": False}
 
     # ROM L961-962: can't poison this type

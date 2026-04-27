@@ -22,6 +22,7 @@ from mud.commands.auto_settings import (
     do_brief,
     do_compact,
     do_combine,
+    do_telnetga,
 )
 from mud.models.character import Character
 from mud.models.constants import CommFlag, PlayerFlag
@@ -485,3 +486,36 @@ class TestEdgeCases:
         do_compact(test_char, "")
         assert test_char.comm & CommFlag.BRIEF
         assert not (test_char.comm & CommFlag.COMPACT)
+
+
+# =============================================================================
+# do_telnetga Tests (ROM C lines 2927-2943)
+# =============================================================================
+
+
+class TestTelnetGA:
+    """Test do_telnetga command ROM C parity."""
+
+    def test_telnetga_npc_returns_empty(self, test_npc):
+        """NPCs can't use telnetga (ROM C line 2929-2930)."""
+        output = do_telnetga(test_npc, "")
+        assert output == ""
+
+    def test_telnetga_toggle_on(self, test_char):
+        """Telnetga toggles from OFF to ON (ROM C line 2937-2941)."""
+        assert not (test_char.comm & CommFlag.TELNET_GA)
+        output = do_telnetga(test_char, "")
+        assert "enabled" in output.lower()
+        assert test_char.comm & CommFlag.TELNET_GA
+
+    def test_telnetga_toggle_off(self, test_char):
+        """Telnetga toggles from ON to OFF (ROM C line 2932-2936)."""
+        test_char.comm |= CommFlag.TELNET_GA
+        output = do_telnetga(test_char, "")
+        assert "removed" in output.lower()
+        assert not (test_char.comm & CommFlag.TELNET_GA)
+
+    def test_telnetga_ignores_arguments(self, test_char):
+        """Telnetga ignores all arguments (ROM C behavior)."""
+        output = do_telnetga(test_char, "random arguments")
+        assert "enabled" in output.lower() or "removed" in output.lower()

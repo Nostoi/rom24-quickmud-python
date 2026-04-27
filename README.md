@@ -55,6 +55,15 @@ python3 -m mud websocketserver
 mud websocketserver
 ```
 
+> **WebSocket dependency note:** browser WebSocket clients require Uvicorn to
+> have a supported WebSocket implementation available. If `/ws` upgrade requests
+> fail, install one of:
+> ```bash
+> ./venv/bin/python -m pip install websockets
+> # or
+> ./venv/bin/python -m pip install 'uvicorn[standard]'
+> ```
+
 **SSH Server (port 2222):**
 ```bash
 python3 -m mud sshserver
@@ -79,6 +88,53 @@ telnet localhost 5001
 ssh -p 2222 player@localhost
 # Note: SSH username/password are ignored; MUD authentication happens after connection
 ```
+
+## 🌐 Web Interface
+
+QuickMUD includes a WebSocket server, but the browser interface lives in a
+separate companion project so this engine repo can remain the canonical,
+ROM-faithful Python backend.
+
+Recommended layout:
+
+```text
+~/dev/projects/
+  rom24-quickmud-python/
+  quickmud-web-client/
+```
+
+The browser client should connect to:
+
+```text
+ws://127.0.0.1:8000/ws
+```
+
+### Browser Client Setup
+
+From the companion `quickmud-web-client` repo:
+
+```bash
+cd ~/dev/projects/quickmud-web-client
+npm install
+npm run dev:all
+```
+
+That workflow:
+
+- starts this QuickMUD engine's WebSocket server
+- starts the frontend development server
+- opens the browser client against the local `/ws` endpoint
+
+The browser client is intended to follow the same ANSI, account login, account
+creation, character selection, and in-game command flow as telnet/SSH rather
+than using a browser-only shortcut login path.
+
+### Companion Repo
+
+The web interface is intended to live in a separate repository named
+`quickmud-web-client`. Keep that project focused on browser UX, terminal
+rendering, reconnect behavior, and login flow while leaving gameplay and ROM
+parity logic in this backend repo.
 
 ## 🏗️ For Developers
 
@@ -149,6 +205,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 - [Configuration](docs/configuration.md)
 - [World Building](docs/world-building.md)
 - [API Reference](docs/api.md)
+- Companion browser client: `quickmud-web-client` (separate repo)
 
 ---
 
@@ -283,4 +340,3 @@ See [ROM_PARITY_FEATURE_TRACKER.md](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) f
 ---
 
 **Experience authentic ROM 2.4 gameplay with modern Python reliability!** 🐍✨
-

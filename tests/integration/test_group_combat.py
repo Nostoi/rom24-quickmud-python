@@ -368,17 +368,19 @@ class TestGroupLootSharing:
         follower1.gold = 0
         follower2.gold = 0
 
-        # Leader gets 300 gold and splits
+        # Leader gets 300 silver + 300 gold and splits both. ROM ``do_split``
+        # takes ``<silver> <gold>``; first arg = silver, second = gold.
+        leader.silver = 300
         leader.gold = 300
-        result = process_command(leader, "split 300")
+        result = process_command(leader, "split 300 300")
 
-        # Each member should get 100 gold (300 / 3)
-        expected_gold = 100
+        # Each member should get 100 silver and 100 gold (300 / 3).
+        expected = 100
         assert (
             "You split" in result
-            or leader.gold == expected_gold
-            or follower1.gold == expected_gold
-            or follower2.gold == expected_gold
+            or leader.gold == expected
+            or follower1.gold == expected
+            or follower2.gold == expected
         ), "Gold should be split among group members"
 
 

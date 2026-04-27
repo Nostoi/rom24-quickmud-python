@@ -390,8 +390,11 @@ def test_practice_lists_known_skills_with_percentages():
 
 
 def test_train_command_increases_stats():
-    char = Character(practice=0, train=1)
+    from mud.models.character import PCData
+
+    char = Character(practice=0, train=1, is_npc=False)
+    char.pcdata = PCData()
     msg = do_train(char, "hp")
     assert char.train == 0
     assert char.max_hit > 0
-    assert "train your hp" in msg
+    assert "durability" in msg.lower()

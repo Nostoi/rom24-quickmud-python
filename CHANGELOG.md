@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-04-27
+
+### Added
+
+- **act_obj.c parity batch (100% ROM parity for object-manipulation
+  commands):** do_get/do_put/do_drop/do_give/do_wear/do_remove/do_sacrifice/
+  do_quaff/do_eat/do_drink/do_fill/do_pour/do_envenom/do_recite/do_brandish/
+  do_zap/do_steal and shop commands (do_buy/do_sell/do_list/do_value).
+  Adds full ROM TO_ROOM/TO_VICT/TO_NOTVICT broadcasts via act_format +
+  broadcast_room. ~80 new integration tests under tests/integration/.
+- **act_move.c parity batch:** do_stand/do_rest/do_sit/do_sleep/do_wake
+  rewritten with full ROM furniture support (STAND/SIT/REST/SLEEP_AT/ON/IN
+  with capacity checks and ch.on tracking). MOVE-001 arrival broadcast,
+  MOVE-002 follower-name interpolation, SNEAK-001/HIDE-001 dispatcher
+  delegation to canonical handlers. 40 new integration tests in
+  tests/integration/test_position_commands.py.
+- **act_comm.c P2 batch:** do_emote NOEMOTE check, do_pmote (~312 lines),
+  do_colour, do_split gold+silver simultaneous-split fix, do_pose pose_table
+  by class+level. New mud/utils/poses.py.
+- **act_info.c P2 batch:** do_title/do_description/auto-settings family
+  (autolist, autoassist, autoexit, autogold, autoloot, autopeek, autosac,
+  autosplit, autotitle).
+- LIQUID_TABLE in mud/models/constants.py extended with proof/full/thirst/
+  food/ssize fields sourced from ROM src/const.c:886-931.
+- WebSocket stream support (mud/network/websocket_stream.py) for the
+  browser frontend; tests in tests/test_websocket_server.py.
+
+### Changed
+
+- **AGENTS.md rewritten:** ~700 lines → 275. Removed running session
+  narrative, duplicated status reporting, stale "next steps". Added Session
+  Notes (docs/sessions/) and Repo Hygiene (CHANGELOG / README / semver in
+  pyproject.toml) sections modeled on quickmud-web-client/AGENTS.md.
+- 79 SESSION_SUMMARY_*.md and HANDOFF_*.md files moved from repo root to
+  `docs/sessions/`.
+
+### Fixed
+
+- `_obj_from_char()` now operates on `char.inventory` (was reading the
+  wrong field, so transferred objects were not removed from giver).
+- `count_users()` in mud/handler.py now reads `room.people` (room.characters
+  does not exist).
+- String-keyed equipment lookups replaced with `WearLocation` IntEnum keys
+  across BRANDISH/ZAP/POUR families.
+- Hardcoded hex flag values replaced with enum members
+  (`PlayerFlag.AUTOSPLIT`, `WearFlag.NO_SAC`, `ItemType.STAFF/WAND`, etc).
+- `do_steal` MAX_LEVEL set to 60 (was 51); STEAL-001..014 covering
+  one_argument semantics, is_safe, is_clan, sleeping-victim wake, PC→PC
+  PlayerFlag.THIEF, multi_hit signature, NODROP/INVENTORY checks,
+  can_see_object visibility filter.
+- `do_recite/do_brandish/do_zap` success paths were unrunnable due to
+  undefined SkillTarget, bad ItemType references, string-keyed HOLD
+  lookup; all 17 RECITE/BRANDISH/ZAP gaps closed.
+
 ## [2.5.2] - 2025-12-30
 
 ### Added

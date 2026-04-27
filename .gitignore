@@ -29,3 +29,16 @@ env/
 
 # Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+.gitnexus
+
+# Coverage artifacts
+.coverage
+.coverage.*
+htmlcov/
+
+# Local agent / scheduler scratch
+.agents/
+.claude/scheduled_tasks.lock
+
+# Editor / OS backup files
+*.bak
