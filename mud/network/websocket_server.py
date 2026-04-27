@@ -3,16 +3,18 @@ from __future__ import annotations
 import asyncio
 
 import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
-from mud.account import load_character, save_character
-from mud.commands import process_command
 from mud.config import CORS_ORIGINS, HOST, PORT
+from mud.config import load_qmconfig
+from mud.db.migrations import run_migrations
 from mud.game_loop import async_game_loop
-from mud.world.world_state import create_test_character, initialize_world
+from mud.net.connection import handle_connection_with_stream
+from mud.security import bans
+from mud.world.world_state import initialize_world
 
-from .websocket_session import WebSocketPlayerSession
+from .websocket_stream import WebSocketStream
 
 app = FastAPI()
 
@@ -31,7 +33,10 @@ _game_task = None
 @app.on_event("startup")
 async def startup() -> None:
     global _game_task
-    initialize_world(None)
+    load_qmconfig()
+    run_migrations()
+    initialize_world("area/area.lst")
+    bans.load_bans_file()
     # Start game loop as background task
     _game_task = asyncio.create_task(async_game_loop())
     print("🎮 Game loop started for WebSocket server")
@@ -52,55 +57,12 @@ async def shutdown() -> None:
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    await websocket.send_json({"type": "info", "text": "Welcome to PythonMUD. What is your name?"})
-    try:
-        data = await websocket.receive_json()
-    except WebSocketDisconnect:
-        return
-    name = data.get("text", "guest")
-    char = load_character(name, name)
-    if not char:
-        char = create_test_character(name, 3001)
-    elif char.room:
-        char.room.add_character(char)
-
-    session = WebSocketPlayerSession(websocket=websocket, character=char, name=name)
-    char.connection = session
-
-    try:
-        while True:
-            try:
-                message = await session.recv()
-            except WebSocketDisconnect:
-                break
-            if message.get("type") != "command":
-                continue
-            command = message.get("text", "").strip()
-            if not command:
-                continue
-            response = process_command(char, command)
-            await session.send(
-                {
-                    "type": "output",
-                    "text": response,
-                    "room": char.room.vnum if getattr(char, "room", None) else None,
-                    "hp": char.hit,
-                }
-            )
-            while char.messages:
-                msg = char.messages.pop(0)
-                await session.send(
-                    {
-                        "type": "output",
-                        "text": msg,
-                        "room": char.room.vnum if getattr(char, "room", None) else None,
-                        "hp": char.hit,
-                    }
-                )
-    finally:
-        save_character(char)
-        if char.room:
-            char.room.remove_character(char)
+    stream = WebSocketStream(websocket)
+    await handle_connection_with_stream(
+        stream,
+        host_for_ban=stream.peer_host,
+        connection_type="WebSocket",
+    )
 
 
 def run(host: str = HOST, port: int = PORT) -> None:

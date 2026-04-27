@@ -194,7 +194,8 @@ def _can_loot(mob: Character, obj: ObjectData) -> bool:
             return True
 
     mob_group = getattr(mob, "group", None)
-    if mob_group is not None and mob_group == getattr(owner_char, "group", None):
+    owner_group = getattr(owner_char, "group", None)
+    if mob_group and owner_group and mob_group == owner_group:
         return True
 
     return False
