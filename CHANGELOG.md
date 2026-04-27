@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-001: `do_mpkill` now refuses when the script mob is charmed
+  (`AffectFlag.CHARM`) and the chosen victim is its master, mirroring ROM
+  `src/mob_cmds.c:364-369`. Previously a charmed mob scripted to
+  `mob kill <master>` would attack its own charmer. Integration coverage
+  at `tests/integration/test_mob_cmds_kill.py::TestMpKillCharmedMasterGuard`.
 - MOBCMD-015 + MOBCMD-016: `do_mpcall` (MOBprog `call` script command) now
   parses the optional obj1/obj2 tokens from `mob call <vnum> <victim>
   <obj1> <obj2>` and resolves them via `_find_obj_here` (the `get_obj_here`

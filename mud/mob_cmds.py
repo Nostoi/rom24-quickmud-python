@@ -992,9 +992,17 @@ def do_mpkill(ch: Character, argument: str) -> None:
         return
     if getattr(target, "is_npc", False):
         return
-    from mud.models.constants import Position
+    from mud.models.constants import AffectFlag, Position
 
     if getattr(ch, "position", None) == Position.FIGHTING:
+        return
+    # mirroring ROM src/mob_cmds.c:364-369 — a charmed mob refuses to attack
+    # its master, otherwise scripts could weaponise charm to break it.
+    if (
+        hasattr(ch, "has_affect")
+        and ch.has_affect(AffectFlag.CHARM)
+        and getattr(ch, "master", None) is target
+    ):
         return
     from mud.combat import multi_hit
 

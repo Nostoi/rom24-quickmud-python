@@ -85,7 +85,7 @@ Stable IDs are immutable. Severity legend: **CRITICAL** = wrong observable behav
 
 | Gap ID | Severity | ROM File:Line | Python File:Line | Description | Status |
 |---|---|---|---|---|---|
-| MOBCMD-001 | IMPORTANT | `src/mob_cmds.c:348-373` | `mud/mob_cmds.py:930-941` | `do_mpkill` omits ROM's `IS_AFFECTED(AFF_CHARM) && ch->master == victim` defensive check. | 🔄 OPEN |
+| MOBCMD-001 | IMPORTANT | `src/mob_cmds.c:348-373` | `mud/mob_cmds.py:930-941` | `do_mpkill` omits ROM's `IS_AFFECTED(AFF_CHARM) && ch->master == victim` defensive check. | ✅ FIXED (2026-04-27) — `do_mpkill` now refuses when `ch.has_affect(AffectFlag.CHARM)` and `ch.master is target`, mirroring ROM `src/mob_cmds.c:364-369`. Test: `tests/integration/test_mob_cmds_kill.py::TestMpKillCharmedMasterGuard`. |
 | MOBCMD-002 | IMPORTANT | `src/mob_cmds.c:380-398` | `mud/mob_cmds.py:943-953` | `do_mpassist` does not validate charm/master relationship like ROM does. | 🔄 OPEN |
 | MOBCMD-003 | CRITICAL | `src/mob_cmds.c:348-373` | `mud/mob_cmds.py:944` | `do_mpkill` checks `ch->position == POS_FIGHTING` in ROM; Python checks `ch->fighting` instead — different gating semantics. | ✅ FIXED (2026-04-27) — `do_mpkill` now blocks on `ch.position == Position.FIGHTING` and adds the missing `victim is ch` self-attack guard from ROM `src/mob_cmds.c:361`. Test: `tests/integration/test_mob_cmds_kill.py::TestMpKillPositionGate`. |
 | MOBCMD-004 | IMPORTANT | `src/mob_cmds.c:409-446` | `mud/mob_cmds.py:959-1086` | `do_mpjunk` ROM parses `"all"` vs `"all.suffix"` (checks `arg[3]`); Python does not distinguish prefix patterns. | 🔄 OPEN |

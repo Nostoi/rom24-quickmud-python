@@ -80,3 +80,26 @@ class TestMpKillPositionGate:
 
         # Mob should not be fighting itself.
         assert actor.fighting is not actor, "must not target self"
+
+
+class TestMpKillCharmedMasterGuard:
+    """MOBCMD-001: ROM ``src/mob_cmds.c:364-369`` — when ``ch`` is charmed
+    (``IS_AFFECTED(ch, AFF_CHARM)``) and the chosen victim is the charmer
+    (``ch->master == victim``), ROM logs a bug and refuses to attack.
+    Python had been missing this guard, so a charmed mob scripted to
+    ``mob kill <master>`` would attack its own charmer.
+    """
+
+    def test_charmed_mob_refuses_to_attack_master(self, script_mob, victim):
+        from mud.models.constants import AffectFlag
+
+        # Charm the script mob and bind its master to the prospective victim.
+        script_mob.add_affect(AffectFlag.CHARM)
+        script_mob.master = victim
+
+        do_mpkill(script_mob, "Target")
+
+        assert script_mob.fighting is None, (
+            "do_mpkill must refuse when ch is charmed and ch.master is the"
+            " victim (ROM src/mob_cmds.c:364-369)."
+        )
