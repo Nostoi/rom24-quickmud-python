@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- MOBCMD-014: `do_mpdamage` (MOBprog `damage` script command) now routes
+  through `mud.combat.engine.apply_damage` instead of raw-decrementing
+  `victim.hit`. Mirrors ROM `src/mob_cmds.c:1132-1145`
+  (`damage(victim, victim, amount, TYPE_UNDEFINED, DAM_NONE, FALSE)`) so
+  the death pipeline, position updates, fight triggers, and corpse
+  handling fire on script-driven damage. Integration coverage at
+  `tests/integration/test_mob_cmds_damage.py`.
+
 ### Changed
 
 - `docs/parity/ACT_OBJ_C_AUDIT.md` and `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`

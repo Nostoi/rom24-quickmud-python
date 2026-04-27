@@ -1086,6 +1086,11 @@ def do_mpjunk(ch: Character, argument: str) -> None:
 
 
 def do_mpdamage(ch: Character, argument: str) -> None:
+    # mirroring ROM src/mob_cmds.c:1078-1147 — script-driven damage must route
+    # through damage() so death, position updates, and fight triggers fire
+    # (ROM calls damage(victim, victim, amount, TYPE_UNDEFINED, DAM_NONE, FALSE)).
+    from mud.combat.engine import apply_damage
+
     parts = argument.split()
     if len(parts) < 3:
         return
@@ -1099,22 +1104,34 @@ def do_mpdamage(ch: Character, argument: str) -> None:
         low, high = high, low
     kill = bool(rest)
 
-    def _apply_damage(victim: Character) -> None:
+    def _deal(victim: Character) -> None:
         amount = rng_mm.number_range(low, high)
         if not kill:
+            # ROM src/mob_cmds.c:1134 — UMIN(victim->hit, number_range(low,high))
             amount = min(amount, max(0, getattr(victim, "hit", 0)))
-        victim.hit = max(0, getattr(victim, "hit", 0) - amount)
+        # ROM passes DAM_NONE / TYPE_UNDEFINED here; in Python that means no
+        # RIV class and no specific attack-type, so pass dam_type=None / dt=None
+        # to bypass resistance/vulnerability scaling and route straight to the
+        # damage application + update_pos pipeline.
+        apply_damage(
+            victim,
+            victim,
+            amount,
+            dam_type=None,
+            dt=None,
+            show=False,
+        )
 
     if target_token.lower() == "all":
         for occupant in _iter_room_people(getattr(ch, "room", None)):
             if occupant is ch:
                 continue
-            _apply_damage(occupant)
+            _deal(occupant)
         return
     victim = _find_char_in_room(ch, target_token)
     if victim is None:
         return
-    _apply_damage(victim)
+    _deal(victim)
 
 
 def do_mpremember(ch: Character, argument: str) -> None:
