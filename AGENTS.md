@@ -195,6 +195,11 @@ Before pushing changes:
      counts that changed.
    - Keep ROM-parity status badges honest. Do not claim percentages the
      trackers don't support.
+   - **Whenever you touch README's "Project Status" / badges / metrics, also
+     refresh AGENTS.md's tracker pointers and `docs/sessions/SESSION_STATUS.md`
+     in the same commit so the three surfaces (README, AGENTS, SESSION_STATUS)
+     never disagree.** Source of truth for the underlying numbers stays in
+     `docs/parity/*` trackers — do not invent figures the trackers don't back.
 
 3. **Update the version**
    - Single source: `pyproject.toml` `version = "X.Y.Z"`.

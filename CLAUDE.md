@@ -1,5 +1,35 @@
 @AGENTS.md
 
+# Porting workflow — when to invoke which skill
+
+The ROM 2.4b6 → Python parity loop is encoded in three project-local skills.
+Use them; do not re-derive the workflow each session.
+
+| Situation | Skill | Output |
+|-----------|-------|--------|
+| Starting a file-level audit (e.g. "audit `scan.c`", a P0/P1 file is Partial/Not Audited in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`) | `/rom-parity-audit` | New/updated `docs/parity/<FILE>_C_AUDIT.md` with stable gap IDs |
+| Closing one gap by ID (e.g. "fix `DROP-001`", working through a gap list from an audit doc) | `/rom-gap-closer` | One failing-test-first commit with `feat(parity)` / `fix(parity)` prefix; audit row flipped to ✅ FIXED |
+| Wrapping up the session (multiple gaps closed, file just hit 100%, "write the session summary") | `/rom-session-handoff` | New `docs/sessions/SESSION_SUMMARY_<date>_<topic>.md`, refreshed `SESSION_STATUS.md`, CHANGELOG entries, version bump if pushing |
+
+Decision tree:
+
+1. **Is the gap already documented with a stable ID in `docs/parity/<FILE>_C_AUDIT.md`?**
+   - No → invoke `rom-parity-audit` first to produce the audit doc and gap IDs.
+   - Yes → continue.
+2. **Are you closing one specific gap?**
+   - Yes → invoke `rom-gap-closer` with the ID.
+   - No (multiple gaps in one go) → invoke `rom-gap-closer` once per gap, sequentially. One gap = one test = one commit. Do not batch.
+3. **Done with the session's work?**
+   - Yes → invoke `rom-session-handoff` to write the summary, refresh `SESSION_STATUS.md`, update CHANGELOG, and bump version if anything is being pushed.
+
+These skills sit on top of (and call out to) the existing rules:
+
+- ROM Parity Rules from `AGENTS.md` (RNG via `rng_mm`, integer math via `c_div`/`c_mod`, IntEnum flags, `char.equipment[WearLocation.X]`, `char.inventory`, `room.people`).
+- GitNexus discipline from this file (`gitnexus_impact` before edits, `gitnexus_detect_changes` before commits).
+- TDD discipline from `superpowers:test-driven-development` (failing test before implementation).
+
+Do not invoke `rom-gap-closer` without a documented gap ID. Do not invoke `rom-parity-audit` for a single-gap fix. Do not skip `rom-session-handoff` at session end — `SESSION_STATUS.md` and `CHANGELOG.md` rot fast otherwise.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 

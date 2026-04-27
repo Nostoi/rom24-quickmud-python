@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.3] - 2026-04-27
+
+### Added
+
+- Three project-local skills under `.claude/skills/` encoding the ROM 2.4b6 →
+  Python parity loop: `rom-parity-audit` (file-level 5-phase audit),
+  `rom-gap-closer` (single-gap TDD close flow), `rom-session-handoff`
+  (end-of-session SESSION_SUMMARY + SESSION_STATUS + CHANGELOG generation).
+- `CLAUDE.md` "Porting workflow" section: decision-tree mapping of when to
+  invoke each skill plus dependencies between them.
+
+### Changed
+
+- `README.md` Project Status / badges refreshed to current state: version
+  `2.6.2`, tests `3508/3521 passing` (99.6%) with 11 skipped and 2 known
+  pre-existing failures, integration suite `1000+`, ROM 2.4b parity badge
+  scoped to "gameplay 100%" (truer given the long tail of P2/P3 files), and
+  active focus called out as `act_obj.c` (~60%).
+- `AGENTS.md` Repo Hygiene §2 now requires that any change to README's
+  Project Status / badges / metrics be accompanied in the same commit by a
+  refresh of AGENTS.md tracker pointers and `docs/sessions/SESSION_STATUS.md`,
+  preventing drift between the three surfaces. Underlying numbers stay
+  sourced from `docs/parity/*` trackers.
+
 ## [2.6.2] - 2026-04-27
 
 ### Fixed
