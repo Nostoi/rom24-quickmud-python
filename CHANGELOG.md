@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-011 + MOBCMD-012: `do_mpcast` (MOBprog `cast` script command) now
+  resolves the JSON `target` string into a canonical `_TargetType` IntEnum
+  mirroring ROM `TAR_*` (`src/magic.h`) and dispatches on the enum, matching
+  ROM's switch in `src/mob_cmds.c:1043-1066`. The previously string-keyed
+  branches were drift-prone; in particular the `TAR_OBJ_CHAR_DEF/OFF/INV`
+  cases now require an object (no character fallback) and `TAR_CHAR_DEFENSIVE`
+  defaults to `ch` when the lookup fails, matching ROM lines 1055 + 1060-1065.
+  Integration coverage at `tests/integration/test_mob_cmds_cast.py`.
 - MOBCMD-003: `do_mpkill` now gates on `ch.position == Position.FIGHTING`
   (matching ROM `src/mob_cmds.c:361`) instead of the looser
   `ch.fighting is not None` check, and short-circuits self-attacks via the

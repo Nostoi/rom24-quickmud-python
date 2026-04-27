@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
@@ -15,6 +16,36 @@ if TYPE_CHECKING:
 
 
 CommandFunc = Callable[["Character", str], None]
+
+
+class _TargetType(IntEnum):
+    """Canonical ROM ``TAR_*`` constants from ``src/magic.h``.
+
+    ``data/skills.json`` encodes these as lower-case strings (see
+    ``mud/scripts/convert_skills_to_json.py``); ``_TARGET_STRINGS`` maps each
+    string back to the enum so ``do_mpcast`` can switch on the canonical value
+    rather than free-form strings, mirroring ROM ``src/mob_cmds.c:1043-1066``.
+    """
+
+    TAR_IGNORE = 0
+    TAR_CHAR_OFFENSIVE = 1
+    TAR_CHAR_DEFENSIVE = 2
+    TAR_CHAR_SELF = 3
+    TAR_OBJ_INV = 4
+    TAR_OBJ_CHAR_DEF = 5
+    TAR_OBJ_CHAR_OFF = 6
+
+
+_TARGET_STRINGS: dict[str, _TargetType] = {
+    "ignore": _TargetType.TAR_IGNORE,
+    "victim": _TargetType.TAR_CHAR_OFFENSIVE,
+    "friendly": _TargetType.TAR_CHAR_DEFENSIVE,
+    "self": _TargetType.TAR_CHAR_SELF,
+    "object": _TargetType.TAR_OBJ_INV,
+    # JSON collapses TAR_OBJ_CHAR_DEF and TAR_OBJ_CHAR_OFF into one string;
+    # ROM treats them identically in mob_cmds context (src/mob_cmds.c:1060-1065).
+    "character_or_object": _TargetType.TAR_OBJ_CHAR_DEF,
+}
 
 
 @dataclass(frozen=True)
@@ -471,41 +502,41 @@ def do_mpcast(ch: Character, argument: str) -> None:
         return
 
     target_token = rest.strip()
-    target_kind = (getattr(spell, "target", "victim") or "victim").lower()
+    target_kind = _TARGET_STRINGS.get(
+        (getattr(spell, "target", "") or "").strip().lower()
+    )
 
-    if target_kind == "ignore":
-        target: Character | Object | None = None
-    elif target_kind == "victim":
+    # Mirroring ROM src/mob_cmds.c:1043-1066 — switch on skill_table[sn].target
+    # (TAR_*). ROM resolves both vch=get_char_room and obj=get_obj_here up
+    # front, then dispatches; the default branch returns silently.
+    target: Character | Object | None
+    if target_kind is None:
+        return
+    elif target_kind is _TargetType.TAR_IGNORE:
+        target = None
+    elif target_kind is _TargetType.TAR_CHAR_OFFENSIVE:
         victim = _find_char_in_room(ch, target_token)
         if victim is None or victim is ch:
             return
         target = victim
-    elif target_kind == "friendly":
-        if target_token:
-            victim = _find_char_in_room(ch, target_token)
-            if victim is None:
-                return
-            target = victim
-        else:
-            target = ch
-    elif target_kind == "self":
+    elif target_kind is _TargetType.TAR_CHAR_DEFENSIVE:
+        # ROM src/mob_cmds.c:1054-1056 — vch == NULL ? ch : vch.
+        victim = _find_char_in_room(ch, target_token) if target_token else None
+        target = victim if victim is not None else ch
+    elif target_kind is _TargetType.TAR_CHAR_SELF:
         target = ch
-    elif target_kind == "object":
+    elif target_kind in (
+        _TargetType.TAR_OBJ_INV,
+        _TargetType.TAR_OBJ_CHAR_DEF,
+        _TargetType.TAR_OBJ_CHAR_OFF,
+    ):
+        # ROM src/mob_cmds.c:1060-1065 — all three OBJ targets resolve obj
+        # only via get_obj_here, with no character fallback. Returns silently
+        # when obj == NULL.
         obj = _find_obj_here(ch, target_token)
         if obj is None:
             return
         target = obj
-    elif target_kind == "character_or_object":
-        if not target_token:
-            return
-        victim = _find_char_in_room(ch, target_token)
-        if victim is not None:
-            target = victim
-        else:
-            obj = _find_obj_here(ch, target_token)
-            if obj is None:
-                return
-            target = obj
     else:
         return
 
