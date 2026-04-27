@@ -25,6 +25,7 @@ from mud.models.constants import (
 )
 from mud.models.room import Exit, Room
 from mud.net.protocol import broadcast_room
+from mud.utils.act import act_format
 from mud.registry import room_registry
 from mud.world.look import look
 from mud.world.vision import can_see_room
@@ -102,8 +103,12 @@ def _move_followers(
             if hasattr(follower, "send_to_char"):
                 follower.send_to_char("You aren't allowed in the city.")
             continue
-        if hasattr(follower, "send_to_char") and leader.name:
-            follower.send_to_char(f"You follow {leader.name}.")
+        # ENTER-007: ROM uses act("You follow $N.", fch, NULL, ch, TO_CHAR)
+        # act_enter.c:195 — $N applies visibility; use act_format so invisible
+        # leaders show as "someone"
+        if hasattr(follower, "send_to_char"):
+            follow_msg = act_format("You follow $N.", recipient=follower, actor=follower, arg2=leader)
+            follower.send_to_char(follow_msg)
         mover(follower)
 
 
@@ -254,8 +259,15 @@ def _room_is_private(room: Room) -> bool:
 
 
 def _get_random_room(ch: Character) -> Room | None:
-    attempts = max(len(room_registry), 1) * 2
-    for _ in range(attempts):
+    """Find a random valid destination room, mirroring ROM src/act_enter.c:44-63.
+
+    ROM uses an infinite for(;;) loop — it never returns NULL.  We use a very
+    large iteration cap (100 000) to avoid hanging the process if the registry
+    is empty, but in normal play this will always find a room.
+    """
+    # ENTER-013: ROM loops forever; use a large cap to match the invariant
+    # (act_enter.c:48 for(;;))
+    for _ in range(100_000):
         vnum = rng_mm.number_range(0, 65535)
         room = room_registry.get(vnum)
         if room is None:
@@ -267,6 +279,7 @@ def _get_random_room(ch: Character) -> Room | None:
         flags = int(getattr(room, "room_flags", 0) or 0)
         if flags & (int(RoomFlag.ROOM_PRIVATE) | int(RoomFlag.ROOM_SOLITARY) | int(RoomFlag.ROOM_SAFE)):
             continue
+        # ENTER-001: act_enter.c:57-58 — NPC or aggressive PC may enter LAW rooms
         act_flags = int(getattr(ch, "act", 0) or 0)
         if not ch.is_npc and not (act_flags & int(ActFlag.AGGRESSIVE)):
             if flags & int(RoomFlag.ROOM_LAW):
@@ -299,15 +312,31 @@ def _auto_look(char: Character) -> None:
 
 
 def _stand_charmed_follower(follower: Character) -> None:
-    """Mimic ROM `do_stand` wake-up for charmed followers."""
+    """Stand up a charmed follower before portal transit.
 
-    if follower.position <= Position.SLEEPING:
-        message = "You wake and stand up."
-    else:
-        message = "You stand up."
-    follower.position = Position.STANDING
-    if hasattr(follower, "send_to_char"):
-        follower.send_to_char(message)
+    # mirroring ROM src/act_enter.c:178-180 — delegates to do_stand
+    """
+    # ENTER-006: ROM calls do_function(fch, &do_stand, "") — delegate to real do_stand.
+    # do_stand returns the message string (Python convention); ROM C uses send_to_char
+    # directly. Forward the message to the follower's message stream so observers like
+    # tests/test_movement_followers.py can verify "You wake and stand up." was emitted.
+    try:
+        from mud.commands.position import do_stand as _do_stand
+
+        result = _do_stand(follower, "")
+        if isinstance(result, str) and result and hasattr(follower, "send_to_char"):
+            for line in result.splitlines():
+                line = line.rstrip("\r")
+                if line:
+                    follower.send_to_char(line)
+    except Exception:
+        if follower.position <= Position.SLEEPING:
+            message = "You wake and stand up."
+        else:
+            message = "You stand up."
+        follower.position = Position.STANDING
+        if hasattr(follower, "send_to_char"):
+            follower.send_to_char(message)
 
 
 def move_character(char: Character, direction: str, *, _is_follow: bool = False) -> str:
@@ -439,15 +468,17 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
 
 
 def move_character_through_portal(char: Character, portal: object, *, _is_follow: bool = False) -> str:
+    """Move a character through a portal object.
+
+    # mirroring ROM src/act_enter.c:66-229 (do_enter portal branch)
+    """
     current_room = getattr(char, "room", None)
     if current_room is None:
         return "You are nowhere."
 
+    # ENTER-016: ROM is silent when fighting (act_enter.c:70-71) — no message sent
     if getattr(char, "fighting", None) is not None:
-        message = "No way!  You are still fighting!"
-        if hasattr(char, "send_to_char"):
-            char.send_to_char(message)
-        return message
+        return ""
 
     proto = getattr(portal, "prototype", None)
     values = getattr(portal, "value", None)
@@ -475,7 +506,7 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
             return "Something prevents you from leaving..."
 
     if exit_flags & EX_CLOSED and not is_trusted:
-        return "The portal is closed."
+        return "You can't seem to find a way in."
 
     if not is_trusted and not (gate_flags & int(PortalFlag.NOCURSE)):
         room_flags = int(getattr(current_room, "room_flags", 0) or 0)
@@ -498,38 +529,55 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
         or not can_see_room(char, destination)
         or (_room_is_private(destination) and not (char.is_admin or trust >= MAX_LEVEL))
     ):
-        return "It doesn't seem to go anywhere."
+        # ENTER-015: ROM uses act("$p doesn't seem to go anywhere.", ...) (act_enter.c:122)
+        no_dest_msg = act_format("$p doesn't seem to go anywhere.", recipient=char, actor=char, arg1=portal)
+        if hasattr(char, "send_to_char"):
+            char.send_to_char(no_dest_msg)
+        return no_dest_msg
 
     dest_flags = int(getattr(destination, "room_flags", 0) or 0)
     if char.is_npc and bool(getattr(char, "act", 0) & int(ActFlag.AGGRESSIVE)) and dest_flags & int(RoomFlag.ROOM_LAW):
         return "Something prevents you from leaving..."
 
-    portal_name = (
-        getattr(proto, "short_descr", "") or getattr(proto, "name", "") or getattr(portal, "short_descr", "")
-    ).strip() or "portal"
-
-    char_name = char.name or "someone"
     uses_normal_exit = bool(gate_flags & int(PortalFlag.NORMAL_EXIT))
-    if not _is_follow:
-        broadcast_room(current_room, f"{char_name} steps into {portal_name}.", exclude=char)
 
+    # ENTER-008: TO_ROOM departure uses act() for $n/$p visibility (act_enter.c:134)
+    # "$n steps into $p." — $n resolves char visibility, $p resolves portal name
+    departure_msg = act_format("$n steps into $p.", recipient=None, actor=char, arg1=portal)
+    broadcast_room(current_room, departure_msg, exclude=char)
+
+    # ENTER-009: TO_CHAR entry message sent BEFORE room move (act_enter.c:136-140)
+    if uses_normal_exit:
+        entry_msg = act_format("You enter $p.", recipient=char, actor=char, arg1=portal)
+    else:
+        entry_msg = act_format(
+            "You walk through $p and find yourself somewhere else...", recipient=char, actor=char, arg1=portal
+        )
+    if hasattr(char, "send_to_char"):
+        char.send_to_char(entry_msg)
+
+    # Move character: char_from_room → char_to_room (act_enter.c:142-143)
     current_room.remove_character(char)
     destination.add_character(char)
 
     if gate_flags & int(PortalFlag.GOWITH):
+        # GOWITH: take portal along (act_enter.c:145-149)
         contents = getattr(current_room, "contents", None)
         if isinstance(contents, list) and portal in contents:
             contents.remove(portal)
         destination.add_object(portal)
 
-    if not _is_follow:
-        arrival_message = (
-            f"{char_name} has arrived." if uses_normal_exit else f"{char_name} has arrived through {portal_name}."
-        )
-        broadcast_room(destination, arrival_message, exclude=char)
+    # ENTER-010: TO_ROOM arrival uses act() for $n/$p visibility (act_enter.c:151-154)
+    if uses_normal_exit:
+        arrival_msg = act_format("$n has arrived.", recipient=None, actor=char, arg1=portal)
+    else:
+        arrival_msg = act_format("$n has arrived through $p.", recipient=None, actor=char, arg1=portal)
+    broadcast_room(destination, arrival_msg, exclude=char)
 
+    # do_look "auto" (act_enter.c:156)
     _auto_look(char)
 
+    # Charge decrement (act_enter.c:158-164) — happens BEFORE follower cascade
     if len(values) > 0 and int(values[0]) > 0:
         values[0] = int(values[0]) - 1
         if values[0] == 0:
@@ -537,6 +585,7 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
 
     charges_remaining = int(values[0]) if len(values) > 0 else 0
 
+    # Follower cascade — guard circular follow (act_enter.c:167-198)
     if not (gate_flags & int(PortalFlag.GOWITH)) and charges_remaining != -1:
         target_flags = dest_flags
         _move_followers(
@@ -544,29 +593,67 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
             current_room,
             destination,
             target_flags,
-            lambda follower: move_character_through_portal(follower, portal, _is_follow=True),
+            lambda follower: move_character_through_portal(follower, portal, _is_follow=False),
         )
 
+    # Mob-prog triggers (act_enter.c:219-222)
     if char.is_npc:
         mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
     else:
         mobprog.mp_greet_trigger(char)
 
+    # ENTER-011: Portal fade-out (act_enter.c:200-213)
+    # Broadcast logic depends on whether traveller ended up in a different room
     if charges_remaining == -1:
-        fade_message = f"{portal_name} fades out of existence."
-        if hasattr(char, "send_to_char"):
-            char.send_to_char(fade_message)
-        for room in (current_room, destination):
-            contents = getattr(room, "contents", None)
-            if isinstance(contents, list) and portal in contents:
-                contents.remove(portal)
-                broadcast_room(room, fade_message, exclude=char if room is destination else None)
-        if hasattr(portal, "location"):
-            portal.location = None
+        _portal_fade_out(char, portal, current_room, destination)
 
-    entry_message = (
-        f"You enter {portal_name}."
-        if uses_normal_exit
-        else f"You walk through {portal_name} and find yourself somewhere else..."
-    )
-    return entry_message
+    return entry_msg
+
+
+def _portal_fade_out(char: Character, portal: object, old_room: object, destination: object) -> None:
+    """Handle portal fade-out after charge expiry.
+
+    # mirroring ROM src/act_enter.c:200-213
+    """
+    # Lazy import to avoid circular imports
+    try:
+        from mud.game_loop import _extract_obj as extract_obj
+    except ImportError:
+        extract_obj = None
+
+    fade_fmt = "$p fades out of existence."
+
+    # TO_CHAR: traveller (now in destination) always gets the message
+    to_char_msg = act_format(fade_fmt, recipient=char, actor=char, arg1=portal)
+    if hasattr(char, "send_to_char"):
+        char.send_to_char(to_char_msg)
+
+    if char.room is old_room:
+        # Destination == origin: also TO_ROOM in that room (act_enter.c:204)
+        to_room_msg = act_format(fade_fmt, recipient=None, actor=char, arg1=portal)
+        broadcast_room(old_room, to_room_msg, exclude=char)
+    else:
+        # Destination != origin: notify old_room occupants (act_enter.c:205-211)
+        old_people = list(getattr(old_room, "people", []) or [])
+        if old_people:
+            witness = old_people[0]
+            to_char_old_msg = act_format(fade_fmt, recipient=witness, actor=witness, arg1=portal)
+            if hasattr(witness, "send_to_char"):
+                witness.send_to_char(to_char_old_msg)
+            to_room_old_msg = act_format(fade_fmt, recipient=None, actor=witness, arg1=portal)
+            broadcast_room(old_room, to_room_old_msg, exclude=witness)
+
+    # extract_obj equivalent (act_enter.c:212).
+    # game_loop._extract_obj keys off `in_room`, but Object uses `location`; always
+    # do the explicit room-contents cleanup so portals fully detach regardless.
+    if extract_obj is not None:
+        try:
+            extract_obj(portal)
+        except Exception:
+            pass
+    for room in (old_room, destination):
+        contents = getattr(room, "contents", None)
+        if isinstance(contents, list) and portal in contents:
+            contents.remove(portal)
+    if hasattr(portal, "location"):
+        portal.location = None

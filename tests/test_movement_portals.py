@@ -134,6 +134,7 @@ def test_move_through_portal_blocked_while_fighting(portal_factory):
 
     out = move_character_through_portal(ch, portal)
 
-    assert out == "No way!  You are still fighting!"
+    # ROM act_enter.c:70-71 — fighting check is silent: `if (ch->fighting != NULL) return;`
+    assert out == ""
     assert ch.room.vnum == 3001
-    assert "No way!  You are still fighting!" in ch.messages
+    assert ch.messages == []

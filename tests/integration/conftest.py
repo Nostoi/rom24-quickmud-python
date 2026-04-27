@@ -11,6 +11,27 @@ import pytest
 from mud.models.character import Character
 from mud.models.room import Room
 from mud.registry import room_registry
+from mud.utils import rng_mm
+
+
+@pytest.fixture(autouse=True)
+def _seed_rng():
+    """Seed Mitchell-Moore RNG to a known state before every integration test.
+
+    DO NOT REMOVE. The Mitchell-Moore RNG (mud.utils.rng_mm) is global
+    mutable state. Without this fixture, RNG state leaks across test
+    boundaries and the suite is flaky on any test depending on a
+    probabilistic outcome — scavenger 1/64 action roll, AoE saves,
+    holy_word damage rolls, combat hit/miss, etc. Different tests fail
+    on different runs purely based on test execution order.
+
+    Added in v2.6.2 alongside the giant_strength test fix. See
+    CHANGELOG.md and AGENTS.md "Test determinism (RNG)" for context.
+
+    To override the default seed for a specific test, call
+    rng_mm.seed_mm(your_seed) inside the test body after fixture setup.
+    """
+    rng_mm.seed_mm(12345)
 
 
 @pytest.fixture

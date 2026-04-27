@@ -234,16 +234,18 @@ class TestSpellAffectStacking:
         assert char.has_spell_effect("shield")
         assert char.armor[0] == initial_ac - 40, "AC bonuses should stack (-20 -20 = -40)"
 
-    def test_stat_modifiers_stack_from_same_spell(self, movable_char_factory):
+    def test_giant_strength_refuses_to_stack(self, movable_char_factory):
         """
-        Test: Stat modifiers from same spell stack when recast.
+        Test: spell_giant_strength refuses to stack on the same target.
 
-        ROM Parity: Mirrors ROM affect_join() - stat modifiers merge
-        ROM Reference: src/handler.c affect_join() - paf->modifier += paf_old->modifier
+        ROM Parity: src/magic.c:3022-3030 spell_giant_strength() returns early
+        with "You are already as strong as you can get!" when the target is
+        already affected. It does NOT call affect_join — unlike most other
+        buff spells, giant strength explicitly anti-stacks.
 
-        Given: Character with giant strength (+2 STR)
-        When: Cast giant strength again (+2 STR)
-        Then: Total +4 STR
+        Given: Character cast giant strength (level 20 → +2 STR)
+        When: Cast giant strength again on same target
+        Then: Second cast fails; STR remains at initial+2 (not +4).
         """
         from mud.skills.handlers import giant_strength
 
@@ -253,16 +255,16 @@ class TestSpellAffectStacking:
 
         initial_str = char.get_curr_stat(0)
 
-        giant_strength(char, char)
+        assert giant_strength(char, char) is True
         assert char.has_spell_effect("giant strength")
 
         first_str = char.get_curr_stat(0)
         assert first_str == initial_str + 2, "First cast should give +2 STR"
 
-        giant_strength(char, char)
-
+        # Second cast must fail (ROM anti-stack) and STR must not change.
+        assert giant_strength(char, char) is False, "Second cast must refuse to stack"
         second_str = char.get_curr_stat(0)
-        assert second_str == initial_str + 4, "Second cast should stack to +4 STR total"
+        assert second_str == initial_str + 2, "STR must not change on refused recast"
 
 
 class TestDispelMagic:

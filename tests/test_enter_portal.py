@@ -7,7 +7,8 @@ def test_enter_closed_portal_denied(portal_factory):
     ch = create_test_character("Traveler", 3001)
     portal_factory(3001, to_vnum=3054, closed=True)
     out = process_command(ch, "enter portal")
-    assert out == "The portal is closed."
+    # ROM act_enter.c:94 — closed portal emits "You can't seem to find a way in."
+    assert out == "You can't seem to find a way in."
     assert ch.room.vnum == 3001
 
 

@@ -45,39 +45,50 @@ def do_down(char: Character, args: str = "") -> str:
 
 
 def do_enter(char: Character, args: str = "") -> str:
-    target = (args or "").strip().lower()
+    """Enter a portal object.
+
+    # mirroring ROM src/act_enter.c:66-229
+    """
+    from mud.commands.obj_manipulation import get_obj_list
+
+    target = (args or "").strip()
     if not target:
-        return "Enter what?"
+        # ENTER-002: ROM sends "Nope, can't do it." for no-arg (act_enter.c:227)
+        return "Nope, can't do it."
 
+    # ENTER-016: ROM is silent when fighting (act_enter.c:70-71)
     if getattr(char, "fighting", None) is not None:
-        return "No way!  You are still fighting!"
+        return ""
 
-    # Find a portal object in the room matching target token
-    portal = None
-    for obj in getattr(char.room, "contents", []):
-        proto = getattr(obj, "prototype", None)
-        if not proto or getattr(proto, "item_type", 0) != int(ItemType.PORTAL):
-            continue
-        name = (getattr(proto, "short_descr", None) or getattr(proto, "name", "") or "").lower()
-        if target in name or target == "portal" or target in (getattr(obj, "short_descr", "") or "").lower():
-            portal = obj
-            break
+    # ENTER-005: Use get_obj_list for visibility + numbered-prefix support
+    # (act_enter.c:82: portal = get_obj_list(ch, argument, ch->in_room->contents))
+    room_contents = list(getattr(char.room, "contents", []) or [])
+    portal = get_obj_list(char, target, room_contents)
 
-    if not portal:
-        return f"I see no {target} here."
+    # ENTER-003: ROM sends "You don't see that here." when object not found
+    if portal is None:
+        return "You don't see that here."
 
-    proto = portal.prototype
+    # Resolve values — prefer instance value list, fall back to prototype
+    proto = getattr(portal, "prototype", None)
     values = getattr(portal, "value", None)
     if not isinstance(values, list):
-        values = getattr(proto, "value", [0, 0, 0, 0, 0])
+        proto_values = getattr(proto, "value", None) if proto else None
+        values = list(proto_values) if isinstance(proto_values, list) else [0, 0, 0, 0, 0]
+        if hasattr(portal, "value"):
+            portal.value = values
 
     exit_flags = int(values[1]) if len(values) > 1 else 0
-    gate_flags = int(values[2]) if len(values) > 2 else 0
 
     is_trusted = char.is_admin or _get_trust(char) >= LEVEL_ANGEL
 
-    if exit_flags & EX_CLOSED and not is_trusted:
-        return "The portal is closed."
+    # ENTER-004: Combined gate — non-portal OR closed-without-trust → same message
+    # (act_enter.c:90-96)
+    portal_item_type = int(getattr(proto, "item_type", 0)) if proto else 0
+    if portal_item_type != int(ItemType.PORTAL) or (exit_flags & EX_CLOSED and not is_trusted):
+        return "You can't seem to find a way in."
+
+    gate_flags = int(values[2]) if len(values) > 2 else 0
 
     if not is_trusted and not (gate_flags & int(PortalFlag.NOCURSE)):
         room_flags = int(getattr(char.room, "room_flags", 0) or 0)
