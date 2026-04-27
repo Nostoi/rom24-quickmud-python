@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-010: `do_mpflee` (MOBprog `flee` script command) now routes through
+  `mud.world.movement.move_character` instead of the silent `_move_to_room`
+  helper, mirroring ROM `src/mob_cmds.c:1283`
+  (`move_char(ch, door, FALSE)`). Leave/arrive broadcasts, mp_exit/entry
+  triggers, and the rest of the canonical movement pipeline now fire on
+  script-driven flees. Integration coverage at
+  `tests/integration/test_mob_cmds_flee.py`.
 - MOBCMD-005: `do_mpoload` (MOBprog `oload` script command) now accepts the
   optional `level` argument from `mob oload <vnum> [level] [R|W]`, mirroring
   ROM `src/mob_cmds.c:538-614`. When omitted, level defaults to

@@ -1188,15 +1188,21 @@ def do_mpremove(ch: Character, argument: str) -> None:
 
 
 def do_mpflee(ch: Character, argument: str) -> None:
+    # mirroring ROM src/mob_cmds.c:1260-1287
     if getattr(ch, "fighting", None) is not None:
         return
-    room = getattr(ch, "room", None)
-    if room is None:
+    was_in = getattr(ch, "room", None)
+    if was_in is None:
         return
     from mud.models.constants import EX_CLOSED
+    from mud.world.movement import move_character
 
-    exits = list(getattr(room, "exits", []) or [])
-    for exit_obj in exits:
+    _DIR_NAMES = ("north", "east", "south", "west", "up", "down")
+
+    exits = list(getattr(was_in, "exits", []) or [])
+    for door, exit_obj in enumerate(exits):
+        if door >= len(_DIR_NAMES):
+            break
         if exit_obj is None:
             continue
         if getattr(exit_obj, "exit_info", 0) & EX_CLOSED:
@@ -1204,8 +1210,10 @@ def do_mpflee(ch: Character, argument: str) -> None:
         target_room = getattr(exit_obj, "to_room", None)
         if target_room is None:
             continue
-        _move_to_room(ch, target_room)
-        return
+        # mirroring ROM src/mob_cmds.c:1283 — `move_char(ch, door, FALSE)`
+        move_character(ch, _DIR_NAMES[door])
+        if getattr(ch, "room", None) is not was_in:
+            return
 
 
 _COMMANDS: list[MobCommand] = [
