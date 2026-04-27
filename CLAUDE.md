@@ -33,9 +33,46 @@ Do not invoke `rom-gap-closer` without a documented gap ID. Do not invoke `rom-p
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **rom24-quickmud-python** (33689 symbols, 56215 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **rom24-quickmud-python** (33687 symbols, 56227 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+
+## ⚠️ Known GitNexus Indexing Gap (load-bearing — read before trusting `gitnexus_impact`)
+
+GitNexus's scope extractor has a **32 KB-per-file limit** (upstream bug — failures show as `Invalid argument` during `npx gitnexus analyze`). Any QuickMUD source file ≥ ~33 KB is either **missing from the graph entirely** or registered as a **stub node with zero relationships**, which means `gitnexus_impact` will silently return "0 callers, LOW risk" on real symbols that have many callers.
+
+**Affected files (do not trust `gitnexus_impact` results for symbols defined here):**
+
+```
+mud/skills/handlers.py            mud/handler.py
+mud/combat/engine.py              mud/persistence.py
+mud/game_loop.py                  mud/mobprog.py
+mud/mob_cmds.py                   mud/spec_funs.py
+mud/commands/build.py             mud/commands/dispatcher.py
+mud/commands/inventory.py         mud/commands/shop.py
+mud/models/character.py           mud/net/connection.py
+mud/spawning/reset_handler.py     mud/account/account_service.py
+mud/imc/__init__.py
+tests/test_account_auth.py        tests/test_combat_death.py
+tests/test_db_resets_rom_parity.py tests/test_imc.py
+tests/test_shops.py               tests/test_skill_combat_rom_parity.py
+tests/test_spawning.py            tests/test_spec_funs.py
+tests/integration/test_consumables.py
+tests/integration/test_equipment_system.py
+```
+
+**Verified failure modes** (April 2026):
+- `mud/commands/inventory.py::do_get` — node exists, 0 incoming + 0 outgoing edges, `impact()` reports LOW risk / 0 callers.
+- `mud/handler.py::extract_obj` and `mud/combat/engine.py::one_hit` — not in the graph at all.
+
+**When your target is in one of those files, do this instead:**
+
+1. Use `gitnexus_impact` anyway — sometimes the symbol is partially indexed and the result is still informative. But if it returns 0 callers / LOW risk on a clearly hot symbol, **do not trust it**.
+2. Fall back to `grep -rn "<symbol_name>" mud/ tests/` for callers.
+3. Run the relevant integration suite (`pytest tests/integration/test_<area>.py -v`) to catch regressions the static graph would have flagged.
+4. Still report the (untrusted) `gitnexus_impact` result to the user with the caveat — do not pretend the symbol is safe.
+
+This warning sits **above** the "MUST run impact analysis" rule below, not against it. Always run `gitnexus_impact`; just don't believe a clean result when the file is on the list above. Tracked upstream in GitNexus (32 KB scope-extractor buffer).
 
 ## Always Do
 
