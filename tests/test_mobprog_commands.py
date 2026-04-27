@@ -667,7 +667,9 @@ def test_mppurge_all_cleans_room(monkeypatch):
     junk_inv = Object(instance_id=None, prototype=ObjIndex(vnum=7201, short_descr="a bronze coin", name="coin"))
     controller.inventory = [junk_inv]
 
-    mob_cmds.mob_interpret(controller, "purge all")
+    # ROM has no "all" keyword (MOBCMD-007 / src/mob_cmds.c:631-665) — the
+    # no-arg form is what triggers the purge-everything branch.
+    mob_cmds.mob_interpret(controller, "purge")
 
     assert controller in room.people
     assert hero in room.people  # players are preserved

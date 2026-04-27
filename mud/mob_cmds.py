@@ -798,12 +798,11 @@ def do_mppurge(ch: Character, argument: str) -> None:
     if room is None:
         return
 
-    # ROM `mppurge` (no arg): purge every NPC in the room except `ch`
-    # (skipping NPCs flagged ACT_NOPURGE) and every object in the room
-    # except those flagged ITEM_NOPURGE.  PCs are never purged.
-    # We accept the literal "all" as a synonym for the no-arg form
-    # because Python area triggers commonly emit `purge all`.
-    if not token or token.lower() == "all":
+    # mirroring ROM src/mob_cmds.c:631-652 — empty arg purges every NPC in
+    # the room except `ch` (skipping ACT_NOPURGE) and every non-ITEM_NOPURGE
+    # object. ROM has no literal "all" keyword (MOBCMD-007); a token of "all"
+    # falls through to the name-resolution branch like any other word.
+    if not token:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is ch:
                 continue
@@ -820,8 +819,9 @@ def do_mppurge(ch: Character, argument: str) -> None:
 
     victim = _find_char_in_room(ch, token)
     if victim is not None:
-        # ROM safety: never purge a PC and never purge the running mob.
+        # mirroring ROM src/mob_cmds.c:669-674 — never purge a PC.
         if not getattr(victim, "is_npc", False):
+            _bug("Mppurge - Purging a PC", ch)
             return
         if victim is ch:
             return
@@ -846,6 +846,8 @@ def do_mppurge(ch: Character, argument: str) -> None:
                 target_obj = equipped
                 break
     if target_obj is None:
+        # mirroring ROM src/mob_cmds.c:663-664 — no NPC nor object matched.
+        _bug("Mppurge - Bad argument", ch)
         return
     _purge_object(ch, target_obj)
 

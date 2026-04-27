@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-007: `do_mppurge` no longer accepts the literal `"all"` token
+  as a synonym for the no-arg purge-everything form. ROM
+  `src/mob_cmds.c:631-665` treats an empty argument as purge-all and has
+  no `"all"` keyword — the token falls through to the name-resolution
+  branch like any other word. Also added the missing
+  `Mppurge - Bad argument` (ROM line 663) and `Mppurge - Purging a PC`
+  (ROM line 671) bug logs via the new `_bug()` helper. The previously
+  divergent unit test (`test_mppurge_all_cleans_room`) now uses the
+  no-arg form. Integration coverage at
+  `tests/integration/test_mob_cmds_purge.py`.
 - MOBCMD-013: `do_mpdamage` now emits a ROM-style `bug()` warning via
   Python's `logging` module when the min or max argument is non-numeric,
   mirroring ROM `src/mob_cmds.c:1105-1107` + `1113-1115`. Previously the
