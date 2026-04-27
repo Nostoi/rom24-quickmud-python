@@ -1009,12 +1009,15 @@ def _cmd_eval(
                 return False
             lval = _object_vnum(target_obj) or 0
         else:
-            if target_char is None or not getattr(target_char, "is_npc", False):
-                return False
-            vnum = _character_proto_vnum(target_char)
-            if vnum is None:
-                return False
-            lval = vnum
+            # mirroring ROM src/mob_prog.c:631-642 — lval defaults to 0 and is
+            # only overwritten when target_char is a non-NULL NPC. PCs keep
+            # lval=0 and still flow into num_eval, so `if vnum $n == 0` is True
+            # against a PC.
+            lval = 0
+            if target_char is not None and getattr(target_char, "is_npc", False):
+                vnum = _character_proto_vnum(target_char)
+                if vnum is not None:
+                    lval = vnum
         return _compare_numbers(int(lval), oper, rval)
 
     if check == "hpcnt":

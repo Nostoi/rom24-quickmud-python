@@ -87,3 +87,42 @@ def test_objexists_returns_false_when_object_not_in_world():
 
     assert mobprog._cmd_eval("objexists", "phoenix", mob, None, None, None, None) is False
     assert mobprog._cmd_eval("objexists", "9999", mob, None, None, None, None) is False
+
+
+def test_vnum_compare_against_pc_uses_zero_lval():
+    """mirrors ROM src/mob_prog.c:631-648 — for PCs, lval stays 0; comparison still runs."""
+    here = Room(vnum=4000, name="Hall")
+    room_registry[4000] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    pc = Character(name="hero", is_npc=False)
+    here.add_character(pc)
+    character_registry.append(pc)
+
+    # PC → lval = 0 → "$n vnum == 0" is True, "!= 0" is False, "> 0" is False.
+    assert mobprog._cmd_eval("vnum", "$n == 0", mob, pc, None, None, None) is True
+    assert mobprog._cmd_eval("vnum", "$n != 0", mob, pc, None, None, None) is False
+    assert mobprog._cmd_eval("vnum", "$n > 0", mob, pc, None, None, None) is False
+
+
+def test_vnum_compare_against_npc_uses_proto_vnum():
+    """mirrors ROM src/mob_prog.c:640-642 — NPC vnum comes from pIndexData."""
+    from mud.models.mob import MobIndex
+
+    here = Room(vnum=4001, name="Hall")
+    room_registry[4001] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    other_npc = Character(name="goblin", is_npc=True)
+    other_npc.prototype = MobIndex(vnum=3500, short_descr="a goblin")
+    here.add_character(other_npc)
+    character_registry.append(other_npc)
+
+    assert mobprog._cmd_eval("vnum", "$n == 3500", mob, other_npc, None, None, None) is True
+    assert mobprog._cmd_eval("vnum", "$n == 0", mob, other_npc, None, None, None) is False

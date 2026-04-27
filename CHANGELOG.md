@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-003: `_cmd_eval` `vnum` check now compares against `lval=0` when the
+  target is a PC instead of returning False. Mirrors ROM `src/mob_prog.c:631-642`
+  — `lval` initialises to 0 and is only overwritten for NPCs, so
+  `if vnum $n == 0` is True against PCs and `if vnum $n != 0` is False.
+  Integration coverage at `tests/integration/test_mobprog_predicates.py`.
 - MOBPROG-002: `mp_greet_trigger` no longer falls through to GRALL after a
   failed GREET percent roll. Mirrors ROM `src/mob_prog.c:1340-1345` where the
   GREET / GRALL branches are exclusive — a mob that is awake, can see the
