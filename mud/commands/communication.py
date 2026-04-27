@@ -524,18 +524,22 @@ def do_emote(char: Character, args: str) -> str:
     """
     Perform a custom emote action.
 
-    ROM Reference: src/act_comm.c lines 1067-1090 (do_emote)
-
-    Usage: emote <action>
-
-    Displays "<your name> <action>" to everyone in the room.
-    Example: "emote smiles happily" displays "Bob smiles happily"
+    ROM Reference: src/act_comm.c do_emote (lines 1067-1097)
     """
-    args = args.strip()
+    # ROM C lines 1069-1073: NPCs bypass NOEMOTE; PCs cannot emote when flagged.
+    if not getattr(char, "is_npc", False) and _has_comm_flag(char, CommFlag.NOEMOTE):
+        return "You can't show your emotions."
+
+    # NB: ROM does NOT strip leading whitespace; argument arrives via interpret().
     if not args:
         return "Emote what?"
 
-    # Broadcast to room
+    # ROM C lines 1082-1086: ',{' bug guard - first char must be alpha and not space.
+    first = args[0]
+    if not first.isalpha() or first.isspace():
+        return "Moron!"
+
+    # Broadcast to room ($n $T = "<actor> <argument>")
     message = f"{char.name} {args}"
     if char.room:
         broadcast_room(char.room, message, exclude=char)
@@ -545,26 +549,51 @@ def do_emote(char: Character, args: str) -> str:
 
 def do_pose(char: Character, args: str) -> str:
     """
-    Perform a custom emote action (alias for emote).
+    Random class+level pose from the ROM pose_table.
 
-    ROM Reference: pose is typically an alias to emote in ROM
-
-    Usage: pose <action>
-
-    Same as 'emote'. Displays "<your name> <action>" to everyone in the room.
+    ROM Reference: src/act_comm.c do_pose (lines 1411-1428) and
+    ``pose_table`` in src/act_comm.c lines 1106-1409.
     """
-    return do_emote(char, args)
+    from mud.utils import rng_mm
+    from mud.utils.poses import MAX_POSE_LEVEL, POSE_TABLE
+
+    # ROM C line 1416-1417: NPCs cannot pose.
+    if getattr(char, "is_npc", False):
+        return ""
+
+    # ROM C line 1419-1420: level = UMIN(ch->level, max_pose_index)
+    level = min(int(getattr(char, "level", 0) or 0), MAX_POSE_LEVEL)
+    if level < 0:
+        level = 0
+
+    pose = rng_mm.number_range(0, level)
+    cls = int(getattr(char, "ch_class", 0) or 0)
+    if cls < 0 or cls > 3:
+        cls = 0
+
+    to_char_fmt = POSE_TABLE[pose][2 * cls + 0]
+    to_room_fmt = POSE_TABLE[pose][2 * cls + 1]
+
+    from mud.utils.act import act_format
+
+    self_msg = act_format(to_char_fmt, recipient=char, actor=char)
+    room_msg = act_format(to_room_fmt, recipient=None, actor=char)
+
+    if char.room:
+        broadcast_room(char.room, room_msg, exclude=char)
+
+    return self_msg
 
 
 def do_yell(char: Character, args: str) -> str:
     """
-    Yell to adjacent rooms.
+    Yell to entire area (area-wide broadcast).
 
     ROM Reference: src/act_comm.c lines 1033-1065 (do_yell)
 
     Usage: yell <message>
 
-    Shouts a message that can be heard in your room and adjacent rooms.
+    Shouts a message that can be heard by everyone in your current area.
     More local than 'shout' which is heard game-wide.
     """
     if _has_comm_flag(char, CommFlag.NOSHOUT):
@@ -574,16 +603,25 @@ def do_yell(char: Character, args: str) -> str:
     if not args:
         return "Yell what?"
 
-    # Yell to current room and adjacent rooms
-    message = f"{char.name} yells '{args}'"
+    # ROM C lines 1056-1061: Area-wide broadcast to all characters in same area
+    # Check COMM_QUIET filtering and area matching
+    if char.room and char.room.area:
+        current_area = char.room.area
 
-    # Broadcast to current room
-    if char.room:
-        broadcast_room(char.room, message, exclude=char)
+        # Broadcast to all characters in the same area
+        for victim in list(character_registry):
+            if victim is char:
+                continue
+            if not hasattr(victim, "room") or not victim.room:
+                continue
+            if victim.room.area != current_area:
+                continue
+            if _has_comm_flag(victim, CommFlag.QUIET):
+                continue
 
-        # Broadcast to adjacent rooms
-        # In full implementation, would iterate through exits and broadcast there too
-        # For now, just local room (can be enhanced later)
+            # Send yell message to victim (ROM C: act("$n yells '$t'", ch, argument, d->character, TO_VICT))
+            victim_message = f"{char.name} yells '{args}'"
+            send_to_char(victim_message, victim)
 
     return f"You yell '{args}'"
 

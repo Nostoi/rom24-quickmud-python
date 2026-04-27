@@ -90,13 +90,21 @@ class TestEmoteCommand:
 
         assert "emote what" in result.lower()
 
-    def test_pose_is_alias_for_emote(self, alice):
-        """Test pose command works identically to emote."""
-        emote_result = do_emote(alice, "waves")
-        pose_result = do_pose(alice, "waves")
+    def test_pose_returns_class_level_pose_message(self, alice):
+        """Test pose command returns a ROM pose_table entry (no longer an emote alias).
 
-        assert emote_result == pose_result
-        assert "Alice waves" in pose_result
+        ROM Reference: src/act_comm.c do_pose (lines 1411-1428)
+        """
+        from mud.utils.poses import POSE_TABLE
+
+        alice.is_npc = False
+        alice.level = 1
+        alice.ch_class = 0  # mage
+        result = do_pose(alice, "")
+
+        # Result must be one of the level-0 or level-1 mage TO_CHAR strings.
+        valid = {POSE_TABLE[0][0], POSE_TABLE[1][0]}
+        assert result in valid, f"Pose result {result!r} not in {valid!r}"
 
 
 class TestSayCommand:
