@@ -906,11 +906,23 @@ def do_mptransfer(ch: Character, argument: str) -> None:
     if location_token and _mptransfer_room_is_private(destination):
         return
     if target_name.lower() == "all":
+        # mirroring ROM src/mob_cmds.c:791-806 — recursively call
+        # do_mptransfer per PC so each target re-runs the full
+        # validation pipeline (private-room check, location lookup, etc.).
+        # Look up the dispatcher via the module so test seams that monkeypatch
+        # `mob_cmds.do_mptransfer` see the recursive calls.
+        import mud.mob_cmds as _self
+
         for occupant in list(_iter_room_people(getattr(ch, "room", None))):
             if getattr(occupant, "is_npc", True):
                 continue
-            _transfer_character(ch, occupant, destination)
-            _mptransfer_auto_look(occupant)
+            occupant_name = getattr(occupant, "name", "") or ""
+            if not occupant_name:
+                continue
+            recurse_arg = (
+                f"{occupant_name} {location_token}" if location_token else occupant_name
+            )
+            _self.do_mptransfer(ch, recurse_arg)
         return
     victim = _find_char_world(target_name)
     if victim is None:

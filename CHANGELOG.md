@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-017: `do_mptransfer` now mirrors ROM's recursive structure — a
+  literal `mob transfer all <loc>` recursively dispatches
+  `do_mptransfer(ch, "<pcname> <loc>")` once per PC in the room
+  (`src/mob_cmds.c:791-806`) so each victim re-runs the full validation
+  pipeline (private-room check, location resolution). Previously the
+  Python implementation inlined the iteration with a direct
+  `_transfer_character` call. NPCs are skipped exactly as in ROM line
+  799. Integration coverage at `tests/integration/test_mob_cmds_transfer.py`.
+- MOBCMD-018: verified `do_mpflee` already checks `ch.fighting` as the
+  first guard, mirroring ROM `src/mob_cmds.c:1266-1267`. The audit row
+  was stale and is now closed without a code change.
 - MOBCMD-007: `do_mppurge` no longer accepts the literal `"all"` token
   as a synonym for the no-arg purge-everything form. ROM
   `src/mob_cmds.c:631-665` treats an empty argument as purge-all and has

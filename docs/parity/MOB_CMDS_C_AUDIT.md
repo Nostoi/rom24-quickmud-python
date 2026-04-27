@@ -101,8 +101,8 @@ Stable IDs are immutable. Severity legend: **CRITICAL** = wrong observable behav
 | MOBCMD-014 | CRITICAL | `src/mob_cmds.c:1132-1145` | `mud/mob_cmds.py:1103-1107` | `do_mpdamage` ROM calls `damage(victim, victim, ...)`; Python directly decrements `victim.hit` — skips death messages, position updates, fight triggers, and corpse handling. | ✅ FIXED (2026-04-27) — `do_mpdamage` now routes through `apply_damage(victim, victim, amount, dam_type=None, dt=None, show=False)`, exercising `update_pos` + death pipeline. Test: `tests/integration/test_mob_cmds_damage.py::TestMpDamageCallsDamagePipeline`. |
 | MOBCMD-015 | CRITICAL | `src/mob_cmds.c:1217-1250` | `mud/mob_cmds.py:413-428` | `do_mpcall` ROM accepts 4 args (`vnum, victim_char, obj1, obj2`); Python accepts 1-2 args (`vnum, victim_char`) — script `mob call` cannot pass object context. | ✅ FIXED (2026-04-27) — `do_mpcall` now parses obj1/obj2 tokens and forwards both to `mobprog.call_prog` (which already accepted `arg1`/`arg2`). Test: `tests/integration/test_mob_cmds_call.py::TestMpCallForwardsObjectArgs`. |
 | MOBCMD-016 | IMPORTANT | `src/mob_cmds.c:1243-1249` | `mud/mob_cmds.py:413-428` | `do_mpcall` ROM calls `get_obj_here()` twice to load obj1 and obj2; Python does not load objects at all. | ✅ FIXED (2026-04-27) — closed alongside MOBCMD-015. obj1/obj2 are now resolved via `_find_obj_here` (the `get_obj_here` analog), defaulting to `None` for missing or unresolved tokens per ROM `src/mob_cmds.c:1239-1249`. |
-| MOBCMD-017 | MINOR | `src/mob_cmds.c:791-805` | `mud/mob_cmds.py:825-837` | `do_mptransfer` ROM recursively calls itself for `"all"`; Python iterates with loop. Behavior equivalent; refactor for ROM faithfulness. | 🔄 OPEN |
-| MOBCMD-018 | MINOR | `src/mob_cmds.c:1266-1267` | `mud/mob_cmds.py:1161-1163` | `do_mpflee` ROM checks `ch->fighting` at function start; Python checks same but in different control-flow position. Same observable behavior — flag for cleanup. | 🔄 OPEN |
+| MOBCMD-017 | MINOR | `src/mob_cmds.c:791-805` | `mud/mob_cmds.py:825-837` | `do_mptransfer` ROM recursively calls itself for `"all"`; Python iterates with loop. Behavior equivalent; refactor for ROM faithfulness. | ✅ FIXED (2026-04-27) — `do_mptransfer` now recursively calls itself once per PC via the module attribute, mirroring ROM `src/mob_cmds.c:791-806`. Test: `tests/integration/test_mob_cmds_transfer.py::TestMpTransferAllRecursesThroughDispatch`. |
+| MOBCMD-018 | MINOR | `src/mob_cmds.c:1266-1267` | `mud/mob_cmds.py:1161-1163` | `do_mpflee` ROM checks `ch->fighting` at function start; Python checks same but in different control-flow position. Same observable behavior — flag for cleanup. | ✅ FIXED (2026-04-27) — verified during the MOBCMD-017 sweep: `do_mpflee` already checks `ch.fighting` as the first guard at `mud/mob_cmds.py:1290`, mirroring ROM `src/mob_cmds.c:1266-1267`. Audit row was stale; no code change required. |
 
 **Severity totals**: 6 CRITICAL, 9 IMPORTANT, 3 MINOR.
 
@@ -131,19 +131,36 @@ integration test in `tests/integration/test_mobprog_*.py`, one
 
 ---
 
-## Phase 5: Closure (pending)
+## Phase 5: Closure (complete — 2026-04-27)
 
-When all CRITICAL + IMPORTANT gaps are FIXED:
+All 18 gaps closed (6 CRITICAL + 9 IMPORTANT + 3 MINOR). Per-gap closure
+work spans commits `3365720` (MOBCMD-014) → master HEAD; integration
+coverage lives in:
 
-1. Flip the tracker row `mob_cmds.c` from ⚠️ Partial / 70% → ✅ AUDITED / ≥95%.
-2. Update CHANGELOG `[Unreleased]` with `Fixed` lines per gap.
-3. Run `/rom-session-handoff` to write `docs/sessions/SESSION_SUMMARY_<date>_MOB_CMDS_C_AUDIT.md`.
+- `tests/integration/test_mob_cmds_assist.py`
+- `tests/integration/test_mob_cmds_call.py`
+- `tests/integration/test_mob_cmds_cast.py`
+- `tests/integration/test_mob_cmds_damage.py`
+- `tests/integration/test_mob_cmds_flee.py`
+- `tests/integration/test_mob_cmds_junk.py`
+- `tests/integration/test_mob_cmds_kill.py`
+- `tests/integration/test_mob_cmds_oload.py`
+- `tests/integration/test_mob_cmds_purge.py`
+- `tests/integration/test_mob_cmds_transfer.py`
 
-MINOR-only gaps may be deferred — note in this doc which were skipped.
+Closing checklist:
+
+1. ✅ All 18 gap rows flipped to FIXED.
+2. ☐ Flip tracker row `mob_cmds.c` in `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`
+   from ⚠️ Partial / 70% → ✅ AUDITED / 100%.
+3. ☐ Bump `pyproject.toml` patch version 2.6.3 → 2.6.4.
+4. ☐ Run `/rom-session-handoff` to write
+   `docs/sessions/SESSION_SUMMARY_2026-04-27_MOB_CMDS_C_AUDIT_COMPLETE.md`
+   and refresh `SESSION_STATUS.md`.
 
 ---
 
-**Document Status**: 🔄 Active
+**Document Status**: ✅ Complete
 **Maintained By**: QuickMUD ROM Parity Team
 **Related Documents**:
 - `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`
