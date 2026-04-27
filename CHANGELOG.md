@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.1] - 2026-04-27
+
+### Added
+
+- **act_enter.c parity (100% ROM parity for portal/enter mechanics):**
+  Close all 15 ENTER-001..016 gaps documented in
+  `docs/parity/ACT_ENTER_C_AUDIT.md`. 25 new integration tests in
+  `tests/integration/test_act_enter_gaps.py`.
+
+### Fixed
+
+- **ENTER-009 (CRITICAL):** `do_enter` TO_CHAR message ("You enter $p." /
+  "...somewhere else...") was being returned as a Python string and
+  silently dropped — now delivered to the player.
+- **ENTER-005:** Portal lookup uses `get_obj_list` (visibility,
+  numbered syntax `2.portal`, keyword-list semantics) instead of fuzzy
+  substring matching.
+- **ENTER-004:** Non-portal objects and closed portals both produce
+  `"You can't seem to find a way in."` (was diverging).
+- **ENTER-008/010:** Departure/arrival TO_ROOM messages go through
+  `act_format` + `broadcast_room` for correct `$n` invisibility
+  resolution.
+- **ENTER-011:** Portal fade-out only broadcasts in the old room when
+  caller is in the old room; calls `extract_obj` on charge expiry.
+- **ENTER-013:** `_get_random_room` capped at 100k iterations
+  (was potentially returning None; ROM loops indefinitely).
+- **ENTER-006/007/012:** Follower cascade — charmed followers stand
+  before following, follower-name interpolation via `act_format`.
+- **ENTER-002/003/014/015/016:** Cosmetic message wording matched to
+  ROM and fighting-character silent-skip path.
+
 ## [2.6.0] - 2026-04-27
 
 ### Added
