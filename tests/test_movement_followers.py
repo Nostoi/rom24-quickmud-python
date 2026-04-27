@@ -73,7 +73,8 @@ def test_aggressive_follower_blocked_in_law_room() -> None:
 
     assert follower.room is start
     assert follower.messages[-1] == "You aren't allowed in the city."
-    assert leader.messages[-1] == "You can't bring that follower into the city."
+    # ROM act_move.c:224 — "You can't bring $N into the city." with $N = follower's name
+    assert leader.messages[-1] == "You can't bring Berserker into the city."
 
 
 def test_player_receives_auto_look_after_move() -> None:
@@ -130,3 +131,20 @@ def test_charmed_follower_stays_with_master() -> None:
     assert outcome == "What?  And leave your beloved master?"
     assert follower.room is start
     assert follower.affected_by & int(AffectFlag.CHARM)
+
+
+def test_arrival_message_uses_rom_has_arrived_text() -> None:
+    """ROM act_move.c:202 — act("$n has arrived.", ch, NULL, NULL, TO_ROOM)."""
+    start, target = _build_rooms()
+
+    mover = Character(name="Wanderer", is_npc=False, move=20)
+    observer = Character(name="Observer", is_npc=False)
+    start.add_character(mover)
+    target.add_character(observer)
+
+    move_character(mover, "north")
+
+    assert mover.room is target
+    assert "Wanderer has arrived." in observer.messages
+    # Negative assertion: the prior incorrect "arrives." form must not be emitted.
+    assert "Wanderer arrives." not in observer.messages
