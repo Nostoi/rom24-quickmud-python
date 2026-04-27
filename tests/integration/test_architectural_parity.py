@@ -10,7 +10,7 @@ from mud.loaders.help_loader import load_help_file
 from mud.loaders.reset_loader import validate_resets
 from mud.models.area import Area
 from mud.models.character import Character
-from mud.models.constants import OHELPS_FILE, Direction, ItemType
+from mud.models.constants import OHELPS_FILE, Direction, ItemType, WearFlag
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Exit, Room
@@ -81,7 +81,12 @@ class TestEncumbranceIntegration:
         room_registry[start.vnum] = start
         room_registry[dest.vnum] = dest
 
-        heavy_proto = ObjIndex(vnum=9103, short_descr="a heavy stone", weight=5)
+        heavy_proto = ObjIndex(
+            vnum=9103,
+            short_descr="a heavy stone",
+            weight=5,
+            wear_flags=int(WearFlag.TAKE),
+        )
         obj_registry[heavy_proto.vnum] = heavy_proto
         heavy_obj = Object(instance_id=None, prototype=heavy_proto)
         start.add_object(heavy_obj)

@@ -1,6 +1,6 @@
 from mud.commands.inventory import do_get
 from mud.models.character import Character
-from mud.models.constants import ActFlag, Direction, ItemType, LEVEL_IMMORTAL
+from mud.models.constants import ActFlag, Direction, ItemType, LEVEL_IMMORTAL, WearFlag
 from mud.models.room import Exit, Room
 from mud.world.movement import can_carry_n, can_carry_w, move_character
 
@@ -165,7 +165,7 @@ def test_do_get_blocked_by_weight_limit(object_factory):
 
     ch.carry_weight = can_carry_w(ch)
 
-    heavy_obj = object_factory({"vnum": 100, "short_descr": "a heavy stone", "weight": 5})
+    heavy_obj = object_factory({"vnum": 100, "short_descr": "a heavy stone", "weight": 5, "wear_flags": int(WearFlag.TAKE)})
     room.add_object(heavy_obj)
 
     result = do_get(ch, "stone")
@@ -183,7 +183,7 @@ def test_do_get_blocked_by_item_count_limit(object_factory):
 
     ch.carry_number = can_carry_n(ch)
 
-    light_obj = object_factory({"vnum": 101, "short_descr": "a feather", "weight": 1})
+    light_obj = object_factory({"vnum": 101, "short_descr": "a feather", "weight": 1, "wear_flags": int(WearFlag.TAKE)})
     room.add_object(light_obj)
 
     result = do_get(ch, "feather")
@@ -202,12 +202,13 @@ def test_do_get_succeeds_when_under_limits(object_factory):
     ch.carry_number = 0
     ch.carry_weight = 0
 
-    obj = object_factory({"vnum": 102, "short_descr": "a small gem", "weight": 1})
+    obj = object_factory({"vnum": 102, "short_descr": "a small gem", "weight": 1, "wear_flags": int(WearFlag.TAKE)})
     room.add_object(obj)
 
     result = do_get(ch, "gem")
 
-    assert "You pick up" in result
+    # ROM C act("You get $p.", ...) — see src/act_obj.c:get_obj
+    assert "You get" in result
     assert obj not in room.contents
     assert obj in ch.inventory
     assert ch.carry_number == 1

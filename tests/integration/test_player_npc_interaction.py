@@ -54,10 +54,9 @@ class TestPlayerMeetsNPC:
         # Create a test item in player inventory using the prototype
         bread = Object(instance_id=1, prototype=proto)
         
-        # ROM uses "carrying" attribute for inventory
-        if not hasattr(test_player, 'carrying'):
-            test_player.carrying = []
-        test_player.carrying.append(bread)
+        if not hasattr(test_player, "inventory"):
+            test_player.inventory = []
+        test_player.inventory.append(bread)
         bread.carried_by = test_player
         
         result = process_command(test_player, "give bread test")

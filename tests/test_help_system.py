@@ -133,7 +133,9 @@ def test_help_missing_topic_logs_request(monkeypatch, tmp_path):
     assert log_path.exists()
     content = log_path.read_text(encoding="utf-8")
     assert "[ 3001] Researcher: planar theory" in content
-    assert result == "No help on that word.\r\n"
+    # do_help may append a "Try: <suggestion>" line for similar topics; both
+    # forms count as a missing-help response for logging purposes.
+    assert result.startswith("No help on that word.\r\n")
 
 
 def test_help_overlong_request_rebukes_and_skips_logging(monkeypatch, tmp_path, caplog):

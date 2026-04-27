@@ -892,7 +892,11 @@ def test_d_reset_door_states():
 
 
 def test_d_reset_reverse_exit_sync():
-    """Test D reset synchronizes reverse exit"""
+    """ROM C `reset_room` D-branch is a no-op (`src/db.c:1970-1971`); only
+    `load_resets` applies the lock state, and that only touches the forward
+    exit (`src/db.c:1077-1086`). The reverse exit must NOT be mutated by
+    QuickMUD either — see test_door_reset_preserves_reverse_rs_flags and
+    test_door_reset_does_not_promote_one_way_exit in test_spawning.py."""
     area = Area(name="Test Area", min_vnum=9000, max_vnum=9010, nplayer=0)
     area_registry[9000] = area
 
@@ -927,9 +931,10 @@ def test_d_reset_reverse_exit_sync():
     area.resets = [ResetJson(command="D", arg1=9000, arg2=0, arg3=2, arg4=0)]  # Lock door
     apply_resets(area)
 
-    # Both exits should be locked
+    # Forward exit becomes locked; reverse exit retains its original state.
     assert exit1.exit_info & EX_LOCKED
-    assert exit2.exit_info & EX_LOCKED
+    assert not (exit2.exit_info & EX_LOCKED)
+    assert exit2.exit_info == (EX_ISDOOR | EX_CLOSED)
 
 
 # =============================================================================

@@ -74,6 +74,9 @@ class TestScoreCommand:
 
     def test_score_shows_hitroll_damroll(self):
         player = create_test_character("Fighter", 3001)
+        # ROM C `do_score` only displays hitroll/damroll at level 15+
+        # (`src/act_info.c:1677-1682`). Set level high enough to trigger.
+        player.level = 15
         player.hitroll = 15
         player.damroll = 12
 

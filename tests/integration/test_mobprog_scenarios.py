@@ -142,9 +142,9 @@ endif
             short_descr="a golden widget",
         )
         quest_item = Object(instance_id=None, prototype=quest_item_idx)
-        if not hasattr(test_player, "carrying"):
-            test_player.carrying = []
-        test_player.carrying.append(quest_item)
+        if not hasattr(test_player, "inventory"):
+            test_player.inventory = []
+        test_player.inventory.append(quest_item)
         quest_item.carried_by = test_player
 
         # Mock command processing

@@ -40,6 +40,8 @@ def test_area_list_requires_sentinel(tmp_path):
     area_registry.clear()
     area_list = tmp_path / "area.lst"
     area_list.write_text("midgaard.are\n", encoding="latin-1")
+    # Sentinel enforcement is part of the legacy .are loader path; the
+    # default JSON loader scans `data/areas/*.json` and ignores `area.lst`.
     with pytest.raises(ValueError):
-        load_all_areas(str(area_list))
+        load_all_areas(str(area_list), use_json=False)
     area_registry.clear()

@@ -695,30 +695,66 @@ def _purge_object(ch: Character, obj: Object) -> None:
                 equipment.pop(slot, None)
 
 
+def _has_act_nopurge(char: Character) -> bool:
+    """Return True if the NPC has the ROM ACT_NOPURGE flag set."""
+    from mud.models.constants import ActFlag
+
+    flags = getattr(char, "act", 0) or 0
+    try:
+        return bool(int(flags) & int(ActFlag.NOPURGE))
+    except (TypeError, ValueError):
+        return False
+
+
+def _has_item_nopurge(obj: Object) -> bool:
+    """Return True if the object has the ROM ITEM_NOPURGE extra flag set."""
+    from mud.models.constants import ITEM_NOPURGE
+
+    flags = getattr(obj, "extra_flags", 0) or 0
+    try:
+        return bool(int(flags) & int(ITEM_NOPURGE))
+    except (TypeError, ValueError):
+        return False
+
+
 def do_mppurge(ch: Character, argument: str) -> None:
     token = argument.strip()
     room = getattr(ch, "room", None)
     if room is None:
         return
 
+    # ROM `mppurge` (no arg): purge every NPC in the room except `ch`
+    # (skipping NPCs flagged ACT_NOPURGE) and every object in the room
+    # except those flagged ITEM_NOPURGE.  PCs are never purged.
+    # We accept the literal "all" as a synonym for the no-arg form
+    # because Python area triggers commonly emit `purge all`.
     if not token or token.lower() == "all":
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is ch:
                 continue
             if not getattr(occupant, "is_npc", False):
                 continue
+            if _has_act_nopurge(occupant):
+                continue
             _extract_character(occupant)
         for obj in list(getattr(room, "contents", []) or []):
+            if _has_item_nopurge(obj):
+                continue
             _purge_object(ch, obj)
         return
 
     victim = _find_char_in_room(ch, token)
     if victim is not None:
+        # ROM safety: never purge a PC and never purge the running mob.
         if not getattr(victim, "is_npc", False):
+            return
+        if victim is ch:
             return
         _extract_character(victim)
         return
 
+    # Specific object lookup follows ROM `get_obj_here` order:
+    # room contents, then carried inventory, then equipped slots.
     target_obj: Object | None = None
     for obj in list(getattr(room, "contents", []) or []):
         if _match_object(obj, token):
@@ -739,6 +775,47 @@ def do_mppurge(ch: Character, argument: str) -> None:
     _purge_object(ch, target_obj)
 
 
+def _mptransfer_room_is_private(room: Room | None) -> bool:
+    """ROM `room_is_private` check used to gate `mptransfer` destinations."""
+    if room is None:
+        return False
+    try:
+        from mud.models.constants import RoomFlag
+    except Exception:  # pragma: no cover - defensive
+        return False
+    flags = getattr(room, "room_flags", 0) or 0
+    try:
+        flag_value = int(flags)
+    except (TypeError, ValueError):
+        return False
+    private_mask = int(RoomFlag.ROOM_PRIVATE)
+    solitary_mask = getattr(RoomFlag, "ROOM_SOLITARY", 0)
+    try:
+        solitary_value = int(solitary_mask)
+    except (TypeError, ValueError):
+        solitary_value = 0
+    occupants = len(list(getattr(room, "people", []) or []))
+    if flag_value & private_mask and occupants >= 2:
+        return True
+    if solitary_value and flag_value & solitary_value and occupants >= 1:
+        return True
+    return False
+
+
+def _mptransfer_auto_look(victim: Character) -> None:
+    """Mirror ROM `do_look(victim, "auto")` after transfer; tolerate failures."""
+    try:
+        from mud.commands.inspection import do_look
+    except Exception:
+        return
+    try:
+        result = do_look(victim, "auto")
+    except Exception:
+        return
+    if isinstance(result, str) and result and hasattr(victim, "messages"):
+        victim.messages.append(result)
+
+
 def do_mptransfer(ch: Character, argument: str) -> None:
     first, _, rest = argument.partition(" ")
     target_name = first.strip()
@@ -748,16 +825,21 @@ def do_mptransfer(ch: Character, argument: str) -> None:
     destination = _resolve_transfer_location(ch, location_token)
     if destination is None:
         return
+    # ROM only enforces room_is_private when an explicit location is given.
+    if location_token and _mptransfer_room_is_private(destination):
+        return
     if target_name.lower() == "all":
         for occupant in list(_iter_room_people(getattr(ch, "room", None))):
             if getattr(occupant, "is_npc", True):
                 continue
             _transfer_character(ch, occupant, destination)
+            _mptransfer_auto_look(occupant)
         return
     victim = _find_char_world(target_name)
     if victim is None:
         return
     _transfer_character(ch, victim, destination)
+    _mptransfer_auto_look(victim)
 
 
 def do_mpgtransfer(ch: Character, argument: str) -> None:

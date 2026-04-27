@@ -11,6 +11,7 @@ from mud.models.constants import Position
 from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
+from mud.skills.registry import skill_registry  # re-exported for test/spec-fun access
 from mud.spawning.reset_handler import apply_resets
 
 from .linking import link_exits

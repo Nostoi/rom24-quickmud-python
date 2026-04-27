@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from mud.handler import unequip_char
 from mud.models.character import Character
-from mud.models.constants import ExtraFlag, ItemType, Position
+from mud.models.constants import ExtraFlag, ItemType, Position, OBJ_VNUM_PIT, WearFlag
+from mud.net.protocol import broadcast_room
+from mud.utils import rng_mm
+from mud.utils.act import act_format
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
 
 
@@ -37,8 +40,15 @@ def get_obj_list(char: Character, name: str, obj_list: list) -> object | None:
         name_lower = parts[1].lower()
 
     for obj in obj_list:
-        obj_name = getattr(obj, "name", "").lower()
-        short = getattr(obj, "short_descr", "").lower()
+        obj_name = getattr(obj, "name", None)
+        if obj_name is None:
+            obj_name = ""
+        obj_name = obj_name.lower()
+
+        short = getattr(obj, "short_descr", None)
+        if short is None:
+            short = ""
+        short = short.lower()
 
         # Check if name matches any keyword
         if name_lower in obj_name.split() or name_lower in obj_name or name_lower in short:
@@ -109,6 +119,11 @@ def do_put(char: Character, args: str) -> str:
         if not _can_drop_obj(char, obj):
             return "You can't let go of it."
 
+        # PUT-002: WEIGHT_MULT check (ROM C lines 411-416)
+        # Prevent containers in containers (WEIGHT_MULT != 100)
+        if _get_weight_mult(obj) != 100:
+            return "You have a feeling that would be a bad idea."
+
         # Check weight
         obj_weight = _get_obj_weight(obj)
         container_weight = _get_true_weight(container)
@@ -118,6 +133,21 @@ def do_put(char: Character, args: str) -> str:
         if obj_weight + container_weight > max_weight or obj_weight > max_single:
             return "It won't fit."
 
+        # PUT-003: Pit timer handling (ROM C lines 426-433)
+        # Set timer for objects put into donation pit
+        container_proto = getattr(container, "prototype", None)
+        container_vnum = getattr(container_proto, "vnum", None) if container_proto else None
+        if container_vnum == OBJ_VNUM_PIT:
+            # Check if container has TAKE flag (donation pit has !TAKE)
+            container_wear_flags = getattr(container_proto, "wear_flags", 0)
+            if not (container_wear_flags & WearFlag.TAKE):
+                if obj.timer:
+                    # Object already has timer - set HAD_TIMER flag
+                    obj.extra_flags |= ExtraFlag.HAD_TIMER
+                else:
+                    # No timer - assign random timer (100-200 ticks)
+                    obj.timer = rng_mm.number_range(100, 200)
+
         # Transfer the item
         _obj_from_char(char, obj)
         _obj_to_obj(obj, container)
@@ -125,6 +155,22 @@ def do_put(char: Character, args: str) -> str:
         obj_name = getattr(obj, "short_descr", "something")
         container_short = getattr(container, "short_descr", "something")
 
+        # PUT-001: TO_ROOM messages (ROM C lines 440-441, 445-446)
+        # Broadcast to room observers
+        room = getattr(char, "location", None)
+        if room:
+            if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
+                # "on" message
+                room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
+                broadcast_room(room, room_message, exclude=char)
+                return f"You put {obj_name} on {container_short}."
+            else:
+                # "in" message
+                room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
+                broadcast_room(room, room_message, exclude=char)
+                return f"You put {obj_name} in {container_short}."
+
+        # Fallback if no room
         if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
             return f"You put {obj_name} on {container_short}."
         else:
@@ -136,7 +182,7 @@ def do_put(char: Character, args: str) -> str:
         if item_name.lower().startswith("all."):
             filter_name = item_name[4:].lower()
 
-        carrying = list(getattr(char, "carrying", []))
+        carrying = list(getattr(char, "inventory", []))
         count = 0
         messages = []
 
@@ -159,6 +205,11 @@ def do_put(char: Character, args: str) -> str:
             if not _can_drop_obj(char, obj):
                 continue
 
+            # PUT-002: WEIGHT_MULT check (ROM C line 458)
+            # Skip containers in containers (WEIGHT_MULT != 100)
+            if _get_weight_mult(obj) != 100:
+                continue
+
             # Check weight
             obj_weight = _get_obj_weight(obj)
             container_weight = _get_true_weight(container)
@@ -168,6 +219,21 @@ def do_put(char: Character, args: str) -> str:
             if obj_weight + container_weight > max_weight or obj_weight > max_single:
                 continue
 
+            # PUT-003: Pit timer handling (ROM C lines 465-472)
+            # Set timer for objects put into donation pit
+            container_proto = getattr(container, "prototype", None)
+            container_vnum = getattr(container_proto, "vnum", None) if container_proto else None
+            if container_vnum == OBJ_VNUM_PIT:
+                # Check if container has TAKE flag (donation pit has !TAKE)
+                container_wear_flags = getattr(container_proto, "wear_flags", 0)
+                if not (container_wear_flags & WearFlag.TAKE):
+                    if obj.timer:
+                        # Object already has timer - set HAD_TIMER flag
+                        obj.extra_flags |= ExtraFlag.HAD_TIMER
+                    else:
+                        # No timer - assign random timer (100-200 ticks)
+                        obj.timer = rng_mm.number_range(100, 200)
+
             # Transfer
             _obj_from_char(char, obj)
             _obj_to_obj(obj, container)
@@ -175,10 +241,26 @@ def do_put(char: Character, args: str) -> str:
             obj_short = getattr(obj, "short_descr", "something")
             container_short = getattr(container, "short_descr", "something")
 
-            if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
-                messages.append(f"You put {obj_short} on {container_short}.")
+            # PUT-001: TO_ROOM messages (ROM C lines 479-480, 484-485)
+            # Broadcast to room observers
+            room = getattr(char, "location", None)
+            if room:
+                if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
+                    # "on" message
+                    room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
+                    broadcast_room(room, room_message, exclude=char)
+                    messages.append(f"You put {obj_short} on {container_short}.")
+                else:
+                    # "in" message
+                    room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
+                    broadcast_room(room, room_message, exclude=char)
+                    messages.append(f"You put {obj_short} in {container_short}.")
             else:
-                messages.append(f"You put {obj_short} in {container_short}.")
+                # Fallback if no room
+                if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
+                    messages.append(f"You put {obj_short} on {container_short}.")
+                else:
+                    messages.append(f"You put {obj_short} in {container_short}.")
             count += 1
 
         if count == 0:
@@ -195,14 +277,21 @@ def do_remove(char: Character, args: str) -> str:
                    src/handler.c remove_obj (lines 1372-1392)
 
     Usage: remove <item>
-           remove all
+           remove all   (Python extension; ROM only accepts a single item)
+
+    ROM Parity Notes:
+        - ROM ``do_remove`` uses ``one_argument`` and only handles a single
+          item. The ``remove all`` form is a derivative-friendly extension we
+          retain because tests and players rely on it. Single-item removal is
+          fully ROM-faithful (NOREMOVE check, TO_CHAR + TO_ROOM act() pair,
+          unequip via ``unequip_char``).
     """
     if not args or not args.strip():
         return "Remove what?"
 
     item_name = args.strip().split()[0]
 
-    # Handle "remove all"
+    # Handle "remove all" (Python extension - not in ROM 2.4b6)
     if item_name.lower() == "all":
         equipment = getattr(char, "equipment", {})
         if not equipment:
@@ -210,26 +299,22 @@ def do_remove(char: Character, args: str) -> str:
 
         # Get all equipped items (copy to avoid modification during iteration)
         equipped_items = list(equipment.values())
-        removed_count = 0
+        removed_messages: list[str] = []
+        blocked = 0
 
         for obj in equipped_items:
             # Check NOREMOVE flag (cursed items)
             extra_flags = getattr(obj, "extra_flags", 0)
             if extra_flags & ExtraFlag.NOREMOVE:
-                obj_name = getattr(obj, "short_descr", "it")
                 # Continue removing other items even if one is cursed
+                blocked += 1
                 continue
 
-            # Remove the item
-            _remove_obj(char, obj)
-            removed_count += 1
+            removed_messages.append(_perform_remove(char, obj))
 
-        if removed_count == 0:
+        if not removed_messages:
             return "You can't remove any of your equipment."
-        elif removed_count == 1:
-            return "You stop using your equipment."
-        else:
-            return f"You stop using {removed_count} items."
+        return "\n".join(removed_messages)
 
     # Find worn item
     obj = get_obj_wear(char, item_name)
@@ -242,15 +327,40 @@ def do_remove(char: Character, args: str) -> str:
         return "You aren't wearing that."
 
     # Check NOREMOVE flag (cursed items) - ROM src/handler.c:1382-1386
+    # ROM: act("You can't remove $p.", ch, obj, NULL, TO_CHAR);
     extra_flags = getattr(obj, "extra_flags", 0)
     if extra_flags & ExtraFlag.NOREMOVE:
         obj_name = getattr(obj, "short_descr", "it")
         return f"You can't remove {obj_name}."
 
-    # Remove the item
+    return _perform_remove(char, obj)
+
+
+def _perform_remove(char: Character, obj) -> str:
+    """Remove a worn object and emit ROM-faithful TO_CHAR + TO_ROOM messages.
+
+    ROM Reference: src/handler.c:remove_obj (lines 1387-1391)
+        unequip_char(ch, obj);
+        act("$n stops using $p.", ch, obj, NULL, TO_ROOM);
+        act("You stop using $p.", ch, obj, NULL, TO_CHAR);
+    """
+    # Unequip + revert AC/affects + return to inventory
     _remove_obj(char, obj)
 
-    obj_name = getattr(obj, "short_descr", "something")
+    obj_name = getattr(obj, "short_descr", "something") or "something"
+
+    # ROM TO_ROOM broadcast: "$n stops using $p."
+    room = getattr(char, "room", None) or getattr(char, "location", None)
+    if room is not None:
+        room_message = act_format(
+            "$n stops using $p.",
+            recipient=None,
+            actor=char,
+            arg1=obj,
+        )
+        broadcast_room(room, room_message, exclude=char)
+
+    # ROM TO_CHAR: "You stop using $p."
     return f"You stop using {obj_name}."
 
 
@@ -440,6 +550,47 @@ def _get_true_weight(container) -> int:
     return weight
 
 
+def _get_weight_mult(obj) -> int:
+    """Get container weight multiplier (WEIGHT_MULT macro from ROM C handler.c).
+
+    Returns value[4] for containers (weight reduction percentage), 100 otherwise.
+    ROM C Reference: handler.c WEIGHT_MULT macro
+    """
+    # Get item type
+    item_type = getattr(obj, "item_type", None)
+    if item_type is None:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            item_type = getattr(proto, "item_type", None)
+
+    # Only containers have weight multipliers
+    if item_type != ItemType.CONTAINER:
+        return 100
+
+    # Get value[4] (weight multiplier) - prefer instance value, fallback to prototype
+    values = getattr(obj, "value", None)
+    mult = None
+
+    # Check instance value - but only if it's not the default [0,0,0,0,0]
+    if values and len(values) >= 5:
+        if values != [0, 0, 0, 0, 0] or sum(values) != 0:
+            mult = values[4]
+
+    # Fall back to prototype if instance has default values
+    if mult is None:
+        proto = getattr(obj, "prototype", None)
+        if proto:
+            proto_values = getattr(proto, "value", None)
+            if proto_values and len(proto_values) >= 5:
+                mult = proto_values[4]
+
+    try:
+        mult_int = int(mult if mult is not None else 100)
+        return mult_int if mult_int >= 0 else 100
+    except (TypeError, ValueError, IndexError):
+        return 100
+
+
 def _can_drop_obj(char: Character, obj) -> bool:
     """Check if character can drop/put an object."""
     extra_flags = getattr(obj, "extra_flags", 0)
@@ -451,9 +602,9 @@ def _can_drop_obj(char: Character, obj) -> bool:
 
 def _obj_from_char(char: Character, obj) -> None:
     """Remove object from character's inventory."""
-    carrying = getattr(char, "carrying", [])
-    if obj in carrying:
-        carrying.remove(obj)
+    inventory = getattr(char, "inventory", [])
+    if obj in inventory:
+        inventory.remove(obj)
     obj.carried_by = None
 
     # Update carry weight/number
@@ -464,11 +615,11 @@ def _obj_from_char(char: Character, obj) -> None:
 
 def _obj_to_obj(obj, container) -> None:
     """Put object into container."""
-    contains = getattr(container, "contains", None)
-    if contains is None:
-        container.contains = []
-        contains = container.contains
-    contains.append(obj)
+    contained_items = getattr(container, "contained_items", None)
+    if contained_items is None:
+        container.contained_items = []
+        contained_items = container.contained_items
+    contained_items.append(obj)
     obj.in_obj = container
 
 

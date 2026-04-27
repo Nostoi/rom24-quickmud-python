@@ -10,10 +10,50 @@ from typing import TYPE_CHECKING
 
 from mud.handler import equip_char, unequip_char
 from mud.models.constants import ExtraFlag, ItemType, Position, WearFlag, WearLocation
+from mud.net.protocol import broadcast_room
+from mud.utils.act import act_format
 
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.models.object import Object
+
+
+def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
+    """Remove an equipped object, returning it to inventory.
+
+    ROM Reference: src/act_obj.c:1372-1392 (remove_obj)
+
+    Returns True if the object was successfully removed, False if it
+    couldn't be removed (e.g. ITEM_NOREMOVE). Also emits ROM-style
+    removal messages to the character and room.
+    """
+    extra_flags = getattr(obj, "extra_flags", 0)
+    if hasattr(extra_flags, "__class__") and not isinstance(extra_flags, int):
+        extra_flags = int(extra_flags) if extra_flags else 0
+
+    if extra_flags & ExtraFlag.NOREMOVE:
+        # ROM act("You can't remove $p.", ch, obj, NULL, TO_CHAR);
+        obj_name = getattr(obj, "short_descr", "it")
+        if hasattr(ch, "send") and callable(ch.send):
+            ch.send(f"You can't remove {obj_name}.\n")
+        return False
+
+    unequip_char(ch, obj)
+    obj.worn_by = None
+    inventory = getattr(ch, "inventory", [])
+    if obj not in inventory:
+        inventory.append(obj)
+
+    obj_name = getattr(obj, "short_descr", "something")
+    room_msg = f"{getattr(ch, 'name', 'Someone')} stops using {obj_name}."
+    char_msg = f"You stop using {obj_name}."
+
+    from mud.net.protocol import broadcast_room
+    broadcast_room(getattr(ch, "room", None), room_msg, exclude=ch)
+    if hasattr(ch, "send") and callable(ch.send):
+        ch.send(char_msg + "\n")
+
+    return True
 
 
 def _can_wear_alignment(ch: Character, obj: Object) -> tuple[bool, str | None]:
@@ -99,7 +139,9 @@ def do_wear(ch: Character, args: str) -> str:
         if wield_loc in equipment and equipment[wield_loc] is not None:
             weapon = equipment[wield_loc]
             weapon_flags = getattr(weapon.prototype, "value", [0, 0, 0, 0, 0])
-            if len(weapon_flags) > 4:
+            ch_size = int(getattr(ch, "size", 0) or 0)
+            from mud.models.constants import Size
+            if len(weapon_flags) > 4 and ch_size < int(Size.LARGE):
                 weapon_flag_val = weapon_flags[4]
                 if weapon_flag_val & WeaponFlag.TWO_HANDS:
                     return "Your hands are tied up with your weapon!"
@@ -112,8 +154,9 @@ def do_wear(ch: Character, args: str) -> str:
 
         if hold_loc in equipment and equipment[hold_loc] is not None:
             existing = equipment[hold_loc]
-            existing_name = getattr(existing, "short_descr", "something")
-            return f"You're already holding {existing_name}."
+            if not _unequip_to_inventory(ch, existing):
+                existing_name = getattr(existing, "short_descr", "it")
+                return f"You can't remove {existing_name}."
 
         # Check alignment restrictions
         can_hold, error_msg = _can_wear_alignment(ch, obj)
@@ -145,14 +188,20 @@ def do_wear(ch: Character, args: str) -> str:
     # Find appropriate wear location
     wear_loc = _get_wear_location(obj, wear_flags, ch)
     if not wear_loc:
-        return "You can't wear that."
+        # Multi-slot items: all slots occupied. Try to make room.
+        wear_loc = _try_replace_multislot(ch, wear_flags)
+        if not wear_loc:
+            return _multislot_full_message(wear_flags)
+
+    wear_loc = int(wear_loc)
 
     # Check if slot is occupied
     equipment = getattr(ch, "equipment", {})
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
-        existing_name = getattr(existing, "short_descr", "something")
-        return f"You're already wearing {existing_name}."
+        if not _unequip_to_inventory(ch, existing):
+            existing_name = getattr(existing, "short_descr", "it")
+            return f"You can't remove {existing_name}."
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_wear, error_msg = _can_wear_alignment(ch, obj)
@@ -175,8 +224,14 @@ def do_wear(ch: Character, args: str) -> str:
     # Apply equipment bonuses (ROM src/handler.c:equip_char)
     equip_char(ch, obj, wear_loc)
 
+    # ROM-style location-specific messages (src/act_obj.c:1435-1612)
     obj_name = getattr(obj, "short_descr", "something")
-    return f"You wear {obj_name}."
+    room_template, char_template = _wear_location_messages(wear_loc)
+    from mud.utils.act import act_format
+    from mud.net.protocol import broadcast_room
+    room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
+    broadcast_room(getattr(ch, "room", None), room_message, exclude=ch)
+    return char_template.format(obj_name=obj_name)
 
 
 def do_wield(ch: Character, args: str) -> str:
@@ -221,34 +276,36 @@ def do_wield(ch: Character, args: str) -> str:
 
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
-        existing_name = getattr(existing, "short_descr", "something")
-        return f"You're already wielding {existing_name}."
+        if not _unequip_to_inventory(ch, existing):
+            existing_name = getattr(existing, "short_descr", "it")
+            return f"You can't remove {existing_name}."
 
-    # Check strength requirement (weapon weight)
-    weight = getattr(obj.prototype, "weight", 0)
+    # ROM src/act_obj.c:1623 — strength check skipped for NPCs.
+    is_npc = bool(getattr(ch, "is_npc", False))
+    if not is_npc:
+        weight = getattr(obj.prototype, "weight", 0)
+        str_stat = 13
+        if hasattr(ch, "get_curr_stat"):
+            from mud.models.constants import Stat
 
-    # Get character strength (default to 13 if stat system not available)
-    str_stat = 13
-    if hasattr(ch, "get_curr_stat"):
-        from mud.models.constants import Stat
-
-        stat_value = ch.get_curr_stat(Stat.STR)
-        if stat_value is not None:
-            str_stat = stat_value
-
-    # ROM formula: need STR >= weight / 10
-    if str_stat * 10 < weight:
-        return "It is too heavy for you to wield."
+            stat_value = ch.get_curr_stat(Stat.STR)
+            if stat_value is not None:
+                str_stat = stat_value
+        if str_stat * 10 < weight:
+            return "It is too heavy for you to wield."
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_wield, error_msg = _can_wear_alignment(ch, obj)
     if not can_wield:
         return error_msg or "You cannot wield that weapon."
 
-    from mud.models.constants import WeaponFlag
+    from mud.models.constants import Size, WeaponFlag
 
+    # ROM src/act_obj.c:1631-1636 — two-hand vs shield check skipped for NPCs
+    # and for characters of SIZE_LARGE or greater.
     weapon_flags = getattr(obj.prototype, "value", [0, 0, 0, 0, 0])
-    if len(weapon_flags) > 4:
+    ch_size = int(getattr(ch, "size", 0) or 0)
+    if not is_npc and ch_size < int(Size.LARGE) and len(weapon_flags) > 4:
         weapon_flag_val = weapon_flags[4]
         if weapon_flag_val & WeaponFlag.TWO_HANDS:
             shield_loc = int(WearLocation.SHIELD)
@@ -391,12 +448,81 @@ def _wear_all(ch: Character) -> str:
         equip_char(ch, obj, wear_loc)
 
         obj_name = getattr(obj, "short_descr", "something")
-        messages.append(f"You wear {obj_name}.")
+        room_template, char_template = _wear_location_messages(int(wear_loc))
+        room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
+        broadcast_room(getattr(ch, "room", None), room_message, exclude=ch)
+        messages.append(char_template.format(obj_name=obj_name))
 
     if not messages:
         return "You have nothing else to wear."
 
     return "\n".join(messages)
+
+
+
+def _wear_location_messages(wear_loc: int) -> tuple[str, str]:
+    """ROM wear messages for standard armor/accessory slots.
+
+    ROM Reference: src/act_obj.c:1435-1612 (wear_obj act() messages)
+    """
+    mapping = {
+        int(WearLocation.FINGER_L): ("$n wears $p on $s left finger.", "You wear {obj_name} on your left finger."),
+        int(WearLocation.FINGER_R): ("$n wears $p on $s right finger.", "You wear {obj_name} on your right finger."),
+        int(WearLocation.NECK_1): ("$n wears $p around $s neck.", "You wear {obj_name} around your neck."),
+        int(WearLocation.NECK_2): ("$n wears $p around $s neck.", "You wear {obj_name} around your neck."),
+        int(WearLocation.BODY): ("$n wears $p on $s torso.", "You wear {obj_name} on your torso."),
+        int(WearLocation.HEAD): ("$n wears $p on $s head.", "You wear {obj_name} on your head."),
+        int(WearLocation.LEGS): ("$n wears $p on $s legs.", "You wear {obj_name} on your legs."),
+        int(WearLocation.FEET): ("$n wears $p on $s feet.", "You wear {obj_name} on your feet."),
+        int(WearLocation.HANDS): ("$n wears $p on $s hands.", "You wear {obj_name} on your hands."),
+        int(WearLocation.ARMS): ("$n wears $p on $s arms.", "You wear {obj_name} on your arms."),
+        int(WearLocation.ABOUT): ("$n wears $p about $s torso.", "You wear {obj_name} about your torso."),
+        int(WearLocation.WAIST): ("$n wears $p about $s waist.", "You wear {obj_name} about your waist."),
+        int(WearLocation.WRIST_L): ("$n wears $p around $s left wrist.", "You wear {obj_name} around your left wrist."),
+        int(WearLocation.WRIST_R): ("$n wears $p around $s right wrist.", "You wear {obj_name} around your right wrist."),
+        int(WearLocation.SHIELD): ("$n wears $p as a shield.", "You wear {obj_name} as a shield."),
+        int(WearLocation.FLOAT): ("$n releases $p to float next to $m.", "You release {obj_name} and it floats next to you."),
+    }
+    return mapping.get(wear_loc, ("$n wears $p.", "You wear {obj_name}."))
+
+
+def _try_replace_multislot(ch: Character, wear_flags: int) -> WearLocation | None:
+    """Try to make room on an occupied multi-slot by removing one item.
+
+    ROM Reference: src/act_obj.c:1427-1431 (finger), 1456-1460 (neck), 1565-1569 (wrist)
+
+    For finger/neck/wrist slots where both are occupied, try to remove an
+    existing item to make room. Returns the newly freed slot, or None if
+    both slots are locked (NOREMOVE).
+    """
+    equipment = getattr(ch, "equipment", {}) or {}
+
+    if wear_flags & WearFlag.WEAR_FINGER:
+        slots = [int(WearLocation.FINGER_L), int(WearLocation.FINGER_R)]
+    elif wear_flags & WearFlag.WEAR_NECK:
+        slots = [int(WearLocation.NECK_1), int(WearLocation.NECK_2)]
+    elif wear_flags & WearFlag.WEAR_WRIST:
+        slots = [int(WearLocation.WRIST_L), int(WearLocation.WRIST_R)]
+    else:
+        return None
+
+    for slot in slots:
+        existing = equipment.get(slot)
+        if existing is not None:
+            if _unequip_to_inventory(ch, existing):
+                return WearLocation(slot)
+    return None
+
+
+def _multislot_full_message(wear_flags: int) -> str:
+    """ROM-style error message when all multi-slot locations are full."""
+    if wear_flags & WearFlag.WEAR_FINGER:
+        return "You already wear two rings."
+    if wear_flags & WearFlag.WEAR_NECK:
+        return "You already wear two neck items."
+    if wear_flags & WearFlag.WEAR_WRIST:
+        return "You already wear two wrist items."
+    return "You can't wear that."
 
 
 def _get_wear_location(obj: Object, wear_flags: int, ch: Character | None = None) -> WearLocation | None:
@@ -410,32 +536,29 @@ def _get_wear_location(obj: Object, wear_flags: int, ch: Character | None = None
     """
     equipment = getattr(ch, "equipment", {}) if ch else {}
 
-    # Priority order for wear locations (from ROM)
-    # Check WearFlag bits and return corresponding WearLocation slot
+    def slot_free(loc: int) -> bool:
+        return loc not in equipment or equipment.get(loc) is None
 
-    # Multi-slot: Finger (FINGER_L, FINGER_R)
     if wear_flags & WearFlag.WEAR_FINGER:
-        if int(WearLocation.FINGER_L) not in equipment:
+        if slot_free(int(WearLocation.FINGER_L)):
             return WearLocation.FINGER_L
-        if int(WearLocation.FINGER_R) not in equipment:
+        if slot_free(int(WearLocation.FINGER_R)):
             return WearLocation.FINGER_R
-        return None  # Both slots occupied
+        return None
 
-    # Multi-slot: Neck (NECK_1, NECK_2)
     if wear_flags & WearFlag.WEAR_NECK:
-        if int(WearLocation.NECK_1) not in equipment:
+        if slot_free(int(WearLocation.NECK_1)):
             return WearLocation.NECK_1
-        if int(WearLocation.NECK_2) not in equipment:
+        if slot_free(int(WearLocation.NECK_2)):
             return WearLocation.NECK_2
-        return None  # Both slots occupied
+        return None
 
-    # Multi-slot: Wrist (WRIST_L, WRIST_R)
     if wear_flags & WearFlag.WEAR_WRIST:
-        if int(WearLocation.WRIST_L) not in equipment:
+        if slot_free(int(WearLocation.WRIST_L)):
             return WearLocation.WRIST_L
-        if int(WearLocation.WRIST_R) not in equipment:
+        if slot_free(int(WearLocation.WRIST_R)):
             return WearLocation.WRIST_R
-        return None  # Both slots occupied
+        return None
 
     # Single-slot items
     if wear_flags & WearFlag.WEAR_BODY:

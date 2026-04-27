@@ -618,6 +618,13 @@ def test_guard_attacks_flagged_criminal() -> None:
     room = room_registry.get(3001)
     assert room is not None
 
+    # Strip any pre-existing NPCs from Midgaard square — Hassan (the city
+    # executioner spec) loads here by default and would kill Criminal before
+    # spec_guard ever runs, leaving the guard's NOSHOUT bit set.
+    pre_existing_npcs = [m for m in list(room.people) if getattr(m, "is_npc", False)]
+    for npc in pre_existing_npcs:
+        room.people.remove(npc)
+
     bystander = create_test_character("Bystander", room.vnum)
     bystander.messages.clear()
     criminal = create_test_character("Criminal", room.vnum)

@@ -611,7 +611,10 @@ async def _send_login_motd(char: "Character") -> None:
 
     for topic in topics:
         text = _resolve_help_text(char, topic)
-        if not text and topic == "motd":
+        # When `motd` resolves to the auto-generated command help instead of
+        # an actual MOTD topic, fall back to the MOTD slice of the greeting
+        # banner so login still surfaces the rules text.
+        if topic == "motd" and (not text or text.lstrip().startswith("Command: motd")):
             text = _extract_motd_from_greeting()
         if not text:
             continue
