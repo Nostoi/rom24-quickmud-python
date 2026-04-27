@@ -728,28 +728,22 @@ def _cmd_eval(
         if not tokens:
             return False
         identifier = tokens[0]
-        room = getattr(mob, "room", None)
-        if room and _obj_here(mob, identifier):
-            return True
-        people = getattr(room, "people", []) if room else []
-        for char in people or []:
-            if identifier.isdigit():
-                if _character_has_item(char, vnum=int(identifier)):
+        # mirroring ROM src/mob_prog.c:399 — get_obj_world walks the entire
+        # object_list, not just the current room or argument objects.
+        from mud.models.obj import object_registry
+
+        if identifier.isdigit():
+            target_vnum = int(identifier)
+            for obj in object_registry:
+                if _object_vnum(obj) == target_vnum:
                     return True
-            else:
-                if _character_has_item(char, name=identifier):
-                    return True
-        for candidate in (arg1, arg2):
-            if not hasattr(candidate, "prototype"):
-                continue
-            if identifier.isdigit():
-                if _object_vnum(candidate) == int(identifier):
-                    return True
-            else:
-                proto = getattr(candidate, "prototype", None)
-                if proto and (
-                    _match_name(getattr(proto, "name", None), identifier)
-                    or _match_name(getattr(proto, "short_descr", None), identifier)
+        else:
+            for obj in object_registry:
+                proto = getattr(obj, "prototype", None)
+                if proto is None:
+                    continue
+                if _match_name(getattr(proto, "name", None), identifier) or _match_name(
+                    getattr(proto, "short_descr", None), identifier
                 ):
                     return True
         return False

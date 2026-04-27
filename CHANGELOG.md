@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- MOBPROG-001: `_cmd_eval` `objexists` now walks `mud.models.obj.object_registry`
+  (mirroring ROM `get_obj_world`, `src/mob_prog.c:399`) instead of only the
+  current room and same-room carriers. Mob programs that gate on
+  `if objexists <vnum|name>` against globally-placed items now match ROM
+  semantics. Integration coverage at
+  `tests/integration/test_mobprog_predicates.py`.
+
 ## [2.6.4] - 2026-04-27
 
 `mob_cmds.c` ROM parity audit complete — all 18 gaps closed (6 CRITICAL,
