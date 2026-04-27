@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.4] - 2026-04-27
+
+`mob_cmds.c` ROM parity audit complete — all 18 gaps closed (6 CRITICAL,
+9 IMPORTANT, 3 MINOR). MOBprog script commands (`mob kill`, `assist`,
+`oload`, `flee`, `cast`, `call`, `damage`, `junk`, `purge`, `transfer`)
+now match ROM 2.4b6 behaviour for charm/master defence, position gates,
+target-type dispatch, level bounds, NO_MOB respect, recursion, and
+bug-log emission on script authoring errors.
+
 ### Fixed
 
 - MOBCMD-017: `do_mptransfer` now mirrors ROM's recursive structure — a

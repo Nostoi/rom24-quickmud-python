@@ -76,7 +76,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `save.c` | P1 | ✅ **COMPLETE!** | `mud/persistence.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED  - ALL 8 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - Pet persistence + 17 integration tests - See SAVE_C_AUDIT.md |
 | **Mob Programs** | | | | | |
 | `mob_prog.c` | P1 | ⚠️ Partial | `mud/mobprog/` | 75% | Quest/combat progs tested |
-| `mob_cmds.c` | P1 | ⚠️ Partial | `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py` | 70% | Apr 27, 2026 audit doc complete: 18 gaps (6 CRITICAL, 9 IMPORTANT, 3 MINOR) — see MOB_CMDS_C_AUDIT.md. Phase 4 closure pending. |
+| `mob_cmds.c` | P1 | ✅ Complete | `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py` | 100% | Apr 27, 2026 — all 18 gaps closed (6 CRITICAL, 9 IMPORTANT, 3 MINOR). Integration coverage in `tests/integration/test_mob_cmds_*.py`. See `MOB_CMDS_C_AUDIT.md`. |
 | **OLC (Online Creation)** | | | | | |
 | `olc.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Basic OLC exists |
 | `olc_act.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | OLC actions partial |
