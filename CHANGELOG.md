@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.2] - 2026-04-27
+
+### Fixed
+
+- **act_enter portal regressions** uncovered by the act_enter.c audit
+  (PR #123):
+  - `_stand_charmed_follower` now forwards `do_stand`'s returned string
+    into the follower's message stream, so charmed sleepers receive the
+    "You wake and stand up." text exactly as ROM `act_move.c:1044`
+    sends inside `do_stand`.
+  - `_portal_fade_out` now explicitly removes the portal from
+    `room.contents` and clears `portal.location`. `game_loop._extract_obj`
+    keys off `obj.in_room` but `Object` uses `obj.location`, so portal
+    detachment after charge expiry was a silent no-op. Behavior now
+    matches ROM `extract_obj(portal)` at `act_enter.c:212`.
+  - `test_enter_closed_portal_denied`: corrected expected message to
+    `"You can't seem to find a way in."` per ROM `act_enter.c:94`. The
+    prior `"The portal is closed."` was the door-blocked message from
+    `act_move.c`, not the portal path.
+  - `test_move_through_portal_blocked_while_fighting`: corrected to
+    assert silent return per ROM `act_enter.c:70-71`
+    (`if (ch->fighting != NULL) return;`); removed the non-ROM
+    `"No way!  You are still fighting!"` string.
+- **`test_giant_strength_refuses_to_stack`** (was
+  `test_stat_modifiers_stack_from_same_spell`): test asserted +4 STR after
+  recasting giant strength, but ROM `src/magic.c:3022-3030`
+  `spell_giant_strength` early-returns with "You are already as strong as
+  you can get!" when the target is already affected. The Python
+  implementation correctly mirrors ROM; the test was wrong. Rewrote the
+  test to assert ROM anti-stack behavior.
+- **`test_scavenger_prefers_valuable_items`**: flaky because the
+  Mitchell-Moore RNG state leaks across tests, and the scavenger only acts
+  on a 1/64 roll per `mobile_update` tick. Seed `rng_mm.seed_mm` to a
+  known value at start of test and bump the iteration cap from 2000 to
+  5000 for deterministic passes.
+
 ## [2.6.1] - 2026-04-27
 
 ### Added

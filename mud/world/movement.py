@@ -316,13 +316,20 @@ def _stand_charmed_follower(follower: Character) -> None:
 
     # mirroring ROM src/act_enter.c:178-180 — delegates to do_stand
     """
-    # ENTER-006: ROM calls do_function(fch, &do_stand, "") — delegate to real do_stand
+    # ENTER-006: ROM calls do_function(fch, &do_stand, "") — delegate to real do_stand.
+    # do_stand returns the message string (Python convention); ROM C uses send_to_char
+    # directly. Forward the message to the follower's message stream so observers like
+    # tests/test_movement_followers.py can verify "You wake and stand up." was emitted.
     try:
         from mud.commands.position import do_stand as _do_stand
 
-        _do_stand(follower, "")
+        result = _do_stand(follower, "")
+        if isinstance(result, str) and result and hasattr(follower, "send_to_char"):
+            for line in result.splitlines():
+                line = line.rstrip("\r")
+                if line:
+                    follower.send_to_char(line)
     except Exception:
-        # Fallback: minimal position update if do_stand unavailable
         if follower.position <= Position.SLEEPING:
             message = "You wake and stand up."
         else:
@@ -636,17 +643,17 @@ def _portal_fade_out(char: Character, portal: object, old_room: object, destinat
             to_room_old_msg = act_format(fade_fmt, recipient=None, actor=witness, arg1=portal)
             broadcast_room(old_room, to_room_old_msg, exclude=witness)
 
-    # extract_obj equivalent (act_enter.c:212)
+    # extract_obj equivalent (act_enter.c:212).
+    # game_loop._extract_obj keys off `in_room`, but Object uses `location`; always
+    # do the explicit room-contents cleanup so portals fully detach regardless.
     if extract_obj is not None:
         try:
             extract_obj(portal)
         except Exception:
             pass
-    else:
-        # Fallback: remove portal from room contents if extract_obj unavailable
-        for room in (old_room, destination):
-            contents = getattr(room, "contents", None)
-            if isinstance(contents, list) and portal in contents:
-                contents.remove(portal)
-        if hasattr(portal, "location"):
-            portal.location = None
+    for room in (old_room, destination):
+        contents = getattr(room, "contents", None)
+        if isinstance(contents, list) and portal in contents:
+            contents.remove(portal)
+    if hasattr(portal, "location"):
+        portal.location = None

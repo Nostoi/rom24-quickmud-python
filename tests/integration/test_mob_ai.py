@@ -215,7 +215,12 @@ class TestScavengerBehavior:
         assert obj not in test_room.contents
 
     def test_scavenger_prefers_valuable_items(self, test_room):
-        """ROM parity: src/update.c:633 - Scavengers pick most valuable item."""
+        """ROM parity: src/update.c:633 - Scavengers pick most valuable item.
+
+        Loop bound generous enough that the 1/64-per-tick action roll fires
+        many times. RNG seeding is handled by the integration conftest
+        autouse fixture for determinism.
+        """
         scavenger = create_test_mob(
             3001,
             name="scavenger goblin",
@@ -238,7 +243,7 @@ class TestScavengerBehavior:
             wear_flags=int(WearFlag.TAKE),
         )
 
-        for _ in range(2000):
+        for _ in range(5000):
             mobile_update()
             if expensive_obj in scavenger.inventory:
                 break
