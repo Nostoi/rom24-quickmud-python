@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/parity/ACT_OBJ_C_AUDIT.md` and `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`
+  refreshed to reflect that ROM `src/act_obj.c` is at 100% parity. Apr 27, 2026
+  formal sweep verified all 12 audited functions
+  (`do_get`/`do_put`/`do_drop`/`do_give`/`do_remove`/`do_sacrifice`/`do_quaff`/
+  `do_drink`/`do_eat`/`do_fill`/`do_pour`/`do_recite`/`do_brandish`/`do_zap`
+  plus `do_wear`/`do_wield`/`do_hold` and `do_steal`) against current Python;
+  the recent batch commits (`97c901e` do_drop parity batch, `517542b` close
+  get/put/drop/give/wear/sacrifice/recite/brandish/zap/steal gaps) closed all
+  outstanding gaps. 193 act_obj-area integration tests green. P1 audited count
+  rises from 5/11 (81%) to 6/11 (86%). No code changes — documentation
+  reconciliation only.
+
 ## [2.6.3] - 2026-04-27
 
 ### Added

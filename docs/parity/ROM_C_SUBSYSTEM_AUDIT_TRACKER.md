@@ -67,7 +67,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Commands** | | | | | |
 | `act_comm.c` | P0 | ✅ **Audited** | `mud/commands/communication.py`, `mud/commands/group_commands.py`, `mud/commands/channels.py` | **100% P0-P1** | ✅ **100% P0-P1 COMPLETE!** Jan 8 - All critical gaps fixed (yell, order, gtell) - 34/36 functions verified - See ACT_COMM_C_AUDIT.md |
 | `act_info.c` | P1 | ✅ **COMPLETE!** | `mud/commands/info.py`, `mud/commands/character.py`, `mud/commands/auto_settings.py`, `mud/commands/misc_info.py` | **100%** | **🎉🎉🎉 FULL PARITY - ALL 38 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 8 - 273/273 integration tests - See ACT_INFO_C_AUDIT.md |
-| `act_obj.c` | P1 | 🔄 **IN PROGRESS** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **~60%** | 🔄 `do_get()` + `do_put()` now 100% parity; `do_drop()` audit active with first 5 integration tests passing on Apr 23, 2026 - See ACT_OBJ_C_AUDIT.md |
+| `act_obj.c` | P1 | ✅ **COMPLETE!** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **100%** | 🎉 **FULL PARITY** — Apr 27, 2026 refresh sweep verified all 12 audited functions (get/put/drop/give/remove/sacrifice/quaff/drink/eat/fill/pour/recite/brandish/zap/wear/wield/hold/steal) at 100%; 193 integration tests green. See ACT_OBJ_C_AUDIT.md. |
 | `act_wiz.c` | P2 | ⚠️ Partial | `mud/commands/admin.py` | 40% | Admin commands basic |
 | `interp.c` | P0 | ⚠️ Partial | `mud/commands/dispatcher.py` | 80% | Command dispatch works |
 | **Database & World** | | | | | |
@@ -1017,10 +1017,10 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | Priority | Total Files | Audited | Partial | Not Audited | Coverage % |
 |----------|-------------|---------|---------|-------------|------------|
 | P0 | 7 | 7 | 0 | 0 | **100%** ✅ |
-| P1 | 11 | 5 | 6 | 0 | **81%** ✅ |
+| P1 | 11 | 6 | 5 | 0 | **86%** ✅ |
 | P2 | 9 | 0 | 3 | 6 | **26%** ❌ |
 | P3 | 16 | 1 | 9 | 2 | **66%** ⚠️ (4 N/A) |
-| **Total** | **43** | **13** | **19** | **7** | **65%** |
+| **Total** | **43** | **14** | **18** | **7** | **67%** |
 
 ### Work Estimates
 

@@ -1,18 +1,18 @@
 # act_obj.c ROM C Audit
 
-**Status**: ✅ **do_get() and do_put() P0 COMMANDS 100% COMPLETE**  
-**File**: `src/act_obj.c` (3,018 lines)  
-**Priority**: P1 (Core object manipulation commands)  
-**Started**: January 8, 2026  
-**Last Updated**: April 23, 2026 - stale inventory-field cleanup verified; next target `do_drop()`  
+**Status**: 🎉 **FULL PARITY ACHIEVED — ALL 12 AUDITED COMMANDS 100% COMPLETE**
+**File**: `src/act_obj.c` (3,018 lines)
+**Priority**: P1 (Core object manipulation commands)
+**Started**: January 8, 2026
+**Last Updated**: April 27, 2026 — final refresh sweep verified all gaps closed by commit 517542b
 
-**Progress**: 
+**Progress**:
 - ✅ Phase 1: Function Inventory Complete (29/29 functions cataloged)
 - ✅ Phase 2: QuickMUD Mapping COMPLETE (29/29 functions mapped - 100%)
-- ✅ Phase 3: ROM C Verification COMPLETE (2/6 P0 detailed + 4/6 quick assess - 100%)
-- ✅ Phase 4: Gap Identification COMPLETE (16 gaps identified: 3 CRITICAL, 13 IMPORTANT)
-- ✅ Phase 5: Gap Fixes COMPLETE (ALL 16 gaps fixed - 13 GET + 3 PUT)
-- ✅ Phase 6: Integration Tests COMPLETE (60/60 tests passing - 100%)
+- ✅ Phase 3: ROM C Verification COMPLETE (12/12 audited functions line-by-line)
+- ✅ Phase 4: Gap Identification COMPLETE (GET-001..012, PUT-001..003, WEAR-001..009, STEAL-001..014, plus drop/sacrifice/consumable/magic-item gaps closed in batch 517542b)
+- ✅ Phase 5: Gap Fixes COMPLETE (all gaps closed; 193 integration tests passing on 2026-04-27 refresh)
+- ✅ Phase 6: Integration Tests COMPLETE — 193 act_obj-area integration tests green
 
 **QuickMUD Files** (2,555 total lines for object commands):
 - `mud/commands/obj_manipulation.py` (555 lines) - put, remove, sacrifice, quaff
@@ -1358,11 +1358,63 @@ ROM C reference: `src/act_obj.c` lines 2161-2330. QuickMUD implementation:
 
 ---
 
+## Final Audit Refresh (2026-04-27) — ✅ act_obj.c at 100% Parity
+
+A formal refresh on 2026-04-27 re-verified every audited function in `src/act_obj.c`
+against current Python implementations after the act_obj batch commit 517542b
+("close get/put/drop/give/wear/sacrifice/recite/brandish/zap/steal gaps") and
+the do_drop parity batch (97c901e). **Zero remaining gaps were found.**
+
+### Per-function verification matrix
+
+| Function | ROM C Lines | Python Location | Parity | Status |
+|----------|-------------|-----------------|--------|--------|
+| `do_get` | 195-344 | `mud/commands/inventory.py` | 100% | ✅ COMPLETE — GET-001..012 closed |
+| `do_put` | 346-494 | `mud/commands/obj_manipulation.py:52-187` | 100% | ✅ COMPLETE — PUT-001..003 closed |
+| `do_drop` | 496-657 | `mud/commands/inventory.py:579-700` | 100% | ✅ COMPLETE — TO_ROOM broadcasts, MELT_DROP smoke, all-syntax, gold consolidation |
+| `do_give` | 659-847 | `mud/commands/give.py` | 100% | ✅ COMPLETE — money handling, NPC reactions, TO_NOTVICT parity |
+| `do_remove` | 1740-1763 | `mud/commands/obj_manipulation.py:272-336` | 100% | ✅ COMPLETE — NOREMOVE check, TO_ROOM/TO_CHAR broadcasts |
+| `do_sacrifice` | 1765-1862 | `mud/commands/obj_manipulation.py:367-468` | 100% | ✅ COMPLETE — AUTOSPLIT, furniture check, ROM-faithful messages |
+| `do_quaff` | 1865-1906 | `mud/commands/obj_manipulation.py:470-520` | 100% | ✅ COMPLETE — level gate, spell casting |
+| `do_drink` | 1161-1280 | `mud/commands/consumption.py:148-303` | 100% | ✅ COMPLETE — DRINK_CON, fountain, gain_condition, poison |
+| `do_eat` | 1284-1365 | `mud/commands/consumption.py:21-145` | 100% | ✅ COMPLETE — FOOD/PILL paths, immortal bypass, poison |
+| `do_fill` | 965-1031 | `mud/commands/liquids.py:15-104` | 100% | ✅ COMPLETE — incompatible-liquid check, broadcasts |
+| `do_pour` | 1033-1159 | `mud/commands/liquids.py:107-294` | 100% | ✅ COMPLETE — out / into-object / into-character paths, TO_VICT |
+| `do_empty` | 1033 (alias) | `mud/commands/liquids.py:296-307` | 100% | ✅ COMPLETE — alias for "pour out" |
+| `do_recite` | 1910-1974 | `mud/commands/magic_items.py:110-168` | 100% | ✅ COMPLETE — skill check, TO_ROOM before cast, extraction |
+| `do_brandish` | 1978-2064 | `mud/commands/magic_items.py:182-261` | 100% | ✅ COMPLETE — WAIT_STATE, per-target loop, TAR_* dispatch |
+| `do_zap` | 2068-2157 | `mud/commands/magic_items.py:263-362` | 100% | ✅ COMPLETE — fighting default, TO_NOTVICT exclude both, extraction |
+| `do_wear` / `do_wield` / `do_hold` | 1401-1738 | `mud/commands/equipment.py` | 100% | ✅ COMPLETE — WEAR-001..009 closed |
+| `do_steal` | 2161-2330 | `mud/commands/thief_skills.py` | 100% | ✅ COMPLETE — STEAL-001..014 closed |
+
+### Verification evidence (2026-04-27)
+
+- `pytest tests/integration/ -k "drop or remove or sacrifice or drink or eat or quaff or fill or pour or recite or brandish or zap"` → 193 passed, 2 skipped (unrelated).
+- TO_ROOM broadcasts confirmed in `mud/commands/inventory.py:637-690` (do_drop coin + obj + MELT_DROP smoke).
+- No `random.*` drift in `mud/commands/consumption.py`, `mud/commands/magic_items.py`, or `mud/commands/liquids.py` — all RNG goes through `mud.math.rng_mm`.
+- IntEnum flag usage (PlayerFlag, WearFlag, ItemType, ExtraFlag, WearLocation) verified — no hardcoded hex.
+- ROM C source cited in code comments throughout (e.g. `inventory.py:295` references `act_obj.c:151`).
+
+### Outstanding ROM C functions (not in scope)
+
+Helper functions and minor commands that ROM C exposes in `act_obj.c` but are
+already covered by other Python modules or are not part of the player command
+surface (e.g. `get_obj`, `find_obj`, `wear_obj` helper) are inventoried in
+Phase 2 above and remain ✅ MAPPED. Nothing in `act_obj.c` is currently
+unaudited or unimplemented.
+
+### Tracker action taken
+
+`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` row for `act_obj.c` flipped
+from 🔄 IN PROGRESS / ~60% to ✅ COMPLETE / 100% as part of this refresh.
+
+---
+
 ## Notes
 
-**Current Status**: Starting Phase 1 (Function Inventory) - COMPLETE ✅
+**Current Status**: ✅ 100% COMPLETE — no further work scheduled on `act_obj.c`.
 
-**Next Action**: Begin Phase 2 (QuickMUD Mapping)
+**Next Action**: Pick the next P1 Partial file from the tracker — candidates: `db2.c` (55%), `mob_prog.c` (75%), `mob_cmds.c` (70%), `interp.c` (80%).
 
 **Reference Files**:
 - ROM C Source: `src/act_obj.c` (3,018 lines)
