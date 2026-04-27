@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-004: `do_mpjunk` (MOBprog `junk` script command) now matches
+  ROM's empty-needle behaviour: `mob junk all.` (trailing dot, no
+  suffix) discards nothing because ROM `src/mob_cmds.c:436` defers to
+  `is_name(&arg[4], ...)` which returns FALSE for an empty string.
+  Python had been short-circuiting on `not suffix` and discarding every
+  carried object. Bare `mob junk all` still clears inventory as before.
+  Integration coverage at `tests/integration/test_mob_cmds_junk.py`.
 - MOBCMD-002: `do_mpassist` now enforces ROM `src/mob_cmds.c:393`'s full
   guard set — `victim == ch`, `ch->fighting != NULL`, and
   `victim->fighting == NULL`. Previously only the third clause was

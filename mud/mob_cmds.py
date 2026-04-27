@@ -1135,8 +1135,14 @@ def do_mpjunk(ch: Character, argument: str) -> None:
         return
     if lower.startswith("all."):
         suffix = token[4:]
+        # mirroring ROM src/mob_cmds.c:436 — `arg[3] == '\0' || is_name(&arg[4], ...)`.
+        # Bare "all" is handled above (arg[3] == '\0'); for "all.<needle>" ROM
+        # defers to is_name, which returns FALSE on an empty needle. So
+        # "all." alone (trailing dot, no suffix) matches nothing.
+        if not suffix:
+            return
         for obj in _iter_carried_objects():
-            if not suffix or _match_object(obj, suffix):
+            if _match_object(obj, suffix):
                 _discard(obj)
         return
 
