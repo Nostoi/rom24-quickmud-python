@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-003: `do_mpkill` now gates on `ch.position == Position.FIGHTING`
+  (matching ROM `src/mob_cmds.c:361`) instead of the looser
+  `ch.fighting is not None` check, and short-circuits self-attacks via the
+  missing `victim is ch` guard from the same ROM line. Integration coverage
+  at `tests/integration/test_mob_cmds_kill.py`.
 - MOBCMD-008: `do_mpflee` now performs 6 `rng_mm.number_door()` random-door
   attempts before giving up, mirroring ROM `src/mob_cmds.c:1272-1286`.
   Previously the function iterated the exits list in order, so the first

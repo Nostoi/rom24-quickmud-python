@@ -942,12 +942,18 @@ def do_mpvforce(ch: Character, argument: str) -> None:
 
 
 def do_mpkill(ch: Character, argument: str) -> None:
+    # mirroring ROM src/mob_cmds.c:348-373
     target = _find_char_in_room(ch, argument.strip())
     if target is None:
         return
+    # mirroring ROM src/mob_cmds.c:361 — `victim == ch || IS_NPC(victim) || ch->position == POS_FIGHTING`
+    if target is ch:
+        return
     if getattr(target, "is_npc", False):
         return
-    if getattr(ch, "fighting", None) is not None:
+    from mud.models.constants import Position
+
+    if getattr(ch, "position", None) == Position.FIGHTING:
         return
     from mud.combat import multi_hit
 
