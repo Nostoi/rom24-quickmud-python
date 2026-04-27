@@ -99,6 +99,24 @@ class TestMpOloadLevelArgument:
             " arg is omitted."
         )
 
+    def test_level_above_trust_refused(self, script_mob, oload_room):
+        # mirrors ROM src/mob_cmds.c:575-580 — `level < 0 || level > get_trust(ch)`
+        # bugs and refuses. script_mob has trust=30; passing 50 must abort.
+        do_mpoload(script_mob, f"{_TEST_VNUM} 50")
+
+        assert not getattr(script_mob, "inventory", []), (
+            "do_mpoload accepted a level above get_trust(ch); ROM"
+            " src/mob_cmds.c:575-580 bugs and returns without spawning."
+        )
+        assert not oload_room.contents
+
+    def test_negative_level_refused(self, script_mob, oload_room):
+        # mirrors ROM src/mob_cmds.c:575-580 — `level < 0` is rejected.
+        do_mpoload(script_mob, f"{_TEST_VNUM} -1")
+
+        assert not getattr(script_mob, "inventory", [])
+        assert not oload_room.contents
+
     def test_room_mode_with_explicit_level(self, script_mob, oload_room):
         # mirrors ROM src/mob_cmds.c:589-592 — 'R' loads to room.
         do_mpoload(script_mob, f"{_TEST_VNUM} 22 R")

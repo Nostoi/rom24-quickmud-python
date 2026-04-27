@@ -600,7 +600,8 @@ def do_mpoload(ch: Character, argument: str) -> None:
     # ROM src/mob_cmds.c:559-581 — arg2 is optional level; defaults to
     # get_trust(ch). If supplied, must be in [0, get_trust(ch)] or ROM bugs
     # out (MOBCMD-006 covers bounds; MOBCMD-005 only requires accepting it).
-    level = get_trust(ch)
+    trust = get_trust(ch)
+    level = trust
     mode_token = ""
     if len(parts) >= 2:
         if parts[1].lstrip("-").isdigit():
@@ -608,6 +609,10 @@ def do_mpoload(ch: Character, argument: str) -> None:
                 level = int(parts[1])
             except ValueError:
                 pass
+            # mirroring ROM src/mob_cmds.c:575-580 — `level < 0 || level >
+            # get_trust(ch)` bugs and refuses to spawn.
+            if level < 0 or level > trust:
+                return
             if len(parts) >= 3:
                 mode_token = parts[2]
         else:

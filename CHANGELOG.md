@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-006: `do_mpoload` now validates the optional level argument
+  against ROM's `level < 0 || level > get_trust(ch)` check
+  (`src/mob_cmds.c:575-580`) and refuses to spawn the object when out of
+  range. Previously the level was accepted unconditionally so a script
+  could load objects above the mob's trust ceiling. Integration coverage
+  at `tests/integration/test_mob_cmds_oload.py`.
 - MOBCMD-004: `do_mpjunk` (MOBprog `junk` script command) now matches
   ROM's empty-needle behaviour: `mob junk all.` (trailing dot, no
   suffix) discards nothing because ROM `src/mob_cmds.c:436` defers to
