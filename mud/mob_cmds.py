@@ -449,13 +449,23 @@ def do_mpcall(ch: Character, argument: str) -> None:
         vnum = int(args[0])
     except ValueError:
         return
-    target = None
+    # Mirroring ROM src/mob_cmds.c:1217-1252 — `mob call` accepts up to four
+    # argument tokens after the vnum: victim, obj1, obj2. ROM resolves victim
+    # via get_char_room and the two obj tokens via get_obj_here, defaulting
+    # to NULL when a token is missing or the lookup fails (lines 1239-1249).
+    target: Character | None = None
     if len(args) > 1:
         target = _find_char_in_room(ch, args[1])
+    obj1: Object | None = None
+    if len(args) > 2:
+        obj1 = _find_obj_here(ch, args[2])
+    obj2: Object | None = None
+    if len(args) > 3:
+        obj2 = _find_obj_here(ch, args[3])
     from mud import mobprog
 
     context = getattr(ch, "_mp_context", None)
-    mobprog.call_prog(vnum, ch, target, context=context)
+    mobprog.call_prog(vnum, ch, target, obj1, obj2, context=context)
 
 
 def do_mpdelay(ch: Character, argument: str) -> None:

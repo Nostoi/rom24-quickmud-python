@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-015 + MOBCMD-016: `do_mpcall` (MOBprog `call` script command) now
+  parses the optional obj1/obj2 tokens from `mob call <vnum> <victim>
+  <obj1> <obj2>` and resolves them via `_find_obj_here` (the `get_obj_here`
+  analog), forwarding both to `mobprog.call_prog`. ROM
+  `src/mob_cmds.c:1217-1252` initialises obj1/obj2 to NULL and only sets
+  them when the corresponding token resolves through `get_obj_here`; the
+  Python implementation had been dropping both args entirely so called
+  sub-programs could never receive object context. Integration coverage at
+  `tests/integration/test_mob_cmds_call.py`.
 - MOBCMD-011 + MOBCMD-012: `do_mpcast` (MOBprog `cast` script command) now
   resolves the JSON `target` string into a canonical `_TargetType` IntEnum
   mirroring ROM `TAR_*` (`src/magic.h`) and dispatches on the enum, matching
