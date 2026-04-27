@@ -542,6 +542,7 @@ def do_mpmload(ch: Character, argument: str) -> None:
 
 
 def do_mpoload(ch: Character, argument: str) -> None:
+    # mirroring ROM src/mob_cmds.c:538-614 — `mob oload <vnum> [level] [R|W]`
     parts = argument.split()
     if not parts:
         return
@@ -552,9 +553,20 @@ def do_mpoload(ch: Character, argument: str) -> None:
     room = getattr(ch, "room", None)
     if room is None:
         return
+
+    from mud.commands.imm_commands import get_trust
+
+    # ROM src/mob_cmds.c:559-581 — arg2 is optional level; defaults to
+    # get_trust(ch). If supplied, must be in [0, get_trust(ch)] or ROM bugs
+    # out (MOBCMD-006 covers bounds; MOBCMD-005 only requires accepting it).
+    level = get_trust(ch)
     mode_token = ""
     if len(parts) >= 2:
-        if parts[1].isdigit():
+        if parts[1].lstrip("-").isdigit():
+            try:
+                level = int(parts[1])
+            except ValueError:
+                pass
             if len(parts) >= 3:
                 mode_token = parts[2]
         else:
@@ -565,6 +577,8 @@ def do_mpoload(ch: Character, argument: str) -> None:
     obj = spawn_object(vnum)
     if obj is None:
         return
+    # mirroring ROM src/mob_cmds.c:601 — `obj = create_object(pObjIndex, level)`
+    obj.level = level
     if mode.startswith("r"):
         room.add_object(obj)
         return
@@ -1031,7 +1045,7 @@ def do_mpjunk(ch: Character, argument: str) -> None:
             _strip_from_collections(obj)
 
         if hasattr(obj, "carried_by"):
-            setattr(obj, "carried_by", None)
+            obj.carried_by = None
         _extract_runtime_object(obj)
 
     def _iter_carried_objects() -> list[Object]:

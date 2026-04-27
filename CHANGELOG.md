@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-005: `do_mpoload` (MOBprog `oload` script command) now accepts the
+  optional `level` argument from `mob oload <vnum> [level] [R|W]`, mirroring
+  ROM `src/mob_cmds.c:538-614`. When omitted, level defaults to
+  `get_trust(ch)`; the spawned object's `level` is set post-spawn to mirror
+  ROM `create_object(pObjIndex, level)`. Previously the level token was parsed
+  but discarded, so script-loaded objects always took the prototype's raw
+  level. Integration coverage at `tests/integration/test_mob_cmds_oload.py`.
 - MOBCMD-014: `do_mpdamage` (MOBprog `damage` script command) now routes
   through `mud.combat.engine.apply_damage` instead of raw-decrementing
   `victim.hit`. Mirrors ROM `src/mob_cmds.c:1132-1145`
