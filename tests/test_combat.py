@@ -585,8 +585,13 @@ def test_visibility_and_position_modifiers(monkeypatch):
 
     victim.hit = 50
     victim.add_affect(AffectFlag.INVISIBLE)
+    # ROM src/handler.c:2207 — get_char_room filters by can_see, so an
+    # invisible victim is not findable by `kill <name>`. ROM do_kill
+    # (src/fight.c:2771-2775) then emits "They aren't here." This test
+    # used to assert "You miss Victim.", which would require attacker
+    # to bypass the visibility check entirely — non-ROM behavior.
     out = process_command(attacker, "kill victim")
-    assert out == "You miss Victim."
+    assert out == "They aren't here."
 
     attacker.position = Position.STANDING
     attacker.fighting = None

@@ -89,104 +89,15 @@ def do_quiet(char: Character, args: str) -> str:
 
 
 def do_envenom(char: Character, args: str) -> str:
+    """Dispatcher entry point — delegates to the canonical skill handler.
+
+    ROM Reference: src/act_obj.c:849-963 (do_envenom)
     """
-    Apply poison to a weapon or food.
-    
-    ROM Reference: src/act_obj.c do_envenom (lines 849-960)
-    
-    Usage: envenom <item>
-    
-    Requires the envenom skill. Can poison edged weapons or food/drink.
-    """
-    if not args or not args.strip():
-        return "Envenom what item?"
-    
-    item_name = args.strip().split()[0]
-    
-    # Find item in inventory
-    carrying = getattr(char, "carrying", [])
-    obj = None
-    for item in carrying:
-        if item_name.lower() in getattr(item, "name", "").lower():
-            obj = item
-            break
-    
-    if obj is None:
-        return "You don't have that item."
-    
-    # Check envenom skill
-    skill = _get_skill(char, "envenom")
-    if skill < 1:
-        return "Are you crazy? You'd poison yourself!"
-    
-    item_type = getattr(obj, "item_type", "")
-    obj_name = getattr(obj, "short_descr", "it")
-    
-    # Food or drink
-    if item_type in ("food", "drink"):
-        # Check for blessed/burn_proof
-        extra_flags = getattr(obj, "extra_flags", 0)
-        ITEM_BLESS = 0x00000002
-        ITEM_BURN_PROOF = 0x00400000
-        
-        if extra_flags & (ITEM_BLESS | ITEM_BURN_PROOF):
-            return f"You fail to poison {obj_name}."
-        
-        from mud.core.dice import number_percent
-        if number_percent() < skill:
-            # Success
-            values = list(getattr(obj, "value", [0, 0, 0, 0, 0]))
-            while len(values) < 4:
-                values.append(0)
-            if not values[3]:
-                values[3] = 1
-                obj.value = values
-                _check_improve(char, "envenom", True)
-            return f"You treat {obj_name} with deadly poison."
-        else:
-            _check_improve(char, "envenom", False)
-            return f"You fail to poison {obj_name}."
-    
-    # Weapon
-    if item_type == "weapon":
-        # Check for special weapon flags that prevent envenoming
-        weapon_flags = getattr(obj, "weapon_flags", 0)
-        extra_flags = getattr(obj, "extra_flags", 0)
-        
-        WEAPON_FLAMING = 0x00000001
-        WEAPON_FROST = 0x00000002
-        WEAPON_VAMPIRIC = 0x00000004
-        WEAPON_SHARP = 0x00000008
-        WEAPON_VORPAL = 0x00000010
-        WEAPON_SHOCKING = 0x00000040
-        WEAPON_POISON = 0x00000080
-        ITEM_BLESS = 0x00000002
-        ITEM_BURN_PROOF = 0x00400000
-        
-        blocked = WEAPON_FLAMING | WEAPON_FROST | WEAPON_VAMPIRIC | WEAPON_SHARP | WEAPON_VORPAL | WEAPON_SHOCKING
-        
-        if weapon_flags & blocked or extra_flags & (ITEM_BLESS | ITEM_BURN_PROOF):
-            return f"You can't seem to envenom {obj_name}."
-        
-        # Check damage type (bash weapons can't be envenomed)
-        values = getattr(obj, "value", [0, 0, 0, 0, 0])
-        if len(values) > 3 and values[3] < 0:
-            return "You can only envenom edged weapons."
-        
-        if weapon_flags & WEAPON_POISON:
-            return f"{obj_name} is already envenomed."
-        
-        from mud.core.dice import number_percent
-        if number_percent() < skill:
-            # Add poison to weapon
-            obj.weapon_flags = weapon_flags | WEAPON_POISON
-            _check_improve(char, "envenom", True)
-            return f"You coat {obj_name} with venom."
-        else:
-            _check_improve(char, "envenom", False)
-            return f"You fail to envenom {obj_name}."
-    
-    return "You can't envenom that."
+    from mud.skills.handlers import envenom
+
+    item_name = args.strip().split(maxsplit=1)[0] if args and args.strip() else ""
+    result = envenom(char, item_name=item_name)
+    return str(result.get("message", ""))
 
 
 def do_gain(char: Character, args: str) -> str:

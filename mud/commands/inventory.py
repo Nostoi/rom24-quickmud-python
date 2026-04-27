@@ -366,15 +366,10 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
                         if is_same_group(gch, char):
                             members += 1
 
-            # Auto-split if >1 member and money > 1 (ROM C lines 176-180)
+            # Auto-split if >1 member and money > 1 (ROM C lines 176-180).
+            # ROM passes ``"silver gold"`` as a single sprintf-formatted string.
             if members > 1 and (silver > 1 or gold):
-                if silver > 1 and gold > 0:
-                    do_split(char, f"{silver} silver")
-                    do_split(char, f"{gold} gold")
-                elif silver > 1:
-                    do_split(char, f"{silver} silver")
-                elif gold > 0:
-                    do_split(char, f"{gold} gold")
+                do_split(char, f"{silver} {gold}")
 
         # Extract money object (ROM C line 183) - don't add to inventory
         return None  # Success, message already set

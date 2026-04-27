@@ -75,8 +75,8 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_get()` | 195-344 | ✅ `inventory.py::do_get()` (line 142) | ⏳ **VERIFY** | Get objects from room/container |
-| `do_steal()` | 2161-2404 | ✅ `thief_skills.py::do_steal()` (line 99) | ⏳ **VERIFY** | Theft skill |
+| `do_get()` | 195-344 | ✅ `inventory.py::do_get()` (line 142) | ✅ **AUDITED** | GET-001..012 fixed in prior sessions; 60/60 integration tests passing across `test_container_retrieval.py`, `test_furniture_occupancy.py`, `test_get_room_messages.py`, `test_numbered_get_syntax.py`, `test_pit_timer_handling.py`, `test_room_retrieval.py`. Verified April 27, 2026. |
+| `do_steal()` | 2161-2404 | ✅ `thief_skills.py::do_steal()` (line 99) | ✅ **AUDITED** | STEAL-001..014 fixed (full rewrite); 15/15 integration tests in `test_steal_command.py`. See do_steal section below. |
 
 **Estimated Complexity**: HIGH  
 **ROM C Lines**: 389 lines total  
@@ -88,9 +88,9 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_put()` | 346-494 | ✅ `obj_manipulation.py::do_put()` (line 52) | ⏳ **VERIFY** | Put items in containers |
-| `do_drop()` | 496-657 | ✅ `inventory.py::do_drop()` (line 171) | ⏳ **VERIFY** | Drop items to room |
-| `do_give()` | 659-847 | ✅ `give.py::do_give()` (line 13) | ⏳ **VERIFY** | Give items to characters |
+| `do_put()` | 346-494 | ✅ `obj_manipulation.py::do_put()` (line 52) | ✅ **AUDITED** | PUT-001..003 fixed (TO_ROOM messages, WEIGHT_MULT check, pit timer); 15/15 integration tests across `test_put_room_messages.py`, `test_put_weight_mult.py`, `test_put_pit_timer.py`. |
+| `do_drop()` | 496-657 | ✅ `inventory.py::do_drop()` (line 171) | ✅ **AUDITED** | `drop all`, `drop all.type`, money consolidation, ITEM_MELT_DROP, no-drop, wear-state exclusion all verified; 15/15 integration tests in `test_drop_command.py`. |
+| `do_give()` | 659-847 | ✅ `give.py::do_give()` (line 13) | ✅ **AUDITED** | Money paths (gold/silver/coin), equipped-item rejection, carry-limit, bribe trigger, changer NPC return-change, TO_NOTVICT exclusion all verified; 14/14 integration tests in `test_give_command.py`. |
 
 **Estimated Complexity**: MEDIUM  
 **ROM C Lines**: 401 lines total  
@@ -102,10 +102,10 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_wear()` | 1699-1738 | ✅ `equipment.py::do_wear()` (line 51) | ⏳ **VERIFY** | Wear equipment |
-| `do_remove()` | 1740-1763 | ✅ `obj_manipulation.py::do_remove()` (line 190) | ⏳ **VERIFY** | Remove equipment |
-| `wear_obj()` | 1401-1697 | ✅ `handler.py::equip_char()` | ⏳ **VERIFY** | Helper: wear object with slot logic |
-| `remove_obj()` | 1372-1399 | ✅ `handler.py::unequip_char()` + `handler.py::remove_obj()` | ⏳ **VERIFY** | Helper: remove object with slot logic |
+| `do_wear()` | 1699-1738 | ✅ `equipment.py::do_wear()` (line 51) | ✅ **AUDITED** | WEAR-001..009 fixed; replace logic, two-handed/shield/hold interactions, multi-slot wrist/neck/finger, location-specific text, light handling, TO_ROOM messages, `wear all` routing all verified; 52 tests passing across `test_equipment_system.py` + `test_player_equipment.py`. |
+| `do_remove()` | 1740-1763 | ✅ `obj_manipulation.py::do_remove()` (line 272) | ✅ **AUDITED** | 100% parity; `remove all` is documented Python extension |
+| `wear_obj()` | 1401-1697 | ✅ `equipment.py::do_wear()`/`do_wield()`/`do_hold()` | ✅ **AUDITED** | Slot/replace/multi-slot logic verified via WEAR-001..009 (all closed) |
+| `remove_obj()` | 1372-1392 | ✅ `obj_manipulation.py::_perform_remove()` (line 339) | ✅ **AUDITED** | NOREMOVE check + TO_CHAR/TO_ROOM "$n stops using $p" pair match ROM |
 
 **Estimated Complexity**: HIGH (slot validation, replace logic)  
 **ROM C Lines**: 365 lines total  
@@ -117,12 +117,12 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_quaff()` | 1865-1908 | ✅ `obj_manipulation.py::do_quaff()` (line 359) | ⏳ **VERIFY** | Drink potions |
-| `do_recite()` | 1910-1976 | ✅ `magic_items.py::do_recite()` (line 124) | ⏳ **VERIFY** | Read scrolls |
-| `do_drink()` | 1161-1282 | ✅ `consumption.py::do_drink()` (line 87) | ⏳ **VERIFY** | Drink from fountains/containers |
-| `do_eat()` | 1284-1370 | ✅ `consumption.py::do_eat()` (line 18) | ⏳ **VERIFY** | Eat food |
-| `do_fill()` | 965-1031 | ✅ `liquids.py::do_fill()` (line 13) | ⏳ **VERIFY** | Fill containers with liquid |
-| `do_pour()` | 1033-1159 | ✅ `liquids.py::do_pour()` (line 93) | ⏳ **VERIFY** | Pour liquids |
+| `do_quaff()` | 1865-1908 | ✅ `obj_manipulation.py::do_quaff()` (line 469) | ✅ **AUDITED** | QUAFF-001 fixed: TO_ROOM "$n quaffs $p." now broadcast before spell casting |
+| `do_recite()` | 1910-1976 | ✅ `magic_items.py::do_recite()` | ✅ **AUDITED** | RECITE-001..005 fixed: full rewrite — was raising `NameError` (undefined `SkillTarget`/`SKILL_TARGET_MAP`) on success path. RECITE-001: ROM `get_obj_carry` lookup (instead of substring scan of `ch.inventory`). RECITE-002: TO_ROOM `$n recites $p.` via `act_format`/`broadcast_room` (was inline f-string). RECITE-003: spell dispatch delegates to `obj_manipulation._obj_cast_spell` (no longer references missing `skill_handlers` dict). RECITE-004: scroll consumed via `_extract_obj` (matches ROM 1972 `extract_obj` regardless of success). RECITE-005: target arg `arg2[0]=='\0'` defaults to `victim=ch`; otherwise tries `get_char_room` then `get_obj_here`. 5 integration tests passing. |
+| `do_drink()` | 1161-1282 | ✅ `consumption.py::do_drink()` (line 87) | ✅ **AUDITED** | DRINK-001..009 fixed: no-arg fountain scan, drunk pre-check, get_obj_here lookup, list-based condition updates, liq_table affect calculations, post-condition feedback, TO_ROOM act, ROM poison fields, immortal full-bypass; LIQUID_TABLE extended with affect arrays |
+| `do_eat()` | 1284-1370 | ✅ `consumption.py::do_eat()` (line 18) | ✅ **AUDITED** | EAT-001..005 fixed: PILL type, immortal bypass, fullness pre-check, TO_ROOM broadcast, ROM poison affect fields |
+| `do_fill()` | 965-1031 | ✅ `liquids.py::do_fill()` (line 13) | ✅ **AUDITED** | FILL-002: added TO_ROOM broadcast (`$n fills $p with %s from $P.`); FILL-003: TO_CHAR wording verified correct; FILL-004: skipped (get_obj_carry shape difference, non-functional) |
+| `do_pour()` | 1033-1159 | ✅ `liquids.py::do_pour()` (line 93) | ✅ **AUDITED** | POUR-001: added TO_ROOM broadcast on `pour out`; POUR-002: added TO_ROOM on object-to-object pour; POUR-003: added TO_VICT and TO_NOTVICT on character-target pour; POUR-004 (critical bug): fixed hold-slot lookup from wrong string keys to `target_char.equipment[WearLocation.HOLD]`; POUR-005: no gap; POUR-006: skipped (article cosmetic) |
 
 **Estimated Complexity**: MEDIUM (spell casting, thirst/hunger mechanics)  
 **ROM C Lines**: 430 lines total  
@@ -134,10 +134,10 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_buy()` | 2531-2771 | ✅ `shop.py::do_buy()` (line 650) | ⏳ **VERIFY** | Purchase from shopkeeper |
-| `do_sell()` | 2871-2963 | ✅ `shop.py::do_sell()` (line 769) | ⏳ **VERIFY** | Sell to shopkeeper |
-| `do_list()` | 2773-2869 | ✅ `shop.py::do_list()` (line 590) | ⏳ **VERIFY** | List shop inventory |
-| `do_value()` | 2965-3018 | ✅ `shop.py::do_value()` (line 912) | ⏳ **VERIFY** | Appraise item value |
+| `do_buy()` | 2531-2771 | ✅ `shop.py::do_buy()` (line 650) | ✅ **AUDITED** | BUY-001..004 (keeper-voiced refusals + ch.reply) and BUY-005 (haggle on buy) fixed; minor cosmetic gaps deferred |
+| `do_sell()` | 2871-2963 | ✅ `shop.py::do_sell()` (line 769) | ✅ **AUDITED** | SELL-001 / SELL-004 (keeper-voiced refusals) and SELL-006 (`obj_to_keeper` dedup against ITEM_INVENTORY copies) fixed |
+| `do_list()` | 2773-2869 | ✅ `shop.py::do_list()` (line 590) | ✅ **AUDITED** | LIST-002 (pet-shop branch with kennel listing) and LIST-003 (`wear_loc` filter to skip keeper's worn items) fixed |
+| `do_value()` | 2965-3018 | ✅ `shop.py::do_value()` (line 912) | ✅ **AUDITED** | VAL-004 (keeper-voiced price quote with `$p` item-name substitution) fixed |
 
 **Estimated Complexity**: MEDIUM (shop mechanics, pricing formulas)  
 **ROM C Lines**: 351 lines total  
@@ -149,10 +149,10 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Priority | Notes |
 |----------------|-------|----------|--------|----------|-------|
-| `do_sacrifice()` | 1765-1863 | ✅ `obj_manipulation.py::do_sacrifice()` (line 257) | ⏳ **VERIFY** | P1 | Sacrifice corpses for gold |
-| `do_envenom()` | 849-963 | ✅ `remaining_rom.py::do_envenom()` (line 91) | ⏳ **VERIFY** | P1 | Poison weapons |
-| `do_brandish()` | 1978-2066 | ✅ `magic_items.py::do_brandish()` (line 225) | ⏳ **VERIFY** | P2 | Use staff magic |
-| `do_zap()` | 2068-2159 | ✅ `magic_items.py::do_zap()` (line 343) | ⏳ **VERIFY** | P2 | Use wand magic |
+| `do_sacrifice()` | 1765-1863 | ✅ `obj_manipulation.py::do_sacrifice()` (line 257) | ✅ **AUDITED** | P1 | SAC-001..005 fixed: TO_ROOM broadcasts, WearFlag.NO_SAC (1<<15), PlayerFlag.AUTOSPLIT (1<<7), UMIN unconditional; 6/6 tests passing |
+| `do_envenom()` | 849-963 | ✅ `skills/handlers.py::envenom()` (line 3625) + `remaining_rom.py::do_envenom()` shim | ✅ **AUDITED** | P1 | ENV-001 (WAIT_STATE on all 4 exit points) and ENV-002 (raw `attack_table[idx].damage == DAM_BASH` check; was misusing mapped enum which folds DAM_NONE→BASH and over-rejected) fixed; ENV-003 deferred (gsn_poison sn vs -1 affects only never-walked obj.affected); ENV-004: dispatcher shim cleaned up. 18/18 tests passing |
+| `do_brandish()` | 1978-2066 | ✅ `magic_items.py::do_brandish()` | ✅ **AUDITED** | P2 | BRANDISH-001..006 fixed: was unrunnable (referenced `ItemType.ITEM_STAFF`, undefined `SkillTarget`/`SKILL_TARGET_MAP`, `equipment.get("held")` string-key lookup). BRANDISH-001: HOLD-slot lookup now uses `equipment[WearLocation.HOLD]` IntEnum key (POUR-004 pattern). BRANDISH-002: `ItemType.STAFF` (no `ITEM_` prefix) per `mud/models/constants.py:291`. BRANDISH-003: ROM 2004 `WAIT_STATE(ch, 2*PULSE_VIOLENCE)` applied unconditionally before charge gate (was inside fail path only). BRANDISH-004: TO_ROOM `$n brandishes $p.`/`...and nothing happens.`/`$n's $p blazes bright and is gone.` via `act_format`+`broadcast_room`. BRANDISH-005: target dispatch via skill `target` string ("ignore"/"victim"/"friendly"/"self") mapped to ROM TAR_IGNORE/TAR_CHAR_OFFENSIVE/TAR_CHAR_DEFENSIVE/TAR_CHAR_SELF (lines 2023-2048). BRANDISH-006: charge decrement is unconditional after if-block (ROM 2056 `--staff->value[2]`); destruction extract_obj fires when `<=0`. 4 integration tests passing. |
+| `do_zap()` | 2068-2159 | ✅ `magic_items.py::do_zap()` | ✅ **AUDITED** | P2 | ZAP-001..006 fixed: same family of bugs as brandish (unrunnable success path, wrong HOLD lookup, `ItemType.ITEM_WAND`, undefined SkillTarget). ZAP-001: HOLD lookup now `equipment[WearLocation.HOLD]`. ZAP-002: `ItemType.WAND` per `mud/models/constants.py:290`. ZAP-003: `WAIT_STATE` applied after target resolution, before charge gate (ROM 2117). ZAP-004: act-trio messages — TO_NOTVICT (excludes ch+victim), TO_CHAR, TO_VICT — now use `act_format` with proper `$n`/`$N`/`$p` substitution; helper `_broadcast` extended to accept iterable exclusion since `broadcast_room` only takes a single character. ZAP-005: object-target branch broadcasts `$n zaps $P with $p.` TO_ROOM (ROM 2129). ZAP-006: charge decrement unconditional; on `<=0` broadcasts `$n's $p explodes into fragments.` and extracts the wand. 6 integration tests passing. |
 
 **Estimated Complexity**: MEDIUM (spell integration, skill checks)  
 **ROM C Lines**: 322 lines total  
@@ -164,12 +164,12 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `get_obj()` | 92-193 | ✅ Integrated into `do_get()` | ⏳ **VERIFY** | Helper: get single object with autosplit |
-| `can_loot()` | 61-89 | ✅ `ai/__init__.py::_can_loot()` (line 168) | ⏳ **VERIFY** | Helper: check corpse looting permissions |
-| `obj_to_keeper()` | 2406-2529 | ✅ Integrated into `shop.py` | ⏳ **VERIFY** | Helper: transfer object to shopkeeper |
-| `find_keeper()` | Forward ref | ✅ `shop.py::_find_keeper()` | ⏳ **VERIFY** | Helper: find shopkeeper in room |
-| `get_cost()` | Forward ref | ✅ `shop.py::_get_cost()` (line 433) | ⏳ **VERIFY** | Helper: calculate buy/sell price |
-| `get_obj_keeper()` | Forward ref | ✅ Integrated into `shop.py::do_buy/sell()` | ⏳ **VERIFY** | Helper: find object in shop inventory |
+| `get_obj()` | 92-193 | ✅ Integrated into `do_get()` | ✅ **AUDITED** | All ROM behaviors verified inline in `mud/commands/inventory.py::do_get`: CAN_WEAR ITEM_TAKE check, `carry_number + get_obj_number` vs `can_carry_n`, weight check vs `can_carry_w`, `_can_loot()`, furniture occupancy (ROM 127-134), pit-timer/HAD_TIMER (ROM 137-150), AUTOSPLIT for ITEM_MONEY (ROM 156-185). |
+| `can_loot()` | 61-89 | ✅ `ai/__init__.py::_can_loot()` (line 168) | ✅ **AUDITED** | Verified line-by-line vs ROM `act_obj.c:61-89`: immortal bypass, no-owner bypass, owner-not-found bypass, self-name bypass, PLR_CANLOOT bypass, `is_same_group` bypass. Group equality compared via `getattr(.., "group", None)` — equivalent to ROM `is_same_group`. |
+| `obj_to_keeper()` | 2406-2529 | ✅ Integrated into `shop.py::_obj_to_keeper()` (line 53) | ✅ **AUDITED** | Verified vs ROM 2406-2444: ITEM_INVENTORY dedup destroys new obj; non-inventory dupe inherits cost from existing; `carry_number`/`carry_weight` updated; `in_room`/`in_obj` cleared. SELL-006 covers this path. |
+| `find_keeper()` | Forward ref | ✅ `shop.py::_find_keeper()` | ✅ **AUDITED** | Locates ROM-flagged ACT_IS_NPC + shopkeeper in room; refusal messages and `ch.reply` handling verified. |
+| `get_cost()` | Forward ref | ✅ `shop.py::_get_cost()` (line 487) | ✅ **AUDITED** | Verified profit_buy/profit_sell percent multipliers, ITEM_INVENTORY half-price discount on dupe sells, integer-division via `c_div`. BUY-005 buy-haggle gap closed in shop audit. |
+| `get_obj_keeper()` | Forward ref | ✅ Integrated into `shop.py::do_buy()` | ✅ **AUDITED** | `number_argument()` parsing (`_parse_number_argument`, line 391) honors ROM `<n>.<name>` syntax; visibility filter applied; ITEM_INVENTORY infinite-stock branch (line 705). |
 
 **Estimated Complexity**: MEDIUM  
 **ROM C Lines**: ~300 lines estimated  
@@ -356,7 +356,7 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 **Quick Assessments**: 4/6 P0 commands (67%)
 - ⚠️ do_drop() - verified core parity batch with 15 targeted tests
 - ✅ do_give() - final sweep complete with 14 targeted tests passing
-- 🔄 do_wear() - ~80% parity estimate with initial batch verified
+- ✅ do_wear() / do_wield() / do_hold() - 100% ROM C parity (all 8 WEAR-* gaps closed; 92/93 tests passing, 1 unrelated skip)
 - ⚠️ do_remove() - ~80% parity estimate
 
 **Overall act_obj.c P0 Estimated Parity**: **~70%**
@@ -1265,19 +1265,19 @@ Python target: `mud/commands/equipment.py`.
 
 | ID | ROM line | Python line | Gap | Status |
 |----|----------|-------------|-----|--------|
-| WEAR-001 | 1410-1411 | equipment.py:122-123 (and do_wield/do_hold equivalents) | Level-fail path is missing the TO_ROOM `act("$n tries to use $p, but is too inexperienced.", ..., TO_ROOM)` broadcast. | open |
-| WEAR-002 | 1415-1423, 1670-1677 | equipment.py:150-186, 333-405 | LIGHT/HOLD wording divergence. ROM emits `"You light $p and hold it."` for ITEM_LIGHT and `"You hold $p in your hand."` for non-light HOLD; Python emits `"You hold X as your light."` for lights. Also missing TO_ROOM `"$n holds $p in $s hand."` / `"$n lights $p and holds it."` for holds taken via `do_wear` and `do_hold`. | open |
-| WEAR-003 | 1623-1629 | equipment.py:286-295 | WIELD weight check uses raw `STR * 10` instead of ROM's `str_app[STR].wield * 10` lookup. At STR 18 ROM allows 250 weight, Python allows 180; at STR 25 ROM allows 600, Python allows 250. | open |
-| WEAR-004 | 1639 | equipment.py:329-330 | `do_wield` does not broadcast `"$n wields $p."` to the room. | open |
+| WEAR-001 | 1410-1411 | equipment.py:37-45, 149, 307, 438 | Level-fail path is missing the TO_ROOM `act("$n tries to use $p, but is too inexperienced.", ..., TO_ROOM)` broadcast. **Fixed** — `_broadcast_level_fail()` emits the TO_ROOM message and is called from `do_wear`, `do_wield`, and `do_hold`. Covered by `test_item_level_restriction`. | closed |
+| WEAR-002 | 1415-1423, 1670-1677 | equipment.py:199-213, 478-494 | LIGHT/HOLD wording divergence; missing TO_ROOM `"$n holds $p in $s hand."` / `"$n lights $p and holds it."`. **Fixed** — `do_wear` (HOLD branch) and `do_hold` both branch on `ITEM_LIGHT` and emit ROM-faithful TO_CHAR + TO_ROOM messages. Covered by `test_wear_light_sets_light_slot`. | closed |
+| WEAR-003 | 1623-1629 | equipment.py:24-34, 339 | WIELD weight check uses raw `STR * 10` instead of ROM's `str_app[STR].wield * 10` lookup. **Fixed** — `_STR_WIELD` table mirrors `src/const.c:728` `str_app[26]` wield column exactly; `_str_wield_max()` is consulted in `do_wield`. | closed |
+| WEAR-004 | 1639 | equipment.py:377 | `do_wield` does not broadcast `"$n wields $p."` to the room. **Fixed** — `broadcast_room` emits `"{ch_name} wields {obj_name}."` after equip. | closed |
 
 ### IMPORTANT gaps
 
 | ID | ROM line | Python line | Gap | Status |
 |----|----------|-------------|-----|--------|
-| WEAR-005 | 1643-1665 | equipment.py:329-330 | WIELD does not emit the seven-tier weapon-skill flavor message. Skip when `sn == gsn_hand_to_hand`. | open |
-| ~~WEAR-006~~ | 1429-1431, 1458-1460, 1567-1569 | equipment.py:489-514 | ~~Multi-slot replace only attempts removal on the first occupied slot.~~ **VERIFIED NOT A BUG** on re-read: ROM's `&&` short-circuit means R removal only runs when L removal returned FALSE (locked). Python's "try L; on failure try R" matches that exactly. | closed |
-| WEAR-007 | 1719 | equipment.py:415-453 | `wear all` iterates inventory without `can_see_obj(ch, obj)` filtering. | open |
-| WEAR-008 | 1382-1386 | equipment.py:36-39 + 202-204 | NOREMOVE failure path emits `"You can't remove $p."` twice. | open |
+| WEAR-005 | 1643-1665 | equipment.py:380-407 | WIELD does not emit the seven-tier weapon-skill flavor message. **Fixed** — `_weapon_skill_flavor()` reproduces ROM's seven tiers and skips on `HAND_TO_HAND_SKILL`. | closed |
+| ~~WEAR-006~~ | 1429-1431, 1458-1460, 1567-1569 | equipment.py:587-612 | ~~Multi-slot replace only attempts removal on the first occupied slot.~~ **VERIFIED NOT A BUG** on re-read: ROM's `&&` short-circuit means R removal only runs when L removal returned FALSE (locked). Python's "try L; on failure try R" matches that exactly. | closed |
+| WEAR-007 | 1719 | equipment.py:514-516 | `wear all` iterates inventory without `can_see_obj(ch, obj)` filtering. **Fixed** — `_wear_all` calls `can_see_object(ch, obj)` and skips invisible items. | closed |
+| WEAR-008 | 1382-1386 | equipment.py:61-66, 229-232 | NOREMOVE failure path emits `"You can't remove $p."` twice. **Fixed** — `_unequip_to_inventory` sends the NOREMOVE message once and the caller returns `""` on failure to avoid duplicate output. Covered by `test_wear_replace_blocked_by_noremove`. | closed |
 | WEAR-009 | 1599-1608 | equipment.py:134-147 | SHIELD branch checks two-hand weapon BEFORE the slot remove attempt. ROM removes shield first, then checks; on failure the old shield is gone and the new one isn't equipped. **Fixed** — Python now mirrors ROM order per PARITY-not-IMPROVEMENT directive (player loses shield on rejected swap, matching ROM). | closed |
 
 ### Methodology
@@ -1316,6 +1316,45 @@ A function is **100% ROM C parity** when:
 3. ✅ Edge cases handled correctly
 4. ✅ Formulas match ROM C (weight, cost, etc.)
 5. ✅ Integration tests passing (100%)
+
+---
+
+## do_steal() Audit (2026-04-27) - ✅ AUDITED
+
+ROM C reference: `src/act_obj.c` lines 2161-2330. QuickMUD implementation:
+`mud/commands/thief_skills.py::do_steal()` (full rewrite to close 14 gaps).
+
+### Gaps fixed
+
+| ID | ROM Line(s) | Gap | Resolution |
+|----|-------------|-----|------------|
+| STEAL-001 | 2174-2178 | Missing-arg path returned a string without `\n` and split on first space only (couldn't reject `"steal coins"` with one arg). | Use ROM `one_argument` parsing semantics: extract `arg1`, `arg2` and reject when either is empty with `"Steal what from whom?\n"`. |
+| STEAL-002 | 2185-2189 | `victim is char` check came after `get_char_room`, but the QuickMUD helper excludes self, so self-name lookup returned `None` ("They aren't here") instead of "That's pointless". | Self-match by name (or `"self"`) before calling `get_char_room`. |
+| STEAL-003 | 2191-2192 | `is_safe(ch, victim)` short-circuit was returning a fabricated message instead of letting `is_safe` send its own and exiting silently. | Call `is_safe`, return empty TO_CHAR (ROM behaviour: `is_safe` already messaged). |
+| STEAL-004 | 2213 | Missing ROM `is_clan(ch)` check — non-clan PCs could steal successfully. | Added `_is_clan(char)` (delegates to `mud.characters.is_clan_member`); included in failure-condition disjunction per ROM. |
+| STEAL-005 | 2207, 2274-2275 | Used `//` integer division and `MAX_LEVEL = 51` (wrong constant) for coin scaling. | Use `c_div` and `MAX_LEVEL` from `mud.models.constants` (= 60). |
+| STEAL-006 | 2291 | Coin success message order was `"{gold} gold and {silver} silver"`, ROM prints silver first: `"%d silver and %d gold coins."` | Reordered to `"{silver} silver and {gold} gold coins."`. |
+| STEAL-007 | 2222-2223 | Failure path emitted no act() broadcasts — neither TO_VICT `"$n tried to steal from you."` nor TO_NOTVICT `"$n tried to steal from $N."`. | Direct delivery to `victim.messages` and to non-vict observers in `room.people`, mirroring ROM's TO_VICT/TO_NOTVICT split. |
+| STEAL-008 | 2241-2245 | Sleeping victim was never woken before yelling, and the random yell text was built but never broadcast to the room. | Wake (set `position = STANDING`) then deliver yell text to all room occupants; sex-aware possessive (`her`/`his`) preserved. |
+| STEAL-009 | 2256-2261 | PC→PC failure never set `PLR_THIEF` on the attacker. | Set `char.act |= PlayerFlag.THIEF` (using enum, not hardcoded hex) and append the "*** You are now a THIEF!! ***" message. |
+| STEAL-010 | 2247-2250 | NPC failure called `multi_hit(victim, char, -1)`; the `-1` damage type was bogus. | Pass `None` (matches QuickMUD `multi_hit` `dt` default and ROM `TYPE_UNDEFINED`). |
+| STEAL-011 | 2304-2306 | Item-rejection check used `wear_loc != -1` ("equipped"), missing the three real ROM rejections (`!can_drop_obj`, `ITEM_INVENTORY`, `obj->level > ch->level`) and the message was wrong. | Replaced with extra-flag NODROP / INVENTORY / level-gate using `ExtraFlag` enum; returns `"You can't pry it away.\n"`. Falls back to prototype `level` when instance level is 0. |
+| STEAL-012 | 2308-2319 | Carry-limit checks used ad-hoc `_get_max_carry_*` helpers instead of canonical `can_carry_n`/`can_carry_w`, and used a single-slot count instead of `_object_carry_number`. | Use `mud.world.movement.can_carry_n/can_carry_w` and `_object_carry_number`/`_object_carry_weight` from `mud.models.character` (matches ROM `get_obj_number`/`get_obj_weight`). |
+| STEAL-013 | 2322-2326 | Inventory transfer manipulated deprecated `victim.carrying` / `char.carrying` lists directly, leaving carry counters/weight stale (same bug class as PUT-001). | Use `victim.remove_object(obj)` + `char.add_object(obj)` so `carry_number`/`carry_weight` recalculate correctly. Output is `"You pocket $p.\n" + "Got it!\n"`. |
+| STEAL-014 | 2300-2303 | `get_obj_carry(victim, name)` lacked the ROM third-arg `ch` visibility filter; invisible items in the victim's inventory were stealable. | Added local `_get_obj_carry_visible(victim, name, observer)` that gates each candidate through `can_see_object(observer, obj)` while preserving N.name syntax. |
+
+### Verification
+
+- `pytest tests/ -k "steal or thief" -q` → 44 passed
+- New integration coverage at `tests/integration/test_steal_command.py` (15 tests):
+  missing-arg, self-target, fighting NPC, coin success message order, no-coins,
+  item success transfer, ITEM_INVENTORY rejection, ITEM_NODROP rejection,
+  obj-level > char-level rejection, no-clan PC failure, TO_VICT + TO_NOTVICT
+  broadcast on failure, AFF_SNEAK strip, PC→PC sets PLR_THIEF, WAIT_STATE
+  applied, PvP level-diff > 7 forces failure.
+- The pre-existing skill-handler `mud/skills/handlers.py::steal()` is left
+  untouched — it is exercised independently by `test_skill_steal_rom_parity.py`
+  and is not in the `do_steal` command path.
 
 ---
 

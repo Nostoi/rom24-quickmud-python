@@ -11,6 +11,7 @@ from mud.models.constants import (
     ItemType,
     LEVEL_IMMORTAL,
     RoomFlag,
+    WearLocation,
     ITEM_GLOW,
     ITEM_HAD_TIMER,
     ITEM_INVENTORY,
@@ -31,7 +32,60 @@ from mud.world.vision import room_is_dark
 _CLOSED_EARLY = "Sorry, I am closed. Come back later."
 _CLOSED_LATE = "Sorry, I am closed. Come back tomorrow."
 _CANT_SEE = "I don't trade with folks I can't see."
-_NO_WEALTH = "I'm afraid I don't have enough wealth to buy that."
+
+
+def _keeper_says(keeper, ch, message: str, *, obj=None) -> str:
+    """Emit a keeper-spoken message and set ch.reply.
+
+    ROM uses act() with TO_VICT for these — for the dispatcher we still
+    return the formatted line so it appears in ch's prompt.
+    Mirrors ROM src/act_obj.c act("$n tells you '...'", keeper, ..., ch, TO_VICT).
+    """
+    keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", "The shopkeeper")
+    if hasattr(ch, "reply"):
+        ch.reply = keeper
+    if obj is not None:
+        obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it") or "it"
+        return f"{keeper_name} tells you '{message.replace('$p', obj_name)}'"
+    return f"{keeper_name} tells you '{message}'"
+
+
+def _obj_to_keeper(obj: object, keeper) -> bool:
+    """Mirror ROM src/act_obj.c:obj_to_keeper dedup logic.
+
+    If keeper already carries an ITEM_INVENTORY-flagged object with the same
+    prototype vnum, the sold object is destroyed (extracted) and True is
+    returned to signal the caller NOT to add it to keeper inventory.
+    Otherwise returns False (caller should add normally).
+    """
+    obj_proto = getattr(obj, "prototype", None)
+    if obj_proto is None:
+        return False
+    obj_vnum = getattr(obj_proto, "vnum", None)
+    obj_descr = (getattr(obj, "short_descr", None) or "").strip().lower()
+
+    for existing in list(getattr(keeper, "inventory", []) or []):
+        ex_proto = getattr(existing, "prototype", None)
+        if ex_proto is None:
+            continue
+        if getattr(ex_proto, "vnum", None) != obj_vnum:
+            continue
+        ex_descr = (getattr(existing, "short_descr", None) or "").strip().lower()
+        if ex_descr != obj_descr:
+            continue
+        # Matched — check ITEM_INVENTORY flag
+        ex_flags = int(getattr(existing, "extra_flags", 0) or 0) | int(getattr(ex_proto, "extra_flags", 0) or 0)
+        if ex_flags & int(ITEM_INVENTORY):
+            # Destroy the sold object (extract_obj equivalent)
+            if hasattr(obj, "location"):
+                obj.location = None
+            return True
+        # Non-inventory duplicate: cost sync (keep it standard)
+        existing_cost = int(getattr(existing, "cost", 0) or 0)
+        if existing_cost:
+            obj.cost = existing_cost
+        break
+    return False
 
 
 def _split_first_argument(raw: str) -> tuple[str, str]:
@@ -588,6 +642,26 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
 
 
 def do_list(char: Character, args: str = "") -> str:
+    # LIST-002: pet shop branch (mirrors ROM src/act_obj.c:2777-2815)
+    room = getattr(char, "room", None)
+    if room is not None and getattr(room, "room_flags", 0) & int(RoomFlag.ROOM_PET_SHOP):
+        room_vnum = getattr(room, "vnum", None)
+        kennel_vnum = 9706 if room_vnum == 9621 else (room_vnum + 1 if room_vnum is not None else None)
+        kennel = room_registry.get(kennel_vnum) if kennel_vnum is not None else None
+        if kennel is None:
+            return "You can't do that here."
+        lines: list[str] = []
+        for pet in getattr(kennel, "people", []) or []:
+            if not _has_act_flag(pet, ActFlag.PET):
+                continue
+            level = int(getattr(pet, "level", 0) or 0)
+            price = 10 * level * level
+            short_descr = getattr(pet, "short_descr", None) or getattr(pet, "name", "a pet")
+            lines.append(f"[{level:2d}] {price:8d} - {short_descr}")
+        if not lines:
+            return "Sorry, we're out of pets right now."
+        return "Pets for sale:\n" + "\n".join(lines)
+
     keeper, denial = _find_shopkeeper(char)
     if not keeper:
         return denial or "You can't do that here."
@@ -614,6 +688,9 @@ def do_list(char: Character, args: str = "") -> str:
     entries: list[tuple[int, int, str, bool, int]] = []
     seen: dict[tuple[int | None, str], int] = {}
     for obj in inventory:
+        # LIST-003: skip items the keeper is wearing/wielding (ROM line 2831: obj->wear_loc == WEAR_NONE)
+        if int(getattr(obj, "wear_loc", int(WearLocation.NONE))) != int(WearLocation.NONE):
+            continue
         proto = getattr(obj, "prototype", None)
         if proto is None:
             continue
@@ -660,8 +737,9 @@ def do_buy(char: Character, args: str) -> str:
     if not shop:
         return "You can't do that here."
     quantity, remainder = _parse_purchase_quantity(args)
+    # BUY-001: quantity out of range uses keeper voice (ROM line 2655)
     if quantity < 1 or quantity > 99:
-        return "You can't buy that many."
+        return _keeper_says(keeper, char, "Get real!")
     target_index, raw_name = _parse_numbered_keyword(remainder)
     name = raw_name.lower()
     if not name:
@@ -682,18 +760,16 @@ def do_buy(char: Character, args: str) -> str:
         selected_position = idx
         break
 
-    if selected_obj is None:
-        return "The shopkeeper doesn't sell that."
+    proto = getattr(selected_obj, "prototype", None) if selected_obj is not None else None
 
-    proto = getattr(selected_obj, "prototype", None)
+    unit_price = _get_cost(keeper, selected_obj, buy=True) if selected_obj is not None else 0
 
-    unit_price = _get_cost(keeper, selected_obj, buy=True)
-    if unit_price <= 0:
-        # Allow prototype-less inventory templates to be purchased for free.
-        if proto is None and _is_inventory_item(selected_obj):
-            unit_price = 0
-        else:
-            return "The shopkeeper doesn't sell that."
+    # BUY-002: "don't sell that" uses keeper voice (ROM line 2661-2665)
+    if selected_obj is None or (unit_price <= 0 and not (proto is None and _is_inventory_item(selected_obj))):
+        return _keeper_says(keeper, char, "I don't sell that -- try 'list'.")
+
+    if unit_price <= 0 and proto is None and _is_inventory_item(selected_obj):
+        unit_price = 0
 
     infinite_stock = _is_inventory_item(selected_obj) and proto is not None
     matching_stock: list[Object] = []
@@ -705,12 +781,16 @@ def do_buy(char: Character, args: str) -> str:
             start_index=selected_position,
         )
         if len(matching_stock) < quantity:
-            return "The shopkeeper doesn't have that many in stock."
+            # ROM line 2681-2685: keeper voice for insufficient stock
+            return _keeper_says(keeper, char, "I don't have that many in stock.")
 
     item_level = getattr(proto, "level", getattr(selected_obj, "level", 0))
     char_level = getattr(char, "level", 0)
     if int(char_level) < int(item_level or 0):
-        return "You can't use that yet."
+        # BUY-003b: level check uses keeper voice (ROM line 2702-2706)
+        if hasattr(char, "reply"):
+            char.reply = keeper
+        return _keeper_says(keeper, char, f"You can't use $p yet.", obj=selected_obj)
 
     current_number = int(getattr(char, "carry_number", 0) or 0)
     if current_number + quantity > can_carry_n(char):
@@ -729,8 +809,29 @@ def do_buy(char: Character, args: str) -> str:
         return "You can't carry that much weight."
 
     total_cost = unit_price * quantity
+    # BUY-003: can't afford uses keeper voice (ROM line 2688-2698)
     if _character_total_wealth(char) < total_cost:
-        return "You can't afford that."
+        if quantity > 1:
+            return _keeper_says(keeper, char, "You can't afford to buy that many.")
+        return _keeper_says(keeper, char, "You can't afford to buy $p.", obj=selected_obj)
+
+    # BUY-005: haggle on buy (ROM src/act_obj.c:2722-2730)
+    skills = getattr(char, "skills", {}) or {}
+    try:
+        haggle_skill = int(skills.get("haggle", 0) or 0)
+    except (TypeError, ValueError):
+        haggle_skill = 0
+    flags = int(getattr(selected_obj, "extra_flags", 0) or 0)
+    if haggle_skill > 0 and not (flags & int(ITEM_SELL_EXTRACT)):
+        roll = rng_mm.number_percent()
+        if roll < haggle_skill:
+            base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0) if proto is not None else int(getattr(selected_obj, "cost", 0) or 0)
+            discount = c_div(c_div(base_cost, 2) * roll, 100)
+            unit_price = max(0, unit_price - discount)
+            total_cost = unit_price * quantity
+            if hasattr(char, "messages"):
+                char.messages.append("You haggle with the shopkeeper.")
+            check_improve(char, "haggle", True, 4)
 
     deduct_cost(char, total_cost)
     _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)
@@ -796,9 +897,8 @@ def do_sell(char: Character, args: str) -> str:
             break
 
     if selected_obj is None:
-        if hasattr(char, "reply"):
-            char.reply = keeper
-        return "You don't have that."
+        # SELL-001: keeper voice for missing item (ROM line 2892-2896)
+        return _keeper_says(keeper, char, "You don't have that item.")
 
     if not _can_drop_object(char, selected_obj):
         return "You can't let go of it."
@@ -811,7 +911,8 @@ def do_sell(char: Character, args: str) -> str:
         return "The shopkeeper doesn't buy that."
     total_wealth = _keeper_total_wealth(keeper)
     if price > total_wealth:
-        return _NO_WEALTH
+        # SELL-004: keeper voice with $p substitution (ROM line 2917-2921)
+        return _keeper_says(keeper, char, "I'm afraid I don't have enough wealth to buy $p.", obj=selected_obj)
 
     flags = int(getattr(selected_obj, "extra_flags", 0) or 0)
     skills = getattr(char, "skills", {}) or {}
@@ -889,11 +990,13 @@ def do_sell(char: Character, args: str) -> str:
         else:
             selected_obj.timer = rng_mm.number_range(50, 100)
             selected_obj.extra_flags = flags & ~int(ITEM_HAD_TIMER)
-        add_obj = getattr(keeper, "add_object", None)
-        if callable(add_obj):
-            add_obj(selected_obj)
-        else:  # pragma: no cover - legacy fallback
-            keeper.inventory.append(selected_obj)
+        # SELL-006: obj_to_keeper dedup — if keeper has ITEM_INVENTORY copy, extract sold obj
+        if not _obj_to_keeper(selected_obj, keeper):
+            add_obj = getattr(keeper, "add_object", None)
+            if callable(add_obj):
+                add_obj(selected_obj)
+            else:  # pragma: no cover - legacy fallback
+                keeper.inventory.append(selected_obj)
 
     _set_character_total_wealth(char, _character_total_wealth(char) + price)
     _set_keeper_total_wealth(keeper, total_wealth - price)
@@ -936,9 +1039,8 @@ def do_value(char: Character, args: str) -> str:
             break
 
     if selected_obj is None:
-        if hasattr(char, "reply"):
-            char.reply = keeper
-        return "The shopkeeper tells you 'You don't have that item.'"
+        # ROM line 2986-2990: keeper voice for missing item
+        return _keeper_says(keeper, char, "You don't have that item.")
 
     if not _keeper_can_see_object(keeper, selected_obj):
         return "The shopkeeper doesn't see what you are offering."
@@ -950,10 +1052,7 @@ def do_value(char: Character, args: str) -> str:
     if price <= 0:
         return "The shopkeeper looks uninterested in that."
 
-    if hasattr(char, "reply"):
-        char.reply = keeper
-
-    descriptor = selected_obj.short_descr or selected_obj.name or "it"
+    # VAL-004: price quote via keeper voice with $p substitution (ROM line 3011-3015)
     silver = price % 100
     gold = price // 100
-    return f"The shopkeeper tells you 'I'll give you {silver} silver and {gold} gold coins for {descriptor}.'"
+    return _keeper_says(keeper, char, f"I'll give you {silver} silver and {gold} gold coins for $p.", obj=selected_obj)

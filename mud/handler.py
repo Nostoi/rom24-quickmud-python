@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.constants import ItemType, Stat, WearLocation
+from mud.models.constants import ItemType, Stat, WearFlag, WearLocation
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -634,12 +634,14 @@ def count_users(obj: "Object") -> int:
     if TYPE_CHECKING:
         from mud.models.object import Object
 
-    in_room = getattr(obj, "in_room", None)
+    in_room = getattr(obj, "in_room", None) or getattr(obj, "location", None)
     if in_room is None:
         return 0
 
     count = 0
-    characters = getattr(in_room, "characters", [])
+    characters = getattr(in_room, "people", None)
+    if characters is None:
+        characters = getattr(in_room, "characters", [])
     for fch in characters:
         if getattr(fch, "on", None) == obj:
             count += 1
@@ -904,52 +906,53 @@ def create_money(gold: int, silver: int) -> "Object":
     value_1: int  # gold
 
     if gold == 0 and silver == 1:
-        # ROM C handler.c:2439-2441
         vnum = OBJ_VNUM_SILVER_ONE
+        name = "coin silver"
         short_descr = "one silver coin"
         cost = 1
         weight = 1
         value_0 = 1
         value_1 = 0
     elif gold == 1 and silver == 0:
-        # ROM C handler.c:2443-2445
         vnum = OBJ_VNUM_GOLD_ONE
+        name = "coin gold"
         short_descr = "one gold coin"
         cost = 100
         weight = 1
         value_0 = 0
         value_1 = 1
     elif silver == 0:
-        # ROM C handler.c:2447-2456 (gold only)
         vnum = OBJ_VNUM_GOLD_SOME
+        name = "coins gold"
         short_descr = f"{gold} gold coins"
         cost = 100 * gold
-        weight = max(1, gold // 5)  # ROM: gold / 5 (integer division)
+        weight = max(1, gold // 5)
         value_0 = 0
         value_1 = gold
     elif gold == 0:
-        # ROM C handler.c:2457-2466 (silver only)
         vnum = OBJ_VNUM_SILVER_SOME
+        name = "coins silver"
         short_descr = f"{silver} silver coins"
         cost = silver
-        weight = max(1, silver // 20)  # ROM: silver / 20 (integer division)
+        weight = max(1, silver // 20)
         value_0 = silver
         value_1 = 0
     else:
-        # ROM C handler.c:2468-2478 (mixed coins)
         vnum = OBJ_VNUM_COINS
+        name = "coins silver gold"
         short_descr = f"{silver} silver and {gold} gold coins"
         cost = 100 * gold + silver
-        weight = max(1, gold // 5 + silver // 20)  # ROM: gold/5 + silver/20
+        weight = max(1, gold // 5 + silver // 20)
         value_0 = silver
         value_1 = gold
 
-    # Create fallback money object (money vnums don't exist in area files)
     proto = ObjIndex(
         vnum=vnum,
+        name=name,
         short_descr=short_descr,
         description=f"{short_descr.capitalize()} is lying here.",
         item_type=int(ItemType.MONEY),
+        wear_flags=int(WearFlag.TAKE),
         weight=weight,
     )
     obj = Object(instance_id=None, prototype=proto)

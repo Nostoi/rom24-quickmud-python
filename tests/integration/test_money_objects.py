@@ -299,6 +299,266 @@ def test_corpse_money_is_lootable_object(movable_char_factory, movable_mob_facto
 
 
 # =============================================================================
+# AUTOSPLIT Integration Tests (GET-001 Gap Fix)
+# =============================================================================
+
+
+def test_autosplit_with_group_enabled(movable_char_factory, movable_mob_factory, test_room_3001):
+    """
+    Test: AUTOSPLIT flag causes money to auto-split when picked up in group.
+
+    ROM Parity: src/act_obj.c:162-184 (do_get AUTOSPLIT logic)
+        if (IS_SET(ch->act, PLR_AUTOSPLIT)) {
+            members = 0;
+            for (gch = ch->in_room->people; gch != NULL; gch = gch->next_in_room)
+                if (!IS_AFFECTED(gch, AFF_CHARM) && is_same_group(gch, ch))
+                    members++;
+            if (members > 1 && (obj->value[0] > 1 || obj->value[1]))
+                do_split(ch, buffer);
+        }
+
+    Given: Player with AUTOSPLIT flag enabled
+    And: Player grouped with another non-charmed character
+    When: Player picks up money > 1 coin
+    Then: Money automatically splits with group members
+    """
+    from mud.commands.inventory import do_get
+    from mud.models.constants import PlayerFlag
+
+    # Create leader with AUTOSPLIT enabled
+    leader = movable_char_factory(name="Leader", room_vnum=3001)
+    leader.act = int(PlayerFlag.AUTOSPLIT)
+    leader.silver = 0
+    leader.gold = 0
+
+    # Create follower and group them
+    follower = movable_char_factory(name="Follower", room_vnum=3001)
+    follower.silver = 0
+    follower.gold = 0
+    follower.leader = leader
+    follower.master = leader
+    leader.group_members = [leader, follower]
+    follower.group_members = [leader, follower]
+
+    # Create money object in room (100 silver)
+    money = create_money(gold=0, silver=100)
+    test_room_3001.add_object(money)
+
+    # Leader picks up money
+    result = do_get(leader, "coins")
+
+    # Verify money was split
+    # ROM C: do_split divides 100 silver between 2 members = 50 each
+    assert leader.silver == 50, f"Leader should have 50 silver after split, got {leader.silver}"
+    assert follower.silver == 50, f"Follower should have 50 silver after split, got {follower.silver}"
+
+
+def test_autosplit_disabled_keeps_all_money(movable_char_factory, test_room_3001):
+    """
+    Test: Without AUTOSPLIT flag, player keeps all money.
+
+    ROM Parity: src/act_obj.c:166 (if (!IS_SET(ch->act, PLR_AUTOSPLIT)) skip split)
+
+    Given: Player WITHOUT AUTOSPLIT flag
+    And: Player grouped with another character
+    When: Player picks up money
+    Then: Player keeps all money (no split)
+    """
+    from mud.commands.inventory import do_get
+
+    # Create leader WITHOUT AUTOSPLIT (act = 0)
+    leader = movable_char_factory(name="Leader", room_vnum=3001)
+    leader.act = 0
+    leader.silver = 0
+    leader.gold = 0
+
+    # Create follower and group them
+    follower = movable_char_factory(name="Follower", room_vnum=3001)
+    follower.silver = 0
+    follower.gold = 0
+    follower.leader = leader
+    follower.master = leader
+    leader.group_members = [leader, follower]
+    follower.group_members = [leader, follower]
+
+    # Create money object in room (100 silver)
+    money = create_money(gold=0, silver=100)
+    test_room_3001.add_object(money)
+
+    # Leader picks up money
+    result = do_get(leader, "coins")
+
+    # Verify leader keeps all money (no split)
+    assert leader.silver == 100, f"Leader should keep all 100 silver, got {leader.silver}"
+    assert follower.silver == 0, f"Follower should have 0 silver (no split), got {follower.silver}"
+
+
+def test_autosplit_solo_player_keeps_all_money(movable_char_factory, test_room_3001):
+    """
+    Test: Solo player keeps all money even with AUTOSPLIT enabled.
+
+    ROM Parity: src/act_obj.c:176-180 (if (members > 1) split)
+
+    Given: Player with AUTOSPLIT flag
+    And: Player has NO group members
+    When: Player picks up money
+    Then: Player keeps all money (split requires members > 1)
+    """
+    from mud.commands.inventory import do_get
+    from mud.models.constants import PlayerFlag
+
+    # Create solo player with AUTOSPLIT
+    player = movable_char_factory(name="Solo", room_vnum=3001)
+    player.act = int(PlayerFlag.AUTOSPLIT)
+    player.silver = 0
+    player.gold = 0
+    player.group_members = [player]  # Solo group
+
+    # Create money object in room (100 silver)
+    money = create_money(gold=0, silver=100)
+    test_room_3001.add_object(money)
+
+    # Player picks up money
+    result = do_get(player, "coins")
+
+    # Verify player keeps all money (solo = no split)
+    assert player.silver == 100, f"Solo player should keep all 100 silver, got {player.silver}"
+
+
+def test_autosplit_excludes_charmed_members(movable_char_factory, test_room_3001):
+    """
+    Test: AUTOSPLIT excludes charmed group members from count.
+
+    ROM Parity: src/act_obj.c:172 (if (!IS_AFFECTED(gch, AFF_CHARM) && is_same_group))
+
+    Given: Player with AUTOSPLIT flag
+    And: Group has 1 charmed member + 1 non-charmed member
+    When: Player picks up money
+    Then: Money only splits with non-charmed members (members = 2, not 3)
+    """
+    from mud.commands.inventory import do_get
+    from mud.models.constants import AffectFlag, PlayerFlag
+
+    # Create leader with AUTOSPLIT
+    leader = movable_char_factory(name="Leader", room_vnum=3001)
+    leader.act = int(PlayerFlag.AUTOSPLIT)
+    leader.silver = 0
+    leader.gold = 0
+
+    # Create non-charmed follower
+    follower = movable_char_factory(name="Follower", room_vnum=3001)
+    follower.silver = 0
+    follower.gold = 0
+    follower.leader = leader
+    follower.master = leader
+
+    # Create charmed follower (should be excluded from split)
+    charmed = movable_char_factory(name="Charmed", room_vnum=3001)
+    charmed.silver = 0
+    charmed.gold = 0
+    charmed.leader = leader
+    charmed.master = leader
+    charmed.affected_by = int(AffectFlag.CHARM)
+
+    leader.group_members = [leader, follower, charmed]
+    follower.group_members = [leader, follower, charmed]
+    charmed.group_members = [leader, follower, charmed]
+
+    # Create money object in room (100 silver)
+    money = create_money(gold=0, silver=100)
+    test_room_3001.add_object(money)
+
+    # Leader picks up money
+    result = do_get(leader, "coins")
+
+    # Verify split excludes charmed member
+    # ROM C: members = 2 (leader + follower, excluding charmed)
+    # 100 silver / 2 = 50 each
+    assert leader.silver == 50, f"Leader should have 50 silver, got {leader.silver}"
+    assert follower.silver == 50, f"Follower should have 50 silver, got {follower.silver}"
+    assert charmed.silver == 0, f"Charmed member should have 0 silver (excluded), got {charmed.silver}"
+
+
+def test_autosplit_with_mixed_gold_and_silver(movable_char_factory, test_room_3001):
+    """
+    Test: AUTOSPLIT splits both gold and silver correctly.
+
+    ROM Parity: src/act_obj.c:178-180
+        sprintf(buffer, "%d %d", obj->value[0], obj->value[1]);
+        do_function(ch, &do_split, buffer);
+
+    Given: Player with AUTOSPLIT flag in group
+    When: Player picks up money with both gold and silver
+    Then: Both gold and silver are split correctly
+    """
+    from mud.commands.inventory import do_get
+    from mud.models.constants import PlayerFlag
+
+    # Create leader with AUTOSPLIT
+    leader = movable_char_factory(name="Leader", room_vnum=3001)
+    leader.act = int(PlayerFlag.AUTOSPLIT)
+    leader.silver = 0
+    leader.gold = 0
+
+    # Create follower
+    follower = movable_char_factory(name="Follower", room_vnum=3001)
+    follower.silver = 0
+    follower.gold = 0
+    follower.leader = leader
+    follower.master = leader
+    leader.group_members = [leader, follower]
+    follower.group_members = [leader, follower]
+
+    # Create money object with 50 silver and 10 gold
+    money = create_money(gold=10, silver=50)
+    test_room_3001.add_object(money)
+
+    # Leader picks up money
+    result = do_get(leader, "coins")
+
+    # Verify both currencies split correctly
+    # 50 silver / 2 = 25 each
+    # 10 gold / 2 = 5 each
+    assert leader.silver == 25, f"Leader should have 25 silver, got {leader.silver}"
+    assert leader.gold == 5, f"Leader should have 5 gold, got {leader.gold}"
+    assert follower.silver == 25, f"Follower should have 25 silver, got {follower.silver}"
+    assert follower.gold == 5, f"Follower should have 5 gold, got {follower.gold}"
+
+
+def test_money_object_extracted_not_in_inventory(movable_char_factory, test_room_3001):
+    """
+    Test: Money object is extracted (consumed), not added to inventory.
+
+    ROM Parity: src/act_obj.c:183 (extract_obj(obj))
+
+    Given: Player picks up money
+    When: do_get() completes
+    Then: Money object no longer exists (not in inventory, not in room)
+    """
+    from mud.commands.inventory import do_get
+
+    player = movable_char_factory(name="Player", room_vnum=3001)
+    player.silver = 0
+    player.gold = 0
+
+    # Create money object in room
+    money = create_money(gold=10, silver=50)
+    test_room_3001.add_object(money)
+
+    # Verify money is in room before pickup
+    assert money in test_room_3001.contents
+
+    # Player picks up money
+    result = do_get(player, "coins")
+
+    # Verify money is consumed (ROM C: extract_obj)
+    assert money not in player.inventory, "Money should not be in inventory (extracted)"
+    assert money not in test_room_3001.contents, "Money should not be in room (extracted)"
+    assert player.silver == 50, "Player should have silver added to attributes"
+    assert player.gold == 10, "Player should have gold added to attributes"
+
+
+# =============================================================================
 # Drop Command Money Integration Tests
 # =============================================================================
 

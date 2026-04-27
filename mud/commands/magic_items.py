@@ -1,472 +1,362 @@
 """
 Magic item commands (recite, brandish, zap).
 
-ROM Reference: src/act_obj.c lines 1915-2157
+ROM Reference: src/act_obj.c lines 1910-2157
+
+This module mirrors ROM 2.4b6 do_recite/do_brandish/do_zap line-by-line:
+- HOLD-slot lookup uses WearLocation.HOLD enum key (POUR-004 pattern)
+- ItemType.SCROLL / STAFF / WAND (no ITEM_ prefix)
+- WAIT_STATE applied via ch.wait before any charge gate
+- Skill chance: 20 + c_div(skill * 4, 5) using number_percent (rng_mm)
+- Messages routed through act_format + broadcast_room
+- Spell dispatch delegates to obj_manipulation._obj_cast_spell
+- Charges decremented after the cast attempt; destruction broadcast last
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.commands.obj_manipulation import _extract_obj, _obj_cast_spell
 from mud.math.c_compat import c_div
-from mud.models.constants import ItemType
+from mud.models.constants import ItemType, WearLocation
+from mud.net.protocol import broadcast_room
+from mud.skills.registry import check_improve, skill_registry
 from mud.utils import rng_mm
-from mud.skills.registry import check_improve
+from mud.utils.act import act_format
 from mud.world.char_find import get_char_room as _get_char_room
-from mud.world.obj_find import get_obj_here as _get_obj_here
-
-
-def find_char_in_room(room, name, ch):
-    """ROM `get_char_room` analogue scoped by the actor's current room."""
-
-    return _get_char_room(ch, name)
-
-
-def find_obj_in_room(room, name):
-    """ROM `get_obj_here` analogue scoped to the supplied room.
-
-    QuickMUD's `get_obj_here` takes the actor as its first argument so that
-    it can walk the room contents. When only the room is in hand we wrap it
-    in a minimal stand-in that exposes `.room`.
-    """
-
-    if room is None:
-        return None
-    actor = type("_RoomLookup", (), {"room": room})()
-    return _get_obj_here(actor, name)
-
-
-def _skill_percent(character, name: str) -> int:
-    """Get skill percentage for character (0-100)."""
-    from mud.models.character import Character
-
-    if not isinstance(character, Character):
-        return 0
-
-    pcdata = getattr(character, "pcdata", None)
-    if not pcdata:
-        return 0
-
-    learned = getattr(pcdata, "learned", {})
-    return learned.get(name, 0)
-
+from mud.world.obj_find import get_obj_carry, get_obj_here as _get_obj_here
 
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.models.object import Object
 
 
-def obj_cast_spell(
-    skill_name: str, level: int, caster: Character, victim: Character | None, obj: Object | None
-) -> None:
+# ROM PULSE_VIOLENCE = 3 * PULSE_PER_SECOND; combat engine uses 3 (see mud/combat/engine.py:293).
+_PULSE_VIOLENCE = 3
+
+
+def _skill_percent(character: "Character", name: str) -> int:
+    """Return character's learned percent for ``name`` (0-100)."""
+    pcdata = getattr(character, "pcdata", None)
+    if not pcdata:
+        return 0
+    learned = getattr(pcdata, "learned", {})
+    return int(learned.get(name, 0))
+
+
+def _find_obj_here(ch: "Character", name: str) -> "Object | None":
+    """ROM get_obj_here scoped to actor's room (visible items)."""
+    return _get_obj_here(ch, name)
+
+
+def _get_value(obj, idx: int, default: int = 0) -> int:
+    """Safe accessor for obj.value[idx]."""
+    values = getattr(obj, "value", None) or []
+    if idx < len(values) and values[idx] is not None:
+        try:
+            return int(values[idx])
+        except (TypeError, ValueError):
+            return default
+    return default
+
+
+def _get_value_raw(obj, idx: int, default=None):
+    """Raw accessor (preserves str spell names) for obj.value[idx]."""
+    values = getattr(obj, "value", None) or []
+    if idx < len(values) and values[idx] is not None:
+        return values[idx]
+    return default
+
+
+def _set_value(obj, idx: int, val) -> None:
+    values = getattr(obj, "value", None)
+    if values is None:
+        values = [0, 0, 0, 0, 0]
+        obj.value = values
+    while len(values) <= idx:
+        values.append(0)
+    values[idx] = val
+
+
+def _resolve_target_kind(spell_name: str) -> str:
+    """Return the target kind ('ignore'/'victim'/'friendly'/'self'/'object'/'character_or_object')."""
+    skill = skill_registry.skills.get(spell_name)
+    if skill is None:
+        return "ignore"
+    return getattr(skill, "target", "ignore") or "ignore"
+
+
+def _broadcast(room, msg: str, *, exclude=None) -> None:
+    """Broadcast ``msg`` to room, supporting an iterable ``exclude`` set.
+
+    ``broadcast_room`` only accepts a single character; for ROM TO_NOTVICT we
+    need to skip both actor and victim, so iterate manually when given a set.
     """
-    Cast a spell from a magic item (scroll, staff, wand).
-
-    ROM Reference: src/magic.c:594-720 (obj_cast_spell)
-
-    Args:
-        skill_name: Name of the spell to cast
-        level: Caster level for the spell
-        caster: Character using the magic item
-        victim: Target character (or None)
-        obj: Target object (or None)
-    """
-    from mud.models.constants import SKILL_TARGET_MAP
-    from mud.skills.registry import get_skill_by_name
-    from mud.skills.handlers import skill_handlers
-
-    # Get skill data
-    skill = get_skill_by_name(skill_name)
-    if not skill:
+    if room is None or not msg:
         return
-
-    # Check if spell handler exists
-    handler = skill_handlers.get(skill_name)
-    if not handler:
+    if exclude is None or not isinstance(exclude, (list, tuple)):
+        broadcast_room(room, msg, exclude=exclude)
         return
-
-    # Determine target based on skill target type
-    target_type = SKILL_TARGET_MAP.get(skill.target, SkillTarget.TAR_IGNORE)
-
-    # Handle different target types
-    if target_type == SkillTarget.TAR_IGNORE:
-        # No target needed
-        pass
-
-    elif target_type == SkillTarget.TAR_CHAR_OFFENSIVE:
-        # Offensive spell - target enemy
-        if victim is None:
-            victim = caster.fighting
-        if victim is None:
-            caster.messages.append("You can't do that.")
-            return
-        # TODO: Add is_safe check
-        # if is_safe(caster, victim) and caster != victim:
-        #     caster.messages.append("Something isn't right...")
-        #     return
-
-    elif target_type in (SkillTarget.TAR_CHAR_DEFENSIVE, SkillTarget.TAR_CHAR_SELF):
-        # Defensive/self spell - default to self
-        if victim is None:
-            victim = caster
-
-    elif target_type == SkillTarget.TAR_OBJ_INV:
-        # Object spell
-        if obj is None:
-            caster.messages.append("You can't do that.")
-            return
-
-    elif target_type == SkillTarget.TAR_OBJ_CHAR_OFF:
-        # Offensive - char or object
-        if victim is None and obj is None:
-            if caster.fighting:
-                victim = caster.fighting
-            else:
-                caster.messages.append("You can't do that.")
-                return
-        # TODO: Add is_safe_spell check for victim
-
-    elif target_type == SkillTarget.TAR_OBJ_CHAR_DEF:
-        # Defensive - char or object
-        if victim is None and obj is None:
-            victim = caster
-
-    # Cast the spell
-    try:
-        handler(caster, victim if victim else obj)
-    except Exception:
-        # Spell failed - handler will have set appropriate messages
-        pass
-
-    # TODO: Check for offensive spells initiating combat
-    # if (skill.target == TAR_CHAR_OFFENSIVE or TAR_OBJ_CHAR_OFF) and victim != caster:
-    #     multi_hit(caster, victim, TYPE_UNDEFINED)
+    skip = list(exclude)
+    for char in list(getattr(room, "people", [])):
+        if any(char is s for s in skip):
+            continue
+        msgs = getattr(char, "messages", None)
+        if msgs is not None:
+            msgs.append(msg)
 
 
-def do_recite(ch: Character, args: str) -> str:
-    """
-    Recite a scroll to cast its spells.
+def do_recite(ch: "Character", args: str) -> str:
+    """Recite a scroll. ROM src/act_obj.c:1910-1974."""
+    parts = (args or "").split()
+    arg1 = parts[0] if parts else ""
+    arg2 = parts[1] if len(parts) > 1 else ""
 
-    ROM Reference: src/act_obj.c:1915-1974 (do_recite)
+    if not arg1:
+        return "What do you want to recite?"
 
-    Usage: recite <scroll> [target]
-
-    Attempts to cast the spells stored in a scroll. Success depends on the
-    'scrolls' skill and character level. On failure, the scroll is still consumed.
-    """
-    # Imports removed - function needs registry access for full implementation
-
-    # Parse arguments: recite <scroll> [target]
-    parts = args.split(None, 1)
-    if not parts:
-        return "Recite what?"
-
-    scroll_name = parts[0]
-    target_name = parts[1] if len(parts) > 1 else ""
-
-    # Find the scroll in inventory
-    scroll = None
-    for obj in ch.inventory:
-        if obj.name and scroll_name.lower() in obj.name.lower():
-            scroll = obj
-            break
-
-    if not scroll:
+    # ROM 1921: get_obj_carry(ch, arg1, ch)
+    scroll = get_obj_carry(ch, arg1)
+    if scroll is None:
         return "You do not have that scroll."
 
-    if scroll.item_type != ItemType.SCROLL:
+    # ROM 1927
+    if scroll.item_type != int(ItemType.SCROLL):
         return "You can recite only scrolls."
 
-    # Check level requirement
-    if ch.level < scroll.level:
+    # ROM 1933 — level gate
+    if int(getattr(ch, "level", 0)) < int(getattr(scroll, "level", 0)):
         return "This scroll is too complex for you to comprehend."
 
-    # Find target (character or object)
-    victim: Character | None = None
-    target_obj: Object | None = None
-
-    if not target_name:
-        # No target specified - default to self
+    victim: "Character | None" = None
+    target_obj: "Object | None" = None
+    if not arg2:
+        # ROM 1942 — default to self
         victim = ch
     else:
-        # Look for character in room
-        victim = find_char_in_room(ch.room, target_name, ch)
-        if not victim:
-            # Look for object in room
-            target_obj = find_obj_in_room(ch.room, target_name)
-
-        if not victim and not target_obj:
+        victim = _get_char_room(ch, arg2)
+        if victim is None:
+            target_obj = _find_obj_here(ch, arg2)
+        if victim is None and target_obj is None:
             return "You can't find it."
 
-    # Room messages
-    if ch.room:
-        for other in ch.room.people:
-            if other != ch:
-                other.messages.append(f"{ch.name} recites {scroll.short_descr}.")
+    room = getattr(ch, "room", None)
+    # ROM 1955-1956: act() pair fires before skill check
+    _broadcast(room, act_format("$n recites $p.", recipient=None, actor=ch, arg1=scroll), exclude=ch)
+    self_msg = act_format("You recite $p.", recipient=ch, actor=ch, arg1=scroll)
 
-    ch.messages.append(f"You recite {scroll.short_descr}.")
-
-    # Skill check: ROM formula is number_percent() >= 20 + skill*4/5
-    skill_level = _skill_percent(ch, "scrolls")
-    skill_chance = 20 + c_div(skill_level * 4, 5)
-    roll = rng_mm.number_percent()
-
-    if roll >= skill_chance:
-        # Failed
-        ch.messages.append("You mispronounce a syllable.")
+    # ROM 1958: number_percent() >= 20 + skill * 4 / 5  (failure branch)
+    skill_pct = _skill_percent(ch, "scrolls")
+    chance = 20 + c_div(skill_pct * 4, 5)
+    if rng_mm.number_percent() >= chance:
+        # ROM 1960
+        out = self_msg + "\n\rYou mispronounce a syllable."
         check_improve(ch, "scrolls", False, 2)
     else:
-        # Success - cast all three spell slots
-        # Scroll value[0] = level, value[1-3] = spell names/IDs
-        spell_level = scroll.value[0] if scroll.value and len(scroll.value) > 0 else ch.level
-
-        # Cast spell from value[1]
-        if scroll.value and len(scroll.value) > 1 and scroll.value[1]:
-            spell_name = str(scroll.value[1])
-            obj_cast_spell(spell_name, spell_level, ch, victim, target_obj)
-
-        # Cast spell from value[2]
-        if scroll.value and len(scroll.value) > 2 and scroll.value[2]:
-            spell_name = str(scroll.value[2])
-            obj_cast_spell(spell_name, spell_level, ch, victim, target_obj)
-
-        # Cast spell from value[3]
-        if scroll.value and len(scroll.value) > 3 and scroll.value[3]:
-            spell_name = str(scroll.value[3])
-            obj_cast_spell(spell_name, spell_level, ch, victim, target_obj)
-
+        # ROM 1966-1968: cast all three slots
+        spell_level = _get_value(scroll, 0, int(getattr(ch, "level", 1)))
+        for slot in (1, 2, 3):
+            spell = _get_value_raw(scroll, slot)
+            if spell:
+                _obj_cast_spell(spell, spell_level, ch, victim, target_obj)
         check_improve(ch, "scrolls", True, 2)
+        out = self_msg
 
-    # Destroy the scroll
-    if scroll in ch.inventory:
-        ch.inventory.remove(scroll)
-
-    return ""
+    # ROM 1972: extract_obj(scroll)
+    _extract_obj(ch, scroll)
+    return out
 
 
-def do_brandish(ch: Character, args: str) -> str:
-    """
-    Brandish a staff to cast its spell on all valid targets in the room.
+def _hold_slot(ch: "Character"):
+    """ROM get_eq_char(ch, WEAR_HOLD). Equipment dict keyed by WearLocation.HOLD."""
+    equipment = getattr(ch, "equipment", None) or {}
+    return equipment.get(WearLocation.HOLD)
 
-    ROM Reference: src/act_obj.c:1978-2064 (do_brandish)
 
-    Usage: brandish
+def _clear_hold(ch: "Character") -> None:
+    equipment = getattr(ch, "equipment", None) or {}
+    equipment.pop(WearLocation.HOLD, None)
 
-    Brandishes the staff held in hand, casting its spell on all appropriate targets
-    based on the spell's target type (offensive vs defensive). Consumes one charge.
-    """
-    # Check if holding something
-    staff = getattr(ch, "equipment", {}).get("held")
-    if not staff:
+
+def do_brandish(ch: "Character", args: str) -> str:
+    """Brandish a staff. ROM src/act_obj.c:1978-2064."""
+    staff = _hold_slot(ch)
+
+    # ROM 1985
+    if staff is None:
         return "You hold nothing in your hand."
 
-    # Check if it's a staff
-    if staff.item_type != ItemType.ITEM_STAFF:
+    # ROM 1991
+    if staff.item_type != int(ItemType.STAFF):
         return "You can brandish only with a staff."
 
-    # Get spell from staff value[3]
-    if not staff.value or len(staff.value) < 4 or not staff.value[3]:
-        # Invalid staff - no spell
-        return "Nothing happens."
+    spell_name = _get_value_raw(staff, 3)
+    # ROM 1997-2002: bad sn check (sn<0 || sn>=MAX_SKILL || spell_fun==0)
+    if not spell_name:
+        return ""  # ROM bugs out silently; suppress output
 
-    spell_name = str(staff.value[3])
+    # ROM 2004: WAIT_STATE BEFORE charge check
+    ch.wait = max(getattr(ch, "wait", 0), 2 * _PULSE_VIOLENCE)
 
-    # Apply wait state (2 * PULSE_VIOLENCE = 2 rounds)
-    ch.wait = max(ch.wait, 2 * 3)  # PULSE_VIOLENCE is typically 3
+    room = getattr(ch, "room", None)
+    out_lines: list[str] = []
 
-    # Check if staff has charges
-    charges = staff.value[2] if staff.value and len(staff.value) > 2 else 0
-    if charges <= 0:
-        return "The staff has no charges left."
+    charges = _get_value(staff, 2, 0)
+    # ROM 2006: if (staff->value[2] > 0)
+    if charges > 0:
+        # ROM 2008-2009: act pair
+        _broadcast(room, act_format("$n brandishes $p.", recipient=None, actor=ch, arg1=staff), exclude=ch)
+        out_lines.append(act_format("You brandish $p.", recipient=ch, actor=ch, arg1=staff))
 
-    # Room messages
-    if ch.room:
-        for other in ch.room.people:
-            if other != ch:
-                other.messages.append(f"{ch.name} brandishes {staff.short_descr}.")
+        skill_pct = _skill_percent(ch, "staves")
+        chance = 20 + c_div(skill_pct * 4, 5)
+        # ROM 2010-2016
+        if int(getattr(ch, "level", 0)) < int(getattr(staff, "level", 0)) or rng_mm.number_percent() >= chance:
+            out_lines.append(act_format("You fail to invoke $p.", recipient=ch, actor=ch, arg1=staff))
+            _broadcast(room, "...and nothing happens.", exclude=ch)
+            check_improve(ch, "staves", False, 2)
+        else:
+            # ROM 2019-2053: per-target loop
+            target_kind = _resolve_target_kind(spell_name)
+            spell_level = _get_value(staff, 0, int(getattr(ch, "level", 1)))
+            people = list(getattr(room, "people", [])) if room is not None else [ch]
+            ch_is_npc = bool(getattr(ch, "is_npc", False))
+            for vch in people:
+                vch_is_npc = bool(getattr(vch, "is_npc", False))
+                # Map ROM TAR_* via skill target string
+                if target_kind == "ignore":
+                    if vch is not ch:
+                        continue
+                elif target_kind == "victim":  # TAR_CHAR_OFFENSIVE
+                    if (vch_is_npc if ch_is_npc else not vch_is_npc):
+                        continue
+                elif target_kind == "friendly":  # TAR_CHAR_DEFENSIVE
+                    if (not vch_is_npc if ch_is_npc else vch_is_npc):
+                        continue
+                elif target_kind == "self":  # TAR_CHAR_SELF
+                    if vch is not ch:
+                        continue
+                else:
+                    # Unknown / non-supported target type for brandish in ROM bugs out
+                    return "\n".join(filter(None, out_lines))
 
-    ch.messages.append(f"You brandish {staff.short_descr}.")
+                _obj_cast_spell(spell_name, spell_level, ch, vch, None)
+            check_improve(ch, "staves", True, 2)
 
-    # Check level and skill
-    skill_level = _skill_percent(ch, "staves")
-    skill_chance = 20 + c_div(skill_level * 4, 5)
-    roll = rng_mm.number_percent()
+    # ROM 2056: --staff->value[2] <= 0 (decrement unconditionally; check after)
+    new_charges = charges - 1
+    _set_value(staff, 2, new_charges)
+    if new_charges <= 0:
+        _broadcast(
+            room,
+            act_format("$n's $p blazes bright and is gone.", recipient=None, actor=ch, arg1=staff),
+            exclude=ch,
+        )
+        out_lines.append(act_format("Your $p blazes bright and is gone.", recipient=ch, actor=ch, arg1=staff))
+        _clear_hold(ch)
+        _extract_obj(ch, staff)
 
-    if ch.level < staff.level or roll >= skill_chance:
-        # Failed
-        ch.messages.append(f"You fail to invoke {staff.short_descr}.")
-        if ch.room:
-            for other in ch.room.people:
-                if other != ch:
-                    other.messages.append("...and nothing happens.")
-        check_improve(ch, "staves", False, 2)
-    else:
-        # Success - cast on all appropriate targets
-        from mud.models.constants import SKILL_TARGET_MAP
-        from mud.skills.registry import get_skill_by_name
-
-        skill = get_skill_by_name(spell_name)
-        spell_level = staff.value[0] if staff.value and len(staff.value) > 0 else ch.level
-
-        if skill and ch.room:
-            target_type = SKILL_TARGET_MAP.get(skill.target, SkillTarget.TAR_IGNORE)
-
-            # Cast on all valid targets in room
-            for vch in list(ch.room.people):
-                # Determine if this character is a valid target
-                should_target = False
-
-                if target_type == SkillTarget.TAR_IGNORE:
-                    # Only self
-                    should_target = vch == ch
-
-                elif target_type == SkillTarget.TAR_CHAR_OFFENSIVE:
-                    # Enemies only (NPC vs PC or PC vs NPC)
-                    if ch.is_npc:
-                        should_target = not vch.is_npc
-                    else:
-                        should_target = vch.is_npc
-
-                elif target_type == SkillTarget.TAR_CHAR_DEFENSIVE:
-                    # Allies only (same type)
-                    if ch.is_npc:
-                        should_target = vch.is_npc
-                    else:
-                        should_target = not vch.is_npc
-
-                elif target_type == SkillTarget.TAR_CHAR_SELF:
-                    # Only self
-                    should_target = vch == ch
-
-                if should_target:
-                    obj_cast_spell(spell_name, spell_level, ch, vch, None)
-
-        check_improve(ch, "staves", True, 2)
-
-    # Decrement charges
-    if staff.value and len(staff.value) > 2:
-        staff.value[2] = charges - 1
-
-        # If no charges left, destroy staff
-        if staff.value[2] <= 0:
-            if ch.room:
-                for other in ch.room.people:
-                    if other != ch:
-                        other.messages.append(f"{ch.name}'s {staff.short_descr} blazes bright and is gone.")
-            ch.messages.append(f"Your {staff.short_descr} blazes bright and is gone.")
-
-            # Remove from equipment
-            if "held" in ch.equipment:
-                del ch.equipment["held"]
-
-    return ""
+    return "\n".join(line for line in out_lines if line)
 
 
-def do_zap(ch: Character, args: str) -> str:
-    """
-    Zap a target with a wand to cast its spell.
+def do_zap(ch: "Character", args: str) -> str:
+    """Zap with a wand. ROM src/act_obj.c:2068-2157."""
+    arg = (args or "").split()
+    arg = arg[0] if arg else ""
 
-    ROM Reference: src/act_obj.c:2068-2157 (do_zap)
+    fighting = getattr(ch, "fighting", None)
 
-    Usage: zap [target]
+    # ROM 2076: empty arg + no fight target
+    if not arg and fighting is None:
+        return "Zap whom or what?"
 
-    Zaps a character or object with the wand held in hand. If no target is specified
-    and you're fighting, zaps your current opponent. Consumes one charge.
-    """
-    # Check if holding something
-    wand = getattr(ch, "equipment", {}).get("held")
-    if not wand:
+    wand = _hold_slot(ch)
+    # ROM 2082
+    if wand is None:
         return "You hold nothing in your hand."
 
-    # Check if it's a wand
-    if wand.item_type != ItemType.ITEM_WAND:
+    # ROM 2088
+    if wand.item_type != int(ItemType.WAND):
         return "You can zap only with a wand."
 
-    # Parse target
-    target_name = args.strip()
-    victim: Character | None = None
-    target_obj: Object | None = None
-
-    if not target_name:
-        # No argument - use fighting target
-        if ch.fighting:
-            victim = ch.fighting
+    victim: "Character | None" = None
+    target_obj: "Object | None" = None
+    if not arg:
+        # ROM 2095-2105
+        if fighting is not None:
+            victim = fighting
         else:
             return "Zap whom or what?"
     else:
-        # Look for character in room
-        if ch.room:
-            victim = find_char_in_room(ch.room, target_name, ch)
-            if not victim:
-                # Look for object in room
-                target_obj = find_obj_in_room(ch.room, target_name)
-
-        if not victim and not target_obj:
+        victim = _get_char_room(ch, arg)
+        if victim is None:
+            target_obj = _find_obj_here(ch, arg)
+        if victim is None and target_obj is None:
             return "You can't find it."
 
-    # Apply wait state (2 * PULSE_VIOLENCE = 2 rounds)
-    ch.wait = max(ch.wait, 2 * 3)  # PULSE_VIOLENCE is typically 3
+    # ROM 2117: WAIT_STATE
+    ch.wait = max(getattr(ch, "wait", 0), 2 * _PULSE_VIOLENCE)
 
-    # Check if wand has charges
-    charges = wand.value[2] if wand.value and len(wand.value) > 2 else 0
-    if charges <= 0:
-        return "The wand has no charges left."
+    room = getattr(ch, "room", None)
+    out_lines: list[str] = []
 
-    # Room messages
-    if victim:
-        if ch.room:
-            for other in ch.room.people:
-                if other != ch and other != victim:
-                    other.messages.append(f"{ch.name} zaps {victim.name} with {wand.short_descr}.")
-        ch.messages.append(f"You zap {victim.name} with {wand.short_descr}.")
-        if victim != ch:
-            victim.messages.append(f"{ch.name} zaps you with {wand.short_descr}.")
-    else:
-        # Zapping object
-        if ch.room:
-            for other in ch.room.people:
-                if other != ch:
-                    obj_name = target_obj.short_descr if target_obj else "something"
-                    other.messages.append(f"{ch.name} zaps {obj_name} with {wand.short_descr}.")
-        obj_name = target_obj.short_descr if target_obj else "it"
-        ch.messages.append(f"You zap {obj_name} with {wand.short_descr}.")
+    charges = _get_value(wand, 2, 0)
+    # ROM 2119: if (wand->value[2] > 0)
+    if charges > 0:
+        # ROM 2121-2131: messaging branches
+        if victim is not None:
+            # ROM TO_NOTVICT: exclude ch + victim. act_format uses arg2 for $N.
+            _broadcast(
+                room,
+                act_format("$n zaps $N with $p.", recipient=None, actor=ch, arg1=wand, arg2=victim),
+                exclude=[ch, victim],
+            )
+            out_lines.append(act_format("You zap $N with $p.", recipient=ch, actor=ch, arg1=wand, arg2=victim))
+            if victim is not ch:
+                vict_msg = act_format("$n zaps you with $p.", recipient=victim, actor=ch, arg1=wand, arg2=victim)
+                msgs = getattr(victim, "messages", None)
+                if msgs is not None and vict_msg:
+                    msgs.append(vict_msg)
+        else:
+            _broadcast(
+                room,
+                act_format("$n zaps $P with $p.", recipient=None, actor=ch, arg1=wand, arg2=target_obj),
+                exclude=ch,
+            )
+            out_lines.append(act_format("You zap $P with $p.", recipient=ch, actor=ch, arg1=wand, arg2=target_obj))
 
-    # Check level and skill
-    skill_level = _skill_percent(ch, "wands")
-    skill_chance = 20 + c_div(skill_level * 4, 5)
-    roll = rng_mm.number_percent()
+        skill_pct = _skill_percent(ch, "wands")
+        chance = 20 + c_div(skill_pct * 4, 5)
+        # ROM 2133-2146
+        if int(getattr(ch, "level", 0)) < int(getattr(wand, "level", 0)) or rng_mm.number_percent() >= chance:
+            out_lines.append(
+                act_format("Your efforts with $p produce only smoke and sparks.", recipient=ch, actor=ch, arg1=wand)
+            )
+            _broadcast(
+                room,
+                act_format("$n's efforts with $p produce only smoke and sparks.", recipient=None, actor=ch, arg1=wand),
+                exclude=ch,
+            )
+            check_improve(ch, "wands", False, 2)
+        else:
+            spell = _get_value_raw(wand, 3)
+            spell_level = _get_value(wand, 0, int(getattr(ch, "level", 1)))
+            if spell:
+                _obj_cast_spell(spell, spell_level, ch, victim, target_obj)
+            check_improve(ch, "wands", True, 2)
 
-    if ch.level < wand.level or roll >= skill_chance:
-        # Failed
-        ch.messages.append(f"Your efforts with {wand.short_descr} produce only smoke and sparks.")
-        if ch.room:
-            for other in ch.room.people:
-                if other != ch:
-                    other.messages.append(f"{ch.name}'s efforts with {wand.short_descr} produce only smoke and sparks.")
-        check_improve(ch, "wands", False, 2)
-    else:
-        # Success - cast spell
-        if wand.value and len(wand.value) > 3 and wand.value[3]:
-            spell_name = str(wand.value[3])
-            spell_level = wand.value[0] if wand.value and len(wand.value) > 0 else ch.level
-            obj_cast_spell(spell_name, spell_level, ch, victim, target_obj)
+    # ROM 2149: --wand->value[2] <= 0
+    new_charges = charges - 1
+    _set_value(wand, 2, new_charges)
+    if new_charges <= 0:
+        _broadcast(
+            room,
+            act_format("$n's $p explodes into fragments.", recipient=None, actor=ch, arg1=wand),
+            exclude=ch,
+        )
+        out_lines.append(act_format("Your $p explodes into fragments.", recipient=ch, actor=ch, arg1=wand))
+        _clear_hold(ch)
+        _extract_obj(ch, wand)
 
-        check_improve(ch, "wands", True, 2)
-
-    # Decrement charges
-    if wand.value and len(wand.value) > 2:
-        wand.value[2] = charges - 1
-
-        # If no charges left, destroy wand
-        if wand.value[2] <= 0:
-            if ch.room:
-                for other in ch.room.people:
-                    if other != ch:
-                        other.messages.append(f"{ch.name}'s {wand.short_descr} explodes into fragments.")
-            ch.messages.append(f"Your {wand.short_descr} explodes into fragments.")
-
-            # Remove from equipment
-            if "held" in ch.equipment:
-                del ch.equipment["held"]
-
-    return ""
+    return "\n".join(line for line in out_lines if line)

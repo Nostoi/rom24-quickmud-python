@@ -136,7 +136,10 @@ def test_buy_rejects_items_above_level():
 
         before_gold = char.gold
         response = process_command(char, "buy greatsword")
-        assert response == "You can't use that yet."
+        # BUY-003b: keeper-voiced with $p substitution (ROM line 2702-2706)
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        weapon_name = getattr(weapon, "short_descr", None) or getattr(weapon, "name", None) or "it"
+        assert response == f"{keeper_name} tells you 'You can't use {weapon_name} yet.'"
         assert char.gold == before_gold
         assert not any("greatsword" in (obj.short_descr or "").lower() for obj in char.inventory)
         assert any("greatsword" in (obj.short_descr or "").lower() for obj in keeper.inventory)
@@ -745,7 +748,9 @@ def test_sell_sets_reply_after_missing_item():
     try:
         time_info.hour = 10
         response = process_command(char, "sell lantern")
-        assert response == "You don't have that."
+        # SELL-001: keeper-voiced refusal (ROM: "$n tells you 'You don't have that item'.")
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        assert f"{keeper_name} tells you 'You don't have that item.'" == response
         assert char.reply is keeper
     finally:
         time_info.hour = previous_hour
@@ -966,9 +971,11 @@ def test_value_lists_offer():
 
         expected_cost = _get_cost(keeper, lantern, buy=False)
         response = process_command(char, "value lantern")
-        descriptor = lantern.short_descr or lantern.name or "it"
+        descriptor = getattr(lantern, "short_descr", None) or getattr(lantern, "name", None) or "it"
+        # VAL-004: keeper-voiced with $p substitution using actual keeper short_descr
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
         expected_message = (
-            "The shopkeeper tells you "
+            f"{keeper_name} tells you "
             f"'I'll give you {expected_cost % 100} silver and {expected_cost // 100} gold coins for {descriptor}.'"
         )
         assert response == expected_message
@@ -993,6 +1000,11 @@ def test_sell_numbered_selector():
         keeper.move_to_room(char.room)
     keeper.gold = 50
     keeper.silver = 500
+    # Clear any existing lanterns so _obj_to_keeper dedup doesn't extract sold items
+    keeper.inventory = [
+        obj for obj in getattr(keeper, "inventory", [])
+        if "lantern" not in (getattr(getattr(obj, "prototype", None), "short_descr", "") or "").lower()
+    ]
 
     first = spawn_object(3031)
     second = spawn_object(3031)
@@ -1267,7 +1279,10 @@ def test_shop_respects_keeper_wealth():
         keeper.gold = 1
         keeper.silver = 0
         denied = process_command(char, "sell canoe")
-        assert denied == "I'm afraid I don't have enough wealth to buy that."
+        # SELL-004: keeper-voiced with $p substitution (ROM: "$n tells you 'I'm afraid...$p'.")
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        canoe_name = getattr(canoe, "short_descr", None) or getattr(canoe, "name", None) or "it"
+        assert denied == f"{keeper_name} tells you 'I'm afraid I don't have enough wealth to buy {canoe_name}.'"
         assert char.gold == 0
         assert canoe in char.inventory
         assert canoe not in keeper.inventory
@@ -1375,3 +1390,268 @@ def test_pet_shop_rejects_second_pet():
     assert sum(1 for entry in character_registry if getattr(entry, "master", None) is buyer) == 1
     assert isinstance(kennel.people[0], MobInstance)
     assert int(getattr(proto, "act_flags", 0) or 0) & int(ActFlag.PET)
+
+
+# ---------------------------------------------------------------------------
+# New parity tests (BUY-005, LIST-002, LIST-003, SELL-006, keeper-voice checks)
+# ---------------------------------------------------------------------------
+
+
+def test_buy_haggle_reduces_cost_on_success():
+    """BUY-005: buy haggle reduces unit_price by proto.cost/2 * roll / 100."""
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = _create_shop_character("Haggler", 3010)
+    char.gold = 200
+    char.silver = 0
+    char.skills = {"haggle": 95}
+
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        ration = spawn_object(3031)
+        assert ration is not None
+        ration.prototype.short_descr = "a haggle test ration"
+        ration.prototype.cost = 100
+        proto_extra = int(getattr(ration.prototype, "extra_flags", 0) or 0)
+        ration.prototype.extra_flags = proto_extra | int(ITEM_INVENTORY)
+        ration.extra_flags = int(getattr(ration, "extra_flags", 0) or 0) | int(ITEM_INVENTORY)
+        keeper.inventory.append(ration)
+
+        shop = shop_registry.get(3002)
+        base_unit_price = (ration.prototype.cost * shop.profit_buy) // 100
+
+        original_roll = rng_mm.number_percent
+        try:
+            rng_mm.number_percent = lambda: 40  # roll 40, below haggle_skill 95 → succeeds
+            before_wealth = _total_wealth(char)
+            response = process_command(char, "buy ration")
+        finally:
+            rng_mm.number_percent = original_roll
+
+        assert "buy a haggle test ration" in response.lower()
+        match = re.search(r"for (\d+) silver", response)
+        assert match is not None
+        paid = int(match.group(1))
+
+        # Expected discount: c_div(c_div(100, 2) * 40, 100) = c_div(50 * 40, 100) = c_div(2000, 100) = 20
+        from mud.math.c_compat import c_div
+        expected_discount = c_div(c_div(100, 2) * 40, 100)
+        expected_unit_price = max(0, base_unit_price - expected_discount)
+        assert paid == expected_unit_price
+        assert paid < base_unit_price
+        assert _total_wealth(char) == before_wealth - paid
+        assert "You haggle with the shopkeeper." in getattr(char, "messages", [])
+    finally:
+        time_info.hour = previous_hour
+
+
+def test_list_in_pet_shop_room_shows_pets():
+    """LIST-002: do_list in a pet shop room lists pets from adjacent kennel."""
+    from mud.commands.shop import do_list
+    from mud.models.mob import MobIndex
+    from mud.spawning.templates import MobInstance
+
+    room_registry.clear()
+    mob_registry.clear()
+    character_registry.clear()
+
+    storefront = Room(vnum=9700, name="Pet Shop")
+    storefront.room_flags = int(RoomFlag.ROOM_PET_SHOP)
+    kennel = Room(vnum=9701, name="Kennel")
+    room_registry[storefront.vnum] = storefront
+    room_registry[kennel.vnum] = kennel
+
+    proto = MobIndex(vnum=9702, short_descr="a fluffy bunny", player_name="bunny")
+    proto.level = 3
+    proto.act_flags = int(ActFlag.PET)
+    mob_registry[proto.vnum] = proto
+
+    kennel_pet = MobInstance.from_prototype(proto)
+    kennel.add_mob(kennel_pet)
+
+    buyer = Character(name="Lister", level=10, is_npc=False)
+    storefront.add_character(buyer)
+    character_registry.append(buyer)
+
+    response = do_list(buyer)
+    assert "Pets for sale:" in response
+    assert "fluffy bunny" in response
+    assert "3" in response  # level
+    assert "90" in response  # price = 10 * 3 * 3 = 90
+
+
+def test_list_skips_keeper_worn_items():
+    """LIST-003: do_list skips items the keeper is wearing (wear_loc != WEAR_NONE)."""
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = _create_shop_character("Browser", 3010)
+
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+    keeper.inventory = []
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        from mud.models.constants import WearLocation
+
+        # Place a lantern worn (non-NONE wear_loc) in keeper inventory
+        worn = spawn_object(3031)
+        assert worn is not None
+        worn.prototype.short_descr = "a worn lantern"
+        worn.prototype.cost = 50
+        worn.wear_loc = int(WearLocation.LIGHT)  # slot 0 = worn
+        keeper.inventory.append(worn)
+
+        # Place a normal lantern (not worn) in keeper inventory
+        normal = spawn_object(3031)
+        assert normal is not None
+        normal.prototype.short_descr = "a normal lantern"
+        normal.prototype.cost = 50
+        normal.wear_loc = int(WearLocation.NONE)  # -1 = not worn
+        keeper.inventory.append(normal)
+
+        listing = process_command(char, "list")
+        assert "normal lantern" in listing
+        assert "worn lantern" not in listing
+    finally:
+        time_info.hour = previous_hour
+
+
+def test_sell_inventory_item_dedups_via_obj_to_keeper():
+    """SELL-006: obj_to_keeper extracts sold obj if keeper has ITEM_INVENTORY-flagged copy of same vnum."""
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = _create_shop_character("Seller", 3010)
+    char.gold = 0
+
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+    keeper.gold = 500
+    keeper.silver = 0
+    keeper.inventory = []
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+
+        # Create an ITEM_INVENTORY-flagged lantern in keeper inventory (infinite stock)
+        template = spawn_object(3031)
+        assert template is not None
+        template.prototype.item_type = int(ItemType.LIGHT)
+        template.prototype.cost = 100
+        template.prototype.extra_flags = int(getattr(template.prototype, "extra_flags", 0) or 0) | int(ITEM_INVENTORY)
+        template.extra_flags = int(getattr(template, "extra_flags", 0) or 0) | int(ITEM_INVENTORY)
+        keeper.inventory.append(template)
+
+        keeper_count_before = len(keeper.inventory)
+
+        # Char sells another copy of same prototype
+        sold = spawn_object(3031)
+        assert sold is not None
+        sold.prototype.item_type = int(ItemType.LIGHT)
+        sold.prototype.cost = 100
+        char.add_object(sold)
+
+        response = process_command(char, "sell lantern")
+        assert "you sell" in response.lower()
+
+        # Sold object should NOT have been added; keeper inventory count unchanged
+        assert len(keeper.inventory) == keeper_count_before
+        assert sold not in keeper.inventory
+        assert sold not in char.inventory
+    finally:
+        time_info.hour = previous_hour
+
+
+def test_buy_cant_afford_uses_keeper_voice():
+    """BUY-003: can't-afford refusal uses keeper's name in the message."""
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = _create_shop_character("Broke", 3010)
+    char.gold = 0
+    char.silver = 0
+
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        if not any((obj.short_descr or "").lower().startswith("a hooded brass lantern") for obj in keeper.inventory):
+            lantern = spawn_object(3031)
+            assert lantern is not None
+            lantern.prototype.short_descr = "a hooded brass lantern"
+            keeper.inventory.append(lantern)
+
+        response = process_command(char, "buy lantern")
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        assert f"{keeper_name} tells you '" in response
+        assert "You can't afford" in response
+    finally:
+        time_info.hour = previous_hour
+
+
+def test_value_uses_keeper_voice_with_item_name():
+    """VAL-004: do_value price quote uses keeper's name and item's short_descr."""
+    initialize_world("area/area.lst")
+    assert 3002 in shop_registry
+    char = _create_shop_character("Appraiser2", 3010)
+    char.gold = 0
+
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+    keeper.gold = 500
+    keeper.silver = 0
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        lantern = spawn_object(3031)
+        assert lantern is not None
+        lantern.prototype.item_type = int(ItemType.LIGHT)
+        char.add_object(lantern)
+
+        response = process_command(char, "value lantern")
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        item_name = getattr(lantern, "short_descr", None) or getattr(lantern, "name", None) or "it"
+        assert response.startswith(f"{keeper_name} tells you '")
+        assert item_name in response
+        assert "silver" in response
+        assert "gold coins" in response
+    finally:
+        time_info.hour = previous_hour

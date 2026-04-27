@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from mud.handler import unequip_char
 from mud.models.character import Character
-from mud.models.constants import ExtraFlag, ItemType, Position, OBJ_VNUM_PIT, WearFlag
+from mud.models.constants import ExtraFlag, ItemType, PlayerFlag, Position, OBJ_VNUM_PIT, WearFlag
 from mud.net.protocol import broadcast_room
 from mud.utils import rng_mm
 from mud.utils.act import act_format
@@ -372,19 +372,26 @@ def do_sacrifice(char: Character, args: str) -> str:
 
     Usage: sacrifice <item>
     """
-    if not args or not args.strip():
-        # Self-sacrifice message
-        char_name = getattr(char, "name", "someone")
-        return "Mota appreciates your offer and may accept it later."
+    # Resolve room early so both self-sacrifice and normal branches can broadcast.
+    room = getattr(char, "room", None)
 
-    item_name = args.strip().split()[0]
+    item_name = args.strip().split()[0] if args and args.strip() else ""
     char_name = getattr(char, "name", "someone")
 
-    if item_name.lower() == char_name.lower():
+    # SAC-002: ROM lines 1780-1787 — self-sacrifice broadcasts TO_ROOM then returns.
+    if not item_name or item_name.lower() == char_name.lower():
+        if room is not None:
+            # $mself = object pronoun of actor + "self" (e.g., "himself")
+            from mud.utils.act import _object_pronoun, _sex_of
+            reflexive = _object_pronoun(_sex_of(char)) + "self"
+            room_msg = act_format(
+                "$n offers " + reflexive + " to Mota, who graciously declines.",
+                recipient=None,
+                actor=char,
+            )
+            broadcast_room(room, room_msg, exclude=char)
         return "Mota appreciates your offer and may accept it later."
 
-    # Find item in room
-    room = getattr(char, "room", None)
     if not room:
         return "You can't find it."
 
@@ -401,27 +408,15 @@ def do_sacrifice(char: Character, args: str) -> str:
         if obj_contents:
             return "Mota wouldn't like that."
 
-    # Check if can take/sacrifice
+    # SAC-003: Use WearFlag.TAKE and WearFlag.NO_SAC (not hardcoded hex).
+    # ROM line 1806: if (!CAN_WEAR(obj, ITEM_TAKE) || CAN_WEAR(obj, ITEM_NO_SAC))
     wear_flags = getattr(obj, "wear_flags", 0)
     if not hasattr(obj, "wear_flags"):
         proto = getattr(obj, "prototype", None)
         if proto:
             wear_flags = getattr(proto, "wear_flags", 0)
 
-    extra_flags = getattr(obj, "extra_flags", 0)
-    if not hasattr(obj, "extra_flags"):
-        proto = getattr(obj, "prototype", None)
-        if proto:
-            extra_flags = getattr(proto, "extra_flags", 0)
-
-    ITEM_TAKE = 1
-    ITEM_NO_SAC = 0x4000  # Bit 14
-
-    if not (wear_flags & ITEM_TAKE):
-        obj_name = getattr(obj, "short_descr", "That")
-        return f"{obj_name} is not an acceptable sacrifice."
-
-    if extra_flags & ITEM_NO_SAC:
+    if not (wear_flags & WearFlag.TAKE) or (wear_flags & WearFlag.NO_SAC):
         obj_name = getattr(obj, "short_descr", "That")
         return f"{obj_name} is not an acceptable sacrifice."
 
@@ -439,31 +434,37 @@ def do_sacrifice(char: Character, args: str) -> str:
 
     silver = max(1, obj_level * 3)
 
-    # Non-corpse items capped at cost
+    # SAC-005: ROM line 1825 — UMIN is unconditional for non-corpses (no obj_cost > 0 guard).
     if item_type not in (ItemType.CORPSE_NPC, ItemType.CORPSE_PC) and str(item_type) not in ("corpse_npc", "corpse_pc"):
-        silver = min(silver, obj_cost) if obj_cost > 0 else silver
+        silver = min(silver, obj_cost)
+
+    # ROM lines 1827-1836: send TO_CHAR message BEFORE granting silver.
+    if silver == 1:
+        char_msg = "Mota gives you one silver coin for your sacrifice."
+    else:
+        char_msg = f"Mota gives you {silver} silver coins for your sacrifice."
 
     # Give silver
     char.silver = getattr(char, "silver", 0) + silver
 
-    # Remove object
-    _extract_obj(char, obj)
-
-    # Auto-split if enabled
+    # SAC-004: Use PlayerFlag.AUTOSPLIT (not hardcoded hex 0x00002000).
+    # ROM lines 1840-1853: AUTOSPLIT check happens before TO_ROOM + extract.
     act_flags = getattr(char, "act", 0)
-    PLR_AUTOSPLIT = 0x00002000
-    if act_flags & PLR_AUTOSPLIT and silver > 1:
-        # Check for group members
+    if act_flags & PlayerFlag.AUTOSPLIT and silver > 1:
         members = _count_group_members(char)
         if members > 1:
             from mud.commands.group_commands import do_split
 
-            do_split(char, str(silver))
+            do_split(char, f"{silver} silver")
 
-    if silver == 1:
-        return "Mota gives you one silver coin for your sacrifice."
-    else:
-        return f"Mota gives you {silver} silver coins for your sacrifice."
+    # SAC-001: ROM line 1856 — broadcast TO_ROOM before extract_obj.
+    if room is not None:
+        room_msg = act_format("$n sacrifices $p to Mota.", recipient=None, actor=char, arg1=obj)
+        broadcast_room(room, room_msg, exclude=char)
+
+    _extract_obj(char, obj)
+
+    return char_msg
 
 
 def do_quaff(char: Character, args: str) -> str:
@@ -497,6 +498,12 @@ def do_quaff(char: Character, args: str) -> str:
         return "This liquid is too powerful for you to drink."
 
     obj_name = getattr(obj, "short_descr", "something")
+
+    # ROM act() pair fires BEFORE spells (src/act_obj.c:1897-1898)
+    room = getattr(char, "room", None) or getattr(char, "location", None)
+    if room is not None:
+        room_message = act_format("$n quaffs $p.", recipient=None, actor=char, arg1=obj)
+        broadcast_room(room, room_message, exclude=char)
 
     # Cast the spells from the potion
     obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])

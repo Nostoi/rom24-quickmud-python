@@ -5,6 +5,7 @@ from mud.models.constants import ExtraFlag, ItemType, WeaponFlag
 from mud.models.obj import Affect, ObjIndex
 from mud.models.object import Object
 from mud.skills.handlers import envenom
+from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.utils import rng_mm
 
 
@@ -255,3 +256,95 @@ def test_envenom_skill_improves_on_success():
 
     if result["success"]:
         assert food.value[3] == 1
+
+
+# --- ENV-001: WAIT_STATE tests ---
+
+def test_envenom_applies_wait_state_on_food_success():
+    """ENV-001: ROM L894 WAIT_STATE fires on food-envenom success."""
+    thief = make_character(level=30, skills={"envenom": 99})
+    food = make_food("apple", poisoned=False)
+    thief.inventory = [food]
+    thief.wait = 0
+
+    rng_mm.seed_mm(0x1234)
+    result = envenom(thief, item_name="apple")
+
+    assert result["success"] is True
+    expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
+    assert thief.wait >= expected_beats
+
+
+def test_envenom_applies_wait_state_on_food_failure():
+    """ENV-001: ROM L901 WAIT_STATE fires on food-envenom failure."""
+    # skill=1 makes it nearly impossible to succeed (need percent < 1)
+    thief = make_character(level=30, skills={"envenom": 1})
+    food = make_food("apple", poisoned=False)
+    thief.inventory = [food]
+    thief.wait = 0
+
+    # Seed RNG so number_percent() >= 1, forcing failure
+    rng_mm.seed_mm(0xABCD)
+    result = envenom(thief, item_name="apple")
+
+    # Whether success or failure, wait must be set
+    expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
+    assert thief.wait >= expected_beats
+
+
+def test_envenom_applies_wait_state_on_weapon_success():
+    """ENV-001: ROM L949 WAIT_STATE fires on weapon-envenom success."""
+    thief = make_character(level=30, skills={"envenom": 99})
+    weapon = make_weapon("dagger", edged=True)
+    thief.inventory = [weapon]
+    thief.wait = 0
+
+    rng_mm.seed_mm(0x5678)
+    result = envenom(thief, item_name="dagger")
+
+    assert result["success"] is True
+    expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
+    assert thief.wait >= expected_beats
+
+
+def test_envenom_applies_wait_state_on_weapon_failure():
+    """ENV-001: ROM L956 WAIT_STATE fires on weapon-envenom failure."""
+    thief = make_character(level=30, skills={"envenom": 1})
+    weapon = make_weapon("dagger", edged=True)
+    thief.inventory = [weapon]
+    thief.wait = 0
+
+    rng_mm.seed_mm(0xABCD)
+    result = envenom(thief, item_name="dagger")
+
+    expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
+    assert thief.wait >= expected_beats
+
+
+# --- ENV-002: Bash-weapon rejection test ---
+
+def test_envenom_rejects_bash_weapon_with_positive_index():
+    """ENV-002: ROM L920-925 rejects weapon with bash damage type (value[3] >= 0 but DAM_BASH).
+
+    ATTACK_TABLE index 6 = 'blast' which maps to DamageType.BASH (matching ROM src/const.c).
+    """
+    thief = make_character(level=30, skills={"envenom": 99})
+    # value[3]=6 -> attack_table[6] = "blast" -> DamageType.BASH
+    proto = ObjIndex(
+        vnum=2001,
+        name="mace club",
+        short_descr="a mace",
+        item_type=int(ItemType.WEAPON),
+        extra_flags=0,
+        value=[0, 5, 10, 6, 0],  # index 6 = "blast" (BASH)
+    )
+    mace = Object(instance_id=10, prototype=proto)
+    mace.value = list(proto.value)
+    mace.item_type = ItemType.WEAPON
+    mace.affected = []
+    thief.inventory = [mace]
+
+    result = envenom(thief, item_name="mace")
+
+    assert result["success"] is False
+    assert "edged" in result["message"].lower()
