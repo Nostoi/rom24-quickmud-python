@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.misc_info import do_motd, do_rules, do_story
+from mud.commands.misc_info import do_motd, do_imotd, do_rules, do_story
 from mud.commands.help import do_wizlist
 from mud.commands.info import do_credits, do_report
 from mud.commands.remaining_rom import do_wimpy
@@ -81,6 +81,17 @@ def test_motd_calls_help(test_char):
     # Should return help text (non-empty string)
     assert isinstance(output, str), "do_motd should return string"
     # We don't check exact content since help topics may vary
+
+
+def test_imotd_calls_help(test_char):
+    """
+    do_imotd calls help imotd.
+
+    ROM C Reference: src/act_info.c lines 636-639
+    - do_function(ch, &do_help, "imotd");
+    """
+    output = do_imotd(test_char, "")
+    assert isinstance(output, str), "do_imotd should return string"
 
 
 def test_rules_calls_help(test_char):

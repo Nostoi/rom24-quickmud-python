@@ -166,42 +166,54 @@ def do_description(ch: Character, args: str) -> str:
     args = smash_tilde(args)
 
     if args.startswith("-"):
+        # ROM C lines 2588-2628: Remove last line by finding second-to-last '\r'
         if not current_desc:
             return "No lines left to remove."
 
-        lines = [line for line in current_desc.split("\n") if line]
-        if not lines:
-            ch.description = ""
-            return "Description cleared."
+        buf = current_desc
+        found = False
 
-        lines = lines[:-1]
+        # ROM C: for (len = strlen(buf); len > 0; len--)
+        # Search backwards for '\n' characters (ROM C uses '\r')
+        for i in range(len(buf) - 1, -1, -1):
+            if buf[i] == "\n":
+                if not found:
+                    # ROM C: if (!found) { if (len > 0) len--; found = TRUE; }
+                    if i > 0:
+                        i -= 1
+                    found = True
+                else:
+                    # ROM C: buf[len + 1] = '\0'; (line 2614)
+                    buf = buf[: i + 1]
+                    ch.description = buf
+                    # ROM C: lines 2617-2619
+                    return f"Your description is:\n{ch.description if ch.description else '(None).'}"
 
-        if not lines:
-            ch.description = ""
-            return "Description cleared."
-
-        new_desc = "\n".join(lines) + "\n"
-        ch.description = new_desc
-        return f"Your description is:\n{new_desc}"
+        # ROM C: buf[0] = '\0'; (line 2624)
+        ch.description = ""
+        return "Description cleared."
 
     if args.startswith("+"):
-        new_line = args[1:].strip()
-        if not new_line:
-            return "Add what to your description?"
+        new_line = args[1:].lstrip()  # ROM C: while (isspace(*argument)) argument++;
+        buf = current_desc if current_desc else ""
 
-        if current_desc:
-            new_desc = f"{current_desc}\n{new_line}"
-        else:
-            new_desc = new_line
-
-        if len(new_desc) >= 1024:
+        # ROM C: Check length before appending (line 2639-2643)
+        if len(buf) >= 1024:
             return "Description too long."
 
-        ch.description = new_desc
-        return f"Your description is:\n{new_desc}"
+        # ROM C: strcat(buf, argument); strcat(buf, "\n\r");
+        buf += new_line + "\n"
+        ch.description = buf
 
+        # ROM C: Always shows description at end (lines 2651-2652)
+        return f"Your description is:\n{ch.description if ch.description else '(None).'}"
+
+    # ROM C: Default case - replace entire description (lines 2645-2648)
     if len(args) >= 1024:
         return "Description too long."
 
-    ch.description = args
-    return f"Your description is:\n{args}"
+    # ROM C: strcat(buf, argument); strcat(buf, "\n\r");
+    ch.description = args + "\n"
+
+    # ROM C: Always shows description at end (lines 2651-2652)
+    return f"Your description is:\n{ch.description if ch.description else '(None).'}"

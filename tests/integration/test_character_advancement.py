@@ -291,7 +291,10 @@ def test_train_command_increases_stats(test_character):
 
     result = process_command(char, "train hp")
 
-    assert "train" in result.lower() or "hp" in result.lower(), "Train command should provide feedback"
+    # ROM C lines 1759: "Your durability increases!"
+    assert "durability" in result.lower(), "Train command should provide feedback"
+    assert char.train == 4, "Train sessions should decrease by cost"
+    assert char.max_hit > 20, "Max HP should increase"
 
 
 def test_xp_loss_on_death(test_character):
