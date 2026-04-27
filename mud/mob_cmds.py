@@ -1200,9 +1200,12 @@ def do_mpflee(ch: Character, argument: str) -> None:
     _DIR_NAMES = ("north", "east", "south", "west", "up", "down")
 
     exits = list(getattr(was_in, "exits", []) or [])
-    for door, exit_obj in enumerate(exits):
-        if door >= len(_DIR_NAMES):
-            break
+    # mirroring ROM src/mob_cmds.c:1272-1286 — 6 random_door() attempts
+    for _ in range(6):
+        door = rng_mm.number_door()
+        if door >= len(_DIR_NAMES) or door >= len(exits):
+            continue
+        exit_obj = exits[door]
         if exit_obj is None:
             continue
         if getattr(exit_obj, "exit_info", 0) & EX_CLOSED:

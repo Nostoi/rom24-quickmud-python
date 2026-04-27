@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBCMD-008: `do_mpflee` now performs 6 `rng_mm.number_door()` random-door
+  attempts before giving up, mirroring ROM `src/mob_cmds.c:1272-1286`.
+  Previously the function iterated the exits list in order, so the first
+  valid exit always won — wrong distribution for ROM-faithful flee
+  behavior. Integration coverage at
+  `tests/integration/test_mob_cmds_flee.py::TestMpFleeRandomDoor`.
 - MOBCMD-010: `do_mpflee` (MOBprog `flee` script command) now routes through
   `mud.world.movement.move_character` instead of the silent `_move_to_room`
   helper, mirroring ROM `src/mob_cmds.c:1283`

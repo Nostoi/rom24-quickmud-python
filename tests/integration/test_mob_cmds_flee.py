@@ -2,9 +2,10 @@
 
 ROM C reference: ``src/mob_cmds.c:1260-1287`` — ROM calls
 ``move_char(ch, door, FALSE)`` so the canonical movement pipeline runs
-(leave/arrive broadcasts, mp_exit/entry triggers, autoexits, etc.).
+(leave/arrive broadcasts, mp_exit/entry triggers, autoexits, etc.) and
+runs 6 random_door() attempts before giving up.
 
-Closes MOBCMD-010.
+Closes MOBCMD-010, MOBCMD-008.
 """
 
 from __future__ import annotations
@@ -65,4 +66,56 @@ class TestMpFleeUsesMoveChar:
             f"witness saw {witness.messages!r}; expected a 'leaves north'"
             " broadcast from the canonical movement pipeline. The old"
             " implementation used _move_to_room which is silent."
+        )
+
+
+class TestMpFleeRandomDoor:
+    """MOBCMD-008: ``do_mpflee`` must pick a random door across 6 attempts
+    rather than iterating exits in list order, mirroring ROM
+    ``src/mob_cmds.c:1272-1286``::
+
+        for (attempt = 0; attempt < 6; attempt++)
+        {
+            door = number_door();
+            ...
+        }
+
+    Pre-fix the loop walked ``room.exits`` in list order so the first valid
+    exit always won. Post-fix the rng-driven door distribution selects a
+    different exit across many runs.
+    """
+
+    def test_random_door_distribution_is_not_first_exit_only(self):
+        # Build a fresh room with 4 valid exits each run; reseed and call
+        # do_mpflee enough times to assert at least 2 distinct exits chosen.
+        from mud.utils import rng_mm
+
+        chosen: set[int] = set()
+        for seed in range(1, 30):
+            src = Room(vnum=9700, name="Flee Multi Source")
+            dests: dict[int, Room] = {}
+            for d in (Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST):
+                room = Room(vnum=9700 + int(d) + 1, name=f"Dest {int(d)}")
+                src.exits[int(d)] = Exit(to_room=room)
+                dests[int(d)] = room
+
+            mob = Character(name="Fleer", is_npc=True)
+            mob.position = Position.STANDING
+            mob.level = 30
+            src.add_character(mob)
+
+            rng_mm.seed_mm(seed)
+            do_mpflee(mob, "")
+
+            for d_int, room in dests.items():
+                if mob.room is room:
+                    chosen.add(d_int)
+                    break
+
+        # Pre-fix: iteration always picked Direction.NORTH (first non-None).
+        # Post-fix: random_door() distributes across all 4 valid exits, so
+        # we must observe more than just NORTH across many seeds.
+        assert len(chosen) >= 2, (
+            f"only directions {chosen!r} ever chosen across 30 seeds; expected"
+            " random_door() to distribute across multiple exits."
         )
