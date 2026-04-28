@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.models.constants import RoomFlag
 
 if TYPE_CHECKING:
     pass
@@ -136,7 +137,7 @@ def do_at(char: Character, args: str) -> str:
         return "No such location."
 
     # Check private room
-    if _room_is_private(location) and get_trust(char) < MAX_LEVEL:
+    if not _is_room_owner(char, location) and _room_is_private(location) and get_trust(char) < MAX_LEVEL:
         return "That room is private right now."
 
     # Save original location
@@ -179,7 +180,7 @@ def do_goto(char: Character, args: str) -> str:
 
     # Check private room
     room_count = len(getattr(location, "people", []))
-    if _room_is_private(location) and room_count > 1 and get_trust(char) < MAX_LEVEL:
+    if not _is_room_owner(char, location) and _room_is_private(location) and (room_count > 1 or get_trust(char) < MAX_LEVEL):
         return "That room is private right now."
 
     # Stop fighting
@@ -249,7 +250,7 @@ def do_transfer(char: Character, args: str) -> str:
         if location is None:
             return "No such location."
 
-        if _room_is_private(location) and get_trust(char) < MAX_LEVEL:
+        if not _is_room_owner(char, location) and _room_is_private(location) and get_trust(char) < MAX_LEVEL:
             return "That room is private right now."
     else:
         location = getattr(char, "room", None)
@@ -290,87 +291,102 @@ def do_transfer(char: Character, args: str) -> str:
 
 
 def do_force(char: Character, args: str) -> str:
-    """
-    Force a player or mob to execute a command.
-
-    ROM Reference: src/act_wiz.c do_force (lines 4183-4300)
-
-    Usage:
-    - force <target> <command>
-    - force all <command>      - Force all players
-    - force players <command>  - Force mortal players only
-
-    Note: Cannot force "delete" or "mob" commands.
-    """
+    # mirrors ROM src/act_wiz.c:4183-4322
     if not args or not args.strip():
-        return "Force whom to do what?"
+        # mirroring ROM src/act_wiz.c:4191-4194
+        return "Force whom to do what?\n\r"
 
     parts = args.strip().split(None, 1)
     if len(parts) < 2:
-        return "Force whom to do what?"
+        return "Force whom to do what?\n\r"
 
     target_name = parts[0]
     command = parts[1]
 
-    # Safety check - don't allow delete or mob commands
+    # mirroring ROM src/act_wiz.c:4197-4202
     cmd_first = command.split()[0].lower() if command else ""
-    if cmd_first in ("delete", "mob"):
-        return "That will NOT be done."
+    if cmd_first == "delete" or cmd_first.startswith("mob"):
+        return "That will NOT be done.\n\r"
 
-    # Handle "force all"
+    # mirroring ROM src/act_wiz.c:4211-4232 — force all
     if target_name.lower() == "all":
         if get_trust(char) < MAX_LEVEL - 3:
-            return "Not at your level!"
+            return "Not at your level!\n\r"
 
         from mud import registry
 
-        count = 0
-        for player in list(getattr(registry, "players", {}).values()):
-            if get_trust(player) < get_trust(char):
-                _send_to_char(player, f"{getattr(char, 'name', 'Someone')} forces you to '{command}'.")
+        for desc in getattr(registry, "descriptor_list", []):
+            vch = getattr(desc, "character", None)
+            if vch is None:
+                continue
+            if getattr(desc, "connected", 0) != 0:
+                continue
+            if get_trust(vch) < get_trust(char):
+                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
                 from mud.commands import process_command
+                process_command(vch, command)
 
-                process_command(player, command)
-                count += 1
-        return f"Forced {count} players." if count > 0 else "No one to force."
+        return "Ok.\n\r"
 
-    # Handle "force players" (mortals only)
+    # mirroring ROM src/act_wiz.c:4233-4255 — force players
     if target_name.lower() == "players":
         if get_trust(char) < MAX_LEVEL - 2:
-            return "Not at your level!"
+            return "Not at your level!\n\r"
 
         from mud import registry
 
-        count = 0
-        for player in list(getattr(registry, "players", {}).values()):
-            if get_trust(player) < get_trust(char) and getattr(player, "level", 1) < LEVEL_HERO:
-                _send_to_char(player, f"{getattr(char, 'name', 'Someone')} forces you to '{command}'.")
+        for vch in list(getattr(registry, "char_list", [])):
+            if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) < LEVEL_HERO:
+                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
                 from mud.commands import process_command
+                process_command(vch, command)
 
-                process_command(player, command)
-                count += 1
-        return f"Forced {count} players." if count > 0 else "No one to force."
+        return "Ok.\n\r"
 
-    # Find specific target
+    # mirroring ROM src/act_wiz.c:4256-4278 — force gods
+    if target_name.lower() == "gods":
+        if get_trust(char) < MAX_LEVEL - 2:
+            return "Not at your level!\n\r"
+
+        from mud import registry
+
+        for vch in list(getattr(registry, "char_list", [])):
+            if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) >= LEVEL_HERO:
+                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
+                from mud.commands import process_command
+                process_command(vch, command)
+
+        return "Ok.\n\r"
+
+    # mirroring ROM src/act_wiz.c:4279-4318 — single target
     victim = get_char_world(char, target_name)
     if victim is None:
-        return "They aren't here."
+        # mirroring ROM src/act_wiz.c:4284-4286
+        return "They aren't here.\n\r"
 
     if victim is char:
-        return "Aye aye, right away!"
+        # mirroring ROM src/act_wiz.c:4289-4291
+        return "Aye aye, right away!\n\r"
 
-    # Check trust
-    if not getattr(victim, "is_npc", False) and get_trust(victim) >= get_trust(char):
-        return "Do it yourself!"
+    # mirroring ROM src/act_wiz.c:4295-4301 — private room check
+    victim_room = getattr(victim, "room", None)
+    if victim_room is not None:
+        if not _is_room_owner(char, victim_room) and char.room is not victim_room and _room_is_private(victim_room) and get_trust(char) < MAX_LEVEL:
+            return "That character is in a private room.\n\r"
 
-    # Force the command
-    _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} forces you to '{command}'.")
+    # mirroring ROM src/act_wiz.c:4304-4308
+    if get_trust(victim) >= get_trust(char):
+        return "Do it yourself!\n\r"
 
+    # mirroring ROM src/act_wiz.c:4310-4313
+    if not getattr(victim, "is_npc", False) and get_trust(char) < MAX_LEVEL - 3:
+        return "Not at your level!\n\r"
+
+    _send_to_char(victim, f"{char.name} forces you to '{command}'.\n\r")
     from mud.commands import process_command
-
     process_command(victim, command)
 
-    return "Ok."
+    return "Ok.\n\r"
 
 
 def do_peace(char: Character, args: str) -> str:
@@ -405,19 +421,31 @@ def do_peace(char: Character, args: str) -> str:
 
 def _room_is_private(room) -> bool:
     """Check if room is private."""
-    room_flags = getattr(room, "room_flags", 0)
-    ROOM_PRIVATE = 0x00000200
-    ROOM_SOLITARY = 0x00000400
+    if getattr(room, "owner", None):
+        return True
 
-    if room_flags & ROOM_PRIVATE:
+    room_flags = int(getattr(room, "room_flags", 0) or 0)
+
+    if room_flags & int(RoomFlag.ROOM_PRIVATE):
         count = len(getattr(room, "people", []))
         return count >= 2
 
-    if room_flags & ROOM_SOLITARY:
+    if room_flags & int(RoomFlag.ROOM_SOLITARY):
         count = len(getattr(room, "people", []))
         return count >= 1
 
+    if room_flags & int(RoomFlag.ROOM_IMP_ONLY):
+        return True
+
     return False
+
+
+def _is_room_owner(char: Character, room) -> bool:
+    owner = (getattr(room, "owner", None) or "").strip()
+    char_name = (getattr(char, "name", None) or "").strip().lower()
+    if not owner or not char_name:
+        return False
+    return char_name in {token.lower() for token in owner.split() if token}
 
 
 def _char_from_room(char: Character) -> None:

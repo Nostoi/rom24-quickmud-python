@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `WIZ-003` — `protect` now mirrors ROM `src/act_wiz.c:2086-2118` lookup/messages and toggles the real `CommFlag.SNOOP_PROOF` bit instead of the old `COMM_NOTELL` value.
 - `WIZ-004` — `snoop` now honors the canonical `CommFlag.SNOOP_PROOF` bit from ROM `src/act_wiz.c:2167-2174`, preventing snooping of correctly protected targets.
 - `WIZ-006` — `log` command now mirrors ROM `src/act_wiz.c:2927-2984`: uses `get_char_world()` for lookup, toggles `PlayerFlag.LOG` on `victim.act` instead of a `log_commands` bool, rejects NPCs with ROM message, and uses canonical `\n\r` line endings.
+- `WIZ-007` — `force` command now mirrors ROM `src/act_wiz.c:4183-4322`: adds `gods` branch for hero+ players, adds private-room check before forcing individuals, applies trust check to all victims (not just non-NPCs), iterates `descriptor_list` for `force all` and `char_list` for `force players`/`force gods`, and uses canonical `\n\r` line endings.
 - `ALIAS-001` — `alia` now returns the ROM `src/alias.c:97-100` typo-guard text instead of a generic helper string.
 - `ALIAS-002` — `alias` now mirrors ROM `src/alias.c:112-220`: exact list/query/set/realias messages, reserved-word checks, quote/name validation, `delete`/`prefix` expansion guards, and the five-alias limit.
 - `ALIAS-003` — alias substitution now mirrors ROM `src/alias.c:69-99`: one expansion pass only, truncation warning handling, and `mud.rom_api.substitute_alias()` now returns the expanded string instead of an internal tuple.

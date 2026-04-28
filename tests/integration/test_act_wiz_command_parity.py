@@ -202,3 +202,88 @@ def test_log_empty_arg_and_not_found() -> None:
 
     assert cmd_log(admin, "") == "Log whom?\n\r"
     assert cmd_log(admin, "Nonexistent") == "They aren't here.\n\r"
+
+
+# mirrors ROM src/act_wiz.c:4183-4322 (WIZ-007)
+
+
+def test_force_rejects_delete_and_mob_prefix() -> None:
+    # mirrors ROM src/act_wiz.c:4197-4202
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9150, name="ForceRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    assert "NOT" in do_force(admin, "victim delete")
+    assert "NOT" in do_force(admin, "victim mob kill")
+
+
+def test_force_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:4191-4194
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9151, name="ForceRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    assert do_force(admin, "") == "Force whom to do what?\n\r"
+    assert do_force(admin, "target") == "Force whom to do what?\n\r"
+
+
+def test_force_self_returns_aye_aye() -> None:
+    # mirrors ROM src/act_wiz.c:4289-4292
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9152, name="ForceRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    assert do_force(admin, "Admin look") == "Aye aye, right away!\n\r"
+
+
+def test_force_gods_branch_rejects_low_trust() -> None:
+    # mirrors ROM src/act_wiz.c:4258-4263
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9153, name="ForceRoom")
+    low_imm = _imm("Lowadmin", room.vnum, trust=57)
+
+    result = do_force(low_imm, "gods look")
+    assert result == "Not at your level!\n\r"
+
+
+def test_force_private_room_blocks_non_owner() -> None:
+    # mirrors ROM src/act_wiz.c:4295-4301
+    from mud.commands.imm_commands import do_force
+    from mud.models.constants import RoomFlag
+
+    source = _room(9154, name="Source")
+    private_room = _room(9155, name="PrivateRoom", room_flags=int(RoomFlag.ROOM_PRIVATE))
+    private_room.owner = "OwnerName"
+    admin = _imm("Admin", source.vnum, trust=57)
+    _imm("Victim", private_room.vnum, trust=10)
+
+    result = do_force(admin, "Victim look")
+    assert result == "That character is in a private room.\n\r"
+
+
+def test_force_single_target_trust_check() -> None:
+    # mirrors ROM src/act_wiz.c:4304-4307 — get_trust(victim) >= get_trust(ch)
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9156, name="ForceRoom")
+    low_imm = _imm("Lowadmin", room.vnum, trust=53)
+    _imm("Highadmin", room.vnum, trust=55)
+
+    result = do_force(low_imm, "Highadmin look")
+    assert result == "Do it yourself!\n\r"
+
+
+def test_force_returns_ok_after_single_force() -> None:
+    # mirrors ROM src/act_wiz.c:4320
+    from mud.commands.imm_commands import do_force
+
+    room = _room(9157, name="ForceRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    _imm("Victim", room.vnum, trust=10)
+
+    result = do_force(admin, "Victim look")
+    assert result == "Ok.\n\r"

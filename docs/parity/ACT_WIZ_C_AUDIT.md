@@ -64,7 +64,7 @@
 | `do_slookup` | `src/act_wiz.c:3191-3231` | `mud/commands/imm_search.py:120` | ⚠️ PARTIAL |
 | `do_set` / `do_sset` / `do_mset` / `do_string` / `do_oset` / `do_rset` | `src/act_wiz.c:3233-4138` | `mud/commands/imm_set.py` | ⚠️ PARTIAL |
 | `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:268` | ⚠️ PARTIAL |
-| `do_force` | `src/act_wiz.c:4183-4300` | `mud/commands/imm_commands.py:293` | ⚠️ PARTIAL |
+| `do_force` | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | ✅ AUDITED |
 | `do_invis` | `src/act_wiz.c:4329-4373` | `mud/commands/imm_display.py:17` | ⚠️ PARTIAL |
 | `do_incognito` | `src/act_wiz.c:4375-4420` | `mud/commands/imm_display.py:61` | ⚠️ PARTIAL |
 | `do_holylight` | `src/act_wiz.c:4422-4441` | `mud/commands/admin_commands.py:396` (`cmd_holylight`) | ⚠️ PARTIAL |
@@ -150,7 +150,7 @@ Python now:
 | `WIZ-004` | CRITICAL | `src/act_wiz.c:2167-2174` | `mud/commands/imm_admin.py:150` | `do_snoop` checked the wrong bitmask, so canonical `CommFlag.SNOOP_PROOF` did not actually block snooping. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_snoop_honors_comm_snoop_proof_enum` |
 | `WIZ-005` | CRITICAL | `src/act_wiz.c:1122-1744` | `mud/commands/imm_search.py:448` | `do_stat` dispatch exists, but ROM-faithful `rstat` / `ostat` / `mstat` implementations are still missing as standalone detailed admin views. | 🔄 OPEN |
 | `WIZ-006` | IMPORTANT | `src/act_wiz.c:2927-2984` | `mud/commands/admin_commands.py:341` | `do_log` used `character_registry` prefix match instead of `get_char_world`, toggled a `log_commands` bool instead of `PlayerFlag.LOG` on `act`, and omitted ROM `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_log_*` |
-| `WIZ-007` | IMPORTANT | `src/act_wiz.c:4183-4300` | `mud/commands/imm_commands.py:293` | `do_force` still diverges in `all` / `players` flow, return messages, and ROM notification semantics. | 🔄 OPEN |
+| `WIZ-007` | IMPORTANT | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | `do_force` was missing `gods` branch, private-room check, canonical trust check for all victims, and ROM `\n\r` line endings; bulk branches iterated wrong collections. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_force_*` |
 
 ## Phase 4 — Closures
 
@@ -189,6 +189,13 @@ Python now:
 - **Fix:** Replaced `character_registry` prefix-match lookup with `get_char_world()`; replaced `log_commands` bool toggle with canonical `PlayerFlag.LOG` bit toggle on `victim.act`; added ROM `\n\r` line endings to all messages.
 - **Tests:** `tests/integration/test_act_wiz_command_parity.py::test_log_toggles_plr_log_on_act_not_bool_field`, `test_log_rejects_npc`, `test_log_all_toggles_global_flag`, `test_log_empty_arg_and_not_found`
 
+### `WIZ-007` — ✅ FIXED
+
+- **Python:** `mud/commands/imm_commands.py:293`
+- **ROM C:** `src/act_wiz.c:4183-4322`
+- **Fix:** Added `gods` branch (force immortals ≥ LEVEL_HERO); added private-room check using `_is_room_owner` / `_room_is_private`; changed trust check to apply to all victims (not just non-NPCs); added `MAX_LEVEL - 3` threshold for forcing PCs; iterated `descriptor_list` for `force all` and `char_list` for `force players`/`force gods` per ROM semantics; added canonical `\n\r` line endings; added `mob` prefix check (`startswith("mob")`) per ROM `!str_prefix(arg2, "mob")`.
+- **Tests:** `tests/integration/test_act_wiz_command_parity.py::test_force_rejects_delete_and_mob_prefix`, `test_force_empty_arg`, `test_force_self_returns_aye_aye`, `test_force_gods_branch_rejects_low_trust`, `test_force_private_room_blocks_non_owner`, `test_force_single_target_trust_check`, `test_force_returns_ok_after_single_force`
+
 ## Phase 5 — Current State
 
 `act_wiz.c` remains **PARTIAL** after this pass.
@@ -197,13 +204,13 @@ Completed this session:
 - Private-room admin movement now respects owner rooms and ROM room-flag values.
 - `violate` now works on ROM location targets instead of directions.
 - `protect` and `snoop` now share the correct `COMM_SNOOP_PROOF` behavior.
-- New focused integration coverage exists for these closed gaps.
+- `do_log` now uses `get_char_world()` and canonical `PlayerFlag.LOG` on `victim.act`.
+- `do_force` now has ROM-faithful `all`/`players`/`gods` branches, private-room check, and trust-level semantics.
 
 Still outstanding:
-- Full `stat` / `rstat` / `ostat` / `mstat` parity.
-- `do_log`.
-- Remaining `force`, echo family, punishment, load/clone, and server-control audits.
+- Full `stat` / `rstat` / `ostat` / `mstat` parity (WIZ-005).
+- Remaining echo family, punishment, load/clone, and server-control audits.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `4 passed`
-- `ruff check mud/commands/imm_commands.py mud/commands/imm_admin.py mud/commands/imm_server.py tests/integration/test_act_wiz_command_parity.py` — clean
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `15 passed`
+- `ruff check mud/commands/imm_commands.py mud/commands/imm_admin.py mud/commands/admin_commands.py tests/integration/test_act_wiz_command_parity.py` — clean
