@@ -1,59 +1,55 @@
-# Session Status — 2026-04-27 — `interp.c` audit started; social cluster CRITICAL gaps closed
+# Session Status — 2026-04-27 — `interp.c` social cluster complete
 
 ## Current State
 
-- **Active audit**: `interp.c` (Phase 4 — gap closure in progress; 4 of 24 gaps FIXED).
-- **Last completed**: INTERP-018, INTERP-019, INTERP-020, INTERP-023 — entire CRITICAL+IMPORTANT social cluster of `check_social`.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_C_SOCIAL_GATES.md](SESSION_SUMMARY_2026-04-27_INTERP_C_SOCIAL_GATES.md)
+- **Active audit**: `interp.c` (Phase 4 — gap closure in progress;
+  6 of 24 gaps FIXED; full social cluster of `check_social` complete).
+- **Last completed**: INTERP-021 (`str_prefix` social lookup),
+  INTERP-022 (literal "They aren't here."). Closes the 6-gap social
+  cluster (INTERP-018/019/020/021/022/023).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_C_SOCIAL_CLUSTER_COMPLETE.md](SESSION_SUMMARY_2026-04-27_INTERP_C_SOCIAL_CLUSTER_COMPLETE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.6 |
-| Tests (socials suite) | 27 / 27 passing |
-| ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial, but a 24-gap audit doc now exists) |
-| `interp.c` gaps closed | 4 / 24 |
-| Active focus | `interp.c` — social cluster done; trust table (INTERP-001), dispatcher hooks (INTERP-002/003/008), command-mapping cleanup (INTERP-009..014), and prefix-order sweep (INTERP-017) remain |
+| Version | 2.6.7 |
+| Tests (socials suite) | 31 / 31 passing |
+| ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial) |
+| `interp.c` gaps closed | 6 / 24 (25%) |
+| Active focus | `interp.c` — social cluster complete; trust table (INTERP-001), dispatcher hooks (INTERP-002/003/007/008), command-mapping cleanup (INTERP-009..014), and prefix-order sweep (INTERP-017) remain |
 
 ## Recent Commits (this session)
 
-- `3577938` — `fix(parity): interp.c:INTERP-018 — socials refuse DEAD/INCAP/MORTAL/STUNNED`
-- `7b15bea` — `fix(parity): interp.c:INTERP-019 — sleeping blocks socials except snore`
-- `071cdaa` — `fix(parity): interp.c:INTERP-020 — COMM_NOEMOTE silences player socials`
-- `9b51e40` — `feat(parity): interp.c:INTERP-023 — NPC slap/echo auto-react to player socials`
+- `b9e4bf2` — `fix(parity): interp.c:INTERP-021 — social lookup uses str_prefix`
+- `b57ef3e` — `fix(parity): interp.c:INTERP-022 — literal "They aren't here." on missing target`
 
 ## Next Intended Task
 
-Two reasonable continuations:
+Highest leverage remaining `interp.c` work:
 
-1. **Finish the social cluster** by closing the remaining 2 gaps:
-   `INTERP-021` (`social_registry` should fall back to `str_prefix` lookup
-   so `gigg` matches `giggle` per ROM `src/interp.c:584-592`) and
-   `INTERP-022` (replace fabricated `social.not_found` field with literal
-   `"They aren't here."` per ROM `src/interp.c:637-640`). Both are small
-   and isolated to `socials.py` / `social.py`.
-2. **Start the trust-table drift cleanup** (`INTERP-001`). The
-   `INTERP_C_AUDIT.md` "INTERP-001 detail" table lists ~40 immortal
-   commands granted at lower trust than ROM's tier table. This is
-   security-relevant (a `LEVEL_IMMORTAL` character can currently
-   `reboot`, `purge`, `restore`, `force`, …). Mechanical per-line edits,
-   but each command is a separate test + commit per the rom-gap-closer
-   rule, so plan for a multi-session sweep.
-
-For dispatcher-side gaps (INTERP-002 snoop, INTERP-003 wiznet log mirror,
-INTERP-008 punctuation aliases, INTERP-017 prefix-order sweep), see
-`docs/parity/INTERP_C_AUDIT.md` Phase 4 plan.
+1. **`INTERP-001` — trust-table drift sweep** (~40 immortal commands
+   granted at lower trust than ROM's `merc.h:147-167` tier table).
+   Security-relevant (a `LEVEL_IMMORTAL` character can currently
+   `reboot`, `purge`, `restore`, `force`, …). Mechanical per-row
+   edits, but rom-gap-closer requires one commit + one test per row,
+   so plan for a multi-session sweep. See "INTERP-001 detail" table
+   in `docs/parity/INTERP_C_AUDIT.md`.
+2. **Pure-dispatcher gaps**: INTERP-002 (snoop forwarding), INTERP-003
+   (wiznet `WIZ_SECURE` log mirror), INTERP-007 (silent empty input),
+   INTERP-008 (`.`/`,`/`/` aliases), INTERP-017 (prefix-match
+   table-order sweep — needs an empirical test).
+3. **Command-mapping cleanup**: INTERP-009..014 — `hit`, `take`,
+   `junk`, `tap`, `go`, `wield`, `hold`, `:` should dispatch to ROM's
+   canonical handlers (`do_kill`, `do_get`, `do_sacrifice`, `do_enter`,
+   `do_wear`, `do_immtalk`) rather than separate Python stubs.
 
 ## Outstanding Cleanup (carried over)
 
-- **RNG-isolation flake between integration and unit suites** — unchanged
-  from the prior session.
+- **RNG-isolation flake between integration and unit suites** —
+  unchanged from prior sessions.
   `tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape`
-  passes alone and on master but fails when pytest also collects
-  `tests/integration/test_mobprog_*.py`. Root cause: integration
-  `conftest.py` autouse seeds `rng_mm.seed_mm(12345)` per integration
-  test, but `tests/conftest.py` has no equivalent fixture, so RNG state
-  bleeds across suites. Fix: add a session-scoped autouse seed fixture
-  to `tests/conftest.py`. Suggested commit prefix
+  passes alone but fails after integration tests run because there's
+  no session-scoped `rng_mm.seed_mm` autouse fixture in
+  `tests/conftest.py`. Fix: add the fixture. Suggested commit prefix
   `fix(test): isolate rng_mm state across test suites`.

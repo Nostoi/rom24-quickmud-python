@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.7] - 2026-04-27
+
+`interp.c` social-cluster audit complete (6/6 social gaps closed). Both
+remaining gaps (prefix lookup + literal "not found" message) shipped
+with integration coverage; socials suite now 31/31. `interp.c` overall
+audit progress: 6/24 gaps closed (25%) — non-social gaps (trust drift,
+dispatcher hooks, command-mapping cleanup) remain open.
+
 ### Fixed
 
 - `interp.c:INTERP-021` — social command lookup now mirrors ROM
