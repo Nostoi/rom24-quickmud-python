@@ -105,7 +105,11 @@ def do_scan(char: Character, args: str = "") -> str:
         return "Which way do you want to scan?"
     d = token_map[s]
     dir_str = dir_name[d]
-    lines = [f"Looking {dir_str} you see:"]
+    # SCAN-002: TO_CHAR + TO_ROOM act() pair — mirroring ROM src/scan.c:89-91.
+    # ROM builds a "Looking <dir> you see:" header into `buf` but never sends it;
+    # the only visible messages are the two act() calls below.
+    broadcast_room(char.room, f"{char.name} peers intently {dir_str}.", exclude=char)
+    lines = [f"You peer intently {dir_str}."]
     scan_room = char.room
     for depth in (1, 2, 3):
         ex = _get_exit(scan_room, d)

@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SCAN-001` — `do_scan` with no argument now emits the TO_ROOM broadcast
   `"$n looks all around."` so onlookers see the scan, mirroring ROM
   `src/scan.c:60` (`act("$n looks all around.", ch, NULL, NULL, TO_ROOM);`).
+- `SCAN-002` — directional `do_scan` now emits the TO_CHAR/TO_ROOM act() pair
+  `"You peer intently <dir>."` / `"$n peers intently <dir>."`, mirroring ROM
+  `src/scan.c:89-90`.
+
+### Fixed
+
+- `SCAN-002` — directional `do_scan` no longer prints a spurious
+  `"Looking <dir> you see:"` header. ROM builds that string into `buf` at
+  `src/scan.c:91` but never calls `send_to_char(buf, ch)`; the only visible
+  scanner-facing message is the `"You peer intently <dir>."` act().
 
 ## [2.6.14] - 2026-04-28
 

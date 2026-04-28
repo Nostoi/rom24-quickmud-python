@@ -34,14 +34,19 @@ def test_scan_all_directions():
 
 
 def test_scan_single_direction():
-    """Test directional scan matches ROM C depth logic."""
+    """Test directional scan matches ROM C depth logic.
+
+    SCAN-002: ROM emits "You peer intently <dir>." (TO_CHAR), not
+    "Looking <dir> you see:" (the latter is built into `buf` at
+    src/scan.c:91 but never sent).
+    """
     char = setup_scan_test()
 
     # Try scanning north (most rooms have this exit)
     result = do_scan(char, "north")
 
-    # Should show directional scan or no exit message
-    assert "Looking north you see:" in result or "Nothing of note" in result
+    # Should show ROM-faithful TO_CHAR or empty fallback
+    assert "You peer intently north." in result or "Nothing of note" in result
 
 
 def test_scan_distance_messages():
@@ -85,8 +90,8 @@ def test_scan_direction_mapping():
 
     for direction in directions:
         result = do_scan(char, direction)
-        # Should successfully parse and scan
-        assert "Looking" in result or "Nothing of note" in result
+        # Should successfully parse and scan (SCAN-002: ROM emits "You peer intently …")
+        assert "You peer intently" in result or "Nothing of note" in result
 
 
 def test_scan_direction_abbreviations():
@@ -100,9 +105,9 @@ def test_scan_direction_abbreviations():
         result_abbrev = do_scan(char, abbrev)
         result_full = do_scan(char, full)
 
-        # Both should produce same output format
-        assert result_abbrev.startswith("Looking") or "Nothing of note" in result_abbrev
-        assert result_full.startswith("Looking") or "Nothing of note" in result_full
+        # SCAN-002: ROM emits "You peer intently …" TO_CHAR
+        assert result_abbrev.startswith("You peer intently") or "Nothing of note" in result_abbrev
+        assert result_full.startswith("You peer intently") or "Nothing of note" in result_full
 
 
 def test_scan_room_messages():
@@ -152,8 +157,8 @@ def test_scan_directional_depth():
     # Scan north to see depth reporting
     result = do_scan(char, "north")
 
-    # Should have looking message
-    assert "Looking north you see:" in result
+    # SCAN-002: ROM emits "You peer intently north." (TO_CHAR), no "Looking …" header
+    assert "You peer intently north." in result
 
 
 def test_scan_no_room():
@@ -170,11 +175,11 @@ def test_scan_parity_golden_sequence():
     """Golden test sequence for scan parity against ROM C behavior."""
     char = setup_scan_test()
 
-    # Test all scan modes
+    # Test all scan modes (SCAN-002: directional emits "You peer intently …" per ROM)
     test_cases = [
         ("", "Looking around you see:"),  # Scan all directions
-        ("north", "Looking north you see:"),  # Directional scan
-        ("n", "Looking north you see:"),  # Short direction
+        ("north", "You peer intently north."),  # Directional scan TO_CHAR
+        ("n", "You peer intently north."),  # Short direction
         ("invalid", "Which way do you want to scan?"),  # Invalid direction
     ]
 

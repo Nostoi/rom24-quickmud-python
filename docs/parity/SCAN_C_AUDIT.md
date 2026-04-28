@@ -83,7 +83,7 @@ Python (inspection.py:64-68): emits `"{who}, right here."` for depth 0 and `"{wh
 | ID | Severity | ROM C ref | Python ref | Description | Status |
 |----|----------|-----------|------------|-------------|--------|
 | `SCAN-001` | IMPORTANT | `src/scan.c:60` | `mud/commands/inspection.py:74` | No-arg `do_scan` is missing the `act("$n looks all around.", TO_ROOM)` broadcast — onlookers never see the scan. | ✅ FIXED — `tests/integration/test_scan_broadcasts.py::test_scan_no_arg_broadcasts_looks_all_around` |
-| `SCAN-002` | IMPORTANT | `src/scan.c:89-91` | `mud/commands/inspection.py:104` | Directional `do_scan` is missing both `act("You peer intently $T.", TO_CHAR)` and `act("$n peers intently $T.", TO_ROOM)`, and emits a spurious `"Looking <dir> you see:"` header that ROM builds but never sends. | 🔄 OPEN |
+| `SCAN-002` | IMPORTANT | `src/scan.c:89-91` | `mud/commands/inspection.py:104-110` | Directional `do_scan` is missing both `act("You peer intently $T.", TO_CHAR)` and `act("$n peers intently $T.", TO_ROOM)`, and emits a spurious `"Looking <dir> you see:"` header that ROM builds but never sends. | ✅ FIXED — TO_CHAR returned to scanner, TO_ROOM via `broadcast_room`, header dropped. `tests/integration/test_scan_broadcasts.py::test_scan_directional_emits_peer_intently_pair` |
 | `SCAN-003` | MINOR | `src/scan.c:48-104` | `mud/commands/inspection.py:81-83,112-113` | Python adds non-ROM fallback lines (`"No one is nearby."`, `"Nothing of note."`) when no visible characters are found; ROM emits nothing extra. | 🔄 OPEN |
 
 No CRITICAL gaps. SCAN-001 and SCAN-002 are IMPORTANT (visible behavior — TO_ROOM and TO_CHAR messages diverge). SCAN-003 is MINOR cosmetic.

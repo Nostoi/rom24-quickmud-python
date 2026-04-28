@@ -56,3 +56,32 @@ def test_scan_no_arg_broadcasts_looks_all_around(two_char_room):
     assert not any("looks all around" in msg for msg in scanner.messages), (
         "Scanner should not receive their own TO_ROOM broadcast."
     )
+
+
+def test_scan_directional_emits_peer_intently_pair(two_char_room):
+    """SCAN-002 — mirrors ROM src/scan.c:89-91.
+
+    Directional do_scan must emit:
+      act("You peer intently $T.", ch, NULL, dir_name[door], TO_CHAR);
+      act("$n peers intently $T.", ch, NULL, dir_name[door], TO_ROOM);
+
+    The "Looking <dir> you see:" header is NOT sent by ROM (it builds the
+    string in `buf` but never calls send_to_char). Python must drop the header.
+    """
+    room, scanner, observer = two_char_room
+
+    result = do_scan(scanner, "north")
+
+    # TO_CHAR: returned to scanner
+    assert "You peer intently north." in result, (
+        f"Scanner missing TO_CHAR 'You peer intently north.' Got: {result!r}"
+    )
+    # TO_ROOM: broadcast to observer
+    assert any("Scanner peers intently north." in msg for msg in observer.messages), (
+        f"Observer missing TO_ROOM peer broadcast. Got: {observer.messages!r}"
+    )
+    # ROM never sends the "Looking <dir> you see:" header
+    assert "Looking north you see:" not in result, (
+        f"Spurious 'Looking north you see:' header should be removed (ROM builds "
+        f"buf at scan.c:91 but never sends it). Got: {result!r}"
+    )
