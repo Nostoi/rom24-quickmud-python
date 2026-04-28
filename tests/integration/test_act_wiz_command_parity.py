@@ -1235,3 +1235,213 @@ def test_qmconfig_unknown_option() -> None:
     result = cmd_qmconfig(admin, "bogus_option123")
     assert "no clue" in result.lower()
     assert result.endswith("\n\r")
+
+
+# ── WIZ-027: do_load ───────────────────────────────────────────────
+
+
+def test_load_empty_arg_shows_syntax() -> None:
+    # mirrors ROM src/act_wiz.c:2465-2470
+    from mud.commands.imm_load import do_load
+
+    admin = _imm("Admin", 11000)
+    result = do_load(admin, "")
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+def test_load_invalid_type_shows_syntax() -> None:
+    # mirrors ROM src/act_wiz.c:2484-2485
+    from mud.commands.imm_load import do_load
+
+    admin = _imm("Admin", 11001)
+    result = do_load(admin, "bogus 1234")
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-028: do_mload ──────────────────────────────────────────────
+
+
+def test_mload_non_numeric_arg() -> None:
+    # mirrors ROM src/act_wiz.c:2498-2501
+    from mud.commands.imm_load import do_mload
+
+    admin = _imm("Admin", 11100)
+    result = do_mload(admin, "abc")
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+def test_mload_invalid_vnum() -> None:
+    # mirrors ROM src/act_wiz.c:2504-2507
+    from mud.commands.imm_load import do_mload
+
+    admin = _imm("Admin", 11101)
+    result = do_mload(admin, "99999")
+    assert "No mob" in result
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-029: do_oload ──────────────────────────────────────────────
+
+
+def test_oload_non_numeric_arg() -> None:
+    # mirrors ROM src/act_wiz.c:2531-2534
+    from mud.commands.imm_load import do_oload
+
+    admin = _imm("Admin", 11200)
+    result = do_oload(admin, "abc")
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+def test_oload_invalid_vnum() -> None:
+    # mirrors ROM src/act_wiz.c:2555-2558
+    from mud.commands.imm_load import do_oload
+
+    admin = _imm("Admin", 11201)
+    result = do_oload(admin, "99999")
+    assert "No object" in result
+    assert result.endswith("\n\r")
+
+
+def test_oload_level_above_trust_rejected() -> None:
+    # mirrors ROM src/act_wiz.c:2547-2552
+    from mud.commands.imm_load import do_oload
+
+    admin = _imm("Admin", 11202, trust=55)
+    result = do_oload(admin, "1", "999")
+    assert "Level" in result or "level" in result.lower()
+
+
+# ── WIZ-030: do_purge ──────────────────────────────────────────────
+
+
+def test_purge_no_args_ok() -> None:
+    # mirrors ROM src/act_wiz.c:2605-2607
+    from mud.commands.imm_load import do_purge
+
+    _room(11300)
+    admin = _imm("Admin", 11300)
+    result = do_purge(admin, "")
+    assert "Ok" in result
+    assert result.endswith("\n\r")
+
+
+def test_purge_self_is_ho_ho_ho() -> None:
+    # mirrors ROM src/act_wiz.c:2619-2622
+    from mud.commands.imm_load import do_purge
+
+    _room(11301)
+    admin = _imm("Admin", 11301)
+    result = do_purge(admin, admin.name)
+    assert "Ho ho ho" in result
+    assert result.endswith("\n\r")
+
+
+def test_purge_higher_trust_rejected() -> None:
+    # mirrors ROM src/act_wiz.c:2625-2631
+    from mud.commands.imm_load import do_purge
+
+    _room(11302)
+    admin = _imm("Admin", 11302, trust=55)
+    victim = _imm("Victim", 11302, trust=60)
+    result = do_purge(admin, victim.name)
+    assert "good idea" in result.lower()
+    assert result.endswith("\n\r")
+
+
+def test_purge_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:2610-2613
+    from mud.commands.imm_load import do_purge
+
+    _room(11303)
+    admin = _imm("Admin", 11303)
+    result = do_purge(admin, "NobodyHere12345")
+    assert "aren't here" in result
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-031: do_restore ─────────────────────────────────────────────
+
+
+def test_restore_room() -> None:
+    # mirrors ROM src/act_wiz.c:2792-2817
+    from mud.commands.imm_load import do_restore
+
+    _room(11400)
+    admin = _imm("Admin", 11400)
+    result = do_restore(admin, "")
+    assert "Room restored" in result
+    assert result.endswith("\n\r")
+
+
+def test_restore_room_keyword() -> None:
+    # mirrors ROM src/act_wiz.c:2793
+    from mud.commands.imm_load import do_restore
+
+    _room(11401)
+    admin = _imm("Admin", 11401)
+    result = do_restore(admin, "room")
+    assert "Room restored" in result
+    assert result.endswith("\n\r")
+
+
+def test_restore_all_insufficient_trust() -> None:
+    # mirrors ROM src/act_wiz.c:2820 — requires MAX_LEVEL - 1
+    from mud.commands.imm_load import do_restore
+
+    _room(11402)
+    admin = _imm("Admin", 11402, trust=55)
+    result = do_restore(admin, "all")
+    # Should not restore; trust too low
+
+
+def test_restore_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:2848-2851
+    from mud.commands.imm_load import do_restore
+
+    _room(11403)
+    admin = _imm("Admin", 11403)
+    result = do_restore(admin, "NobodyHere12345")
+    assert "aren't here" in result
+    assert result.endswith("\n\r")
+
+
+def test_restore_specific_char_ok() -> None:
+    # mirrors ROM src/act_wiz.c:2848-2868
+    from mud.commands.imm_load import do_restore
+
+    _room(11404)
+    admin = _imm("Admin", 11404)
+    victim = _imm("RestVictim", 11404, trust=10)
+    victim.hit = 1
+    result = do_restore(admin, victim.name)
+    assert "Ok" in result
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-032: do_clone ──────────────────────────────────────────────
+
+
+def test_clone_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:2349
+    from mud.commands.imm_search import do_clone
+
+    _room(11500)
+    admin = _imm("Admin", 11500)
+    result = do_clone(admin, "")
+    assert "Clone what" in result
+    assert result.endswith("\n\r")
+
+
+def test_clone_not_here() -> None:
+    # mirrors ROM src/act_wiz.c:2358-2360
+    from mud.commands.imm_search import do_clone
+
+    _room(11501)
+    admin = _imm("Admin", 11501)
+    result = do_clone(admin, "NothingHere")
+    assert "don't see" in result.lower()
+    assert result.endswith("\n\r")

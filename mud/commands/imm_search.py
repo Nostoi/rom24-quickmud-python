@@ -376,15 +376,16 @@ def do_clone(char: Character, args: str) -> str:
     """
     Clone a mobile or object.
 
-    ROM Reference: src/act_wiz.c do_clone (lines 2338-2458)
+    ROM Reference: src/act_wiz.c do_clone (lines 2338-2455)
 
     Usage:
     - clone object <item>   - Clone an object
     - clone mobile <mob>    - Clone a mobile
     - clone <target>        - Clone object or mobile
     """
+    # mirrors ROM src/act_wiz.c:2349
     if not args or not args.strip():
-        return "Clone what?"
+        return "Clone what?\n\r"
 
     parts = args.strip().split(None, 1)
     first_arg = parts[0].lower()
@@ -396,68 +397,86 @@ def do_clone(char: Character, args: str) -> str:
     mob = None
     obj = None
 
+    # mirrors ROM src/act_wiz.c:2353-2383
     if first_arg == "object":
         obj = get_obj_here(char, rest)
         if obj is None:
-            return "You don't see that here."
+            return "You don't see that here.\n\r"
     elif first_arg in ("mobile", "character"):
         mob = get_char_room(char, rest)
         if mob is None:
-            return "You don't see that here."
+            return "You don't see that here.\n\r"
     else:
-        # Try both
         mob = get_char_room(char, args.strip())
         obj = get_obj_here(char, args.strip())
         if mob is None and obj is None:
-            return "You don't see that here."
+            return "You don't see that here.\n\r"
 
-    # Clone object
+    # Clone object — mirrors ROM src/act_wiz.c:2386-2409
     if obj is not None:
         from mud.spawning.obj_spawner import spawn_obj
 
         proto = getattr(obj, "prototype", None)
         if proto is None:
-            return "That object cannot be cloned."
+            proto = obj
 
         vnum = getattr(proto, "vnum", 0)
         clone = spawn_obj(vnum)
 
         if clone is None:
-            return "Failed to clone object."
+            return "Your powers are not great enough for such a task.\n\r"
 
-        # Copy properties
         for attr in ("short_descr", "description", "name", "level", "cost", "weight"):
             if hasattr(obj, attr):
                 setattr(clone, attr, getattr(obj, attr))
 
-        # Place in inventory
-        carrying = getattr(char, "carrying", None)
-        if carrying is None:
-            char.carrying = []
-        char.carrying.append(clone)
-        clone.carried_by = char
+        # mirrors ROM src/act_wiz.c:2399-2402
+        carrier = getattr(obj, "carried_by", None)
+        if carrier is not None:
+            carrying = getattr(char, "inventory", None)
+            if carrying is None:
+                char.inventory = []
+            char.inventory.append(clone)
+            clone.carried_by = char
+        else:
+            room = getattr(char, "room", None)
+            if room:
+                contents = getattr(room, "contents", None)
+                if contents is None:
+                    room.contents = []
+                room.contents.append(clone)
+                clone.in_room = room
 
-        clone_name = getattr(clone, "short_descr", "something")
-        return f"You clone {clone_name}."
+        from mud.wiznet import wiznet, WiznetFlag
+        wiznet("$N clones $p.", char, clone, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
+        return "You clone $p.\n\r"
 
-    # Clone mobile
+    # Clone mobile — mirrors ROM src/act_wiz.c:2411-2454
     if mob is not None:
         if not getattr(mob, "is_npc", False):
-            return "You can only clone mobiles."
+            return "You can only clone mobiles.\n\r"
+
+        # mirrors ROM src/act_wiz.c:2423-2432 — trust check
+        mob_level = getattr(mob, "level", 0)
+        from mud.models.constants import LEVEL_AVATAR, LEVEL_DEMI, LEVEL_IMMORTAL, LEVEL_GOD
+        if (mob_level > 20 and get_trust(char) < LEVEL_GOD) or \
+           (mob_level > 10 and get_trust(char) < LEVEL_IMMORTAL) or \
+           (mob_level > 5 and get_trust(char) < LEVEL_DEMI) or \
+           (mob_level > 0 and get_trust(char) < LEVEL_AVATAR):
+            return "Your powers are not great enough for such a task.\n\r"
 
         from mud.spawning.mob_spawner import spawn_mob
 
         proto = getattr(mob, "prototype", None)
         if proto is None:
-            return "That mobile cannot be cloned."
+            proto = mob
 
         vnum = getattr(proto, "vnum", 0)
         clone = spawn_mob(vnum)
 
         if clone is None:
-            return "Failed to clone mobile."
+            return "Your powers are not great enough for such a task.\n\r"
 
-        # Place in room
         room = getattr(char, "room", None)
         if room:
             clone.room = room
@@ -466,10 +485,12 @@ def do_clone(char: Character, args: str) -> str:
                 room.people = []
             room.people.append(clone)
 
-        clone_name = getattr(clone, "short_descr", "something")
-        return f"You clone {clone_name}."
+        from mud.wiznet import wiznet, WiznetFlag
+        clone_short = getattr(clone, "short_descr", "something")
+        wiznet(f"$N clones {clone_short}.", char, None, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
+        return "You clone $N.\n\r"
 
-    return "Clone what?"
+    return "Clone what?\n\r"
 
 
 def do_stat(char: Character, args: str) -> str:

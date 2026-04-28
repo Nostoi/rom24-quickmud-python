@@ -36,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `WIZ-025` — `copyover` now iterates `descriptor_list` with `CON_PLAYING` filter per ROM `src/act_wiz.c:4498-4588`; all messages have `\n\r`.
 - `WIZ-026` — `qmconfig` verified as already ROM-faithful per `src/act_wiz.c:4685-4787`; added test coverage for `"I have no clue..."` fallback.
 - `wiznet()` broadcast now iterates `descriptor_list` with `CON_PLAYING` filter per ROM `src/act_wiz.c:171-194`; falls back to `character_registry` in test environments without descriptor setup.
+- `WIZ-027` — `load` syntax messages now have `\n\r` line endings per ROM; re-invokes `do_load("")` on invalid type.
+- `WIZ-028` — `mload` now returns `"Ok.\n\r"` instead of `"You have created {name}!"` per ROM `src/act_wiz.c:2489-2517`; added `wiznet()` broadcast; safe `getattr` for registry.
+- `WIZ-029` — `oload` now returns `"Ok.\n\r"` instead of `"You have created {name}!"` per ROM `src/act_wiz.c:2521-2570`; added `wiznet()` broadcast; ROM typo preserved in level message; fixed `char.inventory` slot name.
+- `WIZ-030` — `purge` trust check now uses ROM `<=` comparison per `src/act_wiz.c:2625`; added `"X tried to purge you!\n\r"` notification to victim; all messages have `\n\r`.
+- `WIZ-031` — `restore` iterates `descriptor_list` for `restore all` per ROM `src/act_wiz.c:2820-2845`; added wiznet broadcasts; all messages have `\n\r`.
+- `WIZ-032` — `clone` now has wiznet broadcasts per ROM `src/act_wiz.c:2338-2455`; added trust check for mob cloning; uses `obj.carried_by` to determine placement; all messages have `\n\r`.
 - `ALIAS-001` — `alia` now returns the ROM `src/alias.c:97-100` typo-guard text instead of a generic helper string.
 - `ALIAS-002` — `alias` now mirrors ROM `src/alias.c:112-220`: exact list/query/set/realias messages, reserved-word checks, quote/name validation, `delete`/`prefix` expansion guards, and the five-alias limit.
 - `ALIAS-003` — alias substitution now mirrors ROM `src/alias.c:69-99`: one expansion pass only, truncation warning handling, and `mud.rom_api.substitute_alias()` now returns the expanded string instead of an internal tuple.

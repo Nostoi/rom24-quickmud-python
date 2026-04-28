@@ -36,6 +36,12 @@
 | `do_wizlock` | `src/act_wiz.c:3150-3169` | `mud/commands/admin_commands.py:60` (`cmd_wizlock`) | ✅ AUDITED |
 | `do_newlock` | `src/act_wiz.c:3171-3189` | `mud/commands/admin_commands.py:69` (`cmd_newlock`) | ✅ AUDITED |
 | `do_slookup` | `src/act_wiz.c:3191-3231` | `mud/commands/imm_search.py:143` | ✅ AUDITED |
+| `do_clone` | `src/act_wiz.c:2338-2455` | `mud/commands/imm_search.py:375` | ✅ AUDITED |
+| `do_load` | `src/act_wiz.c:2459-2486` | `mud/commands/imm_load.py:17` | ✅ AUDITED |
+| `do_mload` | `src/act_wiz.c:2489-2517` | `mud/commands/imm_load.py:51` | ✅ AUDITED |
+| `do_oload` | `src/act_wiz.c:2521-2570` | `mud/commands/imm_load.py:90` | ✅ AUDITED |
+| `do_purge` | `src/act_wiz.c:2574-2648` | `mud/commands/imm_load.py:152` | ✅ AUDITED |
+| `do_restore` | `src/act_wiz.c:2785-2869` | `mud/commands/imm_load.py:218` | ✅ AUDITED |
 | `do_set` / `do_sset` / `do_mset` / `do_string` / `do_oset` / `do_rset` | `src/act_wiz.c:3233-4138` | `mud/commands/imm_set.py` | ⚠️ PARTIAL |
 | `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:291` | ✅ AUDITED |
 | `do_force` | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | ✅ AUDITED |
@@ -144,6 +150,12 @@ Python now:
 | `WIZ-024` | LOW | `src/act_wiz.c:251-310` | `mud/commands/inventory.py:870` | `do_outfit` returned "You already have your equipment" when nothing to equip (ROM always says "You have been equipped by Mota."); missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_outfit_*` |
 | `WIZ-025` | LOW | `src/act_wiz.c:4498-4588` | `mud/commands/imm_server.py:91` | `do_copyover` iterated `registry.players` dict instead of `descriptor_list` with `CON_PLAYING` filter; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_copyover_*` |
 | `WIZ-026` | LOW | `src/act_wiz.c:4685-4787` | `mud/commands/admin_commands.py:95` | `cmd_qmconfig` already ROM-faithful; verified `\n\r` line endings and `str_prefix` matching. No gaps found. | ✅ VERIFIED — `tests/integration/test_act_wiz_command_parity.py::test_qmconfig_*` |
+| `WIZ-027` | MEDIUM | `src/act_wiz.c:2459-2486` | `mud/commands/imm_load.py:17` | `do_load` missing `\n\r` line endings; missing ROM `str_cmp` for "mob"/"char"; invalid type re-invoked `do_load("")` in ROM instead of hardcoded syntax. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_load_*` |
+| `WIZ-028` | MEDIUM | `src/act_wiz.c:2489-2517` | `mud/commands/imm_load.py:51` | `do_mload` returned `"You have created {name}!"` instead of ROM `"Ok.\n\r"`; missing `wiznet()` broadcast; used `registry.mob_prototypes` directly instead of safe `getattr`; missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_mload_*` |
+| `WIZ-029` | MEDIUM | `src/act_wiz.c:2521-2570` | `mud/commands/imm_load.py:90` | `do_oload` returned `"You have created {name}!"` instead of ROM `"Ok.\n\r"`; missing `wiznet()` broadcast; ROM level error says `"between 0 and your level"` with typo extra "be"; used `registry.obj_prototypes` directly; used `char.carrying` instead of `char.inventory`; missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_oload_*` |
+| `WIZ-030` | HIGH | `src/act_wiz.c:2574-2648` | `mud/commands/imm_load.py:152` | `do_purge` trust check used `>=` instead of ROM `<=`; missing `"X tried to purge you!\n\r"` notification to victim on trust failure; all messages missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_purge_*` |
+| `WIZ-031` | MEDIUM | `src/act_wiz.c:2785-2869` | `mud/commands/imm_load.py:218` | `do_restore` iterated `registry.players` instead of `descriptor_list` for `restore all`; missing wiznet broadcasts for room restore, `all` restore, and individual restore; all messages missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_restore_*` |
+| `WIZ-032` | MEDIUM | `src/act_wiz.c:2338-2455` | `mud/commands/imm_search.py:375` | `do_clone` missing `\n\r` line endings; missing wiznet broadcasts; missing ROM trust check for mob cloning; used `char.carrying` instead of checking `obj.carried_by`; missing `"Your powers are not great enough"` message for obj_check. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_clone_*` |
 
 ## Phase 4 — Closures
 
@@ -221,20 +233,25 @@ Python now:
 
 `act_wiz.c` remains **PARTIAL** after this pass.
 
-Completed this session (WIZ-023..026):
-- `do_guild` now uses `lookup_clan_id`/`CLAN_TABLE` for clan lookup; uses `str_prefix`-style matching for "none"; distinguishes independent-clan (`"a <name>"`) vs member-clan (`"member of clan <Name>"`) messaging; all messages have `\n\r`.
-- `do_outfit` now always returns `"You have been equipped by Mota.\n\r"` per ROM; removed "You already have your equipment" branch.
-- `do_copyover` now iterates `descriptor_list` with `CON_PLAYING` filter per ROM; all messages have `\n\r`.
-- `cmd_qmconfig` verified as already ROM-faithful; added test coverage for `"I have no clue..."` fallback.
-- `wiznet()` broadcast now iterates `descriptor_list` with `CON_PLAYING` filter in production; falls back to `character_registry` in tests.
+Completed this session (WIZ-023..032):
+- `do_guild` now uses `lookup_clan_id`/`CLAN_TABLE` for clan lookup; distinguishes independent-clan vs member-clan messaging; `\n\r`.
+- `do_outfit` always returns ROM message.
+- `do_copyover` iterates `descriptor_list` with `CON_PLAYING`; `\n\r`.
+- `cmd_qmconfig` verified; added test for `"I have no clue..."` fallback.
+- `wiznet()` broadcast now iterates `descriptor_list` in production.
+- `do_load` syntax messages have `\n\r`; re-invokes `do_load("")` on bad arg per ROM.
+- `do_mload` returns `"Ok.\n\r"` per ROM; added `wiznet()` broadcast; safe `getattr` for registry.
+- `do_oload` returns `"Ok.\n\r"` per ROM; added `wiznet()` broadcast; ROM typo in level message; fixed `char.inventory` slot.
+- `do_purge` trust check now uses ROM `<=` comparison; added `"X tried to purge you!\n\r"` to victim; `\n\r`.
+- `do_restore` iterates `descriptor_list` for `restore all`; added wiznet broadcasts; `\n\r`.
+- `do_clone` added wiznet broadcasts, trust check for mob cloning, `obj.carried_by` check; `\n\r`.
 - All modified commands have `\n\r` line endings.
 
 Still outstanding:
 - `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` family (900+ lines).
-- `do_clone`, `do_load`/`do_mload`/`do_oload`, `do_purge`, `do_restore`.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `111 passed`
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `129 passed`
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
 - `pytest tests/test_wiznet.py -q` — `32 passed`
 - `ruff check` — clean (no F/E9 errors)
