@@ -8,7 +8,7 @@ from enum import Enum, auto
 from mud.admin_logging.admin import is_log_all_enabled, log_admin_command
 from mud.models.character import Character
 from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, MAX_LEVEL, AffectFlag, PlayerFlag, Position
-from mud.models.social import social_registry
+from mud.models.social import find_social
 from mud.net.session import Session
 from mud.wiznet import cmd_wiznet
 
@@ -848,7 +848,8 @@ def process_command(char: Character, input_str: str) -> str:
     if not command:
         if lowered_name == "immtalk" or cmd_name == ":":
             return do_immtalk(char, arg_str)
-        social = social_registry.get(lowered_name)
+        # mirroring ROM src/interp.c:584-592 — str_prefix social lookup.
+        social = find_social(lowered_name)
         if social:
             return perform_social(char, cmd_name, arg_str)
         imc_response = try_imc_command(char, cmd_name, arg_str)

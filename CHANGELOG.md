@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `interp.c:INTERP-021` — social command lookup now mirrors ROM
+  `str_prefix` semantics so partial names (e.g. `gigg` → `giggle`)
+  resolve in load order. Added `mud.models.social.find_social()` and
+  routed both the dispatcher fallback (`mud/commands/dispatcher.py`)
+  and `perform_social` (`mud/commands/socials.py`) through it. Mirrors
+  ROM `src/interp.c:584-592`.
+
 ## [2.6.6] - 2026-04-27
 
 `interp.c` ROM parity audit started — full audit doc with 24 stable gap

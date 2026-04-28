@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, CommFlag, Position
-from mud.models.social import expand_placeholders, social_registry
+from mud.models.social import expand_placeholders, find_social
 from mud.utils import rng_mm
 
 
 def perform_social(char: Character, name: str, arg: str) -> str:
-    social = social_registry.get(name.lower())
+    # mirroring ROM src/interp.c:584-592 — str_prefix lookup so partial
+    # social names ("gigg" → "giggle") resolve in load order.
+    social = find_social(name)
     if social is None or char.room is None:
         return "Huh?"
     # mirroring ROM src/interp.c:597-601 — COMM_NOEMOTE silences players

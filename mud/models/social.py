@@ -35,6 +35,27 @@ def register_social(social: Social) -> None:
     social_registry[social.name.lower()] = social
 
 
+def find_social(name: str) -> Social | None:
+    """Look up a social by name with ROM ``str_prefix`` semantics.
+
+    Mirrors ROM ``src/interp.c:584-592``: iterate the social table in
+    load order and return the first social whose name starts with the
+    query (so ``gigg`` matches ``giggle``). Exact matches still win
+    because dict insertion order is preserved.
+    """
+
+    if not name:
+        return None
+    lowered = name.lower()
+    social = social_registry.get(lowered)
+    if social is not None:
+        return social
+    for key, candidate in social_registry.items():
+        if key.startswith(lowered):
+            return candidate
+    return None
+
+
 # START socials
 _SUBJECT_PRONOUNS: dict[Sex, str] = {
     Sex.MALE: "he",

@@ -508,3 +508,38 @@ class TestSocialNpcAutoReact:
         perform_social(alice, "smile", "cityguard")
 
         assert not any("slaps you" in m.lower() for m in alice.messages)
+
+
+class TestSocialPrefixLookup:
+    """ROM src/interp.c:584-592 — check_social uses str_prefix so partial names match."""
+
+    def test_prefix_matches_full_social_name(self, alice, bob):
+        # mirrors ROM src/interp.c:584-592 — "smi" should resolve to "smile".
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smi", "")
+
+        assert result == ""
+        assert len(alice.messages) > 0
+        assert "smile" in alice.messages[0].lower()
+        assert len(bob.messages) > 0
+        assert "alice" in bob.messages[0].lower()
+
+    def test_prefix_lookup_returns_first_load_order_match(self, alice):
+        # mirrors ROM src/interp.c:584-592 — first social_table entry whose name
+        # starts with the query wins (load-order, not alphabetical).
+        alice.messages.clear()
+
+        result = perform_social(alice, "sm", "")
+
+        # Any social starting with "sm" is acceptable; the point is that
+        # exact-match lookup would have returned "Huh?" here.
+        assert result == ""
+        assert len(alice.messages) > 0
+
+    def test_unknown_prefix_still_returns_huh(self, alice):
+        # mirrors ROM src/interp.c:594-595 — no match → return FALSE (→ "Huh?").
+        result = perform_social(alice, "zzznotasocial", "")
+
+        assert result == "Huh?"
