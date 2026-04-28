@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.9] - 2026-04-27
+
+Closes four `interp.c` dispatcher-level gaps in one session: empty-input
+behavior (`INTERP-007`), ROM punctuation aliases (`INTERP-008`), snoop
+forwarding (`INTERP-002`), and verified the wiznet `WIZ_SECURE` mirror
+that was already in place (`INTERP-003`). `interp.c` is now 11/24 gaps
+closed (46%).
+
 ### Fixed
 
 - `interp.c:INTERP-007` — empty input now returns silently to match

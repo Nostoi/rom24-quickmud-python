@@ -1,47 +1,52 @@
-# Session Status — 2026-04-27 — `interp.c` INTERP-001 trust sweep complete
+# Session Status — 2026-04-27 — `interp.c` dispatcher hook cluster complete
 
 ## Current State
 
 - **Active audit**: `interp.c` (Phase 4 — gap closure in progress;
-  7 of 24 gaps FIXED; full social cluster + INTERP-001 trust drift
-  done).
-- **Last completed**: INTERP-001 — 43 immortal commands raised to
-  ROM `cmd_table[]` trust tiers (ML, L1..L7). Security drift closed.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_001_TRUST_SWEEP.md](SESSION_SUMMARY_2026-04-27_INTERP_001_TRUST_SWEEP.md)
+  11 of 24 gaps FIXED; full social cluster, INTERP-001 trust drift,
+  and the dispatcher-hook cluster (INTERP-002/003/007/008) all done).
+- **Last completed**: INTERP-007, INTERP-008, INTERP-002, INTERP-003 —
+  empty-input silent return, ROM punctuation aliases, snoop-by
+  forwarding, wiznet `WIZ_SECURE` log-mirror verification.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_DISPATCHER_HOOKS.md](SESSION_SUMMARY_2026-04-27_INTERP_DISPATCHER_HOOKS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.8 |
+| Version | 2.6.9 |
+| Tests (interp_dispatcher suite) | 10 / 10 passing |
 | Tests (interp_trust suite) | 50 / 50 passing |
 | Tests (socials suite) | 31 / 31 passing |
+| Tests (alias_parity suite) | 14 / 14 passing |
 | ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial) |
-| `interp.c` gaps closed | 7 / 24 (29%) |
-| Active focus | `interp.c` — security drift closed; dispatcher hooks (INTERP-002/003/007/008/017), command-mapping cleanup (INTERP-009..014), and INTERP-024 (`do_commands`/`do_wizhelp` formatting) remain |
+| `interp.c` gaps closed | 11 / 24 (46%) |
+| Active focus | `interp.c` — dispatcher hooks done; command-mapping cleanup (INTERP-009..014), prefix-order sweep (INTERP-017), and INTERP-024 (`do_commands`/`do_wizhelp` formatting) remain |
 
 ## Recent Commits (this session)
 
-- `548098d` — `fix(parity): interp.c:INTERP-001 — raise immortal command trust to ROM tiers`
+- `6146ea5` — `fix(parity): interp.c:INTERP-007 — empty input returns silently`
+- `42dc0d1` — `fix(parity): interp.c:INTERP-008 — add ., ,, / punctuation aliases`
+- `1ef8a10` — `fix(parity): interp.c:INTERP-002 — forward snoop logline to snooper`
+- `b17ad93` — `test(parity): interp.c:INTERP-003 — verify wiznet WIZ_SECURE log mirror`
 
 ## Next Intended Task
 
-The remaining `interp.c` work is correctness/cleanup, not security.
-Reasonable continuations:
+The remaining `interp.c` work is correctness/cleanup only:
 
-1. **Pure-dispatcher gaps** (smaller, isolated, quick wins):
-   - INTERP-002 — snoop forwarding to `desc->snoop_by`
-   - INTERP-003 — wiznet `WIZ_SECURE` log mirror for logged commands
-   - INTERP-007 — silent return on empty input (Python emits "What?")
-   - INTERP-008 — `.`/`,`/`/` punctuation aliases in COMMAND_INDEX
-   - INTERP-017 — prefix-match table-order divergence (needs an
-     empirical sweep test)
-2. **Command-mapping cleanup** (INTERP-009..014): route `hit`, `take`,
+1. **INTERP-017** — prefix-match table-order divergence. Needs an
+   empirical sweep test that walks every `cmd_table[]` prefix and
+   confirms `resolve_command` returns the same first-match command
+   ROM does.
+2. **INTERP-009..014** — command-mapping cleanup: route `hit`, `take`,
    `junk`, `tap`, `go`, `wield`, `hold`, `:` to ROM's canonical
    handlers (`do_kill`, `do_get`, `do_sacrifice`, `do_enter`,
-   `do_wear`, `do_immtalk`) rather than separate Python stubs.
+   `do_wear`, `do_immtalk`) rather than separate Python stubs. These
+   are higher-impact because they may break tests that expect the
+   current Python stubs.
 3. **INTERP-024** — verify `do_commands`/`do_wizhelp` column format
-   and `LEVEL_HERO` mortal/immortal split.
+   (12-char left-justified, 6 per line) and `LEVEL_HERO`
+   mortal/immortal split.
 
 ## Outstanding Cleanup (carried over)
 
