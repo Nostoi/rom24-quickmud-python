@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `SCAN-001` — `do_scan` with no argument now emits the TO_ROOM broadcast
+  `"$n looks all around."` so onlookers see the scan, mirroring ROM
+  `src/scan.c:60` (`act("$n looks all around.", ch, NULL, NULL, TO_ROOM);`).
+
 ## [2.6.14] - 2026-04-28
 
 Closes the `db2.c` audit (P1): all CRITICAL/IMPORTANT mob-loader gaps fixed.

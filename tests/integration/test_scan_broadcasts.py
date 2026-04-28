@@ -1,0 +1,58 @@
+"""Integration parity tests for src/scan.c.
+
+Each test mirrors a specific ROM C line range from src/scan.c and asserts
+the QuickMUD-Python output / broadcast behavior matches.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from mud.commands.inspection import do_scan
+from mud.models.character import Character, character_registry
+from mud.models.room import Room
+from mud.registry import room_registry
+
+
+@pytest.fixture
+def two_char_room():
+    """Single room with a scanner and an observer, both attached to messages buffers."""
+    room = Room(vnum=9001, name="Scan Test Room", description="", room_flags=0, sector_type=0)
+    room.people = []
+    room.contents = []
+    room_registry[9001] = room
+
+    scanner = Character(name="Scanner", level=10, room=room, is_npc=False, hit=100, max_hit=100)
+    scanner.messages = []
+    observer = Character(name="Observer", level=10, room=room, is_npc=False, hit=100, max_hit=100)
+    observer.messages = []
+    room.people.extend([scanner, observer])
+    character_registry.extend([scanner, observer])
+
+    yield room, scanner, observer
+
+    for ch in (scanner, observer):
+        if ch in room.people:
+            room.people.remove(ch)
+        if ch in character_registry:
+            character_registry.remove(ch)
+    room_registry.pop(9001, None)
+
+
+def test_scan_no_arg_broadcasts_looks_all_around(two_char_room):
+    """SCAN-001 — mirrors ROM src/scan.c:60.
+
+    `act("$n looks all around.", ch, NULL, NULL, TO_ROOM);` must reach onlookers
+    when do_scan is invoked with no argument. The scanner itself does NOT
+    receive the broadcast (TO_ROOM excludes ch).
+    """
+    room, scanner, observer = two_char_room
+
+    do_scan(scanner, "")
+
+    assert any("Scanner looks all around." in msg for msg in observer.messages), (
+        f"Observer never received TO_ROOM scan broadcast. Got: {observer.messages!r}"
+    )
+    assert not any("looks all around" in msg for msg in scanner.messages), (
+        "Scanner should not receive their own TO_ROOM broadcast."
+    )

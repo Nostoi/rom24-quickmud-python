@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.models.constants import Direction
+from mud.net.protocol import broadcast_room
 from mud.world.look import dir_names, look
 from mud.world.vision import can_see_character, describe_character
 
@@ -70,6 +71,9 @@ def do_scan(char: Character, args: str = "") -> str:
 
     s = args.strip().lower()
     if not s:
+        # SCAN-001: TO_ROOM broadcast — mirroring ROM src/scan.c:60
+        # `act("$n looks all around.", ch, NULL, NULL, TO_ROOM);`
+        broadcast_room(char.room, f"{char.name} looks all around.", exclude=char)
         lines: list[str] = ["Looking around you see:"]
         # current room
         lines += list_room(char.room, 0, -1)
