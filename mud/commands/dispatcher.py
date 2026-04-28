@@ -159,7 +159,7 @@ from .murder import do_murder
 from .notes import do_board, do_note
 from .obj_manipulation import do_put, do_quaff, do_remove, do_sacrifice
 from .player_config import do_delet, do_delete, do_nofollow, do_noloot, do_nosummon
-from .player_info import do_info, do_play, do_scroll, do_show, do_take
+from .player_info import do_info, do_play, do_scroll, do_show
 from .position import do_rest, do_sit, do_sleep, do_stand, do_wake
 from .remaining_rom import (
     do_bs,
@@ -266,7 +266,8 @@ COMMANDS: list[Command] = [
     # Common actions
     Command("look", do_look, aliases=("l",), min_position=Position.RESTING),
     Command("exits", do_exits, aliases=("ex",), min_position=Position.RESTING),
-    Command("get", do_get, aliases=("g",), min_position=Position.RESTING),
+    # ROM src/interp.c:226 — `take` is a cmd_table alias for do_get.
+    Command("get", do_get, aliases=("g", "take"), min_position=Position.RESTING),
     Command("drop", do_drop, min_position=Position.RESTING),
     Command("inventory", do_inventory, aliases=("inv",), min_position=Position.DEAD),
     Command("equipment", do_equipment, aliases=("eq",), min_position=Position.DEAD),
@@ -402,7 +403,6 @@ COMMANDS: list[Command] = [
     Command("remove", do_remove, min_position=Position.RESTING),
     Command("sacrifice", do_sacrifice, aliases=("sac",), min_position=Position.RESTING),
     Command("quaff", do_quaff, min_position=Position.RESTING),
-    Command("take", do_take, min_position=Position.RESTING),
     # Player Essential - Info
     Command("scroll", do_scroll, min_position=Position.DEAD),
     Command("show", do_show, min_position=Position.DEAD),

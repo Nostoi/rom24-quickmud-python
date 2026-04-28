@@ -126,6 +126,13 @@ def test_interp_009_hit_routes_to_do_kill(name, handler):
     assert cmd.func is handler
 
 
+def test_interp_010_take_routes_to_do_get():
+    # mirrors ROM src/interp.c:226 — `take` is a cmd_table alias for do_get.
+    cmd = COMMAND_INDEX.get("take")
+    assert cmd is not None
+    assert cmd.func is do_get
+
+
 def test_interp_003_logged_command_mirrors_to_wiznet_secure(test_room, monkeypatch):
     # mirrors ROM src/interp.c:468-489 — when a command is logged
     # (PLR_LOG, LOG_ALWAYS, or fLogAll), the dispatcher mirrors

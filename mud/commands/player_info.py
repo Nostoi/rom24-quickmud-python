@@ -157,14 +157,3 @@ def do_info(char: Character, args: str) -> str:
     return do_group(char, "")
 
 
-def do_take(char: Character, args: str) -> str:
-    """
-    Alias for get command.
-
-    ROM Reference: interp.c - take maps to do_get
-
-    Usage: take <item> [container]
-    """
-    from mud.commands.inventory import do_get
-
-    return do_get(char, args)
