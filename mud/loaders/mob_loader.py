@@ -117,6 +117,12 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
             short_descr = tokenizer.next_line().rstrip("~")
             long_descr = tokenizer.read_string_tilde()
             desc = tokenizer.read_string_tilde()
+            # Mirrors ROM src/db2.c:236-237 — UPPER first char of
+            # long_descr/description to defend against lowercase typos.
+            if long_descr:
+                long_descr = long_descr[0].upper() + long_descr[1:]
+            if desc:
+                desc = desc[0].upper() + desc[1:]
             race = tokenizer.next_line().rstrip("~")
 
             # Parse act flags, affected flags, alignment, group.

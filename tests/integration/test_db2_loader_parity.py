@@ -151,3 +151,45 @@ def test_load_mobiles_from_json_merges_race_table_flags():
     assert AffectFlag.INFRARED in affected
 
     mob_registry.pop(99006, None)
+
+
+def test_load_mobiles_uppercases_first_char_of_long_descr_and_description():
+    """DB2-003: ROM ``src/db2.c:236-237`` does
+    ``pMobIndex->long_descr[0] = UPPER(...)`` and the same for ``description``
+    to defend against area-builder typos. The .are loader must do the same so
+    a mob with a lowercase first letter still renders capitalized in room
+    output."""
+
+    mob_registry.pop(99007, None)
+    fragment = _are_fragment(99007, "0 0 0 0")
+    fragment[3] = "a burly guard stands here."
+    fragment[5] = "a lawful, well-armored guard."
+    tokenizer = BaseTokenizer(fragment)
+    load_mobiles(tokenizer, area=None)
+
+    mob = mob_registry[99007]
+    assert mob.long_descr.startswith("A burly")
+    assert mob.description.startswith("A lawful")
+
+    mob_registry.pop(99007, None)
+
+
+def test_load_mobiles_from_json_uppercases_first_char_of_long_descr_and_description():
+    """DB2-003: JSON loader must apply the same first-char uppercasing as
+    ROM ``src/db2.c:236-237`` so JSON-only mobs cannot render lowercase
+    long_descr/description in the room output."""
+
+    mob_registry.pop(99008, None)
+    payload = {
+        "id": 99008,
+        "name": "the city guard",
+        "long_description": "a burly guard stands here.",
+        "description": "a lawful, well-armored guard.",
+    }
+    _load_mobs_from_json([payload], area=None)
+
+    mob = mob_registry[99008]
+    assert mob.long_descr.startswith("A burly")
+    assert mob.description.startswith("A lawful")
+
+    mob_registry.pop(99008, None)

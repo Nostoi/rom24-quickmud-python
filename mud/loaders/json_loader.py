@@ -421,8 +421,10 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             vnum=mob_data["id"],
             player_name=mob_data.get("player_name", ""),
             short_descr=mob_data.get("name", ""),
-            long_descr=mob_data.get("long_description", ""),
-            description=mob_data.get("description", ""),
+            # Mirrors ROM src/db2.c:236-237 — UPPER first char of
+            # long_descr/description to defend against lowercase typos.
+            long_descr=(lambda s: (s[0].upper() + s[1:]) if s else s)(mob_data.get("long_description", "")),
+            description=(lambda s: (s[0].upper() + s[1:]) if s else s)(mob_data.get("description", "")),
             race=mob_data.get("race", ""),
             # Mirrors ROM src/db2.c:239 — force ``ACT_IS_NPC`` (letter
             # ``A``) into every mob's act_flags string.

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `DB2-003` — both mob loaders now uppercase the first character of
+  `long_descr` and `description` at load time, mirroring ROM
+  `src/db2.c:236-237` (`pMobIndex->long_descr[0] = UPPER(...)`).
+  Previously mob protos with a lowercase first letter rendered that way in
+  room/look output. `.are` loader normalizes after `read_string_tilde`;
+  JSON loader normalizes inline at MobIndex construction.
 - `DB2-006` — mob armor-class fields (`ac_pierce`/`ac_bash`/`ac_slash`/`ac_exotic`)
   are now multiplied by 10 at load time in both the `.are` loader
   (`mud/loaders/mob_loader.py`) and the JSON loader (`mud/loaders/json_loader.py`),
