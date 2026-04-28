@@ -403,26 +403,6 @@ def do_go(char: Character, args: str) -> str:
     return do_enter(char, args)
 
 
-def do_junk(char: Character, args: str) -> str:
-    """
-    Alias for sacrifice.
-    
-    ROM Reference: interp.c - junk maps to do_sacrifice
-    """
-    from mud.commands.obj_manipulation import do_sacrifice
-    return do_sacrifice(char, args)
-
-
-def do_tap(char: Character, args: str) -> str:
-    """
-    Alias for sacrifice.
-    
-    ROM Reference: interp.c - tap maps to do_sacrifice
-    """
-    from mud.commands.obj_manipulation import do_sacrifice
-    return do_sacrifice(char, args)
-
-
 def do_teleport(char: Character, args: str) -> str:
     """
     Alias for transfer.

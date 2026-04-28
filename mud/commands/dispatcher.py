@@ -170,11 +170,9 @@ from .remaining_rom import (
     do_go,
     do_groups,
     do_guild,
-    do_junk,
     do_mob,
     do_qmread,
     do_quiet,
-    do_tap,
     do_teleport,
     do_wimpy,
 )
@@ -401,7 +399,8 @@ COMMANDS: list[Command] = [
     # Player Essential - Object Manipulation
     Command("put", do_put, min_position=Position.RESTING),
     Command("remove", do_remove, min_position=Position.RESTING),
-    Command("sacrifice", do_sacrifice, aliases=("sac",), min_position=Position.RESTING),
+    # ROM src/interp.c:228-229 — `junk` and `tap` are cmd_table aliases for do_sacrifice.
+    Command("sacrifice", do_sacrifice, aliases=("sac", "junk", "tap"), min_position=Position.RESTING),
     Command("quaff", do_quaff, min_position=Position.RESTING),
     # Player Essential - Info
     Command("scroll", do_scroll, min_position=Position.DEAD),
@@ -509,8 +508,6 @@ COMMANDS: list[Command] = [
     # Alias Commands
     Command("bs", do_bs, min_position=Position.FIGHTING, show=False),
     Command("go", do_go, min_position=Position.STANDING, show=False),
-    Command("junk", do_junk, min_position=Position.RESTING, show=False),
-    Command("tap", do_tap, min_position=Position.RESTING, show=False),
     Command("teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, show=False),
     # Typo Guards
     Command("qui", do_qui, min_position=Position.DEAD, show=False),
