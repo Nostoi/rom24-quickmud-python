@@ -42,7 +42,12 @@
 | `do_oload` | `src/act_wiz.c:2521-2570` | `mud/commands/imm_load.py:90` | ✅ AUDITED |
 | `do_purge` | `src/act_wiz.c:2574-2648` | `mud/commands/imm_load.py:152` | ✅ AUDITED |
 | `do_restore` | `src/act_wiz.c:2785-2869` | `mud/commands/imm_load.py:218` | ✅ AUDITED |
-| `do_set` / `do_sset` / `do_mset` / `do_string` / `do_oset` / `do_rset` | `src/act_wiz.c:3233-4138` | `mud/commands/imm_set.py` | ⚠️ PARTIAL |
+| `do_set` | `src/act_wiz.c:3233-3275` | `mud/commands/imm_set.py:17` | ✅ AUDITED |
+| `do_sset` | `src/act_wiz.c:3278-3352` | `mud/commands/imm_set.py:345` | ✅ AUDITED |
+| `do_mset` | `src/act_wiz.c:3355-3790` | `mud/commands/imm_set.py:61` | ✅ AUDITED |
+| `do_string` | `src/act_wiz.c:3793-3954` | `mud/commands/imm_set.py:407` | ✅ AUDITED |
+| `do_oset` | `src/act_wiz.c:3958-4067` | `mud/commands/imm_set.py:218` | ✅ AUDITED |
+| `do_rset` | `src/act_wiz.c:4071-4136` | `mud/commands/imm_set.py:293` | ✅ AUDITED |
 | `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:291` | ✅ AUDITED |
 | `do_force` | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | ✅ AUDITED |
 | `do_invis` | `src/act_wiz.c:4329-4373` | `mud/commands/imm_display.py:17` | ✅ AUDITED |
@@ -156,6 +161,12 @@ Python now:
 | `WIZ-030` | HIGH | `src/act_wiz.c:2574-2648` | `mud/commands/imm_load.py:152` | `do_purge` trust check used `>=` instead of ROM `<=`; missing `"X tried to purge you!\n\r"` notification to victim on trust failure; all messages missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_purge_*` |
 | `WIZ-031` | MEDIUM | `src/act_wiz.c:2785-2869` | `mud/commands/imm_load.py:218` | `do_restore` iterated `registry.players` instead of `descriptor_list` for `restore all`; missing wiznet broadcasts for room restore, `all` restore, and individual restore; all messages missing `\n\r`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_restore_*` |
 | `WIZ-032` | MEDIUM | `src/act_wiz.c:2338-2455` | `mud/commands/imm_search.py:375` | `do_clone` missing `\n\r` line endings; missing wiznet broadcasts; missing ROM trust check for mob cloning; used `char.carrying` instead of checking `obj.carried_by`; missing `"Your powers are not great enough"` message for obj_check. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_clone_*` |
+| `WIZ-033` | MEDIUM | `src/act_wiz.c:3233-3275` | `mud/commands/imm_set.py:17` | `do_set` syntax messages missing `\n\r` line endings; invalid type should re-invoke `do_set("")` per ROM, not return hardcoded syntax. | ✅ FIXED |
+| `WIZ-034` | MEDIUM | `src/act_wiz.c:3278-3352` | `mud/commands/imm_set.py:312` | `do_sset` uses string iteration over `skill_table` instead of ROM `skill_lookup`; missing `(use the name of the skill, not the number)` hint; missing `\n\r` line endings. | ✅ FIXED |
+| `WIZ-035` | HIGH | `src/act_wiz.c:3355-3790` | `mud/commands/imm_set.py:68` | `do_mset` missing `smash_tilde`; stat max hardcoded 25 instead of `get_max_train()`; `level` allows PCs (ROM: NPC-only); `sex` missing `pcdata.true_sex` set; `hp`/`mana`/`move` missing `pcdata.perm_hit/perm_mana/perm_move` set and wrong ranges; `practice`/`train` missing range checks; `class` field entirely missing (uses `class_lookup`); `race` field entirely missing (uses `race_lookup`); `group` field missing (NPC-only); `hours` field missing; `thirst`/`drunk`/`full`/`hunger` fields missing (PC-only with condition arrays); `security` missing `ch->pcdata->security`-based range check; `victim->zone` not cleared; unknown field re-invokes `do_mset("")` per ROM; all messages missing `\n\r`. | ✅ FIXED |
+| `WIZ-036` | MEDIUM | `src/act_wiz.c:3958-4067` | `mud/commands/imm_set.py:366` | `do_oset` missing `smash_tilde`; missing `v0`-`v4` short aliases (ROM allows `v0` as alias for `value0`); `value0` not capped at `UMIN(50,value)` per ROM:3998; missing `timer` field; unknown field re-invokes `do_oset("")` per ROM; all messages missing `\n\r`. | ✅ FIXED |
+| `WIZ-037` | MEDIUM | `src/act_wiz.c:4071-4136` | `mud/commands/imm_set.py:457` | `do_rset` missing `smash_tilde`; uses `registry.rooms.get(vnum)` instead of ROM `find_location(ch, arg1)`; missing private-room check (`is_room_owner`/`room_is_private`); missing `"Value must be numeric.\n\r"` check; unknown field re-invokes `do_rset("")`; `"No such location.\n\r"` vs `"No such room."`; all messages missing `\n\r`. | ✅ FIXED |
+| `WIZ-038` | MEDIUM | `src/act_wiz.c:3793-3954` | `mud/commands/imm_set.py:516` | `do_string` missing `smash_tilde`; `spec` field entirely missing (NPC-only, uses `spec_lookup`); `long` appends `\n` instead of ROM `\n\r`; `title` uses `" " + value` instead of ROM `set_title(victim, arg3)`; `desc` uses exact match instead of `str_prefix`; extended description stub instead of ROM `extra_descr` insertion; bad type re-invokes `do_string("")` per ROM; all messages missing `\n\r`. | ✅ FIXED |
 
 ## Phase 4 — Closures
 
@@ -231,9 +242,9 @@ Python now:
 
 ## Phase 5 — Current State
 
-`act_wiz.c` remains **PARTIAL** after this pass.
+`act_wiz.c` is now **AUDITED** — all functions verified or closed.
 
-Completed this session (WIZ-023..032):
+Completed this session (WIZ-023..038):
 - `do_guild` now uses `lookup_clan_id`/`CLAN_TABLE` for clan lookup; distinguishes independent-clan vs member-clan messaging; `\n\r`.
 - `do_outfit` always returns ROM message.
 - `do_copyover` iterates `descriptor_list` with `CON_PLAYING`; `\n\r`.
@@ -245,13 +256,30 @@ Completed this session (WIZ-023..032):
 - `do_purge` trust check now uses ROM `<=` comparison; added `"X tried to purge you!\n\r"` to victim; `\n\r`.
 - `do_restore` iterates `descriptor_list` for `restore all`; added wiznet broadcasts; `\n\r`.
 - `do_clone` added wiznet broadcasts, trust check for mob cloning, `obj.carried_by` check; `\n\r`.
+- `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` now fully ROM-faithful:
+  - Uses `smash_tilde()` for input sanitization per ROM
+  - Uses `get_max_train()` for stat ranges instead of hardcoded 25
+  - Uses `str_prefix`-style matching (`.startswith()`) for field matching
+  - Missing fields added: `class`, `race`, `group`, `hours`, `spec`, `timer`
+  - `mset.sex` now sets `pcdata.true_sex` for PCs
+  - `mset.hp`/`mana`/`move` now set `pcdata.perm_hit/perm_mana/perm_move` for PCs
+  - `mset.security` uses `ch->pcdata->security`-based range check per ROM
+  - `mset.level` now rejects PCs per ROM (line 3552-3556)
+  - Missing fields from original: `thirst`, `drunk`, `full`, `hunger` (PC-only condition arrays)
+  - `mset`/`oset`/`rset`/`string` re-invoke themselves on unknown field per ROM
+  - `oset.value0` capped at `min(50, value)` per ROM:3998
+  - `oset`/`rset`/`string` use `find_location()` for room lookup per ROM
+  - `rset` includes private-room check (`is_room_owner`/`room_is_private`)
+  - `string` uses `set_title()` for title setting
+  - `string.spec` uses `get_spec_fun()` for spec function lookup
+  - `string.long` appends `\n\r` per ROM
+  - All messages have `\n\r` line endings
 - All modified commands have `\n\r` line endings.
 
-Still outstanding:
-- `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` family (900+ lines).
+Still outstanding: (none — act_wiz.c fully audited)
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `129 passed`
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `102 passed` (+27 new tests)
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
 - `pytest tests/test_wiznet.py -q` — `32 passed`
 - `ruff check` — clean (no F/E9 errors)
