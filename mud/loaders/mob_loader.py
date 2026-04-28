@@ -63,9 +63,13 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
             desc = tokenizer.read_string_tilde()
             race = tokenizer.next_line().rstrip("~")
 
-            # Parse act flags, affected flags, alignment, group
+            # Parse act flags, affected flags, alignment, group.
+            # Mirrors ROM src/db2.c:239 — ``ACT_IS_NPC`` (letter ``A``) is
+            # OR'd into every mob's act_flags unconditionally.
             act_line = tokenizer.next_line().split()
             act_flags = act_line[0] if len(act_line) > 0 else ""
+            if "A" not in act_flags:
+                act_flags = "A" + act_flags
             affected_by = act_line[1] if len(act_line) > 1 else ""
             alignment = int(act_line[2]) if len(act_line) > 2 and act_line[2].lstrip("-").isdigit() else 0
             group = int(act_line[3]) if len(act_line) > 3 and act_line[3].isdigit() else 0

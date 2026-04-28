@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   10× off in ROM's negative-AC convention, making them noticeably easier to hit.
   `mud/scripts/convert_are_to_json.py` now divides back when re-emitting JSON so
   the JSON files stay a faithful mirror of the raw `.are` upstream.
+- `DB2-001` — both mob loaders now unconditionally OR `ACT_IS_NPC` (letter `A`)
+  into every prototype's `act_flags` letter string, mirroring ROM
+  `src/db2.c:239`. Previously a mob whose area-file flags omitted the `A`
+  letter would spawn with `IS_NPC()` returning false, breaking every
+  downstream `is_npc` check (combat, save, look, mobprog dispatch).
 
 ## [2.6.13] - 2026-04-28
 

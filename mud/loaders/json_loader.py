@@ -424,7 +424,9 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             long_descr=mob_data.get("long_description", ""),
             description=mob_data.get("description", ""),
             race=mob_data.get("race", ""),
-            act_flags=mob_data.get("act_flags", ""),
+            # Mirrors ROM src/db2.c:239 — force ``ACT_IS_NPC`` (letter
+            # ``A``) into every mob's act_flags string.
+            act_flags=("A" + mob_data.get("act_flags", "")) if "A" not in mob_data.get("act_flags", "") else mob_data.get("act_flags", ""),
             affected_by=mob_data.get("affected_by", ""),
             alignment=mob_data.get("alignment", 0),
             group=mob_data.get("group", 0),
