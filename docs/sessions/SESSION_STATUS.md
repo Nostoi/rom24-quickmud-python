@@ -1,52 +1,52 @@
-# Session Status — 2026-04-27 — `interp.c` dispatcher hook cluster complete
+# Session Status — 2026-04-27 — `interp.c` 17/24 gaps closed
 
 ## Current State
 
-- **Active audit**: `interp.c` (Phase 4 — gap closure in progress;
-  11 of 24 gaps FIXED; full social cluster, INTERP-001 trust drift,
-  and the dispatcher-hook cluster (INTERP-002/003/007/008) all done).
-- **Last completed**: INTERP-007, INTERP-008, INTERP-002, INTERP-003 —
-  empty-input silent return, ROM punctuation aliases, snoop-by
-  forwarding, wiznet `WIZ_SECURE` log-mirror verification.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_DISPATCHER_HOOKS.md](SESSION_SUMMARY_2026-04-27_INTERP_DISPATCHER_HOOKS.md)
+- **Active audit**: `interp.c` (Phase 4 — gap closure;
+  17 of 24 gaps closed; remaining work is correctness-only).
+- **Last completed**: INTERP-009/010/011/012/014 command-mapping
+  cleanup (alias collapse), INTERP-024 column-padding fix, and
+  INTERP-017 prefix-order sweep (Python's prefix scan now mirrors
+  ROM `cmd_table[]` declaration order).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-27_INTERP_COMMAND_MAPPING_AND_PREFIX.md](SESSION_SUMMARY_2026-04-27_INTERP_COMMAND_MAPPING_AND_PREFIX.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.9 |
-| Tests (interp_dispatcher suite) | 10 / 10 passing |
-| Tests (interp_trust suite) | 50 / 50 passing |
-| Tests (socials suite) | 31 / 31 passing |
-| Tests (alias_parity suite) | 14 / 14 passing |
+| Version | 2.6.10 |
+| Tests (interp_dispatcher suite) | 17 / 17 passing |
+| Tests (interp_prefix_order suite) | 45 / 45 passing |
+| Tests (full integration + alias + help sweep) | 1202 / 1202 passing, 10 skipped (75.8s) |
 | ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial) |
-| `interp.c` gaps closed | 11 / 24 (46%) |
-| Active focus | `interp.c` — dispatcher hooks done; command-mapping cleanup (INTERP-009..014), prefix-order sweep (INTERP-017), and INTERP-024 (`do_commands`/`do_wizhelp` formatting) remain |
+| `interp.c` gaps closed | 17 / 24 (71%) |
+| Active focus | `interp.c` — `INTERP-004`/`-005`/`-006` position/trust gates + `INTERP-013` (deferred until `do_wear` ports the missing wield/hold logic) + `INTERP-015` shlex/one_argument port |
 
 ## Recent Commits (this session)
 
-- `6146ea5` — `fix(parity): interp.c:INTERP-007 — empty input returns silently`
-- `42dc0d1` — `fix(parity): interp.c:INTERP-008 — add ., ,, / punctuation aliases`
-- `1ef8a10` — `fix(parity): interp.c:INTERP-002 — forward snoop logline to snooper`
-- `b17ad93` — `test(parity): interp.c:INTERP-003 — verify wiznet WIZ_SECURE log mirror`
+- `64c4adf` — `fix(parity): interp.c:INTERP-009 — route 'hit' to do_kill`
+- `97fdec1` — `fix(parity): interp.c:INTERP-010 — route 'take' to do_get`
+- `324bd1d` — `fix(parity): interp.c:INTERP-011 — route 'junk'/'tap' to do_sacrifice`
+- `5db5f00` — `fix(parity): interp.c:INTERP-012 — route 'go' to do_enter`
+- `e1fd782` — `fix(parity): interp.c:INTERP-014 — route ':' to do_immtalk`
+- `bc707ee` — `fix(parity): interp.c:INTERP-024 — preserve 12-char column padding`
+- `69e5cab` — `fix(parity): interp.c:INTERP-017 — prefix scan walks ROM cmd_table order`
 
 ## Next Intended Task
 
-The remaining `interp.c` work is correctness/cleanup only:
+The remaining `interp.c` work is correctness-only:
 
-1. **INTERP-017** — prefix-match table-order divergence. Needs an
-   empirical sweep test that walks every `cmd_table[]` prefix and
-   confirms `resolve_command` returns the same first-match command
-   ROM does.
-2. **INTERP-009..014** — command-mapping cleanup: route `hit`, `take`,
-   `junk`, `tap`, `go`, `wield`, `hold`, `:` to ROM's canonical
-   handlers (`do_kill`, `do_get`, `do_sacrifice`, `do_enter`,
-   `do_wear`, `do_immtalk`) rather than separate Python stubs. These
-   are higher-impact because they may break tests that expect the
-   current Python stubs.
-3. **INTERP-024** — verify `do_commands`/`do_wizhelp` column format
-   (12-char left-justified, 6 per line) and `LEVEL_HERO`
-   mortal/immortal split.
+1. **INTERP-004/-005/-006** — small position/trust-gate fixes:
+   `shout` (ROM `min_trust=3`), `murder` (ROM `min_trust=5`),
+   `music` (`min_position=POS_SLEEPING` not `RESTING`).
+2. **INTERP-013** — port missing wield/hold behavior into `do_wear`
+   (STR check, weapon-skill flavor, two-hand conflict, HOLD
+   auto-unequip), then collapse `do_wield`/`do_hold` into aliases.
+   Track new gap IDs in `ACT_OBJ_C_AUDIT.md`.
+3. **INTERP-015** — replace `shlex.split` in `_split_command_and_args`
+   with a ROM-faithful `one_argument` port (backslash semantics).
+4. **INTERP-016** — document `tail_chain()` as a no-op extension
+   hook; defer.
 
 ## Outstanding Cleanup (carried over)
 
