@@ -1,8 +1,64 @@
 from mud.models.mob import MobIndex, MobProgram
+from mud.models.races import get_race
 from mud.registry import mob_registry
 
 from .base_loader import BaseTokenizer
 from mud.mobprog import resolve_trigger_flag
+
+
+def _flag_int_to_letters(value: int) -> str:
+    """Convert an IntFlag bitmask back to ROM letter form (A-Z, a-z)."""
+
+    letters: list[str] = []
+    for bit in range(52):
+        if value & (1 << bit):
+            if bit < 26:
+                letters.append(chr(ord("A") + bit))
+            else:
+                letters.append(chr(ord("a") + bit - 26))
+    return "".join(letters)
+
+
+def _merge_letters(existing: str, additions: str) -> str:
+    """Append flag letters from ``additions`` not already present in
+    ``existing``, preserving original ordering."""
+
+    if not additions:
+        return existing
+    extra = "".join(ch for ch in additions if ch not in existing)
+    return existing + extra
+
+
+def merge_race_flags(mob: MobIndex) -> None:
+    """Mirror ROM src/db2.c:239-242,279-286,295-297 — OR race_table[]
+    flag bits into the mob's letter-based flag fields."""
+
+    race_name = mob.race if isinstance(mob.race, str) else None
+    if not race_name:
+        return
+    race = get_race(race_name)
+    if race is None:
+        return
+
+    mob.act_flags = _merge_letters(
+        mob.act_flags if isinstance(mob.act_flags, str) else "",
+        _flag_int_to_letters(int(race.act_flags)),
+    )
+    mob.affected_by = _merge_letters(mob.affected_by, _flag_int_to_letters(int(race.affect_flags)))
+    mob.offensive = _merge_letters(mob.offensive, _flag_int_to_letters(int(race.offensive_flags)))
+    mob.immune = _merge_letters(mob.immune, _flag_int_to_letters(int(race.immunity_flags)))
+    mob.resist = _merge_letters(mob.resist, _flag_int_to_letters(int(race.resistance_flags)))
+    mob.vuln = _merge_letters(mob.vuln, _flag_int_to_letters(int(race.vulnerability_flags)))
+    mob.form = _merge_letters(
+        mob.form if isinstance(mob.form, str) else "",
+        _flag_int_to_letters(int(race.form_flags)),
+    )
+    mob.parts = _merge_letters(
+        mob.parts if isinstance(mob.parts, str) else "",
+        _flag_int_to_letters(int(race.part_flags)),
+    )
+    if hasattr(mob, "_act_cache"):
+        mob._act_cache = None
 
 
 def _remove_flag_letters(value: str, flags: str) -> str:
@@ -150,6 +206,7 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
                 area=area,
                 new_format=True,
             )
+            merge_race_flags(mob)
             mob_registry[vnum] = mob
 
             while True:

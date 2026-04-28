@@ -109,3 +109,45 @@ def test_load_mobiles_from_json_forces_act_is_npc_flag():
     assert ActFlag.IS_NPC in mob.get_act_flags()
 
     mob_registry.pop(99004, None)
+
+
+def test_load_mobiles_merges_race_table_flags():
+    """DB2-002: ROM ``src/db2.c:239-242,279-286,295-297`` ORs the
+    race_table[].{act,aff,off,imm,res,vuln,form,parts} bits into every
+    mob's flag fields. The .are loader must do the same so a dragon
+    spawns flying with infrared (race-derived AffectFlag.FLYING |
+    AffectFlag.INFRARED), even when the area-file flags are blank."""
+
+    from mud.models.constants import AffectFlag, convert_flags_from_letters
+
+    mob_registry.pop(99005, None)
+    fragment = _are_fragment(99005, "0 0 0 0", act_flags="A")
+    fragment[7] = "dragon~"
+    tokenizer = BaseTokenizer(fragment)
+    load_mobiles(tokenizer, area=None)
+
+    mob = mob_registry[99005]
+    affected = convert_flags_from_letters(mob.affected_by, AffectFlag)
+    assert AffectFlag.FLYING in affected
+    assert AffectFlag.INFRARED in affected
+
+    mob_registry.pop(99005, None)
+
+
+def test_load_mobiles_from_json_merges_race_table_flags():
+    """DB2-002: JSON loader must apply the same race-table flag merge as
+    ROM ``src/db2.c:239-242,279-286,295-297`` so race-derived intrinsics
+    are not silently dropped on the JSON load path."""
+
+    from mud.models.constants import AffectFlag, convert_flags_from_letters
+
+    mob_registry.pop(99006, None)
+    payload = {"id": 99006, "name": "the wyrm", "race": "dragon"}
+    _load_mobs_from_json([payload], area=None)
+
+    mob = mob_registry[99006]
+    affected = convert_flags_from_letters(mob.affected_by, AffectFlag)
+    assert AffectFlag.FLYING in affected
+    assert AffectFlag.INFRARED in affected
+
+    mob_registry.pop(99006, None)

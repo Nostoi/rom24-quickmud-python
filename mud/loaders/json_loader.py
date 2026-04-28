@@ -458,6 +458,11 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             area=area,
         )
 
+        # Mirror ROM src/db2.c:239-242,279-286,295-297 — OR race_table
+        # flag bits into the mob's letter-based flag fields.
+        from mud.loaders.mob_loader import merge_race_flags
+
+        merge_race_flags(mob)
         mob_registry[mob.vnum] = mob
 
 
