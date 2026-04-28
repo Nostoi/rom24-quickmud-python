@@ -167,7 +167,6 @@ from .remaining_rom import (
     do_envenom,
     do_flag,
     do_gain,
-    do_go,
     do_groups,
     do_guild,
     do_mob,
@@ -255,7 +254,8 @@ COMMANDS: list[Command] = [
         log_level=LogLevel.NEVER,
         show=False,
     ),
-    Command("enter", do_enter, min_position=Position.STANDING),
+    # ROM src/interp.c:263 — `go` is a cmd_table alias for do_enter.
+    Command("enter", do_enter, aliases=("go",), min_position=Position.STANDING),
     # Position changes
     Command("sleep", do_sleep, min_position=Position.SLEEPING),
     Command("wake", do_wake, min_position=Position.SLEEPING),
@@ -507,7 +507,6 @@ COMMANDS: list[Command] = [
     Command("mob", do_mob, min_position=Position.DEAD, show=False),
     # Alias Commands
     Command("bs", do_bs, min_position=Position.FIGHTING, show=False),
-    Command("go", do_go, min_position=Position.STANDING, show=False),
     Command("teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, show=False),
     # Typo Guards
     Command("qui", do_qui, min_position=Position.DEAD, show=False),

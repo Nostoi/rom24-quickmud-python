@@ -133,6 +133,13 @@ def test_interp_010_take_routes_to_do_get():
     assert cmd.func is do_get
 
 
+def test_interp_012_go_routes_to_do_enter():
+    # mirrors ROM src/interp.c:263 — `go` is a cmd_table alias for do_enter.
+    cmd = COMMAND_INDEX.get("go")
+    assert cmd is not None
+    assert cmd.func is do_enter
+
+
 @pytest.mark.parametrize("name", ["junk", "tap"])
 def test_interp_011_junk_tap_route_to_do_sacrifice(name):
     # mirrors ROM src/interp.c:228-229 — `junk` and `tap` are cmd_table

@@ -393,16 +393,6 @@ def do_bs(char: Character, args: str) -> str:
     return do_backstab(char, args)
 
 
-def do_go(char: Character, args: str) -> str:
-    """
-    Alias for enter.
-    
-    ROM Reference: interp.c - go maps to do_enter
-    """
-    from mud.commands.movement import do_enter
-    return do_enter(char, args)
-
-
 def do_teleport(char: Character, args: str) -> str:
     """
     Alias for transfer.
