@@ -790,6 +790,15 @@ def process_command(char: Character, input_str: str) -> str:
         return "You're totally frozen!"
 
     trimmed = input_str.lstrip()
+    # mirroring ROM src/interp.c:491-496 — forward the logline (input minus
+    # leading whitespace, prefixed with "% ") to ch->desc->snoop_by.
+    desc = getattr(char, "desc", None)
+    snoop_desc = getattr(desc, "snoop_by", None) if desc is not None else None
+    snooper = getattr(snoop_desc, "character", None) if snoop_desc is not None else None
+    if snooper is not None and trimmed:
+        snooper_messages = getattr(snooper, "messages", None)
+        if snooper_messages is not None:
+            snooper_messages.append(f"% {trimmed.rstrip()}")
     core = trimmed.rstrip()
     trailing_ws = trimmed[len(core) :]
     prefix_text = (getattr(char, "prefix", "") or "").strip()

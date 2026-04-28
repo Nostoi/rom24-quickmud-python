@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `,` → `emote`, `/` → `recall` to `COMMAND_INDEX`
   (`src/interp.c:184,186,272`). Test:
   `tests/integration/test_interp_dispatcher.py::test_interp_008_punctuation_aliases_route_to_rom_handlers`.
+- `interp.c:INTERP-002` — `process_command` now forwards the input
+  logline to `desc.snoop_by.character.messages` prefixed with `"% "`
+  (`src/interp.c:491-496`). Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_002_snoop_forwards_logline_to_snooper`.
 
 ## [2.6.8] - 2026-04-27
 
