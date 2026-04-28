@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.6] - 2026-04-27
+
+`interp.c` ROM parity audit started — full audit doc with 24 stable gap
+IDs (`INTERP-001`..`INTERP-024`) created. Closed the entire CRITICAL+
+IMPORTANT social-cluster subset of `check_social` (`src/interp.c:597-685`):
+position gates, NOEMOTE, sleeping snore exception, and the NPC slap/echo
+auto-react via `mud.utils.rng_mm.number_bits(4)`. Socials integration
+suite grew from 13 to 27 tests, all green.
+
 ### Fixed
 
 - `interp.c:INTERP-018` — `perform_social` now refuses socials from
