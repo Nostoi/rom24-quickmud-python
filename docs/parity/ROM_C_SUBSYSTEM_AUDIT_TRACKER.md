@@ -38,7 +38,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **37% Audited** (15 audited, 17 partial, 7 not audited, 4 N/A)  
+**Overall**: ⚠️ **40% Audited** (17 audited, 17 partial, 5 not audited, 4 N/A)  
 **handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
 **save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
 **db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
@@ -47,7 +47,9 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 **act_comm.c Status**: ✅ **100% P0-P1 COMPLETE!** 🎉 (34/36 functions - all critical gaps fixed!) 🎉  
 **act_move.c Status**: ✅ **85% COMPLETE - Phase 4 Done!** 🎉 (Door/portal/recall/train 100% parity, furniture deferred P2!) 🎉  
 **act_obj.c Status**: 🔄 **AUDIT IN PROGRESS!** (Phase 3 - 17%, do_get verified with 13 gaps) - See ACT_OBJ_C_AUDIT.md
-**Last Updated**: January 8, 2026 17:42 CST
+**healer.c Status**: ✅ **COMPLETE!** 🎉 (1/1 function, 4 gaps closed) — Apr 28, 2026
+**alias.c Status**: ✅ **COMPLETE!** 🎉 (4/4 functions, 5 gaps closed) — Apr 28, 2026
+**Last Updated**: April 28, 2026
 
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
@@ -68,7 +70,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `act_comm.c` | P0 | ✅ **Audited** | `mud/commands/communication.py`, `mud/commands/group_commands.py`, `mud/commands/channels.py` | **100% P0-P1** | ✅ **100% P0-P1 COMPLETE!** Jan 8 - All critical gaps fixed (yell, order, gtell) - 34/36 functions verified - See ACT_COMM_C_AUDIT.md |
 | `act_info.c` | P1 | ✅ **COMPLETE!** | `mud/commands/info.py`, `mud/commands/character.py`, `mud/commands/auto_settings.py`, `mud/commands/misc_info.py` | **100%** | **🎉🎉🎉 FULL PARITY - ALL 38 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 8 - 273/273 integration tests - See ACT_INFO_C_AUDIT.md |
 | `act_obj.c` | P1 | ✅ **COMPLETE!** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **100%** | 🎉 **FULL PARITY** — Apr 27, 2026 refresh sweep verified all 12 audited functions (get/put/drop/give/remove/sacrifice/quaff/drink/eat/fill/pour/recite/brandish/zap/wear/wield/hold/steal) at 100%; 193 integration tests green. See ACT_OBJ_C_AUDIT.md. |
-| `act_wiz.c` | P2 | ⚠️ Partial | `mud/commands/admin.py` | 40% | Admin commands basic |
+| `act_wiz.c` | P2 | ⚠️ Partial | `mud/wiznet.py`, `mud/commands/imm_*.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py` | 60% | Apr 28, 2026 — third pass closed WIZ-005 (do_stat/rstat/ostat/mstat ROM-faithful rewrite + 8 bit-name helpers). See ACT_WIZ_C_AUDIT.md |
 | `interp.c` | P0 | ✅ **COMPLETE!** | `mud/commands/dispatcher.py` | **100%** | 🎉 **FULL PARITY** — Apr 28, 2026: 24/24 gaps fixed + 1 closed-deferred. All command-mapping (INTERP-009..014), prefix-order (INTERP-017), `do_commands` formatting (INTERP-024), `one_argument` port (INTERP-015), and `tail_chain` extension hook (INTERP-016 closed-deferred) verified. See INTERP_C_AUDIT.md. |
 | **Database & World** | | | | | |
 | `db.c` | P1 | ✅ **COMPLETE!** | `mud/loaders/`, `mud/spawning/`, `mud/utils/math_utils.py`, `mud/utils/rng_mm.py`, `mud/utils/text.py`, `mud/registry.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 44 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - See DB_C_AUDIT.md |
@@ -101,9 +103,9 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `mem.c` | P3 | N/A | - | N/A | Python memory management |
 | **Admin & Security** | | | | | |
 | `ban.c` | P2 | ⚠️ Partial | `mud/security/bans.py` | 50% | Basic bans work |
-| `alias.c` | P2 | ❌ Not Audited | - | 0% | Alias system missing |
+| `alias.c` | P2 | ✅ AUDITED | `mud/commands/alias_cmds.py`, `mud/commands/dispatcher.py`, `mud/commands/typo_guards.py`, `mud/rom_api.py` | 100% | Apr 28, 2026 — all 5 gaps closed (`ALIAS-001`..`005`): `alia` guard, ROM alias messages/validation/limit, single-pass substitution, ROM `unalias`, and prefix-length warning parity. See `ALIAS_C_AUDIT.md`. |
 | **Healing & Services** | | | | | |
-| `healer.c` | P2 | ❌ Not Audited | - | 0% | Healer spec proc missing |
+| `healer.c` | P2 | ✅ AUDITED | `mud/commands/healer.py` | 100% | Apr 28, 2026 — all 4 gaps closed (`HEALER-001`..`004`): `ACT_IS_HEALER` detection, exact service list/aliases, silver-aware pricing + utterance + payout, and real spell dispatch. See `HEALER_C_AUDIT.md`. |
 | **External Systems** | | | | | |
 | `imc.c` | P3 | N/A | `mud/imc/` | N/A | Different IMC implementation |
 | `sha256.c` | P3 | ⚠️ Partial | `mud/security/hash_utils.py` | 100% | Uses Python hashlib |
@@ -854,34 +856,41 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ❌ P2-3: act_wiz.c (PARTIAL - 40%)
+### ❌ P2-3: act_wiz.c (PARTIAL - 50%)
 
-**Status**: ⚠️ **Basic admin commands only**
+**Status**: ⚠️ **First parity pass landed; core admin movement + snoop-proof flow improved**
 
 **ROM Functions**: Immortal/admin commands
-**QuickMUD Module**: `mud/commands/admin.py`
+**QuickMUD Modules**: `mud/wiznet.py`, `mud/commands/imm_*.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py`
 
 **Known Status**:
-- ✅ `goto` (teleport)
-- ✅ `transfer`
+- ✅ `goto` private-room gating now respects owner rooms
+- ✅ `transfer` uses the corrected private-room helper
+- ✅ `violate` now uses ROM `find_location()` semantics
+- ✅ `protect` / `snoop` now use canonical `COMM_SNOOP_PROOF`
 - ⚠️ `force` (partial)
 - ⚠️ `wiznet` (basic)
-- ❌ Many admin commands missing
+- ❌ `rstat` / `ostat` / `mstat` still missing as ROM-faithful detailed views
+- ❌ `log` still missing
+- ❌ Many admin commands still need line-by-line ROM audit
 
 **Critical Gaps**:
-- [ ] `at` command (execute command at location)
-- [ ] `stat` command (detailed object/char info)
-- [ ] `mstat`, `ostat`, `rstat`
-- [ ] `memory` command
-- [ ] `protect` command
+- [x] `protect` command (`WIZ-003`)
+- [x] canonical snoop-proof check in `snoop` (`WIZ-004`)
+- [x] owner/private-room admin movement gates (`WIZ-001`)
+- [x] ROM `violate` location semantics (`WIZ-002`)
+- [ ] `stat` command family (`WIZ-005`)
+- [ ] `log` command (`WIZ-006`)
+- [ ] `force` ROM flow/message parity (`WIZ-007`)
 
-**Integration Tests**: ❌ None
+**Integration Tests**: ✅ `tests/integration/test_act_wiz_command_parity.py` (4 focused parity tests)
 
 **Estimated Work**: 2-3 days
 
 **Next Steps**:
-- [ ] Audit all admin commands in act_wiz.c
-- [ ] Implement P2 admin commands
+- [ ] Finish `do_stat` / `do_rstat` / `do_ostat` / `do_mstat`
+- [ ] Audit `do_force`
+- [ ] Audit `do_log` and remaining punishment/server-control commands
 
 ---
 

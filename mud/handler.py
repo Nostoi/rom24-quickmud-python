@@ -1425,3 +1425,262 @@ def comm_bit_name(comm_flags: int) -> str:
             flags.append(flag.name.lower())
 
     return " ".join(flags) if flags else f"unknown({comm_flags})"
+
+
+def wear_bit_name(wear_flags: int) -> str:
+    """
+    Convert wear flags bitvector to flag names.
+
+    ROM C: handler.c:3062-3110 (wear_bit_name)
+
+    Args:
+        wear_flags: Wear flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import WearFlag as WF
+
+    if wear_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in WF:
+        if wear_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({wear_flags})"
+
+
+def extra_bit_name(extra_flags: int) -> str:
+    """
+    Convert extra flags bitvector to flag names.
+
+    ROM C: handler.c:3112-3190 (extra_bit_name)
+
+    Args:
+        extra_flags: Extra flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import ExtraFlag as EF
+
+    if extra_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in EF:
+        if extra_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({extra_flags})"
+
+
+def imm_bit_name(imm_flags: int) -> str:
+    """
+    Convert immune/resist/vuln flags to flag names.
+
+    ROM C: handler.c:2899-2975 (uses IRV_NAMES for immune, resist, vulnerable)
+
+    Args:
+        imm_flags: Immune/resist/vuln flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import ImmFlag as IF, ResFlag as RF, VulnFlag as VF
+
+    if imm_flags == 0:
+        return "none"
+
+    flags = []
+    for flag_set in (IF, RF, VF):
+        for flag in flag_set:
+            if imm_flags & flag and flag not in flags:
+                flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({imm_flags})"
+
+
+def off_bit_name(off_flags: int) -> str:
+    """
+    Convert offensive flags to flag names.
+
+    ROM C: handler.c:3193-3227 (off_bit_name)
+
+    Args:
+        off_flags: Offensive flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import OffFlag as OF
+
+    if off_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in OF:
+        if off_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({off_flags})"
+
+
+def form_bit_name(form_flags: int) -> str:
+    """
+    Convert form flags to flag names.
+
+    ROM C: handler.c:3229-3267 (form_bit_name)
+
+    Args:
+        form_flags: Form flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import FormFlag as FF
+
+    if form_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in FF:
+        if form_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({form_flags})"
+
+
+def part_bit_name(part_flags: int) -> str:
+    """
+    Convert body-part flags to flag names.
+
+    ROM C: handler.c:3269-3312 (part_bit_name)
+
+    Args:
+        part_flags: Body-part flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import PartFlag as PF
+
+    if part_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in PF:
+        if part_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({part_flags})"
+
+
+def weapon_bit_name(weapon_flags: int) -> str:
+    """
+    Convert weapon flags to flag names.
+
+    ROM C: handler.c (weapon_bit_name)
+
+    Args:
+        weapon_flags: Weapon flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import WeaponFlag as WF
+
+    if weapon_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in WF:
+        if weapon_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({weapon_flags})"
+
+
+def cont_bit_name(cont_flags: int) -> str:
+    """
+    Convert container flags to flag names.
+
+    ROM C: handler.c (cont_bit_name)
+
+    Args:
+        cont_flags: Container flags bitvector
+
+    Returns:
+        Space-separated flag names, or "none" if 0
+    """
+    from mud.models.constants import ContainerFlag as CF
+
+    if cont_flags == 0:
+        return "none"
+
+    flags = []
+    for flag in CF:
+        if cont_flags & flag:
+            flags.append(flag.name.lower())
+
+    return " ".join(flags) if flags else f"unknown({cont_flags})"
+
+
+def size_name(size_val: int) -> str:
+    """Convert size enum value to ROM name string."""
+    from mud.models.constants import Size
+
+    try:
+        return Size(size_val).name.lower()
+    except ValueError:
+        return "unknown"
+
+
+def position_name(pos_val: int) -> str:
+    """Convert position enum value to ROM name string."""
+    from mud.models.constants import Position
+
+    try:
+        return Position(pos_val).name.lower()
+    except ValueError:
+        return "unknown"
+
+
+def sex_name(sex_val: int) -> str:
+    """Convert sex enum value to ROM name string.
+
+    ROM C: sex_table indexed lookup.
+    """
+    from mud.models.constants import Sex
+
+    try:
+        return Sex(sex_val).name.lower()
+    except ValueError:
+        return "none"
+
+
+def race_name(race_val: int | str) -> str:
+    """Convert race to ROM name string."""
+    if isinstance(race_val, str):
+        return race_val.lower()
+
+    from mud.models.races import get_race
+
+    race = get_race(race_val)
+    if race is not None:
+        return getattr(race, "name", f"unknown({race_val})").lower()
+    return f"unknown({race_val})"
+
+
+def class_name(class_val: int | str) -> str:
+    """Convert class to ROM name string."""
+    if isinstance(class_val, str):
+        return class_val.lower()
+
+    from mud.models.classes import CLASS_TABLE
+
+    if 0 <= class_val < len(CLASS_TABLE):
+        return CLASS_TABLE[class_val].name.lower()
+    return "mobile"

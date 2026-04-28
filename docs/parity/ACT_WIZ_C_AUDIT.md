@@ -30,7 +30,10 @@
 | `do_at` | `src/act_wiz.c:882-935` | `mud/commands/imm_commands.py:115` | ⚠️ PARTIAL |
 | `do_goto` | `src/act_wiz.c:937-998` | `mud/commands/imm_commands.py:164` | ⚠️ PARTIAL |
 | `do_violate` | `src/act_wiz.c:1000-1057` | `mud/commands/imm_server.py:156` | ⚠️ PARTIAL |
-| `do_stat` | `src/act_wiz.c:1059-1120` | `mud/commands/imm_search.py:448` | ⚠️ PARTIAL |
+| `do_stat` | `src/act_wiz.c:1059-1120` | `mud/commands/imm_search.py:448` | ✅ AUDITED |
+| `do_rstat` | `src/act_wiz.c:1122-1215` | `mud/commands/imm_search.py:495` | ✅ AUDITED |
+| `do_ostat` | `src/act_wiz.c:1219-1538` | `mud/commands/imm_search.py:604` | ✅ AUDITED |
+| `do_mstat` | `src/act_wiz.c:1543-1742` | `mud/commands/imm_search.py:810` | ✅ AUDITED |
 | `do_rstat` | `src/act_wiz.c:1122-1217` | folded into `mud/commands/imm_search.py` helpers | ❌ MISSING |
 | `do_ostat` | `src/act_wiz.c:1219-1541` | folded into `mud/commands/imm_search.py` helpers | ❌ MISSING |
 | `do_mstat` | `src/act_wiz.c:1543-1744` | folded into `mud/commands/imm_search.py` helpers | ❌ MISSING |
@@ -148,7 +151,7 @@ Python now:
 | `WIZ-002` | IMPORTANT | `src/act_wiz.c:1000-1057` | `mud/commands/imm_server.py:156` | `do_violate` parsed directions instead of `find_location()` targets and missed the ROM private-room gating/message path. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_violate_uses_room_lookup_and_rejects_non_private_rooms` |
 | `WIZ-003` | CRITICAL | `src/act_wiz.c:2086-2118` | `mud/commands/imm_server.py:124` | `do_protect` used the wrong bitmask, blocked NPCs incorrectly, and used non-ROM lookup and snoop-proof messages. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_protect_sets_rom_snoop_proof_flag_and_message` |
 | `WIZ-004` | CRITICAL | `src/act_wiz.c:2167-2174` | `mud/commands/imm_admin.py:150` | `do_snoop` checked the wrong bitmask, so canonical `CommFlag.SNOOP_PROOF` did not actually block snooping. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_snoop_honors_comm_snoop_proof_enum` |
-| `WIZ-005` | CRITICAL | `src/act_wiz.c:1122-1744` | `mud/commands/imm_search.py:448` | `do_stat` dispatch exists, but ROM-faithful `rstat` / `ostat` / `mstat` implementations are still missing as standalone detailed admin views. | 🔄 OPEN |
+| `WIZ-005` | CRITICAL | `src/act_wiz.c:1059-1742` | `mud/commands/imm_search.py:448` | `do_stat` dispatch auto-detection used room-local lookups instead of world lookups; `do_rstat`/`do_ostat`/`do_mstat` were simplified stubs with no ROM output format parity, missing private-room checks, description output, exit details, affects, bit-name rendering, item-type-specific stat blocks, and `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_stat_*`, `test_rstat_*`, `test_ostat_*`, `test_mstat_*` |
 | `WIZ-006` | IMPORTANT | `src/act_wiz.c:2927-2984` | `mud/commands/admin_commands.py:341` | `do_log` used `character_registry` prefix match instead of `get_char_world`, toggled a `log_commands` bool instead of `PlayerFlag.LOG` on `act`, and omitted ROM `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_log_*` |
 | `WIZ-007` | IMPORTANT | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | `do_force` was missing `gods` branch, private-room check, canonical trust check for all victims, and ROM `\n\r` line endings; bulk branches iterated wrong collections. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_force_*` |
 
@@ -189,6 +192,13 @@ Python now:
 - **Fix:** Replaced `character_registry` prefix-match lookup with `get_char_world()`; replaced `log_commands` bool toggle with canonical `PlayerFlag.LOG` bit toggle on `victim.act`; added ROM `\n\r` line endings to all messages.
 - **Tests:** `tests/integration/test_act_wiz_command_parity.py::test_log_toggles_plr_log_on_act_not_bool_field`, `test_log_rejects_npc`, `test_log_all_toggles_global_flag`, `test_log_empty_arg_and_not_found`
 
+### `WIZ-005` — ✅ FIXED
+
+- **Python:** `mud/commands/imm_search.py:448` (do_stat, do_rstat, do_ostat, do_mstat)
+- **ROM C:** `src/act_wiz.c:1059-1742`
+- **Fix:** Rewrote `do_stat` dispatcher to use `get_char_world`/`get_obj_world`/`find_location` for ROM-faithful auto-detection (not room-local lookups); added ROM syntax message for empty args; added `char`/`mob` keyword routing to `do_mstat`. Rewrote `do_rstat` with ROM area name, vnum, sector, light, healing, mana, room flags, description, extra descriptions, character list, object list, and door details. Rewrote `do_ostat` with ROM name(s), vnum/format/type/resets, short/long description, wear bits, extra bits, number/weight, level/cost/condition/timer, in_room/in_obj/carried_by/wear_loc, values, item-type-specific blocks (scroll/potion/pill, wand/staff, drink_con, weapon, armor, container), extra descriptions, and affect listing with bitvector where/types. Rewrote `do_mstat` with ROM name, vnum/format/race/group/sex/room, NPC count/killed, stats (perm+cur), hp/mana/move/practices, level/class/align/gold/silver/exp, AC per type, hit/dam/saves/size/position/wimpy, NPC damage/message, fighting, thirst/hunger/full/drunk for PCs, carry number/weight, age/played/last_level/timer for PCs, act bits, comm bits, offense bits, immune/resist/vulnerable, form/parts, affected_by, master/leader/pet, security for PCs, short/long description, spec_fun, and affected list. Added 8 ROM-faithful bit-name helpers to `mud/handler.py`: `wear_bit_name`, `extra_bit_name`, `imm_bit_name`, `off_bit_name`, `form_bit_name`, `part_bit_name`, `weapon_bit_name`, `cont_bit_name`, plus `size_name`, `position_name`, `sex_name`, `class_name`, `race_name` helpers. All outputs use canonical `\n\r` line endings.
+- **Tests:** `test_stat_shows_syntax_when_no_args`, `test_stat_room_dispatches_to_rstat`, `test_stat_mob_dispatches_to_mstat`, `test_stat_nothing_found`, `test_rstat_shows_room_info`, `test_rstat_private_room_blocks_non_owner`, `test_ostat_shows_object_info`, `test_ostat_empty_arg`, `test_mstat_shows_character_info`, `test_mstat_empty_arg`
+
 ### `WIZ-007` — ✅ FIXED
 
 - **Python:** `mud/commands/imm_commands.py:293`
@@ -201,16 +211,14 @@ Python now:
 `act_wiz.c` remains **PARTIAL** after this pass.
 
 Completed this session:
-- Private-room admin movement now respects owner rooms and ROM room-flag values.
-- `violate` now works on ROM location targets instead of directions.
-- `protect` and `snoop` now share the correct `COMM_SNOOP_PROOF` behavior.
-- `do_log` now uses `get_char_world()` and canonical `PlayerFlag.LOG` on `victim.act`.
-- `do_force` now has ROM-faithful `all`/`players`/`gods` branches, private-room check, and trust-level semantics.
+- `do_stat` dispatcher now uses world-scope lookups and ROM-faithful routing.
+- `do_rstat` / `do_ostat` / `do_mstat` rewritten with full ROM C output parity.
+- 8 bit-name helpers added to `mud/handler.py` (wear, extra, imm, off, form, part, weapon, cont).
+- 5 display helpers added (size_name, position_name, sex_name, class_name, race_name).
 
 Still outstanding:
-- Full `stat` / `rstat` / `ostat` / `mstat` parity (WIZ-005).
 - Remaining echo family, punishment, load/clone, and server-control audits.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `15 passed`
-- `ruff check mud/commands/imm_commands.py mud/commands/imm_admin.py mud/commands/admin_commands.py tests/integration/test_act_wiz_command_parity.py` — clean
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `25 passed`
+- `ruff check mud/commands/imm_search.py mud/commands/admin_commands.py mud/commands/imm_commands.py` — clean

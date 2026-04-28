@@ -287,3 +287,180 @@ def test_force_returns_ok_after_single_force() -> None:
 
     result = do_force(admin, "Victim look")
     assert result == "Ok.\n\r"
+
+
+# ── do_stat family (WIZ-005) ────────────────────────────────────────
+
+
+def test_stat_shows_syntax_when_no_args() -> None:
+    # mirrors ROM src/act_wiz.c:1068-1075 — empty arg shows syntax
+    from mud.commands.imm_search import do_stat
+
+    room = _room(9200, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_stat(admin, "")
+    assert "Syntax:" in result
+    assert "stat <name>" in result
+
+
+def test_stat_room_dispatches_to_rstat() -> None:
+    # mirrors ROM src/act_wiz.c:1078-1081 — "room" keyword calls do_rstat
+    from mud.commands.imm_search import do_stat
+
+    room = _room(9201, name="Stat Test Room")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_stat(admin, "room")
+    assert "Stat Test Room" in result
+
+
+def test_stat_mob_dispatches_to_mstat() -> None:
+    # mirrors ROM src/act_wiz.c:1090-1093 — "mob" keyword calls do_mstat
+    from mud.commands.imm_search import do_stat
+
+    room = _room(9202, name="StatRoom")
+    mob = create_test_character("test mob", room.vnum)
+    mob.is_npc = True
+    mob.short_descr = "a test mob"
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_stat(admin, "mob test mob")
+    assert "test mob" in result.lower()
+
+
+def test_stat_nothing_found() -> None:
+    # mirrors ROM src/act_wiz.c:1119 — nothing found returns message
+    from mud.commands.imm_search import do_stat
+
+    room = _room(9203, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_stat(admin, "nonexistent")
+    assert "Nothing by that name found" in result
+
+
+def test_rstat_shows_room_info() -> None:
+    # mirrors ROM src/act_wiz.c:1146-1155 — Name, Area, Vnum, Sector, Light, Healing, Mana
+    from mud.commands.imm_search import do_rstat
+
+    room = _room(9210, name="The Grand Hall")
+    room.sector_type = 1
+    room.light = 3
+    room.heal_rate = 110
+    room.mana_rate = 120
+    room.description = "A grand hall stretches before you."
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_rstat(admin, str(room.vnum))
+    assert "The Grand Hall" in result
+    assert f"Vnum: {room.vnum}" in result
+    assert "Sector:" in result
+    assert "Light: 3" in result
+    assert "Healing: 110" in result
+    assert "Mana: 120" in result
+
+
+def test_rstat_private_room_blocks_non_owner() -> None:
+    # mirrors ROM src/act_wiz.c:1139-1144 — private room check
+    from mud.commands.imm_search import do_rstat
+
+    source = _room(9211, name="Source")
+    private_room = _room(9212, owner="Owner", name="Private Room", room_flags=0)
+    private_room.owner = "Owner"
+    from mud.models.constants import RoomFlag
+    private_room.room_flags = int(RoomFlag.ROOM_PRIVATE)
+    private_room.people = []
+    _imm("Occupant", private_room.vnum, trust=10)
+    _imm("Occupant2", private_room.vnum, trust=10)
+
+    admin = _imm("Admin", source.vnum, trust=52)
+
+    result = do_rstat(admin, str(private_room.vnum))
+    assert "private" in result.lower()
+
+
+def test_ostat_shows_object_info() -> None:
+    # mirrors ROM src/act_wiz.c:1240-1279 — Name(s), Vnum, Format, Type, etc.
+    from mud.commands.imm_search import do_ostat
+    from mud.models.obj import ObjIndex, object_registry
+    from mud.models.object import Object
+
+    room = _room(9220, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    proto = ObjIndex(vnum=92200, name="stat sword test", short_descr="a stat test sword", description="A test sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
+    obj = Object(instance_id=77001, prototype=proto, location=-1, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    obj.in_room = room
+    room.contents.append(obj)
+    object_registry.append(obj)
+
+    result = do_ostat(admin, "stat sword test")
+    assert "stat sword test" in result
+    assert f"Vnum: {proto.vnum}" in result
+    assert "Level:" in result
+
+    if obj in object_registry:
+        object_registry.remove(obj)
+
+
+def test_mstat_shows_character_info() -> None:
+    # mirrors ROM src/act_wiz.c:1564-1621 — Name, Vnum, Str, Hp, Lv, Armor, etc.
+    from mud.commands.imm_search import do_mstat
+
+    room = _room(9230, name="StatRoom")
+    mob = create_test_character("stat mob target", room.vnum)
+    mob.is_npc = True
+    mob.level = 30
+    mob.hit = 100
+    mob.max_hit = 200
+    mob.mana = 50
+    mob.max_mana = 100
+    mob.move = 75
+    mob.max_move = 150
+    mob.gold = 100
+    mob.silver = 50
+    mob.alignment = 500
+    mob.hitroll = 10
+    mob.damroll = 5
+    mob.saving_throw = 0
+    mob.armor = [20, 15, 10, 5]
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_mstat(admin, "stat mob target")
+    assert "stat mob target" in result
+    assert "Name:" in result
+    assert "Hp:" in result
+    assert "Lv:" in result or "Level" in result
+
+
+def test_mstat_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:1553-1555 — "Stat whom?"
+    from mud.commands.imm_search import do_mstat
+
+    room = _room(9231, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_mstat(admin, "")
+    assert "Stat whom?" in result
+
+
+def test_ostat_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:1229-1231 — "Stat what?"
+    from mud.commands.imm_search import do_ostat
+
+    room = _room(9232, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_ostat(admin, "")
+    assert "Stat what?" in result
