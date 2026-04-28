@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.8] - 2026-04-27
+
+Closes the immortal command trust drift (`INTERP-001`). All 43 commands
+that were gated too low now match ROM `cmd_table[]` tier-for-tier. This
+is a security-relevant fix — previously a `LEVEL_IMMORTAL` (52) character
+could invoke commands ROM gates at L1..ML (53..60).
+
+### Fixed
+
+- `interp.c:INTERP-001` — raised `min_trust` on 43 immortal commands
+  in `mud/commands/dispatcher.py` to match ROM `cmd_table[]` trust
+  tiers (`src/interp.c:63-381`, `src/interp.h:34-44`). Affected
+  tiers: ML, L1, L2, L3, L4, L5, L6, L7. Security-relevant — closes
+  privilege drift where `LEVEL_IMMORTAL` (52) characters could
+  invoke commands ROM gates at L1..ML (53..60). Test:
+  `tests/integration/test_interp_trust.py::test_interp_001_command_trust_matches_rom` (50 parameters).
+
 ## [2.6.7] - 2026-04-27
 
 `interp.c` social-cluster audit complete (6/6 social gaps closed). Both
