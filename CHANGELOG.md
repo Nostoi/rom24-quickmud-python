@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   logline to `desc.snoop_by.character.messages` prefixed with `"% "`
   (`src/interp.c:491-496`). Test:
   `tests/integration/test_interp_dispatcher.py::test_interp_002_snoop_forwards_logline_to_snooper`.
+- `interp.c:INTERP-003` — verified `log_admin_command` already mirrors
+  logged commands to wiznet `WIZ_SECURE` with ROM-style `$`/`{`
+  doubling (`mud/admin_logging/admin.py:107-114`,
+  `src/interp.c:468-489`). Audit row description was stale. Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_003_logged_command_mirrors_to_wiznet_secure`.
 
 ## [2.6.8] - 2026-04-27
 

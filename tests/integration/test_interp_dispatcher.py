@@ -105,3 +105,39 @@ def test_interp_002_snoop_inactive_when_no_snooper(test_room):
 
     assert not any(msg.startswith("% ") for msg in char.messages)
     test_room.people.remove(char)
+
+
+def test_interp_003_logged_command_mirrors_to_wiznet_secure(test_room, monkeypatch):
+    # mirrors ROM src/interp.c:468-489 — when a command is logged
+    # (PLR_LOG, LOG_ALWAYS, or fLogAll), the dispatcher mirrors
+    # "Log <name>: <logline>" to wiznet's WIZ_SECURE channel.
+    captured: list[tuple[str, object, object, object, object, int]] = []
+
+    def fake_wiznet(message, sender_ch_or_flag=None, obj=None, flag=None, flag_skip=None, min_level=0):
+        captured.append((message, sender_ch_or_flag, obj, flag, flag_skip, min_level))
+
+    from mud.admin_logging import admin as admin_module
+
+    monkeypatch.setattr(admin_module, "wiznet", fake_wiznet)
+
+    char = Character(
+        name="Logger",
+        level=60,
+        room=test_room,
+        hit=100,
+        max_hit=100,
+        is_npc=False,
+    )
+    char.log_commands = True  # force the logged-command path
+    test_room.people.append(char)
+    try:
+        process_command(char, "look")
+
+        assert captured, "wiznet was not invoked for a logged command"
+        message, _sender, _obj, flag, _flag_skip, _min_level = captured[0]
+        from mud.wiznet import WiznetFlag
+
+        assert flag is WiznetFlag.WIZ_SECURE
+        assert message.startswith("Log Logger: ")
+    finally:
+        test_room.people.remove(char)
