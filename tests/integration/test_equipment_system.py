@@ -1130,3 +1130,73 @@ def test_npc_bypasses_strength_and_two_hand_checks(test_character, object_factor
     assert "too heavy" not in result.lower(), f"NPC should bypass strength check, got: {result}"
     assert "two hands" not in result.lower(), f"NPC should bypass two-hand check, got: {result}"
     assert char.equipment.get(int(WearLocation.WIELD)) is heavy_two_hander, "NPC should wield two-hander with shield"
+
+
+def test_wear_010_do_wear_dispatches_weapon_to_wield(test_character, object_factory):
+    """ROM src/act_obj.c:1401-1697 — `wear_obj` dispatcher routes ITEM_WIELD
+    items to the WIELD branch. ROM cmd_table maps "wear", "wield", "hold"
+    all to `do_wear`, so `wear sword` and `wield sword` are identical.
+    """
+    from mud.commands.equipment import do_wear
+
+    char = test_character
+    weapon = object_factory(
+        {
+            "vnum": 1503,
+            "name": "longsword sword",
+            "short_descr": "a longsword",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.WIELD),
+            "value": [0, 3, 6, 0],
+        }
+    )
+    char.add_object(weapon)
+
+    result = do_wear(char, "sword")
+
+    assert "wield" in result.lower(), f"do_wear on weapon should wield, got: {result}"
+    assert weapon.wear_loc == int(WearLocation.WIELD), "Weapon should be in WIELD slot"
+    assert char.equipment.get(int(WearLocation.WIELD)) is weapon
+
+
+def test_wear_011_do_hold_auto_replaces_existing_held(test_character, object_factory):
+    """ROM src/act_obj.c:1670-1677 — HOLD branch calls `remove_obj(ch,
+    WEAR_HOLD, fReplace=TRUE)` which auto-unequips the existing held item.
+    ROM `do_hold` is just an alias on `do_wear` so the same dispatcher runs.
+    """
+    from mud.commands.equipment import do_hold
+
+    char = test_character
+
+    first_torch = object_factory(
+        {
+            "vnum": 1601,
+            "name": "torch first",
+            "short_descr": "a small torch",
+            "item_type": int(ItemType.LIGHT),
+            "wear_flags": int(WearFlag.HOLD),
+            "value": [0, 0, 100, 0],
+        }
+    )
+    second_torch = object_factory(
+        {
+            "vnum": 1602,
+            "name": "lantern second",
+            "short_descr": "a brass lantern",
+            "item_type": int(ItemType.LIGHT),
+            "wear_flags": int(WearFlag.HOLD),
+            "value": [0, 0, 200, 0],
+        }
+    )
+    char.add_object(first_torch)
+    char.add_object(second_torch)
+
+    do_hold(char, "torch")
+    assert char.equipment.get(int(WearLocation.HOLD)) is first_torch
+
+    result = do_hold(char, "lantern")
+
+    assert "already holding" not in result.lower(), f"Should auto-replace, got: {result}"
+    assert char.equipment.get(int(WearLocation.HOLD)) is second_torch, "New item should occupy HOLD slot"
+    assert first_torch in char.inventory, "Replaced item should return to inventory"
+    assert first_torch.wear_loc == int(WearLocation.NONE)

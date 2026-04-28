@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `act_obj.c:WEAR-010` — `do_wear` now dispatches `ITEM_WEAPON` items
+  to the WIELD branch (`_dispatch_wield`) instead of rejecting with
+  "You need to wield weapons, not wear them." Mirrors ROM
+  `src/act_obj.c:1401-1697` `wear_obj` single-dispatcher design where
+  `do_wear`/`do_wield`/`do_hold` are all the same function. Tests:
+  `tests/integration/test_equipment_system.py::test_wear_010_do_wear_dispatches_weapon_to_wield`.
+
 ## [2.6.12] - 2026-04-28
 
 Closes the remaining `interp.c` parser/extension gaps:

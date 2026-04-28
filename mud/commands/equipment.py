@@ -155,8 +155,11 @@ def do_wear(ch: Character, args: str) -> str:
     item_type_str = getattr(obj.prototype, "item_type", None)
     item_type = int(item_type_str) if item_type_str else ItemType.TRASH
 
+    # ROM src/act_obj.c:1616-1668 — `wear_obj` dispatches ITEM_WIELD to the
+    # WIELD branch. ROM cmd_table maps "wear", "wield", "hold" all to
+    # `do_wear`, so `wear sword` and `wield sword` are identical.
     if item_type == ItemType.WEAPON:
-        return "You need to wield weapons, not wear them."
+        return _dispatch_wield(ch, obj)
 
     # ROM act_obj.c:1595-1614: SHIELD branch removes the existing shield FIRST
     # then performs the two-hand-weapon check. Implemented below after the
@@ -313,19 +316,27 @@ def do_wield(ch: Character, args: str) -> str:
     if item_type != ItemType.WEAPON:
         return "You can't wield that."
 
-    # Check if weapon slot is occupied
+    return _dispatch_wield(ch, obj)
+
+
+def _dispatch_wield(ch: Character, obj: Object) -> str:
+    """ROM `wear_obj` ITEM_WIELD branch — src/act_obj.c:1616-1668.
+
+    Assumes caller has already verified position, level, and item_type.
+    Handles slot-replace, STR check, alignment, two-hand/shield check,
+    equip, and weapon-skill flavor.
+    """
+    from mud.models.constants import Size, WeaponFlag
+
     equipment = getattr(ch, "equipment", {})
     wear_loc = WearLocation.WIELD
 
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
         if not _unequip_to_inventory(ch, existing):
-            # _unequip_to_inventory already emits "You can't remove $p." via ch.send.
-            # Returning empty string avoids ROM-divergent duplicate output.
             return ""
 
     # ROM src/act_obj.c:1623-1629 — strength check skipped for NPCs.
-    # Max wieldable weight is `str_app[STR].wield * 10` (lookup table, not raw STR).
     is_npc = bool(getattr(ch, "is_npc", False))
     if not is_npc:
         weight = getattr(obj.prototype, "weight", 0)
@@ -339,44 +350,37 @@ def do_wield(ch: Character, args: str) -> str:
         if weight > _str_wield_max(str_stat):
             return "It is too heavy for you to wield."
 
-    # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_wield, error_msg = _can_wear_alignment(ch, obj)
     if not can_wield:
         return error_msg or "You cannot wield that weapon."
-
-    from mud.models.constants import Size, WeaponFlag
 
     # ROM src/act_obj.c:1631-1636 — two-hand vs shield check skipped for NPCs
     # and for characters of SIZE_LARGE or greater.
     weapon_flags = getattr(obj.prototype, "value", [0, 0, 0, 0, 0])
     ch_size = int(getattr(ch, "size", 0) or 0)
     if not is_npc and ch_size < int(Size.LARGE) and len(weapon_flags) > 4:
-        weapon_flag_val = weapon_flags[4]
-        if weapon_flag_val & WeaponFlag.TWO_HANDS:
+        if weapon_flags[4] & WeaponFlag.TWO_HANDS:
             shield_loc = int(WearLocation.SHIELD)
             if shield_loc in equipment and equipment[shield_loc] is not None:
                 return "You need two hands free for that weapon!"
 
-    # Wield the weapon
     if not equipment:
         ch.equipment = {}
     ch.equipment[wear_loc] = obj
     obj.worn_by = ch
 
-    # Remove from inventory
     inventory = getattr(ch, "inventory", [])
     if obj in inventory:
         inventory.remove(obj)
 
-    # Apply equipment bonuses (ROM src/handler.c:equip_char)
     equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
-    # ROM act_obj.c:1639 — TO_ROOM "$n wields $p."
     ch_name = getattr(ch, "name", "Someone")
+    # ROM act_obj.c:1639 — TO_ROOM "$n wields $p."
     broadcast_room(getattr(ch, "room", None), f"{ch_name} wields {obj_name}.", exclude=ch)
 
-    # ROM act_obj.c:1643-1665 — weapon-skill flavor message (skip for hand-to-hand).
+    # ROM act_obj.c:1643-1665 — weapon-skill flavor (skip for hand-to-hand).
     flavor = _weapon_skill_flavor(ch, obj)
     if flavor:
         return f"You wield {obj_name}.\n{flavor}"
