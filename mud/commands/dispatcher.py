@@ -310,7 +310,8 @@ COMMANDS: list[Command] = [
     Command("disarm", do_disarm, min_position=Position.FIGHTING),
     Command("trip", do_trip, min_position=Position.FIGHTING),
     Command("surrender", do_surrender, min_position=Position.FIGHTING),
-    Command("murder", do_murder, min_position=Position.FIGHTING),
+    # ROM src/interp.c:247 — murder requires trust 5.
+    Command("murder", do_murder, min_position=Position.FIGHTING, min_trust=5),
     Command("cast", do_cast, min_position=Position.RESTING),
     Command("consider", do_consider, aliases=("con",), min_position=Position.RESTING),
     # Group Commands
