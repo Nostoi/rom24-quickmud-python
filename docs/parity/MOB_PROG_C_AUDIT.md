@@ -67,7 +67,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 | MOBPROG-004    | IMPORTANT  | `mob_prog.c:601-609`     | `mobprog.py:967-992`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
 | MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | ✅ FIXED — `tests/integration/test_mobprog_program_flow.py` |
 | MOBPROG-006    | IMPORTANT  | `mob_prog.c:795-799`     | `mobprog.py:540-545`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
-| MOBPROG-007    | MINOR      | `mob_prog.c:1051-1109`   | `mobprog.py:1170-1188`    | 🔄 OPEN  |
+| MOBPROG-007    | MINOR      | `mob_prog.c:1051-1109`   | `mobprog.py:1170-1188`    | ✅ FIXED — `tests/integration/test_mobprog_program_flow.py` |
 
 ### MOBPROG-001 — `objexists` is room-only; ROM searches the world (CRITICAL)
 

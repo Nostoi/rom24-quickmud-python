@@ -76,7 +76,7 @@ class TestQuestWorkflows:
             trig_phrase="quest",
             vnum=5001,
             code="""if ispc $n
-  if has_item $n 1234
+  if carries $n 1234
     say You already have my quest, $n.
   else
     say I need you to find the Golden Widget.

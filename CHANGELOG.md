@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-007: `_program_flow` now logs a warning and aborts the program when
+  an `if`/`or`/`and` keyword is not in ROM's `fn_keyword[]` table, mirroring
+  the `bug()` + `return` paths at `src/mob_prog.c:1049-1056`, `1076-1083`,
+  `1103-1109`. Typo'd predicates fail loudly instead of silently evaluating
+  to False. Integration coverage at
+  `tests/integration/test_mobprog_program_flow.py`. Also corrected the
+  `test_simple_quest_accept_workflow` fixture program to use the real ROM
+  keyword `carries` (not the previously-silent invalid `has_item`).
 - MOBPROG-006: `_expand_arg` `$R` substitution now replicates the ROM
   long-standing bug at `src/mob_prog.c:798-799` — the visibility gate uses
   `rch` (random victim) but the substituted string is `ch->short_descr`

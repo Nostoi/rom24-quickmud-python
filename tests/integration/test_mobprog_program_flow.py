@@ -77,3 +77,46 @@ def test_nested_if_inside_else_executes_inner_branch(monkeypatch):
     # The inner branch ran for the PC.
     assert any("inner-pc" in msg for msg in pc.messages)
     assert not any("outer-true" in msg for msg in pc.messages)
+
+
+def test_invalid_if_keyword_aborts_program(monkeypatch):
+    """ROM src/mob_prog.c:1049-1056 — an unknown if-check keyword logs a bug
+    and returns from program_flow, aborting the rest of the program.
+    """
+    room = Room(vnum=4600, name="Hall")
+    room_registry[4600] = room
+
+    mob = Character(name="warden", is_npc=True)
+    mob.position = Position.STANDING
+    mob.default_pos = Position.STANDING
+    room.add_character(mob)
+    character_registry.append(mob)
+
+    pc = Character(name="hero", is_npc=False)
+    room.add_character(pc)
+    character_registry.append(pc)
+
+    program = MobProgram(
+        trig_type=int(Trigger.SPEECH),
+        trig_phrase="hello",
+        vnum=4601,
+        code=(
+            "if foozle $n\n"
+            "  mob echoat $n should-not-fire\n"
+            "endif\n"
+            "mob echoat $n after-bad-if\n"
+        ),
+    )
+    mob.mob_programs = [program]
+
+    monkeypatch.setattr(
+        "mud.commands.dispatcher.process_command",
+        lambda char, line: "",
+    )
+
+    run_prog(mob, Trigger.SPEECH, actor=pc, phrase="hello")
+
+    # ROM aborts the program on the unknown keyword — neither the body of the
+    # bad if nor any subsequent command runs.
+    assert not any("should-not-fire" in msg for msg in pc.messages)
+    assert not any("after-bad-if" in msg for msg in pc.messages)

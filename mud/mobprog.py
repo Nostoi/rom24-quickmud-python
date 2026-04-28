@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import IntFlag
 from typing import TYPE_CHECKING
+
+logger = logging.getLogger(__name__)
 
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, OffFlag, Position
 from mud.models.mob import MobProgram
@@ -684,6 +687,23 @@ def _compare_numbers(lval: int, oper: str, rval: int) -> bool:
     return False
 
 
+# mirroring ROM src/mob_prog.c:120-184 fn_keyword[] — valid `if`/`or`/`and`
+# check keywords. Unknown keywords abort program_flow with a bug log per
+# src/mob_prog.c:1049-1056, 1076-1083, 1103-1109.
+_KNOWN_IF_CHECKS: frozenset[str] = frozenset({
+    "rand", "mobhere", "objhere", "mobexists", "objexists",
+    "people", "players", "mobs", "clones", "order", "hour",
+    "ispc", "isnpc", "isgood", "isevil", "isneutral", "isimmort",
+    "ischarm", "isfollow", "isactive", "isdelay", "isvisible",
+    "hastarget", "istarget", "exists",
+    "affected", "act", "off", "imm", "carries", "wears", "has", "uses",
+    "name", "pos", "position", "clan", "race", "class", "objtype",
+    "vnum", "hpcnt", "room", "sex", "level", "align", "money",
+    "objval0", "objval1", "objval2", "objval3", "objval4",
+    "grpsize",
+})
+
+
 def _rom_prefix_lookup(name: str, table: list[str], default: int) -> int:
     """Mirror ROM ``str_prefix`` lookup tables: case-insensitive prefix match,
     return the first matching index or *default* on no match."""
@@ -1197,6 +1217,15 @@ def _program_flow(
                     cond[level] = False
                     continue
                 check_name, check_args = _split_control(data)
+                # mirroring ROM src/mob_prog.c:1049-1056 — invalid if_check
+                # logs a bug and aborts the program.
+                if check_name.lower() not in _KNOWN_IF_CHECKS:
+                    logger.warning(
+                        "Mobprog: invalid if_check (if), mob %s: %s",
+                        getattr(mob, "name", "?"),
+                        check_name,
+                    )
+                    return
                 cond[level] = _cmd_eval(check_name.lower(), check_args, mob, ch, arg1, arg2, rch)
                 state[level] = END_BLOCK
             elif lower == "or":
@@ -1205,6 +1234,14 @@ def _program_flow(
                 if level and not cond[level - 1]:
                     continue
                 check_name, check_args = _split_control(data)
+                # mirroring ROM src/mob_prog.c:1076-1083
+                if check_name.lower() not in _KNOWN_IF_CHECKS:
+                    logger.warning(
+                        "Mobprog: invalid if_check (or), mob %s: %s",
+                        getattr(mob, "name", "?"),
+                        check_name,
+                    )
+                    return
                 result = _cmd_eval(check_name.lower(), check_args, mob, ch, arg1, arg2, rch)
                 cond[level] = bool(cond[level] or result)
             elif lower == "and":
@@ -1213,6 +1250,14 @@ def _program_flow(
                 if level and not cond[level - 1]:
                     continue
                 check_name, check_args = _split_control(data)
+                # mirroring ROM src/mob_prog.c:1103-1109
+                if check_name.lower() not in _KNOWN_IF_CHECKS:
+                    logger.warning(
+                        "Mobprog: invalid if_check (and), mob %s: %s",
+                        getattr(mob, "name", "?"),
+                        check_name,
+                    )
+                    return
                 result = _cmd_eval(check_name.lower(), check_args, mob, ch, arg1, arg2, rch)
                 cond[level] = bool(cond[level] and result)
             elif lower == "else":
