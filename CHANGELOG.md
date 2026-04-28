@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.14] - 2026-04-28
+
+Closes the `db2.c` audit (P1): all CRITICAL/IMPORTANT mob-loader gaps fixed.
+Both `.are` and JSON loaders now match ROM `src/db2.c:load_mobiles` for AC
+scaling, `ACT_IS_NPC` enforcement, race-table flag merge, and first-char
+uppercase of long_descr/description. Two MINOR gaps (`DB2-004` kill_table,
+`DB2-005` single-line fread_string) remain deferred — both documented as
+not user-reachable in the current port.
+
 ### Fixed
 
 - `DB2-003` — both mob loaders now uppercase the first character of

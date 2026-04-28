@@ -2,7 +2,7 @@
 
 **Date started:** 2026-04-28
 **Auditor:** automated (rom-parity-audit skill)
-**Status:** ⚠️ Phase 3 complete — gaps catalogued; Phase 4 closures pending
+**Status:** ✅ AUDITED — all CRITICAL/IMPORTANT gaps closed (DB2-001, DB2-002, DB2-003, DB2-006); two MINOR gaps deferred (DB2-004 kill_table, DB2-005 single-line fread_string) — both documented as not user-reachable.
 **ROM file:** `src/db2.c` (958 lines)
 **Python module(s):** `mud/loaders/social_loader.py`, `mud/loaders/mob_loader.py`, `mud/loaders/obj_loader.py`
 

@@ -72,7 +72,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `interp.c` | P0 | ✅ **COMPLETE!** | `mud/commands/dispatcher.py` | **100%** | 🎉 **FULL PARITY** — Apr 28, 2026: 24/24 gaps fixed + 1 closed-deferred. All command-mapping (INTERP-009..014), prefix-order (INTERP-017), `do_commands` formatting (INTERP-024), `one_argument` port (INTERP-015), and `tail_chain` extension hook (INTERP-016 closed-deferred) verified. See INTERP_C_AUDIT.md. |
 | **Database & World** | | | | | |
 | `db.c` | P1 | ✅ **COMPLETE!** | `mud/loaders/`, `mud/spawning/`, `mud/utils/math_utils.py`, `mud/utils/rng_mm.py`, `mud/utils/text.py`, `mud/registry.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 44 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - See DB_C_AUDIT.md |
-| `db2.c` | P1 | ⚠️ Partial | `mud/loaders/` | 55% | Continuation of db.c |
+| `db2.c` | P1 | ✅ AUDITED | `mud/loaders/` | **100%** (CRITICAL/IMPORTANT) | Apr 28 — DB2-001/002/003/006 closed; DB2-004/005 MINOR deferred (not user-reachable). See DB2_C_AUDIT.md |
 | `save.c` | P1 | ✅ **COMPLETE!** | `mud/persistence.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED  - ALL 8 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - Pet persistence + 17 integration tests - See SAVE_C_AUDIT.md |
 | **Mob Programs** | | | | | |
 | `mob_prog.c` | P1 | ✅ Complete | `mud/mobprog.py` | 100% | Apr 27, 2026 — all 7 audit gaps closed (MOBPROG-001..007: 2 CRITICAL, 4 IMPORTANT, 1 MINOR). Integration coverage in `tests/integration/test_mobprog_predicates.py`, `test_mobprog_greet_trigger.py`, `test_mobprog_program_flow.py`. See `MOB_PROG_C_AUDIT.md`. |
