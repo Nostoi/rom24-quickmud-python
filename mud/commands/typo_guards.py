@@ -68,19 +68,3 @@ def do_alia(char: Character, args: str) -> str:
     return "If you want to ALIAS, spell it out."
 
 
-def do_colon(char: Character, args: str) -> str:
-    """
-    The colon command - used for socials in some MUDs.
-    
-    ROM Reference: interp.c command table
-    
-    In ROM, ':' is mapped to do_immtalk for immortal chat.
-    
-    Usage: : <message>
-    """
-    if not args or not args.strip():
-        return "Say what on the immortal channel?"
-    
-    # Delegate to immtalk
-    from mud.commands.communication import do_immtalk
-    return do_immtalk(char, args)

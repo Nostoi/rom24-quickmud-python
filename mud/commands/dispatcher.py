@@ -179,7 +179,7 @@ from .session import do_quit, do_recall, do_save, do_score
 from .shop import do_buy, do_list, do_sell, do_value
 from .socials import perform_social
 from .thief_skills import do_hide, do_sneak, do_steal, do_visible
-from .typo_guards import do_alia, do_colon, do_murde, do_qui, do_reboo, do_shutdow
+from .typo_guards import do_alia, do_murde, do_qui, do_reboo, do_shutdow
 
 CommandFunc = Callable[[Character, str], str]
 
@@ -288,6 +288,7 @@ COMMANDS: list[Command] = [
     Command("music", do_music, min_position=Position.RESTING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
     Command("clantalk", do_clantalk, min_position=Position.SLEEPING),  # ROM alias
+    # ROM src/interp.c:356 — `:` is a cmd_table alias for do_immtalk.
     Command(
         "immtalk",
         do_immtalk,
@@ -514,7 +515,6 @@ COMMANDS: list[Command] = [
     Command("reboo", do_reboo, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, show=False),
     Command("shutdow", do_shutdow, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, show=False),
     Command("alia", do_alia, min_position=Position.DEAD, show=False),
-    Command(":", do_colon, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     # Feedback
     Command("bug", do_bug, min_position=Position.DEAD),
     Command("idea", do_idea, min_position=Position.DEAD),

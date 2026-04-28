@@ -133,6 +133,13 @@ def test_interp_010_take_routes_to_do_get():
     assert cmd.func is do_get
 
 
+def test_interp_014_colon_routes_to_do_immtalk():
+    # mirrors ROM src/interp.c:356 — `:` is a cmd_table alias for do_immtalk.
+    cmd = COMMAND_INDEX.get(":")
+    assert cmd is not None
+    assert cmd.func is do_immtalk
+
+
 def test_interp_012_go_routes_to_do_enter():
     # mirrors ROM src/interp.c:263 — `go` is a cmd_table alias for do_enter.
     cmd = COMMAND_INDEX.get("go")
