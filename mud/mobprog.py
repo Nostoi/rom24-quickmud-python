@@ -676,6 +676,18 @@ def _compare_numbers(lval: int, oper: str, rval: int) -> bool:
     return False
 
 
+def _rom_prefix_lookup(name: str, table: list[str], default: int) -> int:
+    """Mirror ROM ``str_prefix`` lookup tables: case-insensitive prefix match,
+    return the first matching index or *default* on no match."""
+    if not name:
+        return default
+    needle = name.lower()
+    for idx, entry in enumerate(table):
+        if entry and entry.lower().startswith(needle):
+            return idx
+    return default
+
+
 def _cmd_eval(
     check: str,
     arguments: str,
@@ -963,27 +975,39 @@ def _cmd_eval(
             return False
         clan_value = getattr(target_char, "clan", 0)
         try:
-            return int(clan_value or 0) == int(value_token)
+            rval_int = int(value_token)
         except ValueError:
-            return str(clan_value).lower() == value_token.lower()
+            # mirroring ROM src/mob_prog.c:601-603 — clan_lookup(name) → int idx.
+            from mud.models.clans import CLAN_TABLE
+
+            rval_int = _rom_prefix_lookup(value_token, [c.name for c in CLAN_TABLE], default=0)
+        return int(clan_value or 0) == rval_int
 
     if check == "race":
         if target_char is None:
             return False
         race_value = getattr(target_char, "race", 0)
         try:
-            return int(race_value or 0) == int(value_token)
+            rval_int = int(value_token)
         except ValueError:
-            return str(race_value).lower() == value_token.lower()
+            # mirroring ROM src/mob_prog.c:604-606 — race_lookup(name) → int idx.
+            from mud.models.races import RACE_TABLE
+
+            rval_int = _rom_prefix_lookup(value_token, [r.name for r in RACE_TABLE], default=0)
+        return int(race_value or 0) == rval_int
 
     if check == "class":
         if target_char is None:
             return False
         class_value = getattr(target_char, "ch_class", 0)
         try:
-            return int(class_value or 0) == int(value_token)
+            rval_int = int(value_token)
         except ValueError:
-            return str(class_value).lower() == value_token.lower()
+            # mirroring ROM src/mob_prog.c:607-609 — class_lookup(name) → int idx.
+            from mud.models.classes import CLASS_TABLE
+
+            rval_int = _rom_prefix_lookup(value_token, [c.name for c in CLASS_TABLE], default=-1)
+        return int(class_value or 0) == rval_int
 
     if check == "objtype":
         if target_obj is None:

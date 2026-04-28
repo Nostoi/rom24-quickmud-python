@@ -126,3 +126,74 @@ def test_vnum_compare_against_npc_uses_proto_vnum():
 
     assert mobprog._cmd_eval("vnum", "$n == 3500", mob, other_npc, None, None, None) is True
     assert mobprog._cmd_eval("vnum", "$n == 0", mob, other_npc, None, None, None) is False
+
+
+def test_class_lookup_resolves_named_keyword():
+    """mirrors ROM src/mob_prog.c:607-609 — class_lookup converts name to int index."""
+    from mud.models.classes import CLASS_TABLE
+
+    mage_idx = next(i for i, c in enumerate(CLASS_TABLE) if c.name == "mage")
+
+    here = Room(vnum=4002, name="Hall")
+    room_registry[4002] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    pc = Character(name="hero", is_npc=False)
+    pc.ch_class = mage_idx
+    here.add_character(pc)
+    character_registry.append(pc)
+
+    assert mobprog._cmd_eval("class", "$n mage", mob, pc, None, None, None) is True
+    assert mobprog._cmd_eval("class", "$n cleric", mob, pc, None, None, None) is False
+    # ROM prefix match: "mag" should also resolve to mage.
+    assert mobprog._cmd_eval("class", "$n mag", mob, pc, None, None, None) is True
+
+
+def test_race_lookup_resolves_named_keyword():
+    """mirrors ROM src/mob_prog.c:604-606 — race_lookup converts name to int index."""
+    from mud.models.races import RACE_TABLE
+
+    dwarf_idx = next((i for i, r in enumerate(RACE_TABLE) if r.name == "dwarf"), None)
+    assert dwarf_idx is not None
+
+    here = Room(vnum=4003, name="Hall")
+    room_registry[4003] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    npc = Character(name="thane", is_npc=True)
+    npc.race = dwarf_idx
+    here.add_character(npc)
+    character_registry.append(npc)
+
+    assert mobprog._cmd_eval("race", "$n dwarf", mob, npc, None, None, None) is True
+    assert mobprog._cmd_eval("race", "$n elf", mob, npc, None, None, None) is False
+
+
+def test_clan_lookup_resolves_named_keyword():
+    """mirrors ROM src/mob_prog.c:601-603 — clan_lookup converts name to int index."""
+    from mud.models.clans import CLAN_TABLE
+
+    if len(CLAN_TABLE) < 2:
+        pytest.skip("CLAN_TABLE has no named clan entries")
+    target_idx = 1
+    target_name = CLAN_TABLE[target_idx].name
+
+    here = Room(vnum=4004, name="Hall")
+    room_registry[4004] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    pc = Character(name="hero", is_npc=False)
+    pc.clan = target_idx
+    here.add_character(pc)
+    character_registry.append(pc)
+
+    assert mobprog._cmd_eval("clan", f"$n {target_name}", mob, pc, None, None, None) is True

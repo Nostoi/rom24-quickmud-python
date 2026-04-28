@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-004: `_cmd_eval` `clan` / `race` / `class` checks now resolve their
+  name keyword via a ROM-style prefix lookup over `CLAN_TABLE`, `RACE_TABLE`,
+  and `CLASS_TABLE` (mirroring ROM `clan_lookup` / `race_lookup` /
+  `class_lookup`, `src/mob_prog.c:601-609`) instead of comparing the int
+  attribute to the literal name string. `if class $n mage`,
+  `if race $n dragon`, `if clan $n thieves` now match ROM. Integration
+  coverage at `tests/integration/test_mobprog_predicates.py`.
 - MOBPROG-003: `_cmd_eval` `vnum` check now compares against `lval=0` when the
   target is a PC instead of returning False. Mirrors ROM `src/mob_prog.c:631-642`
   — `lval` initialises to 0 and is only overwritten for NPCs, so

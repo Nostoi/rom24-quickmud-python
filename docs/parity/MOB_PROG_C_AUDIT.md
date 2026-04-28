@@ -64,7 +64,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 | MOBPROG-001    | CRITICAL   | `mob_prog.c:399`         | `mobprog.py:727-755`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
 | MOBPROG-002    | CRITICAL   | `mob_prog.c:1340-1346`   | `mobprog.py:1469-1485`    | ✅ FIXED — `tests/integration/test_mobprog_greet_trigger.py` |
 | MOBPROG-003    | IMPORTANT  | `mob_prog.c:631-648`     | `mobprog.py:1012-1024`    | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
-| MOBPROG-004    | IMPORTANT  | `mob_prog.c:601-609`     | `mobprog.py:967-992`      | 🔄 OPEN  |
+| MOBPROG-004    | IMPORTANT  | `mob_prog.c:601-609`     | `mobprog.py:967-992`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
 | MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | 🔄 OPEN  |
 | MOBPROG-006    | IMPORTANT  | `mob_prog.c:795-799`     | `mobprog.py:540-545`      | 🔄 OPEN  |
 | MOBPROG-007    | MINOR      | `mob_prog.c:1051-1109`   | `mobprog.py:1170-1188`    | 🔄 OPEN  |
