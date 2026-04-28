@@ -32,8 +32,8 @@
 | `do_set` / `do_sset` / `do_mset` / `do_string` / `do_oset` / `do_rset` | `src/act_wiz.c:3233-4138` | `mud/commands/imm_set.py` | ⚠️ PARTIAL |
 | `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:268` | ⚠️ PARTIAL |
 | `do_force` | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | ✅ AUDITED |
-| `do_invis` | `src/act_wiz.c:4329-4373` | `mud/commands/imm_display.py:17` | ⚠️ PARTIAL |
-| `do_incognito` | `src/act_wiz.c:4375-4420` | `mud/commands/imm_display.py:61` | ⚠️ PARTIAL |
+| `do_invis` | `src/act_wiz.c:4329-4373` | `mud/commands/imm_display.py:17` | ✅ AUDITED |
+| `do_incognito` | `src/act_wiz.c:4375-4420` | `mud/commands/imm_display.py:61` | ✅ AUDITED |
 | `do_holylight` | `src/act_wiz.c:4422-4441` | `mud/commands/admin_commands.py:396` (`cmd_holylight`) | ⚠️ PARTIAL |
 | `do_prefi` / `do_prefix` | `src/act_wiz.c:4443-4496` | `mud/commands/alias_cmds.py:120`, `mud/commands/alias_cmds.py:126` | ✅ AUDITED |
 | `do_copyover` | `src/act_wiz.c:4498-4683` | `mud/commands/imm_server.py:91` | ⚠️ PARTIAL |
@@ -120,6 +120,7 @@ Python now:
 | `WIZ-007` | IMPORTANT | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | `do_force` was missing `gods` branch, private-room check, canonical trust check for all victims, and ROM `\n\r` line endings; bulk branches iterated wrong collections. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_force_*` |
 | `WIZ-008` | CRITICAL | `src/act_wiz.c:314-360,2986-3032,3034-3085,3087-3132,2872-2922,619-670` | `mud/commands/imm_punish.py:28-201`, `mud/commands/imm_admin.py:113` | Punish commands (`nochannels`, `noemote`, `noshout`, `notell`, `freeze`, `pardon`) used hardcoded wrong flag bit values (`0x00004000` instead of `CommFlag.NOCHANNELS=1<<22`, etc.), corrupting unrelated flags. Missing wiznet broadcasts and `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_nochannels_*, test_noemote_*, test_noshout_*, test_notell_*, test_pardon_*, test_freeze_*` |
 | `WIZ-009` | HIGH | `src/act_wiz.c:3134-3148` | `mud/commands/imm_commands.py:392` | `do_peace` set `fighting=None` instead of calling `stop_fighting(person, True)` (incomplete combat cleanup leaving dangling references); hardcoded `ACT_AGGRESSIVE=0x20` instead of `ActFlag.AGGRESSIVE` enum. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_peace_stops_fighting_and_removes_aggressive` |
+| `WIZ-010` | HIGH | `src/act_wiz.c:4329-4420` | `mud/commands/imm_display.py:17,61` | `do_invis` and `do_incognito` missing room-wide `act()` broadcast messages (`"$n slowly fades into thin air."` / `"$n slowly fades back into existence."` / `"$n cloaks $s presence."`); `do_incognito` missing `reply = None` when setting a specific level; both missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_invis_*, test_incognito_*` |
 
 ## Phase 4 — Closures
 
@@ -186,23 +187,33 @@ Python now:
 - **Fix:** Replaced `person.fighting = None` with `stop_fighting(person, True)` to properly clear all combat references (both attacker and defender). Replaced hardcoded `ACT_AGGRESSIVE=0x20` with `ActFlag.AGGRESSIVE` enum. Added canonical `\n\r` line endings.
 - **Tests:** `tests/integration/test_act_wiz_command_parity.py::test_peace_stops_fighting_and_removes_aggressive`
 
+### `WIZ-010` — ✅ FIXED
+
+- **Python:** `mud/commands/imm_display.py:17,61`
+- **ROM C:** `src/act_wiz.c:4329-4420`
+- **Fix:** Added `_act_room()` helper for room-wide visibility-aware messages. `do_invis` now broadcasts `"$n slowly fades into thin air."` / `"$n slowly fades back into existence."` to room occupants as ROM does via `act()`. `do_incognito` broadcasts `"$n cloaks $s presence."`. Added `char.reply = None` in `do_incognito` level-setting path (ROM 4410). Added `\n\r` line endings.
+- **Tests:** `test_invis_toggle_sets_and_clears_invis_level`, `test_invis_set_level`, `test_invis_rejects_invalid_level`, `test_incognito_toggle_sets_and_clears_incog_level`, `test_incognito_set_level`
+
 ## Phase 5 — Current State
 
 `act_wiz.c` remains **PARTIAL** after this pass.
 
 Completed this session:
-- Punish commands (`nochannels`, `noemote`, `noshout`, `notell`, `freeze`, `pardon`) now use canonical `CommFlag`/`PlayerFlag` enum values instead of hardcoded wrong bit positions.
-- `do_peace` now calls `stop_fighting(person, True)` instead of setting `fighting = None`.
-- All punish and peace commands have ROM `\n\r` line endings.
-- Wiznet broadcast calls added for punish commands.
+- Punish commands now use canonical `CommFlag`/`PlayerFlag` enum values (fixing critical data-corruption bugs).
+- `do_peace` now calls `stop_fighting()` for proper combat cleanup.
+- `do_invis`/`do_incognito` now broadcast room messages via `_act_room()`.
+- All modified commands have `\n\r` line endings.
 
 Still outstanding:
 - Echo family (`do_echo`, `do_recho`, `do_zecho`, `do_pecho`) — NPC/session filter gaps.
-- `do_invis`/`do_incognito` — missing room act() broadcast messages.
-- `do_deny` — toggle behavior, missing `stop_fighting`.
-- Remaining `do_clone`, `do_load`, `do_purge`, `do_advance`, `do_trust`, `do_restore`, `do_switch`, `do_return` audits.
+- `do_deny` — toggle behavior, missing `stop_fighting`, different lookup.
+- `do_disconnect` — `_close_socket` is a stub.
+- `do_invis`/`do_incognito` — `_act_room` is simplified (no `$n`/`$s`/`$e` substitution for all occupants yet).
+- `do_bamfin`/`do_bamfout` — missing `smash_tilde()`; case-insensitive name match.
+- Remaining `do_clone`, `do_load`, `do_purge`, `do_advance`, `do_trust`, `do_restore` audits.
 - `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` family (900+ lines).
+- `do_wiznet`, `do_smote`, `do_switch`, `do_return`, `do_slookup`, `do_vnum`, `do_mfind`, `do_ofind`, `do_owhere`, `do_mwhere`, `do_sockets`, `do_reboot`, `do_shutdown`, `do_copyover`, `do_qmconfig`, `do_guild`, `do_outfit`, `do_holylight`, `do_wizlock`, `do_newlock`.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `36 passed`
-- `ruff check mud/commands/imm_punish.py mud/commands/imm_admin.py mud/commands/imm_commands.py` — clean
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `41 passed`
+- `ruff check mud/commands/imm_punish.py mud/commands/imm_admin.py mud/commands/imm_commands.py mud/commands/imm_display.py` — clean

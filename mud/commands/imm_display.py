@@ -17,79 +17,67 @@ if TYPE_CHECKING:
 def do_invis(char: Character, args: str) -> str:
     """
     Toggle wizard invisibility or set to specific level.
-    
-    ROM Reference: src/act_wiz.c do_invis (lines 4329-4375)
-    
-    Usage:
-    - invis         - Toggle invisibility on/off
-    - invis <level> - Set invisibility to specific level
+
+    ROM Reference: src/act_wiz.c:4329-4373
     """
     invis_level = getattr(char, "invis_level", 0)
-    
+
     if not args or not args.strip():
-        # Toggle
         if invis_level:
             char.invis_level = 0
-            return "You slowly fade back into existence."
-        else:
-            char.invis_level = get_trust(char)
-            return "You slowly vanish into thin air."
-    
-    # Set specific level
+            _act_room(char, "$n slowly fades back into existence.", do_not_see_char=True)
+            return "You slowly fade back into existence.\n\r"
+
+        char.invis_level = get_trust(char)
+        _act_room(char, "$n slowly fades into thin air.", do_not_see_char=True)
+        return "You slowly vanish into thin air.\n\r"
+
     arg = args.strip().split()[0]
     if not arg.isdigit():
-        return "Invis level must be a number."
-    
+        return "Invis level must be a number.\n\r"
+
     level = int(arg)
     if level < 2 or level > get_trust(char):
-        return "Invis level must be between 2 and your level."
-    
+        return "Invis level must be between 2 and your level.\n\r"
+
     char.invis_level = level
-    char.reply = None  # Clear reply target
-    return "You slowly vanish into thin air."
+    char.reply = None
+    return "You slowly vanish into thin air.\n\r"
 
 
 def do_wizinvis(char: Character, args: str) -> str:
-    """
-    Alias for invis command.
-    
-    ROM Reference: interp.c - wizinvis maps to do_invis
-    """
+    """Alias for invis command."""
     return do_invis(char, args)
 
 
 def do_incognito(char: Character, args: str) -> str:
     """
     Toggle incognito mode (hidden from who/where but visible in room).
-    
-    ROM Reference: src/act_wiz.c do_incognito (lines 4377-4420)
-    
-    Usage:
-    - incognito         - Toggle incognito on/off
-    - incognito <level> - Set incognito to specific level
+
+    ROM Reference: src/act_wiz.c:4375-4420
     """
     incog_level = getattr(char, "incog_level", 0)
-    
+
     if not args or not args.strip():
-        # Toggle
         if incog_level:
             char.incog_level = 0
-            return "You are no longer cloaked."
-        else:
-            char.incog_level = get_trust(char)
-            return "You cloak your presence."
-    
-    # Set specific level
+            return "You are no longer cloaked.\n\r"
+
+        char.incog_level = get_trust(char)
+        _act_room(char, "$n cloaks $s presence.", do_not_see_char=True)
+        return "You cloak your presence.\n\r"
+
     arg = args.strip().split()[0]
     if not arg.isdigit():
-        return "Incognito level must be a number."
-    
+        return "Incognito level must be a number.\n\r"
+
     level = int(arg)
     if level < 2 or level > get_trust(char):
-        return "Incognito level must be between 2 and your level."
-    
+        return "Incognito level must be between 2 and your level.\n\r"
+
     char.incog_level = level
-    return "You cloak your presence."
+    char.reply = None
+    return "You cloak your presence.\n\r"
 
 
 def do_poofin(char: Character, args: str) -> str:
@@ -279,3 +267,31 @@ def _send_to_char(char: Character, message: str) -> None:
     if not hasattr(char, "output_buffer"):
         char.output_buffer = []
     char.output_buffer.append(message)
+
+
+def _act_room(char: Character, message: str, *, do_not_see_char: bool = False) -> None:
+    """Send a message to all other characters in char's room.
+
+    ROM C uses act() with TO_ROOM for this. This is a simplified version
+    that sends the message (with $n/$s/$e substitution) to room occupants.
+
+    Args:
+        char: The source character (used for $n substitution).
+        message: Message with $n for char name, $s for char possessive.
+        do_not_see_char: If True, also shows the message to char (for
+            invis fade-in/fade-out where others see it).
+    """
+    from mud.world.vision import can_see_character
+
+    room = getattr(char, "room", None)
+    if not room:
+        return
+
+    char_name = getattr(char, "name", "someone")
+    display_msg = message.replace("$n", char_name).replace("$s", f"{char_name}'s").replace("$e", char_name)
+
+    for person in getattr(room, "people", []):
+        if person is char and do_not_see_char:
+            continue
+        if can_see_character(person, char):
+            _send_to_char(person, f"{display_msg}\n\r")

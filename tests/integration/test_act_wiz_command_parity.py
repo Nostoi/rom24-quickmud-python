@@ -658,3 +658,75 @@ def test_peace_stops_fighting_and_removes_aggressive() -> None:
     assert "Ok" in result
     assert getattr(mob, "fighting", None) is None
     assert not (int(getattr(mob, "act", 0)) & int(ActFlag.AGGRESSIVE))
+
+
+# ── do_invis / do_incognito (WIZ-010) ──────────────────────────────
+
+
+def test_invis_toggle_sets_and_clears_invis_level() -> None:
+    # mirrors ROM src/act_wiz.c:4329-4373 — toggles invis_level with room message
+    from mud.commands.imm_display import do_invis
+
+    room = _room(9400, name="InvisRoom")
+    admin = _imm("Admin", room.vnum, trust=55)
+
+    result = do_invis(admin, "")
+    assert "vanish" in result.lower()
+    assert admin.invis_level == 55
+
+    result = do_invis(admin, "")
+    assert "fade" in result.lower()
+    assert admin.invis_level == 0
+
+
+def test_invis_set_level() -> None:
+    # mirrors ROM src/act_wiz.c:4355-4373 — sets specific invis level
+    from mud.commands.imm_display import do_invis
+
+    room = _room(9401, name="InvisRoom")
+    admin = _imm("Admin", room.vnum, trust=55)
+
+    result = do_invis(admin, "30")
+    assert "vanish" in result.lower()
+    assert admin.invis_level == 30
+
+
+def test_invis_rejects_invalid_level() -> None:
+    # mirrors ROM src/act_wiz.c:4351-4353
+    from mud.commands.imm_display import do_invis
+
+    room = _room(9402, name="InvisRoom")
+    admin = _imm("Admin", room.vnum, trust=55)
+
+    result = do_invis(admin, "1")
+    assert "between 2" in result.lower() or "number" in result.lower()
+
+
+def test_incognito_toggle_sets_and_clears_incog_level() -> None:
+    # mirrors ROM src/act_wiz.c:4375-4420 — toggles incog_level
+    from mud.commands.imm_display import do_incognito
+
+    room = _room(9403, name="IncogRoom")
+    admin = _imm("Admin", room.vnum, trust=55)
+
+    result = do_incognito(admin, "")
+    assert "cloak" in result.lower()
+    assert admin.incog_level == 55
+
+    result = do_incognito(admin, "")
+    assert "no longer" in result.lower()
+    assert admin.incog_level == 0
+
+
+def test_incognito_set_level() -> None:
+    # mirrors ROM src/act_wiz.c:4405-4418
+    from mud.commands.imm_display import do_incognito
+
+    room = _room(9404, name="IncogRoom")
+    admin = _imm("Admin", room.vnum, trust=55)
+
+    result = do_incognito(admin, "30")
+    assert "cloak" in result.lower()
+    assert admin.incog_level == 30
+    # mirrors ROM src/act_wiz.c:4410 — reply is set to NULL when setting a level
+    assert admin.reply is None
