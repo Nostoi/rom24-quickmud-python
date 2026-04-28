@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.11] - 2026-04-28
+
+Closes the three small position/trust gates left in `interp.c`
+(`INTERP-004`/`-005`/`-006`). `interp.c` is now 20/24 gaps closed
+(83%); only `INTERP-013` (deferred until `do_wear` ports the missing
+wield/hold logic), `INTERP-015` (shlex/one_argument port), and
+`INTERP-016` (`tail_chain` documentation, no-op) remain.
+
+### Fixed
+
+- `interp.c:INTERP-004` — `shout` now requires trust 3 to match ROM
+  (`src/interp.c:200`). Previously had no `min_trust` (defaulted to 0).
+  Test: `tests/integration/test_interp_dispatcher.py::test_interp_004_shout_requires_trust_3`.
+- `interp.c:INTERP-005` — `murder` now requires trust 5 to match ROM
+  (`src/interp.c:247`). Test:
+  `test_interp_005_murder_requires_trust_5`.
+- `interp.c:INTERP-006` — `music` `min_position` lowered from
+  `RESTING` to `SLEEPING` to match ROM (`src/interp.c:93`). Test:
+  `test_interp_006_music_min_position_sleeping`.
+
 ## [2.6.10] - 2026-04-27
 
 Closes five more `interp.c` gaps: command-mapping cleanup

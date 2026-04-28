@@ -1,6 +1,6 @@
 from mud.commands import process_command
 from mud.models.character import character_registry
-from mud.models.constants import CommFlag, LEVEL_IMMORTAL
+from mud.models.constants import CommFlag, LEVEL_HERO, LEVEL_IMMORTAL
 from mud.registry import (
     area_registry,
     mob_registry,
@@ -22,6 +22,11 @@ def setup_function(function):
 def make_player(name: str, room_vnum: int):
     char = create_test_character(name, room_vnum)
     char.desc = object()
+    # ROM cmd_table places several common channels behind trust gates
+    # (shout=3 src/interp.c:200, murder=5 :247, etc.). Test fixtures
+    # represent established mortals — give them hero-level trust so the
+    # command resolver lets them through.
+    char.level = LEVEL_HERO - 1
     return char
 
 
