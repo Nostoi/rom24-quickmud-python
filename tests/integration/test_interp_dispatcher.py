@@ -156,6 +156,31 @@ def test_interp_011_junk_tap_route_to_do_sacrifice(name):
     assert cmd.func is do_sacrifice
 
 
+def test_interp_024_do_commands_preserves_12char_column_padding(test_room, monkeypatch):
+    # mirrors ROM src/interp.c:803-825 — do_commands emits names as
+    # "%-12s" (12-char left-justified), 6 per row, with no trailing
+    # whitespace stripped from columns within a row.
+    from mud.commands import dispatcher
+    from mud.commands.info import do_commands as do_commands_fn
+
+    short = dispatcher.Command("a", do_commands_fn)
+    long_name = dispatcher.Command("xxxxxxxxxxxx", do_commands_fn)  # 12 chars
+    third = dispatcher.Command("c", do_commands_fn)
+    monkeypatch.setattr(dispatcher, "COMMANDS", [short, long_name, third], raising=False)
+
+    char = Character(name="Mortal", level=1, trust=0, room=test_room, is_npc=False)
+    test_room.people.append(char)
+    try:
+        result = do_commands_fn(char, "")
+        # Three names, one row. ROM padding: each column is exactly 12 chars,
+        # so total length is 36 chars + trailing newline. With rstrip Python
+        # would compress "a           xxxxxxxxxxxxc           " to
+        # "a           xxxxxxxxxxxxc" — 25 chars. Assert the un-stripped form.
+        assert result == "a           xxxxxxxxxxxxc           " + "\n\r"
+    finally:
+        test_room.people.remove(char)
+
+
 def test_interp_003_logged_command_mirrors_to_wiznet_secure(test_room, monkeypatch):
     # mirrors ROM src/interp.c:468-489 — when a command is logged
     # (PLR_LOG, LOG_ALWAYS, or fLogAll), the dispatcher mirrors

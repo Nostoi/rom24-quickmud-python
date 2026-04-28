@@ -44,13 +44,15 @@ def _chunk_commands(names: list[str]) -> list[str]:
         return []
     rows: list[str] = []
     current: list[str] = []
+    # mirroring ROM src/interp.c:815-823 — each column is "%-12s"; ROM does
+    # not strip trailing whitespace from rows, so neither do we.
     for index, name in enumerate(names, start=1):
         current.append(f"{name:<{_COLUMN_WIDTH}}")
         if index % _COLUMNS_PER_ROW == 0:
-            rows.append("".join(current).rstrip())
+            rows.append("".join(current))
             current = []
     if current:
-        rows.append("".join(current).rstrip())
+        rows.append("".join(current))
     return rows
 
 
