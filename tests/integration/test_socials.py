@@ -543,3 +543,16 @@ class TestSocialPrefixLookup:
         result = perform_social(alice, "zzznotasocial", "")
 
         assert result == "Huh?"
+
+
+class TestSocialNotFoundMessage:
+    """ROM src/interp.c:637-640 — get_char_room NULL → literal "They aren't here.\\n\\r"."""
+
+    def test_not_found_emits_rom_literal(self, alice):
+        # mirrors ROM src/interp.c:639 — send_to_char ("They aren't here.\n\r", ch).
+        alice.messages.clear()
+
+        perform_social(alice, "smile", "charlie")
+
+        assert alice.messages
+        assert alice.messages[0] == "They aren't here."

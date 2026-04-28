@@ -75,9 +75,10 @@ def perform_social(char: Character, name: str, arg: str) -> str:
         char.messages.append(expand_placeholders(social.char_auto, char))
         char.room.broadcast(expand_placeholders(social.others_auto, char), exclude=char)
     elif arg and not victim:
-        # ROM semantics: if an argument was provided but no victim is found,
-        # emit the "not found" message instead of the no-arg variant.
-        char.messages.append(expand_placeholders(social.not_found, char))
+        # mirroring ROM src/interp.c:637-640 — get_char_room → NULL emits
+        # the literal "They aren't here." There is no `not_found` field in
+        # ROM's social_table; the message is hard-coded in check_social.
+        char.messages.append("They aren't here.")
     else:
         char.messages.append(expand_placeholders(social.char_no_arg, char))
         char.room.broadcast(expand_placeholders(social.others_no_arg, char), exclude=char)

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   routed both the dispatcher fallback (`mud/commands/dispatcher.py`)
   and `perform_social` (`mud/commands/socials.py`) through it. Mirrors
   ROM `src/interp.c:584-592`.
+- `interp.c:INTERP-022` — `perform_social` now emits the literal
+  `"They aren't here."` when the targeted victim is absent, matching
+  ROM `src/interp.c:637-640`. The fabricated `social.not_found` field
+  (which has no counterpart in ROM's social table) is no longer used.
 
 ## [2.6.6] - 2026-04-27
 
