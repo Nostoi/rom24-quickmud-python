@@ -29,8 +29,13 @@ Required reading order at session start:
 4. The per-file audit doc for the chosen target (e.g. `docs/parity/ACT_OBJ_C_AUDIT.md`).
 
 Workflow skills live as plain markdown in `.claude/skills/` and are readable
-from any harness. Claude Code invokes them via the `Skill` tool; other
-harnesses must `Read` the SKILL.md and follow the instructions manually:
+from any harness:
+
+- **Claude Code agents:** invoke them via the `Skill` tool (e.g.
+  `Skill({skill: "rom-parity-audit", args: "scan.c"})`). Do not read the
+  SKILL.md and follow it inline — let the harness load it.
+- **Codex / Opencode / other harnesses:** `Read` the SKILL.md file and
+  follow the instructions manually. Same workflow, just no `Skill` tool.
 
 - `.claude/skills/rom-parity-audit/SKILL.md` — file-level audit (5 phases).
 - `.claude/skills/rom-gap-closer/SKILL.md` — single-gap TDD close (one test, one commit).
