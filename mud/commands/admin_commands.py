@@ -1,7 +1,9 @@
 import asyncio
 
 from mud.account import release_account
+from mud.account.account_manager import save_character as save_player_file
 from mud.admin_logging.admin import toggle_log_all
+from mud.commands.imm_commands import get_char_world
 from mud.config import (
     get_qmconfig,
     load_qmconfig,
@@ -12,14 +14,12 @@ from mud.config import (
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, PlayerFlag, Sex
 from mud.net.session import SESSIONS
-from mud.account.account_manager import save_character as save_player_file
 from mud.registry import room_registry
 from mud.security import bans
 from mud.security.bans import BanFlag, BanPermissionError
 from mud.spawning.mob_spawner import spawn_mob
-from mud.world.world_state import toggle_newlock, toggle_wizlock
 from mud.wiznet import wiznet
-
+from mud.world.world_state import toggle_newlock, toggle_wizlock
 
 ROM_NEWLINE = "\n\r"
 
@@ -339,28 +339,31 @@ def cmd_banlist(char: Character, args: str) -> str:
 
 
 def cmd_log(char: Character, args: str) -> str:
+    # mirrors ROM src/act_wiz.c:2927-2982
     arg = args.strip()
     if not arg:
-        return "Log whom?"
+        # mirroring ROM src/act_wiz.c:2935
+        return "Log whom?\n\r"
     target_name, *_rest = arg.split(maxsplit=1)
     if target_name.lower() == "all":
+        # mirroring ROM src/act_wiz.c:2940-2952
         enabled = toggle_log_all()
-        return "Log ALL on." if enabled else "Log ALL off."
-    lowered = target_name.lower()
-    target = next(
-        (
-            candidate
-            for candidate in character_registry
-            if candidate.name and candidate.name.lower().startswith(lowered)
-        ),
-        None,
-    )
-    if target is None:
-        return "They aren't here."
-    if getattr(target, "is_npc", False):
-        return "Not on NPC's."
-    target.log_commands = not getattr(target, "log_commands", False)
-    return "LOG set." if target.log_commands else "LOG removed."
+        return "Log ALL on.\n\r" if enabled else "Log ALL off.\n\r"
+    victim = get_char_world(char, target_name)
+    if victim is None:
+        # mirroring ROM src/act_wiz.c:2955-2958
+        return "They aren't here.\n\r"
+    if getattr(victim, "is_npc", False):
+        # mirroring ROM src/act_wiz.c:2961-2963
+        return "Not on NPC's.\n\r"
+    if victim.act & int(PlayerFlag.LOG):
+        victim.act &= ~int(PlayerFlag.LOG)
+        # mirroring ROM src/act_wiz.c:2972-2973
+        return "LOG removed.\n\r"
+    else:
+        victim.act |= int(PlayerFlag.LOG)
+        # mirroring ROM src/act_wiz.c:2977-2978
+        return "LOG set.\n\r"
 
 
 def cmd_incognito(char: Character, args: str) -> str:

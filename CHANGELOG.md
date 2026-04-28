@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `WIZ-001` — `goto`, `at`, and `transfer` now mirror ROM `src/act_wiz.c:821-839,897-905,957-966` owner/private-room gating by honoring owner-locked rooms, the canonical `ROOM_SOLITARY` flag value, and `is_room_owner()` bypass semantics.
+- `WIZ-002` — `violate` now mirrors ROM `src/act_wiz.c:1000-1057`: it targets rooms through `find_location()`, rejects public rooms with the `use goto` hint, and no longer parses directions/exits.
+- `WIZ-003` — `protect` now mirrors ROM `src/act_wiz.c:2086-2118` lookup/messages and toggles the real `CommFlag.SNOOP_PROOF` bit instead of the old `COMM_NOTELL` value.
+- `WIZ-004` — `snoop` now honors the canonical `CommFlag.SNOOP_PROOF` bit from ROM `src/act_wiz.c:2167-2174`, preventing snooping of correctly protected targets.
+- `WIZ-006` — `log` command now mirrors ROM `src/act_wiz.c:2927-2984`: uses `get_char_world()` for lookup, toggles `PlayerFlag.LOG` on `victim.act` instead of a `log_commands` bool, rejects NPCs with ROM message, and uses canonical `\n\r` line endings.
+- `ALIAS-001` — `alia` now returns the ROM `src/alias.c:97-100` typo-guard text instead of a generic helper string.
+- `ALIAS-002` — `alias` now mirrors ROM `src/alias.c:112-220`: exact list/query/set/realias messages, reserved-word checks, quote/name validation, `delete`/`prefix` expansion guards, and the five-alias limit.
+- `ALIAS-003` — alias substitution now mirrors ROM `src/alias.c:69-99`: one expansion pass only, truncation warning handling, and `mud.rom_api.substitute_alias()` now returns the expanded string instead of an internal tuple.
+- `ALIAS-004` — `unalias` now mirrors ROM `src/alias.c:236-274` prompt/removal/failure messages.
+- `ALIAS-005` — prefix preprocessing before alias expansion now mirrors ROM `src/alias.c:49-61,88-95`, including the overlong-line warning and full-`prefix` bypass semantics.
+- `HEALER-001` — `heal` now finds NPC healers via `ACT_IS_HEALER` and shows the ROM `src/healer.c:49-79` service table instead of a compressed summary string.
+- `HEALER-002` — `heal mana` now mirrors ROM `src/healer.c:147-190`: silver-aware affordability, `deduct_cost`, healer payout, TO_ROOM utterance, and `dice(2, 8) + level/3` mana restoration.
+- `HEALER-003` — `heal refresh` now dispatches to the underlying ROM spell path from `src/healer.c:156-160,196` instead of a placeholder full-restore shortcut.
+- `HEALER-004` — `heal heal` now dispatches to the underlying ROM `spell_heal` path from `src/healer.c:107-112,196` instead of always filling hit points to max.
+
 ## [2.6.15] - 2026-04-28
 
 Closes the `scan.c` audit (P2): all 3 gaps fixed, ROM-faithful TO_ROOM/TO_CHAR
