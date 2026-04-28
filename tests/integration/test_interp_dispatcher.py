@@ -156,6 +156,38 @@ def test_interp_011_junk_tap_route_to_do_sacrifice(name):
     assert cmd.func is do_sacrifice
 
 
+@pytest.mark.parametrize(
+    "raw,expected_head,expected_tail",
+    [
+        # Plain whitespace split.
+        ("look around", "look", "around"),
+        # Single-quoted leading token.
+        ("'fire bolt' target", "fire bolt", "target"),
+        # Double-quoted leading token.
+        ('"hello world" foo', "hello world", "foo"),
+        # ROM does NOT treat backslash as an escape — passes it through.
+        (r"hi\there", r"hi\there", ""),
+        # ROM lowercases the head; tail keeps original case.
+        ("LOOK Around", "look", "Around"),
+        # Empty quoted token.
+        ("'' rest", "", "rest"),
+        # Leading whitespace stripped.
+        ("   look", "look", ""),
+        # Trailing whitespace after head dropped before tail capture.
+        ("get   sword", "get", "sword"),
+    ],
+)
+def test_interp_015_one_argument_matches_rom(raw, expected_head, expected_tail):
+    # mirrors ROM src/interp.c:766-798 — one_argument lowercases the
+    # head, supports ' and " as quote sentinels (no nesting), treats
+    # backslash literally, strips surrounding whitespace.
+    from mud.commands.dispatcher import _one_argument
+
+    head, tail = _one_argument(raw)
+    assert head == expected_head
+    assert tail == expected_tail
+
+
 def test_interp_004_shout_requires_trust_3():
     # mirrors ROM src/interp.c:200 — {"shout", do_shout, POS_RESTING, 3, ...}
     cmd = COMMAND_INDEX["shout"]

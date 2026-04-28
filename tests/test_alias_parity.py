@@ -102,17 +102,18 @@ def test_alias_max_depth_protection():
     assert result in ("a", "b")  # Either is acceptable, just no infinite loop
 
 
-def test_alias_case_sensitivity():
-    """Test alias case sensitivity matches ROM C."""
+def test_alias_case_insensitive_lookup_matches_rom():
+    """ROM substitute_alias is case-INsensitive: do_alias stores keys via
+    one_argument (which lowercases — src/alias.c:127, 217), and the
+    expansion compares the lowercased input head against the stored key
+    (src/alias.c:78-81). So uppercase input expands a lowercased alias.
+    """
     char = setup_alias_test()
-
-    # Set up lowercase alias
     char.aliases["lk"] = "look"
 
-    # Uppercase should not match
     result, alias_used = _expand_aliases(char, "LK")
-    assert alias_used is False
-    assert result == "LK"
+    assert alias_used is True
+    assert result == "look"
 
 
 def test_alias_empty_argument():

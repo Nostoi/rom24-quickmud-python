@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shlex
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -764,48 +763,64 @@ def resolve_command(name: str, *, trust: int | None = None) -> Command | None:
     return None
 
 
+def _one_argument(argument: str) -> tuple[str, str]:
+    """Pick off one argument from a string and return ``(head, rest)``.
+
+    Mirrors ROM ``one_argument`` (src/interp.c:766-798): lowercases the
+    head; treats ``'`` or ``"`` as a single-character quote sentinel
+    (no nesting, no escape — backslash is literal); strips surrounding
+    whitespace.
+    """
+
+    i = 0
+    n = len(argument)
+    while i < n and argument[i].isspace():
+        i += 1
+
+    if i >= n:
+        return "", ""
+
+    sentinel = " "
+    if argument[i] in ("'", '"'):
+        sentinel = argument[i]
+        i += 1
+
+    head_chars: list[str] = []
+    while i < n:
+        ch = argument[i]
+        if (sentinel == " " and ch.isspace()) or ch == sentinel:
+            i += 1
+            break
+        head_chars.append(ch.lower())
+        i += 1
+
+    while i < n and argument[i].isspace():
+        i += 1
+
+    return "".join(head_chars), argument[i:]
+
+
 def _split_command_and_args(input_str: str) -> tuple[str, str]:
-    """Extract the leading command token and its remaining arguments."""
+    """Extract the leading command token and its remaining arguments.
+
+    ROM-faithful: uses :func:`_one_argument` for the alphanumeric branch
+    so backslash and quote semantics match `src/interp.c` exactly.
+    Single-character punctuation tokens (`.`, `,`, `/`, `'`, `;`, `:`)
+    are dispatched as the command directly per ROM `interpret()` at
+    src/interp.c:426-433.
+    """
 
     stripped = input_str.lstrip()
     if not stripped:
         return "", ""
 
     first = stripped[0]
-    # Handle special case for @ commands (admin commands like @teleport, @who, etc.)
-    if first == "@":
-        # For @ commands, split normally by whitespace to preserve full command names
-        try:
-            parts = shlex.split(stripped)
-            if not parts:
-                return "", ""
-            head = parts[0]
-            tail = " ".join(parts[1:]) if len(parts) > 1 else ""
-            return head, tail
-        except ValueError:
-            fallback = stripped.split(None, 1)
-            if not fallback:
-                return "", ""
-            head = fallback[0]
-            tail = fallback[1] if len(fallback) > 1 else ""
-            return head, tail
-    elif not first.isalnum():
+    # ROM punctuation aliases ('.', ',', '/', etc.) are single-char
+    # commands; '"' and "'" are quote sentinels for one_argument.
+    if not first.isalnum() and first not in ("'", '"'):
         return first, stripped[1:].lstrip()
 
-    try:
-        parts = shlex.split(stripped)
-        if not parts:
-            return "", ""
-        head = parts[0]
-        tail = " ".join(parts[1:]) if len(parts) > 1 else ""
-        return head, tail
-    except ValueError:
-        fallback = stripped.split(None, 1)
-        if not fallback:
-            return "", ""
-        head = fallback[0]
-        tail = fallback[1] if len(fallback) > 1 else ""
-        return head, tail
+    return _one_argument(stripped)
 
 
 ALIAS_BLOCKED_PREFIXES = ("alias", "una", "prefix")
