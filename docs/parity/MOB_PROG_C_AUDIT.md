@@ -65,7 +65,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 | MOBPROG-002    | CRITICAL   | `mob_prog.c:1340-1346`   | `mobprog.py:1469-1485`    | ✅ FIXED — `tests/integration/test_mobprog_greet_trigger.py` |
 | MOBPROG-003    | IMPORTANT  | `mob_prog.c:631-648`     | `mobprog.py:1012-1024`    | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
 | MOBPROG-004    | IMPORTANT  | `mob_prog.c:601-609`     | `mobprog.py:967-992`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
-| MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | 🔄 OPEN  |
+| MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | ✅ FIXED — `tests/integration/test_mobprog_program_flow.py` |
 | MOBPROG-006    | IMPORTANT  | `mob_prog.c:795-799`     | `mobprog.py:540-545`      | 🔄 OPEN  |
 | MOBPROG-007    | MINOR      | `mob_prog.c:1051-1109`   | `mobprog.py:1170-1188`    | 🔄 OPEN  |
 
@@ -98,14 +98,14 @@ If the actor is a PC, `lval` stays at its initialized `0`, then `num_eval(0, ope
 
 ROM (`mob_prog.c:601-609`) calls `clan_lookup(buf)` / `race_lookup(buf)` / `class_lookup(buf)` to convert the keyword (e.g. `mage`, `dragon`, `arctic`) into its registered integer index, then compares to `lval_char->clan/race/class`. Python (`mobprog.py:967-992`) tries `int(value_token)` first; on `ValueError` it falls back to a lowercase string compare against `str(value)`. Since `Character.race` / `ch_class` / `clan` are stored as integer indices (not name strings), the string fallback compares e.g. `"3"` to `"mage"` and always returns False. Result: every `if race $n dragon` / `if class $n mage` / `if clan $n thieves` predicate returns False in Python, blocking class/race-gated mob behavior.
 
-### MOBPROG-005 — `else` doesn't reset `state[level]` to `IN_BLOCK`; ROM does (IMPORTANT)
+### MOBPROG-005 — `else` doesn't reset `state[level]` to `IN_BLOCK`; ROM does (IMPORTANT — structural parity)
 
 ROM (`mob_prog.c:1138-1139`):
 ```c
 state[level] = IN_BLOCK;
 cond[level]  = (cond[level] == TRUE) ? FALSE : TRUE;
 ```
-Python (`mobprog.py:1189-1194`) only toggles `cond[level]`; `state[level]` stays at `END_BLOCK` from the matching `if`. The state machine flag is consulted by the `or`/`and`/`endif`/`else` control words to detect "misplaced if" / "or without if" errors. Within the `else` body, ROM treats new `if`s with `state[level] == IN_BLOCK` (the legal case); Python leaves `END_BLOCK` set, so a nested `if` inside an `else` block hits the `state[level] == BEGIN_BLOCK`-style check inconsistently and can return early on legal programs.
+Python (`mobprog.py:1189-1194`) only toggles `cond[level]`; `state[level]` stays at `END_BLOCK` from the matching `if`. **Structural parity gap:** every control-word check uses `state[level] != BEGIN_BLOCK`, and both `END_BLOCK` and `IN_BLOCK` satisfy that condition, so on valid programs the missing reset does not produce an observable divergence. The fix still aligns the Python state machine with ROM exactly so future state checks (e.g. additional bug-log paths) read the same values ROM would. No failing behavioural test is possible; closure is paired with a regression test that exercises a nested `if/else { if ... endif } endif` program.
 
 ### MOBPROG-006 — `$R` $-code uses `rch` data; ROM uses `ch` (replicate-the-bug parity) (IMPORTANT)
 

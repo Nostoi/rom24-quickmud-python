@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-005: `_program_flow` `else` branch now resets
+  `state[level] = IN_BLOCK` mirroring ROM `src/mob_prog.c:1138`. Structural
+  state-machine parity only — no observable divergence on valid programs;
+  regression coverage added at
+  `tests/integration/test_mobprog_program_flow.py`.
 - MOBPROG-004: `_cmd_eval` `clan` / `race` / `class` checks now resolve their
   name keyword via a ROM-style prefix lookup over `CLAN_TABLE`, `RACE_TABLE`,
   and `CLASS_TABLE` (mirroring ROM `clan_lookup` / `race_lookup` /

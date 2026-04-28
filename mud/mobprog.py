@@ -1212,6 +1212,10 @@ def _program_flow(
                     return
                 if level and not cond[level - 1]:
                     continue
+                # mirroring ROM src/mob_prog.c:1138 — reset state to IN_BLOCK
+                # so the state machine matches ROM exactly. Structural parity;
+                # no observable divergence on valid programs.
+                state[level] = IN_BLOCK
                 cond[level] = not cond[level]
             elif lower == "endif":
                 if not level or state[level - 1] != BEGIN_BLOCK:
