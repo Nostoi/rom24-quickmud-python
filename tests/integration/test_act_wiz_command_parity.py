@@ -464,3 +464,197 @@ def test_ostat_empty_arg() -> None:
 
     result = do_ostat(admin, "")
     assert "Stat what?" in result
+
+
+# ── Punish commands (WIZ-008) ──────────────────────────────────────
+
+
+def test_nochannels_sets_and_removes_comm_flag() -> None:
+    # mirrors ROM src/act_wiz.c:339-356 — toggles COMM_NOCHANNELS on victim.comm
+    from mud.commands.imm_punish import do_nochannels
+    from mud.models.constants import CommFlag
+
+    room = _room(9300, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+
+    result = do_nochannels(admin, "Victim")
+    assert "NOCHANNELS set" in result
+    assert int(victim.comm) & int(CommFlag.NOCHANNELS)
+
+    result = do_nochannels(admin, "Victim")
+    assert "NOCHANNELS removed" in result
+    assert not (int(victim.comm) & int(CommFlag.NOCHANNELS))
+
+
+def test_nochannels_rejects_higher_trust() -> None:
+    # mirrors ROM src/act_wiz.c:333-336
+    from mud.commands.imm_punish import do_nochannels
+
+    room = _room(9301, name="PunishRoom")
+    low = _imm("Lowadmin", room.vnum, trust=52)
+    _imm("Highadmin", room.vnum, trust=55)
+
+    result = do_nochannels(low, "Highadmin")
+    assert "You failed" in result
+
+
+def test_noemote_sets_and_removes_comm_flag() -> None:
+    # mirrors ROM src/act_wiz.c:3012-3027 — toggles COMM_NOEMOTE
+    from mud.commands.imm_punish import do_noemote
+    from mud.models.constants import CommFlag
+
+    room = _room(9302, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+
+    result = do_noemote(admin, "Victim")
+    assert "NOEMOTE set" in result
+    assert int(victim.comm) & int(CommFlag.NOEMOTE)
+
+    result = do_noemote(admin, "Victim")
+    assert "NOEMOTE removed" in result
+    assert not (int(victim.comm) & int(CommFlag.NOEMOTE))
+
+
+def test_noshout_rejects_npc() -> None:
+    # mirrors ROM src/act_wiz.c:2893-2894 — IS_NPC check before trust check
+    from mud.commands.imm_punish import do_noshout
+
+    room = _room(9303, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    mob = create_test_character("test guard", room.vnum)
+    mob.is_npc = True
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    result = do_noshout(admin, "test guard")
+    assert "Not on NPC" in result
+
+
+def test_notell_sets_and_removes_comm_flag() -> None:
+    # mirrors ROM src/act_wiz.c:3112-3127 — toggles COMM_NOTELL
+    from mud.commands.imm_punish import do_notell
+    from mud.models.constants import CommFlag
+
+    room = _room(9304, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+
+    result = do_notell(admin, "Victim")
+    assert "NOTELL set" in result
+    assert int(victim.comm) & int(CommFlag.NOTELL)
+
+    result = do_notell(admin, "Victim")
+    assert "NOTELL removed" in result
+    assert not (int(victim.comm) & int(CommFlag.NOTELL))
+
+
+def test_pardon_killer_flag() -> None:
+    # mirrors ROM src/act_wiz.c:646-655 — removes PLR_KILLER from victim.act
+    from mud.commands.imm_punish import do_pardon
+    from mud.models.constants import PlayerFlag
+
+    room = _room(9305, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+    victim.act = int(victim.act) | int(PlayerFlag.KILLER)
+
+    result = do_pardon(admin, "Victim killer")
+    assert "Killer flag removed" in result
+    assert not (int(victim.act) & int(PlayerFlag.KILLER))
+
+
+def test_pardon_thief_flag() -> None:
+    # mirrors ROM src/act_wiz.c:657-665 — removes PLR_THIEF from victim.act
+    from mud.commands.imm_punish import do_pardon
+    from mud.models.constants import PlayerFlag
+
+    room = _room(9306, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+    victim.act = int(victim.act) | int(PlayerFlag.THIEF)
+
+    result = do_pardon(admin, "Victim thief")
+    assert "Thief flag removed" in result
+    assert not (int(victim.act) & int(PlayerFlag.THIEF))
+
+
+def test_pardon_rejects_npc() -> None:
+    # mirrors ROM src/act_wiz.c:640-643
+    from mud.commands.imm_punish import do_pardon
+
+    room = _room(9307, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    mob = create_test_character("test mob", room.vnum)
+    mob.is_npc = True
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    result = do_pardon(admin, "test mob killer")
+    assert "Not on NPC" in result
+
+
+def test_freeze_sets_and_removes_plr_freeze() -> None:
+    # mirrors ROM src/act_wiz.c:2903-2918 — toggles PLR_FREEZE on victim.act
+    from mud.commands.imm_admin import do_freeze
+    from mud.models.constants import PlayerFlag
+
+    room = _room(9308, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    victim = _imm("Victim", room.vnum, trust=10)
+
+    result = do_freeze(admin, "Victim")
+    assert "FREEZE set" in result
+    assert int(victim.act) & int(PlayerFlag.FREEZE)
+
+    result = do_freeze(admin, "Victim")
+    assert "FREEZE removed" in result
+    assert not (int(victim.act) & int(PlayerFlag.FREEZE))
+
+
+def test_freeze_rejects_npc() -> None:
+    # mirrors ROM src/act_wiz.c:2891-2893
+    from mud.commands.imm_admin import do_freeze
+
+    room = _room(9309, name="PunishRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    mob = create_test_character("test mob", room.vnum)
+    mob.is_npc = True
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    result = do_freeze(admin, "test mob")
+    assert "Not on NPC" in result
+
+
+# ── do_peace (WIZ-009) ─────────────────────────────────────────────
+
+
+def test_peace_stops_fighting_and_removes_aggressive() -> None:
+    # mirrors ROM src/act_wiz.c:3134-3148 — stop_fighting + clear ACT_AGGRESSIVE
+    from mud.commands.imm_commands import do_peace
+    from mud.models.constants import ActFlag
+
+    room = _room(9350, name="PeaceRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+    mob = create_test_character("aggro mob", room.vnum)
+    mob.is_npc = True
+    mob.act = int(getattr(mob, "act", 0)) | int(ActFlag.AGGRESSIVE)
+    mob.fighting = admin
+    admin.fighting = mob
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    result = do_peace(admin, "")
+    assert "Ok" in result
+    assert getattr(mob, "fighting", None) is None
+    assert not (int(getattr(mob, "act", 0)) & int(ActFlag.AGGRESSIVE))

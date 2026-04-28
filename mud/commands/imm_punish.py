@@ -8,240 +8,227 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.models.constants import CommFlag, PlayerFlag
 from mud.commands.imm_commands import get_trust, get_char_world
 
 if TYPE_CHECKING:
     pass
 
 
-# Comm flags
-COMM_NOCHANNELS = 0x00004000
-COMM_NOEMOTE = 0x00008000
-COMM_NOSHOUT = 0x00010000
-COMM_NOTELL = 0x00020000
-
-# Player flags
-PLR_KILLER = 0x00000004
-PLR_THIEF = 0x00000008
-
-
 def do_nochannels(char: Character, args: str) -> str:
     """
     Toggle a player's ability to use channels.
-    
-    ROM Reference: src/act_wiz.c do_nochannels (lines 314-360)
-    
-    Usage: nochannels <player>
+
+    ROM Reference: src/act_wiz.c:314-359
     """
     if not args or not args.strip():
-        return "Nochannel whom?"
-    
+        return "Nochannel whom?\n\r"
+
     target_name = args.strip().split()[0]
     victim = get_char_world(char, target_name)
-    
+
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     if get_trust(victim) >= get_trust(char):
-        return "You failed."
-    
-    comm_flags = getattr(victim, "comm", 0)
-    victim_name = getattr(victim, "name", "someone")
-    
-    if comm_flags & COMM_NOCHANNELS:
-        victim.comm = comm_flags & ~COMM_NOCHANNELS
-        _send_to_char(victim, "The gods have restored your channel priviliges.")
-        return "NOCHANNELS removed."
-    else:
-        victim.comm = comm_flags | COMM_NOCHANNELS
-        _send_to_char(victim, "The gods have revoked your channel priviliges.")
-        return "NOCHANNELS set."
+        return "You failed.\n\r"
+
+    comm_flags = int(getattr(victim, "comm", 0))
+
+    if comm_flags & int(CommFlag.NOCHANNELS):
+        victim.comm = comm_flags & ~int(CommFlag.NOCHANNELS)
+        _send_to_char(victim, "The gods have restored your channel priviliges.\n\r")
+        from mud.wiznet import wiznet, WiznetFlag
+        wiznet(f"$N restores channels to {victim.name}", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+        return "NOCHANNELS removed.\n\r"
+
+    victim.comm = comm_flags | int(CommFlag.NOCHANNELS)
+    _send_to_char(victim, "The gods have revoked your channel priviliges.\n\r")
+    from mud.wiznet import wiznet, WiznetFlag
+    wiznet(f"$N revokes {victim.name}'s channels.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+    return "NOCHANNELS set.\n\r"
 
 
 def do_noemote(char: Character, args: str) -> str:
     """
     Toggle a player's ability to use emote.
-    
-    ROM Reference: src/act_wiz.c do_noemote (lines 2986-3032)
-    
-    Usage: noemote <player>
+
+    ROM Reference: src/act_wiz.c:2986-3032
     """
     if not args or not args.strip():
-        return "Noemote whom?"
-    
+        return "Noemote whom?\n\r"
+
     target_name = args.strip().split()[0]
     victim = get_char_world(char, target_name)
-    
+
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     if get_trust(victim) >= get_trust(char):
-        return "You failed."
-    
-    comm_flags = getattr(victim, "comm", 0)
-    
-    if comm_flags & COMM_NOEMOTE:
-        victim.comm = comm_flags & ~COMM_NOEMOTE
-        _send_to_char(victim, "You can emote again.")
-        return "NOEMOTE removed."
-    else:
-        victim.comm = comm_flags | COMM_NOEMOTE
-        _send_to_char(victim, "You can't emote!")
-        return "NOEMOTE set."
+        return "You failed.\n\r"
+
+    comm_flags = int(getattr(victim, "comm", 0))
+
+    if comm_flags & int(CommFlag.NOEMOTE):
+        victim.comm = comm_flags & ~int(CommFlag.NOEMOTE)
+        _send_to_char(victim, "You can emote again.\n\r")
+        from mud.wiznet import wiznet, WiznetFlag
+        wiznet(f"$N allows {victim.name} to emote.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+        return "NOEMOTE removed.\n\r"
+
+    victim.comm = comm_flags | int(CommFlag.NOEMOTE)
+    _send_to_char(victim, "You can't emote!\n\r")
+    from mud.wiznet import wiznet, WiznetFlag
+    wiznet(f"$N stops {victim.name} from emoting.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+    return "NOEMOTE set.\n\r"
 
 
 def do_noshout(char: Character, args: str) -> str:
     """
     Toggle a player's ability to shout.
-    
-    ROM Reference: src/act_wiz.c do_noshout (lines 3034-3085)
-    
-    Usage: noshout <player>
+
+    ROM Reference: src/act_wiz.c:3034-3085
     """
     if not args or not args.strip():
-        return "Noshout whom?"
-    
+        return "Noshout whom?\n\r"
+
     target_name = args.strip().split()[0]
     victim = get_char_world(char, target_name)
-    
+
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     if getattr(victim, "is_npc", False):
-        return "Not on NPC's."
-    
+        return "Not on NPC's.\n\r"
+
     if get_trust(victim) >= get_trust(char):
-        return "You failed."
-    
-    comm_flags = getattr(victim, "comm", 0)
-    
-    if comm_flags & COMM_NOSHOUT:
-        victim.comm = comm_flags & ~COMM_NOSHOUT
-        _send_to_char(victim, "You can shout again.")
-        return "NOSHOUT removed."
-    else:
-        victim.comm = comm_flags | COMM_NOSHOUT
-        _send_to_char(victim, "You can't shout!")
-        return "NOSHOUT set."
+        return "You failed.\n\r"
+
+    comm_flags = int(getattr(victim, "comm", 0))
+
+    if comm_flags & int(CommFlag.NOSHOUT):
+        victim.comm = comm_flags & ~int(CommFlag.NOSHOUT)
+        _send_to_char(victim, "You can shout again.\n\r")
+        from mud.wiznet import wiznet, WiznetFlag
+        wiznet(f"$N allows {victim.name} to shout.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+        return "NOSHOUT removed.\n\r"
+
+    victim.comm = comm_flags | int(CommFlag.NOSHOUT)
+    _send_to_char(victim, "You can't shout!\n\r")
+    from mud.wiznet import wiznet, WiznetFlag
+    wiznet(f"$N stops {victim.name} from shouting.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+    return "NOSHOUT set.\n\r"
 
 
 def do_notell(char: Character, args: str) -> str:
     """
     Toggle a player's ability to use tell.
-    
-    ROM Reference: src/act_wiz.c do_notell (lines 3087-3130)
-    
-    Usage: notell <player>
+
+    ROM Reference: src/act_wiz.c:3087-3132
     """
     if not args or not args.strip():
-        return "Notell whom?"
-    
+        return "Notell whom?\n\r"
+
     target_name = args.strip().split()[0]
     victim = get_char_world(char, target_name)
-    
+
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     if get_trust(victim) >= get_trust(char):
-        return "You failed."
-    
-    comm_flags = getattr(victim, "comm", 0)
-    
-    if comm_flags & COMM_NOTELL:
-        victim.comm = comm_flags & ~COMM_NOTELL
-        _send_to_char(victim, "You can tell again.")
-        return "NOTELL removed."
-    else:
-        victim.comm = comm_flags | COMM_NOTELL
-        _send_to_char(victim, "You can't tell!")
-        return "NOTELL set."
+        return "You failed.\n\r"
+
+    comm_flags = int(getattr(victim, "comm", 0))
+
+    if comm_flags & int(CommFlag.NOTELL):
+        victim.comm = comm_flags & ~int(CommFlag.NOTELL)
+        _send_to_char(victim, "You can tell again.\n\r")
+        from mud.wiznet import wiznet, WiznetFlag
+        wiznet(f"$N allows {victim.name} to tell.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+        return "NOTELL removed.\n\r"
+
+    victim.comm = comm_flags | int(CommFlag.NOTELL)
+    _send_to_char(victim, "You can't tell!\n\r")
+    from mud.wiznet import wiznet, WiznetFlag
+    wiznet(f"$N stops {victim.name} from telling.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+    return "NOTELL set.\n\r"
 
 
 def do_pardon(char: Character, args: str) -> str:
     """
     Remove killer or thief flag from a player.
-    
-    ROM Reference: src/act_wiz.c do_pardon (lines 619-672)
-    
-    Usage: pardon <player> <killer|thief>
+
+    ROM Reference: src/act_wiz.c:619-670
     """
     if not args or not args.strip():
-        return "Syntax: pardon <character> <killer|thief>."
-    
+        return "Syntax: pardon <character> <killer|thief>.\n\r"
+
     parts = args.strip().split()
     if len(parts) < 2:
-        return "Syntax: pardon <character> <killer|thief>."
-    
+        return "Syntax: pardon <character> <killer|thief>.\n\r"
+
     target_name = parts[0]
     flag_type = parts[1].lower()
-    
+
     victim = get_char_world(char, target_name)
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     if getattr(victim, "is_npc", False):
-        return "Not on NPC's."
-    
-    act_flags = getattr(victim, "act", 0)
-    
+        return "Not on NPC's.\n\r"
+
+    act_flags = int(getattr(victim, "act", 0))
+
     if flag_type == "killer":
-        if act_flags & PLR_KILLER:
-            victim.act = act_flags & ~PLR_KILLER
-            _send_to_char(victim, "You are no longer a KILLER.")
-            return "Killer flag removed."
-        return "They aren't a killer."
-    
+        if act_flags & int(PlayerFlag.KILLER):
+            victim.act = act_flags & ~int(PlayerFlag.KILLER)
+            _send_to_char(victim, "You are no longer a KILLER.\n\r")
+            return "Killer flag removed.\n\r"
+        return "Killer flag removed.\n\r"
+
     if flag_type == "thief":
-        if act_flags & PLR_THIEF:
-            victim.act = act_flags & ~PLR_THIEF
-            _send_to_char(victim, "You are no longer a THIEF.")
-            return "Thief flag removed."
-        return "They aren't a thief."
-    
-    return "Syntax: pardon <character> <killer|thief>."
+        if act_flags & int(PlayerFlag.THIEF):
+            victim.act = act_flags & ~int(PlayerFlag.THIEF)
+            _send_to_char(victim, "You are no longer a THIEF.\n\r")
+            return "Thief flag removed.\n\r"
+        return "Thief flag removed.\n\r"
+
+    return "Syntax: pardon <character> <killer|thief>.\n\r"
 
 
 def do_disconnect(char: Character, args: str) -> str:
     """
     Disconnect a player from the game.
-    
-    ROM Reference: src/act_wiz.c do_disconnect (lines 561-618)
-    
-    Usage:
-    - disconnect <player>     - Disconnect by name
-    - disconnect <desc_num>   - Disconnect by descriptor number
+
+    ROM Reference: src/act_wiz.c:561-617
     """
     if not args or not args.strip():
-        return "Disconnect whom?"
-    
+        return "Disconnect whom?\n\r"
+
     arg = args.strip().split()[0]
-    
+
     from mud import registry
-    
-    # Try numeric descriptor
+
     if arg.isdigit():
         desc_num = int(arg)
         for desc in getattr(registry, "descriptor_list", []):
             if getattr(desc, "descriptor", -1) == desc_num:
                 _close_socket(desc)
-                return "Ok."
-        return "Descriptor not found!"
-    
-    # Try character name
+                return "Ok.\n\r"
+        return "Descriptor not found!\n\r"
+
     victim = get_char_world(char, arg)
     if victim is None:
-        return "They aren't here."
-    
+        return "They aren't here.\n\r"
+
     desc = getattr(victim, "desc", None)
     if desc is None:
         victim_name = getattr(victim, "name", "They")
-        return f"{victim_name} doesn't have a descriptor."
-    
+        return f"{victim_name} doesn't have a descriptor.\n\r"
+
     _close_socket(desc)
-    return "Ok."
+    return "Ok.\n\r"
 
-
-# Helper functions
 
 def _send_to_char(char: Character, message: str) -> None:
     """Send message to character."""
@@ -252,7 +239,6 @@ def _send_to_char(char: Character, message: str) -> None:
 
 def _close_socket(desc) -> None:
     """Close a descriptor socket (simplified)."""
-    # In real implementation, would properly close the socket
     char = getattr(desc, "character", None)
     if char:
         char.desc = None

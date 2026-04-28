@@ -393,27 +393,25 @@ def do_peace(char: Character, args: str) -> str:
     """
     Stop all combat in the current room.
 
-    ROM Reference: src/act_wiz.c do_peace (lines 3134-3150)
-
-    Usage: peace
+    ROM Reference: src/act_wiz.c:3134-3148
     """
     room = getattr(char, "room", None)
     if not room:
-        return "You're not in a room."
+        return "You're not in a room.\n\r"
+
+    from mud.combat.engine import stop_fighting
+    from mud.models.constants import ActFlag
 
     for person in getattr(room, "people", []):
-        # Stop fighting
         if getattr(person, "fighting", None):
-            person.fighting = None
+            stop_fighting(person, True)
 
-        # Remove aggressive flag from NPCs
         if getattr(person, "is_npc", False):
-            act_flags = getattr(person, "act", 0)
-            ACT_AGGRESSIVE = 0x00000020
-            if act_flags & ACT_AGGRESSIVE:
-                person.act = act_flags & ~ACT_AGGRESSIVE
+            act_flags = int(getattr(person, "act", 0))
+            if act_flags & int(ActFlag.AGGRESSIVE):
+                person.act = act_flags & ~int(ActFlag.AGGRESSIVE)
 
-    return "Ok."
+    return "Ok.\n\r"
 
 
 # Helper functions
