@@ -263,6 +263,12 @@ This project is indexed by GitNexus as **rom24-quickmud-python** (33 200
 symbols, 54 952 relationships, 300 execution flows). If any GitNexus tool
 warns the index is stale, run `npx gitnexus analyze` first.
 
+**Use the `gitnexus-cli` skill for any GitNexus CLI invocation** (analyze,
+status, clean, wiki, list). Do not call `npx gitnexus …` raw — invoke
+`Skill({skill: "gitnexus-cli", args: "<intent>"})` so the canonical flags
+(e.g. `--skip-agents-md` to preserve the auto-managed CLAUDE.md/AGENTS.md
+block) are applied.
+
 ### Always Do
 
 - **Run impact analysis before editing any symbol.** Before modifying a
