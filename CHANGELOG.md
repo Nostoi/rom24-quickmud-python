@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MOBPROG-006: `_expand_arg` `$R` substitution now replicates the ROM
+  long-standing bug at `src/mob_prog.c:798-799` — the visibility gate uses
+  `rch` (random victim) but the substituted string is `ch->short_descr`
+  (NPC actor) or `ch->name` (PC actor). Per AGENTS.md ROM Parity Rules,
+  QuickMUD reproduces the bug. Integration coverage at
+  `tests/integration/test_mobprog_predicates.py`.
 - MOBPROG-005: `_program_flow` `else` branch now resets
   `state[level] = IN_BLOCK` mirroring ROM `src/mob_prog.c:1138`. Structural
   state-machine parity only — no observable divergence on valid programs;

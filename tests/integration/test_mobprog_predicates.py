@@ -197,3 +197,55 @@ def test_clan_lookup_resolves_named_keyword():
     character_registry.append(pc)
 
     assert mobprog._cmd_eval("clan", f"$n {target_name}", mob, pc, None, None, None) is True
+
+
+def test_dollar_R_uses_ch_name_replicate_rom_bug():
+    """ROM src/mob_prog.c:798-799 — `$R` substitutes ``ch`` (the original
+    actor), NOT ``rch`` (the random victim). This is a long-standing ROM bug
+    that QuickMUD must replicate per AGENTS.md ROM Parity Rules.
+    """
+    here = Room(vnum=4005, name="Hall")
+    room_registry[4005] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    pc = Character(name="hero", is_npc=False)
+    here.add_character(pc)
+    character_registry.append(pc)
+
+    rch_npc = Character(name="goblin", is_npc=True)
+    rch_npc.short_descr = "a sly goblin"
+    here.add_character(rch_npc)
+    character_registry.append(rch_npc)
+
+    expanded = mobprog._expand_arg("$R waves", mob, pc, None, None, rch_npc)
+    # ROM bug: substitutes ch (PC) → "hero", not the goblin short_descr.
+    assert "hero" in expanded.lower()
+    assert "goblin" not in expanded.lower()
+
+
+def test_dollar_R_uses_ch_short_descr_when_actor_is_npc():
+    """ROM src/mob_prog.c:798-799 — when ``ch`` is an NPC, `$R` uses
+    ``ch->short_descr``."""
+    here = Room(vnum=4006, name="Hall")
+    room_registry[4006] = here
+
+    mob = Character(name="oracle", is_npc=True)
+    here.add_character(mob)
+    character_registry.append(mob)
+
+    npc_actor = Character(name="raider", is_npc=True)
+    npc_actor.short_descr = "a savage raider"
+    here.add_character(npc_actor)
+    character_registry.append(npc_actor)
+
+    rch_npc = Character(name="goblin", is_npc=True)
+    rch_npc.short_descr = "a sly goblin"
+    here.add_character(rch_npc)
+    character_registry.append(rch_npc)
+
+    expanded = mobprog._expand_arg("$R approaches", mob, npc_actor, None, None, rch_npc)
+    assert "savage raider" in expanded
+    assert "goblin" not in expanded

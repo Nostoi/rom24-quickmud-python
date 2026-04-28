@@ -538,9 +538,17 @@ def _expand_arg(
             else:
                 substitution = someone
         elif code == "R":
+            # mirroring ROM src/mob_prog.c:798-799 — long-standing ROM bug:
+            # the visibility gate uses ``rch`` but the substitution string is
+            # taken from ``ch`` (the original actor). Per AGENTS.md ROM Parity
+            # Rules ("when ROM C behavior is 'wrong' or quirky, we replicate
+            # it exactly") we keep the bug.
             pick = rch if rch else _get_random_char(mob)
-            if pick and _can_see(mob, pick):
-                substitution = getattr(pick, "short_descr", None) or getattr(pick, "name", None) or someone
+            if pick and _can_see(mob, pick) and ch is not None:
+                if getattr(ch, "is_npc", False):
+                    substitution = getattr(ch, "short_descr", None) or getattr(ch, "name", None) or someone
+                else:
+                    substitution = getattr(ch, "name", None) or someone
             else:
                 substitution = someone
         elif code == "q":
