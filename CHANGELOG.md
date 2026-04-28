@@ -23,6 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   social. NPCs are unaffected per ROM's `IS_NPC` short-circuit.
   Mirrors `src/interp.c:597-601`.
 
+### Added
+
+- `interp.c:INTERP-023` — NPC auto-reaction to player socials. When
+  a non-NPC socials at an awake, non-charmed, non-switched NPC,
+  `mud.utils.rng_mm.number_bits(4)` (0..15) decides the response:
+  values 0..8 echo the social back at the player with the actor and
+  victim swapped; values 9..12 produce a slap
+  (`"$n slaps $N." / "You slap $N." / "$n slaps you."`); values 13..15
+  fall through silently. Mirrors `src/interp.c:652-685`.
+
 ## [2.6.5] - 2026-04-27
 
 `mob_prog.c` ROM parity audit complete — all 7 gaps closed (2 CRITICAL,

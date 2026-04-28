@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import CommFlag, Position
+from mud.models.constants import AffectFlag, CommFlag, Position
 from mud.models.social import expand_placeholders, social_registry
+from mud.utils import rng_mm
 
 
 def perform_social(char: Character, name: str, arg: str) -> str:
@@ -41,6 +42,33 @@ def perform_social(char: Character, name: str, arg: str) -> str:
         char.messages.append(expand_placeholders(social.char_found, char, victim))
         char.room.broadcast(expand_placeholders(social.others_found, char, victim), exclude=char)
         victim.messages.append(expand_placeholders(social.vict_found, char, victim))
+        # mirroring ROM src/interp.c:652-685 — NPC auto-react when a player
+        # socials at an awake, non-charmed, non-switched NPC. number_bits(4)
+        # rolls 0..15: 0..8 echo the social back, 9..12 slap, 13..15 silent.
+        # Must use rng_mm.number_bits per AGENTS.md (no random.*).
+        if (
+            not getattr(char, "is_npc", False)
+            and getattr(victim, "is_npc", False)
+            and not (int(getattr(victim, "affected_by", 0) or 0) & int(AffectFlag.CHARM))
+            and getattr(victim, "position", Position.STANDING) > Position.SLEEPING
+            and getattr(victim, "desc", None) is None
+        ):
+            roll = rng_mm.number_bits(4)
+            if roll <= 8:
+                victim.room.broadcast(
+                    expand_placeholders(social.others_found, victim, char),
+                    exclude=victim,
+                )
+                victim.messages.append(expand_placeholders(social.char_found, victim, char))
+                char.messages.append(expand_placeholders(social.vict_found, victim, char))
+            elif roll <= 12:
+                victim.room.broadcast(
+                    expand_placeholders("$n slaps $N.", victim, char),
+                    exclude=victim,
+                )
+                victim.messages.append(expand_placeholders("You slap $N.", victim, char))
+                char.messages.append(expand_placeholders("$n slaps you.", victim, char))
+            # 13..15 falls through silently (ROM has no case for these).
     elif arg and victim is char:
         char.messages.append(expand_placeholders(social.char_auto, char))
         char.room.broadcast(expand_placeholders(social.others_auto, char), exclude=char)

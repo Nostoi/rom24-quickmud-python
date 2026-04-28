@@ -373,3 +373,138 @@ class TestSocialPositionGates:
         assert result == ""
         assert len(alice.messages) > 0
         assert len(bob.messages) > 0
+
+
+class TestSocialNpcAutoReact:
+    """ROM parity: src/interp.c:652-685 (check_social NPC auto-react) — INTERP-023.
+
+    When a non-NPC socials at a non-charmed, awake, non-switched NPC,
+    ROM rolls number_bits(4) (0..15):
+      - 0..8  → NPC echoes the social back at the player (swap actor/victim)
+      - 9..12 → NPC slaps the player ("$n slaps $N." / "You slap $N." / "$n slaps you.")
+      - 13..15 → silent (no reaction)
+
+    These tests pin each branch by monkey-patching rng_mm.number_bits.
+    The branch logic is what's under test; the RNG itself is unit-tested
+    in tests/test_rng_mm.py. Per AGENTS.md: production code MUST use
+    mud.utils.rng_mm.number_bits — never random.*.
+    """
+
+    @pytest.fixture
+    def npc_victim(self, test_room):
+        npc = Character(
+            name="cityguard",
+            short_descr="the cityguard",
+            is_npc=True,
+            level=10,
+            position=Position.STANDING,
+            room=test_room,
+            sex=Sex.MALE,
+        )
+        test_room.add_character(npc)
+        character_registry.append(npc)
+        yield npc
+        if npc in test_room.people:
+            test_room.people.remove(npc)
+        if npc in character_registry:
+            character_registry.remove(npc)
+
+    def test_slap_branch_emits_three_slap_messages(self, alice, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:676-684 — number_bits(4) in {9..12} → slap.
+        from mud.commands import socials as socials_module
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 9)
+
+        alice.messages.clear()
+        npc_victim.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        # Player should receive a "$n slaps you." message in addition to
+        # the original social's vict_found.
+        assert any("slaps you" in m.lower() for m in alice.messages), (
+            f"Expected slap message in alice.messages, got: {alice.messages}"
+        )
+
+    def test_echo_branch_swaps_actor_and_victim(self, alice, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:668-674 — number_bits(4) in {0..8} → echo
+        # the social back with NPC as actor and player as victim.
+        from mud.commands import socials as socials_module
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 0)
+
+        alice.messages.clear()
+        npc_victim.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        # Player got the original vict_found ("Alice smiles at you" → no, Bob's
+        # social) PLUS the echoed vict_found from the NPC. Two messages where
+        # the NPC name appears as the smiler.
+        npc_smile_count = sum(
+            1 for m in alice.messages if "cityguard" in m.lower()
+        )
+        assert npc_smile_count >= 1, (
+            f"Expected at least one message naming the NPC as smiler, got: {alice.messages}"
+        )
+
+    def test_silent_branch_emits_no_extra_messages(self, alice, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:656-685 — number_bits(4) in {13..15} hits
+        # no switch case → no auto-react.
+        from mud.commands import socials as socials_module
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 13)
+
+        alice.messages.clear()
+        npc_victim.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        # Player only sees the original char_found from their own social
+        # (one message). No extra slap or echoed smile.
+        assert len(alice.messages) == 1, (
+            f"Expected exactly 1 message (no auto-react), got: {alice.messages}"
+        )
+
+    def test_no_react_when_npc_charmed(self, alice, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:653 — IS_AFFECTED(victim, AFF_CHARM) skips reaction.
+        from mud.commands import socials as socials_module
+        from mud.models.constants import AffectFlag
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 9)
+        npc_victim.affected_by = int(AffectFlag.CHARM)
+
+        alice.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        assert not any("slaps you" in m.lower() for m in alice.messages), (
+            f"Charmed NPC should not slap; got: {alice.messages}"
+        )
+
+    def test_no_react_when_actor_is_npc(self, alice, bob, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:652 — !IS_NPC(ch) gate; NPC actors get no reaction.
+        from mud.commands import socials as socials_module
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 9)
+
+        alice.is_npc = True  # NPC actor
+        alice.messages.clear()
+        bob.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        # Player Bob (observer) should not see a slap — no auto-react fired.
+        assert not any("slaps" in m.lower() for m in bob.messages)
+
+    def test_no_react_when_victim_sleeping(self, alice, npc_victim, monkeypatch):
+        # mirrors ROM src/interp.c:654 — IS_AWAKE(victim) (position > SLEEPING) required.
+        from mud.commands import socials as socials_module
+
+        monkeypatch.setattr(socials_module.rng_mm, "number_bits", lambda width: 9)
+        npc_victim.position = Position.SLEEPING
+        alice.messages.clear()
+
+        perform_social(alice, "smile", "cityguard")
+
+        assert not any("slaps you" in m.lower() for m in alice.messages)
