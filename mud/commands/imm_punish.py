@@ -3,13 +3,14 @@ Immortal punishment commands - nochannels, noemote, noshout, notell, pardon, dis
 
 ROM Reference: src/act_wiz.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.commands.imm_commands import get_char_world, get_trust
 from mud.models.character import Character
 from mud.models.constants import CommFlag, PlayerFlag
-from mud.commands.imm_commands import get_trust, get_char_world
 
 if TYPE_CHECKING:
     pass
@@ -38,13 +39,15 @@ def do_nochannels(char: Character, args: str) -> str:
     if comm_flags & int(CommFlag.NOCHANNELS):
         victim.comm = comm_flags & ~int(CommFlag.NOCHANNELS)
         _send_to_char(victim, "The gods have restored your channel priviliges.\n\r")
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet(f"$N restores channels to {victim.name}", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
         return "NOCHANNELS removed.\n\r"
 
     victim.comm = comm_flags | int(CommFlag.NOCHANNELS)
     _send_to_char(victim, "The gods have revoked your channel priviliges.\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N revokes {victim.name}'s channels.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
     return "NOCHANNELS set.\n\r"
 
@@ -72,13 +75,15 @@ def do_noemote(char: Character, args: str) -> str:
     if comm_flags & int(CommFlag.NOEMOTE):
         victim.comm = comm_flags & ~int(CommFlag.NOEMOTE)
         _send_to_char(victim, "You can emote again.\n\r")
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet(f"$N allows {victim.name} to emote.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
         return "NOEMOTE removed.\n\r"
 
     victim.comm = comm_flags | int(CommFlag.NOEMOTE)
     _send_to_char(victim, "You can't emote!\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N stops {victim.name} from emoting.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
     return "NOEMOTE set.\n\r"
 
@@ -109,13 +114,15 @@ def do_noshout(char: Character, args: str) -> str:
     if comm_flags & int(CommFlag.NOSHOUT):
         victim.comm = comm_flags & ~int(CommFlag.NOSHOUT)
         _send_to_char(victim, "You can shout again.\n\r")
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet(f"$N allows {victim.name} to shout.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
         return "NOSHOUT removed.\n\r"
 
     victim.comm = comm_flags | int(CommFlag.NOSHOUT)
     _send_to_char(victim, "You can't shout!\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N stops {victim.name} from shouting.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
     return "NOSHOUT set.\n\r"
 
@@ -143,13 +150,15 @@ def do_notell(char: Character, args: str) -> str:
     if comm_flags & int(CommFlag.NOTELL):
         victim.comm = comm_flags & ~int(CommFlag.NOTELL)
         _send_to_char(victim, "You can tell again.\n\r")
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet(f"$N allows {victim.name} to tell.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
         return "NOTELL removed.\n\r"
 
     victim.comm = comm_flags | int(CommFlag.NOTELL)
     _send_to_char(victim, "You can't tell!\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N stops {victim.name} from telling.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
     return "NOTELL set.\n\r"
 
@@ -200,7 +209,7 @@ def do_disconnect(char: Character, args: str) -> str:
     """
     Disconnect a player from the game.
 
-    ROM Reference: src/act_wiz.c:561-617
+    ROM Reference: src/act_wiz.c:561-614
     """
     if not args or not args.strip():
         return "Disconnect whom?\n\r"
@@ -209,6 +218,7 @@ def do_disconnect(char: Character, args: str) -> str:
 
     from mud import registry
 
+    # mirrors ROM src/act_wiz.c:574-588 — numeric descriptor lookup
     if arg.isdigit():
         desc_num = int(arg)
         for desc in getattr(registry, "descriptor_list", []):
@@ -217,17 +227,24 @@ def do_disconnect(char: Character, args: str) -> str:
                 return "Ok.\n\r"
         return "Descriptor not found!\n\r"
 
+    # mirrors ROM src/act_wiz.c:590-598 — character lookup
     victim = get_char_world(char, arg)
     if victim is None:
         return "They aren't here.\n\r"
 
     desc = getattr(victim, "desc", None)
     if desc is None:
-        victim_name = getattr(victim, "name", "They")
-        return f"{victim_name} doesn't have a descriptor.\n\r"
+        # mirrors ROM src/act_wiz.c:596-599 — act("$N doesn't have a descriptor.")
+        return f"{getattr(victim, 'name', 'They')} doesn't have a descriptor.\n\r"
 
-    _close_socket(desc)
-    return "Ok.\n\r"
+    # mirrors ROM src/act_wiz.c:602-610 — find matching descriptor
+    for desc_iter in getattr(registry, "descriptor_list", []):
+        if desc_iter is desc:
+            _close_socket(desc)
+            return "Ok.\n\r"
+
+    # mirrors ROM src/act_wiz.c:612-613 — bug message
+    return "Descriptor not found!\n\r"
 
 
 def _send_to_char(char: Character, message: str) -> None:

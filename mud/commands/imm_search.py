@@ -3,12 +3,19 @@ Immortal search/info commands - vnum, mfind, ofind, mwhere, owhere, sockets, mem
 
 ROM Reference: src/act_wiz.c, src/db.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.character import Character
-from mud.commands.imm_commands import get_trust, get_char_world, find_location, _is_room_owner, _room_is_private, MAX_LEVEL
+from mud.commands.imm_commands import (
+    MAX_LEVEL,
+    _is_room_owner,
+    _room_is_private,
+    find_location,
+    get_char_world,
+    get_trust,
+)
 from mud.handler import (
     act_bit_name,
     affect_bit_name,
@@ -21,9 +28,10 @@ from mud.handler import (
     item_name,
     off_bit_name,
     part_bit_name,
-    wear_bit_name,
     weapon_bit_name,
+    wear_bit_name,
 )
+from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
     AC_EXOTIC,
@@ -40,168 +48,171 @@ if TYPE_CHECKING:
 def do_vnum(char: Character, args: str) -> str:
     """
     Find vnum of a mob, object, or skill by name.
-    
+
     ROM Reference: src/act_wiz.c do_vnum (lines 1746-1790)
-    
+
     Usage:
     - vnum obj <name>    - Find object vnums
     - vnum mob <name>    - Find mobile vnums
     - vnum skill <name>  - Find skill/spell
     """
     if not args or not args.strip():
-        return ("Syntax:\n"
-                "  vnum obj <name>\n"
-                "  vnum mob <name>\n"
-                "  vnum skill <skill or spell>")
-    
+        return "Syntax:\n  vnum obj <name>\n  vnum mob <name>\n  vnum skill <skill or spell>"
+
     parts = args.strip().split(None, 1)
     search_type = parts[0].lower()
     search_name = parts[1] if len(parts) > 1 else ""
-    
+
     if search_type == "obj":
         return do_ofind(char, search_name)
-    
+
     if search_type in ("mob", "char"):
         return do_mfind(char, search_name)
-    
+
     if search_type in ("skill", "spell"):
         return do_slookup(char, search_name)
-    
+
     # Default: search both
     mob_result = do_mfind(char, args)
     obj_result = do_ofind(char, args)
-    
+
     results = []
     if mob_result and "No mobiles" not in mob_result:
         results.append(mob_result)
     if obj_result and "No objects" not in obj_result:
         results.append(obj_result)
-    
+
     return "\n".join(results) if results else "Nothing found."
 
 
 def do_mfind(char: Character, args: str) -> str:
     """
     Find mobile prototypes by name.
-    
+
     ROM Reference: src/act_wiz.c do_mfind (lines 1792-1840)
-    
+
     Usage: mfind <name>
     """
     if not args or not args.strip():
         return "Find whom?"
-    
+
     search_name = args.strip().lower()
-    
+
     from mud import registry
-    
+
     lines = []
     for vnum, mob in sorted(registry.mob_prototypes.items()):
         mob_name = getattr(mob, "name", "").lower()
         short_desc = getattr(mob, "short_descr", "").lower()
-        
+
         if search_name in mob_name or search_name in short_desc:
             display_name = getattr(mob, "short_descr", mob_name)
             lines.append(f"[{vnum:5d}] {display_name}")
-    
+
     if not lines:
         return "No mobiles by that name."
-    
+
     return "\n".join(lines[:50])  # Limit output
 
 
 def do_ofind(char: Character, args: str) -> str:
     """
     Find object prototypes by name.
-    
+
     ROM Reference: src/act_wiz.c do_ofind (lines 1842-1885)
-    
+
     Usage: ofind <name>
     """
     if not args or not args.strip():
         return "Find what?"
-    
+
     search_name = args.strip().lower()
-    
+
     from mud import registry
-    
+
     lines = []
     for vnum, obj in sorted(registry.obj_prototypes.items()):
         obj_name = getattr(obj, "name", "").lower()
         short_desc = getattr(obj, "short_descr", "").lower()
-        
+
         if search_name in obj_name or search_name in short_desc:
             display_name = getattr(obj, "short_descr", obj_name)
             lines.append(f"[{vnum:5d}] {display_name}")
-    
+
     if not lines:
         return "No objects by that name."
-    
+
     return "\n".join(lines[:50])  # Limit output
 
 
 def do_slookup(char: Character, args: str) -> str:
-    """
-    Find a skill or spell by name.
-    
-    ROM Reference: src/act_wiz.c do_slookup
-    
-    Usage: slookup <skill/spell name>
-    """
-    if not args or not args.strip():
-        return "Lookup what skill?"
-    
-    search_name = args.strip().lower()
-    
+    # mirrors ROM src/act_wiz.c:3191-3229
+    arg = args.strip()
+    if not arg:
+        return "Lookup which skill or spell?\n\r"
+
     from mud import registry
-    
-    lines = []
-    for sn, skill in enumerate(getattr(registry, "skill_table", [])):
-        skill_name = getattr(skill, "name", "").lower()
-        if search_name in skill_name:
-            lines.append(f"Sn: {sn:3d}  Skill/spell: '{skill.name}'")
-    
-    if not lines:
-        return "No skill or spell by that name."
-    
-    return "\n".join(lines)
+
+    skill_table = getattr(registry, "skill_table", [])
+
+    if arg.lower() == "all":
+        lines = []
+        for sn, skill in enumerate(skill_table):
+            skill_name = getattr(skill, "name", None)
+            if skill_name is None:
+                break
+            slot = getattr(skill, "slot", 0)
+            lines.append(f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill_name}'\n\r")
+        return "".join(lines)
+
+    # mirrors ROM: prefix match on skill names
+    arg_lower = arg.lower()
+    for sn, skill in enumerate(skill_table):
+        skill_name = getattr(skill, "name", None)
+        if skill_name is None:
+            break
+        if skill_name.lower().startswith(arg_lower):
+            slot = getattr(skill, "slot", 0)
+            return f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill_name}'\n\r"
+
+    return "No such skill or spell.\n\r"
 
 
 def do_owhere(char: Character, args: str) -> str:
     """
     Find objects in the world by name.
-    
+
     ROM Reference: src/act_wiz.c do_owhere (lines 1886-1948)
-    
+
     Usage: owhere <object name>
     """
     if not args or not args.strip():
         return "Find what?"
-    
+
     search_name = args.strip().lower()
-    
+
     from mud import registry
-    
+
     lines = []
     count = 0
     max_found = 200
-    
+
     for obj in getattr(registry, "object_list", []):
         obj_name = getattr(obj, "name", "").lower()
         if search_name not in obj_name:
             continue
-        
+
         count += 1
         if count > max_found:
             break
-        
+
         # Find the outermost container
         in_obj = obj
         while getattr(in_obj, "in_obj", None):
             in_obj = in_obj.in_obj
-        
+
         obj_short = getattr(obj, "short_descr", "something")
-        
+
         # Determine location
         carrier = getattr(in_obj, "carried_by", None)
         if carrier:
@@ -219,30 +230,30 @@ def do_owhere(char: Character, args: str) -> str:
             lines.append(f"{count:3d}) {obj_short} is in {room_name} [Room {room_vnum}]")
         else:
             lines.append(f"{count:3d}) {obj_short} is somewhere")
-    
+
     if not lines:
         return "Nothing like that in heaven or earth."
-    
+
     return "\n".join(lines)
 
 
 def do_mwhere(char: Character, args: str) -> str:
     """
     Find mobiles/players in the world by name or show all players.
-    
+
     ROM Reference: src/act_wiz.c do_mwhere (lines 1950-2020)
-    
+
     Usage:
     - mwhere           - Show all connected players
     - mwhere <name>    - Find mobs/players by name
     """
     from mud import registry
-    
+
     if not args or not args.strip():
         # Show all connected players
         lines = []
         count = 0
-        
+
         for player in getattr(registry, "players", {}).values():
             room = getattr(player, "room", None)
             if room:
@@ -251,103 +262,96 @@ def do_mwhere(char: Character, args: str) -> str:
                 room_name = getattr(room, "name", "somewhere")
                 room_vnum = getattr(room, "vnum", 0)
                 lines.append(f"{count:3d}) {player_name} is in {room_name} [{room_vnum}]")
-        
+
         if not lines:
             return "No players found."
-        
+
         return "\n".join(lines)
-    
+
     # Search by name
     search_name = args.strip().lower()
     lines = []
     count = 0
-    
+
     for ch in getattr(registry, "char_list", []):
         ch_name = getattr(ch, "name", "").lower()
         room = getattr(ch, "room", None)
-        
+
         if search_name in ch_name and room:
             count += 1
             is_npc = getattr(ch, "is_npc", False)
-            
+
             if is_npc:
                 proto = getattr(ch, "prototype", None)
                 vnum = getattr(proto, "vnum", 0) if proto else 0
             else:
                 vnum = 0
-            
+
             ch_display = getattr(ch, "name", "someone")
             room_name = getattr(room, "name", "somewhere")
             room_vnum = getattr(room, "vnum", 0)
-            
+
             lines.append(f"{count:3d}) [{vnum:5d}] {ch_display:<28s} [{room_vnum:5d}] {room_name}")
-    
+
     if not lines:
         return "Nothing like that in heaven or earth."
-    
+
     return "\n".join(lines[:100])  # Limit output
 
 
 def do_sockets(char: Character, args: str) -> str:
-    """
-    Show connected sockets/players.
-    
-    ROM Reference: src/act_wiz.c do_sockets (lines 4140-4182)
-    
-    Usage:
-    - sockets          - Show all connections
-    - sockets <name>   - Show specific player
-    """
+    # mirrors ROM src/act_wiz.c:4140-4176
+    filter_name = args.strip() if args else ""
+    filter_lower = filter_name.lower() if filter_name else ""
+
     from mud import registry
-    
-    filter_name = args.strip().lower() if args else ""
-    
+
     lines = []
     count = 0
-    
+
     for desc in getattr(registry, "descriptor_list", []):
         character = getattr(desc, "character", None)
-        original = getattr(desc, "original", None)
-        
         if character is None:
             continue
-        
-        char_name = getattr(character, "name", "none")
-        
-        # Apply name filter
-        if filter_name:
-            if filter_name not in char_name.lower():
-                if original and filter_name not in getattr(original, "name", "").lower():
-                    continue
-        
+
+        # mirrors ROM: can_see check and name filter
+        if filter_lower:
+            char_name = getattr(character, "name", "").lower()
+            orig_name = ""
+            original = getattr(desc, "original", None)
+            if original:
+                orig_name = getattr(original, "name", "").lower()
+            if filter_lower not in char_name and (not orig_name or filter_lower not in orig_name):
+                continue
+
         count += 1
         desc_num = getattr(desc, "descriptor", 0)
         connected = getattr(desc, "connected", 0)
         host = getattr(desc, "host", "unknown")
-        
-        display_name = getattr(original, "name", char_name) if original else char_name
-        
-        lines.append(f"[{desc_num:3d} {connected:2d}] {display_name}@{host}")
-    
-    if not lines:
-        return "No one by that name is connected."
-    
-    lines.append(f"{count} user{'s' if count != 1 else ''}")
-    return "\n".join(lines)
+        original = getattr(desc, "original", None)
+        display_name = getattr(original, "name", None) or getattr(character, "name", "none")
+
+        lines.append(f"[{desc_num:3d} {connected:2d}] {display_name}@{host}\n\r")
+
+    if count == 0:
+        return "No one by that name is connected.\n\r"
+
+    lines.append(f"{count} user{'s' if count != 1 else ''}\n\r")
+    return "".join(lines)
 
 
 def do_memory(char: Character, args: str) -> str:
     """
     Show memory usage statistics.
-    
+
     ROM Reference: src/db.c do_memory (lines 3289-3330)
-    
+
     Usage: memory
     """
     from mud import registry
-    
+
     lines = []
-    
+
     # Count various entities
     num_areas = len(getattr(registry, "areas", []))
     num_rooms = len(getattr(registry, "rooms", {}))
@@ -356,7 +360,7 @@ def do_memory(char: Character, args: str) -> str:
     num_helps = len(getattr(registry, "helps", {}))
     num_socials = len(getattr(registry, "social_registry", {}).socials if hasattr(registry, "social_registry") else {})
     num_chars = len(getattr(registry, "char_list", []))
-    
+
     lines.append(f"Areas   {num_areas:5d}")
     lines.append(f"Rooms   {num_rooms:5d}")
     lines.append(f"Mobs    {num_mobs:5d}")
@@ -364,16 +368,16 @@ def do_memory(char: Character, args: str) -> str:
     lines.append(f"Objs    {num_objs:5d}")
     lines.append(f"Helps   {num_helps:5d}")
     lines.append(f"Socials {num_socials:5d}")
-    
+
     return "\n".join(lines)
 
 
 def do_clone(char: Character, args: str) -> str:
     """
     Clone a mobile or object.
-    
+
     ROM Reference: src/act_wiz.c do_clone (lines 2338-2458)
-    
+
     Usage:
     - clone object <item>   - Clone an object
     - clone mobile <mob>    - Clone a mobile
@@ -381,17 +385,17 @@ def do_clone(char: Character, args: str) -> str:
     """
     if not args or not args.strip():
         return "Clone what?"
-    
+
     parts = args.strip().split(None, 1)
     first_arg = parts[0].lower()
     rest = parts[1] if len(parts) > 1 else ""
-    
+
     from mud.commands.imm_commands import get_char_room
     from mud.world.obj_find import get_obj_here
-    
+
     mob = None
     obj = None
-    
+
     if first_arg == "object":
         obj = get_obj_here(char, rest)
         if obj is None:
@@ -406,53 +410,53 @@ def do_clone(char: Character, args: str) -> str:
         obj = get_obj_here(char, args.strip())
         if mob is None and obj is None:
             return "You don't see that here."
-    
+
     # Clone object
     if obj is not None:
         from mud.spawning.obj_spawner import spawn_obj
-        
+
         proto = getattr(obj, "prototype", None)
         if proto is None:
             return "That object cannot be cloned."
-        
+
         vnum = getattr(proto, "vnum", 0)
         clone = spawn_obj(vnum)
-        
+
         if clone is None:
             return "Failed to clone object."
-        
+
         # Copy properties
         for attr in ("short_descr", "description", "name", "level", "cost", "weight"):
             if hasattr(obj, attr):
                 setattr(clone, attr, getattr(obj, attr))
-        
+
         # Place in inventory
         carrying = getattr(char, "carrying", None)
         if carrying is None:
             char.carrying = []
         char.carrying.append(clone)
         clone.carried_by = char
-        
+
         clone_name = getattr(clone, "short_descr", "something")
         return f"You clone {clone_name}."
-    
+
     # Clone mobile
     if mob is not None:
         if not getattr(mob, "is_npc", False):
             return "You can only clone mobiles."
-        
+
         from mud.spawning.mob_spawner import spawn_mob
-        
+
         proto = getattr(mob, "prototype", None)
         if proto is None:
             return "That mobile cannot be cloned."
-        
+
         vnum = getattr(proto, "vnum", 0)
         clone = spawn_mob(vnum)
-        
+
         if clone is None:
             return "Failed to clone mobile."
-        
+
         # Place in room
         room = getattr(char, "room", None)
         if room:
@@ -461,10 +465,10 @@ def do_clone(char: Character, args: str) -> str:
             if people is None:
                 room.people = []
             room.people.append(clone)
-        
+
         clone_name = getattr(clone, "short_descr", "something")
         return f"You clone {clone_name}."
-    
+
     return "Clone what?"
 
 
@@ -531,7 +535,12 @@ def do_rstat(char: Character, args: str) -> str:
     if location is None:
         return "No such location.\n\r"
 
-    if not _is_room_owner(char, location) and getattr(char, "room", None) is not location and _room_is_private(location) and get_trust(char) < MAX_LEVEL:
+    if (
+        not _is_room_owner(char, location)
+        and getattr(char, "room", None) is not location
+        and _room_is_private(location)
+        and get_trust(char) < MAX_LEVEL
+    ):
         return "That room is private right now.\n\r"
 
     buf = ""
@@ -548,7 +557,13 @@ def do_rstat(char: Character, args: str) -> str:
         buf += "Extra description keywords: '"
         keywords = []
         for ed in extra_descr:
-            kw = getattr(ed, "keyword", "") if hasattr(ed, "keyword") else ed.get("keyword", "") if isinstance(ed, dict) else ""
+            kw = (
+                getattr(ed, "keyword", "")
+                if hasattr(ed, "keyword")
+                else ed.get("keyword", "")
+                if isinstance(ed, dict)
+                else ""
+            )
             if kw:
                 keywords.append(kw)
         buf += " ".join(keywords)
@@ -557,6 +572,7 @@ def do_rstat(char: Character, args: str) -> str:
     buf += "Characters:"
     for rch in getattr(location, "people", []):
         from mud.world.vision import can_see_character
+
         if can_see_character(char, rch):
             name = getattr(rch, "name", "?")
             buf += f" {name.split()[0] if name else '?'}"
@@ -589,8 +605,8 @@ def do_ostat(char: Character, args: str) -> str:
 
     Uses get_obj_world to find object by name anywhere.
     """
-    from mud.world.obj_find import get_obj_world
     from mud.skills.handlers import _skill_name_from_value
+    from mud.world.obj_find import get_obj_world
 
     arg = args.strip()
     if not arg:
@@ -638,6 +654,7 @@ def do_ostat(char: Character, args: str) -> str:
     carried_name = getattr(carried_by, "name", "someone") if carried_by else "(none)"
     if carried_by:
         from mud.world.vision import can_see_character
+
         if not can_see_character(char, carried_by):
             carried_name = "someone"
     wear_loc = int(getattr(obj, "wear_loc", -1))
@@ -649,7 +666,11 @@ def do_ostat(char: Character, args: str) -> str:
     values = list(values) + [0] * (5 - len(values))
     buf += f"Values: {values[0]} {values[1]} {values[2]} {values[3]} {values[4]}\n\r"
 
-    it = ItemType(item_type_val) if isinstance(item_type_val, int) and item_type_val in [e.value for e in ItemType] else None
+    it = (
+        ItemType(item_type_val)
+        if isinstance(item_type_val, int) and item_type_val in [e.value for e in ItemType]
+        else None
+    )
 
     if it == ItemType.SCROLL or it == ItemType.POTION or it == ItemType.PILL:
         buf += f"Level {values[0]} spells of:"
@@ -670,6 +691,7 @@ def do_ostat(char: Character, args: str) -> str:
 
     elif it == ItemType.DRINK_CON:
         from mud.models.constants import LIQUID_TABLE
+
         liq_idx = values[2]
         if 0 <= liq_idx < len(LIQUID_TABLE):
             liq = LIQUID_TABLE[liq_idx]
@@ -696,6 +718,7 @@ def do_ostat(char: Character, args: str) -> str:
             buf += f"Damage is {values[1]} to {values[2]} (average {avg})\n\r"
 
         from mud.models.constants import ATTACK_TABLE
+
         attack_name = "undefined"
         if 0 < values[3] < len(ATTACK_TABLE):
             noun = ATTACK_TABLE[values[3]].noun
@@ -718,12 +741,24 @@ def do_ostat(char: Character, args: str) -> str:
     proto_extra_descr = getattr(proto, "extra_descr", None) if proto else None
     if obj_extra_descr or proto_extra_descr:
         buf += "Extra description keywords: '"
-        for ed in (obj_extra_descr or []):
-            kw = getattr(ed, "keyword", "") if hasattr(ed, "keyword") else ed.get("keyword", "") if isinstance(ed, dict) else ""
+        for ed in obj_extra_descr or []:
+            kw = (
+                getattr(ed, "keyword", "")
+                if hasattr(ed, "keyword")
+                else ed.get("keyword", "")
+                if isinstance(ed, dict)
+                else ""
+            )
             if kw:
                 buf += f"{kw} "
-        for ed in (proto_extra_descr or []):
-            kw = getattr(ed, "keyword", "") if hasattr(ed, "keyword") else ed.get("keyword", "") if isinstance(ed, dict) else ""
+        for ed in proto_extra_descr or []:
+            kw = (
+                getattr(ed, "keyword", "")
+                if hasattr(ed, "keyword")
+                else ed.get("keyword", "")
+                if isinstance(ed, dict)
+                else ""
+            )
             if kw:
                 buf += f"{kw} "
         buf = buf.rstrip() + "'\n\r"
@@ -807,8 +842,8 @@ def do_mstat(char: Character, args: str) -> str:
 
     ROM Reference: src/act_wiz.c:1543-1742
     """
-    from mud.models.classes import CLASS_TABLE
     from mud.handler import sex_name
+    from mud.models.classes import CLASS_TABLE
 
     arg = args.strip()
     if not arg:
@@ -823,7 +858,9 @@ def do_mstat(char: Character, args: str) -> str:
 
     is_npc = getattr(victim, "is_npc", False)
     if is_npc:
-        proto = getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        proto = (
+            getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        )
         vnum = getattr(proto, "vnum", 0) if proto else 0
         new_format = getattr(proto, "new_format", False) if proto else False
         fmt = "new" if new_format else "old"
@@ -836,6 +873,7 @@ def do_mstat(char: Character, args: str) -> str:
         race_name = race_val.lower()
     elif isinstance(race_val, int):
         from mud.models.races import RACE_TABLE
+
         if 0 <= race_val < len(RACE_TABLE):
             race_name = getattr(RACE_TABLE[race_val], "name", str(race_val)).lower()
         else:
@@ -850,7 +888,9 @@ def do_mstat(char: Character, args: str) -> str:
     buf += f"Vnum: {vnum}  Format: {fmt}  Race: {race_name}  Group: {group_val}  Sex: {sex_name(sex_val)}  Room: {room_vnum}\n\r"
 
     if is_npc:
-        proto2 = getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        proto2 = (
+            getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        )
         count = getattr(proto2, "count", 0) if proto2 else 0
         killed = getattr(proto2, "killed", 0) if proto2 else 0
         buf += f"Count: {count}  Killed: {killed}\n\r"
@@ -860,6 +900,7 @@ def do_mstat(char: Character, args: str) -> str:
         perm_stat = [perm_stat.get(i, 0) for i in range(5)]
 
     from mud.models.constants import Stat
+
     stat_str = int(perm_stat[Stat.STR]) if Stat.STR < len(perm_stat) else 0
     cur_str = victim.get_curr_stat(Stat.STR) if hasattr(victim, "get_curr_stat") else stat_str
     stat_int = int(perm_stat[Stat.INT]) if Stat.INT < len(perm_stat) else 0
@@ -928,11 +969,14 @@ def do_mstat(char: Character, args: str) -> str:
     pos_val = int(getattr(victim, "position", 8))
     wimpy = int(getattr(victim, "wimpy", 0))
 
-    from mud.handler import size_name, position_name
+    from mud.handler import position_name, size_name
+
     buf += f"Hit: {hitroll}  Dam: {damroll}  Saves: {saving_throw}  Size: {size_name(size_val)}  Position: {position_name(pos_val)}  Wimpy: {wimpy}\n\r"
 
     if is_npc:
-        proto3 = getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        proto3 = (
+            getattr(victim, "prototype", None) if hasattr(victim, "prototype") else getattr(victim, "pIndexData", None)
+        )
         if proto3 and getattr(proto3, "new_format", False):
             damage = getattr(victim, "damage", (0, 0))
             if isinstance(damage, list | tuple) and len(damage) >= 2:
@@ -942,6 +986,7 @@ def do_mstat(char: Character, args: str) -> str:
                 dice_num = dice_type = 0
             dam_type = int(getattr(victim, "dam_type", 0))
             from mud.models.constants import ATTACK_TABLE
+
             dam_noun = "hit"
             if 0 < dam_type < len(ATTACK_TABLE):
                 noun = ATTACK_TABLE[dam_type].noun

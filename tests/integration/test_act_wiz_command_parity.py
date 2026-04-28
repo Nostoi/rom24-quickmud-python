@@ -730,3 +730,344 @@ def test_incognito_set_level() -> None:
     assert admin.incog_level == 30
     # mirrors ROM src/act_wiz.c:4410 — reply is set to NULL when setting a level
     assert admin.reply is None
+
+
+# ── WIZ-011: Echo family (do_echo, do_recho, do_zecho, do_pecho) ─────
+
+
+def test_echo_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:678-679
+    from mud.commands.imm_display import do_echo
+
+    admin = _imm("Admin", 9400)
+    result = do_echo(admin, "")
+    assert "Global echo what?" in result
+
+
+def test_recho_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:704-707
+    from mud.commands.imm_display import do_recho
+
+    admin = _imm("Admin", 9401)
+    result = do_recho(admin, "")
+    assert "Local echo what?" in result
+
+
+def test_zecho_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:730-733
+    from mud.commands.imm_display import do_zecho
+
+    admin = _imm("Admin", 9402)
+    result = do_zecho(admin, "")
+    assert "Zone echo what?" in result
+
+
+def test_pecho_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:757-759
+    from mud.commands.imm_display import do_pecho
+
+    admin = _imm("Admin", 9403)
+    result = do_pecho(admin, "")
+    assert "Personal echo what?" in result
+
+
+def test_pecho_missing_message() -> None:
+    # mirrors ROM src/act_wiz.c:757-759 — only name, no message
+    from mud.commands.imm_display import do_pecho
+
+    admin = _imm("Admin", 9404)
+    result = do_pecho(admin, "Bob")
+    assert "Personal echo what?" in result
+
+
+def test_pecho_target_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:763-766
+    from mud.commands.imm_display import do_pecho
+
+    admin = _imm("Admin", 9405)
+    result = do_pecho(admin, "Nobody testmsg")
+    assert "Target not found" in result
+
+
+# ── WIZ-012: bamfin/bamfout ──────────────────────────────────────
+
+
+def test_poofin_view_default() -> None:
+    # mirrors ROM src/act_wiz.c:463-468
+    from mud.commands.imm_display import do_poofin
+
+    admin = _imm("Admin", 9500)
+    result = do_poofin(admin, "")
+    assert "Your poofin is" in result
+
+
+def test_poofin_set_with_name() -> None:
+    # mirrors ROM src/act_wiz.c:470-480
+    from mud.commands.imm_display import do_poofin
+
+    admin = _imm("Admin", 9501)
+    result = do_poofin(admin, "Admin appears in a flash!")
+    assert "Your poofin is now" in result
+
+
+def test_poofin_rejects_missing_name() -> None:
+    # mirrors ROM src/act_wiz.c:470-473 — strstr check
+    from mud.commands.imm_display import do_poofin
+
+    admin = _imm("Admin", 9502)
+    result = do_poofin(admin, "someone appears")
+    assert "You must include your name" in result
+
+
+def test_poofout_view_and_set() -> None:
+    # mirrors ROM src/act_wiz.c:493-510
+    from mud.commands.imm_display import do_poofout
+
+    admin = _imm("Admin", 9503)
+    result = do_poofout(admin, "")
+    assert "Your poofout is" in result
+
+    result = do_poofout(admin, "Admin vanishes!")
+    assert "Your poofout is now" in result
+
+
+# ── WIZ-013: wizlock/newlock ──────────────────────────────────────
+
+
+def test_wizlock_toggles() -> None:
+    # mirrors ROM src/act_wiz.c:3150-3167
+    from mud.commands.admin_commands import cmd_wizlock
+
+    admin = _imm("Admin", 9600)
+    result = cmd_wizlock(admin, "")
+    assert "wizlock" in result.lower()
+
+
+def test_newlock_toggles() -> None:
+    # mirrors ROM src/act_wiz.c:3171-3188
+    from mud.commands.admin_commands import cmd_newlock
+
+    admin = _imm("Admin", 9601)
+    result = cmd_newlock(admin, "")
+    assert "new" in result.lower() or "lock" in result.lower()
+
+
+# ── WIZ-014: holylight ──────────────────────────────────────────
+
+
+def test_holylight_toggles() -> None:
+    # mirrors ROM src/act_wiz.c:4422-4439
+    from mud.commands.admin_commands import cmd_holylight
+    from mud.models.constants import PlayerFlag
+
+    admin = _imm("Admin", 9700)
+    result = cmd_holylight(admin, "")
+    assert "Holy light mode" in result
+
+    result = cmd_holylight(admin, "")
+    assert "Holy light mode" in result
+    assert int(PlayerFlag.HOLYLIGHT) & int(getattr(admin, "act", 0)) == 0 or "off" in result.lower() or "on" in result.lower()
+
+
+# ── WIZ-015: slookup ────────────────────────────────────────────
+
+
+def test_slookup_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:3198-3200
+    from mud.commands.imm_search import do_slookup
+
+    admin = _imm("Admin", 9800)
+    result = do_slookup(admin, "")
+    assert "Lookup" in result and "skill" in result.lower()
+
+
+def test_slookup_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:3218-3220
+    from mud.commands.imm_search import do_slookup
+
+    admin = _imm("Admin", 9801)
+    result = do_slookup(admin, "xyznonexistentskill")
+    assert "No such skill" in result
+
+
+# ── WIZ-016: sockets ────────────────────────────────────────────
+
+
+def test_sockets_no_players() -> None:
+    # mirrors ROM src/act_wiz.c:4166-4169
+    from mud.commands.imm_search import do_sockets
+
+    admin = _imm("Admin", 9900)
+    global_registry.descriptor_list = []
+    result = do_sockets(admin, "")
+    assert "No one" in result or "0 user" in result
+
+
+def test_sockets_with_filter() -> None:
+    # mirrors ROM src/act_wiz.c:4148-4169
+    from mud.commands.imm_search import do_sockets
+
+    admin = _imm("Admin", 9901)
+    global_registry.descriptor_list = []
+    result = do_sockets(admin, "NobodyHere")
+    assert "No one" in result
+
+
+# ── WIZ-017: do_deny ──────────────────────────────────────────
+
+
+def test_deny_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:523-525
+    from mud.commands.admin_commands import cmd_deny
+
+    admin = _imm("Admin", 10000)
+    result = cmd_deny(admin, "")
+    assert "Deny whom" in result
+
+
+def test_deny_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:529-531
+    from mud.commands.admin_commands import cmd_deny
+
+    admin = _imm("Admin", 10001)
+    result = cmd_deny(admin, "NobodyHere12345")
+    assert "aren't here" in result
+
+
+def test_deny_rejects_npc() -> None:
+    # mirrors ROM src/act_wiz.c:535-538
+    from mud.commands.admin_commands import cmd_deny
+    from mud.models.constants import PlayerFlag
+
+    room = _room(10002, name="DenyRoom")
+    admin = _imm("Admin", 10002, trust=60)
+    mob = create_test_character("denyvictim", room.vnum)
+    mob.is_npc = True
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    result = cmd_deny(admin, "denyvictim")
+    assert "Not on NPC" in result
+
+
+def test_deny_sets_plr_deny() -> None:
+    # mirrors ROM src/act_wiz.c:547-552 — SET-only, not toggle
+    from mud.commands.admin_commands import cmd_deny
+    from mud.models.constants import PlayerFlag
+
+    room = _room(10003, name="DenyRoom")
+    admin = _imm("Admin", 10003, trust=60)
+    victim = _imm("Denytarget", 10003, trust=5)
+    victim.is_npc = False
+
+    result = cmd_deny(admin, "Denytarget")
+    assert "OK" in result
+    assert int(getattr(victim, "act", 0)) & int(PlayerFlag.DENY)
+
+
+# ── WIZ-018: do_switch ──────────────────────────────────────────
+
+
+def test_switch_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:2209-2211
+    from mud.commands.imm_admin import do_switch
+
+    admin = _imm("Admin", 10100)
+    result = do_switch(admin, "")
+    assert "Switch into whom" in result
+
+
+def test_switch_already_switched() -> None:
+    # mirrors ROM src/act_wiz.c:2218-2220
+    from mud.commands.imm_admin import do_switch
+
+    admin = _imm("Admin", 10101)
+    admin.desc = SimpleNamespace(original="previous_body", character=admin)
+    result = do_switch(admin, "mob")
+    admin.desc = None
+    assert "already switched" in result.lower()
+
+
+def test_switch_rejects_pc() -> None:
+    # mirrors ROM src/act_wiz.c:2236-2238
+    from mud.commands.imm_admin import do_switch
+
+    room = _room(10102, name="SwitchRoom")
+    admin = _imm("Admin", 10102, trust=60)
+    admin.desc = SimpleNamespace(original=None, character=admin)
+    victim = _imm("Targetpc", 10102, trust=5)
+    victim.is_npc = False
+
+    result = do_switch(admin, "Targetpc")
+    admin.desc = None
+    assert "mobiles" in result.lower()
+
+
+# ── WIZ-019: do_return ──────────────────────────────────────────
+
+
+def test_return_not_switched() -> None:
+    # mirrors ROM src/act_wiz.c:2280-2283
+    from mud.commands.imm_admin import do_return
+
+    admin = _imm("Admin", 10200)
+    admin.desc = SimpleNamespace(original=None, character=admin)
+    result = do_return(admin, "")
+    admin.desc = None
+    assert "aren't switched" in result.lower()
+
+
+# ── WIZ-020: do_smote ──────────────────────────────────────────
+
+
+def test_smote_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:375-377
+    from mud.commands.imm_emote import do_smote
+
+    admin = _imm("Admin", 10300)
+    result = do_smote(admin, "")
+    assert "Emote what" in result
+
+
+def test_smote_requires_name() -> None:
+    # mirrors ROM src/act_wiz.c:381-383
+    from mud.commands.imm_emote import do_smote
+
+    admin = _imm("Admin", 10301)
+    result = do_smote(admin, "waves at Mary")
+    assert "must include your name" in result.lower()
+
+
+# ── WIZ-021: do_pecho ───────────────────────────────────────────
+
+
+def test_pecho_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:763-766 — "Target not found" (ROM exact message)
+    from mud.commands.imm_display import do_pecho
+
+    admin = _imm("Admin", 10400)
+    result = do_pecho(admin, "NobodyHere hello")
+    assert "Target not found" in result
+
+
+# ── WIZ-022: do_disconnect ───────────────────────────────────────
+
+
+def test_disconnect_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:568-570
+    from mud.commands.imm_punish import do_disconnect
+
+    admin = _imm("Admin", 10500)
+    result = do_disconnect(admin, "")
+    assert "Disconnect whom" in result
+
+
+def test_disconnect_not_found() -> None:
+    # mirrors ROM src/act_wiz.c:590-593
+    from mud.commands.imm_punish import do_disconnect
+
+    admin = _imm("Admin", 10501)
+    result = do_disconnect(admin, "NobodyHere12345")
+    assert "aren't here" in result

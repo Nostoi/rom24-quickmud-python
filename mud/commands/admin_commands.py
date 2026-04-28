@@ -1,9 +1,8 @@
 import asyncio
 
-from mud.account import release_account
 from mud.account.account_manager import save_character as save_player_file
 from mud.admin_logging.admin import toggle_log_all
-from mud.commands.imm_commands import get_char_world
+from mud.commands.imm_commands import get_char_world, get_trust
 from mud.config import (
     get_qmconfig,
     load_qmconfig,
@@ -11,7 +10,7 @@ from mud.config import (
     set_ansiprompt,
     set_telnetga,
 )
-from mud.models.character import Character, character_registry
+from mud.models.character import Character
 from mud.models.constants import CommFlag, PlayerFlag, Sex
 from mud.net.session import SESSIONS
 from mud.registry import room_registry
@@ -58,21 +57,23 @@ def cmd_spawn(char: Character, args: str) -> str:
 
 
 def cmd_wizlock(char: Character, args: str) -> str:
+    # mirrors ROM src/act_wiz.c:3150-3167
     enabled = toggle_wizlock()
     if enabled:
         wiznet("$N has wizlocked the game.", char)
-        return "Game wizlocked."
+        return "Game wizlocked.\n\r"
     wiznet("$N removes wizlock.", char)
-    return "Game un-wizlocked."
+    return "Game un-wizlocked.\n\r"
 
 
 def cmd_newlock(char: Character, args: str) -> str:
+    # mirrors ROM src/act_wiz.c:3171-3188
     enabled = toggle_newlock()
     if enabled:
         wiznet("$N locks out new characters.", char)
-        return "New characters have been locked out."
+        return "New characters have been locked out.\n\r"
     wiznet("$N allows new characters back in.", char)
-    return "Newlock removed."
+    return "Newlock removed.\n\r"
 
 
 def cmd_telnetga(char: Character, args: str) -> str:
@@ -166,6 +167,13 @@ def cmd_qmconfig(char: Character, args: str) -> str:
         return 'Valid arguments are "on" and "off".' + ROM_NEWLINE
 
     return "I have no clue what you are trying to do..." + ROM_NEWLINE
+
+
+def _send_to_char(char: Character, message: str) -> None:
+    """Send message to character."""
+    if not hasattr(char, "output_buffer"):
+        char.output_buffer = []
+    char.output_buffer.append(message)
 
 
 def _get_trust(char: Character) -> int:
@@ -397,18 +405,19 @@ def cmd_incognito(char: Character, args: str) -> str:
 
 
 def cmd_holylight(char: Character, args: str) -> str:
+    # mirrors ROM src/act_wiz.c:4422-4439
     if getattr(char, "is_npc", False):
-        return "Huh?"
+        return ""
 
     current = int(getattr(char, "act", 0) or 0)
     flag = int(PlayerFlag.HOLYLIGHT)
 
     if current & flag:
         char.act = current & ~flag
-        return "Holy light mode off."
+        return "Holy light mode off.\n\r"
 
     char.act = current | flag
-    return "Holy light mode on."
+    return "Holy light mode on.\n\r"
 
 
 def list_hosts() -> list[str]:
@@ -442,61 +451,36 @@ async def _notify_and_disconnect(target: Character, message: str) -> None:
 
 
 def cmd_deny(char: Character, args: str) -> str:
-    target_token = args.strip()
-    if not target_token:
-        return "Deny whom?"
+    # mirrors ROM src/act_wiz.c:517-557 — SET-only (no toggle), wiznet, stop_fighting, do_quit
+    target_name = args.strip()
+    if not target_name:
+        return "Deny whom?\n\r"
 
-    lowered = target_token.lower()
-    target = next(
-        (
-            candidate
-            for candidate in character_registry
-            if candidate.name and candidate.name.lower().startswith(lowered)
-        ),
-        None,
-    )
-    if target is None:
-        return "They aren't here."
-    if getattr(target, "is_npc", False):
-        return "Not on NPC's."
+    victim = get_char_world(char, target_name)
+    if victim is None:
+        return "They aren't here.\n\r"
 
-    actor_trust = _get_trust(char)
-    target_trust = _get_trust(target)
-    if target_trust >= actor_trust and target is not char:
-        return "You failed."
+    if getattr(victim, "is_npc", False):
+        return "Not on NPC's.\n\r"
 
-    session = next((sess for sess in SESSIONS.values() if sess.character is target), None)
-    account_name = None
-    if session and getattr(session, "account_name", None):
-        account_name = session.account_name
-    elif getattr(target, "account_name", None):
-        account_name = target.account_name
-    if not account_name:
-        return "They aren't here."
+    if get_trust(victim) >= get_trust(char):
+        return "You failed.\n\r"
 
-    deny_bit = int(PlayerFlag.DENY)
-    already_denied = bool(getattr(target, "act", 0) & deny_bit)
-    if already_denied:
-        target.act &= ~deny_bit
-        target.messages.append("You are granted access again.")
-        bans.remove_banned_account(account_name)
-        response = "DENY removed."
-    else:
-        target.act |= deny_bit
-        target.messages.append("You are denied access!")
-        bans.add_banned_account(account_name)
-        response = "DENY set."
-        if session:
-            SESSIONS.pop(session.name, None)
-        release_account(account_name)
-        _schedule_coro(_notify_and_disconnect(target, "You are denied access."))
+    victim.act = int(getattr(victim, "act", 0)) | int(PlayerFlag.DENY)
+    _send_to_char(victim, "You are denied access!\n\r")
+    from mud.wiznet import WiznetFlag, wiznet
 
-    try:
-        save_player_file(target)
-    except Exception:
-        pass
-    try:
-        bans.save_bans_file()
-    except Exception:
-        pass
-    return response
+    wiznet(f"$N denies access to {victim.name}", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
+    save_player_file(victim)
+
+    from mud.combat.engine import stop_fighting
+
+    stop_fighting(victim, True)
+
+    # mirrors ROM src/act_wiz.c:554 — force victim to quit
+    if hasattr(victim, "process_command"):
+        victim.process_command("quit")
+    elif hasattr(victim, "do_quit"):
+        victim.do_quit("")
+
+    return "OK.\n\r"

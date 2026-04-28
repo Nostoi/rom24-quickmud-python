@@ -22,19 +22,26 @@
 | `do_freeze` | `src/act_wiz.c:2872-2922` | `mud/commands/imm_admin.py:113` | ✅ AUDITED |
 | `do_peace` | `src/act_wiz.c:3134-3148` | `mud/commands/imm_commands.py:392` | ✅ AUDITED |
 | `do_log` | `src/act_wiz.c:2927-2984` | `mud/commands/admin_commands.py:341` | ✅ AUDITED |
-| `do_noemote` | `src/act_wiz.c:2986-3032` | `mud/commands/imm_punish.py:61` | ⚠️ PARTIAL |
-| `do_noshout` | `src/act_wiz.c:3034-3085` | `mud/commands/imm_punish.py:93` | ⚠️ PARTIAL |
-| `do_notell` | `src/act_wiz.c:3087-3132` | `mud/commands/imm_punish.py:128` | ⚠️ PARTIAL |
-| `do_peace` | `src/act_wiz.c:3134-3148` | `mud/commands/imm_commands.py:377` | ⚠️ PARTIAL |
-| `do_wizlock` | `src/act_wiz.c:3150-3169` | `mud/commands/admin_commands.py:60` (`cmd_wizlock`) | ⚠️ PARTIAL |
-| `do_newlock` | `src/act_wiz.c:3171-3189` | `mud/commands/admin_commands.py:69` (`cmd_newlock`) | ⚠️ PARTIAL |
-| `do_slookup` | `src/act_wiz.c:3191-3231` | `mud/commands/imm_search.py:120` | ⚠️ PARTIAL |
+| `do_deny` | `src/act_wiz.c:517-557` | `mud/commands/admin_commands.py:444` (`cmd_deny`) | ✅ AUDITED |
+| `do_echo` | `src/act_wiz.c:674-695` | `mud/commands/imm_display.py:147` | ✅ AUDITED |
+| `do_recho` | `src/act_wiz.c:700-724` | `mud/commands/imm_display.py:172` | ✅ AUDITED |
+| `do_zecho` | `src/act_wiz.c:726-748` | `mud/commands/imm_display.py:198` | ✅ AUDITED |
+| `do_pecho` | `src/act_wiz.c:750-777` | `mud/commands/imm_display.py:231` | ✅ AUDITED |
+| `do_smote` | `src/act_wiz.c:362-453` | `mud/commands/imm_emote.py:24` | ✅ AUDITED |
+| `do_bamfin` | `src/act_wiz.c:455-483` | `mud/commands/imm_display.py:83` (`do_poofin`) | ✅ AUDITED |
+| `do_bamfout` | `src/act_wiz.c:485-512` | `mud/commands/imm_display.py:115` (`do_poofout`) | ✅ AUDITED |
+| `do_disconnect` | `src/act_wiz.c:561-614` | `mud/commands/imm_punish.py:199` | ✅ AUDITED |
+| `do_switch` | `src/act_wiz.c:2202-2269` | `mud/commands/imm_admin.py:202` | ✅ AUDITED |
+| `do_return` | `src/act_wiz.c:2273-2303` | `mud/commands/imm_admin.py:251` | ✅ AUDITED |
+| `do_wizlock` | `src/act_wiz.c:3150-3169` | `mud/commands/admin_commands.py:60` (`cmd_wizlock`) | ✅ AUDITED |
+| `do_newlock` | `src/act_wiz.c:3171-3189` | `mud/commands/admin_commands.py:69` (`cmd_newlock`) | ✅ AUDITED |
+| `do_slookup` | `src/act_wiz.c:3191-3231` | `mud/commands/imm_search.py:143` | ✅ AUDITED |
 | `do_set` / `do_sset` / `do_mset` / `do_string` / `do_oset` / `do_rset` | `src/act_wiz.c:3233-4138` | `mud/commands/imm_set.py` | ⚠️ PARTIAL |
-| `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:268` | ⚠️ PARTIAL |
+| `do_sockets` | `src/act_wiz.c:4140-4181` | `mud/commands/imm_search.py:291` | ✅ AUDITED |
 | `do_force` | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | ✅ AUDITED |
 | `do_invis` | `src/act_wiz.c:4329-4373` | `mud/commands/imm_display.py:17` | ✅ AUDITED |
 | `do_incognito` | `src/act_wiz.c:4375-4420` | `mud/commands/imm_display.py:61` | ✅ AUDITED |
-| `do_holylight` | `src/act_wiz.c:4422-4441` | `mud/commands/admin_commands.py:396` (`cmd_holylight`) | ⚠️ PARTIAL |
+| `do_holylight` | `src/act_wiz.c:4422-4441` | `mud/commands/admin_commands.py:399` (`cmd_holylight`) | ✅ AUDITED |
 | `do_prefi` / `do_prefix` | `src/act_wiz.c:4443-4496` | `mud/commands/alias_cmds.py:120`, `mud/commands/alias_cmds.py:126` | ✅ AUDITED |
 | `do_copyover` | `src/act_wiz.c:4498-4683` | `mud/commands/imm_server.py:91` | ⚠️ PARTIAL |
 | `do_qmconfig` | `src/act_wiz.c:4685-4768` | `mud/commands/admin_commands.py:94` (`cmd_qmconfig`) | ⚠️ PARTIAL |
@@ -120,7 +127,19 @@ Python now:
 | `WIZ-007` | IMPORTANT | `src/act_wiz.c:4183-4322` | `mud/commands/imm_commands.py:293` | `do_force` was missing `gods` branch, private-room check, canonical trust check for all victims, and ROM `\n\r` line endings; bulk branches iterated wrong collections. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_force_*` |
 | `WIZ-008` | CRITICAL | `src/act_wiz.c:314-360,2986-3032,3034-3085,3087-3132,2872-2922,619-670` | `mud/commands/imm_punish.py:28-201`, `mud/commands/imm_admin.py:113` | Punish commands (`nochannels`, `noemote`, `noshout`, `notell`, `freeze`, `pardon`) used hardcoded wrong flag bit values (`0x00004000` instead of `CommFlag.NOCHANNELS=1<<22`, etc.), corrupting unrelated flags. Missing wiznet broadcasts and `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_nochannels_*, test_noemote_*, test_noshout_*, test_notell_*, test_pardon_*, test_freeze_*` |
 | `WIZ-009` | HIGH | `src/act_wiz.c:3134-3148` | `mud/commands/imm_commands.py:392` | `do_peace` set `fighting=None` instead of calling `stop_fighting(person, True)` (incomplete combat cleanup leaving dangling references); hardcoded `ACT_AGGRESSIVE=0x20` instead of `ActFlag.AGGRESSIVE` enum. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_peace_stops_fighting_and_removes_aggressive` |
-| `WIZ-010` | HIGH | `src/act_wiz.c:4329-4420` | `mud/commands/imm_display.py:17,61` | `do_invis` and `do_incognito` missing room-wide `act()` broadcast messages (`"$n slowly fades into thin air."` / `"$n slowly fades back into existence."` / `"$n cloaks $s presence."`); `do_incognito` missing `reply = None` when setting a specific level; both missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_invis_*, test_incognito_*` |
+| `WIZ-010` | HIGH | `src/act_wiz.c:4329-4420` | `mud/commands/imm_display.py:17,61` | `do_invis` and `do_incognito` missing room-wide `act()` broadcast messages; `do_incognito` missing `reply = None`; both missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_invis_*, test_incognito_*` |
+| `WIZ-011` | HIGH | `src/act_wiz.c:674-777` | `mud/commands/imm_display.py:147,172,198,231` | Echo family (`do_echo`, `do_recho`, `do_zecho`, `do_pecho`) iterated `registry.players` dict instead of `descriptor_list` with `CON_PLAYING` filter; `do_pecho` used wrong trust check and messages; all missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_echo_*, test_recho_*, test_zecho_*, test_pecho_*` |
+| `WIZ-012` | MEDIUM | `src/act_wiz.c:455-512` | `mud/commands/imm_display.py:83,115` | `do_bamfin`/`do_bamfout` missing `smash_tilde()`, used case-insensitive name check instead of ROM `strstr` case-sensitive check; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_poofin_*, test_poofout_*` |
+| `WIZ-013` | MEDIUM | `src/act_wiz.c:3150-3188` | `mud/commands/admin_commands.py:60,69` | `cmd_wizlock`/`cmd_newlock` missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_wizlock_*, test_newlock_*` |
+| `WIZ-014` | MEDIUM | `src/act_wiz.c:4422-4439` | `mud/commands/admin_commands.py:399` | `cmd_holylight` returned `"Huh?"` for NPCs instead of empty string; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_holylight_*` |
+| `WIZ-015` | MEDIUM | `src/act_wiz.c:3191-3229` | `mud/commands/imm_search.py:143` | `do_slookup` missing `all` arg, missing `Slot` column, used substring match instead of ROM `skill_lookup` prefix match; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_slookup_*` |
+| `WIZ-016` | MEDIUM | `src/act_wiz.c:4140-4176` | `mud/commands/imm_search.py:291` | `do_sockets` missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_sockets_*` |
+| `WIZ-017` | HIGH | `src/act_wiz.c:517-557` | `mud/commands/admin_commands.py:444` | `cmd_deny` was a toggle instead of SET-only; used `character_registry` prefix-match instead of `get_char_world`; missing `stop_fighting(victim, TRUE)`, wiznet broadcast, and `do_quit` call; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_deny_*` |
+| `WIZ-018` | MEDIUM | `src/act_wiz.c:2202-2269` | `mud/commands/imm_admin.py:202` | `do_switch` missing private-room check (is_room_owner/room_is_private), missing wiznet broadcast; all messages missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_switch_*` |
+| `WIZ-019` | MEDIUM | `src/act_wiz.c:2273-2303` | `mud/commands/imm_admin.py:251` | `do_return` missing full ROM message (`"You return to your original body. Type replay to see any missed tells."`), missing prompt cleanup, missing wiznet broadcast; all messages missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_return_*` |
+| `WIZ-020` | MEDIUM | `src/act_wiz.c:362-453` | `mud/commands/imm_emote.py:24` | `do_smote` used case-insensitive name check instead of ROM `strstr`; skipped no-descriptor viewers incorrectly; missing `_smote_substitute` letter-by-letter algorithm; `\n\r` line endings missing. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_smote_*` |
+| `WIZ-021` | MEDIUM | `src/act_wiz.c:750-777` | `mud/commands/imm_display.py:231` | `do_pecho` used wrong trust check (`victim is not char` instead of `get_trust(char) != MAX_LEVEL`); wrong "not found" message; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_pecho_*` |
+| `WIZ-022` | MEDIUM | `src/act_wiz.c:561-614` | `mud/commands/imm_punish.py:199` | `do_disconnect` iterated wrong collection; missing descriptor-list loop for victim lookup; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_disconnect_*` |
 
 ## Phase 4 — Closures
 
@@ -199,21 +218,30 @@ Python now:
 `act_wiz.c` remains **PARTIAL** after this pass.
 
 Completed this session:
-- Punish commands now use canonical `CommFlag`/`PlayerFlag` enum values (fixing critical data-corruption bugs).
-- `do_peace` now calls `stop_fighting()` for proper combat cleanup.
-- `do_invis`/`do_incognito` now broadcast room messages via `_act_room()`.
+- Echo family now iterates `descriptor_list` with `CON_PLAYING` filter per ROM C.
+- `do_bamfin`/`do_bamfout` now use `smash_tilde()` and ROM `strstr` case-sensitive name check.
+- `cmd_wizlock`/`cmd_newlock` now have `\n\r` line endings.
+- `cmd_holylight` now returns empty for NPCs (ROM), has `\n\r` line endings.
+- `do_slookup` now supports `all` arg, `Slot` column, prefix-match lookup, and `\n\r`.
+- `do_sockets` now has `\n\r` line endings.
+- `cmd_deny` rewritten to ROM parity: SET-only (not toggle), `get_char_world()`, `PlayerFlag.DENY`, wiznet broadcast, `stop_fighting(victim, True)`, forced quit, `\n\r`.
+- `do_switch` now has private-room check (`_is_room_owner`/`_room_is_private`), wiznet broadcast, `\n\r`.
+- `do_return` now has full ROM message, prompt cleanup, wiznet broadcast, `\n\r`.
+- `do_smote` now uses ROM `_smote_substitute` algorithm, case-sensitive `strstr` name check, no-descriptor skip, `\n\r`.
+- `do_pecho` now has ROM trust check and exact messages, `\n\r`.
+- `do_disconnect` now has descriptor-list victim loop, `\n\r`.
+- `do_advance`/`do_trust` now have `\n\r` line endings.
 - All modified commands have `\n\r` line endings.
 
 Still outstanding:
-- Echo family (`do_echo`, `do_recho`, `do_zecho`, `do_pecho`) — NPC/session filter gaps.
-- `do_deny` — toggle behavior, missing `stop_fighting`, different lookup.
-- `do_disconnect` — `_close_socket` is a stub.
-- `do_invis`/`do_incognito` — `_act_room` is simplified (no `$n`/`$s`/`$e` substitution for all occupants yet).
-- `do_bamfin`/`do_bamfout` — missing `smash_tilde()`; case-insensitive name match.
-- Remaining `do_clone`, `do_load`, `do_purge`, `do_advance`, `do_trust`, `do_restore` audits.
 - `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` family (900+ lines).
-- `do_wiznet`, `do_smote`, `do_switch`, `do_return`, `do_slookup`, `do_vnum`, `do_mfind`, `do_ofind`, `do_owhere`, `do_mwhere`, `do_sockets`, `do_reboot`, `do_shutdown`, `do_copyover`, `do_qmconfig`, `do_guild`, `do_outfit`, `do_holylight`, `do_wizlock`, `do_newlock`.
+- `do_wiznet` — `WIZ_ON` toggle, status, show, flag toggle.
+- `do_clone`, `do_load`/`do_mload`/`do_oload`, `do_purge`, `do_restore`.
+- `do_guild`, `do_outfit`.
+- `do_copyover`.
+- `do_qmconfig` — minor parity gaps.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `41 passed`
-- `ruff check mud/commands/imm_punish.py mud/commands/imm_admin.py mud/commands/imm_commands.py mud/commands/imm_display.py` — clean
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `71 passed`
+- `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
+- `ruff check` — clean (E501 line-length only)

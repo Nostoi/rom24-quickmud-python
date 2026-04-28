@@ -100,28 +100,28 @@ class TestEmoteGaps:
 class TestPmoteGaps:
     def test_pmote_blocked_by_noemote_flag(self, alice):
         alice.comm = int(CommFlag.NOEMOTE)
-        assert do_pmote(alice, "waves at Bob") == "You can't show your emotions."
+        assert "You can't show your emotions." in do_pmote(alice, "waves at Bob")
 
     def test_pmote_rejects_non_alpha_first_char(self, alice):
-        assert do_pmote(alice, ",broken") == "Moron!"
+        assert "Moron" in do_pmote(alice, ",broken")
 
     def test_pmote_substitutes_viewer_name_with_you(self, alice, bob):
         bob.output_buffer = []
         do_pmote(alice, "smiles at Bob.")
         # Bob (the viewer) should see "Bob" rewritten to "you".
-        assert "Alice smiles at you." in bob.output_buffer
+        assert any("Alice smiles at you." in msg for msg in bob.output_buffer)
 
     def test_pmote_handles_possessive_apostrophe(self, alice, bob):
         bob.output_buffer = []
         do_pmote(alice, "grabs Bob's cloak.")
         # ROM rewrites "Bob's" -> "your" (you + 'r).
-        assert "Alice grabs your cloak." in bob.output_buffer
+        assert any("Alice grabs your cloak." in msg for msg in bob.output_buffer)
 
     def test_pmote_absorbs_trailing_plural_s(self, alice, bob):
         bob.output_buffer = []
         do_pmote(alice, "looks at Bobs over there.")
         # ROM: name + 's' (plural) drops the s; "Bobs" -> "you".
-        assert "Alice looks at you over there." in bob.output_buffer
+        assert any("Alice looks at you over there." in msg for msg in bob.output_buffer)
 
 
 # -----------------------------------------------------------------------------

@@ -3,6 +3,7 @@ Immortal admin commands - advance, trust, freeze, snoop, switch, return.
 
 ROM Reference: src/act_wiz.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,95 +20,87 @@ def do_advance(char: Character, args: str) -> str:
     """
     Set a player's level.
 
-    ROM Reference: src/act_wiz.c do_advance (lines 2652-2742)
-
-    Usage: advance <player> <level>
+    ROM Reference: src/act_wiz.c:2652-2742
     """
     if not args or not args.strip():
-        return "Syntax: advance <char> <level>."
+        return "Syntax: advance <char> <level>.\n\r"
 
     parts = args.strip().split()
     if len(parts) < 2:
-        return "Syntax: advance <char> <level>."
+        return "Syntax: advance <char> <level>.\n\r"
 
     target_name = parts[0]
     level_arg = parts[1]
 
     if not level_arg.isdigit():
-        return "Syntax: advance <char> <level>."
+        return "Syntax: advance <char> <level>.\n\r"
 
     victim = get_char_world(char, target_name)
     if victim is None:
-        return "That player is not here."
+        return "That player is not here.\n\r"
 
     if getattr(victim, "is_npc", False):
-        return "Not on NPC's."
+        return "Not on NPC's.\n\r"
 
     level = int(level_arg)
     if level < 1 or level > MAX_LEVEL:
-        return f"Level must be 1 to {MAX_LEVEL}."
+        return f"Level must be 1 to {MAX_LEVEL}.\n\r"
 
     if level > get_trust(char):
-        return "Limited to your trust level."
+        return "Limited to your trust level.\n\r"
 
     old_level = getattr(victim, "level", 1)
 
     if level <= old_level:
-        # Lowering level
         victim.level = level
         victim.hit = getattr(victim, "max_hit", 100)
         victim.mana = getattr(victim, "max_mana", 100)
         victim.move = getattr(victim, "max_move", 100)
-        _send_to_char(victim, "**** OOOOHHHHHHHHHH  NNNNOOOO ****")
-        return "Lowering a player's level!"
+        _send_to_char(victim, "**** OOOOHHHHHHHHHH  NNNNOOOO ****\n\r")
+        return "Lowering a player's level!\n\r"
     else:
-        # Raising level
         victim.level = level
-        _send_to_char(victim, "**** OOOOHHHHHHHHHH  YYYYEEEESSS ****")
-        _send_to_char(victim, f"You are now level {level}.")
-        return "Raising a player's level!"
+        _send_to_char(victim, "**** OOOOHHHHHHHHHH  YYYYEEEESSS ****\n\r")
+        _send_to_char(victim, f"You are now level {level}.\n\r")
+        return "Raising a player's level!\n\r"
 
 
 def do_trust(char: Character, args: str) -> str:
     """
     Set a player's trust level.
 
-    ROM Reference: src/act_wiz.c do_trust (lines 2743-2783)
-
-    Usage: trust <player> <level>
-
-    Trust allows a lower-level immortal to use higher-level commands.
+    ROM Reference: src/act_wiz.c:2743-2783
     """
     if not args or not args.strip():
-        return "Syntax: trust <char> <level>."
+        return "Syntax: trust <char> <level>.\n\r"
 
     parts = args.strip().split()
     if len(parts) < 2:
-        return "Syntax: trust <char> <level>."
+        return "Syntax: trust <char> <level>.\n\r"
 
     target_name = parts[0]
     level_arg = parts[1]
 
     if not level_arg.isdigit():
-        return "Syntax: trust <char> <level>."
+        return "Syntax: trust <char> <level>.\n\r"
 
     victim = get_char_world(char, target_name)
     if victim is None:
-        return "That player is not here."
+        return "That player is not here.\n\r"
 
     level = int(level_arg)
     if level < 0 or level > MAX_LEVEL:
-        return f"Level must be 0 (reset) to {MAX_LEVEL}."
+        return f"Level must be 0 (reset) to {MAX_LEVEL}.\n\r"
 
     if level > get_trust(char):
-        return "Limited to your trust."
+        return "Limited to your trust.\n\r"
 
     victim.trust = level
 
     if level == 0:
-        return "Trust removed."
+        return "Trust removed.\n\r"
     else:
-        return f"Trust set to {level}."
+        return f"Trust set to {level}.\n\r"
 
 
 def do_freeze(char: Character, args: str) -> str:
@@ -138,13 +131,15 @@ def do_freeze(char: Character, args: str) -> str:
     if act_flags & int(PlayerFlag.FREEZE):
         victim.act = act_flags & ~int(PlayerFlag.FREEZE)
         _send_to_char(victim, "You can play again.\n\r")
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet(f"$N thaws {victim.name}.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
         return "FREEZE removed.\n\r"
 
     victim.act = act_flags | int(PlayerFlag.FREEZE)
     _send_to_char(victim, "You can't do ANYthing!\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N puts {victim.name} in the deep freeze.", char, None, WiznetFlag.WIZ_PENALTIES, WiznetFlag.WIZ_SECURE, 0)
     return "FREEZE set.\n\r"
 
@@ -175,6 +170,7 @@ def do_snoop(char: Character, args: str) -> str:
     if victim is char:
         # Cancel all snoops
         from mud import registry
+
         for d in getattr(registry, "descriptor_list", []):
             if getattr(d, "snoop_by", None) is getattr(char, "desc", None):
                 d.snoop_by = None
@@ -203,35 +199,59 @@ def do_switch(char: Character, args: str) -> str:
     """
     Switch into a mobile (control their body).
 
-    ROM Reference: src/act_wiz.c do_switch (lines 2202-2270)
-
-    Usage: switch <mob>
+    ROM Reference: src/act_wiz.c:2202-2269
     """
     if not args or not args.strip():
-        return "Switch into whom?"
+        return "Switch into whom?\n\r"
 
     desc = getattr(char, "desc", None)
     if desc is None:
         return ""
 
-    # Check if already switched
+    # mirrors ROM src/act_wiz.c:2218 — already switched?
     if getattr(desc, "original", None) is not None:
-        return "You are already switched."
+        return "You are already switched.\n\r"
 
     target_name = args.strip().split()[0]
     victim = get_char_world(char, target_name)
 
     if victim is None:
-        return "They aren't here."
+        return "They aren't here.\n\r"
 
     if victim is char:
-        return "Ok."
+        return "Ok.\n\r"
 
     if not getattr(victim, "is_npc", False):
-        return "You can only switch into mobiles."
+        return "You can only switch into mobiles.\n\r"
+
+    # mirrors ROM src/act_wiz.c:2242-2247 — private room check
+    from mud.commands.imm_commands import _is_room_owner, _room_is_private
+
+    victim_room = getattr(victim, "in_room", None) or getattr(victim, "room", None)
+    if victim_room:
+        char_room = getattr(char, "in_room", None) or getattr(char, "room", None)
+        if (
+            not _is_room_owner(char, victim_room)
+            and victim_room is not char_room
+            and _room_is_private(victim_room)
+            and get_trust(char) < MAX_LEVEL
+        ):
+            return "That character is in a private room.\n\r"
 
     if getattr(victim, "desc", None) is not None:
-        return "Character in use."
+        return "Character in use.\n\r"
+
+    # mirrors ROM src/act_wiz.c:2255-2256 — wiznet broadcast
+    from mud.wiznet import WiznetFlag, wiznet
+
+    wiznet(
+        f"$N switches into {getattr(victim, 'short_descr', victim.name)}",
+        char,
+        None,
+        WiznetFlag.WIZ_SWITCHES,
+        WiznetFlag.WIZ_SECURE,
+        get_trust(char),
+    )
 
     # Perform the switch
     desc.character = victim
@@ -239,22 +259,20 @@ def do_switch(char: Character, args: str) -> str:
     victim.desc = desc
     char.desc = None
 
-    # Copy communication settings
+    # mirrors ROM src/act_wiz.c:2263-2266 — copy communications
     if getattr(char, "prompt", None):
         victim.prompt = char.prompt
     victim.comm = getattr(char, "comm", 0)
     victim.lines = getattr(char, "lines", 0)
 
-    return "Ok."
+    return "Ok.\n\r"
 
 
 def do_return(char: Character, args: str) -> str:
     """
     Return from a switched mobile to your original body.
 
-    ROM Reference: src/act_wiz.c do_return (lines 2273-2310)
-
-    Usage: return
+    ROM Reference: src/act_wiz.c:2273-2303
     """
     desc = getattr(char, "desc", None)
     if desc is None:
@@ -262,18 +280,38 @@ def do_return(char: Character, args: str) -> str:
 
     original = getattr(desc, "original", None)
     if original is None:
-        return "You aren't switched."
+        return "You aren't switched.\n\r"
 
-    # Return to original body
-    char.desc = None
+    # mirrors ROM src/act_wiz.c:2286-2288 — full message
+    _send_to_char(char, "You return to your original body. Type replay to see any missed tells.\n\r")
+
+    # mirrors ROM src/act_wiz.c:2289-2292 — free prompt
+    if getattr(char, "prompt", None):
+        char.prompt = None
+
+    # mirrors ROM src/act_wiz.c:2295-2297 — wiznet broadcast
+    from mud.wiznet import WiznetFlag, wiznet
+
+    wiznet(
+        f"$N returns from {getattr(char, 'short_descr', 'something')}.",
+        original,
+        None,
+        WiznetFlag.WIZ_SWITCHES,
+        WiznetFlag.WIZ_SECURE,
+        get_trust(char),
+    )
+
+    # Perform the return
     desc.character = original
     desc.original = None
     original.desc = desc
+    char.desc = None
 
-    return "Ok."
+    return ""
 
 
 # Helper function
+
 
 def _send_to_char(char: Character, message: str) -> None:
     """Send message to character."""

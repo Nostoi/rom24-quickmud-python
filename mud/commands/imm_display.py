@@ -3,12 +3,13 @@ Immortal display commands - invis, wizinvis, poofin, poofout, echo.
 
 ROM Reference: src/act_wiz.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.character import Character
 from mud.commands.imm_commands import get_trust
+from mud.models.character import Character
 
 if TYPE_CHECKING:
     pass
@@ -83,184 +84,214 @@ def do_incognito(char: Character, args: str) -> str:
 def do_poofin(char: Character, args: str) -> str:
     """
     Set or view your arrival message (shown when you goto).
-    
-    ROM Reference: src/act_wiz.c do_bamfin (lines 455-483)
-    
-    Usage:
-    - poofin              - View current poofin
-    - poofin <message>    - Set poofin (must include your name)
+
+    ROM Reference: src/act_wiz.c:455-483
     """
     if getattr(char, "is_npc", False):
         return ""
-    
+
     pcdata = getattr(char, "pcdata", None)
     if pcdata is None:
         return ""
-    
+
+    # mirrors ROM src/act_wiz.c:458-468 — smash_tilde, then check empty
+    from mud.utils.text import smash_tilde
+
+    args = smash_tilde(args) if args else args
+
     if not args or not args.strip():
         bamfin = getattr(pcdata, "bamfin", "$n appears in a swirling mist.")
-        return f"Your poofin is {bamfin}"
-    
-    message = args.strip()
+        return f"Your poofin is {bamfin}\n\r"
+
+    # mirrors ROM src/act_wiz.c:470 — strstr(name, argument) case-sensitive check
     char_name = getattr(char, "name", "")
-    
-    # Must include character's name
-    if char_name.lower() not in message.lower():
-        return "You must include your name."
-    
-    pcdata.bamfin = message
-    return f"Your poofin is now {message}"
+    if char_name and char_name not in args:
+        return "You must include your name.\n\r"
+
+    pcdata.bamfin = args.strip()
+    return f"Your poofin is now {pcdata.bamfin}\n\r"
 
 
 def do_poofout(char: Character, args: str) -> str:
     """
     Set or view your departure message (shown when you goto).
-    
-    ROM Reference: src/act_wiz.c do_bamfout (lines 485-513)
-    
-    Usage:
-    - poofout              - View current poofout
-    - poofout <message>    - Set poofout (must include your name)
+
+    ROM Reference: src/act_wiz.c:485-512
     """
     if getattr(char, "is_npc", False):
         return ""
-    
+
     pcdata = getattr(char, "pcdata", None)
     if pcdata is None:
         return ""
-    
+
+    # mirrors ROM src/act_wiz.c:491 — smash_tilde
+    from mud.utils.text import smash_tilde
+
+    args = smash_tilde(args) if args else args
+
     if not args or not args.strip():
         bamfout = getattr(pcdata, "bamfout", "$n leaves in a swirling mist.")
-        return f"Your poofout is {bamfout}"
-    
-    message = args.strip()
+        return f"Your poofout is {bamfout}\n\r"
+
+    # mirrors ROM src/act_wiz.c:500 — strstr name check
     char_name = getattr(char, "name", "")
-    
-    # Must include character's name
-    if char_name.lower() not in message.lower():
-        return "You must include your name."
-    
-    pcdata.bamfout = message
-    return f"Your poofout is now {message}"
+    if char_name and char_name not in args:
+        return "You must include your name.\n\r"
+
+    pcdata.bamfout = args.strip()
+    return f"Your poofout is now {pcdata.bamfout}\n\r"
 
 
 def do_echo(char: Character, args: str) -> str:
     """
-    Echo a message globally to all players.
-    
-    ROM Reference: src/act_wiz.c do_echo (lines 674-695)
-    
-    Usage: echo <message>
-    
-    Note: Higher-trust immortals see "global>" prefix.
+    Echo a message globally to all connected players.
+
+    ROM Reference: src/act_wiz.c:674-695
+
+    Iterates descriptor_list, sends to CON_PLAYING descriptors.
+    Higher-trust immortals see "global>" prefix.
     """
     if not args or not args.strip():
-        return "Global echo what?"
-    
+        return "Global echo what?\n\r"
+
     message = args.strip()
-    
+
     from mud import registry
-    for player in getattr(registry, "players", {}).values():
-        if get_trust(player) >= get_trust(char):
-            _send_to_char(player, f"global> {message}")
+
+    CON_PLAYING = 1
+    for desc in getattr(registry, "descriptor_list", []):
+        d_char = getattr(desc, "character", None)
+        if d_char is None:
+            continue
+        connected = getattr(desc, "connected", 0)
+        if connected != CON_PLAYING:
+            continue
+        if get_trust(d_char) >= get_trust(char):
+            _send_to_char(d_char, f"global> {message}\n\r")
         else:
-            _send_to_char(player, message)
-    
-    return ""  # Already echoed
+            _send_to_char(d_char, f"{message}\n\r")
+
+    return ""
 
 
 def do_recho(char: Character, args: str) -> str:
     """
-    Echo a message to everyone in the room.
-    
-    ROM Reference: src/act_wiz.c do_recho (lines 697-720)
-    
-    Usage: recho <message>
+    Echo a message to everyone in the same room.
+
+    ROM Reference: src/act_wiz.c:700-724
+
+    Iterates descriptor_list, matches room, CON_PLAYING only.
+    Higher-trust immortals see "local>" prefix.
     """
     if not args or not args.strip():
-        return "Local echo what?"
-    
+        return "Local echo what?\n\r"
+
     message = args.strip()
     room = getattr(char, "room", None)
-    
     if not room:
-        return "You're not in a room."
-    
-    for person in getattr(room, "people", []):
-        if get_trust(person) >= get_trust(char):
-            _send_to_char(person, f"local> {message}")
-        else:
-            _send_to_char(person, message)
-    
-    return ""  # Already echoed
+        return ""
+
+    from mud import registry
+
+    CON_PLAYING = 1
+    for desc in getattr(registry, "descriptor_list", []):
+        d_char = getattr(desc, "character", None)
+        if d_char is None:
+            continue
+        connected = getattr(desc, "connected", 0)
+        if connected != CON_PLAYING:
+            continue
+        d_room = getattr(d_char, "in_room", None) or getattr(d_char, "room", None)
+        if d_room is not None and d_room is room:
+            if get_trust(d_char) >= get_trust(char):
+                _send_to_char(d_char, f"local> {message}\n\r")
+            else:
+                _send_to_char(d_char, f"{message}\n\r")
+
+    return ""
 
 
 def do_zecho(char: Character, args: str) -> str:
     """
-    Echo a message to everyone in the same area.
-    
-    ROM Reference: src/act_wiz.c do_zecho (lines 722-750)
-    
-    Usage: zecho <message>
+    Echo a message to everyone in the same area/zone.
+
+    ROM Reference: src/act_wiz.c:726-748
+
+    Iterates descriptor_list, matches area, CON_PLAYING only.
+    Higher-trust immortals see "zone>" prefix.
     """
     if not args or not args.strip():
-        return "Zone echo what?"
-    
+        return "Zone echo what?\n\r"
+
     message = args.strip()
     room = getattr(char, "room", None)
-    
     if not room:
-        return "You're not in a room."
-    
+        return ""
+
     area = getattr(room, "area", None)
-    if not area:
-        return "You're not in an area."
-    
+
     from mud import registry
-    for player in getattr(registry, "players", {}).values():
-        p_room = getattr(player, "room", None)
-        if p_room and getattr(p_room, "area", None) is area:
-            if get_trust(player) >= get_trust(char):
-                _send_to_char(player, f"zone> {message}")
+
+    CON_PLAYING = 1
+    for desc in getattr(registry, "descriptor_list", []):
+        d_char = getattr(desc, "character", None)
+        if d_char is None:
+            continue
+        connected = getattr(desc, "connected", 0)
+        if connected != CON_PLAYING:
+            continue
+        d_room = getattr(d_char, "in_room", None) or getattr(d_char, "room", None)
+        if d_room is None:
+            continue
+        d_area = getattr(d_room, "area", None)
+        if area is not None and d_area is area:
+            if get_trust(d_char) >= get_trust(char):
+                _send_to_char(d_char, f"zone> {message}\n\r")
             else:
-                _send_to_char(player, message)
-    
-    return ""  # Already echoed
+                _send_to_char(d_char, f"{message}\n\r")
+
+    return ""
 
 
 def do_pecho(char: Character, args: str) -> str:
     """
     Echo a message to a specific player.
-    
-    ROM Reference: src/act_wiz.c do_pecho (lines 752-780)
-    
+
+    ROM Reference: src/act_wiz.c:750-777
+
     Usage: pecho <player> <message>
     """
     if not args or not args.strip():
-        return "Personal echo what?"
-    
+        return "Personal echo what?\n\r"
+
     parts = args.strip().split(None, 1)
     if len(parts) < 2:
-        return "Personal echo what?"
-    
+        return "Personal echo what?\n\r"
+
     target_name = parts[0]
     message = parts[1]
-    
+
     from mud.commands.imm_commands import get_char_world
+
     victim = get_char_world(char, target_name)
-    
+
     if victim is None:
-        return "They aren't here."
-    
-    if get_trust(victim) >= get_trust(char) and victim is not char:
-        _send_to_char(victim, f"personal> {message}")
+        return "Target not found.\n\r"
+
+    # mirrors ROM src/act_wiz.c:769 — higher-trust targets see "personal>" prefix
+    max_level = 65
+    if get_trust(victim) >= get_trust(char) and get_trust(char) != max_level:
+        _send_to_char(victim, f"personal> {message}\n\r")
     else:
-        _send_to_char(victim, message)
-    
-    return "Ok."
+        _send_to_char(victim, f"{message}\n\r")
+
+    _send_to_char(char, f"personal> {message}\n\r")
+    return ""
 
 
 # Helper function
+
 
 def _send_to_char(char: Character, message: str) -> None:
     """Send message to character."""
