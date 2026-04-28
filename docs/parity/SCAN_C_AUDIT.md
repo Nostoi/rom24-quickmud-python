@@ -1,6 +1,6 @@
 # `scan.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** 🔄 PHASE 3 COMPLETE — gap closures pending
+**Status:** ✅ AUDITED — all 3 gaps closed (SCAN-001/002/003)
 **Date:** 2026-04-28
 **ROM C:** `src/scan.c` (141 lines, 3 functions)
 **Python:** `mud/commands/inspection.py:do_scan` (lines 9-114)
@@ -84,7 +84,7 @@ Python (inspection.py:64-68): emits `"{who}, right here."` for depth 0 and `"{wh
 |----|----------|-----------|------------|-------------|--------|
 | `SCAN-001` | IMPORTANT | `src/scan.c:60` | `mud/commands/inspection.py:74` | No-arg `do_scan` is missing the `act("$n looks all around.", TO_ROOM)` broadcast — onlookers never see the scan. | ✅ FIXED — `tests/integration/test_scan_broadcasts.py::test_scan_no_arg_broadcasts_looks_all_around` |
 | `SCAN-002` | IMPORTANT | `src/scan.c:89-91` | `mud/commands/inspection.py:104-110` | Directional `do_scan` is missing both `act("You peer intently $T.", TO_CHAR)` and `act("$n peers intently $T.", TO_ROOM)`, and emits a spurious `"Looking <dir> you see:"` header that ROM builds but never sends. | ✅ FIXED — TO_CHAR returned to scanner, TO_ROOM via `broadcast_room`, header dropped. `tests/integration/test_scan_broadcasts.py::test_scan_directional_emits_peer_intently_pair` |
-| `SCAN-003` | MINOR | `src/scan.c:48-104` | `mud/commands/inspection.py:81-83,112-113` | Python adds non-ROM fallback lines (`"No one is nearby."`, `"Nothing of note."`) when no visible characters are found; ROM emits nothing extra. | 🔄 OPEN |
+| `SCAN-003` | MINOR | `src/scan.c:48-104` | `mud/commands/inspection.py:84-86,116-118` | Python adds non-ROM fallback lines (`"No one is nearby."`, `"Nothing of note."`) when no visible characters are found; ROM emits nothing extra. | ✅ FIXED — both fallbacks removed. `tests/integration/test_scan_broadcasts.py::test_scan_empty_room_emits_no_fallback` |
 
 No CRITICAL gaps. SCAN-001 and SCAN-002 are IMPORTANT (visible behavior — TO_ROOM and TO_CHAR messages diverge). SCAN-003 is MINOR cosmetic.
 
@@ -94,4 +94,10 @@ No CRITICAL gaps. SCAN-001 and SCAN-002 are IMPORTANT (visible behavior — TO_R
 
 ## Phase 5 — Completion
 
-Pending.
+✅ All three gaps closed on 2026-04-28:
+
+- `SCAN-001` — TO_ROOM `"$n looks all around."` broadcast added (no-arg branch).
+- `SCAN-002` — TO_CHAR/TO_ROOM `"You peer intently <dir>." / "$n peers intently <dir>."` act() pair added; spurious `"Looking <dir> you see:"` header removed (directional branch).
+- `SCAN-003` — Non-ROM `"No one is nearby."` / `"Nothing of note."` fallback lines removed.
+
+Coverage: `tests/integration/test_scan_broadcasts.py` (3 tests, all passing) plus the existing `tests/test_scan_parity.py` unit suite (13 tests, updated to ROM-faithful expectations).

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.15] - 2026-04-28
+
+Closes the `scan.c` audit (P2): all 3 gaps fixed, ROM-faithful TO_ROOM/TO_CHAR
+broadcasts on the `scan` command, divergent header and fallback lines removed.
+
 ### Added
 
 - `SCAN-001` — `do_scan` with no argument now emits the TO_ROOM broadcast
@@ -22,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `"Looking <dir> you see:"` header. ROM builds that string into `buf` at
   `src/scan.c:91` but never calls `send_to_char(buf, ch)`; the only visible
   scanner-facing message is the `"You peer intently <dir>."` act().
+- `SCAN-003` — `do_scan` no longer emits non-ROM fallback lines
+  (`"No one is nearby."`, `"Nothing of note."`) when no visible characters
+  are found. ROM emits only the act() messages and header in that case
+  (`src/scan.c:48-104`).
 
 ## [2.6.14] - 2026-04-28
 

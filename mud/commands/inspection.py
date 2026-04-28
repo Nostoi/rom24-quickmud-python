@@ -82,8 +82,8 @@ def do_scan(char: Character, args: str = "") -> str:
             ex = _get_exit(char.room, d)
             to_room = ex.to_room if ex else None
             lines += list_room(to_room, 1, int(d))
-        if len(lines) == 1:
-            lines.append("No one is nearby.")
+        # SCAN-003: no fallback line — mirroring ROM src/scan.c:58-69
+        # (ROM emits the header alone when no visible characters are found).
         return "\n".join(lines)
 
     # Directional scan up to depth 3
@@ -117,8 +117,8 @@ def do_scan(char: Character, args: str = "") -> str:
         if not scan_room:
             break
         lines += list_room(scan_room, depth, int(d))
-    if len(lines) == 1:
-        lines.append("Nothing of note.")
+    # SCAN-003: no fallback line — mirroring ROM src/scan.c:89-103
+    # (ROM emits only the act() pair when no exits/visible characters found).
     return "\n".join(lines)
 
 

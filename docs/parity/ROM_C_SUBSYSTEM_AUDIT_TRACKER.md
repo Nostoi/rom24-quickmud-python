@@ -63,7 +63,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Movement & Rooms** | | | | | |
 | `act_move.c` | P0 | ✅ **AUDITED** | `mud/movement/`, `mud/commands/doors.py`, `mud/commands/session.py`, `mud/commands/advancement.py` | **85%** | ✅ **Phase 4 Complete!** Jan 8 - Door/portal/recall/train 100% parity - See ACT_MOVE_C_AUDIT.md |
 | `act_enter.c` | P1 | ✅ **COMPLETE!** | `mud/commands/movement.py`, `mud/world/movement.py` | **100%** | 🎉 **FULL PARITY — all 15 gaps closed (ENTER-001..016), 25 integration tests** 🎉 Apr 27 — See ACT_ENTER_C_AUDIT.md |
-| `scan.c` | P2 | ❌ Not Audited | - | 0% | Scan command missing |
+| `scan.c` | P2 | ✅ AUDITED | `mud/commands/inspection.py` | **100%** | Apr 28, 2026 — all 3 gaps closed (SCAN-001 TO_ROOM "looks all around", SCAN-002 directional "peer intently" TO_CHAR/TO_ROOM pair + spurious header removed, SCAN-003 non-ROM fallback lines removed). 3 integration + 13 unit tests green. See SCAN_C_AUDIT.md |
 | **Commands** | | | | | |
 | `act_comm.c` | P0 | ✅ **Audited** | `mud/commands/communication.py`, `mud/commands/group_commands.py`, `mud/commands/channels.py` | **100% P0-P1** | ✅ **100% P0-P1 COMPLETE!** Jan 8 - All critical gaps fixed (yell, order, gtell) - 34/36 functions verified - See ACT_COMM_C_AUDIT.md |
 | `act_info.c` | P1 | ✅ **COMPLETE!** | `mud/commands/info.py`, `mud/commands/character.py`, `mud/commands/auto_settings.py`, `mud/commands/misc_info.py` | **100%** | **🎉🎉🎉 FULL PARITY - ALL 38 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 8 - 273/273 integration tests - See ACT_INFO_C_AUDIT.md |

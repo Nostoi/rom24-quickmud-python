@@ -65,11 +65,12 @@ def test_scan_no_exit():
     """Test scan direction with no exit matches ROM C."""
     char = setup_scan_test()
 
-    # Try scanning in a direction that might not have an exit
+    # Try scanning in a direction that might not have an exit.
+    # SCAN-002/003: ROM emits the TO_CHAR "You peer intently <dir>." regardless
+    # of whether exits exist; no "Nothing of note" fallback.
     result = do_scan(char, "down")
 
-    # Should show scan header or nothing of note
-    assert "Looking down you see:" in result or "Nothing of note" in result
+    assert "You peer intently down." in result
 
 
 def test_scan_invalid_direction():
