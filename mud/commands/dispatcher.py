@@ -766,7 +766,9 @@ def process_command(char: Character, input_str: str) -> str:
             return handle_hedit_command(char, session, input_str)
 
     if not input_str.strip():
-        return "What?"
+        # mirroring ROM src/interp.c:401-404 — interpret() strips leading
+        # whitespace and returns silently on empty input.
+        return ""
 
     remover = getattr(char, "remove_affect", None)
     if callable(remover):

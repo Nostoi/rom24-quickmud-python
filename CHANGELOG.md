@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `interp.c:INTERP-007` — empty input now returns silently to match
+  ROM `interpret()` (`src/interp.c:401-404`). Previously emitted the
+  literal `"What?"`. Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_007_empty_input_returns_silently`.
+
 ## [2.6.8] - 2026-04-27
 
 Closes the immortal command trust drift (`INTERP-001`). All 43 commands

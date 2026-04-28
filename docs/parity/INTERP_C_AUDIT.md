@@ -116,7 +116,7 @@ or feature missing; **MINOR** = cosmetic/no-op.
 | INTERP-004 | IMPORTANT | `src/interp.c:200` | `mud/commands/dispatcher.py:279` | `shout` requires level 3 in ROM (`POS_RESTING, 3`); Python sets no `min_trust` (defaults to 0). | 🔄 OPEN |
 | INTERP-005 | IMPORTANT | `src/interp.c:247` | `mud/commands/dispatcher.py:312` | `murder` requires level 5 in ROM (`POS_FIGHTING, 5`); Python sets no `min_trust`. | 🔄 OPEN |
 | INTERP-006 | IMPORTANT | `src/interp.c:93` | `mud/commands/dispatcher.py:290` | `music` minimum position is `POS_SLEEPING` in ROM; Python sets `Position.RESTING`. | 🔄 OPEN |
-| INTERP-007 | IMPORTANT | `src/interp.c:401-404` | `mud/commands/dispatcher.py:769-770` | Empty-input behavior: ROM returns silently; Python returns the literal string `"What?"`. | 🔄 OPEN |
+| INTERP-007 | IMPORTANT | `src/interp.c:401-404` | `mud/commands/dispatcher.py:769-770` | Empty-input behavior: ROM returns silently; Python returns the literal string `"What?"`. | ✅ FIXED — empty input now returns `""` (test `tests/integration/test_interp_dispatcher.py::test_interp_007_empty_input_returns_silently`) |
 | INTERP-008 | IMPORTANT | `src/interp.c:184, 186, 272` | `mud/commands/dispatcher.py:284, 281, 348` | Punctuation aliases missing from `COMMAND_INDEX`: `"."` → `do_gossip`, `","` → `do_emote`, `"/"` → `do_recall`. (`"'"`, `";"`, `":"` are present.) | 🔄 OPEN |
 | INTERP-009 | IMPORTANT | `src/interp.c:88` | `mud/commands/dispatcher.py:406` | `"hit"` should dispatch to `do_kill` (single canonical combat handler); Python routes to a separate `do_hit` stub. | 🔄 OPEN |
 | INTERP-010 | IMPORTANT | `src/interp.c:226` | `mud/commands/dispatcher.py:405` | `"take"` should dispatch to `do_get`; Python routes to `do_take`. | 🔄 OPEN |
