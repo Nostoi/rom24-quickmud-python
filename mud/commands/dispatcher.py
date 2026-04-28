@@ -274,7 +274,8 @@ COMMANDS: list[Command] = [
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
     Command("reply", do_reply, min_position=Position.RESTING),
-    Command("shout", do_shout, min_position=Position.RESTING),
+    # ROM src/interp.c:200 — shout requires trust 3.
+    Command("shout", do_shout, min_position=Position.RESTING, min_trust=3),
     Command("yell", do_yell, min_position=Position.RESTING),
     Command("emote", do_emote, aliases=(",",), min_position=Position.RESTING),
     Command("pose", do_pose, min_position=Position.RESTING),

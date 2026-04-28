@@ -156,6 +156,25 @@ def test_interp_011_junk_tap_route_to_do_sacrifice(name):
     assert cmd.func is do_sacrifice
 
 
+def test_interp_004_shout_requires_trust_3():
+    # mirrors ROM src/interp.c:200 — {"shout", do_shout, POS_RESTING, 3, ...}
+    cmd = COMMAND_INDEX["shout"]
+    assert cmd.min_trust == 3
+
+
+def test_interp_005_murder_requires_trust_5():
+    # mirrors ROM src/interp.c:247 — {"murder", do_murder, POS_FIGHTING, 5, ...}
+    cmd = COMMAND_INDEX["murder"]
+    assert cmd.min_trust == 5
+
+
+def test_interp_006_music_min_position_sleeping():
+    # mirrors ROM src/interp.c:93 — {"music", do_music, POS_SLEEPING, 0, ...}
+    from mud.models.constants import Position
+    cmd = COMMAND_INDEX["music"]
+    assert cmd.min_position == Position.SLEEPING
+
+
 def test_interp_024_do_commands_preserves_12char_column_padding(test_room, monkeypatch):
     # mirrors ROM src/interp.c:803-825 — do_commands emits names as
     # "%-12s" (12-char left-justified), 6 per row, with no trailing
