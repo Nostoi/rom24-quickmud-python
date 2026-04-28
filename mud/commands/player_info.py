@@ -157,19 +157,6 @@ def do_info(char: Character, args: str) -> str:
     return do_group(char, "")
 
 
-def do_hit(char: Character, args: str) -> str:
-    """
-    Alias for kill command.
-
-    ROM Reference: interp.c - hit maps to do_kill
-
-    Usage: hit <target>
-    """
-    from mud.commands.combat import do_kill
-
-    return do_kill(char, args)
-
-
 def do_take(char: Character, args: str) -> str:
     """
     Alias for get command.

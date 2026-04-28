@@ -159,7 +159,7 @@ from .murder import do_murder
 from .notes import do_board, do_note
 from .obj_manipulation import do_put, do_quaff, do_remove, do_sacrifice
 from .player_config import do_delet, do_delete, do_nofollow, do_noloot, do_nosummon
-from .player_info import do_hit, do_info, do_play, do_scroll, do_show, do_take
+from .player_info import do_info, do_play, do_scroll, do_show, do_take
 from .position import do_rest, do_sit, do_sleep, do_stand, do_wake
 from .remaining_rom import (
     do_bs,
@@ -297,7 +297,8 @@ COMMANDS: list[Command] = [
         min_trust=LEVEL_HERO,
     ),
     # Combat
-    Command("kill", do_kill, aliases=("attack",), min_position=Position.FIGHTING),
+    # ROM src/interp.c:88 — `hit` is a cmd_table alias for do_kill.
+    Command("kill", do_kill, aliases=("attack", "hit"), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING),
     Command("flee", do_flee, min_position=Position.FIGHTING),
@@ -402,7 +403,6 @@ COMMANDS: list[Command] = [
     Command("sacrifice", do_sacrifice, aliases=("sac",), min_position=Position.RESTING),
     Command("quaff", do_quaff, min_position=Position.RESTING),
     Command("take", do_take, min_position=Position.RESTING),
-    Command("hit", do_hit, min_position=Position.FIGHTING),
     # Player Essential - Info
     Command("scroll", do_scroll, min_position=Position.DEAD),
     Command("show", do_show, min_position=Position.DEAD),

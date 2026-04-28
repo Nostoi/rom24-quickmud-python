@@ -10,7 +10,12 @@ from types import SimpleNamespace
 import pytest
 
 from mud.commands.dispatcher import COMMAND_INDEX, process_command
-from mud.commands.communication import do_emote, do_gossip
+from mud.commands.combat import do_kill
+from mud.commands.communication import do_emote, do_gossip, do_immtalk
+from mud.commands.equipment import do_wear
+from mud.commands.inventory import do_get
+from mud.commands.movement import do_enter
+from mud.commands.obj_manipulation import do_sacrifice
 from mud.commands.session import do_recall
 from mud.models.character import Character
 
@@ -105,6 +110,20 @@ def test_interp_002_snoop_inactive_when_no_snooper(test_room):
 
     assert not any(msg.startswith("% ") for msg in char.messages)
     test_room.people.remove(char)
+
+
+@pytest.mark.parametrize(
+    "name,handler",
+    [
+        ("hit", do_kill),  # ROM src/interp.c:88
+    ],
+)
+def test_interp_009_hit_routes_to_do_kill(name, handler):
+    # mirrors ROM src/interp.c:88 — `hit` dispatches to do_kill (single
+    # canonical combat handler), not a separate stub.
+    cmd = COMMAND_INDEX.get(name)
+    assert cmd is not None
+    assert cmd.func is handler
 
 
 def test_interp_003_logged_command_mirrors_to_wiznet_secure(test_room, monkeypatch):
