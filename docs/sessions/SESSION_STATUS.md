@@ -30,3 +30,19 @@
 
 Pick the next P1 ROM C file from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`
 that is still ⚠️ Partial / ❌ Not Audited and run `/rom-parity-audit` on it.
+
+## Outstanding Cleanup
+
+- **RNG-isolation flake between integration and unit suites.**
+  `tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape`
+  passes alone and on master but fails when pytest also collects
+  `tests/integration/test_mobprog_*.py`. Root cause: `tests/integration/conftest.py`
+  autouse seeds `rng_mm.seed_mm(12345)` per integration test, but unit tests
+  under `tests/` have no equivalent fixture, so the Mitchell-Moore RNG state
+  from the last integration test bleeds into the unit test and changes
+  `number_door()` outcomes in `do_mpflee`. Fix: add a session-scoped autouse
+  seed fixture to `tests/conftest.py` (or restore prior RNG state on integration
+  fixture teardown), then verify
+  `pytest tests/test_mobprog_commands.py tests/integration/test_mobprog_*.py`
+  is deterministic. Suggested commit prefix `fix(test): isolate rng_mm state
+  across test suites`. Reference: AGENTS.md "Test determinism (RNG)" section.
