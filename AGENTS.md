@@ -18,6 +18,29 @@ The companion browser frontend lives in the sibling project
 Before changing engine behavior, read the corresponding ROM C function. Do not
 guess.
 
+## Resuming in Any Harness (Claude Code, Codex, Opencode, …)
+
+A fresh agent can pick up this project regardless of which CLI it runs in.
+Required reading order at session start:
+
+1. `docs/sessions/SESSION_STATUS.md` — single canonical "where we are" pointer.
+2. The latest `docs/sessions/SESSION_SUMMARY_*.md` it references.
+3. `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` — pick the next ⚠️ Partial / ❌ Not Audited row.
+4. The per-file audit doc for the chosen target (e.g. `docs/parity/ACT_OBJ_C_AUDIT.md`).
+
+Workflow skills live as plain markdown in `.claude/skills/` and are readable
+from any harness. Claude Code invokes them via the `Skill` tool; other
+harnesses must `Read` the SKILL.md and follow the instructions manually:
+
+- `.claude/skills/rom-parity-audit/SKILL.md` — file-level audit (5 phases).
+- `.claude/skills/rom-gap-closer/SKILL.md` — single-gap TDD close (one test, one commit).
+- `.claude/skills/rom-session-handoff/SKILL.md` — end-of-session SUMMARY + STATUS writer.
+- `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` — wraps `npx gitnexus …` with canonical flags.
+
+GitNexus MCP must be configured per-harness for `gitnexus_impact` /
+`gitnexus_detect_changes` calls to work. Without it, fall back to `grep` and
+run the area-specific integration test suite to catch regressions.
+
 ---
 
 ## ROM Parity Rules (CRITICAL)
