@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `WIZ-020` — `smote` now uses ROM `_smote_substitute` letter-by-letter algorithm, case-sensitive `strstr` name check, skips no-descriptor viewers per `src/act_wiz.c:362-453`. Added `\n\r` line endings.
 - `WIZ-021` — `pecho` now uses ROM trust check (`get_trust(char) != MAX_LEVEL`) and exact messages per `src/act_wiz.c:750-777`. Added `\n\r` line endings.
 - `WIZ-022` — `disconnect` now follows ROM descriptor-list victim lookup per `src/act_wiz.c:561-614`. Added `\n\r` line endings.
+- `WIZ-023` — `guild` now uses `lookup_clan_id`/`CLAN_TABLE` per ROM `src/act_wiz.c:196-249`; distinguishes independent-clan (`"a <name>"`) vs member-clan (`"member of clan <Name>"`) messaging; uses `str_prefix`-style match for "none"; all messages have `\n\r`.
+- `WIZ-024` — `outfit` now always returns `"You have been equipped by Mota.\n\r"` per ROM `src/act_wiz.c:251-310` (removed "You already have your equipment" branch).
+- `WIZ-025` — `copyover` now iterates `descriptor_list` with `CON_PLAYING` filter per ROM `src/act_wiz.c:4498-4588`; all messages have `\n\r`.
+- `WIZ-026` — `qmconfig` verified as already ROM-faithful per `src/act_wiz.c:4685-4787`; added test coverage for `"I have no clue..."` fallback.
+- `wiznet()` broadcast now iterates `descriptor_list` with `CON_PLAYING` filter per ROM `src/act_wiz.c:171-194`; falls back to `character_registry` in test environments without descriptor setup.
 - `ALIAS-001` — `alia` now returns the ROM `src/alias.c:97-100` typo-guard text instead of a generic helper string.
 - `ALIAS-002` — `alias` now mirrors ROM `src/alias.c:112-220`: exact list/query/set/realias messages, reserved-word checks, quote/name validation, `delete`/`prefix` expansion guards, and the five-alias limit.
 - `ALIAS-003` — alias substitution now mirrors ROM `src/alias.c:69-99`: one expansion pass only, truncation warning handling, and `mud.rom_api.substitute_alias()` now returns the expanded string instead of an internal tuple.

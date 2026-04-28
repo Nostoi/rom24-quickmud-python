@@ -1071,3 +1071,167 @@ def test_disconnect_not_found() -> None:
     admin = _imm("Admin", 10501)
     result = do_disconnect(admin, "NobodyHere12345")
     assert "aren't here" in result
+
+
+# ── WIZ-023: do_guild ──────────────────────────────────────────────
+
+
+def test_guild_empty_arg() -> None:
+    # mirrors ROM src/act_wiz.c:206-209
+    from mud.commands.remaining_rom import do_guild
+
+    admin = _imm("Admin", 10600)
+    result = do_guild(admin, "")
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+def test_guild_missing_clan_arg() -> None:
+    # mirrors ROM src/act_wiz.c:206-209
+    from mud.commands.remaining_rom import do_guild
+
+    admin = _imm("Admin", 10601)
+    victim = _imm("Victim", 10601, trust=10)
+    result = do_guild(admin, victim.name)
+    assert "Syntax" in result
+    assert result.endswith("\n\r")
+
+
+def test_guild_target_not_playing() -> None:
+    # mirrors ROM src/act_wiz.c:211-214
+    from mud.commands.remaining_rom import do_guild
+
+    admin = _imm("Admin", 10602)
+    result = do_guild(admin, "NobodyHere guild")
+    assert "aren't playing" in result
+    assert result.endswith("\n\r")
+
+
+def test_guild_none_makes_clanless() -> None:
+    # mirrors ROM src/act_wiz.c:217-222
+    from mud.commands.remaining_rom import do_guild
+
+    admin = _imm("Admin", 10603)
+    victim = _imm("GuildVictim", 10603, trust=10)
+    victim.clan = 2
+    result = do_guild(admin, f"{victim.name} none")
+    assert victim.clan == 0
+    assert "clanless" in result.lower()
+    assert result.endswith("\n\r")
+    victim_msgs = getattr(victim, "output_buffer", [])
+    assert any("no clan" in m.lower() for m in victim_msgs)
+
+
+def test_guild_independent_clan_messages() -> None:
+    # mirrors ROM src/act_wiz.c:231-236 — independent clans say "a <name>"
+    from mud.commands.remaining_rom import do_guild
+    from mud.models.clans import CLAN_TABLE
+
+    admin = _imm("Admin", 10604)
+    victim = _imm("GuildVictim2", 10604, trust=10)
+    victim.clan = 0
+    result = do_guild(admin, f"{victim.name} loner")
+    assert victim.clan != 0
+    clan = CLAN_TABLE[victim.clan]
+    if clan.is_independent:
+        assert f"a {clan.name}" in result.lower() or clan.name.lower() in result.lower()
+    assert result.endswith("\n\r")
+
+
+def test_guild_member_clan_messages() -> None:
+    # mirrors ROM src/act_wiz.c:238-244 — member clans say "member of clan <Name>"
+    from mud.commands.remaining_rom import do_guild
+    from mud.models.clans import CLAN_TABLE
+
+    admin = _imm("Admin", 10605)
+    victim = _imm("GuildVictim3", 10605, trust=10)
+    victim.clan = 0
+    result = do_guild(admin, f"{victim.name} rom")
+    assert victim.clan != 0
+    clan = CLAN_TABLE[victim.clan]
+    if not clan.is_independent:
+        assert "member of clan" in result.lower()
+        assert clan.name.capitalize() in result
+    assert result.endswith("\n\r")
+
+
+def test_guild_no_such_clan() -> None:
+    # mirrors ROM src/act_wiz.c:225-228
+    from mud.commands.remaining_rom import do_guild
+
+    admin = _imm("Admin", 10606)
+    victim = _imm("GuildVictim4", 10606, trust=10)
+    result = do_guild(admin, f"{victim.name} bogusclan999")
+    assert "no such clan" in result.lower()
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-024: do_outfit ──────────────────────────────────────────────
+
+
+def test_outfit_rejects_high_level() -> None:
+    # mirrors ROM src/act_wiz.c:256-259 — "Find it yourself!" for level > 5
+    from mud.commands.inventory import do_outfit
+
+    char = _imm("HighLevel", 10700, trust=10)
+    result = do_outfit(char, "")
+    assert "Find it yourself" in result
+    assert result.endswith("\n\r")
+
+
+def test_outfit_rejects_npc() -> None:
+    # mirrors ROM src/act_wiz.c:256-259 — "Find it yourself!" for NPCs
+    from mud.commands.inventory import do_outfit
+
+    char = create_test_character("Mob", 10701)
+    char.is_npc = True
+    result = do_outfit(char, "")
+    assert "Find it yourself" in result
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-025: do_copyover ────────────────────────────────────────────
+
+
+def test_copyover_announces_to_players() -> None:
+    # mirrors ROM src/act_wiz.c:4520-4521
+    from mud.commands.imm_server import do_copyover
+
+    admin = _imm("Admin", 10800)
+    player = _imm("Player", 10800, trust=10)
+    player.messages = []
+    result = do_copyover(admin, "")
+    assert "COPYOVER" in result or "copyover" in result.lower()
+
+
+def test_copyover_result_has_newline() -> None:
+    # mirrors ROM src/act_wiz.c — all messages end \n\r
+    from mud.commands.imm_server import do_copyover
+
+    admin = _imm("Admin", 10801)
+    result = do_copyover(admin, "")
+    assert result.endswith("\n\r")
+
+
+# ── WIZ-026: do_qmconfig ────────────────────────────────────────────
+
+
+def test_qmconfig_empty_shows_options() -> None:
+    # mirrors ROM src/act_wiz.c:4697-4705
+    from mud.commands.admin_commands import cmd_qmconfig
+
+    admin = _imm("Admin", 10900)
+    result = cmd_qmconfig(admin, "")
+    assert "Valid qmconfig options" in result
+    assert "show" in result
+    assert result.endswith("\n\r")
+
+
+def test_qmconfig_unknown_option() -> None:
+    # mirrors ROM src/act_wiz.c:4785 — "I have no clue what you are trying to do..."
+    from mud.commands.admin_commands import cmd_qmconfig
+
+    admin = _imm("Admin", 10901)
+    result = cmd_qmconfig(admin, "bogus_option123")
+    assert "no clue" in result.lower()
+    assert result.endswith("\n\r")

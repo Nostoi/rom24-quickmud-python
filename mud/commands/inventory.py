@@ -9,10 +9,6 @@ from mud.commands.obj_manipulation import CONT_CLOSED, _can_drop_obj, _obj_from_
 from mud.handler import create_money
 from mud.models.character import Character
 from mud.models.constants import (
-    AffectFlag,
-    CommFlag,
-    ExtraFlag,
-    ItemType,
     OBJ_VNUM_COINS,
     OBJ_VNUM_GOLD_ONE,
     OBJ_VNUM_GOLD_SOME,
@@ -22,18 +18,21 @@ from mud.models.constants import (
     OBJ_VNUM_SCHOOL_SHIELD,
     OBJ_VNUM_SCHOOL_SWORD,
     OBJ_VNUM_SCHOOL_VEST,
-    PlayerFlag,
     OBJ_VNUM_SILVER_ONE,
     OBJ_VNUM_SILVER_SOME,
+    AffectFlag,
+    CommFlag,
+    ExtraFlag,
+    ItemType,
+    PlayerFlag,
     WeaponFlag,
     WearFlag,
 )
 from mud.net.protocol import broadcast_room
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils.act import act_format
-from mud.world.obj_find import get_obj_carry
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
-from mud.world.obj_find import get_obj_here
+from mud.world.obj_find import get_obj_carry, get_obj_here
 from mud.world.vision import can_see_object
 
 if TYPE_CHECKING:
@@ -868,10 +867,11 @@ def do_equipment(char: Character, args: str = "") -> str:
 
 
 def do_outfit(char: Character, args: str = "") -> str:
+    # mirrors ROM src/act_wiz.c:251-310
     if getattr(char, "is_npc", False) or int(getattr(char, "level", 0) or 0) > 5:
-        return "Find it yourself!"
+        return "Find it yourself!\n\r"
 
-    provided = give_school_outfit(char)
-    if not provided:
-        return "You already have your equipment."
-    return "You have been equipped by Mota."
+    give_school_outfit(char)
+    # ROM always says "You have been equipped by Mota." regardless of whether
+    # anything was actually equipped.
+    return "You have been equipped by Mota.\n\r"

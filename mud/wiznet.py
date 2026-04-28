@@ -8,9 +8,8 @@ from __future__ import annotations
 from enum import IntFlag
 from typing import TYPE_CHECKING, Any
 
-from mud.utils.act import act_format
 from mud.models.constants import LEVEL_IMMORTAL, MAX_LEVEL
-
+from mud.utils.act import act_format
 
 ROM_NEWLINE = "\n\r"
 
@@ -108,77 +107,134 @@ def wiznet(
     - min_level: minimum trust level required
 
     Immortals must have WIZ_ON and the given *flag* set to receive the message.
+
+    mirrors ROM src/act_wiz.c:171-194 — iterates descriptor_list with CON_PLAYING check.
+    Falls back to character_registry when descriptor_list is absent (test compat).
     """
-    from mud.models.character import character_registry
+    from mud import registry
 
     # Handle backward compatibility
     sender_ch = None
     if sender_ch_or_flag is not None:
         if isinstance(sender_ch_or_flag, WiznetFlag):
-            # Old signature: wiznet(message, flag)
             flag = sender_ch_or_flag
         else:
-            # New signature: sender_ch is provided
             sender_ch = sender_ch_or_flag
 
+    # mirrors ROM src/act_wiz.c:176 — iterate descriptor_list when available
+    descriptor_list = getattr(registry, "descriptor_list", None)
+
+    if descriptor_list is not None and len(descriptor_list) > 0:
+        _wiznet_via_descriptors(message, sender_ch, obj, flag, flag_skip, min_level, descriptor_list)
+    else:
+        _wiznet_via_registry(message, sender_ch, obj, flag, flag_skip, min_level)
+
+
+def _wiznet_via_descriptors(
+    message: str,
+    sender_ch: Any,
+    obj: Any,
+    flag: WiznetFlag | None,
+    flag_skip: WiznetFlag | None,
+    min_level: int,
+    descriptor_list: list,
+) -> None:
+    """ROM-faithful wiznet broadcast via descriptor_list (src/act_wiz.c:176)."""
+    for desc in descriptor_list:
+        d_char = getattr(desc, "character", None)
+        if d_char is None:
+            continue
+
+        # mirrors ROM src/act_wiz.c:178 — CON_PLAYING check
+        if getattr(desc, "connected", 0) != 1:
+            continue
+
+        # Skip sender (identity compare)
+        if sender_ch is not None and d_char is sender_ch:
+            continue
+
+        if not _wiznet_check(d_char, sender_ch, flag, flag_skip, min_level):
+            continue
+
+        _wiznet_deliver(d_char, message, sender_ch, obj)
+
+
+def _wiznet_via_registry(
+    message: str,
+    sender_ch: Any,
+    obj: Any,
+    flag: WiznetFlag | None,
+    flag_skip: WiznetFlag | None,
+    min_level: int,
+) -> None:
+    """Fallback wiznet broadcast via character_registry (test compat)."""
+    from mud.models.character import character_registry
+
     for ch in list(character_registry):
-        # Skip sender (identity compare to avoid recursive __eq__ graphs)
         if sender_ch is not None and ch is sender_ch:
             continue
-
-        # ROM wiznet iterates descriptor_list, which only contains PCs.
         if getattr(ch, "is_npc", True):
             continue
-
-        if (
-            getattr(ch, "desc", None) is None
-            and getattr(ch, "connection", None) is None
-            and not hasattr(ch, "messages")
-        ):
-            continue
-
-        # Must be immortal/admin
+        # mirrors ROM src/act_wiz.c:178 — IS_IMMORTAL check
         is_admin = bool(getattr(ch, "is_admin", False))
         is_immortal = False
-        if hasattr(ch, "is_immortal") and callable(getattr(ch, "is_immortal")):
-            try:
-                is_immortal = bool(ch.is_immortal())
-            except Exception:
-                is_immortal = False
-        else:
+        try:
+            is_immortal = (
+                bool(ch.is_immortal())
+                if hasattr(ch, "is_immortal") and callable(ch.is_immortal)
+                else _get_trust(ch) >= LEVEL_IMMORTAL
+            )
+        except Exception:
             is_immortal = _get_trust(ch) >= LEVEL_IMMORTAL
         if not (is_admin or is_immortal):
             continue
-
-        # Must have WIZ_ON
-        if not getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_ON:
+        if not _wiznet_check(ch, sender_ch, flag, flag_skip, min_level):
             continue
+        _wiznet_deliver(ch, message, sender_ch, obj)
 
-        # Check required flag
-        if flag and not getattr(ch, "wiznet", 0) & flag:
-            continue
 
-        # Check skip flag
-        if flag_skip and getattr(ch, "wiznet", 0) & flag_skip:
-            continue
+def _wiznet_check(
+    ch: Any,
+    sender_ch: Any,
+    flag: WiznetFlag | None,
+    flag_skip: WiznetFlag | None,
+    min_level: int,
+) -> bool:
+    """Check whether *ch* should receive a wiznet message."""
+    wiz = getattr(ch, "wiznet", 0)
+    if not wiz & WiznetFlag.WIZ_ON:
+        return False
+    if flag and not wiz & flag:
+        return False
+    if flag_skip and wiz & flag_skip:
+        return False
+    if _get_trust(ch) < min_level:
+        return False
+    return True
 
-        # Check min level (get_trust equivalent)
-        if _get_trust(ch) < min_level:
-            continue
 
-        if not hasattr(ch, "messages"):
-            continue
+def _wiznet_deliver(
+    ch: Any,
+    message: str,
+    sender_ch: Any,
+    obj: Any,
+) -> None:
+    """Format and deliver a wiznet message to *ch*."""
+    if not hasattr(ch, "messages"):
+        ch.messages = []
 
-        expanded = act_format(
-            message,
-            recipient=ch,
-            actor=sender_ch or ch,
-            arg1=obj,
-            arg2=sender_ch,
-        )
+    # mirrors ROM src/act_wiz.c:184-189
+    expanded = act_format(
+        message,
+        recipient=ch,
+        actor=sender_ch or ch,
+        arg1=obj,
+        arg2=sender_ch,
+    )
 
-        prefix = "{Z--> " if getattr(ch, "wiznet", 0) & WiznetFlag.WIZ_PREFIX else "{Z"
-        ch.messages.append(f"{prefix}{expanded}{ROM_NEWLINE}{{x")
+    wiz = getattr(ch, "wiznet", 0)
+    prefix = "{Z--> " if wiz & WiznetFlag.WIZ_PREFIX else "{Z"
+    ch.messages.append(f"{prefix}{expanded}{ROM_NEWLINE}{{x")
 
 
 def cmd_wiznet(char: Any, args: str) -> str:

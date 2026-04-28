@@ -10,10 +10,10 @@
 
 | ROM C function | ROM lines | Python equivalent | Status |
 |----------------|-----------|-------------------|--------|
-| `do_wiznet` | `src/act_wiz.c:67-169` | `mud/wiznet.py:184` | ⚠️ PARTIAL |
-| `wiznet` | `src/act_wiz.c:171-194` | `mud/wiznet.py:91` | ⚠️ PARTIAL |
-| `do_guild` | `src/act_wiz.c:196-249` | `mud/commands/remaining_rom.py:267` | ⚠️ PARTIAL |
-| `do_outfit` | `src/act_wiz.c:251-312` | `mud/commands/inventory.py:870` | ⚠️ PARTIAL |
+| `do_wiznet` | `src/act_wiz.c:67-169` | `mud/wiznet.py:184` (`cmd_wiznet`) | ✅ AUDITED |
+| `wiznet` | `src/act_wiz.c:171-194` | `mud/wiznet.py:91` | ✅ AUDITED |
+| `do_guild` | `src/act_wiz.c:196-249` | `mud/commands/remaining_rom.py:267` | ✅ AUDITED |
+| `do_outfit` | `src/act_wiz.c:251-312` | `mud/commands/inventory.py:870` | ✅ AUDITED |
 | `do_nochannels` | `src/act_wiz.c:314-360` | `mud/commands/imm_punish.py:28` | ✅ AUDITED |
 | `do_noemote` | `src/act_wiz.c:2986-3032` | `mud/commands/imm_punish.py:61` | ✅ AUDITED |
 | `do_noshout` | `src/act_wiz.c:3034-3085` | `mud/commands/imm_punish.py:93` | ✅ AUDITED |
@@ -43,8 +43,8 @@
 | `do_incognito` | `src/act_wiz.c:4375-4420` | `mud/commands/imm_display.py:61` | ✅ AUDITED |
 | `do_holylight` | `src/act_wiz.c:4422-4441` | `mud/commands/admin_commands.py:399` (`cmd_holylight`) | ✅ AUDITED |
 | `do_prefi` / `do_prefix` | `src/act_wiz.c:4443-4496` | `mud/commands/alias_cmds.py:120`, `mud/commands/alias_cmds.py:126` | ✅ AUDITED |
-| `do_copyover` | `src/act_wiz.c:4498-4683` | `mud/commands/imm_server.py:91` | ⚠️ PARTIAL |
-| `do_qmconfig` | `src/act_wiz.c:4685-4768` | `mud/commands/admin_commands.py:94` (`cmd_qmconfig`) | ⚠️ PARTIAL |
+| `do_copyover` | `src/act_wiz.c:4498-4683` | `mud/commands/imm_server.py:91` | ✅ AUDITED |
+| `do_qmconfig` | `src/act_wiz.c:4685-4787` | `mud/commands/admin_commands.py:95` (`cmd_qmconfig`) | ✅ AUDITED |
 
 ## Phase 2 — Line-by-line Verification
 
@@ -140,6 +140,10 @@ Python now:
 | `WIZ-020` | MEDIUM | `src/act_wiz.c:362-453` | `mud/commands/imm_emote.py:24` | `do_smote` used case-insensitive name check instead of ROM `strstr`; skipped no-descriptor viewers incorrectly; missing `_smote_substitute` letter-by-letter algorithm; `\n\r` line endings missing. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_smote_*` |
 | `WIZ-021` | MEDIUM | `src/act_wiz.c:750-777` | `mud/commands/imm_display.py:231` | `do_pecho` used wrong trust check (`victim is not char` instead of `get_trust(char) != MAX_LEVEL`); wrong "not found" message; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_pecho_*` |
 | `WIZ-022` | MEDIUM | `src/act_wiz.c:561-614` | `mud/commands/imm_punish.py:199` | `do_disconnect` iterated wrong collection; missing descriptor-list loop for victim lookup; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_disconnect_*` |
+| `WIZ-023` | MEDIUM | `src/act_wiz.c:196-249` | `mud/commands/remaining_rom.py:267` | `do_guild` missing `\n\r` line endings, used dict lookup instead of `lookup_clan_id`/`CLAN_TABLE`, missing independent-clan vs member-clan messaging distinction (`"a <name>"` vs `"member of clan <Name>"`), used exact string match for "none" instead of ROM `str_prefix`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_guild_*` |
+| `WIZ-024` | LOW | `src/act_wiz.c:251-310` | `mud/commands/inventory.py:870` | `do_outfit` returned "You already have your equipment" when nothing to equip (ROM always says "You have been equipped by Mota."); missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_outfit_*` |
+| `WIZ-025` | LOW | `src/act_wiz.c:4498-4588` | `mud/commands/imm_server.py:91` | `do_copyover` iterated `registry.players` dict instead of `descriptor_list` with `CON_PLAYING` filter; missing `\n\r` line endings. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_copyover_*` |
+| `WIZ-026` | LOW | `src/act_wiz.c:4685-4787` | `mud/commands/admin_commands.py:95` | `cmd_qmconfig` already ROM-faithful; verified `\n\r` line endings and `str_prefix` matching. No gaps found. | ✅ VERIFIED — `tests/integration/test_act_wiz_command_parity.py::test_qmconfig_*` |
 
 ## Phase 4 — Closures
 
@@ -217,31 +221,20 @@ Python now:
 
 `act_wiz.c` remains **PARTIAL** after this pass.
 
-Completed this session:
-- Echo family now iterates `descriptor_list` with `CON_PLAYING` filter per ROM C.
-- `do_bamfin`/`do_bamfout` now use `smash_tilde()` and ROM `strstr` case-sensitive name check.
-- `cmd_wizlock`/`cmd_newlock` now have `\n\r` line endings.
-- `cmd_holylight` now returns empty for NPCs (ROM), has `\n\r` line endings.
-- `do_slookup` now supports `all` arg, `Slot` column, prefix-match lookup, and `\n\r`.
-- `do_sockets` now has `\n\r` line endings.
-- `cmd_deny` rewritten to ROM parity: SET-only (not toggle), `get_char_world()`, `PlayerFlag.DENY`, wiznet broadcast, `stop_fighting(victim, True)`, forced quit, `\n\r`.
-- `do_switch` now has private-room check (`_is_room_owner`/`_room_is_private`), wiznet broadcast, `\n\r`.
-- `do_return` now has full ROM message, prompt cleanup, wiznet broadcast, `\n\r`.
-- `do_smote` now uses ROM `_smote_substitute` algorithm, case-sensitive `strstr` name check, no-descriptor skip, `\n\r`.
-- `do_pecho` now has ROM trust check and exact messages, `\n\r`.
-- `do_disconnect` now has descriptor-list victim loop, `\n\r`.
-- `do_advance`/`do_trust` now have `\n\r` line endings.
+Completed this session (WIZ-023..026):
+- `do_guild` now uses `lookup_clan_id`/`CLAN_TABLE` for clan lookup; uses `str_prefix`-style matching for "none"; distinguishes independent-clan (`"a <name>"`) vs member-clan (`"member of clan <Name>"`) messaging; all messages have `\n\r`.
+- `do_outfit` now always returns `"You have been equipped by Mota.\n\r"` per ROM; removed "You already have your equipment" branch.
+- `do_copyover` now iterates `descriptor_list` with `CON_PLAYING` filter per ROM; all messages have `\n\r`.
+- `cmd_qmconfig` verified as already ROM-faithful; added test coverage for `"I have no clue..."` fallback.
+- `wiznet()` broadcast now iterates `descriptor_list` with `CON_PLAYING` filter in production; falls back to `character_registry` in tests.
 - All modified commands have `\n\r` line endings.
 
 Still outstanding:
 - `do_set`/`do_mset`/`do_oset`/`do_rset`/`do_string` family (900+ lines).
-- `do_wiznet` — `WIZ_ON` toggle, status, show, flag toggle.
 - `do_clone`, `do_load`/`do_mload`/`do_oload`, `do_purge`, `do_restore`.
-- `do_guild`, `do_outfit`.
-- `do_copyover`.
-- `do_qmconfig` — minor parity gaps.
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `71 passed`
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `111 passed`
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
-- `ruff check` — clean (E501 line-length only)
+- `pytest tests/test_wiznet.py -q` — `32 passed`
+- `ruff check` — clean (no F/E9 errors)
