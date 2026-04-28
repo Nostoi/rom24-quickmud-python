@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ROM `interpret()` (`src/interp.c:401-404`). Previously emitted the
   literal `"What?"`. Test:
   `tests/integration/test_interp_dispatcher.py::test_interp_007_empty_input_returns_silently`.
+- `interp.c:INTERP-008` — added ROM punctuation aliases `.` → `gossip`,
+  `,` → `emote`, `/` → `recall` to `COMMAND_INDEX`
+  (`src/interp.c:184,186,272`). Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_008_punctuation_aliases_route_to_rom_handlers`.
 
 ## [2.6.8] - 2026-04-27
 
