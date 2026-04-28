@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
+from mud.math.c_compat import c_div
 from mud.loaders.reset_loader import validate_resets
 from mud.mobprog import clear_registered_programs, format_trigger_flag, get_registered_program
 from mud.models.constants import Direction, Sector
@@ -85,10 +86,13 @@ def mob_to_dict(mob) -> dict:
         "mana_dice": getattr(mob, "mana_dice", "1d1+0"),
         "damage_dice": getattr(mob, "damage_dice", "1d4+0"),
         "damage_type": getattr(mob, "damage_type", "beating"),
-        "ac_pierce": getattr(mob, "ac_pierce", 0),
-        "ac_bash": getattr(mob, "ac_bash", 0),
-        "ac_slash": getattr(mob, "ac_slash", 0),
-        "ac_exotic": getattr(mob, "ac_exotic", 0),
+        # MobIndex stores AC pre-multiplied by 10 (ROM src/db2.c:273-276);
+        # JSON mirrors the raw .are number, so divide back on write. Use
+        # c_div for ROM-style signed integer division parity.
+        "ac_pierce": c_div(getattr(mob, "ac_pierce", 0), 10),
+        "ac_bash": c_div(getattr(mob, "ac_bash", 0), 10),
+        "ac_slash": c_div(getattr(mob, "ac_slash", 0), 10),
+        "ac_exotic": c_div(getattr(mob, "ac_exotic", 0), 10),
         "offensive": getattr(mob, "offensive", ""),
         "immune": getattr(mob, "immune", ""),
         "resist": getattr(mob, "resist", ""),

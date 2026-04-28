@@ -435,10 +435,12 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             mana_dice=mob_data.get("mana_dice", "1d1+0"),
             damage_dice=mob_data.get("damage_dice", "1d4+0"),
             damage_type=mob_data.get("damage_type", "beating"),
-            ac_pierce=mob_data.get("ac_pierce", 0),
-            ac_bash=mob_data.get("ac_bash", 0),
-            ac_slash=mob_data.get("ac_slash", 0),
-            ac_exotic=mob_data.get("ac_exotic", 0),
+            # JSON files mirror the raw .are number; mirror ROM
+            # src/db2.c:273-276 by multiplying each AC field by 10 on read.
+            ac_pierce=int(mob_data.get("ac_pierce", 0)) * 10,
+            ac_bash=int(mob_data.get("ac_bash", 0)) * 10,
+            ac_slash=int(mob_data.get("ac_slash", 0)) * 10,
+            ac_exotic=int(mob_data.get("ac_exotic", 0)) * 10,
             offensive=mob_data.get("offensive", ""),
             immune=mob_data.get("immune", ""),
             resist=mob_data.get("resist", ""),

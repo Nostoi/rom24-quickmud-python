@@ -80,12 +80,13 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
             damage_dice = stats_line[5] if len(stats_line) > 5 else "1d4+0"
             damage_type = stats_line[6] if len(stats_line) > 6 else "beating"
 
-            # Parse armor class values
+            # Parse armor class values; mirrors ROM src/db2.c:273-276 which
+            # stores ``fread_number(fp) * 10`` for each AC field.
             ac_line = tokenizer.next_line().split()
-            ac_pierce = int(ac_line[0]) if len(ac_line) > 0 and ac_line[0].lstrip("-").isdigit() else 0
-            ac_bash = int(ac_line[1]) if len(ac_line) > 1 and ac_line[1].lstrip("-").isdigit() else 0
-            ac_slash = int(ac_line[2]) if len(ac_line) > 2 and ac_line[2].lstrip("-").isdigit() else 0
-            ac_exotic = int(ac_line[3]) if len(ac_line) > 3 and ac_line[3].lstrip("-").isdigit() else 0
+            ac_pierce = (int(ac_line[0]) * 10) if len(ac_line) > 0 and ac_line[0].lstrip("-").isdigit() else 0
+            ac_bash = (int(ac_line[1]) * 10) if len(ac_line) > 1 and ac_line[1].lstrip("-").isdigit() else 0
+            ac_slash = (int(ac_line[2]) * 10) if len(ac_line) > 2 and ac_line[2].lstrip("-").isdigit() else 0
+            ac_exotic = (int(ac_line[3]) * 10) if len(ac_line) > 3 and ac_line[3].lstrip("-").isdigit() else 0
 
             # Parse off/imm/res/vuln flags
             flags_line = tokenizer.next_line().split()

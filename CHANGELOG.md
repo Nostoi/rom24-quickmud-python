@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `DB2-006` — mob armor-class fields (`ac_pierce`/`ac_bash`/`ac_slash`/`ac_exotic`)
+  are now multiplied by 10 at load time in both the `.are` loader
+  (`mud/loaders/mob_loader.py`) and the JSON loader (`mud/loaders/json_loader.py`),
+  mirroring ROM `src/db2.c:273-276`. Previously every loaded NPC had an AC value
+  10× off in ROM's negative-AC convention, making them noticeably easier to hit.
+  `mud/scripts/convert_are_to_json.py` now divides back when re-emitting JSON so
+  the JSON files stay a faithful mirror of the raw `.are` upstream.
+
 ## [2.6.13] - 2026-04-28
 
 Closes the cross-file dependency that blocked `interp.c` completion:
