@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
+from mud.models.constants import Position
 from mud.models.social import expand_placeholders, social_registry
 
 
@@ -8,6 +9,15 @@ def perform_social(char: Character, name: str, arg: str) -> str:
     social = social_registry.get(name.lower())
     if social is None or char.room is None:
         return "Huh?"
+    # mirroring ROM src/interp.c:603-616 — position gates from check_social.
+    # POS_SLEEPING (with the snore exception) is INTERP-019 and handled there.
+    position = getattr(char, "position", Position.STANDING)
+    if position == Position.DEAD:
+        return "Lie still; you are DEAD."
+    if position in (Position.MORTAL, Position.INCAP):
+        return "You are hurt far too bad for that."
+    if position == Position.STUNNED:
+        return "You are too stunned to do that."
     victim = None
     if arg:
         arg_lower = arg.lower()

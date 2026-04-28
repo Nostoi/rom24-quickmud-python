@@ -260,3 +260,60 @@ class TestMultipleSocials:
                 alice.room.people.remove(observer)
             if observer in character_registry:
                 character_registry.remove(observer)
+
+
+class TestSocialPositionGates:
+    """ROM parity: src/interp.c:603-616 (check_social) — INTERP-018.
+
+    A character in DEAD/INCAP/MORTAL/STUNNED cannot perform any social;
+    the dispatcher must short-circuit with the matching ROM message and
+    must not broadcast char_no_arg / others_no_arg into the room.
+    """
+
+    def test_dead_character_cannot_social(self, alice, bob):
+        # mirrors ROM src/interp.c:605-607 — POS_DEAD blocks all socials.
+        alice.position = Position.DEAD
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "Lie still; you are DEAD."
+        assert alice.messages == []
+        assert bob.messages == []
+
+    def test_mortal_character_cannot_social(self, alice, bob):
+        # mirrors ROM src/interp.c:609-612 — POS_MORTAL/POS_INCAP block socials.
+        alice.position = Position.MORTAL
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "You are hurt far too bad for that."
+        assert alice.messages == []
+        assert bob.messages == []
+
+    def test_incap_character_cannot_social(self, alice, bob):
+        # mirrors ROM src/interp.c:609-612 — POS_INCAP shares the MORTAL message.
+        alice.position = Position.INCAP
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "You are hurt far too bad for that."
+        assert alice.messages == []
+        assert bob.messages == []
+
+    def test_stunned_character_cannot_social(self, alice, bob):
+        # mirrors ROM src/interp.c:614-616 — POS_STUNNED has its own message.
+        alice.position = Position.STUNNED
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "You are too stunned to do that."
+        assert alice.messages == []
+        assert bob.messages == []

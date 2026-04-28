@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `interp.c:INTERP-018` — `perform_social` now refuses socials from
+  characters in `Position.DEAD`, `MORTAL`, `INCAP`, or `STUNNED` and
+  emits ROM's exact response messages
+  (`"Lie still; you are DEAD."`, `"You are hurt far too bad for that."`,
+  `"You are too stunned to do that."`). Mirrors
+  `src/interp.c:603-616` (`check_social` position gate).
+
 ## [2.6.5] - 2026-04-27
 
 `mob_prog.c` ROM parity audit complete — all 7 gaps closed (2 CRITICAL,
