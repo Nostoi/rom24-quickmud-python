@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.12] - 2026-04-28
+
+Closes the remaining `interp.c` parser/extension gaps:
+`INTERP-015` (port ROM `one_argument` to replace `shlex.split`) and
+`INTERP-016` (verify `tail_chain` is a no-op in stock ROM and close-defer).
+`interp.c` is now 22/24 gaps fixed + 1 closed-deferred + 1 deferred-pending
+(`INTERP-013`, blocked on `ACT_OBJ_C` `do_wear` port).
+
+### Fixed
+
+- `interp.c:INTERP-015` — `_split_command_and_args` no longer routes
+  through `shlex.split`; the new `_one_argument()` mirrors ROM
+  `src/interp.c:766-798` byte-for-byte (lowercases head, single-char
+  `'` and `"` quote sentinels with no nesting, backslash treated
+  literally, surrounding whitespace stripped). `shlex` import dropped.
+  Tests:
+  `tests/integration/test_interp_dispatcher.py::test_interp_015_one_argument_matches_rom`
+  (8 cases).
+
+### Changed
+
+- `interp.c:INTERP-016` — closed-deferred. Confirmed `tail_chain()`
+  is `return;` only in stock ROM 2.4b6 (`src/db.c:3929`); empty
+  hook used by some ROM derivatives for stack-tail-call extension.
+  Stock-ROM behavior is "do nothing", which Python already matches
+  by omission.
+- `tests/test_alias_parity.py::test_alias_case_sensitivity` renamed
+  to `test_alias_case_insensitive_lookup_matches_rom` and flipped to
+  assert ROM-correct behavior — ROM `do_alias` stores keys via
+  `one_argument` which lowercases (`src/alias.c:127, 217`), so an
+  uppercase input head expands a lowercased alias key. The previous
+  Python assertion mirrored pre-port `shlex` behavior, not ROM.
+
 ## [2.6.11] - 2026-04-28
 
 Closes the three small position/trust gates left in `interp.c`

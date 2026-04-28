@@ -1,48 +1,47 @@
-# Session Status — 2026-04-28 — `interp.c` 20/24 gaps closed
+# Session Status — 2026-04-28 — `interp.c` 22/24 fixed (+1 deferred, +1 closed-deferred)
 
 ## Current State
 
-- **Active audit**: `interp.c` (Phase 4 — gap closure;
-  20 of 24 gaps closed).
-- **Last completed**: INTERP-004/005/006 position/trust gates
-  (`shout` min_trust=3, `murder` min_trust=5, `music`
-  min_position=SLEEPING) plus `make_player` test fixture uplift to
-  `LEVEL_HERO-1` so mortal-channel tests still pass.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_INTERP_POSITION_TRUST_GATES.md](SESSION_SUMMARY_2026-04-28_INTERP_POSITION_TRUST_GATES.md)
+- **Active audit**: `interp.c` (Phase 4 — only `INTERP-013` remains
+  open, blocked on `ACT_OBJ_C` `do_wear` port).
+- **Last completed**: INTERP-015 (`one_argument` Python port replacing
+  `shlex.split`) and INTERP-016 (`tail_chain` verified empty in stock
+  ROM, closed-deferred). Plus a test correction in
+  `test_alias_parity.py` to assert ROM-faithful case-insensitive
+  alias lookup.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_INTERP_ONE_ARGUMENT_AND_TAIL_CHAIN.md](SESSION_SUMMARY_2026-04-28_INTERP_ONE_ARGUMENT_AND_TAIL_CHAIN.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.11 |
-| Tests (interp_dispatcher suite) | 20 / 20 passing |
+| Version | 2.6.12 |
+| Tests (interp_dispatcher suite) | 28 / 28 passing |
 | Tests (interp_prefix_order suite) | 45 / 45 passing |
-| Tests (test_communication.py) | 17 / 17 passing |
-| Tests (full integration + alias + help + comm sweep) | all green after fixture fix |
-| ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial) |
-| `interp.c` gaps closed | 20 / 24 (83%) |
-| Active focus | `interp.c` — INTERP-013 (blocked on ACT_OBJ_C wear-port), INTERP-015 (shlex/one_argument), INTERP-016 (defer-document) |
+| Tests (test_alias_parity.py) | 14 / 14 passing |
+| Tests (full integration + alias + help + comm sweep) | 1229 / 1229 passing, 10 skipped (~3 min) |
+| ROM C files audited | 16 / 43 (no change — `interp.c` still ⚠️ Partial pending INTERP-013) |
+| `interp.c` gaps closed | 22 / 24 fixed + 1 closed-deferred + 1 deferred-pending (92%+) |
+| Active focus | `ACT_OBJ_C_AUDIT.md` — file `WEAR-001`/`WEAR-002` for the wield/hold pieces missing from `do_wear`, then collapse to satisfy `INTERP-013` |
 
 ## Recent Commits (this iteration)
 
-- `73d4261` — `fix(parity): interp.c:INTERP-004 — shout requires trust 3`
-- `3058388` — `fix(parity): interp.c:INTERP-005 — murder requires trust 5`
-- `1c755c7` — `fix(parity): interp.c:INTERP-006 — music min_position SLEEPING`
-- `1ac6d92` — `test(parity): give make_player hero-level trust for shout/murder gates`
+- `22fa717` — `fix(parity): interp.c:INTERP-015 — port ROM one_argument; close INTERP-016`
 
 ## Next Intended Task
 
-The remaining `interp.c` work:
+The remaining `interp.c` work blocks on `ACT_OBJ_C`:
 
-1. **INTERP-013** — port the missing wield/hold behavior into
-   `do_wear` (STR check, weapon-skill flavor, two-hand conflict, HOLD
-   auto-unequip) under new `WEAR-001`/`WEAR-002` gap IDs in
-   `ACT_OBJ_C_AUDIT.md`, then collapse `do_wield`/`do_hold` into
-   aliases on `do_wear`.
-2. **INTERP-015** — replace `shlex.split` in `_split_command_and_args`
-   with a ROM-faithful `one_argument` port (backslash semantics).
-3. **INTERP-016** — document `tail_chain()` as a no-op extension
-   hook; defer.
+1. **`ACT_OBJ_C` add-on gaps** in `docs/parity/ACT_OBJ_C_AUDIT.md`:
+   - `WEAR-001` — port STR wield-weight check, weapon-skill flavor
+     message, two-hand vs shield conflict from
+     `mud/commands/equipment.py:do_wield` into `do_wear`.
+   - `WEAR-002` — port HOLD auto-unequip behavior from ROM
+     `wear_obj()` (`src/act_obj.c:1670-1678`) into `do_wear`; the
+     current Python `do_hold` rejects with "already holding" instead
+     of removing the existing item.
+2. After `WEAR-001`/`WEAR-002` close, collapse `do_wield`/`do_hold`
+   into aliases on `do_wear` to satisfy `INTERP-013`.
 
 ## Outstanding Cleanup (carried over)
 
