@@ -18,6 +18,10 @@ def perform_social(char: Character, name: str, arg: str) -> str:
         return "You are hurt far too bad for that."
     if position == Position.STUNNED:
         return "You are too stunned to do that."
+    # mirroring ROM src/interp.c:618-626 — POS_SLEEPING blocks every social
+    # except "snore" (the canonical Furey exception).
+    if position == Position.SLEEPING and name.lower() != "snore":
+        return "In your dreams, or what?"
     victim = None
     if arg:
         arg_lower = arg.lower()

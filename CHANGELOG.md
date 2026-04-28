@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`"Lie still; you are DEAD."`, `"You are hurt far too bad for that."`,
   `"You are too stunned to do that."`). Mirrors
   `src/interp.c:603-616` (`check_social` position gate).
+- `interp.c:INTERP-019` — sleeping characters now receive
+  `"In your dreams, or what?"` for every social except `snore`
+  (the canonical Furey exception). Mirrors `src/interp.c:618-626`.
 
 ## [2.6.5] - 2026-04-27
 

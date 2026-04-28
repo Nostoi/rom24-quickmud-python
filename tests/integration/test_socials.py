@@ -317,3 +317,31 @@ class TestSocialPositionGates:
         assert result == "You are too stunned to do that."
         assert alice.messages == []
         assert bob.messages == []
+
+    def test_sleeping_character_cannot_social_except_snore(self, alice, bob):
+        # mirrors ROM src/interp.c:618-626 — POS_SLEEPING blocks all socials
+        # except "snore" with the message "In your dreams, or what?".
+        alice.position = Position.SLEEPING
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "In your dreams, or what?"
+        assert alice.messages == []
+        assert bob.messages == []
+
+    def test_sleeping_character_can_still_snore(self, alice, bob):
+        # mirrors ROM src/interp.c:623-624 — "snore" bypasses the sleeping gate.
+        alice.position = Position.SLEEPING
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "snore", "")
+
+        # Guard: the fix must not over-broadcast and break "snore". The
+        # social succeeds (empty return), and both actor and observer
+        # receive the social text (which is "Zzzzzzzzzzzzzzzzz." in stock data).
+        assert result == ""
+        assert len(alice.messages) > 0
+        assert len(bob.messages) > 0
