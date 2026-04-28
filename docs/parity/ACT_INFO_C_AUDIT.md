@@ -114,7 +114,7 @@ These are the most commonly used commands in ROM - essential for player experien
 | ROM C Function | ROM Lines | QuickMUD Location | Status | Priority | Notes |
 |----------------|-----------|-------------------|--------|----------|-------|
 | `do_look()` | 1037-1313 | ✅ `mud/commands/inspection.py:117` + `mud/world/look.py` | 🔄 **AUDITING** | **P0** | **PRIMARY COMMAND** - 277 ROM C lines vs 282 Python lines |
-| `do_read()` | 1315-1318 | ✅ `mud/commands/info_extended.py` | ❌ **NOT AUDITED** | P1 | Read object text (wrapper for look) |
+| `do_read()` | 1315-1318 | ✅ `mud/commands/info_extended.py:99` | ✅ **AUDITED — 100%** | P1 | 4-line ROM wrapper: `do_function(ch, &do_look, argument)`. Python `do_read` returns `do_look(char, args)`. Dispatcher registers `Command("read", do_read, min_position=Position.RESTING)` matching `src/interp.c:124`. Zero gaps. |
 | `do_examine()` | 1320-1391 | ✅ `mud/commands/info_extended.py:13` | ✅ **100% COMPLETE!** | **P1** | **2 CRITICAL GAPS FIXED!** Examine objects (11/11 tests passing) 🎉 |
 | `do_exits()` | 1393-1451 | ✅ `mud/commands/inspection.py:133` | ✅ **100% COMPLETE!** | **P1** | **100% ROM PARITY!** Show exits (12/12 tests passing) 🎉 |
 | `do_worth()` | 1453-1475 | ✅ `mud/commands/info_extended.py:228` | ✅ **100% COMPLETE!** | **P1** | **100% ROM PARITY!** Show gold/exp (10/10 tests passing) 🎉 |
