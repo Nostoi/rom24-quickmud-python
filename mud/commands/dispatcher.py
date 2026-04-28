@@ -286,7 +286,8 @@ COMMANDS: list[Command] = [
     Command("quote", do_quote, min_position=Position.RESTING),
     Command("question", do_question, min_position=Position.RESTING),
     Command("answer", do_answer, min_position=Position.RESTING),
-    Command("music", do_music, min_position=Position.RESTING),
+    # ROM src/interp.c:93 — music allowed while sleeping.
+    Command("music", do_music, min_position=Position.SLEEPING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
     Command("clantalk", do_clantalk, min_position=Position.SLEEPING),  # ROM alias
     # ROM src/interp.c:356 — `:` is a cmd_table alias for do_immtalk.
