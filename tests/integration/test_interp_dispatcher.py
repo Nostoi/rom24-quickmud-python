@@ -266,3 +266,22 @@ def test_interp_003_logged_command_mirrors_to_wiznet_secure(test_room, monkeypat
         assert message.startswith("Log Logger: ")
     finally:
         test_room.people.remove(char)
+
+
+def test_interp_013_wear_wield_hold_share_do_wear():
+    """ROM src/interp.c:103,215,232 — cmd_table maps "wear", "wield", and
+    "hold" all to the same C function `do_wear`. ROM has no separate
+    do_wield/do_hold; wear_obj() dispatches via CAN_WEAR(obj, ITEM_X).
+    Python collapses do_wield/do_hold into aliases on do_wear.
+    """
+    cmd_wear = COMMAND_INDEX["wear"]
+    cmd_wield = COMMAND_INDEX["wield"]
+    cmd_hold = COMMAND_INDEX["hold"]
+
+    assert cmd_wear.func is do_wear
+    assert cmd_wield.func is do_wear, (
+        f"wield should dispatch to do_wear, got {cmd_wield.func.__name__}"
+    )
+    assert cmd_hold.func is do_wear, (
+        f"hold should dispatch to do_wear, got {cmd_hold.func.__name__}"
+    )

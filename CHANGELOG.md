@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.13] - 2026-04-28
+
+Closes the cross-file dependency that blocked `interp.c` completion:
+`WEAR-010` (do_wear dispatches weapons to wield) and `WEAR-011`
+(do_hold auto-replaces) cleared the way for `INTERP-013` to collapse
+`do_wield`/`do_hold` into aliases on `do_wear`, mirroring ROM
+`cmd_table[]`. `interp.c` now closes at **24/24 fixed + 1
+closed-deferred**.
+
 ### Fixed
 
 - `act_obj.c:WEAR-010` — `do_wear` now dispatches `ITEM_WEAPON` items
@@ -21,6 +30,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `src/act_obj.c:1670-1677` `remove_obj(WEAR_HOLD, fReplace=TRUE)`
   semantics. Tests:
   `tests/integration/test_equipment_system.py::test_wear_011_do_hold_auto_replaces_existing_held`.
+- `interp.c:INTERP-013` — `wield` and `hold` now dispatch to `do_wear`
+  via the dispatcher's `aliases=("wield", "hold")` on the `wear`
+  Command, mirroring ROM `cmd_table[]` (src/interp.c:103, 215, 232).
+  `do_wield`/`do_hold` collapsed to thin wrappers around `do_wear`
+  for direct-import callers. Closes `interp.c` to **24/24 fixed +
+  1 closed-deferred** (100% of closeable gaps). Tests:
+  `tests/integration/test_interp_dispatcher.py::test_interp_013_wear_wield_hold_share_do_wear`.
+
+### Changed
+
+- `wield <non-weapon>` and `hold <non-holdable>` no longer reject with
+  command-specific errors ("You can't wield that." / "You can't hold
+  that."). They now run the full `do_wear` dispatcher, so
+  e.g. `wield ring` wears the ring on a finger — ROM-faithful since
+  ROM has no separate `do_wield`/`do_hold` functions.
+- `wield` and `hold` with no argument now emit
+  `"Wear, wield, or hold what?"` instead of `"Wield what?"` /
+  `"Hold what?"`, mirroring ROM's single-prompt design.
 
 ## [2.6.12] - 2026-04-28
 

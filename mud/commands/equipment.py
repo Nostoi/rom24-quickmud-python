@@ -280,43 +280,12 @@ def do_wear(ch: Character, args: str) -> str:
 
 
 def do_wield(ch: Character, args: str) -> str:
+    """ROM alias — `wield` and `wear` are the same command in ROM
+    (src/interp.c:103, 232 both map to `do_wear`). The dispatcher
+    registers `wield` as an alias on the `wear` Command; this thin
+    wrapper preserves direct-import callers (tests, scripts).
     """
-    Wield a weapon.
-
-    ROM Reference: src/act_obj.c lines 1279-1380 (do_wear, weapon section)
-    """
-    args = args.strip()
-
-    if not args:
-        return "Wield what?"
-
-    # Find object in inventory
-    obj = _find_obj_inventory(ch, args)
-    if not obj:
-        return "You do not have that item."
-
-    # Check if already wielding
-    if getattr(obj, "worn_by", None) == ch:
-        return "You are already using that."
-
-    # Check position
-    if ch.position < Position.SLEEPING:
-        return "You can't do that right now."
-
-    # Check level restriction (ROM src/act_obj.c:1405-1413)
-    obj_level = getattr(obj.prototype, "level", 0)
-    char_level = getattr(ch, "level", 1)
-    if char_level < obj_level:
-        _broadcast_level_fail(ch, obj)
-        return f"You must be level {obj_level} to use this object."
-
-    # Check if it's a weapon (read from prototype)
-    item_type_str = getattr(obj.prototype, "item_type", None)
-    item_type = int(item_type_str) if item_type_str else ItemType.TRASH
-    if item_type != ItemType.WEAPON:
-        return "You can't wield that."
-
-    return _dispatch_wield(ch, obj)
+    return do_wear(ch, args)
 
 
 def _dispatch_wield(ch: Character, obj: Object) -> str:
@@ -412,95 +381,12 @@ def _weapon_skill_flavor(ch: Character, obj: Object) -> str | None:
 
 
 def do_hold(ch: Character, args: str) -> str:
+    """ROM alias — `hold` and `wear` are the same command in ROM
+    (src/interp.c:215, 232 both map to `do_wear`). The dispatcher
+    registers `hold` as an alias on the `wear` Command; this thin
+    wrapper preserves direct-import callers (tests, scripts).
     """
-    Hold an item (lights, instruments, etc.).
-
-    ROM Reference: src/act_obj.c lines 1186-1277 (do_wear, hold section)
-    """
-    args = args.strip()
-
-    if not args:
-        return "Hold what?"
-
-    # Find object in inventory
-    obj = _find_obj_inventory(ch, args)
-    if not obj:
-        return "You do not have that item."
-
-    # Check if already holding
-    if getattr(obj, "worn_by", None) == ch:
-        return "You are already holding that."
-
-    # Check position
-    if ch.position < Position.SLEEPING:
-        return "You can't do that right now."
-
-    # Check level restriction (ROM src/act_obj.c:1405-1413)
-    obj_level = getattr(obj.prototype, "level", 0)
-    char_level = getattr(ch, "level", 1)
-    if char_level < obj_level:
-        _broadcast_level_fail(ch, obj)
-        return f"You must be level {obj_level} to use this object."
-
-    # Check if it can be held (read from prototype)
-    wear_flags = getattr(obj.prototype, "wear_flags", 0)
-    wear_flags = int(wear_flags) if wear_flags else 0  # Convert string to int if needed
-    if not (wear_flags & WearFlag.HOLD):
-        return "You can't hold that."
-
-    # Check if hold slot is occupied
-    equipment = getattr(ch, "equipment", {})
-    wear_loc = WearLocation.HOLD
-
-    # ROM src/act_obj.c:1670-1677 — HOLD branch calls remove_obj(WEAR_HOLD,
-    # fReplace=TRUE) which auto-unequips the existing held item before
-    # equipping the new one. ROM cmd_table maps "hold" to do_wear, so the
-    # same auto-replace behavior applies whether the user typed "wear",
-    # "wield", or "hold".
-    if wear_loc in equipment and equipment[wear_loc] is not None:
-        existing = equipment[wear_loc]
-        if not _unequip_to_inventory(ch, existing):
-            return ""
-
-    # Check alignment restrictions (ROM src/handler.c:1765-1777)
-    can_hold, error_msg = _can_wear_alignment(ch, obj)
-    if not can_hold:
-        return error_msg or "You cannot hold that item."
-
-    # Hold the item
-    if not equipment:
-        ch.equipment = {}
-    ch.equipment[wear_loc] = obj
-    obj.worn_by = ch
-
-    # Remove from inventory
-    inventory = getattr(ch, "inventory", [])
-    if obj in inventory:
-        inventory.remove(obj)
-
-    # Apply equipment bonuses (ROM src/handler.c:equip_char)
-    equip_char(ch, obj, wear_loc)
-
-    obj_name = getattr(obj, "short_descr", "something")
-    ch_name = getattr(ch, "name", "Someone")
-
-    # ROM act_obj.c:1415-1423 (LIGHT) vs 1670-1677 (HOLD).
-    item_type_str = getattr(obj.prototype, "item_type", None)
-    item_type = int(item_type_str) if item_type_str else ItemType.TRASH
-    if item_type == ItemType.LIGHT:
-        broadcast_room(
-            getattr(ch, "room", None),
-            f"{ch_name} lights {obj_name} and holds it.",
-            exclude=ch,
-        )
-        return f"You light {obj_name} and hold it."
-
-    broadcast_room(
-        getattr(ch, "room", None),
-        f"{ch_name} holds {obj_name} in their hand.",
-        exclude=ch,
-    )
-    return f"You hold {obj_name} in your hand."
+    return do_wear(ch, args)
 
 
 def _wear_all(ch: Character) -> str:

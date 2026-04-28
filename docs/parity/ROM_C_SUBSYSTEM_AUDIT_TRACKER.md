@@ -69,7 +69,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `act_info.c` | P1 | ✅ **COMPLETE!** | `mud/commands/info.py`, `mud/commands/character.py`, `mud/commands/auto_settings.py`, `mud/commands/misc_info.py` | **100%** | **🎉🎉🎉 FULL PARITY - ALL 38 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 8 - 273/273 integration tests - See ACT_INFO_C_AUDIT.md |
 | `act_obj.c` | P1 | ✅ **COMPLETE!** | `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py` | **100%** | 🎉 **FULL PARITY** — Apr 27, 2026 refresh sweep verified all 12 audited functions (get/put/drop/give/remove/sacrifice/quaff/drink/eat/fill/pour/recite/brandish/zap/wear/wield/hold/steal) at 100%; 193 integration tests green. See ACT_OBJ_C_AUDIT.md. |
 | `act_wiz.c` | P2 | ⚠️ Partial | `mud/commands/admin.py` | 40% | Admin commands basic |
-| `interp.c` | P0 | ⚠️ Partial | `mud/commands/dispatcher.py` | 80% | Command dispatch works |
+| `interp.c` | P0 | ✅ **COMPLETE!** | `mud/commands/dispatcher.py` | **100%** | 🎉 **FULL PARITY** — Apr 28, 2026: 24/24 gaps fixed + 1 closed-deferred. All command-mapping (INTERP-009..014), prefix-order (INTERP-017), `do_commands` formatting (INTERP-024), `one_argument` port (INTERP-015), and `tail_chain` extension hook (INTERP-016 closed-deferred) verified. See INTERP_C_AUDIT.md. |
 | **Database & World** | | | | | |
 | `db.c` | P1 | ✅ **COMPLETE!** | `mud/loaders/`, `mud/spawning/`, `mud/utils/math_utils.py`, `mud/utils/rng_mm.py`, `mud/utils/text.py`, `mud/registry.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 44 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - See DB_C_AUDIT.md |
 | `db2.c` | P1 | ⚠️ Partial | `mud/loaders/` | 55% | Continuation of db.c |
@@ -295,9 +295,9 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ⚠️ P0-7: interp.c (PARTIAL - 80%)
+### ✅ P0-7: interp.c (COMPLETE - 100%)
 
-**Status**: ⚠️ **Partial audit**
+**Status**: ✅ **FULL PARITY** (Apr 28, 2026 — 24/24 gaps fixed + 1 closed-deferred)
 
 **ROM Functions**: Command interpreter
 **QuickMUD Module**: `mud/commands/dispatcher.py`

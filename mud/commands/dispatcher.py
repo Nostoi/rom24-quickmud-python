@@ -333,9 +333,8 @@ COMMANDS: list[Command] = [
     Command("brandish", do_brandish, min_position=Position.RESTING),
     Command("zap", do_zap, min_position=Position.RESTING),
     # Equipment
-    Command("wear", do_wear, min_position=Position.RESTING),
-    Command("wield", do_wield, min_position=Position.RESTING),
-    Command("hold", do_hold, min_position=Position.RESTING),
+    # ROM src/interp.c:103, 215, 232 — "wear", "wield", "hold" all map to do_wear.
+    Command("wear", do_wear, aliases=("wield", "hold"), min_position=Position.RESTING),
     # Consumption
     Command("eat", do_eat, min_position=Position.RESTING),
     Command("drink", do_drink, min_position=Position.RESTING),
