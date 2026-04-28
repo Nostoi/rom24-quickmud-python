@@ -75,7 +75,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `db2.c` | P1 | ⚠️ Partial | `mud/loaders/` | 55% | Continuation of db.c |
 | `save.c` | P1 | ✅ **COMPLETE!** | `mud/persistence.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED  - ALL 8 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - Pet persistence + 17 integration tests - See SAVE_C_AUDIT.md |
 | **Mob Programs** | | | | | |
-| `mob_prog.c` | P1 | ⚠️ Partial | `mud/mobprog/` | 75% | Quest/combat progs tested |
+| `mob_prog.c` | P1 | ✅ Complete | `mud/mobprog.py` | 100% | Apr 27, 2026 — all 7 audit gaps closed (MOBPROG-001..007: 2 CRITICAL, 4 IMPORTANT, 1 MINOR). Integration coverage in `tests/integration/test_mobprog_predicates.py`, `test_mobprog_greet_trigger.py`, `test_mobprog_program_flow.py`. See `MOB_PROG_C_AUDIT.md`. |
 | `mob_cmds.c` | P1 | ✅ Complete | `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py` | 100% | Apr 27, 2026 — all 18 gaps closed (6 CRITICAL, 9 IMPORTANT, 3 MINOR). Integration coverage in `tests/integration/test_mob_cmds_*.py`. See `MOB_CMDS_C_AUDIT.md`. |
 | **OLC (Online Creation)** | | | | | |
 | `olc.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Basic OLC exists |

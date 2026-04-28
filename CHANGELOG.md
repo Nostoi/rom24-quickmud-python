@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.5] - 2026-04-27
+
+`mob_prog.c` ROM parity audit complete — all 7 gaps closed (2 CRITICAL,
+4 IMPORTANT, 1 MINOR). MOBprog predicate evaluation, greet/grall trigger
+exclusivity, $-code expansion, and program-flow state-machine now match
+ROM 2.4b6 behaviour.
+
 ### Fixed
 
 - MOBPROG-007: `_program_flow` now logs a warning and aborts the program when
