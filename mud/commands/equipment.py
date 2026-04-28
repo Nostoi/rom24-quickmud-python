@@ -452,10 +452,15 @@ def do_hold(ch: Character, args: str) -> str:
     equipment = getattr(ch, "equipment", {})
     wear_loc = WearLocation.HOLD
 
+    # ROM src/act_obj.c:1670-1677 — HOLD branch calls remove_obj(WEAR_HOLD,
+    # fReplace=TRUE) which auto-unequips the existing held item before
+    # equipping the new one. ROM cmd_table maps "hold" to do_wear, so the
+    # same auto-replace behavior applies whether the user typed "wear",
+    # "wield", or "hold".
     if wear_loc in equipment and equipment[wear_loc] is not None:
         existing = equipment[wear_loc]
-        existing_name = getattr(existing, "short_descr", "something")
-        return f"You're already holding {existing_name}."
+        if not _unequip_to_inventory(ch, existing):
+            return ""
 
     # Check alignment restrictions (ROM src/handler.c:1765-1777)
     can_hold, error_msg = _can_wear_alignment(ch, obj)

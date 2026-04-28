@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `src/act_obj.c:1401-1697` `wear_obj` single-dispatcher design where
   `do_wear`/`do_wield`/`do_hold` are all the same function. Tests:
   `tests/integration/test_equipment_system.py::test_wear_010_do_wear_dispatches_weapon_to_wield`.
+- `act_obj.c:WEAR-011` — `do_hold` now auto-unequips an existing held
+  item via `_unequip_to_inventory()` instead of rejecting with
+  "You're already holding {name}." Mirrors ROM
+  `src/act_obj.c:1670-1677` `remove_obj(WEAR_HOLD, fReplace=TRUE)`
+  semantics. Tests:
+  `tests/integration/test_equipment_system.py::test_wear_011_do_hold_auto_replaces_existing_held`.
 
 ## [2.6.12] - 2026-04-28
 
