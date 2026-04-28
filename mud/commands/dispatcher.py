@@ -638,6 +638,96 @@ for cmd in COMMANDS:
         COMMAND_INDEX[alias] = cmd
 
 
+# ROM cmd_table names in declaration order (src/interp.c:67-381). The
+# prefix-match scan walks this list so the first ROM-table entry whose
+# name starts with the user input wins — including ROM's hand-ordered
+# block at the top "Placed here so one and two letter abbreviations
+# work" (src/interp.c:74-104). Maintained by hand to match ROM; if the
+# C table changes, regenerate via the parser in
+# tests/integration/test_interp_prefix_order.py.
+_ROM_CMD_TABLE_NAMES: tuple[str, ...] = (
+    "north", "east", "south", "west", "up", "down",
+    "at", "cast", "auction", "buy", "channels", "exits", "get", "goto",
+    "group", "guild", "hit", "inventory", "kill", "look", "clan", "music",
+    "order", "practice", "rest", "scan", "sit", "sockets", "stand", "tell",
+    "unlock", "wield", "wizhelp",
+    "affects", "areas", "board", "commands", "compare", "consider",
+    "count", "credits", "equipment", "examine", "help", "info", "motd",
+    "read", "report", "rules", "score", "skills", "socials", "show",
+    "spells", "story", "time", "typo", "weather", "who", "whois",
+    "wizlist", "worth",
+    "alia", "alias", "autolist", "autoall", "autoassist", "autoexit",
+    "autogold", "autoloot", "autosac", "autosplit", "brief", "colour",
+    "color", "combine", "compact", "description", "delet", "delete",
+    "nofollow", "noloot", "nosummon", "outfit", "password", "prompt",
+    "scroll", "telnetga", "title", "unalias", "wimpy",
+    "afk", "answer", "deaf", "emote", "pmote", ".", "gossip", ",", "grats",
+    "gtell", ";", "note", "pose", "question", "quote", "quiet", "reply",
+    "replay", "say", "'", "shout", "yell",
+    "brandish", "close", "drink", "drop", "eat", "envenom", "fill", "give",
+    "heal", "hold", "list", "lock", "open", "pick", "pour", "put", "quaff",
+    "recite", "remove", "sell", "take", "sacrifice", "junk", "tap", "value",
+    "wear", "zap",
+    "backstab", "bash", "bs", "berserk", "dirt", "disarm", "flee", "kick",
+    "murde", "murder", "rescue", "surrender", "trip",
+    "mob", "enter", "follow", "gain", "go", "groups", "hide", "play", "qui",
+    "quit", "recall", "/", "rent", "save", "sleep", "sneak", "split", "steal",
+    "train", "visible", "wake", "where",
+    "advance", "copyover", "dump", "trust", "violate", "allow", "ban", "deny",
+    "disconnect", "flag", "freeze", "permban", "protect", "reboo", "reboot",
+    "set", "shutdow", "shutdown", "wizlock", "force", "load", "newlock",
+    "nochannels", "noemote", "noshout", "notell", "pecho", "pardon", "purge",
+    "qmconfig", "restore", "sla", "slay", "teleport", "transfer",
+    "poofin", "poofout", "gecho", "holylight", "incognito", "invis", "log",
+    "memory", "mwhere", "owhere", "peace", "echo", "return", "snoop", "stat",
+    "string", "switch", "wizinvis", "vnum", "zecho", "clone", "wiznet",
+    "immtalk", "imotd", ":", "smote", "prefi", "prefix", "mpdump", "mpstat",
+    "edit", "asave", "alist", "resets", "redit", "medit", "aedit", "oedit",
+    "mpedit", "hedit",
+)
+
+
+def _build_prefix_table() -> list[tuple[str, Command]]:
+    """Return [(rom_name, command), ...] for the prefix scan.
+
+    ROM cmd_table names come first in declaration order (each pointing
+    via COMMAND_INDEX to the Python Command that implements its do_fun).
+    Python-only commands not in the ROM table are appended after, so
+    their abbreviations still resolve via prefix lookup.
+    """
+    pairs: list[tuple[str, Command]] = []
+    used_ids: set[int] = set()
+    for rom_name in _ROM_CMD_TABLE_NAMES:
+        cmd = COMMAND_INDEX.get(rom_name)
+        if cmd is None:
+            continue
+        pairs.append((rom_name, cmd))
+        used_ids.add(id(cmd))
+    for cmd in COMMANDS:
+        if id(cmd) not in used_ids:
+            pairs.append((cmd.name, cmd))
+            used_ids.add(id(cmd))
+    return pairs
+
+
+_PREFIX_TABLE: list[tuple[str, Command]] = _build_prefix_table()
+
+
+def _prefix_table() -> list[tuple[str, Command]]:
+    """Return the current prefix table, rebuilding if COMMANDS/COMMAND_INDEX
+    were monkeypatched (e.g. by tests). Identity-keyed cache so production
+    callers pay zero cost."""
+    global _PREFIX_TABLE, _PREFIX_TABLE_KEY
+    key = (id(COMMANDS), id(COMMAND_INDEX))
+    if key != _PREFIX_TABLE_KEY:
+        _PREFIX_TABLE = _build_prefix_table()
+        _PREFIX_TABLE_KEY = key
+    return _PREFIX_TABLE
+
+
+_PREFIX_TABLE_KEY: tuple[int, int] = (id(COMMANDS), id(COMMAND_INDEX))
+
+
 def _get_trust(char: Character) -> int:
     """Return the effective trust level mirroring ROM's `get_trust`."""
 
@@ -656,14 +746,14 @@ def _get_trust(char: Character) -> int:
 
 def resolve_command(name: str, *, trust: int | None = None) -> Command | None:
     name = name.lower()
-    if name in COMMAND_INDEX:
-        command = COMMAND_INDEX[name]
-        if trust is None or trust >= command.min_trust:
-            return command
-    # ROM str_prefix behavior: choose the first command in table order
-    # whose name starts with the provided prefix. If none match, return None.
-    for cmd in COMMANDS:
-        if not cmd.name.startswith(name):
+    # ROM has no exact-match shortcut (src/interp.c:442-453): interpret()
+    # walks cmd_table linearly and the first row whose name starts with
+    # the input AND whose level <= trust wins. An exact-name input is
+    # naturally handled — the entry's own name is its own longest prefix
+    # — but ordering matters: e.g. "go" must resolve to "goto" not the
+    # later "go" cmd_table row, because "goto" appears earlier.
+    for rom_name, cmd in _prefix_table():
+        if not rom_name.startswith(name):
             continue
         if trust is not None and trust < cmd.min_trust:
             continue

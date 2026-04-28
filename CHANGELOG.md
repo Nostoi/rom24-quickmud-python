@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.10] - 2026-04-27
+
+Closes five more `interp.c` gaps: command-mapping cleanup
+(`INTERP-009/010/011/012/014` — `hit`/`take`/`junk`/`tap`/`go`/`:`
+now route to canonical handlers), `do_commands` column-padding fix
+(`INTERP-024`), and the prefix-order sweep (`INTERP-017`) — Python's
+prefix scan now mirrors ROM `cmd_table[]` declaration order via a
+250-entry table, so 1- and 2-letter abbreviations resolve identically
+to ROM. `INTERP-013` (collapse `do_wield`/`do_hold` into `do_wear`)
+deferred — Python `do_wear` is missing strength/skill/two-hand checks
+and HOLD auto-unequip that the separate functions currently provide;
+collapsing now would regress behavior. `interp.c` is now 17/24 gaps
+closed (71%).
+
+### Fixed
+
+- `interp.c:INTERP-009` — `"hit"` now dispatches to `do_kill` as a
+  ROM-style alias on the kill `Command`; deleted redundant `do_hit`
+  stub from `player_info.py` (`src/interp.c:88`). Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_009_hit_routes_to_do_kill`.
+- `interp.c:INTERP-010` — `"take"` now dispatches to `do_get` as an
+  alias on the get `Command`; deleted `do_take` stub
+  (`src/interp.c:226`). Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_010_take_routes_to_do_get`.
+- `interp.c:INTERP-011` — `"junk"` and `"tap"` now dispatch to
+  `do_sacrifice` as aliases; deleted both stubs from `remaining_rom.py`
+  (`src/interp.c:228-229`). Test:
+  `test_interp_011_junk_tap_route_to_do_sacrifice`.
+- `interp.c:INTERP-012` — `"go"` now dispatches to `do_enter` as an
+  alias; deleted `do_go` stub (`src/interp.c:263`). Test:
+  `test_interp_012_go_routes_to_do_enter`.
+- `interp.c:INTERP-014` — `":"` now dispatches to `do_immtalk` as an
+  alias; deleted `do_colon` stub from `typo_guards.py` whose
+  `"Say what on the immortal channel?"` placeholder was masking ROM's
+  NOWIZ toggle behavior (`src/interp.c:356`). Test:
+  `test_interp_014_colon_routes_to_do_immtalk`.
+- `interp.c:INTERP-024` — `do_commands`/`do_wizhelp` no longer strip
+  trailing whitespace from rows; ROM emits each name as `%-12s` with
+  full column padding preserved (`src/interp.c:815-823`). Test:
+  `test_interp_024_do_commands_preserves_12char_column_padding`.
+- `interp.c:INTERP-017` — `resolve_command` now walks a 250-entry
+  ROM-faithful `_PREFIX_TABLE` in `src/interp.c` declaration order
+  instead of Python's feature-grouped `COMMANDS` list; removed the
+  exact-match shortcut so prefix resolution mirrors ROM
+  `interpret()` exactly (e.g. `"go"` now resolves to `goto` not
+  `enter`, matching ROM's hand-ordered prefix block). Sweep test:
+  `tests/integration/test_interp_prefix_order.py::test_interp_017_prefix_winner_matches_rom`
+  parses `src/interp.c` at collection time and asserts every
+  single-letter prefix plus 20 curated 2-letter prefixes resolve
+  identically to ROM (45 cases).
+
 ## [2.6.9] - 2026-04-27
 
 Closes four `interp.c` dispatcher-level gaps in one session: empty-input
