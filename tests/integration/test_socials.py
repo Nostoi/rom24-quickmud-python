@@ -19,7 +19,7 @@ import pytest
 
 from mud.commands.socials import perform_social
 from mud.models.character import Character, character_registry
-from mud.models.constants import Position, Sex
+from mud.models.constants import CommFlag, Position, Sex
 from mud.models.social import social_registry
 from mud.registry import room_registry
 from mud.world import initialize_world
@@ -330,6 +330,34 @@ class TestSocialPositionGates:
         assert result == "In your dreams, or what?"
         assert alice.messages == []
         assert bob.messages == []
+
+    def test_noemote_player_blocked_with_anti_social_message(self, alice, bob):
+        # mirrors ROM src/interp.c:597-601 — COMM_NOEMOTE blocks all socials
+        # for non-NPC characters with "You are anti-social!".
+        alice.is_npc = False
+        alice.comm = int(CommFlag.NOEMOTE)
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        assert result == "You are anti-social!"
+        assert alice.messages == []
+        assert bob.messages == []
+
+    def test_noemote_does_not_apply_to_npcs(self, alice, bob):
+        # mirrors ROM src/interp.c:597 — IS_NPC(ch) bypasses the NOEMOTE check.
+        alice.is_npc = True
+        alice.comm = int(CommFlag.NOEMOTE)
+        alice.messages.clear()
+        bob.messages.clear()
+
+        result = perform_social(alice, "smile", "")
+
+        # NPC with NOEMOTE flag still socials normally (ROM short-circuit
+        # is gated on !IS_NPC(ch)).
+        assert result == ""
+        assert len(alice.messages) > 0
 
     def test_sleeping_character_can_still_snore(self, alice, bob):
         # mirrors ROM src/interp.c:623-624 — "snore" bypasses the sleeping gate.

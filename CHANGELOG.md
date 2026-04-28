@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `interp.c:INTERP-019` — sleeping characters now receive
   `"In your dreams, or what?"` for every social except `snore`
   (the canonical Furey exception). Mirrors `src/interp.c:618-626`.
+- `interp.c:INTERP-020` — players punished with the `COMM_NOEMOTE`
+  flag now receive `"You are anti-social!"` when attempting any
+  social. NPCs are unaffected per ROM's `IS_NPC` short-circuit.
+  Mirrors `src/interp.c:597-601`.
 
 ## [2.6.5] - 2026-04-27
 
