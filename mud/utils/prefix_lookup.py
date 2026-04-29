@@ -51,6 +51,26 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
     return None
 
 
+def item_lookup(name: str | None) -> int:
+    """Return the int ItemType value whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``item_lookup`` (src/lookup.c:124-136): returns the
+    ``item_table[].type`` value (the ITEM_X constant), NOT the index.
+    Python's ``ItemType`` IntEnum values are equal to ROM ITEM_X constants
+    so ``int(member)`` is correct. Returns ``-1`` on miss.
+    """
+    # mirroring ROM src/lookup.c:124-136 — item_lookup uses str_prefix.
+    from mud.models.constants import ItemType
+
+    if not name:
+        return -1
+    needle = name.lower()
+    for member in ItemType.__members__.values():
+        if member.name and member.name.lower().startswith(needle):
+            return int(member)
+    return -1
+
+
 def size_lookup(name: str | None) -> int:
     """Return the int Size index whose name is prefix-matched by *name*.
 

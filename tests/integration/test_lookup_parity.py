@@ -52,6 +52,19 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_item_lookup_prefix_and_unknown():
+    # mirrors ROM src/lookup.c:124-136 — item_lookup returns item_table[].type
+    # (NOT index); -1 on miss. Python's ItemType IntEnum value == ROM ITEM_X.
+    # Closes LOOKUP-007.
+    from mud.utils.prefix_lookup import item_lookup
+
+    assert item_lookup("light") == 1
+    assert item_lookup("scroll") == 2
+    assert item_lookup("warp") == 30  # WARP_STONE
+    assert item_lookup("clothing") == 11
+    assert item_lookup("xyznotanitem") == -1
+
+
 def test_size_lookup_prefix_and_unknown():
     # mirrors ROM src/lookup.c:95-107 — size_lookup uses str_prefix; -1 on miss.
     # ROM size_table: { tiny, small, medium, large, huge, giant } maps 1:1
