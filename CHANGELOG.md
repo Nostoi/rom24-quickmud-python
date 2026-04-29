@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `OLC-INFRA-001` — descriptor-level OLC editor state plumbing. New `mud/olc/editor_state.py` provides `EditorMode` IntEnum (mirrors ROM `src/olc.h:53-59` — `NONE`/`AREA`/`ROOM`/`OBJECT`/`MOBILE`/`MPCODE`/`HELP`), `StringEdit` dataclass (mirrors ROM `desc->pString` — buffer + on-commit hook + `MAX_STRING_EDIT_LENGTH=4604`), and `route_descriptor_input(session)` (mirrors ROM `src/comm.c:833-847` — `string_edit` precedes `editor_mode` precedes normal interpret). `Session.editor_mode` and `Session.string_edit` fields wired in `mud/net/session.py`. Destinations (`string_add` for STRING-004, `run_olc_editor` for OLC-001) remain stubbed under their own gap IDs; this commit lands only the routing decision and data shapes that unblock the STRING-001..012 cluster. Test: `tests/integration/test_olc_descriptor_state.py` (6 cases).
+
 ### Changed
 
 - `string.c` parity audit (`docs/parity/STRING_C_AUDIT.md`) — `string.c` flipped ⚠️ Partial 85% (stale, wrong file path) → ✅ Audited 5% (accurate). Phase 1 inventory catalogues all 12 public functions (`string_edit`, `string_append`, `string_replace`, `string_add`, `format_string`, `first_arg`, `string_unpad`, `string_proper`, `string_linedel`, `string_lineadd`, `merc_getline`, `numlines`); every one is OLC-editor backend operating on `ch->desc->pString`/`ch->desc->editor` with no current Python consumer (`mud/olc/` skeleton only). 12 stable gap IDs filed (`STRING-001..STRING-012`), all DEFERRED to the OLC audit cluster (`olc.c`/`olc_act.c`/`olc_save.c`/`olc_mpcode.c`/`hedit.c`) where their first concrete consumers will appear. Previous tracker note "85% — `mud/utils.py`" was stale: that file does not exist; only `mud/utils/text.py:smash_tilde` (a `merc.h` helper, not a `string.c` helper) is ported. No code changes.

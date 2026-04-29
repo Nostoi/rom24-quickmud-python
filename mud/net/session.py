@@ -7,6 +7,7 @@ from itertools import count
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.olc.editor_state import EditorMode, StringEdit
 
 if TYPE_CHECKING:
     from mud.net.connection import TelnetStream
@@ -30,6 +31,13 @@ class Session:
     repeat_count: int = field(default=0)
     editor: str | None = None
     editor_state: dict[str, object] = field(default_factory=dict)
+    # mirrors ROM `desc->editor` (src/olc.h:53-59) — integer enum used by
+    # `run_olc_editor` (OLC-001) and the prompt %o/%O tokens (OLC-002/003).
+    editor_mode: EditorMode = EditorMode.NONE
+    # mirrors ROM `desc->pString` (src/string.c:121) — when non-None, raw
+    # input is routed to `string_add` (STRING-004) instead of the command
+    # interpreter. See `mud.olc.editor_state.route_descriptor_input`.
+    string_edit: StringEdit | None = None
     ansi_enabled: bool = True
     go_ahead_enabled: bool = True
     show_buffer: list[str] | None = None
