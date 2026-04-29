@@ -12,7 +12,7 @@ from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
-from mud.math.stat_apps import get_hitroll
+from mud.math.stat_apps import get_damroll, get_hitroll
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     AC_BASH,
@@ -1186,7 +1186,8 @@ def calculate_weapon_damage(
         dam *= max(2, multiplier)
 
     # Add damroll bonus - ROM: GET_DAMROLL(ch) * UMIN(100, skill) / 100
-    dam += attacker.damroll * min(100, skill_total) // 100
+    # ROM src/merc.h:2109-2110 GET_DAMROLL adds str_app[STR].todam to ch->damroll.
+    dam += get_damroll(attacker) * min(100, skill_total) // 100
 
     # Ensure minimum damage - ROM: if (dam <= 0) dam = 1
     if dam <= 0:

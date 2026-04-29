@@ -20,15 +20,17 @@ from __future__ import annotations
 import pytest
 
 from mud.combat import engine as combat_engine
-from mud.math.stat_apps import STR_APP, get_hitroll
+from mud.math.stat_apps import STR_APP, get_damroll, get_hitroll
 from mud.models.character import Character
-from mud.models.constants import Stat
+from mud.models.constants import DamageType, Position, Stat
 
 
-def _make_attacker(strength: int, hitroll: int = 0) -> Character:
-    """Build a Character with permanent STR set to ``strength`` and given hitroll."""
+def _make_attacker(strength: int, hitroll: int = 0, damroll: int = 0) -> Character:
+    """Build a Character with permanent STR set to ``strength``, given hitroll/damroll."""
 
-    char = Character(name=f"Str{strength}", level=20, hitroll=hitroll, is_npc=False)
+    char = Character(
+        name=f"Str{strength}", level=20, hitroll=hitroll, damroll=damroll, is_npc=False
+    )
     char.perm_stat = [13, 13, 13, 13, 13]
     char.perm_stat[Stat.STR] = strength
     char.mod_stat = [0, 0, 0, 0, 0]
@@ -129,3 +131,80 @@ def test_engine_percent_path_uses_str_app_tohit(monkeypatch: pytest.MonkeyPatch)
     # str_app[3].tohit == -3, str_app[25].tohit == 6
     assert STR_APP[3].tohit in seen
     assert STR_APP[25].tohit in seen
+
+
+# ---------------------------------------------------------------------------
+# CONST-003 — GET_DAMROLL adds str_app[STR].todam
+#
+# ROM macro src/merc.h:2109-2110:
+#     #define GET_DAMROLL(ch) \
+#         ((ch)->damroll + str_app[get_curr_stat(ch, STAT_STR)].todam)
+#
+# Consumed at src/fight.c:588:
+#     dam += GET_DAMROLL(ch) * UMIN(100, skill) / 100;
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "strength, expected_todam",
+    [
+        (3, -1),   # str_app[3].todam  (src/const.c:732)
+        (8, 0),    # str_app[8].todam  — neutral band
+        (13, 0),   # str_app[13].todam — neutral band
+        (18, 3),   # str_app[18].todam (src/const.c:746)
+        (25, 9),   # str_app[25].todam (src/const.c:753)
+    ],
+)
+def test_get_damroll_adds_str_app_todam(strength: int, expected_todam: int) -> None:
+    """get_damroll must equal ch.damroll + str_app[STR].todam."""
+
+    char = _make_attacker(strength=strength, damroll=0)
+    assert STR_APP[strength].todam == expected_todam
+    assert get_damroll(char) == expected_todam
+
+
+def test_get_damroll_preserves_raw_damroll_addend() -> None:
+    """A non-zero ch.damroll is added to the str_app contribution, not replaced."""
+
+    weak = _make_attacker(strength=3, damroll=10)
+    strong = _make_attacker(strength=25, damroll=10)
+    assert get_damroll(weak) == 10 + STR_APP[3].todam
+    assert get_damroll(strong) == 10 + STR_APP[25].todam
+    # Sanity — STR-25 hits 10 harder than STR-3 at identical raw damroll
+    # (src/const.c str_app delta 9 - (-1) = 10).
+    assert get_damroll(strong) - get_damroll(weak) == 10
+
+
+def test_calculate_weapon_damage_uses_str_app_todam(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """calculate_weapon_damage must read get_damroll(attacker), not the raw field.
+
+    Pin the unarmed base-damage RNG so only the damroll contribution differs
+    between two attackers, then confirm the damage delta equals the str_app
+    todam delta scaled by ``min(100, skill) / 100`` (== 1 here, skill=120).
+    """
+
+    weak = _make_attacker(strength=3, damroll=0)
+    strong = _make_attacker(strength=25, damroll=0)
+    weak.skills = {"hand to hand": 100}
+    strong.skills = {"hand to hand": 100}
+    weak.enhanced_damage_skill = 0
+    strong.enhanced_damage_skill = 0
+
+    victim = Character(name="Dummy", level=20, hit=100, max_hit=100, is_npc=True)
+    victim.position = Position.FIGHTING
+    victim.armor = [0, 0, 0, 0]
+
+    # Pin number_range so both calls return the same base damage.
+    monkeypatch.setattr(
+        combat_engine.rng_mm, "number_range", lambda lo, hi: lo + (hi - lo) // 2
+    )
+    # Pin enhanced-damage gate to off.
+    monkeypatch.setattr(combat_engine.rng_mm, "number_percent", lambda: 100)
+
+    weak_dam = combat_engine.calculate_weapon_damage(weak, victim, DamageType.BASH)
+    strong_dam = combat_engine.calculate_weapon_damage(strong, victim, DamageType.BASH)
+
+    # str_app delta is 9 - (-1) = 10, skill=120 → min(100,120)/100 == 1
+    assert strong_dam - weak_dam == STR_APP[25].todam - STR_APP[3].todam == 10

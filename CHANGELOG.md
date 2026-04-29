@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `CONST-003` — Combat `GET_DAMROLL` now augments `ch->damroll` with `str_app[get_curr_stat(ch, STAT_STR)].todam`, mirroring ROM `src/merc.h:2109-2110` (consumed at `src/fight.c:588` for weapon damage). New `mud/math/stat_apps.py::get_damroll(ch)` accessor; `calculate_weapon_damage` at `mud/combat/engine.py:1189` now reads it. Before this fix, a STR-3 attacker missed −1 damage and a STR-25 attacker missed +9 damage. Test: `tests/integration/test_combat_str_app.py::test_get_damroll_*` (7 cases).
 - `CONST-002` — Combat `GET_HITROLL` now augments `ch->hitroll` with `str_app[get_curr_stat(ch, STAT_STR)].tohit`, mirroring ROM `src/merc.h:2107-2108` (consumed at `src/fight.c:471` for THAC0). New module `mud/math/stat_apps.py` ports `STR_APP[26]` verbatim from `src/const.c:728-755` and exposes `get_hitroll(ch)`; both attack paths in `mud/combat/engine.py` (THAC0 at L411, percent fallback at L420) now read the augmented value. Before this fix, a STR-3 attacker missed −3 to-hit and a STR-25 attacker missed +6. Test: `tests/integration/test_combat_str_app.py` (8 cases).
 - `MUSIC-004` — `mud/commands/player_info.py:do_play` jukebox scan now applies `mud.world.vision.can_see_object(ch, obj)` so invisible / VIS_DEATH / dark-room jukeboxes drop out of selection, mirroring ROM `src/music.c:229-232`'s `can_see_obj(ch, juke)` filter. Test: `tests/integration/test_music_play.py::test_do_play_skips_invisible_jukebox`.
 

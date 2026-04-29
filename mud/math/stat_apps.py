@@ -88,3 +88,14 @@ def get_hitroll(ch) -> int:
 
     base = int(getattr(ch, "hitroll", 0) or 0)
     return base + STR_APP[_curr_str(ch)].tohit
+
+
+def get_damroll(ch) -> int:
+    """Return ROM ``GET_DAMROLL(ch)``: ch.damroll + str_app[STR].todam.
+
+    Mirrors src/merc.h:2109-2110. Consumed at src/fight.c:588 for the
+    weapon damage contribution.
+    """
+
+    base = int(getattr(ch, "damroll", 0) or 0)
+    return base + STR_APP[_curr_str(ch)].todam
