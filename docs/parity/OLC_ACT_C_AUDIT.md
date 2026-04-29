@@ -53,7 +53,7 @@
 |---|---|---|---|---|
 | `aedit_show` | 606–649 | `_aedit_show` (build.py:~1297) | A | ⚠️ PARTIAL — flags display uses `flag_string`; Python version missing flags row |
 | `aedit_reset` | 653–663 | — | B | ❌ MISSING |
-| `aedit_create` | 667–679 | embedded in `cmd_aedit` (build.py:1226) — no `create` subcommand path | A | ❌ MISSING (OLC_ACT-001) |
+| `aedit_create` | 667–679 | `cmd_aedit` + `_aedit_create` (build.py) | A | ✅ FIXED (OLC_ACT-001) |
 | `aedit_name` | 683–700 | inline in `_interpret_aedit` (build.py:1299) | C | ⚠️ PARTIAL |
 | `aedit_credits` | 702–719 | inline in `_interpret_aedit` (build.py:1307) | C | ⚠️ PARTIAL |
 | `aedit_file` | 722–766 | `_interpret_aedit` (build.py) — no `filename` subcommand found | C | 🔄 NEEDS DEEP AUDIT |
@@ -173,7 +173,7 @@
 **ROM signature**: `bool aedit_create(CHAR_DATA *ch, char *argument)`
 
 **ROM steps (src/olc_act.c:667–679)**:
-1. Calls `new_area()` — allocates and zero-initialises a fresh `AREA_DATA` with defaults (`min_vnum=0`, `max_vnum=0`, `name="(unnamed)"`, `builders="None"`, `security=9`, `age=0`, etc.).
+1. Calls `new_area()` (`src/mem.c:91-122`) — allocates and initialises a fresh `AREA_DATA` with defaults: `name="New area"`, `builders="None"`, `security=1`, `min_vnum=0`, `max_vnum=0`, `age=0`, `nplayer=0`, `empty=TRUE`, `area_flags=AREA_ADDED`, `file_name=sprintf("area%d.are", vnum)`. **Audit-doc correction (2026-04-29)**: original notes said `name="(unnamed)"`/`security=9` — the actual ROM `new_area` source uses `"New area"`/`security=1`; closure replicated authoritative ROM values.
 2. Appends to the global linked list: `area_last->next = pArea; area_last = pArea`.
 3. Sets `ch->desc->pEdit = (void *)pArea` — the descriptor's edit pointer now tracks this new area.
 4. Sets `AREA_ADDED` flag: `SET_BIT(pArea->area_flags, AREA_ADDED)` — marks the area as dynamically added (not loaded from disk), affects how `olc_save.c` handles persistence.
@@ -377,7 +377,7 @@ These all follow the same ROM pattern: check empty arg → return syntax; `free_
 
 | Gap ID | Severity | ROM C ref | Python ref (or "missing") | Description | Status |
 |---|---|---|---|---|---|
-| OLC_ACT-001 | CRITICAL | src/olc_act.c:667–679 `aedit_create` | missing — `cmd_aedit` (build.py:1226) has no `create` subpath | `aedit create` subcommand missing entirely; no new area can be created via OLC; `AREA_ADDED` flag never set | 🔄 OPEN |
+| OLC_ACT-001 | CRITICAL | src/olc_act.c:667–679 `aedit_create` | `mud/commands/build.py:_aedit_create` | `aedit create` subcommand wired in `cmd_aedit` and `_interpret_aedit`; new area gets ROM `new_area()` defaults from `src/mem.c:91-122` (name="New area", builders="None", security=1, min/max_vnum=0, empty=True, AREA_ADDED set, file_name=`area<vnum>.are`); 9 integration tests. | ✅ FIXED |
 | OLC_ACT-002 | CRITICAL | src/olc_act.c:1716–1766 `redit_create` | missing — `cmd_redit` (build.py:1071) has no `create` subpath | `redit create <vnum>` subcommand missing; rooms cannot be created by vnum via OLC | 🔄 OPEN |
 | OLC_ACT-003 | CRITICAL | src/olc.c:766–781 `do_redit` reset branch | missing — `cmd_redit` (build.py:1071) has no `reset` subpath | `redit reset` subcommand missing; area cannot be reset from within room editor | 🔄 OPEN |
 | OLC_ACT-004 | CRITICAL | src/olc.c:783–821 `do_redit` vnum branch | missing — `cmd_redit` (build.py:1071) has no numeric-vnum path | `redit <vnum>` teleport-and-edit missing; builder must physically walk to a room before editing it | 🔄 OPEN |

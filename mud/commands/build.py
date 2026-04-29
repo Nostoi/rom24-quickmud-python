@@ -17,6 +17,7 @@ from mud.models.constants import (
     EX_NOLOCK,
     EX_NOPASS,
     EX_PICKPROOF,
+    AreaFlag,
     Direction,
     RoomFlag,
     Sector,
@@ -1234,6 +1235,10 @@ def cmd_aedit(char: Character, args: str) -> str:
     if session.editor == "aedit":
         return _interpret_aedit(session, char, arg)
 
+    if arg.lower() == "create":
+        # mirrors ROM src/olc.c:222 (aedit_table "create" entry) + src/olc_act.c:667-679
+        return _aedit_create(session)
+
     if not arg:
         return "Syntax: @aedit <area vnum>"
 
@@ -1251,6 +1256,37 @@ def cmd_aedit(char: Character, args: str) -> str:
 
     _ensure_session_area(session, area)
     return f"Now editing area {area.name} (vnum {area.vnum}).\nType 'show' to display area info, 'done' to exit."
+
+
+def _aedit_create(session: Session) -> str:
+    """Allocate a fresh area and switch the descriptor's edit target.
+
+    Mirrors ROM `aedit_create` (`src/olc_act.c:667-679`). Defaults come from
+    `new_area()` (`src/mem.c:91-122`): name="New area", builders="None",
+    security=1, min/max_vnum=0, empty=True, area_flags=AREA_ADDED, file_name
+    derived from vnum. ROM uses a global `top_area` counter to assign vnums;
+    Python uses `max(area_registry) + 1` since `area_registry` is a dict.
+    The redundant `SET_BIT(area_flags, AREA_ADDED)` at src/olc_act.c:676 is
+    idempotent — `new_area` already sets it.
+    """
+
+    new_vnum = max(area_registry.keys(), default=-1) + 1
+    area = Area(
+        vnum=new_vnum,
+        name="New area",
+        builders="None",
+        security=1,
+        min_vnum=0,
+        max_vnum=0,
+        age=0,
+        nplayer=0,
+        empty=True,
+        area_flags=int(AreaFlag.ADDED),
+        file_name=f"area{new_vnum}.are",
+    )
+    area_registry[new_vnum] = area
+    _ensure_session_area(session, area)
+    return "Area Created.\n\r"
 
 
 def _ensure_session_area(session: Session, area: Area) -> None:
@@ -1292,6 +1328,12 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
     if cmd in {"done", "exit"}:
         _clear_session(session)
         return "Exiting area editor."
+
+    if cmd == "create":
+        # mirrors ROM aedit_table dispatch (src/olc.c:222) — `create` typed
+        # inside an active aedit session also allocates a new area and
+        # switches the descriptor's edit target.
+        return _aedit_create(session)
 
     if cmd == "show":
         return _aedit_show(area)

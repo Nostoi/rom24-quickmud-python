@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `OLC_ACT-001` — `aedit create` subcommand (`mud/commands/build.py:cmd_aedit` + `_aedit_create`). Mirrors ROM `src/olc_act.c:667-679` plus authoritative defaults from `src/mem.c:91-122` (`new_area`): `name="New area"`, `builders="None"`, `security=1`, `min/max_vnum=0`, `empty=True`, `area_flags=AreaFlag.ADDED`, `file_name="area<vnum>.are"`. Vnum allocation uses `max(area_registry) + 1` (Python adaptation; ROM uses global `top_area` counter). Reachable from both `@aedit create` (no active session) and `create` typed inside an active aedit session. Unblocks OLC-016 in the sibling audit. Test: `tests/integration/test_olc_act_001_aedit_create.py` (9 cases).
 - `olc_act.c` parity audit (`docs/parity/OLC_ACT_C_AUDIT.md`) — Phase 1–3 complete. 108 ROM functions inventoried across four editors (aedit/redit/oedit/medit); mpedit/hedit out of scope (sibling audits). 14 stable gap IDs filed (OLC_ACT-001..014): 6 CRITICAL (aedit_create wholly missing; redit_create missing; redit reset/vnum dispatcher gaps; oedit_create missing security gate; medit_create missing ACT_IS_NPC flag on new mobs), 6 IMPORTANT (show-command completeness for all four editors; success message string drift; aedit_reset missing), 2 MINOR (structural). Tier breakdown: TIER A 9 functions (line-by-line), TIER B 8 functions (moderate), TIER C ~78 functions (inventory). Closures pending via `rom-gap-closer` per-gap. Tracker: olc_act.c row flipped ❌ Not Audited → ⚠️ Partial.
 
 ### Fixed
