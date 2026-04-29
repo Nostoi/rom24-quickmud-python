@@ -9,6 +9,24 @@ Descriptor plumbing is provided by `mud/olc/editor_state.py`
 from __future__ import annotations
 
 
+def merc_getline(string: str) -> tuple[str, str]:
+    """Read one ``\\n``-terminated line; return ``(rest, line)``.
+
+    Mirrors ROM ``merc_getline`` (src/string.c:647-674). When ``\\n`` is
+    followed by ``\\r``, both are consumed (the ROM canonical line-ending
+    pair). The terminator is not included in the returned line.
+    """
+
+    nl = string.find("\n")
+    if nl == -1:
+        return "", string
+    line = string[:nl]
+    rest_start = nl + 1
+    if rest_start < len(string) and string[rest_start] == "\r":
+        rest_start += 1
+    return string[rest_start:], line
+
+
 def first_arg(argument: str, lower: bool = False) -> tuple[str, str]:
     """Quote/paren-aware single-arg parser.
 
