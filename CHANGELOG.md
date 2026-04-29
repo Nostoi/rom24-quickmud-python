@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `LOOKUP-006` — Added `size_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:95-107` (case-insensitive prefix-match against `Size` IntEnum, returns `-1` on miss).
 - `LOOKUP-005` — Added `sex_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:81-93` (case-insensitive prefix-match against `Sex` IntEnum, returns `-1` on miss). ROM `sex_table {none, male, female, either}` maps 1:1 to Python's enum.
 - `LOOKUP-004` — Added `position_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:67-79` (case-insensitive prefix-match against `Position` IntEnum, returns `-1` on miss).
 - `LOOKUP-003` — `lookup_clan_id` (`mud/models/clans.py`) now uses ROM-faithful prefix-match instead of exact-match. `lookup_clan_id("lo")` returns clan `loner`, `lookup_clan_id("ro")` returns clan `rom`, mirroring ROM `src/lookup.c:53-65` (`clan_lookup` calls `str_prefix`).

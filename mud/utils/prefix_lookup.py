@@ -51,6 +51,23 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
     return None
 
 
+def size_lookup(name: str | None) -> int:
+    """Return the int Size index whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``size_lookup`` (src/lookup.c:95-107). Returns ``-1`` on miss.
+    """
+    # mirroring ROM src/lookup.c:95-107 — size_lookup uses str_prefix.
+    from mud.models.constants import Size
+
+    if not name:
+        return -1
+    needle = name.lower()
+    for member in Size.__members__.values():
+        if member.name and member.name.lower().startswith(needle):
+            return int(member)
+    return -1
+
+
 def sex_lookup(name: str | None) -> int:
     """Return the int Sex index whose name is prefix-matched by *name*.
 

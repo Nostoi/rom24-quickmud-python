@@ -52,6 +52,18 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_size_lookup_prefix_and_unknown():
+    # mirrors ROM src/lookup.c:95-107 — size_lookup uses str_prefix; -1 on miss.
+    # ROM size_table: { tiny, small, medium, large, huge, giant } maps 1:1
+    # to Python Size enum. Closes LOOKUP-006.
+    from mud.utils.prefix_lookup import size_lookup
+
+    assert size_lookup("medium") == 2
+    assert size_lookup("g") == 5  # `giant` is the only `g*`
+    assert size_lookup("h") == 4  # `huge` is the only `h*`
+    assert size_lookup("nonsize") == -1
+
+
 def test_sex_lookup_prefix_and_unknown():
     # mirrors ROM src/lookup.c:81-93 — sex_lookup uses str_prefix; -1 on miss.
     # ROM sex_table: { "none", "male", "female", "either" } — Python Sex enum
