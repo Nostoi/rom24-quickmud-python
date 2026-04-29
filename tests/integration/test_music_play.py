@@ -126,6 +126,18 @@ def test_do_play_loud_with_empty_song_argument(music_world) -> None:
     assert reply == "Play what?"
 
 
+def test_do_play_skips_invisible_jukebox(music_world) -> None:
+    # mirrors ROM src/music.c:229-232 — `can_see_obj(ch, juke)` filters the lookup.
+    from mud.models.constants import ExtraFlag
+
+    char, juke = _build_room_with_jukebox()
+    juke.extra_flags = int(ExtraFlag.INVIS)
+
+    reply = do_play(char, "anthem")
+
+    assert reply == "You see nothing to play."
+
+
 def test_do_play_list_uses_real_song_table_with_two_column_format(music_world) -> None:
     # mirrors ROM src/music.c:263-291 — name-only listing with %-35s, two columns.
     char, _ = _build_room_with_jukebox()

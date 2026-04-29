@@ -78,8 +78,10 @@ def do_play(char: Character, args: str) -> str:
         return "You see nothing to play."
 
     from mud.models.constants import ItemType
+    from mud.world.vision import can_see_object
 
-    # mirroring ROM src/music.c:229-232 — first ITEM_JUKEBOX in the room.
+    # mirroring ROM src/music.c:229-232 — first ITEM_JUKEBOX in the room
+    # that `can_see_obj(ch, juke)` accepts (skips invisible/dark-room hits).
     jukebox = None
     contents = getattr(room, "contents", [])
     for obj in contents:
@@ -89,7 +91,7 @@ def do_play(char: Character, args: str) -> str:
             if proto:
                 item_type = getattr(proto, "item_type", None)
 
-        if item_type == ItemType.JUKEBOX or str(item_type) == "jukebox":
+        if (item_type == ItemType.JUKEBOX or str(item_type) == "jukebox") and can_see_object(char, obj):
             jukebox = obj
             break
 
