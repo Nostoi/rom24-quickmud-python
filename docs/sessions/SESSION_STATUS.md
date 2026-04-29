@@ -1,35 +1,25 @@
-# Session Status — 2026-04-29 — `comm.c` ✅ Audited (8/9 gaps closed)
+# Session Status — 2026-04-29 — `nanny.c` ✅ Audited (12/14 closed)
 
 ## Current State
 
-- **Active audit**: `comm.c` — ✅ Audited 95%. 8 of 9 gaps closed (COMM-001 / 002 / 003 / 004 / 006 / 007 / 008 / 009). COMM-005 (double-newbie sweep) deferred-by-design — overlaps the asyncio descriptor-list carve-out.
-- **Last completed**: COMM-009 (standalone `fix_sex` helper), commit `efbcaff`. Earlier in the session: COMM-008 (`c243a6f`), COMM-007 (`58e3fd2`), COMM-002 (`a3aa6e1`).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_COMM_C_GAPS_002_007_008_009.md](SESSION_SUMMARY_2026-04-29_COMM_C_GAPS_002_007_008_009.md)
+- **Active audit**: `nanny.c` — ✅ Audited 90%. 12 of 14 gaps closed (NANNY-001/002/003/004/005/006/007/008/011/012/013/014). NANNY-009 deferred (488-entry `title_table` data port — dedicated session). NANNY-010 deferred-by-design (`SESSIONS`-dict architecture is ROM-equivalent — twin of `COMM-005`).
+- **Last completed**: NANNY-008 (pet follows owner into login room), commit `d884a63`.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_NANNY_C_NANNY_008_TRACKER_FLIP.md](SESSION_SUMMARY_2026-04-29_NANNY_C_NANNY_008_TRACKER_FLIP.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.41 |
-| Tests | Full suite 1570 passed / 10 skipped / 1 pre-existing failure (`test_mob_flag_removal_lines_clear_flags`, unrelated). New tests this session: `tests/test_fix_sex.py` (5/5), `tests/test_ansi.py::test_translate_ansi_handles_rom_specials` + `::test_strip_ansi_eats_rom_token_pairs`, `tests/test_networking_telnet.py::test_show_string_pager_aborts_on_any_non_empty_input_per_rom` + `::test_stop_idling_broadcast_uses_rom_act_format`. |
-| ROM C files audited | 15 / 43 (35%) ✅ Audited; 17 ⚠️ Partial; 7 ❌ Not Audited; 4 N/A. `comm.c` flipped to ✅ Audited 95% this session. |
-| Active focus | None — `comm.c` complete. Next session picks an ⚠️ Partial / ❌ Not Audited row from the tracker. |
+| Version | 2.6.43 |
+| Tests | Integration suite 1374 passed / 10 skipped / 0 failed (357s). New this session: `tests/integration/test_nanny_login_parity.py::test_login_pet_follows_owner_into_room`. |
+| ROM C files audited | 16 / 43 (37%) ✅ Audited; 16 ⚠️ Partial; 7 ❌ Not Audited; 4 N/A. `nanny.c` flipped to ✅ Audited 90% this session. |
+| Active focus | None — `nanny.c` complete for parity-audit purposes. Next session picks an ⚠️ Partial / ❌ Not Audited row. |
 
 ## Next Intended Task
 
-Choose the next P1-priority file from
-`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`. Top ⚠️ Partial P1
-candidates: `magic.c`, `magic2.c`, `effects.c`. Invoke
-`/rom-parity-audit <file>.c` to run phases 1–3 (function inventory, line-
-by-line verification on P0/P1 functions, gap identification with stable
-IDs). Then close highest-severity gaps with `/rom-gap-closer`, one gap
-per commit.
+Two follow-ups from this session:
 
-COMM-005 stays open as a known architectural deferral; revisit only if
-the asyncio descriptor model itself is being reworked for parity.
+1. **NANNY-009 dedicated session** (deferred this session): port the 488-entry `title_table` from `src/const.c:421-721` (4 classes × 61 levels × 2 sexes) into Python, then wire `set_title(ch, "the <title>")` into the first-login finalization path and the level-up path (`src/update.c:73`). Mechanical data port; deserves isolation.
+2. **Pick the next P1/P2 audit target** from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`'s ⚠️ Partial rows. Top candidates: `db.c + db2.c` (P1, 55% — world loading, highest impact), `music.c` (P2, 60% — smallest scope), `const.c` (P3, 80%). Run `/rom-parity-audit <file>.c` to start.
 
-## Pre-existing test failures (not caused by this session)
-
-Full pytest run shows one failure: `tests/test_area_loader.py::test_mob_flag_removal_lines_clear_flags`. Unrelated to `comm.c` work — no
-`sex` / `prompt` / `act` / `ansi` references in that test. Pre-existing
-baseline carried forward.
+NANNY-010 stays deferred-by-design; revisit only if the asyncio SESSIONS descriptor model is itself reworked for parity.

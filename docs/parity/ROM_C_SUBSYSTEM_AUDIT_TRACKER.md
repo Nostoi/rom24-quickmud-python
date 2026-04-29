@@ -89,7 +89,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `special.c` | P2 | ✅ Audited | `mud/spec_funs.py` | 100% | Apr 28, 2026 — all 8 CRITICAL/IMPORTANT gaps closed (SPEC-001..SPEC-008: area-wide yell, guard NPC targeting, mayor gate messages, c_div integer math, do_murder, is_safe, mayor move_character, c_div gold). See SPECIAL_C_AUDIT.md |
 | **Communication & Social** | | | | | |
 | `comm.c` | P3 | ✅ Audited | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py` | 95% | Non-networking surface fully audited (`COMM_C_AUDIT.md`); 8/9 gaps closed (COMM-001/002/003/004/006/007/008/009). COMM-005 (double-newbie sweep) deferred-by-design — overlaps the asyncio architectural carve-out. Networking layer (`main`, `init_socket`, `game_loop_*`, descriptor I/O) deferred-by-design. |
-| `nanny.c` | P3 | ⚠️ Partial | `mud/account/` | 40% | Login flow partial |
+| `nanny.c` | P3 | ✅ Audited | `mud/net/connection.py`, `mud/account/account_service.py`, `mud/account/account_manager.py`, `mud/handler.py` | 90% | Apr 29, 2026 — `NANNY_C_AUDIT.md` Phase 1–4 complete. 12/14 gaps closed (NANNY-001/002/003/004/005/006/007/008/011/012/013/014). NANNY-009 (`title_table` + `set_title`) deferred — 488-entry data port from `src/const.c:421-721`; deserves dedicated session. NANNY-010 (full descriptor sweep on CON_BREAK_CONNECT) deferred-by-design — Python's `SESSIONS` dict is keyed by name, structurally enforcing ROM's "close all duplicates" invariant. |
 | `board.c` | P2 | ⚠️ Partial | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | 95% | Audit doc + 9 gaps closed (BOARD-001/002/003/004/005/008/011/012/013; BOARD-006 subsumed by 005; BOARD-009 no-gap). Deferred-by-design: BOARD-010 (cosmetic — `note read again` no-op in ROM); BOARD-014 (architectural — AFK plumbing absent). See `docs/parity/BOARD_C_AUDIT.md`. |
 | `music.c` | P2 | ⚠️ Partial | `mud/music.py` | 60% | Song update works |
 | **Utilities & Helpers** | | | | | |
@@ -1027,8 +1027,8 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | P0 | 7 | 7 | 0 | 0 | **100%** ✅ |
 | P1 | 11 | 6 | 5 | 0 | **86%** ✅ |
 | P2 | 9 | 0 | 3 | 6 | **26%** ❌ |
-| P3 | 16 | 2 | 8 | 2 | **69%** ⚠️ (4 N/A) |
-| **Total** | **43** | **15** | **17** | **7** | **69%** |
+| P3 | 16 | 3 | 7 | 2 | **75%** ⚠️ (4 N/A) |
+| **Total** | **43** | **16** | **16** | **7** | **72%** |
 
 ### Work Estimates
 
