@@ -48,6 +48,48 @@ def test_stop_idling_returns_character_to_previous_room():
         room_registry.update(original_rooms)
 
 
+def test_stop_idling_broadcast_uses_rom_act_format():
+    """COMM-007 / ROM src/comm.c:1922 — `act("$n has returned from the void.", ...)`
+    routes through act_format so $n renders via _pers (name → short_descr fallback)
+    instead of the literal `getattr(char, 'name', None) or 'Someone'` fallback."""
+
+    original_rooms = dict(room_registry)
+    try:
+        limbo_area = SimpleNamespace(empty=True, nplayer=0, age=0)
+        home_area = SimpleNamespace(empty=True, nplayer=0, age=0)
+
+        limbo = Room(vnum=ROOM_VNUM_LIMBO, area=limbo_area)
+        home = Room(vnum=ROOM_VNUM_LIMBO + 2, area=home_area)
+        room_registry.clear()
+        room_registry[limbo.vnum] = limbo
+        room_registry[home.vnum] = home
+
+        watcher = SimpleNamespace(name="Watcher", is_npc=False, messages=[])
+        home.add_character(watcher)
+
+        # short_descr-only entity: name absent, should fall through to short_descr
+        # via act_format's _pers() helper. The legacy literal-name fallback would
+        # have produced "Someone has returned from the void." here.
+        wraith = SimpleNamespace(
+            name=None,
+            short_descr="the wraith",
+            is_npc=False,
+            messages=[],
+            room=None,
+            was_in_room=home,
+            timer=99,
+        )
+        limbo.add_character(wraith)
+
+        _stop_idling(wraith)
+
+        assert wraith.room is home
+        assert watcher.messages[-1] == "the wraith has returned from the void."
+    finally:
+        room_registry.clear()
+        room_registry.update(original_rooms)
+
+
 class FakeConn:
     def __init__(self, responses: list[str], host: str | None = None) -> None:
         self._responses = responses

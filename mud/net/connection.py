@@ -281,9 +281,11 @@ def _stop_idling(char: "Character") -> None:
     except Exception:
         pass
 
-    name = getattr(char, "name", None) or "Someone"
+    # mirrors ROM src/comm.c:1922 —
+    # act("$n has returned from the void.", ch, NULL, NULL, TO_ROOM)
     try:
-        destination.broadcast(f"{name} has returned from the void.", exclude=char)
+        message = act_format("$n has returned from the void.", recipient=None, actor=char)
+        destination.broadcast(message, exclude=char)
     except Exception:
         pass
 
