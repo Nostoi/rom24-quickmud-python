@@ -139,20 +139,74 @@ def _seed_default_boards() -> None:
             existing.purge_days = purge_days
 
 
+def _archive_expired_notes(board: Board, now: float) -> int:
+    """Move notes whose ``expire`` is in the past into ``<board>.old.json``.
+
+    Mirrors ROM ``load_board`` archive sweep at ``src/board.c:365-383``: any
+    note whose ``expire < current_time`` is appended to ``<short_name>.old``
+    and dropped from the active board. We use a parallel ``.old.json`` file
+    so the archive is readable with the same JSON schema as live boards.
+
+    Returns the number of notes archived.
+    """
+
+    if not board.notes:
+        return 0
+
+    expired: list = []
+    keep: list = []
+    for note in board.notes:
+        if note.expire and note.expire < now:
+            expired.append(note)
+        else:
+            keep.append(note)
+
+    if not expired:
+        return 0
+
+    board.notes = keep
+
+    BOARDS_DIR.mkdir(parents=True, exist_ok=True)
+    archive_path = BOARDS_DIR / f"{board.storage_key()}.old.json"
+    archive: Board
+    if archive_path.exists():
+        with archive_path.open() as f:
+            archive_data = load_dataclass(BoardJson, f)
+        archive = Board.from_json(archive_data)
+    else:
+        archive = Board(name=f"{board.name}.old", description=board.description)
+
+    archive.notes.extend(expired)
+
+    tmp = archive_path.with_suffix(".tmp")
+    with tmp.open("w") as f:
+        dump_dataclass(archive.to_json(), f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, archive_path)
+
+    return len(expired)
+
+
 def load_boards() -> None:
     """Load all boards from ``BOARDS_DIR`` into ``board_registry``.
 
     Mirrors ROM ``load_boards`` (``src/board.c:399-405``) which iterates the
     hardcoded ``boards[MAX_BOARD]`` table and calls ``load_board`` on each
     entry. We seed those five defaults first, then overlay any persisted
-    notes from JSON.
+    notes from JSON, then sweep expired notes into ``<board>.old.json``
+    (ROM ``load_board`` archive at ``src/board.c:365-383``).
     """
+
+    import time
 
     board_registry.clear()
     _seed_default_boards()
     if not BOARDS_DIR.exists():
         return
     for path in sorted(BOARDS_DIR.glob("*.json")):
+        if path.name.endswith(".old.json"):
+            continue
         with path.open() as f:
             data = load_dataclass(BoardJson, f)
         board = Board.from_json(data)
@@ -164,6 +218,12 @@ def load_boards() -> None:
             existing.notes = board.notes
         else:
             board_registry[key] = board
+
+    now = time.time()
+    for board in board_registry.values():
+        archived = _archive_expired_notes(board, now)
+        if archived:
+            save_board(board)
 
 
 def save_board(board: Board) -> None:

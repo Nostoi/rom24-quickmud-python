@@ -151,7 +151,7 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-005 | CRITICAL | `src/board.c:444-460` | `mud/models/board.py:121-125` | `Board.unread_count` does not filter notes by recipient (`is_note_to`); leaks Personal/per-name notes into non-recipients' unread counts. | ✅ FIXED |
 | BOARD-006 | IMPORTANT | `src/board.c:758-769,793-798,828-832` | `mud/commands/notes.py:190-237` | `do_board` enumeration uses `can_read(trust)` instead of ROM's `unread_notes != BOARD_NOACCESS`; resolved transitively once BOARD-005 lands but the listing also needs to call the recipient-aware unread helper. | ✅ FIXED (subsumed by BOARD-005) |
 | BOARD-007 | MINOR | `src/board.c:790-812` | `mud/commands/notes.py:225-231` | `do_board <N>` numbers boards by accessible position, matching ROM once BOARD-006 is closed; no separate fix needed. | 🔄 OPEN (subsumed) |
-| BOARD-008 | CRITICAL | `src/board.c:365-383` | `mud/notes.py:23-32` | `load_boards` does not drop notes whose `expire < now` nor archive them to `<board>.old`. | 🔄 OPEN |
+| BOARD-008 | CRITICAL | `src/board.c:365-383` | `mud/notes.py:23-32` | `load_boards` does not drop notes whose `expire < now` nor archive them to `<board>.old`. | ✅ FIXED |
 | BOARD-009 | MINOR | `src/board.c:436-437` | `mud/commands/notes.py:101-104` | ROM allows `to_list` to be a number meaning "trust ≥ that number"; Python checks the entire `to` field is digits. ROM is identical (`is_number(note->to_list) && get_trust(ch) >= atoi(note->to_list)`); no gap. | ✅ NO GAP |
 | BOARD-010 | MINOR | `src/board.c:569-572` | `mud/commands/notes.py:327-339` | `note read again` in ROM is a no-op (empty `if` body); Python returns "Read which note?". Cosmetic, deferred. | 🔄 DEFERRED (cosmetic) |
 | BOARD-011 | IMPORTANT | `src/board.c:482-488` | `mud/commands/notes.py:162-177` | ROM `do_nwrite` discards an `in_progress` draft whose `text` is NULL ("cancelled because you did not manage to write any text before losing link"); Python silently reuses any draft. | 🔄 DEFERRED |
@@ -179,7 +179,7 @@ install, only edge cases or out-of-scope architectural plumbing.
 | BOARD-003 | | | 🔄 |
 | BOARD-004 | `tests/integration/test_boards_rom_parity.py::test_post_assigns_unique_timestamp_when_called_in_same_second` | (this commit) | ✅ |
 | BOARD-005 | `tests/integration/test_boards_rom_parity.py::test_unread_count_skips_notes_not_addressed_to_reader` | (this commit) | ✅ |
-| BOARD-008 | | | 🔄 |
+| BOARD-008 | `tests/integration/test_boards_rom_parity.py::test_load_boards_archives_expired_notes` | (this commit) | ✅ |
 
 ---
 

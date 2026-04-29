@@ -136,11 +136,15 @@ def test_initialize_world_loads_boards_from_disk(tmp_path):
     orig_dir = _setup_boards(boards_dir)
     try:
         # Seed an existing board file before boot, mirroring ROM boot_db load order.
+        # ROM General has purge_days=21 (src/board.c:70) — without that, the
+        # note's expire equals its timestamp and the archive sweep at load
+        # time would correctly drop it on the next boot.
         board = notes.get_board(
             "General",
             description="General discussion",
             read_level=0,
             write_level=0,
+            purge_days=21,
         )
         board.post("Immortal", "Welcome", "Follow the rules")
         notes.save_board(board)
