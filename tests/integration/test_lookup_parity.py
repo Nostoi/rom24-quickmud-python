@@ -52,6 +52,17 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_position_lookup_prefix_and_unknown():
+    # mirrors ROM src/lookup.c:67-79 — position_lookup uses str_prefix; -1 on miss.
+    # Closes LOOKUP-004.
+    from mud.utils.prefix_lookup import position_lookup
+
+    assert position_lookup("rest") == 5  # Position.RESTING
+    assert position_lookup("standing") == 8
+    assert position_lookup("dead") == 0
+    assert position_lookup("nonsense") == -1
+
+
 def test_clan_lookup_prefix_match():
     # mirrors ROM src/lookup.c:53-65 — clan_lookup uses str_prefix.
     # Closes LOOKUP-003.

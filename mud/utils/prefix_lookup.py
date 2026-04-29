@@ -49,3 +49,22 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
         if member.name and member.name.lower().startswith(needle):
             return int(member)
     return None
+
+
+def position_lookup(name: str | None) -> int:
+    """Return the int Position index whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``position_lookup`` (src/lookup.c:67-79):
+    case-insensitive prefix-match against the position table. Returns ``-1``
+    on no match (ROM fall-through).
+    """
+    # mirroring ROM src/lookup.c:67-79 — position_lookup uses str_prefix.
+    from mud.models.constants import Position
+
+    if not name:
+        return -1
+    needle = name.lower()
+    for member in Position.__members__.values():
+        if member.name and member.name.lower().startswith(needle):
+            return int(member)
+    return -1

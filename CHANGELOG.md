@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `LOOKUP-004` — Added `position_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:67-79` (case-insensitive prefix-match against `Position` IntEnum, returns `-1` on miss).
 - `LOOKUP-003` — `lookup_clan_id` (`mud/models/clans.py`) now uses ROM-faithful prefix-match instead of exact-match. `lookup_clan_id("lo")` returns clan `loner`, `lookup_clan_id("ro")` returns clan `rom`, mirroring ROM `src/lookup.c:53-65` (`clan_lookup` calls `str_prefix`).
 - `LOOKUP-002` — `_lookup_flag_bit` (`mud/commands/remaining_rom.py`) now uses ROM-faithful prefix-match instead of exact-match. `flag char Bob plr +holy` matches `HOLYLIGHT` per ROM `src/lookup.c:39-51` (`flag_lookup` calls `str_prefix`). Introduces `mud/utils/prefix_lookup.py` with shared `prefix_lookup_index` and `prefix_lookup_intflag` helpers for the remaining LOOKUP-003..008 closures.
 - `LOOKUP-001` — Added `race_lookup(name: str | None) -> int` to `mud/models/races.py` mirroring ROM `src/lookup.c:110-122` (case-insensitive prefix-match against `RACE_TABLE`, fall-through `return 0`). Fixes a latent `ImportError` in `mud/persistence.py:614`'s pet-restore path: every pet load with a non-None race snapshot was crashing with `ImportError: cannot import name 'race_lookup'` because the function had not been ported. Caught during the `lookup.c` parity audit.
