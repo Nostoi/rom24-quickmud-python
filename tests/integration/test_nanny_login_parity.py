@@ -145,6 +145,67 @@ def test_denied_character_is_blocked_from_login():
 
 
 @pytest.mark.p1
+def test_new_character_starts_with_recall_skill_at_50_percent():
+    """NANNY-003 — `learned[gsn_recall] = 50` must be set on a new character.
+
+    ROM C: src/nanny.c:579-581 (after CON_GET_ALIGNMENT)
+        ```c
+        group_add (ch, "rom basics", FALSE);
+        group_add (ch, class_table[ch->class].base_group, FALSE);
+        ch->pcdata->learned[gsn_recall] = 50;
+        ```
+
+    Without this seed, a new character cannot reliably `recall` to safety.
+    Python's `from_orm` (mud/models/character.py:1052-1053) seeds the
+    skill on every load: any character without a stored value gets 50%,
+    and stored values are clamped to ≥50 on load. This test locks in
+    that behavior.
+    """
+    from types import SimpleNamespace
+
+    from mud.models.character import from_orm
+
+    db_char = SimpleNamespace(
+        name="Newbie",
+        level=1,
+        hp=20,
+        room_vnum=3700,
+        race=0,
+        ch_class=0,
+        sex=1,
+        true_sex=1,
+        alignment=0,
+        act=0,
+        hometown_vnum=3001,
+        perm_stats="",
+        size=0,
+        form=0,
+        parts=0,
+        imm_flags=0,
+        res_flags=0,
+        vuln_flags=0,
+        practice=5,
+        train=3,
+        perm_hit=100,
+        perm_mana=100,
+        perm_move=100,
+        default_weapon_vnum=0,
+        newbie_help_seen=False,
+        creation_points=40,
+        creation_groups="",
+        creation_skills="",
+        prompt=None,
+        comm=0,
+        player=None,
+    )
+
+    char = from_orm(db_char)
+
+    # mirrors ROM src/nanny.c:581 — learned[gsn_recall] = 50
+    assert char.pcdata.learned.get("recall", 0) >= 50
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.
