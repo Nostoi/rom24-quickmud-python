@@ -88,7 +88,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Special Procedures** | | | | | |
 | `special.c` | P2 | ✅ Audited | `mud/spec_funs.py` | 100% | Apr 28, 2026 — all 8 CRITICAL/IMPORTANT gaps closed (SPEC-001..SPEC-008: area-wide yell, guard NPC targeting, mayor gate messages, c_div integer math, do_murder, is_safe, mayor move_character, c_div gold). See SPECIAL_C_AUDIT.md |
 | **Communication & Social** | | | | | |
-| `comm.c` | P3 | ⚠️ Partial | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py` | 75% | Non-networking surface audited (`COMM_C_AUDIT.md`); 4/9 gaps closed (COMM-001/003/004/006). Networking layer deferred-by-design (asyncio rewrite). |
+| `comm.c` | P3 | ✅ Audited | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py` | 95% | Non-networking surface fully audited (`COMM_C_AUDIT.md`); 8/9 gaps closed (COMM-001/002/003/004/006/007/008/009). COMM-005 (double-newbie sweep) deferred-by-design — overlaps the asyncio architectural carve-out. Networking layer (`main`, `init_socket`, `game_loop_*`, descriptor I/O) deferred-by-design. |
 | `nanny.c` | P3 | ⚠️ Partial | `mud/account/` | 40% | Login flow partial |
 | `board.c` | P2 | ⚠️ Partial | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | 95% | Audit doc + 9 gaps closed (BOARD-001/002/003/004/005/008/011/012/013; BOARD-006 subsumed by 005; BOARD-009 no-gap). Deferred-by-design: BOARD-010 (cosmetic — `note read again` no-op in ROM); BOARD-014 (architectural — AFK plumbing absent). See `docs/parity/BOARD_C_AUDIT.md`. |
 | `music.c` | P2 | ⚠️ Partial | `mud/music.py` | 60% | Song update works |
@@ -1004,15 +1004,15 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ⚠️ P3-6: comm.c (PARTIAL - 75%)
+### ✅ P3-6: comm.c (AUDITED - 95%)
 
-**Status**: ⚠️ **Non-networking surface audited; networking deferred-by-design**
+**Status**: ✅ **Non-networking surface fully audited; networking deferred-by-design**
 
 **ROM Functions**: Network I/O and socket handling — **and** `bust_a_prompt`, `act_new`, `colour`, `check_parse_name`, `stop_idling`, `fix_sex`, `show_string`.
 
-**QuickMUD Modules**: `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/net/ansi.py`.
+**QuickMUD Modules**: `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py`.
 
-**Audit doc**: [`COMM_C_AUDIT.md`](COMM_C_AUDIT.md) — 9 stable gap IDs (COMM-001..COMM-009). Closed: COMM-001 (`bust_a_prompt` rendering), COMM-003 (`check_parse_name` length floor), COMM-004 (mob-keyword collision), COMM-006 (clan-name reject). Open: COMM-002 (`show_string` pager), COMM-005 (double-newbie disconnect), COMM-007 (`stop_idling` broadcast wording), COMM-008 (ANSI tokens `{D {* {/ {- {{`), COMM-009 (`fix_sex` standalone helper).
+**Audit doc**: [`COMM_C_AUDIT.md`](COMM_C_AUDIT.md) — 9 stable gap IDs (COMM-001..COMM-009). Closed: COMM-001 (`bust_a_prompt` rendering), COMM-002 (`show_string` pager input semantics), COMM-003 (`check_parse_name` length floor), COMM-004 (mob-keyword collision), COMM-006 (clan-name reject), COMM-007 (`stop_idling` act-broadcast), COMM-008 (ANSI specials `{D {* {/ {- {{`), COMM-009 (`fix_sex` standalone helper). Deferred-by-design: COMM-005 (double-newbie-disconnect sweep) — overlaps the asyncio architectural carve-out.
 
 **Networking** (`main`, `init_socket`, `game_loop_*`, descriptor I/O, telnet protocol): intentional architectural divergence — QuickMUD uses asyncio. Not audit-bound.
 
@@ -1027,8 +1027,8 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | P0 | 7 | 7 | 0 | 0 | **100%** ✅ |
 | P1 | 11 | 6 | 5 | 0 | **86%** ✅ |
 | P2 | 9 | 0 | 3 | 6 | **26%** ❌ |
-| P3 | 16 | 1 | 9 | 2 | **66%** ⚠️ (4 N/A) |
-| **Total** | **43** | **14** | **18** | **7** | **67%** |
+| P3 | 16 | 2 | 8 | 2 | **69%** ⚠️ (4 N/A) |
+| **Total** | **43** | **15** | **17** | **7** | **69%** |
 
 ### Work Estimates
 
