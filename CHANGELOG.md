@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `olc_act.c` parity audit (`docs/parity/OLC_ACT_C_AUDIT.md`) — Phase 1–3 complete. 108 ROM functions inventoried across four editors (aedit/redit/oedit/medit); mpedit/hedit out of scope (sibling audits). 14 stable gap IDs filed (OLC_ACT-001..014): 6 CRITICAL (aedit_create wholly missing; redit_create missing; redit reset/vnum dispatcher gaps; oedit_create missing security gate; medit_create missing ACT_IS_NPC flag on new mobs), 6 IMPORTANT (show-command completeness for all four editors; success message string drift; aedit_reset missing), 2 MINOR (structural). Tier breakdown: TIER A 9 functions (line-by-line), TIER B 8 functions (moderate), TIER C ~78 functions (inventory). Closures pending via `rom-gap-closer` per-gap. Tracker: olc_act.c row flipped ❌ Not Audited → ⚠️ Partial.
+
 ### Fixed
 
 - `OLC-022` — `do_resets` (`mud/commands/imm_olc.py`) rewritten with full ROM subcommand set (src/olc.c:1232-1469): P-reset via `inside <containerVnum> [limit] [count]` (validates ITEM_CONTAINER or ITEM_CORPSE_NPC), O-reset via `room`, G/E-reset via wear-loc prefix lookup (`lfin` → FINGER_L), R-reset via `random 1..6`, M-reset extended with optional `[max#area] [max#room]` args. 6-line syntax block on unrecognized numeric-arg subcommand. `_add_reset` helper extracted. Test: `tests/integration/test_olc_do_resets_subcommands.py` (27 cases).

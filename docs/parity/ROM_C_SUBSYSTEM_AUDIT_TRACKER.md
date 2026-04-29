@@ -81,7 +81,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `mob_cmds.c` | P1 | ✅ Complete | `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py` | 100% | Apr 27, 2026 — all 18 gaps closed (6 CRITICAL, 9 IMPORTANT, 3 MINOR). Integration coverage in `tests/integration/test_mob_cmds_*.py`. See `MOB_CMDS_C_AUDIT.md`. |
 | **OLC (Online Creation)** | | | | | |
 | `olc.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Basic OLC exists |
-| `olc_act.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | OLC actions partial |
+| `olc_act.c` | P2 | ⚠️ Partial | `mud/commands/build.py`, `mud/olc/` | 30% | 2026-04-29 — Phase 1–3 audit filed (`OLC_ACT_C_AUDIT.md`). 14 gap IDs (OLC_ACT-001..014): 6 CRITICAL (four `*_create` builders missing/divergent, `redit reset`, `redit <vnum>`), 6 IMPORTANT (`*_show` completeness, message strings, `aedit reset`), 2 MINOR. Closures pending. |
 | `olc_save.c` | P2 | ❌ Not Audited | `mud/olc/` | 25% | OLC save partial |
 | `olc_mpcode.c` | P2 | ❌ Not Audited | `mud/olc/` | 20% | Mobprog editing missing |
 | `hedit.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Help editor basic |
