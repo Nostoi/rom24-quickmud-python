@@ -12,7 +12,7 @@ from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
-from mud.math.stat_apps import get_damroll, get_hitroll
+from mud.math.stat_apps import get_ac, get_damroll, get_hitroll
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     AC_BASH,
@@ -387,9 +387,8 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     dam_type_lookup = attack_damage_type(attack_index)
     dam_type = int(dam_type_lookup) if dam_type_lookup is not None else int(DamageType.BASH)
     ac_idx = ac_index_for_dam_type(dam_type)
-    victim_ac = 0
-    if hasattr(victim, "armor") and 0 <= ac_idx < len(victim.armor):
-        victim_ac = victim.armor[ac_idx]
+    # ROM src/merc.h:2104-2106 GET_AC adds dex_app[DEX].defensive when IS_AWAKE.
+    victim_ac = get_ac(victim, ac_idx)
     # Visibility and position modifiers (ROM-inspired)
     if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.INVISIBLE):
         victim_ac -= 4

@@ -157,23 +157,19 @@ def do_score(ch: Character, args: str) -> str:
         exp_needed = ((level + 1) * exp_per_level(ch)) - exp
         lines.append(f"You need {exp_needed} exp to level.")
 
-    # Armor class - ROM displays individual ACs at level 25+ (src/act_info.c:1591-1650)
-    # armor is list[AC_PIERCE, AC_BASH, AC_SLASH, AC_EXOTIC] where indices 0-3
-    armor = getattr(ch, "armor", [100, 100, 100, 100])
-    # Ensure armor is a list (sometimes can be int)
-    if not isinstance(armor, list):
-        armor = [armor, armor, armor, armor]
+    # Armor class - ROM displays individual ACs at level 25+ (src/act_info.c:1591-1650).
+    # ROM uses GET_AC (src/merc.h:2104-2106) which adds dex_app[DEX].defensive when IS_AWAKE.
+    from mud.math.stat_apps import get_ac
 
     if level >= 25:
-        # High level: show all four armor types
-        ac_pierce = armor[0] if len(armor) > 0 else 100
-        ac_bash = armor[1] if len(armor) > 1 else 100
-        ac_slash = armor[2] if len(armor) > 2 else 100
-        ac_magic = armor[3] if len(armor) > 3 else 100
+        ac_pierce = get_ac(ch, 0)
+        ac_bash = get_ac(ch, 1)
+        ac_slash = get_ac(ch, 2)
+        ac_magic = get_ac(ch, 3)
         lines.append(f"Armor: pierce: {ac_pierce}  bash: {ac_bash}  slash: {ac_slash}  magic: {ac_magic}")
     else:
-        # Low level: show generic description based on AC_SLASH (index 2)
-        ac_slash = armor[2] if len(armor) > 2 else 100
+        # Low level: show generic description based on AC_SLASH (index 2).
+        ac_slash = get_ac(ch, 2)
         lines.append(f"You are {_armor_class_description(ac_slash)} armored.")
 
     # Immortal info - ROM src/act_info.c lines 1654-1675

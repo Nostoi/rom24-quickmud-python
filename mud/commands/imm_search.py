@@ -973,14 +973,13 @@ def do_mstat(char: Character, args: str) -> str:
     exp = int(getattr(victim, "exp", 0))
     buf += f"Lv: {level}  Class: {class_name}  Align: {alignment}  Gold: {gold}  Silver: {silver}  Exp: {exp}\n\r"
 
-    armor = getattr(victim, "armor", [0, 0, 0, 0])
-    if isinstance(armor, list | tuple):
-        ac_pierce = armor[AC_PIERCE] if len(armor) > AC_PIERCE else 0
-        ac_bash = armor[AC_BASH] if len(armor) > AC_BASH else 0
-        ac_slash = armor[AC_SLASH] if len(armor) > AC_SLASH else 0
-        ac_exotic = armor[AC_EXOTIC] if len(armor) > AC_EXOTIC else 0
-    else:
-        ac_pierce = ac_bash = ac_slash = ac_exotic = 0
+    # ROM src/act_wiz.c:1612-1613 prints GET_AC for each AC type (dex_app applied if IS_AWAKE).
+    from mud.math.stat_apps import get_ac
+
+    ac_pierce = get_ac(victim, AC_PIERCE)
+    ac_bash = get_ac(victim, AC_BASH)
+    ac_slash = get_ac(victim, AC_SLASH)
+    ac_exotic = get_ac(victim, AC_EXOTIC)
     buf += f"Armor: pierce: {ac_pierce}  bash: {ac_bash}  slash: {ac_slash}  magic: {ac_exotic}\n\r"
 
     hitroll = int(getattr(victim, "hitroll", 0))

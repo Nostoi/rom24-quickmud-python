@@ -63,20 +63,79 @@ STR_APP: tuple[StrAppRow, ...] = (
 )
 
 
-def _curr_str(ch) -> int:
-    """Return ch's current STR clamped to the str_app index range [0, 25]."""
+class DexAppRow(NamedTuple):
+    """One row of ROM ``dex_app[26]`` — see src/const.c:821-848."""
+
+    defensive: int
+
+
+# ROM src/const.c:821-848 — verbatim port of dex_app[26].
+DEX_APP: tuple[DexAppRow, ...] = (
+    DexAppRow(60),    # DEX  0
+    DexAppRow(50),    # DEX  1
+    DexAppRow(50),    # DEX  2
+    DexAppRow(40),    # DEX  3
+    DexAppRow(30),    # DEX  4
+    DexAppRow(20),    # DEX  5
+    DexAppRow(10),    # DEX  6
+    DexAppRow(0),     # DEX  7
+    DexAppRow(0),     # DEX  8
+    DexAppRow(0),     # DEX  9
+    DexAppRow(0),     # DEX 10
+    DexAppRow(0),     # DEX 11
+    DexAppRow(0),     # DEX 12
+    DexAppRow(0),     # DEX 13
+    DexAppRow(0),     # DEX 14
+    DexAppRow(-10),   # DEX 15
+    DexAppRow(-15),   # DEX 16
+    DexAppRow(-20),   # DEX 17
+    DexAppRow(-30),   # DEX 18
+    DexAppRow(-40),   # DEX 19
+    DexAppRow(-50),   # DEX 20
+    DexAppRow(-60),   # DEX 21
+    DexAppRow(-75),   # DEX 22
+    DexAppRow(-90),   # DEX 23
+    DexAppRow(-105),  # DEX 24
+    DexAppRow(-120),  # DEX 25
+)
+
+
+def _curr_stat(ch, stat: Stat, default: int = 13) -> int:
+    """Return ch's current stat clamped to the app-table index range [0, 25]."""
 
     getter = getattr(ch, "get_curr_stat", None)
     if getter is None:
         raw = getattr(ch, "perm_stat", None)
         if not raw:
-            return 13  # ROM neutral default — tohit/todam columns are 0 here
-        idx = int(Stat.STR)
-        return max(0, min(25, int(raw[idx]) if idx < len(raw) else 13))
-    val = getter(Stat.STR)
+            return default
+        idx = int(stat)
+        return max(0, min(25, int(raw[idx]) if idx < len(raw) else default))
+    val = getter(stat)
     if val is None:
-        return 13
+        return default
     return max(0, min(25, int(val)))
+
+
+def _curr_str(ch) -> int:
+    """Return ch's current STR clamped to the str_app index range [0, 25]."""
+
+    return _curr_stat(ch, Stat.STR)
+
+
+def _curr_dex(ch) -> int:
+    """Return ch's current DEX clamped to the dex_app index range [0, 25]."""
+
+    return _curr_stat(ch, Stat.DEX)
+
+
+def _is_awake(ch) -> bool:
+    """ROM IS_AWAKE: position > POS_SLEEPING (4). See src/merc.h:2103."""
+
+    pos = getattr(ch, "position", 8)
+    try:
+        return int(pos) > 4
+    except (TypeError, ValueError):
+        return True
 
 
 def get_hitroll(ch) -> int:
@@ -99,3 +158,24 @@ def get_damroll(ch) -> int:
 
     base = int(getattr(ch, "damroll", 0) or 0)
     return base + STR_APP[_curr_str(ch)].todam
+
+
+def get_ac(ch, ac_type: int) -> int:
+    """Return ROM ``GET_AC(ch, type)``: armor[type] + (IS_AWAKE ? dex_app[DEX].defensive : 0).
+
+    Mirrors src/merc.h:2104-2106. Consumed at src/fight.c:480-489 for combat
+    AC, src/act_info.c:1591-1650 for the score AC tier display, and
+    src/act_wiz.c:1612-1613 for the wiz "stat char" AC line.
+
+    Sleeping/stunned/incap/dead victims do NOT receive the DEX defensive
+    bonus — IS_AWAKE is ``position > POS_SLEEPING``.
+    """
+
+    armor = getattr(ch, "armor", None)
+    if armor is None or ac_type < 0 or ac_type >= len(armor):
+        base = 0
+    else:
+        base = int(armor[ac_type])
+    if not _is_awake(ch):
+        return base
+    return base + DEX_APP[_curr_dex(ch)].defensive
