@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `sha256.c` audit completed (`docs/parity/SHA256_C_AUDIT.md`). SHA-256 primitive is delegated to Python's stdlib `hashlib` (byte-for-byte equivalent to ROM `src/sha256.c:131-318`). The `sha256_crypt` password hash (ROM `src/sha256.c:320-336`, plain unsalted single-round SHA-256) is replaced by PBKDF2-HMAC-SHA256 with a 16-byte random salt and 100 000 rounds in `mud/security/hash_utils.py` — a deliberate security upgrade with no observable gameplay parity surface (no pfile compatibility goal). Tracker row flipped from ⚠️ Partial → ✅ AUDITED.
+
 ### Fixed
 
 - `NANNY-012` — Name validator (`is_valid_account_name` in `mud/account/account_service.py`) now matches ROM `check_parse_name` (`src/comm.c`, called from `nanny.c:188`): minimum length raised from 2 to 3 chars, and `god` / `imp` added to the reserved-name set. Existing reserved tokens (`all auto immortal self someone something the you loner none`) are unchanged.

@@ -1,23 +1,25 @@
-# Session Status — 2026-04-28 — `ban.c` parity audit & gap closure (✅ 100% complete)
+# Session Status — 2026-04-28 — `sha256.c` parity audit (✅ 100% AUDITED)
 
 ## Current State
 
-- **Active audit**: `ban.c` — ✅ all 4 gaps closed (BAN-001..004); file flipped to AUDITED in tracker.
-- **Last completed**: BAN-001 (level column alignment), BAN-002 (empty type-text fallback), BAN-003 (ROM `str_prefix` abbreviation), BAN-004 (drop exact-match fallback).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_BAN_C_AUDIT_AND_GAP_CLOSURE.md](SESSION_SUMMARY_2026-04-28_BAN_C_AUDIT_AND_GAP_CLOSURE.md)
+- **Active audit**: `sha256.c` — ✅ AUDITED at 100%. No gaps. Deliberate `sha256_crypt` → PBKDF2 divergence documented in `docs/parity/SHA256_C_AUDIT.md`.
+- **Last completed**: `sha256.c` audit doc written; tracker row + per-file status block + overall summary updated; CHANGELOG `Changed` entry; version bumped to 2.6.21.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_SHA256_C_AUDIT.md](SESSION_SUMMARY_2026-04-28_SHA256_C_AUDIT.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.20 |
-| Tests | `tests/integration/test_ban_command_parity.py` 4/4 + 73 ban-adjacent passing |
-| ROM C files audited | 20 / 43 (`ban.c` newly AUDITED) |
-| Active focus | `ban.c` ✅ 100%; previous session left `nanny.c` 11/14 closed |
+| Version | 2.6.21 |
+| Tests | `tests/test_hash_utils.py` 1/1 passing; no code changes this session |
+| ROM C files audited | 25 / 43 (sha256.c newly AUDITED) |
+| Active focus | `sha256.c` ✅ 100%; previous session closed `ban.c` (BAN-001..004) |
 
 ## Next Intended Task
 
 Pick the next ⚠️ Partial / ❌ Not Audited file from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`. Top candidates:
 
-1. **Close deferred NANNY trio** — NANNY-008 (pet follows owner on login), NANNY-009 (title_table + first-login set_title), NANNY-010 (CON_BREAK_CONNECT iterate-all-descriptors). Each requires its own focused session due to scope (async refactor / data porting / descriptor-list iteration).
-2. **Pick another P2 file** — `recycle.c`, `save.c`, OLC files, or remaining unaudited rows.
+1. **Deferred NANNY trio** — NANNY-008 (pet follows owner on login), NANNY-009 (title_table + first-login set_title), NANNY-010 (CON_BREAK_CONNECT iterate-all-descriptors). Each needs its own focused session due to scope (async refactor / data porting / descriptor-list iteration).
+2. **Mid-sized P3 utility files** — `flags.c` (75%), `lookup.c` (65%), `tables.c` (70%), `const.c` (80%). Contained but require porting work.
+3. **OLC cluster** — `olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c` — would unblock `bit.c` and `string.c` audits.
+4. **`board.c`** (P2 35%) — boards subsystem; mid-scope.

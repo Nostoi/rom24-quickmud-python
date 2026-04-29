@@ -38,7 +38,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **42% Audited** (18 audited, 16 partial, 5 not audited, 4 N/A)  
+**Overall**: ⚠️ **58% Audited** (25 audited, 8 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (sha256.c flipped to AUDITED).  
 **handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
 **save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
 **db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
@@ -108,7 +108,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `healer.c` | P2 | ✅ AUDITED | `mud/commands/healer.py` | 100% | Apr 28, 2026 — all 4 gaps closed (`HEALER-001`..`004`): `ACT_IS_HEALER` detection, exact service list/aliases, silver-aware pricing + utterance + payout, and real spell dispatch. See `HEALER_C_AUDIT.md`. |
 | **External Systems** | | | | | |
 | `imc.c` | P3 | N/A | `mud/imc/` | N/A | Different IMC implementation |
-| `sha256.c` | P3 | ⚠️ Partial | `mud/security/hash_utils.py` | 100% | Uses Python hashlib |
+| `sha256.c` | P3 | ✅ AUDITED | `mud/security/hash_utils.py` | 100% | Uses Python hashlib + PBKDF2 (security upgrade, see SHA256_C_AUDIT.md) |
 
 ---
 
@@ -993,14 +993,14 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ⚠️ P3-5: sha256.c (COMPLETE - 100%)
+### ✅ P3-5: sha256.c (AUDITED - 100%)
 
-**Status**: ✅ **Uses Python hashlib**
+**Status**: ✅ **Audited 2026-04-28** — see `docs/parity/SHA256_C_AUDIT.md`
 
-**ROM Functions**: SHA256 hashing
-**QuickMUD Module**: `mud/security/hash_utils.py`
+**ROM Functions**: SHA-256 primitive (Init/Update/Final/Transform/Pad) + `sha256_crypt` password hashing
+**QuickMUD Module**: `mud/security/hash_utils.py` (delegates to stdlib `hashlib`)
 
-**Status**: ✅ Uses Python's built-in hashlib (verified)
+**Status**: ✅ Audited. SHA-256 primitive delegated to Python's `hashlib` (byte-for-byte equivalent). `sha256_crypt` replaced by PBKDF2-HMAC-SHA256 + 16-byte salt — deliberate security upgrade with no observable gameplay parity surface (account credentials are internal; no pfile compatibility goal).
 
 ---
 
