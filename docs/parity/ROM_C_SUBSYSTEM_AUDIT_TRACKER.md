@@ -90,7 +90,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Communication & Social** | | | | | |
 | `comm.c` | P3 | ❌ Not Audited | `mud/net/` | 50% | Networking different arch |
 | `nanny.c` | P3 | ⚠️ Partial | `mud/account/` | 40% | Login flow partial |
-| `board.c` | P2 | ⚠️ Partial | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | 85% | Audit doc + 6 gaps closed (BOARD-001/002/003/004/005/008; BOARD-006 subsumed by 005; BOARD-009 no-gap). Deferred: BOARD-010/011/012/013/014. See `docs/parity/BOARD_C_AUDIT.md`. |
+| `board.c` | P2 | ⚠️ Partial | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | 95% | Audit doc + 9 gaps closed (BOARD-001/002/003/004/005/008/011/012/013; BOARD-006 subsumed by 005; BOARD-009 no-gap). Deferred-by-design: BOARD-010 (cosmetic — `note read again` no-op in ROM); BOARD-014 (architectural — AFK plumbing absent). See `docs/parity/BOARD_C_AUDIT.md`. |
 | `music.c` | P2 | ⚠️ Partial | `mud/music.py` | 60% | Song update works |
 | **Utilities & Helpers** | | | | | |
 | `const.c` | P3 | ⚠️ Partial | `mud/models/constants.py` | 80% | Most constants ported |

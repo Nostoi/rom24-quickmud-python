@@ -1,32 +1,31 @@
-# Session Status — 2026-04-29 — `board.c` audit Phases 1–4 (6 gaps closed)
+# Session Status — 2026-04-29 — `board.c` final pass (BOARD-011/012/013 closed)
 
 ## Current State
 
-- **Active audit**: `board.c` — Phases 1–3 written, Phase 4 partially complete; six of fourteen gaps closed (`BOARD-001/002/003/004/005/008`). Tracker row flipped ❌ Not Audited 35% → ⚠️ Partial 85%.
-- **Last completed**: BOARD-002/003 (TO_ROOM `act` broadcasts on `note write` / `note send`), in commit `ae2a75c`.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_BOARD_C_AUDIT_PHASES_1-4.md](SESSION_SUMMARY_2026-04-29_BOARD_C_AUDIT_PHASES_1-4.md)
+- **Active audit**: `board.c` — effectively closed. 9 of 14 gaps fixed; remaining BOARD-010 (cosmetic) and BOARD-014 (architectural / AFK plumbing) explicitly deferred-by-design. Tracker row ⚠️ Partial 85% → ⚠️ Partial 95%.
+- **Last completed**: BOARD-012 (`do_note` unknown verbs dispatch to `do_help`), commit `9fe74b8`. Earlier in the same session: BOARD-013 (`152c8ce`), BOARD-011 (`0fded45`).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_BOARD_C_FINAL.md](SESSION_SUMMARY_2026-04-29_BOARD_C_FINAL.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.35 |
-| Tests | new `tests/integration/test_boards_rom_parity.py` 6/6 green; `tests/test_boards.py` 20/20 green (3 pre-existing tests adjusted to not contradict ROM `DEF_INCLUDE("all")` and `purge_days=0` non-ROM premises). |
-| ROM C files audited | 28 / 43 audited; `board.c` newly ⚠️ Partial 85%. |
-| Active focus | `board.c` deferred items (BOARD-010..014) or pick a new P2/P3 target. |
+| Version | 2.6.36 |
+| Tests | board area 31/31 green (`tests/integration/test_boards_rom_parity.py` 11/11, `tests/test_boards.py` 20/20). Pre-existing ~30-failure baseline (`test_olc_save`, `test_building`, `test_commands`, `test_logging_admin`, `test_mobprog_triggers`) untouched. |
+| ROM C files audited | 28 / 43 audited; `board.c` ⚠️ Partial 95% (deferred-by-design BOARD-010/014). |
+| Active focus | None — pick a new P2/P3 target. |
 
 ## Next Intended Task
 
-Pick one:
+Start a new file-level audit. Top candidates:
 
-1. **Close remaining `board.c` deferred items** — start with **BOARD-013** (`personal_message` / `make_note` API) since it unblocks death-notification / system-mail features. BOARD-010..012 are minor; BOARD-014 (AFK plumbing) is architectural.
-2. **Move on** to a new tracker target:
-   - `comm.c` (P3 ❌ Not Audited 50%)
-   - **OLC cluster** (`olc.c` / `olc_act.c` / `olc_save.c` / `olc_mpcode.c` / `hedit.c`) — note `tests/test_olc_save.py` already has 13 pre-existing failures.
-   - **Deferred NANNY trio** (NANNY-008/009/010) — architectural-scope.
+1. **`comm.c`** (P3 ❌ Not Audited 50%) — `/rom-parity-audit comm.c`. Smallest scope; networking arch diverges but command-side comm parity has likely-closable gaps. Recommended next step.
+2. **OLC cluster** (`olc.c` / `olc_act.c` / `olc_save.c` / `olc_mpcode.c` / `hedit.c`) — `tests/test_olc_save.py` already has ~13 pre-existing failures; treat as baseline before starting.
+3. **Deferred NANNY trio** (NANNY-008/009/010) — architectural-scope.
 
 ## Pre-existing test failures (not caused by this session)
 
-The full pytest baseline still shows ~50 pre-existing failures across
+The full pytest baseline still shows ~30 pre-existing failures across
 `test_olc_save`, `test_building`, `test_commands`, `test_logging_admin`,
-etc. — none related to boards. All 26 board-touching tests are green.
+`test_mobprog_triggers` — none related to boards or notes. All 31
+board-touching tests are green.
