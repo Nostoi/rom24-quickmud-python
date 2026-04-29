@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` — reconciled the stale `P1-3: db.c + db2.c (PARTIAL - 55%)` section with the actual audit state. Both files have been ✅ Audited 100% on the summary table since the Jan 5 (db.c) and Apr 28 (db2.c) sessions; the P1-3 narrative section has been rewritten to reflect that and to point at the per-file audit docs (`DB_C_AUDIT.md` covers db.c's 44/44 functional functions; `DB2_C_AUDIT.md` covers DB2-001/002/003/006 closures and DB2-004/005 deferred MINORs). No code changes.
+
 ### Added
 
 - `comm.c` parity audit (`docs/parity/COMM_C_AUDIT.md`) — non-networking surface of `src/comm.c` (`bust_a_prompt`, `act_new`, `colour`, `check_parse_name`, `stop_idling`, `fix_sex`, `show_string`) mapped to Python equivalents. Networking layer (`main`, `init_socket`, `game_loop_*`, descriptor I/O) confirmed deferred-by-design per the asyncio rewrite. Phase 3 produces 9 stable gap IDs (`COMM-001..COMM-009`).

@@ -494,35 +494,20 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ⚠️ P1-3: db.c + db2.c (PARTIAL - 55%)
+### ✅ P1-3: db.c + db2.c (AUDITED - 100%)
 
-**Status**: ⚠️ **Partial audit - area loading works**
+**Status**: ✅ **Both files fully audited** — see per-file detailed sections below (P1-5 covers db.c; db2.c covered in summary table line 77).
 
-**ROM Functions**: World database loading
-**QuickMUD Modules**: `mud/loaders/`, `mud/db/`
+**ROM Functions**: World database loading + ROM 2.4 format parsers
+**QuickMUD Modules**: `mud/loaders/`, `mud/spawning/`, `mud/utils/math_utils.py`, `mud/utils/rng_mm.py`, `mud/utils/text.py`, `mud/registry.py`
 
-**Audit Status**:
-- ✅ Area loading (JSON format, not .are)
-- ✅ Room loading (100%)
-- ✅ Mob loading (100%)
-- ✅ Object loading (100%)
-- ⚠️ Reset loading (85% - LastObj/LastMob fixed)
-- ❌ Help file loading (Not from area files)
-- ❌ Shop loading (Different format)
+**Audit Outcome** (Apr 29, 2026 reconciliation):
+- ✅ **db.c** — 44/44 functional functions implemented (24 N/A — Python built-ins / GC / logging). 1 P2-deferred (`check_pet_affected`, part of pet persistence in save.c). See `DB_C_AUDIT.md`.
+- ✅ **db2.c** — 4 CRITICAL/IMPORTANT gaps closed (DB2-001 ACT_IS_NPC merge, DB2-002 race-table flag merge, DB2-003 first-char uppercase, DB2-006 AC ×10). 2 MINOR deferred (DB2-004 kill_table — not user-reachable; DB2-005 single-line vs multi-line `fread_string` — theoretical only). See `DB2_C_AUDIT.md`.
 
-**Critical Gaps**:
-- [ ] .are file format parser (QuickMUD uses JSON)
-- [ ] Immortal table loading
-- [ ] Class/race table loading
-- [ ] Skill table loading (uses JSON)
+**Integration Tests**: ✅ Complete (`tests/integration/test_db2_loader_parity.py` — 8/8 passing; reset/spawning verified across `test_mob_spawning.py`, `test_architectural_parity.py`).
 
-**Note**: QuickMUD intentionally uses JSON instead of ROM .are format. This is **architectural divergence**, not a parity issue.
-
-**Integration Tests**: ✅ Complete (`tests/integration/test_architectural_parity.py`)
-
-**Next Steps**:
-- [ ] Document intentional format differences
-- [ ] Verify all ROM data is loadable (different format OK)
+**Architectural Note**: QuickMUD's canonical area format is JSON (mirrored from ROM .are via `convert_are_to_json.py`); the .are parser exists for parity verification and third-party area support. `load_socials` is N/A by deviation (`data/socials.json` is the canonical source). `convert_objects/convert_object/convert_mobile` are N/A — no MERC legacy areas exist.
 
 ---
 
