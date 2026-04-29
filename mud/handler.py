@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.constants import ItemType, Stat, WearFlag, WearLocation
+from mud.utils.fix_sex import fix_sex
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -1109,9 +1110,7 @@ def reset_char(ch: "Character") -> None:
 
                         if location == APPLY_SEX:
                             ch.sex -= modifier
-                            true_sex = getattr(pcdata, "true_sex", 0)
-                            if ch.sex < 0 or ch.sex > 2:
-                                ch.sex = 0 if is_npc else true_sex
+                            fix_sex(ch)  # mirroring ROM src/comm.c:2178-2182
                         elif location == APPLY_MANA:
                             ch.max_mana -= modifier
                         elif location == APPLY_HIT:
