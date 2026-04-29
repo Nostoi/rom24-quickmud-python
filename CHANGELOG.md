@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `TABLES-003` — Programmatic verification of every `src/merc.h` letter-mapped `#define` macro against the matching Python `IntFlag` member's bit value. New test `tests/integration/test_tables_parity.py::test_merc_h_letter_macros_match_python_intflag_values` parses merc.h, resolves A..Z / aa..dd letter tokens, and cross-checks ~210 macros across the `ACT_/PLR_/OFF_/IMM_/RES_/VULN_/FORM_/PART_/COMM_/ROOM_/GATE_/FURN_/WEAPON_` prefixes. Confirms only `AFF_*` (TABLES-001) diverges; all other letter-mapped tables in `src/tables.c` have correct Python bit positions. Acts as a durable regression guard.
 - `TABLES-002` — `mud/utils/prefix_lookup.py:prefix_lookup_intflag` now consults a ROM `src/tables.c` table-name alias map (`rom_flag_aliases`) before falling back to Python IntFlag member names. ROM-style abbreviations like `+npc`/`+healer`/`+changer`/`+can_loot`/`+dirt_kick`/`+noclangossip` now resolve to the matching Python flag member (`IS_NPC`/`IS_HEALER`/`IS_CHANGER`/`CANLOOT`/`KICK_DIRT`/`NOAUCTION`), restoring ROM `flag_lookup` parity for `do_flag` and OLC.
 
 ### Added
