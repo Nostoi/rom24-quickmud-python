@@ -1,6 +1,6 @@
 # `string.c` ROM Parity Audit
 
-- **Status**: ✅ AUDITED 5% — 11 of 12 helpers DEFERRED to OLC audit cluster (no current Python consumer)
+- **Status**: ⚠️ Partial 60% — 7 of 12 helpers FIXED (STRING-006/007/008/009/010/011/012); 5 remain (STRING-001/002/003/004/005), all blocked on the OLC-INFRA-001 descriptor plumbing landing (descriptor-state setters + dispatcher + format_string).
 - **Date**: 2026-04-29
 - **Source**: `src/string.c` (ROM 2.4b6, 692 lines, 12 public functions — all OLC string-editor backend)
 - **Python primary**: `mud/utils/text.py` (only `smash_tilde` is ported, and that one is declared in `merc.h` rather than `string.c` proper)
@@ -14,13 +14,13 @@
 | `string_replace` | 95-112 | public | Substring substitute (single occurrence) | — | ❌ MISSING (STRING-003) |
 | `string_add` | 121-286 | public | Editor input dispatcher (`.c`/`.s`/`.r`/`.f`/`.h`/`.ld`/`.li`/`.lr`/`~`/`@`); MPCODE save hook | — | ❌ MISSING (STRING-004) |
 | `format_string` | 299-451 | public | Word-wrap to 77 cols + sentence capitalization + paren/quote handling | — | ❌ MISSING (STRING-005) |
-| `first_arg` | 468-508 | public | Quote/paren-aware single-arg parser (used by `.r`/`.li`/`.lr`) | — | ❌ MISSING (STRING-006) |
-| `string_unpad` | 516-543 | public | Trim leading + trailing spaces (used by `aedit_builders`) | — | ❌ MISSING (STRING-007) |
-| `string_proper` | 551-572 | public | Title-case each space-delimited word (used by `aedit_builder`) | — | ❌ MISSING (STRING-008) |
-| `string_linedel` | 574-605 | public | Remove line N (1-indexed) | — | ❌ MISSING (STRING-009) |
-| `string_lineadd` | 607-645 | public | Insert `newstr` as line N (1-indexed) | — | ❌ MISSING (STRING-010) |
-| `merc_getline` | 647-674 | public | Read one `\n`-terminated line into `buf`; return rest of `str` | — | ❌ MISSING (STRING-011) |
-| `numlines` | 676-692 | public | Format string as line-numbered listing (`%2d. ...\n\r`) | — | ❌ MISSING (STRING-012) |
+| `first_arg` | 468-508 | public | Quote/paren-aware single-arg parser (used by `.r`/`.li`/`.lr`) | `mud/utils/string_editor.py:first_arg` | ✅ FIXED (STRING-006) |
+| `string_unpad` | 516-543 | public | Trim leading + trailing spaces (used by `aedit_builders`) | `mud/utils/string_editor.py:string_unpad` | ✅ FIXED (STRING-007) |
+| `string_proper` | 551-572 | public | Title-case each space-delimited word (used by `aedit_builder`) | `mud/utils/string_editor.py:string_proper` | ✅ FIXED (STRING-008) |
+| `string_linedel` | 574-605 | public | Remove line N (1-indexed) | `mud/utils/string_editor.py:string_linedel` | ✅ FIXED (STRING-009) |
+| `string_lineadd` | 607-645 | public | Insert `newstr` as line N (1-indexed) | `mud/utils/string_editor.py:string_lineadd` | ✅ FIXED (STRING-010) |
+| `merc_getline` | 647-674 | public | Read one `\n`-terminated line into `buf`; return rest of `str` | `mud/utils/string_editor.py:merc_getline` | ✅ FIXED (STRING-011) |
+| `numlines` | 676-692 | public | Format string as line-numbered listing (`%2d. ...\n\r`) | `mud/utils/string_editor.py:numlines` | ✅ FIXED (STRING-012) |
 
 Adjacent helper declared in `merc.h` (defined in `db.c`/`comm.c` — not `string.c`):
 
