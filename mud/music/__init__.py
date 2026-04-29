@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
+from pathlib import Path
 
 from mud.models.character import Character
-
 from mud.models.constants import CommFlag, ItemType
 from mud.models.obj import ObjectData, object_registry
 from mud.models.room import Room
 from mud.net.protocol import broadcast_global, broadcast_room
+
+logger = logging.getLogger(__name__)
 
 MAX_SONGS = 20
 MAX_LINES = 100
@@ -159,3 +162,103 @@ def _get_song(index: int) -> Song | None:
     if index < 0 or index >= MAX_SONGS:
         return None
     return song_table[index]
+
+
+# Default location of the ROM music data file (mirrors merc.h MUSIC_FILE).
+DEFAULT_MUSIC_FILE = Path("area/music.txt")
+
+
+def load_songs(path: str | Path = DEFAULT_MUSIC_FILE) -> None:
+    """Populate ``song_table`` from a ROM-format music data file.
+
+    Mirrors ROM ``load_songs`` in src/music.c:160-218. The on-disk format is
+    one entry per song: ``group~`` line, ``name~`` line, then lyric lines
+    until a sentinel ``~`` line; the table terminates with a ``#`` line.
+    Lyrics past ``MAX_LINES`` are dropped with a warning, mirroring ROM's
+    ``bug("Too many lines in a song -- limit is %d.", MAX_LINES)`` behaviour.
+    """
+
+    # mirroring ROM src/music.c:167-168 — reset the global channel queue first.
+    for idx in range(len(channel_songs)):
+        channel_songs[idx] = -1
+
+    music_path = Path(path)
+    try:
+        # ROM reads char-by-char with fread_letter/fread_string; the data
+        # is line-oriented, so splitting on lines reproduces the same parse.
+        text = music_path.read_text(encoding="latin-1")
+    except OSError:
+        # mirroring ROM src/music.c:171-174 — bug() and return without songs.
+        logger.warning("Couldn't open music file %s, no songs available.", music_path)
+        return
+
+    lines = text.splitlines()
+    cursor = 0
+    count = 0
+    while count < MAX_SONGS and cursor < len(lines):
+        # Skip blank leading whitespace between entries (ROM fread_letter does this).
+        while cursor < len(lines) and lines[cursor].strip() == "":
+            cursor += 1
+        if cursor >= len(lines):
+            break
+
+        first = lines[cursor].lstrip()
+        # mirroring ROM src/music.c:180-186 — '#' terminates the table.
+        if first.startswith("#"):
+            break
+
+        group, cursor = _read_tilde_field(lines, cursor)
+        name, cursor = _read_tilde_field(lines, cursor)
+        if group is None or name is None:
+            break
+
+        lyric_lines: list[str] = []
+        while cursor < len(lines):
+            current = lines[cursor]
+            stripped = current.strip()
+            # mirroring ROM src/music.c:198-204 — bare '~' terminates the lyric block.
+            if stripped == "~":
+                cursor += 1
+                break
+            if len(lyric_lines) >= MAX_LINES:
+                # mirroring ROM src/music.c:208-211 — bug warning, then drop the rest.
+                logger.warning("Too many lines in a song -- limit is %d.", MAX_LINES)
+                # ROM still scans forward to the closing '~' to keep the file aligned.
+                while cursor < len(lines) and lines[cursor].strip() != "~":
+                    cursor += 1
+                if cursor < len(lines):
+                    cursor += 1
+                break
+            lyric_lines.append(current)
+            cursor += 1
+
+        song_table[count] = Song(group=group, name=name, lyrics=lyric_lines)
+        count += 1
+
+    # Empty trailing slots remain None, matching ROM's NULL-terminated table.
+    for idx in range(count, MAX_SONGS):
+        song_table[idx] = None
+
+
+def _read_tilde_field(lines: list[str], cursor: int) -> tuple[str | None, int]:
+    """Read a ROM fread_string-style field that ends at the first ``~``.
+
+    The field can span multiple lines; intermediate newlines are joined as
+    a literal ``\\n`` (matching ROM fread_string's behaviour). Returns the
+    parsed string and the new cursor position after the terminator line,
+    or ``(None, cursor)`` if EOF is reached without a tilde.
+    """
+
+    if cursor >= len(lines):
+        return None, cursor
+
+    parts: list[str] = []
+    while cursor < len(lines):
+        line = lines[cursor]
+        cursor += 1
+        tilde_index = line.find("~")
+        if tilde_index >= 0:
+            parts.append(line[:tilde_index])
+            return "\n".join(parts), cursor
+        parts.append(line)
+    return None, cursor

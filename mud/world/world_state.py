@@ -149,6 +149,13 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
     notes.load_boards()
     load_help_file("data/help.json")
 
+    # mirroring ROM src/db.c boot_db -> load_songs (src/music.c:160-218):
+    # populate the song table from area/music.txt so do_play and song_update
+    # have content to broadcast.
+    from mud.music import load_songs
+
+    load_songs()
+
     # ROM imc_startup runs during boot_db when IMC is enabled. Load configuration
     # and cached tables before continuing so idle pumps have the necessary data.
     if imc_enabled():
