@@ -125,3 +125,38 @@ def numlines(string: str) -> str:
         line_num += 1
 
     return "".join(lines)
+
+
+def string_linedel(string: str, line: int) -> str:
+    """Remove the 1-indexed line N from the string.
+
+    Mirrors ROM ``string_linedel`` (src/string.c:574-605). Removes the
+    line at position *line* (1-indexed). Out-of-range line numbers are
+    a no-op. Line endings (``\n\r``) are preserved throughout.
+
+    Used by ``.ld`` dot-command.
+    """
+
+    if line < 1:
+        return string
+
+    buf: list[str] = []
+    cnt = 1
+    i = 0
+
+    while i < len(string):
+        c = string[i]
+
+        if cnt != line:
+            buf.append(c)
+
+        if c == "\n":
+            if i + 1 < len(string) and string[i + 1] == "\r":
+                if cnt != line:
+                    buf.append(string[i + 1])
+                i += 1
+            cnt += 1
+
+        i += 1
+
+    return "".join(buf)
