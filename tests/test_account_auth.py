@@ -497,7 +497,7 @@ def test_immortal_receives_imotd():
     assert create_account("archon", "secret")
     account = login("archon", "secret")
     assert account is not None
-    assert create_character(account, "Zeus")
+    assert create_character(account, "Borogon")
 
     session = SessionLocal()
     try:
@@ -528,12 +528,12 @@ def test_immortal_receives_imotd():
             await writer.drain()
 
             selection_prompt = await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
-            assert b"Zeus" in selection_prompt
-            writer.write(b"Zeus\r\n")
+            assert b"Borogon" in selection_prompt
+            writer.write(b"Borogon\r\n")
             await writer.drain()
 
             look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=10)
-            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob or b"Zeus" in look_blob
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob or b"Borogon" in look_blob
 
             writer.close()
             with suppress(Exception):
@@ -1030,9 +1030,9 @@ def test_new_character_starts_with_recall():
     account = login("traveler", "secret")
     assert account is not None
 
-    assert create_character(account, "Nomad")
+    assert create_character(account, "Plumlux")
 
-    char = load_player_character("traveler", "Nomad")
+    char = load_player_character("traveler", "Plumlux")
     assert char is not None
     skills = getattr(char, "skills", {})
     assert skills.get("recall") == 50
@@ -1067,9 +1067,9 @@ def test_new_character_persists_true_sex():
     account = login("gender", "secret")
     assert account is not None
 
-    assert create_character(account, "Queen", sex=Sex.FEMALE)
+    assert create_character(account, "Pelvex", sex=Sex.FEMALE)
 
-    char = load_player_character("gender", "Queen")
+    char = load_player_character("gender", "Pelvex")
     assert char is not None
     pcdata = getattr(char, "pcdata", None)
     assert pcdata is not None
@@ -1084,13 +1084,13 @@ def test_new_character_persists_true_sex():
 
     session = SessionLocal()
     try:
-        stored = session.query(Character).filter_by(name="Queen").first()
+        stored = session.query(Character).filter_by(name="Pelvex").first()
         assert stored is not None
         assert stored.room_vnum == ROOM_VNUM_SCHOOL
     finally:
         session.close()
 
-    reloaded = load_player_character("gender", "Queen")
+    reloaded = load_player_character("gender", "Pelvex")
     assert reloaded is not None
     reloaded_pcdata = getattr(reloaded, "pcdata", None)
     assert reloaded_pcdata is not None
@@ -1830,7 +1830,7 @@ def test_newbie_banned_blocks_character_creation(monkeypatch):
 
 
 def test_select_character_blocks_newbie_creation_when_banned(monkeypatch):
-    responses = iter(["Newbie", "Guardian"])
+    responses = iter(["Newbie", "Quorblix"])
     prompts: list[str] = []
     messages: list[str] = []
     creation_calls: list[tuple[str, bool]] = []
@@ -1858,10 +1858,10 @@ def test_select_character_blocks_newbie_creation_when_banned(monkeypatch):
         return False
 
     def fake_list_characters(account, require_act_flags=None):  # noqa: ARG001
-        return ["Guardian"]
+        return ["Quorblix"]
 
     def fake_load_character(username, name):  # noqa: ARG001
-        if name == "Guardian":
+        if name == "Quorblix":
             return SimpleNamespace(name=name)
         return None
 
@@ -1895,7 +1895,7 @@ def test_select_character_blocks_newbie_creation_when_banned(monkeypatch):
     character, forced = asyncio.run(run_test())
 
     assert forced is False
-    assert character.name == "Guardian"
+    assert character.name == "Quorblix"
     assert prompts.count("Character: ") == 2
     assert creation_calls == [("Newbie", True)]
     assert messages.count("New players are not allowed from your site.") == 1
@@ -2467,7 +2467,7 @@ def test_ban_permit_requires_permit_flag():
     try:
         account = session.query(PlayerAccount).filter_by(username="warden").first()
         assert account is not None
-        assert create_character(account, "Guardian")
+        assert create_character(account, "Quorblix")
     finally:
         session.close()
 
@@ -2479,7 +2479,7 @@ def test_ban_permit_requires_permit_flag():
 
     session = SessionLocal()
     try:
-        character = session.query(Character).filter_by(name="Guardian").first()
+        character = session.query(Character).filter_by(name="Quorblix").first()
         assert character is not None
         character.act = int(character.act or 0) | int(PlayerFlag.PERMIT)
         session.commit()
@@ -2504,14 +2504,14 @@ def test_character_selection_filters_permit_hosts():
     try:
         account = session.query(PlayerAccount).filter_by(username="warden").first()
         assert account is not None
-        assert create_character(account, "Guardian")
+        assert create_character(account, "Quorblix")
         assert create_character(account, "Rogue")
     finally:
         session.close()
 
     session = SessionLocal()
     try:
-        guardian = session.query(Character).filter_by(name="Guardian").first()
+        guardian = session.query(Character).filter_by(name="Quorblix").first()
         rogue = session.query(Character).filter_by(name="Rogue").first()
         assert guardian is not None and rogue is not None
         guardian.act = int(PlayerFlag.PERMIT)
@@ -2563,14 +2563,14 @@ def test_character_selection_filters_permit_hosts():
         )
         await asyncio.sleep(0)
         listing_output = transport.buffer.decode(errors="ignore")
-        assert "Characters: Guardian" in listing_output
+        assert "Characters: Quorblix" in listing_output
         assert "Rogue" not in listing_output
         transport.buffer.clear()
 
-        protocol.data_received(b"Guardian\r\n")
+        protocol.data_received(b"Quorblix\r\n")
         char, forced = await asyncio.wait_for(selection_task, timeout=1)
         assert forced is False
-        assert char.name == "Guardian"
+        assert char.name == "Quorblix"
 
         conn2, transport2, protocol2 = await make_telnet_stream()
         denied_task = asyncio.create_task(

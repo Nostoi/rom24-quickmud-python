@@ -617,6 +617,38 @@ def is_valid_account_name(username: str) -> bool:
     return True
 
 
+def is_valid_character_name(username: str) -> bool:
+    """ROM `check_parse_name` for new characters — syntactic validation
+    plus rejection of names colliding with any mob prototype's
+    ``player_name`` keyword list.
+
+    mirroring ROM src/comm.c:1699-1828. ``is_valid_account_name`` covers
+    only the syntactic half because account names are a Python addition with
+    no ROM analogue and may legitimately match mob keywords if a player
+    chooses a non-character account login. Character creation paths must
+    use this stricter helper.
+    """
+
+    if not is_valid_account_name(username):
+        return False
+
+    candidate = sanitize_account_name(username)
+    if not candidate:
+        return False
+
+    # mirroring ROM src/comm.c:1782-1796 — reject if any mob's player_name
+    # keyword list matches. Local import avoids circular load at module init.
+    from mud.registry import mob_registry
+    from mud.world.char_find import is_name
+
+    for proto in mob_registry.values():
+        proto_keywords = getattr(proto, "player_name", None)
+        if proto_keywords and is_name(candidate, proto_keywords):
+            return False
+
+    return True
+
+
 def _normalize(username: str) -> str:
     return username.strip().lower()
 
@@ -901,7 +933,9 @@ def create_character(
     """Create a new character for the account with ROM creation metadata."""
 
     sanitized = sanitize_account_name(name)
-    if not is_valid_account_name(sanitized):
+    # mirroring ROM src/comm.c:check_parse_name — full validator including
+    # mob-keyword collision (vs. is_valid_account_name which is syntactic-only)
+    if not is_valid_character_name(sanitized):
         return False
 
     selected_race = race or get_creation_races()[0]

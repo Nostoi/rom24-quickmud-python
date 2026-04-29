@@ -18,6 +18,7 @@ from mud.account import (
     get_weapon_choices,
     is_account_active,
     is_valid_account_name,
+    is_valid_character_name,
     list_characters,
     load_character,
     login_with_host,
@@ -1350,7 +1351,9 @@ async def _run_character_creation_flow(
     newbie_banned: bool = False,
 ) -> bool:
     sanitized = sanitize_account_name(name)
-    if not is_valid_account_name(sanitized):
+    # mirroring ROM src/comm.c:check_parse_name — character-creation-time
+    # validator with mob-keyword collision check.
+    if not is_valid_character_name(sanitized):
         await _send_line(conn, "Illegal character name, try another.")
         return False
 

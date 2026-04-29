@@ -156,7 +156,7 @@ a single-gap close.
 | COMM-001 | CRITICAL | `src/comm.c:1420-1595` | `mud/utils/prompt.py:bust_a_prompt`, `mud/net/connection.py:1698,1923` | `bust_a_prompt` ported. Tokens `%h %H %m %M %v %V %x %X %g %s %a %r %R %z %% %e %c %o %O` expand against character state; default `<%dhp %dm %dmv> %s` fallback when `ch->prompt` unset; `COMM_AFK` short-circuits to `<AFK>`. `do_prompt` now stores on `Character.prompt` (matches ROM `ch->prompt`) instead of the `PCData.prompt` colour-triplet field. `send_prompt` applies ANSI rendering so `{p…{x` colour wrappers don't leak. | ✅ FIXED |
 | COMM-002 | IMPORTANT | `src/comm.c:1941-2174` | (none) | `page_to_char` / `show_string` pager not implemented. Long output (`help`, `score` on imm, long board reads) is not paged at `ch->lines`; ROM's `[Hit Return to continue]` interactive paging is missing. | 🔄 OPEN |
 | COMM-003 | IMPORTANT | `src/comm.c:1729` | `mud/account/account_service.py:591` | `check_parse_name` length lower bound was `< 3`, ROM is `< 2`. Two-letter ROM-legal names (e.g. `Bo`) were rejected. Fixed by flipping the bound to `< 2` and updating `test_name_validator_matches_rom_check_parse_name` (NANNY-012) which had locked in the wrong threshold with a docstring misreading ROM. | ✅ FIXED |
-| COMM-004 | IMPORTANT | `src/comm.c:1782-1796` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't reject names that match a `MOB_INDEX_DATA.player_name`. Allows player → mob name collision (`kill self` ambiguity). | 🔄 OPEN |
+| COMM-004 | IMPORTANT | `src/comm.c:1782-1796` | `mud/account/account_service.py:is_valid_character_name` | New `is_valid_character_name` helper layered on top of `is_valid_account_name` adds the ROM mob-keyword collision check. `create_character` and `_run_character_creation_flow` now use it; the old `is_valid_account_name` keeps syntactic-only semantics so account-name validation (a Python addition with no ROM analogue) still works. | ✅ FIXED |
 | COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't sweep `descriptor_list` for not-yet-`CON_PLAYING` duplicates and doesn't emit the `"Double newbie alert (%s)"` wiznet broadcast. | 🔄 OPEN |
 | COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't reject names matching `clan_table[].name`. (`loner` is incidentally covered by `_RESERVED_NAMES`, but other clans aren't.) | 🔄 OPEN |
 | COMM-007 | MINOR | `src/comm.c:1922` | `mud/net/connection.py:282-286` | `_stop_idling` broadcasts a literal `f"{name} has returned from the void."` instead of `act("$n has returned from the void.", ch, …, TO_ROOM)`. Loses `can_see` / `PERS` perspective handling and capitalize-first-letter behavior. | 🔄 OPEN |
@@ -178,6 +178,25 @@ a single-gap close.
 ---
 
 ## Phase 4 — Gap Closures
+
+### COMM-004 — Mob-keyword collision rejection (IMPORTANT)
+
+- **Test:** `tests/integration/test_nanny_login_parity.py::test_name_validator_rejects_mob_keyword_collision`
+  — installs a mob prototype with `player_name="dragon ancient red"` and
+  asserts `is_valid_character_name("dragon")` / `("ancient")` are False
+  while `is_valid_account_name("dragon")` stays True.
+- **Implementation:** new `mud/account/account_service.py:is_valid_character_name`
+  layered on top of `is_valid_account_name`, iterating `mob_registry` and
+  using `mud.world.char_find.is_name`. `create_character` and
+  `mud/net/connection.py:_run_character_creation_flow` switched to the new
+  helper; existing account-name callers (`create_account`,
+  `login_with_host`, `list_characters`) keep syntactic-only validation.
+- **Test fallout:** `tests/test_account_auth.py` was using stock
+  RPG-flavour names (`Zeus`, `Nomad`, `Queen`, `Guardian`) that
+  legitimately collide with real game mob keywords. ROM rejects those
+  names too — per AGENTS.md "test contradicting ROM C is a bug in the
+  test." Renamed to invented non-colliding tokens (`Borogon`, `Plumlux`,
+  `Pelvex`, `Quorblix`).
 
 ### COMM-003 — `check_parse_name` length floor (IMPORTANT)
 

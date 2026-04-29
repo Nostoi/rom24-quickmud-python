@@ -467,6 +467,35 @@ def test_name_validator_matches_rom_check_parse_name():
 
 
 @pytest.mark.p1
+def test_name_validator_rejects_mob_keyword_collision():
+    """COMM-004 — `is_valid_character_name` rejects names that collide
+    with any mob prototype's `player_name` keyword list.
+
+    mirrors ROM src/comm.c:1782-1796 — iterate `mob_index_hash`, reject if
+    `is_name(name, pMobIndex->player_name)` matches. The mob-collision
+    check lives on the new `is_valid_character_name` helper, not on
+    `is_valid_account_name`, because Python account names have no ROM
+    analogue and may legitimately match mob keywords.
+    """
+    from mud.account import is_valid_account_name, is_valid_character_name
+    from mud.models.mob import MobIndex
+    from mud.registry import mob_registry
+
+    proto = MobIndex(vnum=99001, player_name="dragon ancient red")
+    mob_registry[99001] = proto
+    try:
+        # any keyword in the mob's player_name list collides for character creation
+        assert is_valid_character_name("dragon") is False
+        assert is_valid_character_name("ancient") is False
+        # an unrelated name still passes
+        assert is_valid_character_name("Bob") is True
+        # the syntactic-only validator does NOT enforce the collision
+        assert is_valid_account_name("dragon") is True
+    finally:
+        mob_registry.pop(99001, None)
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.
