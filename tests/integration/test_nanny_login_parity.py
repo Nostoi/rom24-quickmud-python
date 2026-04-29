@@ -206,6 +206,66 @@ def test_new_character_starts_with_recall_skill_at_50_percent():
 
 
 @pytest.mark.p1
+def test_chosen_weapon_skill_seeded_at_40_percent():
+    """NANNY-004 — `learned[*weapon_table[weapon].gsn] = 40` after CON_PICK_WEAPON.
+
+    ROM C: src/nanny.c:653
+        ```c
+        ch->pcdata->learned[*weapon_table[weapon].gsn] = 40;
+        ```
+
+    Without the 40% seed, a freshly created character has 0% in their
+    chosen weapon and cannot reliably hit anything. Python's `from_orm`
+    (mud/models/character.py:1047-1051) seeds the picked weapon's skill
+    on load via `_STARTING_WEAPON_SKILL_BY_VNUM`, clamping to ≥40.
+    This regression test locks that in.
+    """
+    from types import SimpleNamespace
+
+    from mud.models.character import from_orm
+    from mud.models.constants import OBJ_VNUM_SCHOOL_SWORD
+
+    db_char = SimpleNamespace(
+        name="Swordy",
+        level=1,
+        hp=20,
+        room_vnum=3700,
+        race=0,
+        ch_class=0,
+        sex=1,
+        true_sex=1,
+        alignment=0,
+        act=0,
+        hometown_vnum=3001,
+        perm_stats="",
+        size=0,
+        form=0,
+        parts=0,
+        imm_flags=0,
+        res_flags=0,
+        vuln_flags=0,
+        practice=5,
+        train=3,
+        perm_hit=100,
+        perm_mana=100,
+        perm_move=100,
+        default_weapon_vnum=int(OBJ_VNUM_SCHOOL_SWORD),
+        newbie_help_seen=False,
+        creation_points=40,
+        creation_groups="",
+        creation_skills="",
+        prompt=None,
+        comm=0,
+        player=None,
+    )
+
+    char = from_orm(db_char)
+
+    # mirrors ROM src/nanny.c:653 — learned[weapon_gsn] = 40 after weapon pick
+    assert char.pcdata.learned.get("sword", 0) >= 40
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

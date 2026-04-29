@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `NANNY-004` — Audit correction: ROM `learned[weapon_gsn] = 40` (src/nanny.c:653) was already implemented in `mud/models/character.py:from_orm` (lines 1047-1051), which uses `_STARTING_WEAPON_SKILL_BY_VNUM` to seed the picked weapon's skill to ≥40 on every load. Audit had cited the prompt-time path. Added regression test.
 - `NANNY-003` — Audit correction: ROM `learned[gsn_recall] = 50` (src/nanny.c:581) was already implemented in `mud/models/character.py:from_orm` (lines 1052-1053), which clamps `learned["recall"]` to ≥50 on every character load. Audit had cited the wrong source location. Added regression test to lock in the behavior.
 - `NANNY-002` — Login flow now honors the `PlayerFlag.DENY` bit per ROM `src/nanny.c:197-205`: a denied character logs `Denying access to <name>@<host>.`, receives `You are denied access.`, and is rejected before reaching the game loop. New `is_character_denied_access` helper in `mud/net/connection.py`, wired into both load branches of `_select_character`.
 - `NANNY-007` — Login flow now broadcasts `<Name> has entered the game.` to other room occupants on every fresh (non-reconnect) login, mirroring ROM `act("$n has entered the game.", ch, NULL, NULL, TO_ROOM)` at `src/nanny.c:804`. New `broadcast_entry_to_room` helper in `mud/net/connection.py` excludes the actor and uses `act_format` for `$n` substitution.
