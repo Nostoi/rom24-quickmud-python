@@ -35,6 +35,7 @@ from mud.commands import process_command
 from mud.commands.inventory import give_school_outfit
 from mud.commands.help import do_help
 from mud.config import get_qmconfig
+from mud.handler import reset_char
 from mud.db.models import PlayerAccount
 from mud.loaders import help_loader
 from mud.logging import log_game_event
@@ -491,6 +492,19 @@ async def _prompt_ansi_preference(conn: TelnetStream) -> tuple[bool, bool] | Non
         if lowered.startswith("n"):
             return False, True
         await _send_line(conn, "Please answer Y or N.")
+
+
+def apply_login_state_refresh(char: Character) -> None:
+    """Refresh transient character state on login.
+
+    mirrors ROM src/nanny.c:760 — the first body-line of CON_READ_MOTD calls
+    `reset_char(ch)` (handler.c:520-745) on every successful login so a
+    returning character lands with mod_stat[] cleared, hitroll/damroll/
+    saving_throw zeroed, max_hit/max_mana/max_move restored from
+    pcdata->perm_*, and equipment affects re-applied. NPCs are excluded
+    because they never traverse the nanny() state machine.
+    """
+    reset_char(char)
 
 
 def _apply_colour_preference(char: Character, enabled: bool) -> None:
@@ -1518,6 +1532,9 @@ async def handle_connection_with_stream(
         if char is None:
             return
 
+        # mirroring ROM src/nanny.c:760 — reset_char(ch) runs on every login
+        apply_login_state_refresh(char)
+
         is_new_player = _is_new_player(char)
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))
         desired_colour = ansi_preference if ansi_explicit else (qmconfig.ansicolor if is_new_player else saved_colour)
@@ -1738,6 +1755,9 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         char, forced_reconnect = selection
         reconnecting = bool(was_reconnect or forced_reconnect)
+
+        # mirroring ROM src/nanny.c:760 — reset_char(ch) runs on every login
+        apply_login_state_refresh(char)
 
         is_new_player = _is_new_player(char)
         saved_colour = bool(int(getattr(char, "act", 0)) & int(PlayerFlag.COLOUR))

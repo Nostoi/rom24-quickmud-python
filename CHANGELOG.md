@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `NANNY-014` — Login flow now invokes `reset_char(ch)` on every successful login (ROM `src/nanny.c:760`), restoring `max_hit`/`max_mana`/`max_move` from `pcdata.perm_*`, zeroing transient `mod_stat[]`/`hitroll`/`damroll`/`saving_throw`, and re-applying equipment affects so returning characters land with clean state. Wired into both branches of `mud/net/connection.py:handle_connection` via new `apply_login_state_refresh` helper. Also corrected a latent bug in `mud/handler.py:reset_char` where `range(int(WearLocation.MAX))` raised `AttributeError` (the enum has no `MAX` member); replaced with literal `19` matching ROM `MAX_WEAR` (`src/merc.h:1356`).
+- `SPEC-001` — `spec_executioner` yell now broadcasts area-wide (ROM `src/special.c:890-893`) instead of room-only. Added `_yell_area` helper mirroring ROM `do_yell`.
+- `SPEC-002` — `spec_guard` now checks ALL room occupants for evil-alignment combatants (ROM `src/special.c:948-972`), not just PCs. The fallback path targeting `alignment < max_evil` fighters now works for NPCs too.
+- `SPEC-003` — `spec_mayor` gate open/close now emits proper TO_CHAR (`You open the gate.`) and TO_ROOM (`Mayor opens gate.`) messages, plus reverse-exit toggle. Mirrors ROM `do_function(ch, &do_open, "gate")` / `do_function(ch, &do_close, "gate")`.
+- `SPEC-004` — `spec_thief` gold/silver division now uses `c_div` (C integer division) instead of Python `//`, matching ROM `src/special.c:1174-1186`.
+- `SPEC-005` — `spec_nasty` ambush now calls `do_murder` (which sets PLR_KILLER flag) instead of `do_kill`, matching ROM `src/special.c:368-371`. Updated `_issue_command` to search multiple command modules.
+- `SPEC-006` — `spec_troll_member` and `spec_ogre_member` now check `is_safe()` before attacking, matching ROM `src/special.c:145,213`. Prevents attacks in safe rooms.
+- `SPEC-008` — `spec_mayor` movement now uses `move_character()` (with fallback for test SimpleNamespace objects), matching ROM `move_char(ch, dir, FALSE)`.
+- `SPEC-012` — `spec_nasty` gold steal now uses `c_div(gold_before, 10)` instead of `gold_before // 10`, matching ROM `src/special.c:394-396`.
+
 - `WIZ-001` — `goto`, `at`, and `transfer` now mirror ROM `src/act_wiz.c:821-839,897-905,957-966` owner/private-room gating by honoring owner-locked rooms, the canonical `ROOM_SOLITARY` flag value, and `is_room_owner()` bypass semantics.
 - `WIZ-002` — `violate` now mirrors ROM `src/act_wiz.c:1000-1057`: it targets rooms through `find_location()`, rejects public rooms with the `use goto` hint, and no longer parses directions/exits.
 - `WIZ-003` — `protect` now mirrors ROM `src/act_wiz.c:2086-2118` lookup/messages and toggles the real `CommFlag.SNOOP_PROOF` bit instead of the old `COMM_NOTELL` value.

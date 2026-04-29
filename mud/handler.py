@@ -1094,7 +1094,7 @@ def reset_char(ch: "Character") -> None:
     if perm_hit == 0 or perm_mana == 0 or perm_move == 0 or last_level == 0:
         # Full reset - remove equipment affects then save perm stats
         equipment = getattr(ch, "equipment", {})
-        for loc in range(int(WearLocation.MAX)):
+        for loc in range(19):  # mirrors ROM src/merc.h:1356 — MAX_WEAR = 19
             obj = equipment.get(loc)
             if obj is None:
                 continue
@@ -1171,7 +1171,7 @@ def reset_char(ch: "Character") -> None:
 
     # ROM C handler.c:618-689 - Re-apply equipment affects
     equipment = getattr(ch, "equipment", {})
-    for loc in range(int(WearLocation.MAX)):
+    for loc in range(19):  # mirrors ROM src/merc.h:1356 — MAX_WEAR = 19
         obj = equipment.get(loc)
         if obj is None:
             continue
