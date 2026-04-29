@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `NANNY-007` — Login flow now broadcasts `<Name> has entered the game.` to other room occupants on every fresh (non-reconnect) login, mirroring ROM `act("$n has entered the game.", ch, NULL, NULL, TO_ROOM)` at `src/nanny.c:804`. New `broadcast_entry_to_room` helper in `mud/net/connection.py` excludes the actor and uses `act_format` for `$n` substitution.
 - `NANNY-014` — Login flow now invokes `reset_char(ch)` on every successful login (ROM `src/nanny.c:760`), restoring `max_hit`/`max_mana`/`max_move` from `pcdata.perm_*`, zeroing transient `mod_stat[]`/`hitroll`/`damroll`/`saving_throw`, and re-applying equipment affects so returning characters land with clean state. Wired into both branches of `mud/net/connection.py:handle_connection` via new `apply_login_state_refresh` helper. Also corrected a latent bug in `mud/handler.py:reset_char` where `range(int(WearLocation.MAX))` raised `AttributeError` (the enum has no `MAX` member); replaced with literal `19` matching ROM `MAX_WEAR` (`src/merc.h:1356`).
 - `SPEC-001` — `spec_executioner` yell now broadcasts area-wide (ROM `src/special.c:890-893`) instead of room-only. Added `_yell_area` helper mirroring ROM `do_yell`.
 - `SPEC-002` — `spec_guard` now checks ALL room occupants for evil-alignment combatants (ROM `src/special.c:948-972`), not just PCs. The fallback path targeting `alignment < max_evil` fighters now works for NPCs too.

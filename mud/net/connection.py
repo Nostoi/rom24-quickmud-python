@@ -36,6 +36,7 @@ from mud.commands.inventory import give_school_outfit
 from mud.commands.help import do_help
 from mud.config import get_qmconfig
 from mud.handler import reset_char
+from mud.utils.act import act_format
 from mud.db.models import PlayerAccount
 from mud.loaders import help_loader
 from mud.logging import log_game_event
@@ -492,6 +493,31 @@ async def _prompt_ansi_preference(conn: TelnetStream) -> tuple[bool, bool] | Non
         if lowered.startswith("n"):
             return False, True
         await _send_line(conn, "Please answer Y or N.")
+
+
+def broadcast_entry_to_room(char: Character) -> None:
+    """Announce a freshly-logged-in character's arrival to the room.
+
+    mirrors ROM src/nanny.c:804 — `act("$n has entered the game.", ch, NULL,
+    NULL, TO_ROOM)`. TO_ROOM excludes the actor; everyone else in the room
+    sees the formatted message. ROM also broadcasts the same line for
+    `ch->pet` at nanny.c:813-814 (handled by NANNY-008).
+    """
+    room = getattr(char, "room", None)
+    if room is None:
+        return
+    occupants = getattr(room, "people", None)
+    if not occupants:
+        return
+    for occupant in list(occupants):
+        if occupant is char:
+            continue
+        message = act_format("$n has entered the game.", recipient=occupant, actor=char)
+        if not message:
+            continue
+        messages = getattr(occupant, "messages", None)
+        if isinstance(messages, list):
+            messages.append(message)
 
 
 def apply_login_state_refresh(char: Character) -> None:
@@ -1592,6 +1618,10 @@ async def handle_connection_with_stream(
         except Exception as exc:
             print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
 
+        # mirroring ROM src/nanny.c:804 — act("$n has entered the game.", TO_ROOM)
+        if not reconnecting:
+            broadcast_entry_to_room(char)
+
         try:
             if reconnecting:
                 await send_to_char(char, RECONNECT_MESSAGE)
@@ -1810,6 +1840,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                     await _send_newbie_help(char)
         except Exception as exc:
             print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
+
+        # mirroring ROM src/nanny.c:804 — act("$n has entered the game.", TO_ROOM)
+        if not reconnecting:
+            broadcast_entry_to_room(char)
 
         try:
             if reconnecting:

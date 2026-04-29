@@ -71,6 +71,44 @@ def test_login_finalization_invokes_reset_char():
 
 
 @pytest.mark.p1
+def test_login_broadcasts_entry_to_room():
+    """NANNY-007 — `act("$n has entered the game.", TO_ROOM)` on login.
+
+    ROM C: src/nanny.c:804
+        ```c
+        act ("$n has entered the game.", ch, NULL, NULL, TO_ROOM);
+        ```
+
+    Every other player in the room should see "<Name> has entered the
+    game." when a character finishes the login state machine. The actor
+    themselves does not receive the message (TO_ROOM excludes ch).
+    """
+    from mud.models.room import Room
+    from mud.net.connection import broadcast_entry_to_room
+
+    room = Room(vnum=9001, name="Login Test Room", description="", room_flags=0, sector_type=0)
+    room.people = []
+
+    arriver = Character(name="Arriver", level=10)
+    arriver.is_npc = False
+    onlooker = Character(name="Onlooker", level=10)
+    onlooker.is_npc = False
+    bystander = Character(name="Bystander", level=10)
+    bystander.is_npc = False
+
+    for occupant in (arriver, onlooker, bystander):
+        room.people.append(occupant)
+        occupant.room = room
+
+    broadcast_entry_to_room(arriver)
+
+    # mirrors ROM src/nanny.c:804 — TO_ROOM broadcast excludes the actor
+    assert any("Arriver has entered the game." in m for m in onlooker.messages)
+    assert any("Arriver has entered the game." in m for m in bystander.messages)
+    assert all("entered the game" not in m for m in arriver.messages)
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.
