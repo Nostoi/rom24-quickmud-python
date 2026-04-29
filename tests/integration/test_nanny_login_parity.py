@@ -496,6 +496,25 @@ def test_name_validator_rejects_mob_keyword_collision():
 
 
 @pytest.mark.p1
+def test_name_validator_rejects_clan_name():
+    """COMM-006 — `is_valid_character_name` rejects names matching any
+    clan in ``CLAN_TABLE``.
+
+    mirrors ROM src/comm.c:1713-1718 — iterate ``clan_table`` and reject
+    on `str_cmp` match.
+    """
+    from mud.account import is_valid_character_name
+
+    # `rom` is a clan in CLAN_TABLE and would otherwise pass the syntactic
+    # check; ensure the clan loop rejects it.
+    assert is_valid_character_name("rom") is False
+    # Case-insensitive match per ROM str_cmp
+    assert is_valid_character_name("ROM") is False
+    # `loner` is also a clan and is already in _RESERVED_NAMES — sanity.
+    assert is_valid_character_name("loner") is False
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

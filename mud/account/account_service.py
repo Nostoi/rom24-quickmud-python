@@ -636,6 +636,16 @@ def is_valid_character_name(username: str) -> bool:
     if not candidate:
         return False
 
+    candidate_lower = candidate.lower()
+
+    # mirroring ROM src/comm.c:1713-1718 — reject names matching any clan
+    # in clan_table (str_cmp is case-insensitive in ROM).
+    from mud.models.clans import CLAN_TABLE
+
+    for clan in CLAN_TABLE:
+        if clan.name and clan.name.lower() == candidate_lower:
+            return False
+
     # mirroring ROM src/comm.c:1782-1796 — reject if any mob's player_name
     # keyword list matches. Local import avoids circular load at module init.
     from mud.registry import mob_registry

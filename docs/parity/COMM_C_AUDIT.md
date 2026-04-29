@@ -158,7 +158,7 @@ a single-gap close.
 | COMM-003 | IMPORTANT | `src/comm.c:1729` | `mud/account/account_service.py:591` | `check_parse_name` length lower bound was `< 3`, ROM is `< 2`. Two-letter ROM-legal names (e.g. `Bo`) were rejected. Fixed by flipping the bound to `< 2` and updating `test_name_validator_matches_rom_check_parse_name` (NANNY-012) which had locked in the wrong threshold with a docstring misreading ROM. | ✅ FIXED |
 | COMM-004 | IMPORTANT | `src/comm.c:1782-1796` | `mud/account/account_service.py:is_valid_character_name` | New `is_valid_character_name` helper layered on top of `is_valid_account_name` adds the ROM mob-keyword collision check. `create_character` and `_run_character_creation_flow` now use it; the old `is_valid_account_name` keeps syntactic-only semantics so account-name validation (a Python addition with no ROM analogue) still works. | ✅ FIXED |
 | COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't sweep `descriptor_list` for not-yet-`CON_PLAYING` duplicates and doesn't emit the `"Double newbie alert (%s)"` wiznet broadcast. | 🔄 OPEN |
-| COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't reject names matching `clan_table[].name`. (`loner` is incidentally covered by `_RESERVED_NAMES`, but other clans aren't.) | 🔄 OPEN |
+| COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:is_valid_character_name` | `is_valid_character_name` now iterates `CLAN_TABLE` and rejects exact (case-insensitive) matches. `rom` and `loner` are now both rejected. | ✅ FIXED |
 | COMM-007 | MINOR | `src/comm.c:1922` | `mud/net/connection.py:282-286` | `_stop_idling` broadcasts a literal `f"{name} has returned from the void."` instead of `act("$n has returned from the void.", ch, …, TO_ROOM)`. Loses `can_see` / `PERS` perspective handling and capitalize-first-letter behavior. | 🔄 OPEN |
 | COMM-008 | MINOR | `src/comm.c:2714-2728` | `mud/net/ansi.py:5-23` | ANSI translator missing ROM specials: `{D` (dark grey), `{*` (bell), `{/` (newline), `{-` (tilde), `{{` (literal-brace escape). pcdata-customizable channel codes (`{p {s {6 {7 {k …`) are intentionally not in scope (no pfile parity). | 🔄 OPEN |
 | COMM-009 | MINOR | `src/comm.c:2178-2182` | `mud/handler.py:1112-1114` (only callsite) | No standalone `fix_sex` helper. Spell handlers / load paths that flip `ch.sex` outside the affect-strip pass don't auto-clamp to `[0,2]`. | 🔄 OPEN |
@@ -178,6 +178,14 @@ a single-gap close.
 ---
 
 ## Phase 4 — Gap Closures
+
+### COMM-006 — Clan-name rejection (MINOR)
+
+- **Test:** `tests/integration/test_nanny_login_parity.py::test_name_validator_rejects_clan_name`
+  asserts `rom` / `ROM` / `loner` are all rejected.
+- **Implementation:** `is_valid_character_name` iterates `CLAN_TABLE` and
+  rejects case-insensitive exact matches before the mob-collision loop,
+  mirroring ROM src/comm.c:1713-1718.
 
 ### COMM-004 — Mob-keyword collision rejection (IMPORTANT)
 
