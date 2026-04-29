@@ -1,28 +1,28 @@
-# Session Status — 2026-04-29 — `bit.c` ✅ Audited 90% (0/3 closed, 3 MINOR deferred to OLC)
+# Session Status — 2026-04-29 — `const.c` Audit Phases 1–3 (⚠️ Partial 80% — 4 CRITICAL combat/advancement gaps open)
 
 ## Current State
 
-- **Active audit**: None — `bit.c` Phase 5 complete; tracker flipped ⚠️ Partial 90% → ✅ AUDITED 90%.
-- **Last completed**: `bit.c` audit doc (`BIT-001`/`BIT-002`/`BIT-003` filed and deferred to the OLC audit; no current Python consumer requires these helpers, and `do_flag` already mirrors ROM `do_flag` correctly without them).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_BIT_C_AUDIT.md](SESSION_SUMMARY_2026-04-29_BIT_C_AUDIT.md)
+- **Active audit**: `const.c` (Phase 4 — per-gap closures pending).
+- **Last completed**: `const.c` audit doc (`CONST-001`..`CONST-007` filed; tracker held at ⚠️ Partial 80% pending CRITICAL closures CONST-002..006 because they are behavioral combat/advancement divergences, per `AGENTS.md` "no deferring" rule).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_CONST_C_AUDIT_PHASES_1-3.md](SESSION_SUMMARY_2026-04-29_CONST_C_AUDIT_PHASES_1-3.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.46 |
-| Tests | Last suite run (music.c session): 1383 passed / 10 skipped / 1 pre-existing intermittent flake. This session is audit-only — no production code or tests changed. |
-| ROM C files audited | 18 / 43 (42%) ✅ Audited; 14 ⚠️ Partial; 7 ❌ Not Audited; 4 N/A. `bit.c` flipped ⚠️ Partial 90% → ✅ Audited 90% this session. |
-| Active focus | None — pick the next ⚠️ Partial / ❌ Not Audited row. |
+| Version | 2.6.47 |
+| Tests | Last suite-of-record (music.c handoff): 1383 passed / 10 skipped / 1 pre-existing intermittent flake. This session is audit-doc-only — no code changes. |
+| ROM C files audited | 18 / 43 (42%) ✅ Audited; 14 ⚠️ Partial (`const.c` audit-doc filed but row stays ⚠️ Partial pending CONST-002..006); 7 ❌ Not Audited; 4 N/A. |
+| Active focus | `const.c` — 7 gaps open, CONST-002..006 (combat + advancement) blocking tracker flip. |
 
 ## Next Intended Task
 
-`bit.c` is closed at the AUDITED level. Top candidates for the next session, in tracker order:
+**Recommended:** start the CONST combat-math triplet. The next `/rom-gap-closer` invocation should be `CONST-002` (`GET_HITROLL` / `str_app[STR].tohit`) — it pairs naturally with `CONST-003` (`GET_DAMROLL` / `str_app[STR].todam`) and `CONST-004` (`GET_AC` / `dex_app[DEX].defensive`) because all three need the same primitive: a ROM-faithful `str_app` + `dex_app` module plus `get_hitroll(ch)` / `get_damroll(ch)` / `get_ac(ch, type)` accessors. One closer per gap, one commit per gap, but the table-import infrastructure is shared.
 
-1. **`const.c`** (P3, ⚠️ Partial 80%) — `mud/models/constants.py`. Closest-to-done MINOR cleanup, plus the long-pending NANNY-009 dedicated session (488-entry `title_table` port from `src/const.c:421-721` + `set_title` wiring) recommended in earlier SESSION_STATUS revisions.
-2. **`string.c`** (P3, ⚠️ Partial 85%) — tracker lists `mud/utils.py` which is a stale path; the actual surface is `mud/utils/text.py`. Verify and re-point before auditing.
-3. **OLC cluster** (`olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c`) — largest remaining P2 cluster, all ❌ Not Audited at 20-30%. When this lands, close `BIT-001`/`BIT-002`/`BIT-003` in the OLC audit's first commit (deferred there from this session).
+After the triplet: `CONST-005` (port `con_app.hitp` and rewrite `advance_level` to roll `number_range(class.hp_min, class.hp_max) + con_app[CON].hitp` — verify `class_table.hp_min/hp_max` are ported on `mud/models/classes.py:ClassType` first), then `CONST-006` (`wis_app[WIS].practice` in `advance_level`).
 
-For deferred `music.c` MINORs `MUSIC-005` / `MUSIC-006`, leave them parked — they depend on broader infrastructure work (descriptor-state plumbing through `broadcast_global`; per-viewer `$p` substitution via `act_format`) and should land alongside that infrastructure rather than as standalone music patches.
+`CONST-001` (`title_table`, 480 entries) is deferred to a dedicated `NANNY-009` session per the prior `SESSION_STATUS.md` plan. `CONST-007` (`weapon_table`) is deferred to the OLC audit (BIT-style).
 
-Run `/rom-parity-audit <file>.c` to start.
+For deferred `music.c` MINORs `MUSIC-005` / `MUSIC-006`, leave them parked — they depend on broader infrastructure work (descriptor-state plumbing through `broadcast_global`; per-viewer `$p` substitution via `act_format`) and should land alongside that infrastructure.
+
+Run `/rom-gap-closer CONST-002` to start.
