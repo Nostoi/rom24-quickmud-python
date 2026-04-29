@@ -1,6 +1,6 @@
 # `string.c` ROM Parity Audit
 
-- **Status**: ⚠️ Partial 75% — 9 of 12 helpers FIXED (STRING-001/003/006/007/008/009/010/011/012); 3 remain (STRING-002/004/005), all blocked on the main editor loop (STRING-004 string_add dispatcher).
+- **Status**: ⚠️ Partial 83% — 10 of 12 helpers FIXED (STRING-001/002/003/006/007/008/009/010/011/012); 2 remain (STRING-004/005), both critical: STRING-004 is the entire editor I/O loop, STRING-005 is word-wrap + formatting.
 - **Date**: 2026-04-29
 - **Source**: `src/string.c` (ROM 2.4b6, 692 lines, 12 public functions — all OLC string-editor backend)
 - **Python primary**: `mud/utils/text.py` (only `smash_tilde` is ported, and that one is declared in `merc.h` rather than `string.c` proper)
@@ -10,7 +10,7 @@
 | ROM symbol | ROM lines | Visibility | Purpose | Python counterpart | Status |
 |------------|-----------|------------|---------|--------------------|--------|
 | `string_edit` | 38-57 | public | Enter EDIT mode; clear `*pString`; attach to `ch->desc->pString` | `mud/utils/string_editor.py:string_edit` | ✅ FIXED (STRING-001) |
-| `string_append` | 66-86 | public | Enter APPEND mode; preserve `*pString`; emit `numlines()` listing | — | ❌ MISSING (STRING-002) |
+| `string_append` | 66-86 | public | Enter APPEND mode; preserve `*pString`; emit `numlines()` listing | `mud/utils/string_editor.py:string_append` | ✅ FIXED (STRING-002) |
 | `string_replace` | 95-112 | public | Substring substitute (single occurrence) | `mud/utils/string_editor.py:string_replace` | ✅ FIXED (STRING-003) |
 | `string_add` | 121-286 | public | Editor input dispatcher (`.c`/`.s`/`.r`/`.f`/`.h`/`.ld`/`.li`/`.lr`/`~`/`@`); MPCODE save hook | — | ❌ MISSING (STRING-004) |
 | `format_string` | 299-451 | public | Word-wrap to 77 cols + sentence capitalization + paren/quote handling | — | ❌ MISSING (STRING-005) |
@@ -52,7 +52,7 @@ All gaps below are **DEFERRED to the OLC audit cluster** (`olc.c`, `olc_act.c`, 
 | Gap ID | Severity | ROM C | Description | Status |
 |--------|----------|-------|-------------|--------|
 | `STRING-001` | IMPORTANT | `src/string.c:38-57` | `string_edit(ch, pString)` — enter EDIT mode (clears string, attaches descriptor). Required by `olc_act.c::aedit_builder` ("desc edit"), `redit::edit-description`, `medit::edit-description`. | ✅ FIXED — `mud/utils/string_editor.py:string_edit(string_edit_obj) -> str`. Takes a `StringEdit` object (mirrors ROM `ch->desc->pString`), clears its buffer, returns the 4-line editor banner (ROM src/string.c:40-43). Test: `tests/integration/test_string_editor_edit.py` (6 cases). |
-| `STRING-002` | IMPORTANT | `src/string.c:66-86` | `string_append(ch, pString)` — enter APPEND mode (preserve, list lines). Required by every OLC `desc` builder. | 🔄 DEFERRED — close alongside OLC audit |
+| `STRING-002` | IMPORTANT | `src/string.c:66-86` | `string_append(ch, pString)` — enter APPEND mode (preserve, list lines). Required by every OLC `desc` builder. | ✅ FIXED — `mud/utils/string_editor.py:string_append(string_edit_obj, current) -> str`. Takes a `StringEdit` object and a *current* string (the existing text to append to), preserves the buffer, and returns the 4-line banner (ROM src/string.c:68-71) plus the `numlines()` listing. Test: `tests/integration/test_string_editor_append.py` (9 cases). |
 | `STRING-003` | IMPORTANT | `src/string.c:95-112` | `string_replace(orig, old, new)` — single-occurrence substring substitute. Used by `string_add::.r` and `aedit_builder::replace`. | ✅ FIXED — `mud/utils/string_editor.py:string_replace(orig, old, new) -> str`. Replaces first occurrence only; if old not found, returns orig unchanged. Test: `tests/integration/test_string_editor_replace.py` (9 cases). |
 | `STRING-004` | CRITICAL | `src/string.c:121-286` | `string_add` editor dispatcher — reads `.c/.s/.r/.f/.ld/.li/.lr/.h` dot-commands, `~`/`@` to terminate, MAX_STRING_LENGTH-4 truncation, `smash_tilde` on every line, MPCODE post-save hook (writes back to `mob_index_hash` mprogs). The whole editor UX. | 🔄 DEFERRED — close alongside OLC audit |
 | `STRING-005` | IMPORTANT | `src/string.c:299-451` | `format_string` — sentence-end double-space, capitalize-after-`.`/`?`/`!`, balanced paren rewrite, 77-col word-wrap with `bug("No spaces", 0)` mid-word `-` fallback. Cited by `.f` dot-command and many `olc_act.c` `desc` builders. | 🔄 DEFERRED — close alongside OLC audit |

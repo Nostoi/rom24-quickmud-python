@@ -260,3 +260,32 @@ def string_edit(string_edit_obj: StringEdit) -> str:
         "-=======================================-\n\r"
     )
     return banner
+
+
+def string_append(string_edit_obj: StringEdit, current: str) -> str:
+    """Enter APPEND mode: preserve buffer and return banner + line listing.
+
+    Mirrors ROM ``string_append`` (src/string.c:66-86). Initializes the
+    `StringEdit` object with the provided *current* string (preserving
+    it, unlike EDIT mode which clears) and returns the editor banner
+    (4 lines) followed by the line-numbered listing (via `numlines`).
+
+    The *string_edit_obj* parameter is modified in-place: buffer set to
+    *current*, max_length and on_commit preserved.
+
+    Used by every OLC description builder that needs to append to
+    existing text (aedit, redit, medit, oedit, etc.).
+    """
+
+    # Preserve the buffer (ROM: if (*pString == NULL) str_dup(""); else keep as-is)
+    string_edit_obj.buffer = current or ""
+
+    # Return the banner (4 lines) followed by the numlines listing
+    banner = (
+        "-=======- Entering APPEND Mode -========-\n\r"
+        "    Type .h on a new line for help\n\r"
+        " Terminate with a ~ or @ on a blank line.\n\r"
+        "-=======================================-\n\r"
+    )
+    listing = numlines(string_edit_obj.buffer)
+    return banner + listing
