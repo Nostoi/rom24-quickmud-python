@@ -1,35 +1,28 @@
-# Session Status — 2026-04-28 — `tables.c` audit Phase 1+2 complete (⚠️ Partial)
+# Session Status — 2026-04-29 — TABLES-001 closed (`tables.c` ✅ AUDITED 100%)
 
 ## Current State
 
-- **Active audit**: `tables.c` — Phase 1 inventory + Phase 2 spot-checks complete; 3 gaps documented and **deferred**. Critical finding: `AffectFlag` bit positions diverge from ROM `merc.h` (TABLES-001), reproducer landed as `xfail` strict.
-- **Last completed**: `tables.c` audit doc + reproducer test suite; tracker row refreshed; CHANGELOG updated; version 2.6.31.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_TABLES_C_AUDIT_PHASE_1_2.md](SESSION_SUMMARY_2026-04-28_TABLES_C_AUDIT_PHASE_1_2.md)
+- **Active audit**: `tables.c` — TABLES-001 / 002 / 003 all closed; row flipped ⚠️ Partial 75% → ✅ AUDITED 100%.
+- **Last completed**: TABLES-001 (`AffectFlag` bit-position migration to ROM `merc.h:953-982`) — enum renumber + `pfile_version` schema field + on-load translation of legacy `affected_by` and nested `Affect.bitvector` ints in `mud/persistence.py`. Strict-xfail reproducer flipped to xpass; programmatic `merc.h` cross-check now also covers `AFF_*`.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_TABLES_001_AFFECT_FLAG_MIGRATION.md](SESSION_SUMMARY_2026-04-29_TABLES_001_AFFECT_FLAG_MIGRATION.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.31 |
-| Tests | `tests/integration/test_tables_parity.py` 4 passed + 1 xfail (TABLES-001 reproducer); lookup/flag parity suites green |
-| ROM C files audited | 27 / 43 (`tables.c` stays ⚠️ Partial 75%) |
-| Active focus | TABLES-001 (CRITICAL, AffectFlag bit-pos divergence) — deferred until persistence migration plan |
+| Version | 2.6.34 |
+| Tests | `tests/integration/test_tables_parity.py` (`test_affect_flag_letters_match_rom_merc_h` xpass; `test_merc_h_letter_macros_match_python_intflag_values` now covers `AFF_*`) + new `tests/integration/test_tables_001_affect_migration.py` 4/4 green |
+| ROM C files audited | 28 / 43 (`tables.c` flipped ⚠️ Partial 75% → ✅ AUDITED 100%) |
+| Active focus | None active. Next candidate: pick a P2/P3 file from the tracker. |
 
 ## Next Intended Task
 
-**TABLES-001** is the highest-impact next move but is risk-bearing — it needs a persistence migration design before code change. Recommended ordering:
+`tables.c` is closed. Open audit candidates from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`:
 
-1. **TABLES-002** — add ROM-name aliases on diverging IntFlag members (`ActFlag`, `PlayerFlag`, `OffFlag` lowercase ROM-table names) so `do_flag` / OLC accept ROM-style abbreviations like `npc`, `healer`, `dirt_kick`, `can_loot`. No persistence risk; close per-IntFlag.
-2. **TABLES-003** — iterate the remaining ~30 tables and finish Phase 2 letter→bit verification. Likely 1-2 sessions; may surface more value-divergences like TABLES-001.
-3. **TABLES-001** — focused session with persistence-migration plan: bump pfile schema version, on-load translate old `affected_by` ints, renumber `AffectFlag` to match `merc.h:953-982`, flip xfail to xpass.
+- **`board.c`** (P2 ⚠️ Partial) — boards subsystem.
+- **OLC cluster** — `olc.c` / `olc_act.c` / `olc_save.c` / `olc_mpcode.c` / `hedit.c` (P2 ❌ Not Audited or ⚠️ Partial). Note: `tests/test_olc_save.py` already has 13 pre-existing failures (not introduced by this session).
+- **Deferred NANNY trio** (NANNY-008/009/010) — architectural-scope.
 
-Other candidates outside `tables.c`:
+## Pre-existing test failures (not caused by this session)
 
-- **`board.c`** (P2 35%) — boards subsystem; mid-scope.
-- **Deferred NANNY trio** (NANNY-008/009/010) — each architectural-scope.
-- **OLC cluster** — `olc.c`/`olc_act.c`/`olc_save.c`/`olc_mpcode.c`/`hedit.c`. Multi-session block; would unblock `bit.c` and `string.c`.
-
-## Pre-existing test/lint failures (not caused by this session)
-
-- `tests/test_commands.py` 4 failures (alias / scan-directional / typo guards) and `tests/test_building.py` 14 failures — from another in-flight session.
-- `mud/models/races.py` 8 ruff errors (typing.Tuple → tuple, typing.Type → type, import sort) pre-dating this session.
+Verified by re-running `tests/test_olc_save.py` against master — 13 failures pre-date this session. The full pytest baseline shows ~50 pre-existing failures across `test_olc_save`, `test_building`, `test_commands`, `test_logging_admin`, etc., all unrelated to AffectFlag.

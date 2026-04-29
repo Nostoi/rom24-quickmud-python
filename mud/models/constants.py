@@ -546,36 +546,39 @@ class RoomFlag(IntFlag):
 
 # START affects_saves
 class AffectFlag(IntFlag):
-    BLIND = 1 << 0
-    INVISIBLE = 1 << 1
-    DETECT_EVIL = 1 << 2
-    DETECT_INVIS = 1 << 3
-    DETECT_MAGIC = 1 << 4
-    DETECT_HIDDEN = 1 << 5
-    SANCTUARY = 1 << 6
-    FAERIE_FIRE = 1 << 7
-    INFRARED = 1 << 8
-    CURSE = 1 << 9
-    DETECT_GOOD = 1 << 10
-    POISON = 1 << 11
-    PROTECT_EVIL = 1 << 12
-    PROTECT_GOOD = 1 << 13
-    SNEAK = 1 << 14
-    HIDE = 1 << 15
-    SLEEP = 1 << 16
-    CHARM = 1 << 17
-    FLYING = 1 << 18
-    PASS_DOOR = 1 << 19
-    WEAKEN = 1 << 20
-    BERSERK = 1 << 21
-    CALM = 1 << 22
-    HASTE = 1 << 23
-    SLOW = 1 << 24
-    PLAGUE = 1 << 25
-    DARK_VISION = 1 << 26
-    SWIM = 1 << 27
-    REGENERATION = 1 << 28
-    UNUSED4 = 1 << 29
+    # ROM merc.h:953-982 — letter macros A..dd map to bits 0..29.
+    # TABLES-001: bit positions match ROM exactly so letter-form area data
+    # decoded via convert_flags_from_letters agrees with these enum members.
+    BLIND = 1 << 0  # (A)
+    INVISIBLE = 1 << 1  # (B)
+    DETECT_EVIL = 1 << 2  # (C)
+    DETECT_INVIS = 1 << 3  # (D)
+    DETECT_MAGIC = 1 << 4  # (E)
+    DETECT_HIDDEN = 1 << 5  # (F)
+    DETECT_GOOD = 1 << 6  # (G)
+    SANCTUARY = 1 << 7  # (H)
+    FAERIE_FIRE = 1 << 8  # (I)
+    INFRARED = 1 << 9  # (J)
+    CURSE = 1 << 10  # (K)
+    # bit 11 (L) is AFF_UNUSED_FLAG in ROM; reserved.
+    POISON = 1 << 12  # (M)
+    PROTECT_EVIL = 1 << 13  # (N)
+    PROTECT_GOOD = 1 << 14  # (O)
+    SNEAK = 1 << 15  # (P)
+    HIDE = 1 << 16  # (Q)
+    SLEEP = 1 << 17  # (R)
+    CHARM = 1 << 18  # (S)
+    FLYING = 1 << 19  # (T)
+    PASS_DOOR = 1 << 20  # (U)
+    HASTE = 1 << 21  # (V)
+    CALM = 1 << 22  # (W)
+    PLAGUE = 1 << 23  # (X)
+    WEAKEN = 1 << 24  # (Y)
+    DARK_VISION = 1 << 25  # (Z)
+    BERSERK = 1 << 26  # (aa)
+    SWIM = 1 << 27  # (bb)
+    REGENERATION = 1 << 28  # (cc)
+    SLOW = 1 << 29  # (dd)
     UNUSED5 = 1 << 30
     UNUSED6 = 1 << 31
 

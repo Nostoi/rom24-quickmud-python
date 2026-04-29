@@ -20,15 +20,18 @@ def test_affect_flag_toggle():
 
 
 def test_affect_flag_values():
-    assert AffectFlag.BLIND == 1
-    assert AffectFlag.INVISIBLE == 2
-    assert AffectFlag.DETECT_EVIL == 4
-    assert AffectFlag.DETECT_INVIS == 8
-    assert AffectFlag.DETECT_MAGIC == 16
-    assert AffectFlag.DETECT_HIDDEN == 32
-    assert AffectFlag.SANCTUARY == 64
-    assert AffectFlag.FAERIE_FIRE == 128
-    assert AffectFlag.INFRARED == 256
+    # ROM merc.h:953-982 letter-to-bit mapping (TABLES-001).
+    # Letters A..F (BLIND..DETECT_HIDDEN) map to bits 0..5; G=DETECT_GOOD, H=SANCTUARY, ...
+    assert AffectFlag.BLIND == 1 << 0  # (A)
+    assert AffectFlag.INVISIBLE == 1 << 1  # (B)
+    assert AffectFlag.DETECT_EVIL == 1 << 2  # (C)
+    assert AffectFlag.DETECT_INVIS == 1 << 3  # (D)
+    assert AffectFlag.DETECT_MAGIC == 1 << 4  # (E)
+    assert AffectFlag.DETECT_HIDDEN == 1 << 5  # (F)
+    assert AffectFlag.DETECT_GOOD == 1 << 6  # (G)
+    assert AffectFlag.SANCTUARY == 1 << 7  # (H)
+    assert AffectFlag.FAERIE_FIRE == 1 << 8  # (I)
+    assert AffectFlag.INFRARED == 1 << 9  # (J)
 
 
 # new test to verify stat updates when applying and removing multiple affects

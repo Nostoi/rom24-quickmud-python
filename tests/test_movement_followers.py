@@ -116,7 +116,7 @@ def test_charmed_follower_stays_with_master() -> None:
     leader = Character(name="Leader", is_npc=False, move=20)
     start.add_character(leader)
 
-    proto = MobIndex(vnum=4000, short_descr="A charmed pixie", affected_by="R")
+    proto = MobIndex(vnum=4000, short_descr="A charmed pixie", affected_by="S")  # ROM merc.h: S = AFF_CHARM
     follower = MobInstance.from_prototype(proto)
     follower.master = leader
     follower.is_npc = True

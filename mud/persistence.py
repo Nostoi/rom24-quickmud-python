@@ -347,6 +347,9 @@ class PlayerSave:
     last_notes: dict[str, float] = field(default_factory=dict)
     colours: dict[str, list[int]] = field(default_factory=dict)
     pet: PetSave | None = None  # ROM save.c pet persistence (fwrite_pet/fread_pet)
+    # TABLES-001 — schema version for AffectFlag bit-position migration.
+    # 0 = legacy pfile (pre-2.6.34) using old Python bits; 1 = ROM-canonical.
+    pfile_version: int = 0
 
 
 _SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
@@ -716,8 +719,45 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Character) -> Character | 
     return pet
 
 
+def _migrate_affect_bits_in_objects(entries: Any) -> None:
+    """In-place: translate ``affects[*].bitvector`` on object snapshots
+    (recursively into ``contains``)."""
+    if not isinstance(entries, list):
+        return
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        affects = entry.get("affects")
+        if isinstance(affects, list):
+            for aff in affects:
+                if isinstance(aff, dict):
+                    aff["bitvector"] = translate_legacy_affect_bits(_safe_int(aff.get("bitvector", 0)))
+        _migrate_affect_bits_in_objects(entry.get("contains"))
+
+
 def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
     upgraded: dict[str, Any] = dict(raw_data)
+
+    # TABLES-001 — translate AffectFlag bits to ROM-canonical layout for
+    # legacy pfiles (pfile_version < 1). Touches the character bitvector,
+    # any persisted item-affect bitvectors, and the pet's bitvectors.
+    pfile_version = _safe_int(upgraded.get("pfile_version", 0))
+    if pfile_version < 1:
+        upgraded["affected_by"] = translate_legacy_affect_bits(_safe_int(upgraded.get("affected_by", 0)))
+        _migrate_affect_bits_in_objects(upgraded.get("inventory"))
+        equipment = upgraded.get("equipment")
+        if isinstance(equipment, dict):
+            _migrate_affect_bits_in_objects(list(equipment.values()))
+        pet = upgraded.get("pet")
+        if isinstance(pet, dict):
+            if pet.get("affected_by") is not None:
+                pet["affected_by"] = translate_legacy_affect_bits(_safe_int(pet.get("affected_by", 0)))
+            pet_affects = pet.get("affects")
+            if isinstance(pet_affects, list):
+                for aff in pet_affects:
+                    if isinstance(aff, dict):
+                        aff["bitvector"] = translate_legacy_affect_bits(_safe_int(aff.get("bitvector", 0)))
+        upgraded["pfile_version"] = PFILE_SCHEMA_VERSION
 
     raw_inventory = upgraded.get("inventory", [])
     if isinstance(raw_inventory, list):
@@ -781,6 +821,57 @@ def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
 
 PLAYERS_DIR = Path("data/players")
 TIME_FILE = Path("data/time.json")
+
+
+# TABLES-001 — AffectFlag bit-position migration.
+# Pre-2.6.34 pfiles encoded AffectFlag with the legacy Python bit positions
+# (mud/models/constants.py prior to renumber). Those positions diverge from
+# ROM merc.h:953-982 for 20 of 29 bits. Saves are now ROM-canonical
+# (pfile_version=1); older saves (pfile_version=0) get translated on load.
+#
+# Map: legacy Python bit index -> ROM-canonical bit index. Bits not listed
+# (0..5, 22, 27, 28) coincide between old and new and pass through unchanged.
+_AFFECT_BIT_TRANSLATION: dict[int, int] = {
+    6: 7,    # SANCTUARY
+    7: 8,    # FAERIE_FIRE
+    8: 9,    # INFRARED
+    9: 10,   # CURSE
+    10: 6,   # DETECT_GOOD
+    11: 12,  # POISON (legacy bit 11 → ROM bit M=12; old bit 11 vacated)
+    12: 13,  # PROTECT_EVIL
+    13: 14,  # PROTECT_GOOD
+    14: 15,  # SNEAK
+    15: 16,  # HIDE
+    16: 17,  # SLEEP
+    17: 18,  # CHARM
+    18: 19,  # FLYING
+    19: 20,  # PASS_DOOR
+    20: 24,  # WEAKEN
+    21: 26,  # BERSERK
+    23: 21,  # HASTE
+    24: 29,  # SLOW
+    25: 23,  # PLAGUE
+    26: 25,  # DARK_VISION
+}
+
+
+def translate_legacy_affect_bits(value: int) -> int:
+    """Translate a pre-TABLES-001 AffectFlag int to ROM-canonical bits.
+
+    Used during pfile load when pfile_version < 1. See mud/models/constants.py
+    AffectFlag and ROM src/merc.h:953-982 for the canonical bit layout.
+    """
+    if not value:
+        return 0
+    result = 0
+    for bit_index in range(30):
+        if value & (1 << bit_index):
+            new_bit = _AFFECT_BIT_TRANSLATION.get(bit_index, bit_index)
+            result |= 1 << new_bit
+    return result
+
+
+PFILE_SCHEMA_VERSION = 1
 
 
 def save_character(char: Character) -> None:
@@ -925,6 +1016,7 @@ def save_character(char: Character) -> None:
         last_notes=dict(getattr(pcdata, "last_notes", {}) or {}),
         colours=colour_table,
         pet=_serialize_pet(char.pet) if getattr(char, "pet", None) else None,  # ROM save.c fwrite_pet
+        pfile_version=PFILE_SCHEMA_VERSION,  # TABLES-001 — ROM-canonical AffectFlag bits
     )
     path = PLAYERS_DIR / f"{char_name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")

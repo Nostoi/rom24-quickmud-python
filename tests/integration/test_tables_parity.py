@@ -112,9 +112,12 @@ def _build_prefix_map() -> dict[str, tuple[type, dict[str, str]]]:
 
     # Member-rename overrides where Python member name differs from the
     # merc.h macro suffix. Format: {macro_suffix: python_member_name}.
+    from mud.models.constants import AffectFlag
+
     _PREFIX_TO_ENUM.update(
         {
             "ACT": (ActFlag, {"AGGRESSIVE": "AGGRESSIVE"}),
+            "AFF": (AffectFlag, {}),
             "PLR": (PlayerFlag, {}),
             "OFF": (OffFlag, {"KICK_DIRT": "KICK_DIRT", "DIRT_KICK": "KICK_DIRT"}),
             "IMM": (ImmFlag, {}),
@@ -167,9 +170,6 @@ def test_merc_h_letter_macros_match_python_intflag_values() -> None:
         prefix, sep, suffix = macro_name.partition("_")
         if not sep:
             continue
-        # AFF_ is covered by the TABLES-001 reproducer below; skip here.
-        if prefix == "AFF":
-            continue
         if prefix not in prefix_map:
             continue
         enum_cls, _overrides = prefix_map[prefix]
@@ -194,12 +194,6 @@ def test_merc_h_letter_macros_match_python_intflag_values() -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    reason="TABLES-001: Python AffectFlag bit positions diverge from ROM merc.h "
-    "(AFF_DETECT_GOOD=G=1<<6 in ROM, but AffectFlag.SANCTUARY=1<<6 in Python). "
-    "Closure requires renumber + persistence migration. See TABLES_C_AUDIT.md.",
-    strict=True,
-)
 def test_affect_flag_letters_match_rom_merc_h() -> None:
     """ROM ``src/merc.h:953-982`` letter-to-bit mapping for ``AFF_*``.
 

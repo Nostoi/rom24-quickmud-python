@@ -112,14 +112,15 @@ The remaining 30+ tables marked `⚠️ to verify` need a follow-up pass. Spot-c
 
 | ID | Severity | ROM ref | Description | Status |
 |---|---|---|---|---|
-| `TABLES-001` | CRITICAL | `src/merc.h:953-982` + `src/tables.c:130-160` | `AffectFlag` bit positions in `mud/models/constants.py:548-580` diverge from ROM `merc.h` `AFF_*` defines for bits 6..29. Letter-form area data is mis-decoded by `convert_flags_from_letters`. Closure requires renumbering `AffectFlag` and migrating any persisted character/object/race state — defer to focused session with persistence migration plan. | 🔄 OPEN (deferred) |
+| `TABLES-001` | CRITICAL | `src/merc.h:953-982` + `src/tables.c:130-160` | `AffectFlag` bit positions in `mud/models/constants.py:548-580` diverged from ROM `merc.h` `AFF_*` defines for bits 6..29. Letter-form area data was mis-decoded by `convert_flags_from_letters`. Closed by renumbering `AffectFlag` to match ROM exactly + adding `pfile_version` schema field with on-load translation of legacy persisted `affected_by`/`Affect.bitvector`. | ✅ FIXED — Apr 29, 2026: `AffectFlag` renumbered to ROM bits; `mud/persistence.py:translate_legacy_affect_bits` + `_upgrade_legacy_save` migrate legacy pfiles (`pfile_version=0` → `1`); reproducer `test_affect_flag_letters_match_rom_merc_h` xpasses; `test_merc_h_letter_macros_match_python_intflag_values` now also covers `AFF_*`; 4 new migration tests in `tests/integration/test_tables_001_affect_migration.py`. |
 | `TABLES-002` | IMPORTANT | `src/tables.c` (multiple) | ROM table names like `npc`/`healer`/`changer`/`can_loot`/`dirt_kick`/`noclangossip` do not prefix-match Python IntFlag member names (`IS_NPC`/`IS_HEALER`/`IS_CHANGER`/`CANLOOT`/`KICK_DIRT`/`NOAUCTION`). Breaks ROM-style abbreviations in `do_flag` and OLC. | ✅ FIXED — `mud/utils/prefix_lookup.py:rom_flag_aliases` adds ROM table-name → IntFlag-member alias maps for `ActFlag` / `PlayerFlag` / `OffFlag` / `CommFlag`; consulted before the member-name prefix scan. Tests: `tests/integration/test_flag_command_parity.py::test_flag_rom_name_alias_*`. |
 | `TABLES-003` | IMPORTANT | `src/merc.h` letter-macros (all prefixes) | Per-table value equivalence verification for the remaining ~30 tables. Programmatic check landed: every `#define <PREFIX>_<NAME> (letter)` macro in `src/merc.h` cross-checked against the matching Python `IntFlag` member's bit value. | ✅ FIXED — `tests/integration/test_tables_parity.py::test_merc_h_letter_macros_match_python_intflag_values` parses merc.h, resolves letter→bit, looks up `IntFlag.<NAME>` (handling `IS_*`/`KICK_DIRT`/`EARS`/`EYES` overrides), and asserts equality. ~210 macros checked across `ACT/PLR/OFF/IMM/RES/VULN/FORM/PART/COMM/ROOM/GATE/FURN/WEAPON`. All pass. `AFF_*` excluded (covered by TABLES-001 strict xfail). |
 
 ## Phase 4 — Closures
 
-None this session. See SESSION_SUMMARY for rationale.
+- **Apr 28, 2026** — TABLES-002 (ROM table-name aliases for `flag_lookup`) and TABLES-003 (programmatic merc.h letter-macro verification) closed.
+- **Apr 29, 2026** — TABLES-001 (`AffectFlag` bit-position migration to ROM `merc.h:953-982`) closed via enum renumber + `pfile_version` schema field + on-load translation of legacy `affected_by` and nested `Affect.bitvector` ints. See `TABLES_001_CLOSURE_PLAN.md`.
 
 ## Phase 5 — Tracker status
 
-`tables.c` row stays ⚠️ Partial. Description updated from "70% Lookups partial" to reflect Phase 1 + Phase 2 spot-checks complete with three open gaps.
+`tables.c` flipped from ⚠️ Partial 75% → ✅ AUDITED 100%. All three gaps (TABLES-001 / 002 / 003) closed.
