@@ -126,6 +126,60 @@ def test_do_play_loud_with_empty_song_argument(music_world) -> None:
     assert reply == "Play what?"
 
 
+def test_do_play_list_uses_real_song_table_with_two_column_format(music_world) -> None:
+    # mirrors ROM src/music.c:263-291 — name-only listing with %-35s, two columns.
+    char, _ = _build_room_with_jukebox()
+
+    reply = do_play(char, "list")
+
+    # Header capitalized from "the jukebox has the following songs available:".
+    assert reply.startswith("The jukebox has the following songs available:")
+
+    # Three songs from the music_world fixture: Anthem, Ballad of the Blue, Camarillo Brillo.
+    # Two-column %-35s format means the first row holds the first two names.
+    assert "Anthem" in reply
+    assert "Ballad of the Blue" in reply
+    assert "Camarillo Brillo" in reply
+    # mirrors ROM %-35s width: name padding inside the row.
+    assert "Anthem                             " in reply  # 35-wide column (33 spaces)
+
+
+def test_do_play_list_filters_by_name_prefix(music_world) -> None:
+    # mirrors ROM src/music.c:276-282 — str_prefix(argument, song.name) filters.
+    char, _ = _build_room_with_jukebox()
+
+    reply = do_play(char, "list ball")
+
+    assert "Ballad of the Blue" in reply
+    assert "Anthem" not in reply
+    assert "Camarillo Brillo" not in reply
+
+
+def test_do_play_list_artist_mode_pairs_group_and_name(music_world) -> None:
+    # mirrors ROM src/music.c:272-275 — artist mode prints "%-39s %-39s\n\r".
+    char, _ = _build_room_with_jukebox()
+
+    reply = do_play(char, "list artist")
+
+    # Group + name on the same line.
+    assert "The Band" in reply
+    assert "Anthem" in reply
+    # Pair on one line: group followed by name within %-39s padding.
+    lines = reply.splitlines()
+    pair_lines = [line for line in lines if "Anthem" in line and "The Band" in line]
+    assert len(pair_lines) == 1
+
+
+def test_do_play_list_artist_mode_filters_by_group_prefix(music_world) -> None:
+    # mirrors ROM src/music.c:272-275 — str_prefix(argument, song.group) filter.
+    char, _ = _build_room_with_jukebox()
+
+    reply = do_play(char, "list artist other")
+
+    assert "Camarillo Brillo" in reply  # group=Other
+    assert "Anthem" not in reply  # group=The Band
+
+
 def test_do_play_matches_song_by_prefix(music_world) -> None:
     # mirrors ROM src/music.c:320 — str_prefix(argument, song_table[i].name).
     char, juke = _build_room_with_jukebox()

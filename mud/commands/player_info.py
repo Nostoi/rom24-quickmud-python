@@ -99,35 +99,52 @@ def do_play(char: Character, args: str) -> str:
     parts = args.strip().split()
     arg = parts[0].lower()
 
-    if arg == "list":
-        juke_name = getattr(jukebox, "short_descr", "The jukebox")
-        lines = [f"{juke_name} has the following songs available:"]
-
-        from mud import registry
-
-        songs = getattr(registry, "song_table", [])
-
-        if not songs:
-            songs = [
-                {"name": "The Temple Bell", "group": "Unknown"},
-                {"name": "Battle Hymn", "group": "Unknown"},
-                {"name": "Tavern Song", "group": "Unknown"},
-            ]
-
-        row = []
-        for song in songs:
-            name = song.get("name", "Unknown")
-            row.append(f"{name:<35}")
-            if len(row) == 2:
-                lines.append(" ".join(row))
-                row = []
-
-        if row:
-            lines.append(" ".join(row))
-
-        return "\n".join(lines)
-
     from mud.music import MAX_GLOBAL, MAX_SONGS, channel_songs, song_table
+
+    if arg == "list":
+        # mirroring ROM src/music.c:263-265 — capitalize the first character of the header.
+        juke_name = getattr(jukebox, "short_descr", None) or "the jukebox"
+        header_raw = f"{juke_name} has the following songs available:"
+        header = header_raw[:1].upper() + header_raw[1:]
+
+        # mirroring ROM src/music.c:253-261 — `play list artist [<prefix>]`.
+        rest = parts[1:]
+        artist_mode = False
+        if rest and rest[0].lower() == "artist":
+            artist_mode = True
+            rest = rest[1:]
+        match_prefix = " ".join(rest).lower() if rest else ""
+
+        out_lines: list[str] = [header]
+        col = 0
+        row_buf = ""
+        for idx in range(MAX_SONGS):
+            song = song_table[idx]
+            if song is None or song.name is None:
+                # mirroring ROM src/music.c:269-270 — first NULL entry stops the scan.
+                break
+            if artist_mode:
+                # mirroring ROM src/music.c:272-275 — str_prefix(argument, song.group).
+                if match_prefix and not song.group.lower().startswith(match_prefix):
+                    continue
+                out_lines.append(f"{song.group:<39} {song.name:<39}")
+            else:
+                # mirroring ROM src/music.c:276-282 — str_prefix(argument, song.name).
+                if match_prefix and not song.name.lower().startswith(match_prefix):
+                    continue
+                if col % 2 == 0:
+                    row_buf = f"{song.name:<35} "
+                else:
+                    row_buf += f"{song.name:<35}"
+                    out_lines.append(row_buf)
+                    row_buf = ""
+                col += 1
+
+        # mirroring ROM src/music.c:286-287 — flush a trailing odd column.
+        if not artist_mode and col % 2 != 0:
+            out_lines.append(row_buf.rstrip())
+
+        return "\n".join(out_lines)
 
     # mirroring ROM src/music.c:294-298 — "loud" prefix triggers global queue.
     global_play = False
