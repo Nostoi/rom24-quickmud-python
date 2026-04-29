@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `NANNY-001` — Account login now disconnects on the first wrong password (returns `None` from `_run_account_login`) instead of looping back to the Account prompt, mirroring ROM `src/nanny.c:269-274` (`close_socket(d)` on bad password). The same path applies to reconnect attempts (matching ROM's "one chance" rule for both fresh logins and CON_BREAK_CONNECT).
 - `NANNY-005` — Audit correction: ROM `perm_stat[class.attr_prime] += 3` (src/nanny.c:769) was already implemented in `mud/account/account_service.py:finalize_creation_stats` and locked in by `tests/test_nanny_rom_parity.py::test_prime_attribute_bonus_formula`. ROM applies the bonus during the `level == 0 → 1` promotion inside `CON_READ_MOTD`; Python applies it equivalently during `create_character` since Python characters are persisted at level 1.
 - `NANNY-004` — Audit correction: ROM `learned[weapon_gsn] = 40` (src/nanny.c:653) was already implemented in `mud/models/character.py:from_orm` (lines 1047-1051), which uses `_STARTING_WEAPON_SKILL_BY_VNUM` to seed the picked weapon's skill to ≥40 on every load. Audit had cited the prompt-time path. Added regression test.
 - `NANNY-003` — Audit correction: ROM `learned[gsn_recall] = 50` (src/nanny.c:581) was already implemented in `mud/models/character.py:from_orm` (lines 1052-1053), which clamps `learned["recall"]` to ≥50 on every character load. Audit had cited the wrong source location. Added regression test to lock in the behavior.

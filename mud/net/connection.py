@@ -872,9 +872,10 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
                 await _send_line(conn, "Ok, please choose another account.")
                 continue
             if reason is LoginFailureReason.BAD_CREDENTIALS:
+                # mirroring ROM src/nanny.c:269-274 — one attempt, then close
                 message = "Reconnect failed." if allow_reconnect else "Wrong password."
                 await _send_line(conn, message)
-                continue
+                return None
             if reason is LoginFailureReason.WIZLOCK:
                 await _send_line(conn, "The game is wizlocked.")
                 return None

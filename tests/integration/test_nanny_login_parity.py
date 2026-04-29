@@ -266,6 +266,86 @@ def test_chosen_weapon_skill_seeded_at_40_percent():
 
 
 @pytest.mark.p1
+def test_account_login_disconnects_on_wrong_password(monkeypatch):
+    """NANNY-001 — ROM closes the socket on the first wrong password.
+
+    ROM C: src/nanny.c:269-274
+        ```c
+        if (strcmp (crypt (argument, ch->pcdata->pwd), ch->pcdata->pwd))
+        {
+            send_to_desc ("Wrong password.\n\r", d);
+            close_socket (d);
+            return;
+        }
+        ```
+
+    ROM grants exactly one password attempt; failure closes the
+    descriptor. The Python account-login loop instead let the user retry
+    indefinitely, which diverges from ROM's "one chance" rule and weakens
+    brute-force protection.
+
+    This test asserts the run-account-login coroutine returns None
+    (closing the connection) the first time `login_with_host` reports
+    BAD_CREDENTIALS, instead of looping back to the Account prompt.
+    """
+    import asyncio
+    from types import SimpleNamespace
+
+    from mud.account import LoginFailureReason
+    from mud.net import connection as connection_mod
+
+    sent: list[str] = []
+    prompts: list[str] = []
+
+    class FakeStream:
+        host = "test.example"
+
+        def set_ansi(self, _enabled):
+            pass
+
+    async def fake_prompt(_conn, label, *, hide_input=False):
+        prompts.append(label)
+        # Safety net: if the login loop ever asks twice, bail out by
+        # returning None so the test fails on assertion instead of
+        # hanging forever. ROM disconnects on first failure, so this
+        # path should never trip.
+        account_count = sum(1 for p in prompts if "Account" in p)
+        if account_count > 1:
+            return None
+        if "Account" in label:
+            return "tester"
+        if "Password" in label:
+            return "wrongpw"
+        return ""
+
+    async def fake_send_line(_conn, msg):
+        sent.append(msg)
+
+    monkeypatch.setattr(connection_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(connection_mod, "_send_line", fake_send_line)
+    monkeypatch.setattr(connection_mod, "account_exists", lambda _name: True)
+    monkeypatch.setattr(connection_mod, "is_account_active", lambda _name: False)
+    monkeypatch.setattr(
+        connection_mod,
+        "login_with_host",
+        lambda _name, _pw, _host, allow_reconnect=False: SimpleNamespace(
+            account=None,
+            failure=LoginFailureReason.BAD_CREDENTIALS,
+            was_reconnect=False,
+        ),
+    )
+
+    result = asyncio.run(connection_mod._run_account_login(FakeStream(), None))
+
+    # mirrors ROM src/nanny.c:269-274 — one attempt, then close
+    assert result is None
+    assert any("Wrong password" in m for m in sent)
+    # Account prompt must appear exactly once — no retry loop
+    account_prompts = [p for p in prompts if "Account" in p]
+    assert len(account_prompts) == 1
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.
