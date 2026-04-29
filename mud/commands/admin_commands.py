@@ -254,7 +254,8 @@ def _render_ban_listing() -> str:
         else:
             type_text = "all"
         status = "perm" if entry.flags & BanFlag.PERMANENT else "temp"
-        lines.append(f"{pattern:<12}    {entry.level:3d}  {type_text:<7}  {status}")
+        # mirrors ROM src/ban.c:164 — "%-12s    %-3d  %-7s  %s" (level left-aligned)
+        lines.append(f"{pattern:<12}    {entry.level:<3d}  {type_text:<7}  {status}")
     return ROM_NEWLINE.join(lines) + ROM_NEWLINE
 
 
