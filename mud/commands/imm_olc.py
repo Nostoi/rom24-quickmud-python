@@ -129,20 +129,26 @@ def do_alist(char: Character, args: str) -> str:
     if getattr(char, "is_npc", False):
         return ""
     
-    from mud import registry
-    
+    # mirrors ROM src/olc.c:1487-1498 — iterate area_registry (was: bogus
+    # `registry.areas` attribute), use `area.vnum` for the first column
+    # (was: 1-indexed enumerate counter), and `file_name` not `filename`.
+    from mud.registry import area_registry
+
     lines = [f"[{'Num':>3s}] [{'Area Name':<27s}] ({'lvnum':>5s}-{'uvnum':>5s}) [{'Filename':<10s}] {'Sec':>3s} [{'Builders':<10s}]"]
-    
-    for i, area in enumerate(getattr(registry, "areas", []), 1):
-        name = getattr(area, "name", "Unknown")[:27]
+
+    for area in area_registry.values():
+        name = (getattr(area, "name", None) or "Unknown")[:29]
         min_vnum = getattr(area, "min_vnum", 0)
         max_vnum = getattr(area, "max_vnum", 0)
-        filename = getattr(area, "filename", "")[:10]
+        file_name = (getattr(area, "file_name", None) or "")[:12]
         security = getattr(area, "security", 0)
-        builders = getattr(area, "builders", "")[:10]
-        
-        lines.append(f"[{i:3d}] {name:<29s} ({min_vnum:>5d}-{max_vnum:>5d}) {filename:<12s} [{security}] [{builders:<10s}]")
-    
+        builders = (getattr(area, "builders", None) or "")[:10]
+        vnum = getattr(area, "vnum", 0)
+
+        lines.append(
+            f"[{vnum:3d}] {name:<29s} ({min_vnum:>5d}-{max_vnum:>5d}) {file_name:<12s} [{security}] [{builders:<10s}]"
+        )
+
     return "\n".join(lines)
 
 

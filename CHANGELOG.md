@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `OLC-023` — `do_alist` (`mud/commands/imm_olc.py:121-146`) iterated the nonexistent `registry.areas` attribute and returned a header-only listing on a live system. Now iterates `area_registry.values()`, prints `area.vnum` (was a 1-indexed enumerate counter — drifted from ROM `src/olc.c:1494`'s `pArea->vnum`), and reads `area.file_name` (was the nonexistent `area.filename`). Test: `tests/integration/test_olc_alist.py` (4 cases).
+
 ### Added
 
 - `STRING-002` — `mud/utils/string_editor.py:string_append(string_edit_obj, current) -> str`. Mirrors ROM `src/string.c:66-86`: enter APPEND mode, preserve the buffer, and return the editor banner (4 lines) plus the `numlines()` line-numbered listing. Takes a `StringEdit` object and a *current* string (the existing text to append to), unlike `string_edit` which clears. The banner matches ROM verbatim: `-=======- Entering APPEND Mode -========-`, help, termination, and separator. The listing shows each line with its 1-indexed line number in `%2d` format. Used by every OLC description builder (`aedit_builder`, `redit`, `medit`, `oedit`, etc.). Test: `tests/integration/test_string_editor_append.py` (9 cases).
