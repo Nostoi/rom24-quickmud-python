@@ -8,6 +8,11 @@ Descriptor plumbing is provided by `mud/olc/editor_state.py`
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mud.olc.editor_state import StringEdit
+
 
 def merc_getline(string: str) -> tuple[str, str]:
     """Read one ``\\n``-terminated line; return ``(rest, line)``.
@@ -227,3 +232,31 @@ def string_replace(orig: str, old: str, new: str) -> str:
 
     # Replace: prefix + new + suffix (skipping the old substring)
     return orig[:idx] + new + orig[idx + len(old) :]
+
+
+def string_edit(string_edit_obj: StringEdit) -> str:
+    """Enter EDIT mode: clear buffer and return the editor banner.
+
+    Mirrors ROM ``string_edit`` (src/string.c:38-57). Initializes the
+    `StringEdit` object with an empty buffer and returns the editor
+    banner (4 lines) that should be sent to the connection. The banner
+    tells the user how to use the editor.
+
+    The *string_edit_obj* parameter is modified in-place: buffer set to
+    empty string, max_length and on_commit preserved.
+
+    Used by OLC builders: `aedit_builder` (edit description), `redit`
+    (edit-description), `medit` (edit-description).
+    """
+
+    # Clear the buffer (ROM: if (*pString == NULL) str_dup(""); else **pString = '\0')
+    string_edit_obj.buffer = ""
+
+    # Return the banner (4 lines, each ends with \n\r)
+    banner = (
+        "-========- Entering EDIT Mode -=========-\n\r"
+        "    Type .h on a new line for help\n\r"
+        " Terminate with a ~ or @ on a blank line.\n\r"
+        "-=======================================-\n\r"
+    )
+    return banner
