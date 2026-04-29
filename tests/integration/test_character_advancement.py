@@ -13,11 +13,28 @@ import pytest
 from mud.advancement import advance_level, exp_per_level, gain_exp
 from mud.commands.dispatcher import process_command
 from mud.game_loop import game_tick
+from mud.math.c_compat import c_div
+from mud.math.stat_apps import CON_APP
 from mud.models.character import Character
+from mud.models.classes import CLASS_TABLE
 from mud.models.constants import LEVEL_HERO
 from mud.registry import room_registry, area_registry, mob_registry, obj_registry
 from mud.spawning.mob_spawner import spawn_mob
+from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
+
+
+def _rom_hp_gain(ch_class: int, con: int, *, roll: str = "min") -> int:
+    """Compute ROM advance_level HP gain for a class+CON+pinned roll.
+
+    Mirrors src/update.c:74-79: UMAX(2, (con_app[CON].hitp +
+    number_range(class.hp_min, class.hp_max)) * 9 / 10).
+    """
+
+    cls = CLASS_TABLE[ch_class]
+    hp_roll = cls.hp_min if roll == "min" else cls.hp_max
+    add_hp = CON_APP[con].hitp + hp_roll
+    return max(2, c_div(add_hp * 9, 10))
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -197,17 +214,24 @@ def test_multiple_levels_at_once(test_character):
     assert char.level >= 3, "Character should gain multiple levels at once"
 
 
-def test_level_up_grants_hp_mana_move(test_character):
+def test_level_up_grants_hp_mana_move(test_character, monkeypatch):
     """Given warrior character leveling up
     When advance_level called
-    Then HP/mana/move increase by class bonuses
+    Then HP follows ROM formula and mana/move use legacy bonuses (until
+    their own gaps close).
 
-    ROM Parity: src/update.c:advance_level stat increases
-    Warrior bonuses: +10 HP, +4 mana, +6 move
+    ROM Parity: src/update.c:74-79 — HP = UMAX(2, (con_app[CON].hitp +
+    number_range(class.hp_min, class.hp_max)) * 9 / 10).
+    Warrior hp_min=11, hp_max=15. With CON-13 (hitp=0) and pinned hp_min:
+    (0 + 11) * 9 / 10 == 9 HP per level.
     """
     char = test_character
     char.ch_class = 3
     char.level = 1
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     initial_hp = char.max_hit
     initial_mana = char.max_mana
@@ -215,7 +239,8 @@ def test_level_up_grants_hp_mana_move(test_character):
 
     advance_level(char)
 
-    assert char.max_hit == initial_hp + 10, "Warrior should gain +10 HP"
+    expected_hp_gain = _rom_hp_gain(ch_class=3, con=13, roll="min")
+    assert char.max_hit == initial_hp + expected_hp_gain
     assert char.max_mana == initial_mana + 4, "Warrior should gain +4 mana"
     assert char.max_move == initial_move + 6, "Warrior should gain +6 move"
 
@@ -344,12 +369,12 @@ def test_group_xp_split_among_members(test_character):
     assert char2.exp == initial_xp2 + expected_xp_per_member
 
 
-def test_mage_level_up_grants_class_bonuses():
-    """Given mage character
-    When leveling up
-    Then mage bonuses applied: +8 HP, +6 mana, +4 move
+def test_mage_level_up_grants_class_bonuses(monkeypatch):
+    """Given mage character at neutral CON-13 with pinned hp_min roll.
 
-    ROM Parity: advancement.py LEVEL_BONUS per class
+    ROM Parity: src/update.c:74-79 — mage hp_min=6, CON-13 hitp=0,
+    UMAX(2, (0+6)*9/10) == 5 HP. Mana/move stay on legacy LEVEL_BONUS
+    until their gaps close.
     """
     char = create_test_character("MageTest", room_vnum=3001)
     char.ch_class = 0
@@ -357,62 +382,71 @@ def test_mage_level_up_grants_class_bonuses():
     char.max_hit = 20
     char.max_mana = 100
     char.max_move = 100
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     advance_level(char)
 
-    assert char.max_hit == 28, "Mage should gain +8 HP"
+    expected_hp_gain = _rom_hp_gain(ch_class=0, con=13, roll="min")
+    assert char.max_hit == 20 + expected_hp_gain
     assert char.max_mana == 106, "Mage should gain +6 mana"
     assert char.max_move == 104, "Mage should gain +4 move"
 
 
-def test_cleric_level_up_grants_class_bonuses():
-    """Given cleric character
-    When leveling up
-    Then cleric bonuses applied: +6 HP, +8 mana, +4 move
+def test_cleric_level_up_grants_class_bonuses(monkeypatch):
+    """Cleric hp_min=7, CON-13 hitp=0, UMAX(2, (0+7)*9/10) == 6 HP."""
 
-    ROM Parity: advancement.py LEVEL_BONUS per class
-    """
     char = create_test_character("ClericTest", room_vnum=3001)
     char.ch_class = 1
     char.level = 1
     char.max_hit = 20
     char.max_mana = 100
     char.max_move = 100
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     advance_level(char)
 
-    assert char.max_hit == 26, "Cleric should gain +6 HP"
+    expected_hp_gain = _rom_hp_gain(ch_class=1, con=13, roll="min")
+    assert char.max_hit == 20 + expected_hp_gain
     assert char.max_mana == 108, "Cleric should gain +8 mana"
     assert char.max_move == 104, "Cleric should gain +4 move"
 
 
-def test_thief_level_up_grants_class_bonuses():
-    """Given thief character
-    When leveling up
-    Then thief bonuses applied: +7 HP, +6 mana, +5 move
+def test_thief_level_up_grants_class_bonuses(monkeypatch):
+    """Thief hp_min=8, CON-13 hitp=0, UMAX(2, (0+8)*9/10) == 7 HP."""
 
-    ROM Parity: advancement.py LEVEL_BONUS per class
-    """
     char = create_test_character("ThiefTest", room_vnum=3001)
     char.ch_class = 2
     char.level = 1
     char.max_hit = 20
     char.max_mana = 100
     char.max_move = 100
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     advance_level(char)
 
-    assert char.max_hit == 27, "Thief should gain +7 HP"
+    expected_hp_gain = _rom_hp_gain(ch_class=2, con=13, roll="min")
+    assert char.max_hit == 20 + expected_hp_gain
     assert char.max_mana == 106, "Thief should gain +6 mana"
     assert char.max_move == 105, "Thief should gain +5 move"
 
 
-def test_character_advancement_from_level_1_to_10(test_character):
+def test_character_advancement_from_level_1_to_10(test_character, monkeypatch):
     """Given level 1 warrior
     When XP granted to reach level 10
-    Then all stat bonuses accumulate correctly
+    Then HP/mana/move accumulate correctly across N level-ups.
 
-    ROM Parity: Full advancement workflow
+    ROM Parity: src/update.c:74-79 — HP per level uses class hp range +
+    con_app[CON].hitp. With pinned number_range==hp_min and CON-13:
+    warrior gain = UMAX(2, (0 + 11) * 9 / 10) == 9 HP per level.
     """
     char = test_character
     char.level = 1
@@ -423,6 +457,10 @@ def test_character_advancement_from_level_1_to_10(test_character):
     char.max_move = 100
     char.practice = 5
     char.train = 3
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     base_exp = exp_per_level(char)
     xp_for_level_10 = base_exp * 10
@@ -431,7 +469,8 @@ def test_character_advancement_from_level_1_to_10(test_character):
     assert char.level >= 10, f"Character should reach level 10 (got {char.level})"
 
     level_ups = char.level - 1
-    expected_hp = 20 + (level_ups * 10)
+    per_level_hp = _rom_hp_gain(ch_class=3, con=13, roll="min")
+    expected_hp = 20 + (level_ups * per_level_hp)
     expected_mana = 100 + (level_ups * 4)
     expected_move = 100 + (level_ups * 6)
 

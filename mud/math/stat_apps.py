@@ -69,6 +69,19 @@ class DexAppRow(NamedTuple):
     defensive: int
 
 
+class ConAppRow(NamedTuple):
+    """One row of ROM ``con_app[26]`` — see src/const.c:850-878.
+
+    The ``shock`` column is defined but unused by ROM (verified by `grep -rn
+    "con_app" src/`); only `update.c:78` reads `con_app[CON].hitp` in
+    `advance_level`. We port both columns for completeness; only `hitp`
+    has a live consumer in Python.
+    """
+
+    hitp: int
+    shock: int
+
+
 # ROM src/const.c:821-848 — verbatim port of dex_app[26].
 DEX_APP: tuple[DexAppRow, ...] = (
     DexAppRow(60),    # DEX  0
@@ -100,6 +113,37 @@ DEX_APP: tuple[DexAppRow, ...] = (
 )
 
 
+# ROM src/const.c:850-878 — verbatim port of con_app[26].
+CON_APP: tuple[ConAppRow, ...] = (
+    ConAppRow(-4, 20),   # CON  0
+    ConAppRow(-3, 25),   # CON  1
+    ConAppRow(-2, 30),   # CON  2
+    ConAppRow(-2, 35),   # CON  3
+    ConAppRow(-1, 40),   # CON  4
+    ConAppRow(-1, 45),   # CON  5
+    ConAppRow(-1, 50),   # CON  6
+    ConAppRow(0, 55),    # CON  7
+    ConAppRow(0, 60),    # CON  8
+    ConAppRow(0, 65),    # CON  9
+    ConAppRow(0, 70),    # CON 10
+    ConAppRow(0, 75),    # CON 11
+    ConAppRow(0, 80),    # CON 12
+    ConAppRow(0, 85),    # CON 13
+    ConAppRow(0, 88),    # CON 14
+    ConAppRow(1, 90),    # CON 15
+    ConAppRow(2, 95),    # CON 16
+    ConAppRow(2, 97),    # CON 17
+    ConAppRow(3, 99),    # CON 18
+    ConAppRow(3, 99),    # CON 19
+    ConAppRow(4, 99),    # CON 20
+    ConAppRow(4, 99),    # CON 21
+    ConAppRow(5, 99),    # CON 22
+    ConAppRow(6, 99),    # CON 23
+    ConAppRow(7, 99),    # CON 24
+    ConAppRow(8, 99),    # CON 25
+)
+
+
 def _curr_stat(ch, stat: Stat, default: int = 13) -> int:
     """Return ch's current stat clamped to the app-table index range [0, 25]."""
 
@@ -126,6 +170,12 @@ def _curr_dex(ch) -> int:
     """Return ch's current DEX clamped to the dex_app index range [0, 25]."""
 
     return _curr_stat(ch, Stat.DEX)
+
+
+def _curr_con(ch) -> int:
+    """Return ch's current CON clamped to the con_app index range [0, 25]."""
+
+    return _curr_stat(ch, Stat.CON)
 
 
 def _is_awake(ch) -> bool:
@@ -179,3 +229,13 @@ def get_ac(ch, ac_type: int) -> int:
     if not _is_awake(ch):
         return base
     return base + DEX_APP[_curr_dex(ch)].defensive
+
+
+def con_hitp_bonus(ch) -> int:
+    """Return ROM ``con_app[get_curr_stat(ch, STAT_CON)].hitp``.
+
+    Mirrors src/const.c:850-878. Consumed at src/update.c:74-79
+    (advance_level per-level HP gain).
+    """
+
+    return CON_APP[_curr_con(ch)].hitp

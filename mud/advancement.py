@@ -3,10 +3,12 @@ from __future__ import annotations
 import time
 
 from mud.math.c_compat import c_div
+from mud.math.stat_apps import con_hitp_bonus
 from mud.models.character import Character
-from mud.models.constants import LEVEL_HERO
 from mud.models.classes import CLASS_TABLE, ClassType
+from mud.models.constants import LEVEL_HERO
 from mud.models.races import PcRaceType, list_playable_races
+from mud.utils import rng_mm
 from mud.wiznet import WiznetFlag, wiznet
 
 BASE_XP_PER_LEVEL = 1000
@@ -86,8 +88,29 @@ def exp_per_level_for_creation(
 
 
 def advance_level(char: Character) -> None:
-    """Increase hit points, mana, move, practices, and trains."""
-    hp, mana, move = LEVEL_BONUS.get(char.ch_class, (8, 6, 5))
+    """Increase hit points, mana, move, practices, and trains.
+
+    HP path mirrors ROM src/update.c:74-79:
+        add_hp = con_app[CON].hitp + number_range(class.hp_min, class.hp_max)
+        add_hp = add_hp * 9 / 10  (C int div)
+        add_hp = UMAX(2, add_hp)
+
+    Mana / move / practices remain on the legacy LEVEL_BONUS path until
+    their respective CONST-* gaps close (CONST-006 covers wis_app practice;
+    mana and move RNG rolls are tracked separately in the audit doc).
+    """
+    _hp_legacy, mana, move = LEVEL_BONUS.get(char.ch_class, (8, 6, 5))
+
+    # ROM HP roll — class hp range plus con_app[CON].hitp, then x9/10, floor 2.
+    cls = CLASS_TABLE[char.ch_class] if 0 <= char.ch_class < len(CLASS_TABLE) else None
+    if cls is not None:
+        hp_roll = rng_mm.number_range(cls.hp_min, cls.hp_max)
+    else:  # pragma: no cover - defensive guard
+        hp_roll = _hp_legacy
+    add_hp = con_hitp_bonus(char) + hp_roll
+    add_hp = c_div(add_hp * 9, 10)
+    hp = max(2, add_hp)
+
     char.max_hit += hp
     char.max_mana += mana
     char.max_move += move

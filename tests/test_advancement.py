@@ -198,8 +198,18 @@ def test_gain_exp_emits_levelup_messages(monkeypatch):
 
 
 def test_advance_level_updates_permanent_stats(monkeypatch):
+    """Pre-ROM-port: this test asserted +8 HP from a static LEVEL_BONUS dict.
+    Post-CONST-005 ROM parity: HP gain is `UMAX(2, (con_app[CON].hitp +
+    number_range(class.hp_min, class.hp_max)) * 9 / 10)`. With number_range
+    pinned to hp_min and CON=13 (con_app.hitp=0), mage hp_min=6 →
+    UMAX(2, (0 + 6) * 9 / 10) == UMAX(2, 5) == 5 HP per level.
+    """
+
+    from mud.utils import rng_mm
+
     now = 10_000
     monkeypatch.setattr("mud.advancement.time.time", lambda: now)
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     pcdata = PCData(perm_hit=5, perm_mana=7, perm_move=9, last_level=0)
     char = Character(
@@ -214,14 +224,18 @@ def test_advance_level_updates_permanent_stats(monkeypatch):
         practice=1,
         train=0,
     )
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
 
     advance_level(char)
 
+    expected_hp = 5  # mage hp_min=6, CON-13 hitp=0, (0+6)*9/10 == 5
+
     assert pcdata.last_level == (3600 + 1200) // 3600
-    assert pcdata.perm_hit == 5 + 8
+    assert pcdata.perm_hit == 5 + expected_hp
     assert pcdata.perm_mana == 7 + 6
     assert pcdata.perm_move == 9 + 4
-    assert char.max_hit == 38
+    assert char.max_hit == 30 + expected_hp
     assert char.max_mana == 46
     assert char.max_move == 54
     assert char.practice == 3
@@ -229,7 +243,15 @@ def test_advance_level_updates_permanent_stats(monkeypatch):
 
 
 def test_advance_level_reports_gains(monkeypatch):
+    """Post-CONST-005: HP in the gain message is the ROM-rolled value.
+    With number_range pinned to hp_min, cleric hp_min=7, CON-13 hitp=0,
+    (0+7)*9/10 == 6 HP per level.
+    """
+
+    from mud.utils import rng_mm
+
     monkeypatch.setattr("mud.advancement.time.time", lambda: 5000)
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
 
     pcdata = PCData()
     char = Character(
@@ -237,6 +259,8 @@ def test_advance_level_reports_gains(monkeypatch):
         is_npc=False,
         pcdata=pcdata,
     )
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
 
     advance_level(char)
 
