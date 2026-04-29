@@ -1,31 +1,33 @@
-# Session Status — 2026-04-28 — `flags.c` parity audit & FLAG-001 closure (✅ 100% AUDITED)
+# Session Status — 2026-04-28 — `lookup.c` audit + LOOKUP-001 closure (⚠️ Partial 70%)
 
 ## Current State
 
-- **Active audit**: `flags.c` — ✅ AUDITED at 100%. FLAG-001 closed (do_flag fully implemented). FLAG-002 (settable-bit preservation across `=`) deferred MINOR — documented in `docs/parity/FLAGS_C_AUDIT.md`.
-- **Last completed**: full ROM-faithful `do_flag` rewrite in `mud/commands/remaining_rom.py` + 9 integration tests in `tests/integration/test_flag_command_parity.py`; tracker flipped; CHANGELOG entry; version 2.6.22.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_FLAGS_C_AUDIT.md](SESSION_SUMMARY_2026-04-28_FLAGS_C_AUDIT.md)
+- **Active audit**: `lookup.c` — ⚠️ Partial 70%. LOOKUP-001 closed (race_lookup added; latent pet-load ImportError fixed). LOOKUP-002..008 documented OPEN in `docs/parity/LOOKUP_C_AUDIT.md`.
+- **Last completed**: `mud/models/races.py:race_lookup` ROM-faithful implementation; `tests/integration/test_lookup_parity.py` 6/6 passing; full audit doc with stable gap IDs; tracker updated; CHANGELOG + version 2.6.23.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-28_LOOKUP_C_AUDIT_AND_LOOKUP_001.md](SESSION_SUMMARY_2026-04-28_LOOKUP_C_AUDIT_AND_LOOKUP_001.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.22 |
-| Tests | `tests/integration/test_flag_command_parity.py` 9/9 + adjacent immortal suites green |
-| ROM C files audited | 26 / 43 (flags.c newly AUDITED) |
-| Active focus | `flags.c` ✅ 100%; previous sessions closed `sha256.c` and `ban.c` (BAN-001..004) |
+| Version | 2.6.23 |
+| Tests | `tests/integration/test_lookup_parity.py` 6/6 passing |
+| ROM C files audited | 26 / 43 (lookup.c stays Partial; sha256.c + flags.c flipped earlier today) |
+| Active focus | `lookup.c` ⚠️ Partial 70%; 7 documented OPEN gaps (LOOKUP-002..008) |
 
 ## Next Intended Task
 
-Pick the next ⚠️ Partial / ❌ Not Audited file from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`. Top candidates:
+Strongest pick: **close LOOKUP-002..008 as one cohesive follow-up**. Introduce `mud/utils/prefix_lookup.py:prefix_lookup(name, table)` helper, migrate all the existing exact-match lookups (`_lookup_flag_bit`, clan, position, sex, size, item, liq), one commit per gap. Lands the whole `lookup.c` audit at ✅ AUDITED.
 
-1. **`lookup.c`** (P3 65%) — sibling of flags.c; likely similarly contained. Most promising next single-session pick.
-2. **`tables.c`** (P3 70%) — flag-name string tables, used by ROM's `flag_lookup`. Audit would formalize Python's IntFlag-as-table pattern.
-3. **Deferred NANNY trio** — NANNY-008 (pet on login), NANNY-009 (title_table + first-login set_title), NANNY-010 (CON_BREAK_CONNECT iterate-all-descriptors). Each its own architectural session.
-4. **`const.c`** (P3 80%) — large; best as a sub-audit of `stat_app` (combat-critical) first, then class/race/skill in dedicated sessions.
-5. **`board.c`** (P2 35%) — boards subsystem; mid-scope.
-6. **OLC cluster** — `olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c` — multi-session block; would unblock `bit.c` and `string.c`.
+Alternative candidates:
 
-## Pre-existing test failures (not caused by this session)
+1. **`tables.c`** (P3 70%) — sibling of lookup.c; flag-name string tables. Likely shares most of the work above.
+2. **`const.c`** (P3 80%) — large; best as `stat_app` sub-audit first (combat-critical).
+3. **Deferred NANNY trio** — NANNY-008 / NANNY-009 / NANNY-010 (each architectural).
+4. **`board.c`** (P2 35%) — boards subsystem.
+5. **OLC cluster** — `olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c`. Multi-session block; would unblock `bit.c` and `string.c`.
 
-`tests/test_commands.py` shows 4 failures (`test_abbreviations_and_quotes`, `test_apostrophe_alias_routes_to_say`, `test_punctuation_inputs_do_not_raise_value_error`, `test_scan_directional_depth_rom_style`). The file was modified at session start by an earlier in-flight session. Out of scope for flags.c.
+## Pre-existing test/lint failures (not caused by this session)
+
+- `tests/test_commands.py` 4 failures (alias / scan-directional / typo guards) — from another in-flight session.
+- `mud/models/races.py` has 8 ruff errors (typing.Tuple → tuple, typing.Type → type, import sort) pre-dating this session.

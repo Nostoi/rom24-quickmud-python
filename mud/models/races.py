@@ -532,3 +532,20 @@ def list_playable_races() -> tuple[PcRaceType, ...]:
 
     return PC_RACE_TABLE
 
+
+def race_lookup(name: str | None) -> int:
+    """Return the int race index whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``race_lookup`` (src/lookup.c:110-122):
+    case-insensitive prefix-match against ``race_table``. Returns ``0`` on
+    no match, matching ROM's fall-through (race index 0 is the "unique"
+    sentinel for race-less mobs).
+    """
+    if not name:
+        return 0
+    needle = name.lower()
+    for index, race in enumerate(RACE_TABLE):
+        if race.name and race.name.lower().startswith(needle):
+            return index
+    return 0
+
