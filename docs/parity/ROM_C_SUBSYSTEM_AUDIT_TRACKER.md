@@ -38,7 +38,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **40% Audited** (17 audited, 17 partial, 5 not audited, 4 N/A)  
+**Overall**: ⚠️ **42% Audited** (18 audited, 16 partial, 5 not audited, 4 N/A)  
 **handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
 **save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
 **db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
@@ -86,7 +86,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `olc_mpcode.c` | P2 | ❌ Not Audited | `mud/olc/` | 20% | Mobprog editing missing |
 | `hedit.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Help editor basic |
 | **Special Procedures** | | | | | |
-| `special.c` | P2 | ❌ Not Audited | `mud/spec_funs.py` | 40% | Some spec procs exist |
+| `special.c` | P2 | ✅ Audited | `mud/spec_funs.py` | 100% | Apr 28, 2026 — all 8 CRITICAL/IMPORTANT gaps closed (SPEC-001..SPEC-008: area-wide yell, guard NPC targeting, mayor gate messages, c_div integer math, do_murder, is_safe, mayor move_character, c_div gold). See SPECIAL_C_AUDIT.md |
 | **Communication & Social** | | | | | |
 | `comm.c` | P3 | ❌ Not Audited | `mud/net/` | 50% | Networking different arch |
 | `nanny.c` | P3 | ⚠️ Partial | `mud/account/` | 40% | Login flow partial |
@@ -102,7 +102,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `recycle.c` | P3 | N/A | - | N/A | Python GC handles this |
 | `mem.c` | P3 | N/A | - | N/A | Python memory management |
 | **Admin & Security** | | | | | |
-| `ban.c` | P2 | ⚠️ Partial | `mud/security/bans.py` | 50% | Basic bans work |
+| `ban.c` | P2 | ✅ AUDITED | `mud/security/bans.py`, `mud/commands/admin_commands.py` | 100% | Apr 28, 2026 — all 4 gaps closed (`BAN-001`..`004`): listing level alignment, empty type-text fallback, ROM `str_prefix` abbreviation in `_apply_ban`, and `BanEntry.matches` no longer exact-match-falls-through. See `BAN_C_AUDIT.md`. |
 | `alias.c` | P2 | ✅ AUDITED | `mud/commands/alias_cmds.py`, `mud/commands/dispatcher.py`, `mud/commands/typo_guards.py`, `mud/rom_api.py` | 100% | Apr 28, 2026 — all 5 gaps closed (`ALIAS-001`..`005`): `alia` guard, ROM alias messages/validation/limit, single-pass substitution, ROM `unalias`, and prefix-length warning parity. See `ALIAS_C_AUDIT.md`. |
 | **Healing & Services** | | | | | |
 | `healer.c` | P2 | ✅ AUDITED | `mud/commands/healer.py` | 100% | Apr 28, 2026 — all 4 gaps closed (`HEALER-001`..`004`): `ACT_IS_HEALER` detection, exact service list/aliases, silver-aware pricing + utterance + payout, and real spell dispatch. See `HEALER_C_AUDIT.md`. |
