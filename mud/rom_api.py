@@ -292,7 +292,7 @@ def substitute_alias(char: Character, input_text: str) -> str:
     """
     from mud.commands.dispatcher import _expand_aliases
 
-    return _expand_aliases(char, input_text)
+    return _expand_aliases(char, input_text)[0]
 
 
 def mult_argument(argument: str, number_str: str) -> tuple[int, str]:

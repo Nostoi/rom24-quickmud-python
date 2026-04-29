@@ -163,17 +163,17 @@ def test_alias_create_expand_and_unalias():
 
     # Initially no aliases
     out0 = process_command(char, "alias")
-    assert "No aliases" in out0
+    assert out0 == "You have no aliases defined.\n\r"
 
     # Create alias and use it
     set_out = process_command(char, "alias lk look")
-    assert "Alias set: lk -> look" in set_out
+    assert set_out == "lk is now aliased to 'look'.\n\r"
     out1 = process_command(char, "lk")
     assert "Temple" in out1  # expanded to look
 
     # Remove alias
     rm_out = process_command(char, "unalias lk")
-    assert "Removed alias" in rm_out
+    assert rm_out == "Alias removed.\n\r"
     out2 = process_command(char, "lk")
     assert out2 == "Huh?"
 
@@ -230,7 +230,7 @@ def test_prefix_macro_prepends_to_commands():
 
     process_command(speaker, "prefix say")
     alias_output = process_command(speaker, "alias")
-    assert "No aliases" in alias_output
+    assert alias_output == "You have no aliases defined.\n\r"
 
     out = process_command(speaker, "hello there")
     assert out == "You say, 'hello there'"
@@ -251,7 +251,7 @@ def test_command_execution_breaks_hide():
 def test_look_hides_invisible_targets():
     initialize_world("area/area.lst")
     viewer = create_test_character("Watcher", 3001)
-    visible = create_test_character("Visible", 3001)
+    create_test_character("Visible", 3001)
     hidden = create_test_character("Shadow", 3001)
     hidden.invis_level = viewer.level + 5
 

@@ -106,7 +106,7 @@ from .compare import do_compare
 from .consider import do_consider
 from .consumption import do_drink, do_eat
 from .doors import do_close, do_lock, do_open, do_pick, do_unlock
-from .equipment import do_hold, do_wear, do_wield
+from .equipment import do_wear
 from .feedback import do_bug, do_idea, do_typo
 from .give import do_give
 from .group_commands import do_follow, do_group, do_gtell, do_order, do_split
@@ -823,35 +823,62 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
 
 
 ALIAS_BLOCKED_PREFIXES = ("alias", "una", "prefix")
+MAX_INPUT_LENGTH = 256
+
+
+def _lookup_alias_expansion(char: Character, head: str) -> str | None:
+    aliases = getattr(char, "aliases", {})
+    expansion = aliases.get(head)
+    if expansion is not None:
+        return expansion
+
+    lowered = head.lower()
+    if lowered != head:
+        expansion = aliases.get(lowered)
+        if expansion is not None:
+            return expansion
+
+    for name, value in aliases.items():
+        if name.lower() == lowered:
+            return value
+    return None
+
+
+def _expand_aliases_with_warning(char: Character, input_str: str) -> tuple[str, bool, str]:
+    """Expand one ROM-style alias substitution and return any warning."""
+    head, tail = _split_command_and_args(input_str)
+    if head:
+        lowered = head.lower()
+        for blocked in ALIAS_BLOCKED_PREFIXES:
+            if lowered.startswith(blocked):
+                return input_str, False, ""
+
+    if not head:
+        return input_str, False, ""
+
+    expansion = _lookup_alias_expansion(char, head)
+    if not expansion:
+        return input_str, False, ""
+
+    expanded = expansion + (" " + tail if tail else "")
+    warning = ""
+    if len(expanded) > MAX_INPUT_LENGTH - 1:
+        warning = "Alias substitution too long. Truncated.\r\n"
+        expanded = expanded[: MAX_INPUT_LENGTH - 1]
+    return expanded, True, warning
 
 
 def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> tuple[str, bool]:
-    """Expand the first token using per-character aliases, up to max_depth.
+    """Expand the first token using one ROM-style alias substitution.
 
     Returns the expanded string and whether any alias substitution occurred.
 
     ROM C parity: alias expansion is blocked for commands starting with
     "alias", "una" (unalias), or "prefix" (src/alias.c:63-69).
     """
-    head, _ = _split_command_and_args(input_str)
-    if head:
-        lowered = head.lower()
-        for blocked in ALIAS_BLOCKED_PREFIXES:
-            if lowered.startswith(blocked):
-                return input_str, False
-
-    s = input_str
-    alias_used = False
-    for _ in range(max_depth):
-        head, tail = _split_command_and_args(s)
-        if not head:
-            return s, alias_used
-        expansion = char.aliases.get(head)
-        if not expansion:
-            return s, alias_used
-        alias_used = True
-        s = expansion + (" " + tail if tail else "")
-    return s, alias_used
+    del max_depth
+    expanded, alias_used, _warning = _expand_aliases_with_warning(char, input_str)
+    return expanded, alias_used
 
 
 def process_command(char: Character, input_str: str) -> str:
@@ -904,23 +931,26 @@ def process_command(char: Character, input_str: str) -> str:
             snooper_messages.append(f"% {trimmed.rstrip()}")
     core = trimmed.rstrip()
     trailing_ws = trimmed[len(core) :]
+    prefix_warning = ""
     prefix_text = (getattr(char, "prefix", "") or "").strip()
     prefixed_applied = False
     if prefix_text:
         head, _ = _split_command_and_args(core)
         lowered = head.lower()
-        blocked_prefixes = ("alias", "una", "pref")
+        blocked_prefixes = ("alias", "una", "prefix")
         if lowered and not any(lowered.startswith(block) for block in blocked_prefixes):
-            core = f"{prefix_text} {core}" if core else prefix_text
-            prefixed_applied = True
+            prefixed = f"{prefix_text} {core}" if core else prefix_text
+            if len(prefixed) > MAX_INPUT_LENGTH - 2:
+                prefix_warning = "Line to long, prefix not processed.\r\n"
+            else:
+                core = prefixed
+                prefixed_applied = True
     if core:
         raw_parts = core.split(None, 1)
-        raw_head = raw_parts[0]
         raw_tail = raw_parts[1] if len(raw_parts) > 1 else ""
     else:
-        raw_head = ""
         raw_tail = ""
-    expanded, alias_used = _expand_aliases(char, core)
+    expanded, alias_used, alias_warning = _expand_aliases_with_warning(char, core)
     cmd_name, arg_str = _split_command_and_args(expanded)
     if not cmd_name:
         return "What?"
@@ -993,7 +1023,11 @@ def process_command(char: Character, input_str: str) -> str:
     command_args = arg_str
     if command.name == "prefix":
         command_args = raw_tail
-    return command.func(char, command_args)
+    result = command.func(char, command_args)
+    warning_text = prefix_warning + alias_warning
+    if warning_text:
+        return warning_text + result
+    return result
 
 
 def run_test_session() -> list[str]:

@@ -86,20 +86,17 @@ def test_alias_blocked_commands_in_dispatcher():
     assert "alias" in result.lower() or "No aliases" in result
 
 
-def test_alias_max_depth_protection():
-    """Test protection against recursive aliases like ROM C."""
+def test_alias_recursive_definition_is_single_pass():
+    """ROM alias substitution performs only one expansion pass."""
     char = setup_alias_test()
 
     # Set up recursive alias: "a" -> "b", "b" -> "a"
     char.aliases["a"] = "b"
     char.aliases["b"] = "a"
 
-    # Should stop at max_depth and not infinite loop
-    # With max_depth=5: a->b->a->b->a->b, returns "b" (even iterations)
     result, alias_used = _expand_aliases(char, "a", max_depth=5)
     assert alias_used is True
-    # After 5 expansions starting from "a", we get "b" (alternates)
-    assert result in ("a", "b")  # Either is acceptable, just no infinite loop
+    assert result == "b"
 
 
 def test_alias_case_insensitive_lookup_matches_rom():
@@ -152,8 +149,8 @@ def test_alias_command_integration():
     assert result != "Huh?" and result != "What?"
 
 
-def test_alias_chain_expansion():
-    """Test alias chain expansion stops appropriately."""
+def test_alias_chain_expansion_is_single_pass():
+    """ROM alias chains do not recurse into a second expansion."""
     char = setup_alias_test()
 
     # Set up chain: "a" -> "b", "b" -> "look"
@@ -162,7 +159,7 @@ def test_alias_chain_expansion():
 
     result, alias_used = _expand_aliases(char, "a")
     assert alias_used is True
-    assert result == "look"
+    assert result == "b"
 
 
 def test_alias_with_multiple_words():
