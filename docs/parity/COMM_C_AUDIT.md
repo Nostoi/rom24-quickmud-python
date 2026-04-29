@@ -160,7 +160,7 @@ a single-gap close.
 | COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't sweep `descriptor_list` for not-yet-`CON_PLAYING` duplicates and doesn't emit the `"Double newbie alert (%s)"` wiznet broadcast. | 🔄 OPEN |
 | COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:is_valid_character_name` | `is_valid_character_name` now iterates `CLAN_TABLE` and rejects exact (case-insensitive) matches. `rom` and `loner` are now both rejected. | ✅ FIXED |
 | COMM-007 | MINOR | `src/comm.c:1922` | `mud/net/connection.py:_stop_idling` | `_stop_idling` now broadcasts via `act_format("$n has returned from the void.", recipient=None, actor=char)` instead of the literal `f"{name} has returned from the void."` fallback. Routes through ROM-style `$n` token expansion (`mud/utils/act.py:_pers`) so name → short_descr fallback works correctly for entities without a literal `name`. | ✅ FIXED |
-| COMM-008 | MINOR | `src/comm.c:2714-2728` | `mud/net/ansi.py:5-23` | ANSI translator missing ROM specials: `{D` (dark grey), `{*` (bell), `{/` (newline), `{-` (tilde), `{{` (literal-brace escape). pcdata-customizable channel codes (`{p {s {6 {7 {k …`) are intentionally not in scope (no pfile parity). | 🔄 OPEN |
+| COMM-008 | MINOR | `src/comm.c:2714-2728` | `mud/net/ansi.py` | ROM specials added: `{D` → `\x1b[1;30m`, `{*` → `\x07` (bell), `{/` → `\n\r`, `{-` → `~`, `{{` → `{`. Translator rewritten as a single-pass regex so `{{` resolves before adjacent letters can be re-matched as colour tokens. `strip_ansi` mirrors ROM `send_to_char` non-colour branch (`src/comm.c:1995-2007`) by eating both characters of every `{X` pair. pcdata-customizable channel codes (`{p {s {6 {7 {k …`) remain out of scope (no pfile parity). | ✅ FIXED |
 | COMM-009 | MINOR | `src/comm.c:2178-2182` | `mud/handler.py:1112-1114` (only callsite) | No standalone `fix_sex` helper. Spell handlers / load paths that flip `ch.sex` outside the affect-strip pass don't auto-clamp to `[0,2]`. | 🔄 OPEN |
 
 ### Deferred-by-design (no IDs)
@@ -178,6 +178,18 @@ a single-gap close.
 ---
 
 ## Phase 4 — Gap Closures
+
+### COMM-008 — ANSI specials + single-pass translator (MINOR)
+
+- **Tests:** `tests/test_ansi.py::test_translate_ansi_handles_rom_specials`
+  and `::test_strip_ansi_eats_rom_token_pairs` cover `{D {* {/ {- {{`
+  plus the strip-mode invariant.
+- **Implementation:** `mud/net/ansi.py` — added `{D`, `{*`, `{/`, `{-`,
+  `{{` to `ANSI_CODES`. Replaced the dict-iteration `text.replace(...)`
+  loop with a single-pass `re.sub(r"\{(.)", repl, text)` so `{{` cannot
+  be re-matched as `{h` once partially consumed. `strip_ansi` uses the
+  same regex with empty replacement, mirroring ROM `send_to_char`
+  non-colour branch (eats both chars of every `{X` pair).
 
 ### COMM-007 — `_stop_idling` broadcast via act_format (MINOR)
 
