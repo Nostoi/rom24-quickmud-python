@@ -165,17 +165,16 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.6.3 (Production Ready — gameplay parity shipped, infra polish ongoing)
+- **Version**: 2.6.73 (Production Ready — gameplay parity shipped, OLC cluster in progress)
 - **ROM 2.4b Gameplay Parity**: ✅ **100%** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md)) —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented and audited.
-- **ROM C Source Audit**: 13 of 43 ROM C source files at 100% (`fight.c`, `skills.c`,
-  `magic.c`, `magic2.c`, `update.c`, `handler.c`, `effects.c`, `act_info.c`,
-  `act_enter.c`, `act_comm.c` (P0-P1), `db.c`, `save.c`); `act_move.c` 85%;
-  `act_obj.c` ~60% (active focus). Remaining work is the long tail of P2/P3
-  files: OLC editors, admin commands, `scan`/`alias`/`healer`, and infrastructure
-  modules (`comm.c`, `nanny.c`, `const.c`, `tables.c`, `flags.c` …) — gameplay is
-  not blocked on any of them. See
+- **ROM C Source Audit**: 34 of 43 ROM C source files audited (24 at strict 100%);
+  remaining work is the OLC editor cluster (`olc.c`, `olc_act.c`, `olc_save.c`,
+  `olc_mpcode.c`, `hedit.c`) plus a small partial-audit tail (`board.c` 95%).
+  Several audited files sit at 85–98% with deferred-by-design or sibling-gated
+  gaps (`act_move.c`, `comm.c`, `nanny.c`, `const.c`, `music.c`, `board.c`).
+  Gameplay is not blocked on any of them. See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
 - **ROM C Function Coverage**: 96.1% (716/745 functions mapped)
 - **Test Suite**: 3,508 / 3,521 passing (99.6%), 11 skipped, 2 known
@@ -183,8 +182,9 @@ python -m mud  # Start development server
   integration (`tests/integration/`, 1,000+ tests), and command-registry
   (`test_all_commands.py`). Pre-existing skips/failures are catalogued in
   [`docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md`](docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md).
-- **Active focus**: closing remaining `act_obj.c` gaps (`do_drop` audit, plus the
-  broken `do_recite`/`do_brandish`/`do_zap` consumable handlers).
+- **Active focus**: `olc.c` cluster — OLC-020/022/023 + STRING-001..012 closed;
+  remaining CRITICAL gaps (OLC-016/017/018/019, the `*edit create` subcommands)
+  gated on the held `olc_act.c` sibling audit.
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
@@ -332,8 +332,9 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
   skills, spells, movement, communication, world/db, save/load, mob programs,
   255/255 commands).
 - **Function Coverage**: 716/745 ROM C functions mapped (96.1%)
-- **ROM C Source Audit**: 13 of 43 files at 100%; `act_move.c` 85%; `act_obj.c`
-  ~60% (in progress); remainder is P2/P3 infrastructure and OLC.
+- **ROM C Source Audit**: 34 of 43 files audited (24 at strict 100%); remainder
+  is the OLC editor cluster (`olc.c`/`olc_act.c`/`olc_save.c`/`olc_mpcode.c`/`hedit.c`)
+  and a small partial tail (`board.c` 95%).
 
 ### 🔧 Advanced Features
 
