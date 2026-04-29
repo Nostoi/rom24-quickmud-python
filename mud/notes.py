@@ -61,6 +61,10 @@ BOARDS_DIR = Path("data/boards")
 
 DEFAULT_BOARD_NAME = "general"
 
+# ROM ``MAX_NOTE_TEXT`` = ``4 * MAX_STRING_LENGTH - 1000`` (``src/board.h:19``,
+# ``src/merc.h:123``). ``make_note`` rejects text longer than this.
+MAX_NOTE_TEXT = 4 * 4608 - 1000
+
 
 # ROM hardcoded board table mirroring ``src/board.c:67-76``.
 #   { short_name, description, read_level, write_level,
@@ -289,3 +293,56 @@ def iter_boards() -> Iterable[Board]:
     """Iterate over registered boards in insertion/file order."""
 
     return board_registry.values()
+
+
+def make_note(
+    board_name: str,
+    sender: str,
+    to: str,
+    subject: str,
+    expire_days: int,
+    text: str,
+):
+    """Programmatically post a note to ``board_name``.
+
+    Mirrors ROM ``make_note`` at ``src/board.c:848-886``: looks up the board
+    by name, rejects unknown boards and oversized text (ROM ``bug`` + return),
+    and otherwise appends a note with ``expire = current_time + expire_days *
+    86400`` via ``finish_note`` (which assigns a unique ``date_stamp`` through
+    ``last_note_stamp``). Returns the new ``Note`` on success, ``None`` on
+    failure to mirror ROM's silent-bug return.
+    """
+
+    import time
+
+    board = find_board(board_name)
+    if board is None:
+        # ROM ``make_note`` ``board_lookup`` failure (src/board.c:855-859).
+        return None
+
+    if len(text) > MAX_NOTE_TEXT:
+        # ROM ``make_note`` length check (src/board.c:861-865).
+        return None
+
+    base = time.time()
+    expire = base + expire_days * 86400
+    note = board.post(sender, subject, text, to=to, timestamp=base, expire=expire)
+    save_board(board)
+    return note
+
+
+def personal_message(
+    sender: str,
+    to: str,
+    subject: str,
+    expire_days: int,
+    text: str,
+):
+    """Post a Personal-board note on behalf of a system / sender.
+
+    Mirrors ROM ``personal_message`` at ``src/board.c:843-846``:
+
+        make_note ("Personal", sender, to, subject, expire_days, text);
+    """
+
+    return make_note("Personal", sender, to, subject, expire_days, text)

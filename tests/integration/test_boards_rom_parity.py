@@ -183,6 +183,101 @@ def test_load_boards_archives_expired_notes(tmp_path):
         _teardown_boards(orig_dir)
 
 
+def test_personal_message_posts_to_personal_board(tmp_path):
+    """Mirror ROM ``personal_message`` / ``make_note`` at ``src/board.c:843-886``.
+
+    BOARD-013: a programmatic call must append a note to the Personal board
+    with sender/to/subject/text from the call and ``expire = now + days*86400``,
+    and must assign a unique monotonic ``date_stamp`` via ``finish_note``.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        notes.load_boards()
+        personal = notes.find_board("Personal")
+        assert personal is not None
+        personal.notes.clear()
+
+        before = time.time()
+        note = notes.personal_message(
+            sender="System",
+            to="Alice",
+            subject="Death",
+            expire_days=28,
+            text="You have died.",
+        )
+        after = time.time()
+
+        assert note is not None
+        # Must land on the Personal board (ROM ``make_note ("Personal", ...)``).
+        assert note in personal.notes
+        assert note.sender == "System"
+        assert note.to == "Alice"
+        assert note.subject == "Death"
+        assert note.text == "You have died."
+        # expire = current_time + expire_days * 60 * 60 * 24 (ROM line 875)
+        expected_min = before + 28 * 86400
+        expected_max = after + 28 * 86400 + 1
+        assert expected_min <= note.expire <= expected_max
+    finally:
+        _teardown_boards(orig_dir)
+
+
+def test_make_note_returns_none_for_unknown_board(tmp_path):
+    """Mirror ROM ``make_note`` BOARD_NOTFOUND branch at ``src/board.c:855-859``.
+
+    BOARD-013: an unknown board name causes ROM to ``bug`` and return without
+    posting. The Python equivalent must return ``None`` and not create a board.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        notes.load_boards()
+        before = set(notes.board_registry.keys())
+        result = notes.make_note(
+            board_name="NoSuchBoard",
+            sender="System",
+            to="Alice",
+            subject="x",
+            expire_days=1,
+            text="x",
+        )
+        assert result is None
+        # Must not have lazily created a new board for an unknown name.
+        assert set(notes.board_registry.keys()) == before
+    finally:
+        _teardown_boards(orig_dir)
+
+
+def test_make_note_rejects_text_exceeding_max_note_text(tmp_path):
+    """Mirror ROM ``make_note`` length check at ``src/board.c:861-865``.
+
+    BOARD-013: ``MAX_NOTE_TEXT = 4 * MAX_STRING_LENGTH - 1000 = 17432``. Text
+    longer than that is rejected (ROM bugs and returns); no note is appended.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        notes.load_boards()
+        personal = notes.find_board("Personal")
+        assert personal is not None
+        personal.notes.clear()
+
+        oversized = "x" * (notes.MAX_NOTE_TEXT + 1)
+        result = notes.make_note(
+            board_name="Personal",
+            sender="System",
+            to="Alice",
+            subject="overflow",
+            expire_days=1,
+            text=oversized,
+        )
+        assert result is None
+        assert personal.notes == []
+    finally:
+        _teardown_boards(orig_dir)
+
+
 def test_note_write_broadcasts_to_room(tmp_path):
     """Mirror ROM ``do_nwrite`` TO_ROOM ``act`` at ``src/board.c:503``.
 

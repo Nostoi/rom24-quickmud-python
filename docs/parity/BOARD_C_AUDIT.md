@@ -156,7 +156,7 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-010 | MINOR | `src/board.c:569-572` | `mud/commands/notes.py:327-339` | `note read again` in ROM is a no-op (empty `if` body); Python returns "Read which note?". Cosmetic, deferred. | 🔄 DEFERRED (cosmetic) |
 | BOARD-011 | IMPORTANT | `src/board.c:482-488` | `mud/commands/notes.py:162-177` | ROM `do_nwrite` discards an `in_progress` draft whose `text` is NULL ("cancelled because you did not manage to write any text before losing link"); Python silently reuses any draft. | 🔄 DEFERRED |
 | BOARD-012 | IMPORTANT | `src/board.c:707-737` | `mud/commands/notes.py:240-469` | `do_note` does not call `do_help "note"` for unknown subcommands and accepts non-ROM verbs (`post`, `to`, `subject`, `text`, `send`, `expire`). Vocabulary divergence is intentional (no telnet state machine), but the unknown-verb branch should mirror ROM `do_help`. | 🔄 DEFERRED |
-| BOARD-013 | CRITICAL | `src/board.c:843-886` | none | `personal_message` / `make_note` programmatic posting API not exposed; subsystems cannot inject Personal-board notes. | 🔄 DEFERRED |
+| BOARD-013 | CRITICAL | `src/board.c:843-886` | `mud/notes.py:make_note` / `personal_message` | `personal_message` / `make_note` programmatic posting API not exposed; subsystems cannot inject Personal-board notes. | ✅ FIXED |
 | BOARD-014 | MINOR | `src/board.c:49,1175-1182` | none | ROM AFK-flags the player while writing a note; no Python AFK plumbing in place. Architectural — deferred. | 🔄 DEFERRED |
 
 This session targets **BOARD-001 / BOARD-002 / BOARD-003 / BOARD-004 /
@@ -180,6 +180,7 @@ install, only edge cases or out-of-scope architectural plumbing.
 | BOARD-004 | `tests/integration/test_boards_rom_parity.py::test_post_assigns_unique_timestamp_when_called_in_same_second` | (this commit) | ✅ |
 | BOARD-005 | `tests/integration/test_boards_rom_parity.py::test_unread_count_skips_notes_not_addressed_to_reader` | (this commit) | ✅ |
 | BOARD-008 | `tests/integration/test_boards_rom_parity.py::test_load_boards_archives_expired_notes` | (this commit) | ✅ |
+| BOARD-013 | `tests/integration/test_boards_rom_parity.py::test_personal_message_posts_to_personal_board` (+ unknown-board / oversized-text) | (pending commit) | ✅ |
 
 ---
 
