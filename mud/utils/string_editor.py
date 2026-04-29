@@ -9,6 +9,27 @@ Descriptor plumbing is provided by `mud/olc/editor_state.py`
 from __future__ import annotations
 
 
+def string_proper(argument: str) -> str:
+    """Uppercase the first character of each space-delimited word.
+
+    Mirrors ROM ``string_proper`` (src/string.c:551-572). Differs from
+    ``str.title()``: ROM only uppercases the boundary character — the
+    rest of each word is left as-is.
+    """
+
+    chars = list(argument)
+    i = 0
+    n = len(chars)
+    while i < n:
+        if chars[i] != " ":
+            chars[i] = chars[i].upper()
+            while i < n and chars[i] != " ":
+                i += 1
+        else:
+            i += 1
+    return "".join(chars)
+
+
 def string_unpad(argument: str) -> str:
     """Trim leading and trailing spaces (only spaces, not all whitespace).
 
