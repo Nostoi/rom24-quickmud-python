@@ -13,6 +13,28 @@ from enum import IntEnum, IntFlag
 from mud.utils.prefix_lookup import prefix_lookup_intflag
 
 
+def is_stat(table: object) -> bool:
+    """Return ``True`` when *table* is a ROM "stat" table (single value),
+    ``False`` for "flag" tables (bitmask) or non-table inputs.
+
+    Mirrors ROM ``is_stat`` (src/bit.c:93-104) and the
+    ``flag_stat_table[]`` registry (src/bit.c:50-83). The Python port
+    encodes the stat-vs-flag distinction in the type system:
+    ``IntEnum`` = stat, ``IntFlag`` = flag. Returns ``False`` for any
+    non-class or class that is not an ``IntEnum`` subclass.
+    """
+
+    if not isinstance(table, type):
+        return False
+    if not issubclass(table, IntEnum):
+        return False
+    # IntFlag is itself a subclass of IntEnum since Python 3.11; exclude it
+    # so flag (bitmask) tables are correctly classified as non-stat.
+    if issubclass(table, IntFlag):
+        return False
+    return True
+
+
 def flag_value(table: type, argument: str) -> int | None:
     """Return the int value(s) of the named flag(s) in *table*.
 

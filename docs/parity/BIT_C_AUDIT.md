@@ -1,6 +1,6 @@
 # `bit.c` ROM Parity Audit
 
-- **Status**: ✅ AUDITED 90% — 3 MINOR gaps deferred to OLC audit (no current Python consumer)
+- **Status**: ✅ AUDITED 100% — all 3 MINOR gaps closed (BIT-001/002/003)
 - **Date**: 2026-04-29
 - **Source**: `src/bit.c` (ROM 2.4b6, 177 lines, 3 public-or-file-local functions)
 - **Python primaries**:
@@ -71,7 +71,7 @@ Python has **no `flag_string` decoder**. Existing flag-display code uses ad-hoc 
 |--------|----------|-------|--------|-------------|--------|
 | `BIT-001` | MINOR | `src/bit.c:111-142` | `mud/utils/bit.py:flag_value` | Standalone reusable `flag_value(table, argument)` helper not ported. Current sole consumer (`do_flag`) inlines stricter ROM-`do_flag`-faithful accumulator instead. Will be needed by OLC port. | ✅ FIXED — `flag_value(table, argument) -> int \| None` accumulates IntFlag tokens (OR) and returns single value for IntEnum (stat) tables; returns None on no match (ROM `NO_FLAG`). Test: `tests/integration/test_bit_flag_value.py` (9 cases). |
 | `BIT-002` | MINOR | `src/bit.c:151-177` | `mud/utils/bit.py:flag_string` | `flag_string(table, bits)` decoder not ported. Current display paths each handcraft their own formatter. Will be needed by OLC `show`/`save` paths. | ✅ FIXED — `flag_string(table, bits) -> str` returns space-joined names for IntFlag, single name for IntEnum, literal `"none"` on no match. Test: `tests/integration/test_bit_flag_string.py` (8 cases). |
-| `BIT-003` | MINOR | `src/bit.c:50-104` | (no file) | `flag_stat_table[]` registry + `is_stat(table)` helper not ported. Stat-vs-flag distinction is currently encoded in the Python type system (IntEnum vs IntFlag) and resolved at the call site. Will be needed if OLC introduces a generic table dispatcher. | 🔄 DEFERRED — close alongside OLC audit |
+| `BIT-003` | MINOR | `src/bit.c:50-104` | `mud/utils/bit.py:is_stat` | `flag_stat_table[]` registry + `is_stat(table)` helper not ported. Stat-vs-flag distinction is currently encoded in the Python type system (IntEnum vs IntFlag) and resolved at the call site. Will be needed if OLC introduces a generic table dispatcher. | ✅ FIXED — `is_stat(table) -> bool` returns True for IntEnum (stat) tables and False for IntFlag (flag) tables, replacing ROM's `flag_stat_table[]` registry with type-system encoding. Test: `tests/integration/test_bit_is_stat.py` (5 cases). |
 
 No CRITICAL or IMPORTANT gaps. All current Python call sites that consume bit.c-shaped logic (`do_flag` only) match ROM behavior at the source-of-truth level (ROM `do_flag` itself, not ROM `flag_value`).
 
