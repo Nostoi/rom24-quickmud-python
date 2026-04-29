@@ -495,6 +495,17 @@ async def _prompt_ansi_preference(conn: TelnetStream) -> tuple[bool, bool] | Non
         await _send_line(conn, "Please answer Y or N.")
 
 
+def is_character_denied_access(char: Character) -> bool:
+    """Return True if PLR_DENY is set on the character's act flags.
+
+    mirrors ROM src/nanny.c:197 — `IS_SET(ch->act, PLR_DENY)`. Denied
+    characters are kicked at CON_GET_NAME with "You are denied access."
+    and the socket is closed before any game state is touched.
+    """
+    act_flags = int(getattr(char, "act", 0) or 0)
+    return bool(act_flags & int(PlayerFlag.DENY))
+
+
 def broadcast_entry_to_room(char: Character) -> None:
     """Announce a freshly-logged-in character's arrival to the room.
 
@@ -1476,6 +1487,11 @@ async def _select_character(
                 if permit_banned and not _has_permit_flag(transferred_char):
                     await _send_line(conn, "Your site has been banned from this mud.")
                     return None
+                # mirroring ROM src/nanny.c:197-205 — PLR_DENY blocks access
+                if is_character_denied_access(transferred_char):
+                    log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
+                    await _send_line(conn, "You are denied access.")
+                    return None
                 return transferred_char, True
 
             if active_connection is not None:
@@ -1486,6 +1502,11 @@ async def _select_character(
         if char:
             if permit_banned and not _has_permit_flag(char):
                 await _send_line(conn, "Your site has been banned from this mud.")
+                return None
+            # mirroring ROM src/nanny.c:197-205 — PLR_DENY blocks access
+            if is_character_denied_access(char):
+                log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
+                await _send_line(conn, "You are denied access.")
                 return None
             return char, False
         await _send_line(conn, "Failed to load that character. Please try again.")

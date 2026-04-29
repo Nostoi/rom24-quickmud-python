@@ -109,6 +109,42 @@ def test_login_broadcasts_entry_to_room():
 
 
 @pytest.mark.p1
+def test_denied_character_is_blocked_from_login():
+    """NANNY-002 — characters with PLR_DENY must be denied access.
+
+    ROM C: src/nanny.c:197-205
+        ```c
+        if (IS_SET (ch->act, PLR_DENY))
+        {
+            sprintf (log_buf, "Denying access to %s@%s.", argument, d->host);
+            log_string (log_buf);
+            send_to_desc ("You are denied access.\n\r", d);
+            close_socket (d);
+            return;
+        }
+        ```
+
+    Python defines `PlayerFlag.DENY` (mud/models/constants.py:416) but the
+    login path never checks it. A denied character should never reach the
+    game loop.
+    """
+    from mud.models.constants import PlayerFlag
+    from mud.net.connection import is_character_denied_access
+
+    denied = Character(name="Banned", level=10)
+    denied.is_npc = False
+    denied.act = int(PlayerFlag.DENY)
+
+    allowed = Character(name="Welcome", level=10)
+    allowed.is_npc = False
+    allowed.act = 0
+
+    # mirrors ROM src/nanny.c:197 — IS_SET(ch->act, PLR_DENY)
+    assert is_character_denied_access(denied) is True
+    assert is_character_denied_access(allowed) is False
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

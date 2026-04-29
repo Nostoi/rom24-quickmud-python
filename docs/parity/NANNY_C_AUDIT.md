@@ -174,7 +174,7 @@ ROM enforces length 3–12, alpha-only, and rejects reserved tokens including `a
 | Gap ID | Severity | ROM C ref | Python ref | Description | Status |
 |---|---|---|---|---|---|
 | `NANNY-001` | CRITICAL | `nanny.c:269-274` | `mud/net/connection.py:812-826` | Wrong-password loop allows retries; ROM closes the socket on first failure. | 🔄 OPEN |
-| `NANNY-002` | CRITICAL | `nanny.c:197-205` | `mud/account/account_service.py:820` | `PlayerFlag.DENY` is defined but not checked on character load — denied players can still log in. | 🔄 OPEN |
+| `NANNY-002` | CRITICAL | `nanny.c:197-205` | `mud/account/account_service.py:820` | `PlayerFlag.DENY` is defined but not checked on character load — denied players can still log in. | ✅ FIXED — `is_character_denied_access` helper added; checked in both load paths of `_select_character`. Logs `Denying access to <name>@<host>.` and sends `You are denied access.` Test: `tests/integration/test_nanny_login_parity.py::test_denied_character_is_blocked_from_login`. |
 | `NANNY-003` | CRITICAL | `nanny.c:581` | `mud/account/account_service.py:918-920` | `learned[gsn_recall] = 50` not initialized after class/alignment selection — new chars cannot recall reliably. | 🔄 OPEN |
 | `NANNY-004` | CRITICAL | `nanny.c:653` | `mud/net/connection.py:1257-1270` | `CON_PICK_WEAPON` does not set `learned[weapon_gsn] = 40` — chosen weapon proficiency is 0%. | 🔄 OPEN |
 | `NANNY-005` | CRITICAL | `nanny.c:769` | `mud/net/connection.py:1554` | First-login `perm_stat[class.attr_prime] += 3` bonus not applied. | 🔄 OPEN |
