@@ -77,6 +77,13 @@ def _split_tokens(value: str) -> set[str]:
     return {token.lower() for token in value.replace(",", " ").split() if token}
 
 
+def _possessive(char: Character) -> str:
+    """Return ROM ``$s`` possessive pronoun for ``char`` (his/her/its)."""
+
+    sex = getattr(char, "sex", 0) or 0
+    return {1: "his", 2: "her"}.get(sex, "its")
+
+
 def _is_note_visible_to(char: Character, note) -> bool:
     """Delegate to ``mud.notes.is_note_to`` (ROM ``is_note_to`` at src/board.c:408-440)."""
 
@@ -321,6 +328,11 @@ def do_note(char: Character, args: str) -> str:
         if not board.can_write(trust):
             return "You cannot write on this board."
         draft = _ensure_draft(char, board)
+        # Mirror ROM do_nwrite act() at src/board.c:503 — broadcast to the
+        # actor's room (excluding the actor) so bystanders see the action.
+        room = getattr(char, "room", None)
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(f"{char.name} starts writing a note.", exclude=char)
         message = [
             ("You continue your note on the" if (draft.subject or draft.text) else "You begin writing a note on the")
         ]
@@ -394,6 +406,11 @@ def do_note(char: Character, args: str) -> str:
         save_board(board)
         _set_last_read(pcdata, board, note.timestamp)
         pcdata.in_progress = None
+        # Mirror ROM finish-note act() at src/board.c:1181 — TO_ROOM
+        # broadcast announcing the post to bystanders.
+        room = getattr(char, "room", None)
+        if room is not None and hasattr(room, "broadcast"):
+            room.broadcast(f"{char.name} finishes {_possessive(char)} note.", exclude=char)
         return "Note posted."
 
     if subcmd == "expire":
