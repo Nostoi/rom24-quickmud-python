@@ -98,7 +98,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `lookup.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/models/races.py`, `mud/models/clans.py`, `mud/commands/remaining_rom.py` | 100% | Apr 28, 2026 — all 8 gaps closed (LOOKUP-001..008). New `mud/utils/prefix_lookup.py` provides ROM-faithful prefix-match helpers + `position_lookup`, `sex_lookup`, `size_lookup`, `item_lookup`, `liq_lookup`. `race_lookup`, `_lookup_flag_bit`, `lookup_clan_id` migrated to prefix-match. help_lookup/had_lookup UNVERIFIED (help-system audit). See LOOKUP_C_AUDIT.md |
 | `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | Apr 28, 2026 — FLAG-001 closed (do_flag fully implemented: operator parsing, 9-field dispatcher, IntFlag name lookup, bit mutation). FLAG-002 (settable-bit preservation) deferred MINOR. See FLAGS_C_AUDIT.md |
 | `bit.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/utils/bit.py`, `mud/commands/remaining_rom.py` | 100% | Apr 29, 2026 — `flag_lookup` adjacent helper (lookup.c) ported as `prefix_lookup_intflag` (TABLES-002); `do_flag` inline accumulator faithfully mirrors ROM `do_flag` (not ROM `flag_value`). All 3 BIT gaps closed: BIT-001 `flag_value`, BIT-002 `flag_string`, BIT-003 `is_stat` — `mud/utils/bit.py` hosts the standalone helpers needed by the OLC cluster. See BIT_C_AUDIT.md |
-| `string.c` | P3 | ✅ Audited | `mud/utils/text.py` (`smash_tilde` only) | 5% | Apr 29, 2026 — `STRING_C_AUDIT.md` Phase 1–5 complete. All 12 public string.c helpers (`string_edit`, `string_append`, `string_replace`, `string_add`, `format_string`, `first_arg`, `string_unpad`, `string_proper`, `string_linedel`, `string_lineadd`, `merc_getline`, `numlines`) are OLC-editor backend with no current Python consumer (mud/olc/ skeleton only). 12 gaps STRING-001..012 filed and DEFERRED to OLC audit cluster — close alongside `olc.c` / `olc_act.c`. Previous tracker note "85% — `mud/utils.py`" was stale (file does not exist). See `STRING_C_AUDIT.md`. |
+| `string.c` | P3 | ✅ AUDITED 100% | `mud/utils/string_editor.py` (all 12 helpers), `mud/utils/text.py` (`smash_tilde`) | 100% | Apr 29, 2026 — all 12 gaps closed (STRING-001..012). Final gap STRING-004 (`string_add` OLC input dispatcher) closed with 24 integration tests. See `STRING_C_AUDIT.md`. |
 | `recycle.c` | P3 | N/A | - | N/A | Python GC handles this |
 | `mem.c` | P3 | N/A | - | N/A | Python memory management |
 | **Admin & Security** | | | | | |
@@ -951,20 +951,19 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ✅ P3-3: string.c (AUDITED - 5%, 12 gaps deferred to OLC)
+### ✅ P3-3: string.c (AUDITED - 100%, all 12 gaps closed)
 
-**Status**: ✅ **Audit complete; 12 helpers DEFERRED to OLC cluster**
+**Status**: ✅ **AUDITED 100% — all 12 helpers FIXED**
 
 **ROM Functions**: OLC string-editor backend (12 public functions — `string_edit`, `string_append`, `string_replace`, `string_add`, `format_string`, `first_arg`, `string_unpad`, `string_proper`, `string_linedel`, `string_lineadd`, `merc_getline`, `numlines`)
-**QuickMUD Module**: `mud/utils/text.py` (only `smash_tilde` from `merc.h` is ported)
+**QuickMUD Module**: `mud/utils/string_editor.py` (all 12 helpers), `mud/utils/text.py` (`smash_tilde`)
 
 **Known Status (Apr 29, 2026)**:
 - ✅ Phase 1 inventory: all 12 functions catalogued with ROM line ranges in `STRING_C_AUDIT.md`
-- ✅ Phase 2 verification: confirmed every function operates on descriptor-level OLC editor state (`ch->desc->pString`, `ch->desc->editor`); no Python consumers exist (`mud/olc/` skeleton only)
-- 🔄 Phase 3 gaps STRING-001..012 filed, all deferred-by-design to OLC cluster
-- Previous tracker entry "85% — `mud/utils.py`" was stale: that file does not exist; only `mud/utils/text.py:smash_tilde` (a `merc.h` helper, not a `string.c` helper) is ported.
-
-**Estimated Work**: Closure of all 12 gaps will land alongside the OLC audit (`olc.c`, `olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c`). Prerequisite is descriptor-level `pString`/`editor` plumbing in `mud/net/connection.py` plus a game-loop dispatch hook.
+- ✅ Phase 2 verification: confirmed every function operates on descriptor-level OLC editor state
+- ✅ Phase 3 gaps STRING-001..012: all closed (STRING-004 final, closed Apr 29, 2026)
+- ✅ Phase 4: ROM deviation noted — `~` terminator checked before `smash_tilde` (pragmatic fix for ROM dead-code bug at src/string.c:128 vs 230)
+- ✅ Phase 5: 24 integration tests in `tests/integration/test_string_editor_string_add.py`
 
 ---
 

@@ -11,6 +11,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from mud.utils.text import smash_tilde
+
 _log = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -434,6 +436,120 @@ def string_edit(string_edit_obj: StringEdit) -> str:
         "-=======================================-\n\r"
     )
     return banner
+
+
+def string_add(session: object, raw_line: str) -> str | None:  # mirrors ROM src/string.c:121-286
+    """Per-line OLC editor input dispatcher (STRING-004).
+
+    Called by the game loop whenever ``session.string_edit`` is not None
+    (mirrors ROM ``desc->pString != NULL`` routing in ``src/comm.c:833-847``).
+
+    Return value convention:
+      - ``None``   — line was silently absorbed (normal append).
+      - ``str``    — message to send back to the player.
+
+    ROM deviation (line 128 vs 230): ROM smashes tildes *before* checking for
+    the ``~`` terminator, making ``~`` dead code at runtime (it becomes ``-``).
+    Python port checks the terminator *before* smashing so both ``~`` and ``@``
+    work as documented in the ``.h`` help text.  The deviation is intentional
+    and noted here.
+    """
+    se = session.string_edit  # type: ignore[attr-defined]
+
+    # ------------------------------------------------------------------ #
+    # Terminator check FIRST (before smash_tilde) — pragmatic deviation   #
+    # ROM src/string.c:128 smashes tildes, then 230 checks for '~'; that  #
+    # makes '~' dead code.  We reverse the order so both '~' and '@' work. #
+    # ------------------------------------------------------------------ #
+    if raw_line in ("~", "@"):  # mirrors ROM src/string.c:230
+        # Call on_commit if present (mirrors ROM *ch->desc->pString = NULL after mprog hook)
+        if se.on_commit is not None:
+            se.on_commit(se.buffer)
+        session.string_edit = None  # type: ignore[attr-defined]
+        return None
+
+    # mirrors ROM src/string.c:128 — smash tildes for file safety
+    argument = smash_tilde(raw_line)
+
+    # ------------------------------------------------------------------ #
+    # Dot-command branch — mirrors ROM src/string.c:130-228                #
+    # ------------------------------------------------------------------ #
+    if argument.startswith("."):
+        # Parse: arg1 = the dot-cmd (e.g. ".c"), arg2 = first quoted/bare
+        # word, tmparg3 = raw remainder after arg2, arg3 = first word of
+        # remainder (only used by .r).  Mirrors ROM lines 137-140.
+        rest_after_cmd, arg1 = first_arg(argument)
+        rest_after_arg2, arg2 = first_arg(rest_after_cmd)
+        tmparg3 = rest_after_arg2  # raw remainder — used by .li / .lr
+        _rest_after_arg3, _arg3 = first_arg(rest_after_arg2)
+
+        if arg1.lower() == ".c":  # mirrors ROM src/string.c:142-148
+            se.buffer = ""
+            return "String cleared.\n\r"
+
+        if arg1.lower() == ".s":  # mirrors ROM src/string.c:150-155
+            return "String so far:\n\r" + numlines(se.buffer)
+
+        if arg1.lower() == ".r":  # mirrors ROM src/string.c:157-171
+            if not arg2:
+                return 'usage:  .r "old string" "new string"\n\r'
+            se.buffer = string_replace(se.buffer, arg2, _arg3)
+            return f"'{arg2}' replaced with '{_arg3}'.\n\r"
+
+        if arg1.lower() == ".f":  # mirrors ROM src/string.c:173-178
+            se.buffer = format_string(se.buffer)
+            return "String formatted.\n\r"
+
+        if arg1.lower() == ".ld":  # mirrors ROM src/string.c:180-186
+            se.buffer = string_linedel(se.buffer, int(arg2) if arg2 else 0)
+            return "Line deleted.\n\r"
+
+        if arg1.lower() == ".li":  # mirrors ROM src/string.c:188-193
+            # tmparg3 is the raw remainder — multi-word text preserved
+            se.buffer = string_lineadd(se.buffer, tmparg3, int(arg2) if arg2 else 0)
+            return "Line inserted.\n\r"
+
+        if arg1.lower() == ".lr":  # mirrors ROM src/string.c:196-204
+            line_num = int(arg2) if arg2 else 0
+            se.buffer = string_linedel(se.buffer, line_num)
+            se.buffer = string_lineadd(se.buffer, tmparg3, line_num)
+            return "Line replaced.\n\r"
+
+        if arg1.lower() == ".h":  # mirrors ROM src/string.c:206-224
+            return (
+                "Sedit help (commands on blank line):   \n\r"
+                ".r 'old' 'new'   - replace a substring \n\r"
+                "                   (requires '', \"\") \n\r"
+                ".h               - get help (this info)\n\r"
+                ".s               - show string so far  \n\r"
+                ".f               - (word wrap) string  \n\r"
+                ".c               - clear string so far \n\r"
+                ".ld <num>        - delete line number <num>\n\r"
+                ".li <num> <str>  - insert <str> at line <num>\n\r"
+                ".lr <num> <str>  - replace line <num> with <str>\n\r"
+                "@                - end string          \n\r"
+            )
+
+        # mirrors ROM src/string.c:226-227
+        return "SEdit:  Invalid dot command.\n\r"
+
+    # ------------------------------------------------------------------ #
+    # Length cap — mirrors ROM src/string.c:266-273                       #
+    # ROM: strlen(*pString) + strlen(argument) >= MAX_STRING_LENGTH - 4   #
+    # Python: len(buffer) + len(argument) >= se.max_length                #
+    # (max_length defaults to 4604 = MAX_STRING_LENGTH - 4 already)       #
+    # On overflow: force exit from editor without calling on_commit.       #
+    # ------------------------------------------------------------------ #
+    if len(se.buffer) + len(argument) >= se.max_length:
+        session.string_edit = None  # type: ignore[attr-defined]  # mirrors ROM line 271
+        return "String too long, last line skipped.\n\r"
+
+    # ------------------------------------------------------------------ #
+    # Normal append — mirrors ROM src/string.c:281-284                    #
+    # strcat(buf, argument); strcat(buf, "\n\r")                          #
+    # ------------------------------------------------------------------ #
+    se.buffer = se.buffer + argument + "\n\r"
+    return None
 
 
 def string_append(string_edit_obj: StringEdit, current: str) -> str:
