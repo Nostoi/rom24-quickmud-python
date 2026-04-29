@@ -95,11 +95,17 @@ def test_note_list_hides_private_notes(tmp_path):
     try:
         initialize_world("area/area.lst")
         character_registry.clear()
+        # Override to NORMAL force-type with no default recipients so the
+        # ROM "General" board's INCLUDE("all") rule does not auto-append
+        # "all" to every note (src/board.c:933-946). The intent of this
+        # test is recipient filtering, not the General board specifically.
         board = notes.get_board(
             "General",
             description="General discussion",
             read_level=0,
             write_level=0,
+            default_recipients="",
+            force_type=int(BoardForceType.NORMAL),
         )
         board.notes.clear()
         board.post("Immortal", "Staff", "Private planning", to="immortals")
@@ -532,11 +538,15 @@ def test_note_remove_rejects_notes_not_addressed_to_character(tmp_path):
     try:
         initialize_world("area/area.lst")
         character_registry.clear()
+        # Override INCLUDE("all") so the recipient filter actually exercises
+        # the test scenario; ROM's General board would auto-append "all".
         board = notes.get_board(
             "General",
             description="General discussion",
             read_level=0,
             write_level=0,
+            default_recipients="",
+            force_type=int(BoardForceType.NORMAL),
         )
         board.post("Implementor", "Staff", "Immortal briefing", to="imm")
         notes.save_board(board)
@@ -567,11 +577,14 @@ def test_note_read_respects_visibility(tmp_path):
     try:
         initialize_world("area/area.lst")
         character_registry.clear()
+        # Override INCLUDE("all") so the recipient filter is the actual gate.
         board = notes.get_board(
             "General",
             description="General discussion",
             read_level=0,
             write_level=0,
+            default_recipients="",
+            force_type=int(BoardForceType.NORMAL),
         )
         board.post("Implementor", "Staff", "Immortal briefing", to="imm")
         visible = board.post("Scribe", "News", "Public update")

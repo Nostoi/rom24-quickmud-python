@@ -6,11 +6,24 @@ from pathlib import Path
 
 from mud.models.board import Board, BoardForceType
 from mud.models.board_json import BoardJson
+from mud.models.constants import LEVEL_IMMORTAL
 from mud.models.json_io import dump_dataclass, load_dataclass
 
 BOARDS_DIR = Path("data/boards")
 
 DEFAULT_BOARD_NAME = "general"
+
+
+# ROM hardcoded board table mirroring ``src/board.c:67-76``.
+#   { short_name, description, read_level, write_level,
+#     default_recipients, force_type, purge_days }
+ROM_DEFAULT_BOARDS: tuple[tuple[str, str, int, int, str, BoardForceType, int], ...] = (
+    ("General", "General discussion", 0, 2, "all", BoardForceType.INCLUDE, 21),
+    ("Ideas", "Suggestion for improvement", 0, 2, "all", BoardForceType.NORMAL, 60),
+    ("Announce", "Announcements from Immortals", 0, LEVEL_IMMORTAL, "all", BoardForceType.NORMAL, 60),
+    ("Bugs", "Typos, bugs, errors", 0, 1, "imm", BoardForceType.NORMAL, 60),
+    ("Personal", "Personal messages", 0, 1, "all", BoardForceType.EXCLUDE, 28),
+)
 
 
 def _normalize_board_name(name: str) -> str:
@@ -20,16 +33,62 @@ def _normalize_board_name(name: str) -> str:
 board_registry: dict[str, Board] = {}
 
 
+def _seed_default_boards() -> None:
+    """Seed the ROM hardcoded board table from ``src/board.c:67-76``.
+
+    Existing entries (e.g. boards already loaded from JSON) keep their notes
+    but get their static metadata reset to ROM defaults so config drift on
+    disk cannot lower a board's read/write level below what ROM ships.
+    """
+
+    for name, description, read_level, write_level, recipients, force_type, purge_days in ROM_DEFAULT_BOARDS:
+        key = _normalize_board_name(name)
+        existing = board_registry.get(key)
+        if existing is None:
+            board_registry[key] = Board(
+                name=name,
+                description=description,
+                read_level=read_level,
+                write_level=write_level,
+                default_recipients=recipients,
+                force_type=force_type,
+                purge_days=purge_days,
+            )
+        else:
+            existing.name = name
+            existing.description = description
+            existing.read_level = read_level
+            existing.write_level = write_level
+            existing.default_recipients = recipients
+            existing.force_type = force_type
+            existing.purge_days = purge_days
+
+
 def load_boards() -> None:
-    """Load all boards from ``BOARDS_DIR`` into ``board_registry``."""
+    """Load all boards from ``BOARDS_DIR`` into ``board_registry``.
+
+    Mirrors ROM ``load_boards`` (``src/board.c:399-405``) which iterates the
+    hardcoded ``boards[MAX_BOARD]`` table and calls ``load_board`` on each
+    entry. We seed those five defaults first, then overlay any persisted
+    notes from JSON.
+    """
+
     board_registry.clear()
+    _seed_default_boards()
     if not BOARDS_DIR.exists():
         return
     for path in sorted(BOARDS_DIR.glob("*.json")):
         with path.open() as f:
             data = load_dataclass(BoardJson, f)
         board = Board.from_json(data)
-        board_registry[board.storage_key()] = board
+        key = board.storage_key()
+        existing = board_registry.get(key)
+        if existing is not None:
+            # Preserve ROM static metadata (levels, force_type, purge_days)
+            # but adopt persisted notes. JSON is authoritative for content.
+            existing.notes = board.notes
+        else:
+            board_registry[key] = board
 
 
 def save_board(board: Board) -> None:
