@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `LOOKUP-008` — Added public `liq_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:138-150` (case-insensitive prefix-match against `LIQUID_TABLE`, returns `-1` on miss). The loader-internal `mud/loaders/obj_loader.py:_liq_lookup` is retained because it intentionally returns `0` (water) on miss for object-load defaults. With this `lookup.c` is ✅ AUDITED at 100% (LOOKUP-001..008 all closed).
 - `LOOKUP-007` — Added `item_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:124-136` (case-insensitive prefix-match against `ItemType` IntEnum, returns the ITEM_X type value, `-1` on miss). Python's `ItemType` IntEnum values match ROM ITEM_X constants 1:1.
 - `LOOKUP-006` — Added `size_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:95-107` (case-insensitive prefix-match against `Size` IntEnum, returns `-1` on miss).
 - `LOOKUP-005` — Added `sex_lookup(name)` to `mud/utils/prefix_lookup.py` mirroring ROM `src/lookup.c:81-93` (case-insensitive prefix-match against `Sex` IntEnum, returns `-1` on miss). ROM `sex_table {none, male, female, either}` maps 1:1 to Python's enum.

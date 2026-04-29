@@ -38,7 +38,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **60% Audited** (26 audited, 7 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (flags.c flipped to AUDITED via FLAG-001 closure).  
+**Overall**: ⚠️ **63% Audited** (27 audited, 6 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (lookup.c flipped to AUDITED after closing LOOKUP-001..008).  
 **handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
 **save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
 **db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
@@ -95,7 +95,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Utilities & Helpers** | | | | | |
 | `const.c` | P3 | ⚠️ Partial | `mud/models/constants.py` | 80% | Most constants ported |
 | `tables.c` | P3 | ⚠️ Partial | `mud/data/` | 70% | Lookup tables partial |
-| `lookup.c` | P3 | ⚠️ Partial | `mud/models/races.py`, `mud/models/clans.py`, `mud/loaders/obj_loader.py`, `mud/commands/remaining_rom.py` | 70% | Apr 28, 2026 — audit doc landed, LOOKUP-001 closed (race_lookup added; pet-load ImportError fixed). LOOKUP-002..008 OPEN (prefix-match drift in flag/clan/position/sex/size/item/liq lookups). See LOOKUP_C_AUDIT.md |
+| `lookup.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/models/races.py`, `mud/models/clans.py`, `mud/commands/remaining_rom.py` | 100% | Apr 28, 2026 — all 8 gaps closed (LOOKUP-001..008). New `mud/utils/prefix_lookup.py` provides ROM-faithful prefix-match helpers + `position_lookup`, `sex_lookup`, `size_lookup`, `item_lookup`, `liq_lookup`. `race_lookup`, `_lookup_flag_bit`, `lookup_clan_id` migrated to prefix-match. help_lookup/had_lookup UNVERIFIED (help-system audit). See LOOKUP_C_AUDIT.md |
 | `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | Apr 28, 2026 — FLAG-001 closed (do_flag fully implemented: operator parsing, 9-field dispatcher, IntFlag name lookup, bit mutation). FLAG-002 (settable-bit preservation) deferred MINOR. See FLAGS_C_AUDIT.md |
 | `bit.c` | P3 | ⚠️ Partial | `mud/utils.py` | 90% | Bit operations ported |
 | `string.c` | P3 | ⚠️ Partial | `mud/utils.py` | 85% | String utils partial |

@@ -52,6 +52,17 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_liq_lookup_prefix_and_unknown():
+    # mirrors ROM src/lookup.c:138-150 — liq_lookup uses str_prefix; -1 on miss.
+    # Closes LOOKUP-008.
+    from mud.utils.prefix_lookup import liq_lookup
+
+    assert liq_lookup("water") == 0  # LIQUID_TABLE[0]
+    assert liq_lookup("beer") == 1
+    assert liq_lookup("whis") == 5  # `whisky`
+    assert liq_lookup("xyznotaliq") == -1
+
+
 def test_item_lookup_prefix_and_unknown():
     # mirrors ROM src/lookup.c:124-136 — item_lookup returns item_table[].type
     # (NOT index); -1 on miss. Python's ItemType IntEnum value == ROM ITEM_X.

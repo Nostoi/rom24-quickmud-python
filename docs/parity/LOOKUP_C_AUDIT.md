@@ -1,6 +1,6 @@
 # `lookup.c` ROM Parity Audit
 
-- **Status**: Phase 3 — gap identification complete; LOOKUP-001 closure landing this session
+- **Status**: ✅ AUDITED — all 8 gaps closed (LOOKUP-001..008). help_lookup / had_lookup remain UNVERIFIED (out of scope; help-system audit).
 - **Date**: 2026-04-28
 - **Source**: `src/lookup.c` (ROM 2.4b6, 184 lines, 10 public functions)
 - **Python primary**: scattered across `mud/models/races.py`, `mud/models/clans.py`, `mud/loaders/obj_loader.py`, `mud/commands/remaining_rom.py`
@@ -62,7 +62,7 @@ The freshly-shipped `mud/commands/remaining_rom.py:_lookup_flag_bit` uses exact-
 | `LOOKUP-005` | IMPORTANT | `src/lookup.c:81-93` | `mud/utils/prefix_lookup.py:sex_lookup` (new) | No `sex_lookup` equivalent. Used by character creation and OLC. | ✅ FIXED — added `sex_lookup(name) -> int` with prefix-match against `Sex` IntEnum. ROM sex_table {none, male, female, either} maps 1:1 to Python's enum. Test: `tests/integration/test_lookup_parity.py::test_sex_lookup_prefix_and_unknown`. |
 | `LOOKUP-006` | IMPORTANT | `src/lookup.c:95-107` | `mud/utils/prefix_lookup.py:size_lookup` (new) | No `size_lookup` equivalent. Used by OLC. | ✅ FIXED — added `size_lookup(name) -> int` with prefix-match against `Size` IntEnum. ROM size_table {tiny, small, medium, large, huge, giant} maps 1:1. Test: `tests/integration/test_lookup_parity.py::test_size_lookup_prefix_and_unknown`. |
 | `LOOKUP-007` | IMPORTANT | `src/lookup.c:124-136` | `mud/utils/prefix_lookup.py:item_lookup` (new) | No `item_lookup` equivalent. Used by OLC for setting item type by name. | ✅ FIXED — added `item_lookup(name) -> int` returning the `ItemType` IntEnum value (matches ROM ITEM_X constants 1:1). Test: `tests/integration/test_lookup_parity.py::test_item_lookup_prefix_and_unknown`. |
-| `LOOKUP-008` | MINOR | `src/lookup.c:138-150` | `mud/loaders/obj_loader.py:_liq_lookup` | Private liquid lookup uses exact-match instead of prefix-match. | 🔄 OPEN — deferred. |
+| `LOOKUP-008` | MINOR | `src/lookup.c:138-150` | `mud/utils/prefix_lookup.py:liq_lookup` (new). `mud/loaders/obj_loader.py:_liq_lookup` retained as loader-internal helper. | Public liquid lookup missing; loader's private `_liq_lookup` returns 0 on miss (deliberate water-default). | ✅ FIXED — added public `liq_lookup(name) -> int` mirroring ROM (returns `-1` on miss). Test: `tests/integration/test_lookup_parity.py::test_liq_lookup_prefix_and_unknown`. |
 
 ## Phase 4 — Closures
 
@@ -74,7 +74,17 @@ The freshly-shipped `mud/commands/remaining_rom.py:_lookup_flag_bit` uses exact-
 
 ## Phase 5 — Completion summary
 
-(Filled in once all OPEN gaps closed.)
+`lookup.c` is ✅ AUDITED. All 8 stable gaps closed across two sessions on 2026-04-28:
+
+- LOOKUP-001 (CRITICAL) — added `race_lookup` to `mud/models/races.py`, fixed latent pet-load `ImportError`.
+- LOOKUP-002 (IMPORTANT) — `_lookup_flag_bit` now uses ROM-faithful prefix-match.
+- LOOKUP-003 (IMPORTANT) — `lookup_clan_id` now uses ROM-faithful prefix-match.
+- LOOKUP-004..007 (IMPORTANT) — added `position_lookup`, `sex_lookup`, `size_lookup`, `item_lookup` to `mud/utils/prefix_lookup.py`.
+- LOOKUP-008 (MINOR) — added public `liq_lookup` (loader-internal `_liq_lookup` retained for water-default semantic).
+
+Foundation: introduced `mud/utils/prefix_lookup.py` with `prefix_lookup_index` and `prefix_lookup_intflag` helpers + the per-table lookup functions. Tests: `tests/integration/test_lookup_parity.py` 12/12 passing.
+
+`help_lookup` and `had_lookup` (ROM 152-184) remain UNVERIFIED — they belong to a future help-system audit, not this audit.
 
 ## Notes for future sessions
 

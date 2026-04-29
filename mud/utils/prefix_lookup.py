@@ -51,6 +51,28 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
     return None
 
 
+def liq_lookup(name: str | None) -> int:
+    """Return the int LIQUID_TABLE index whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``liq_lookup`` (src/lookup.c:138-150). Returns ``-1`` on miss.
+
+    Note: ``mud/loaders/obj_loader.py:_liq_lookup`` is a separate, internal
+    helper that returns ``0`` (water) on miss for object-loading defaults.
+    Use this public ``liq_lookup`` for ROM-faithful semantics.
+    """
+    # mirroring ROM src/lookup.c:138-150 — liq_lookup uses str_prefix.
+    from mud.models.constants import LIQUID_TABLE
+
+    if not name:
+        return -1
+    needle = name.lower()
+    for index, liquid in enumerate(LIQUID_TABLE):
+        liq_name = getattr(liquid, "name", "") or ""
+        if liq_name and liq_name.lower().startswith(needle):
+            return index
+    return -1
+
+
 def item_lookup(name: str | None) -> int:
     """Return the int ItemType value whose name is prefix-matched by *name*.
 
