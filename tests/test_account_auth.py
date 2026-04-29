@@ -1920,7 +1920,8 @@ def test_banned_host_cannot_login():
     reset_lockdowns()
 
     assert create_account("carol", "pw")
-    bans.add_banned_host("203.0.113.9")
+    # mirrors ROM src/ban.c:104-132 — entries need PREFIX or SUFFIX bit to ever match
+    bans.add_banned_host("*203.0.113.9*")
     # Host-aware login wrapper should reject banned host
     result = login_with_host("carol", "pw", "203.0.113.9")
     assert result.account is None
@@ -1944,7 +1945,8 @@ def test_banned_host_disconnects_before_greeting():
         host, port = _server_address(server)
         server_task = asyncio.create_task(server.serve_forever())
         # Add ban AFTER create_server (which clears bans during world init)
-        bans.add_banned_host("127.0.0.1")
+        # mirrors ROM src/ban.c:104-132 — needs PREFIX/SUFFIX bit to match
+        bans.add_banned_host("*127.0.0.1*")
         try:
             reader, writer = await asyncio.open_connection(host, port)
             chunks = []
@@ -1977,7 +1979,7 @@ def test_permanent_ban_survives_restart(tmp_path):
     clear_active_accounts()
     reset_lockdowns()
 
-    bans.add_banned_host("203.0.113.9")
+    bans.add_banned_host("*203.0.113.9*")
     original_file = bans.BANS_FILE
     path = tmp_path / "bans.txt"
     bans.BANS_FILE = path
@@ -2000,8 +2002,8 @@ def test_permanent_ban_survives_restart(tmp_path):
 def test_ban_persistence_roundtrip(tmp_path):
     # Arrange
     bans.clear_all_bans()
-    bans.add_banned_host("bad.example")
-    bans.add_banned_host("203.0.113.9")
+    bans.add_banned_host("*bad.example*")
+    bans.add_banned_host("*203.0.113.9*")
     path = tmp_path / "ban.txt"
 
     # Act: save → clear → load
@@ -2432,7 +2434,7 @@ def test_newbie_permit_enforcement():
 
     assert create_account("elder", "pw")
 
-    bans.add_banned_host("blocked.example", flags=BanFlag.NEWBIES)
+    bans.add_banned_host("*blocked.example*", flags=BanFlag.NEWBIES)
     account = login_with_host("elder", "pw", "blocked.example").account
     assert account is not None
     release_account("elder")
@@ -2446,7 +2448,7 @@ def test_newbie_permit_enforcement():
         session.close()
 
     bans.clear_all_bans()
-    bans.add_banned_host("locked.example", flags=BanFlag.ALL)
+    bans.add_banned_host("*locked.example*", flags=BanFlag.ALL)
     locked = login_with_host("elder", "pw", "locked.example")
     assert locked.account is None
     assert locked.failure is LoginFailureReason.HOST_BANNED
@@ -2469,7 +2471,7 @@ def test_ban_permit_requires_permit_flag():
     finally:
         session.close()
 
-    bans.add_banned_host("permit.example", flags=BanFlag.PERMIT)
+    bans.add_banned_host("*permit.example*", flags=BanFlag.PERMIT)
 
     blocked = login_with_host("warden", "pw", "permit.example")
     assert blocked.account is None

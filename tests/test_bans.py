@@ -9,8 +9,8 @@ def test_account_and_host_add_remove_checks():
     assert not bans.is_host_banned("example.org")
     assert not bans.is_account_banned("alice")
 
-    # Add and check
-    bans.add_banned_host("example.org")
+    # Add and check; ROM src/ban.c:104-132 requires PREFIX/SUFFIX bit to match
+    bans.add_banned_host("*example.org*")
     bans.add_banned_account("alice")
     assert bans.is_host_banned("example.org")
     assert bans.is_account_banned("alice")
@@ -35,10 +35,11 @@ def test_save_deletes_when_empty(tmp_path):
 def test_load_ignores_non_permanent(tmp_path):
     bans.clear_all_bans()
     path = tmp_path / "ban.txt"
-    # Write one non-permanent (D) and one permanent (DF)
+    # Write one non-permanent (D) and one permanent (D+SUFFIX+PREFIX+F = ABDF) — ROM
+    # src/ban.c:104-132 requires PREFIX or SUFFIX bit for check_ban to ever match.
     lines = [
         f"{'temp.example':<20}  0 D\n",
-        f"{'perm.example':<20}  0 DF\n",
+        f"{'perm.example':<20}  0 ABDF\n",
     ]
     path.write_text("".join(lines))
     loaded = bans.load_bans_file(path)

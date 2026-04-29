@@ -39,6 +39,8 @@ class BanEntry:
     level: int = 0
 
     def matches(self, host: str) -> bool:
+        # mirrors ROM src/ban.c:104-132 — only PREFIX or SUFFIX entries can match;
+        # an entry with neither bit set is silently skipped (ROM quirk).
         candidate = host.strip().lower()
         if not self.pattern:
             return False
@@ -48,7 +50,7 @@ class BanEntry:
             return candidate.endswith(self.pattern)
         if self.flags & BanFlag.SUFFIX:
             return candidate.startswith(self.pattern)
-        return candidate == self.pattern
+        return False
 
     def to_pattern(self) -> str:
         text = self.pattern
