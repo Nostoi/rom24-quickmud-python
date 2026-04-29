@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `bit.c` parity audit (`docs/parity/BIT_C_AUDIT.md`) — `bit.c` flipped ⚠️ Partial 90% → ✅ Audited 90%. Confirmed the only current Python consumer of bit.c-shaped logic (`do_flag` in `mud/commands/remaining_rom.py`) faithfully mirrors ROM `do_flag` semantics (not ROM `flag_value` — they differ on unknown-name handling on purpose). Three MINOR helpers (`flag_value`, `flag_string`, `flag_stat_table`+`is_stat`) recorded as `BIT-001`/`BIT-002`/`BIT-003` and deferred to the OLC audit, where their first concrete consumers (`olc.c`, `olc_act.c`, `olc_save.c`, `act_olc.c`) will appear. No code changes.
 - `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` — reconciled the stale `P1-3: db.c + db2.c (PARTIAL - 55%)` section with the actual audit state. Both files have been ✅ Audited 100% on the summary table since the Jan 5 (db.c) and Apr 28 (db2.c) sessions; the P1-3 narrative section has been rewritten to reflect that and to point at the per-file audit docs (`DB_C_AUDIT.md` covers db.c's 44/44 functional functions; `DB2_C_AUDIT.md` covers DB2-001/002/003/006 closures and DB2-004/005 deferred MINORs). No code changes.
 
 ### Added
