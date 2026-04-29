@@ -269,13 +269,14 @@ def _apply_ban(char: Character, args: str, *, permanent: bool) -> str:
 
     parts = stripped.split()
     host_token = parts[0]
-    type_token = parts[1].lower() if len(parts) > 1 else "all"
+    type_token = parts[1].lower() if len(parts) > 1 else ""
 
-    if type_token.startswith("all"):
+    # mirrors ROM src/ban.c:180-191 — `!str_prefix(arg2, "all")` → arg2 is a prefix of "all"
+    if not type_token or "all".startswith(type_token):
         ban_type = BanFlag.ALL
-    elif type_token.startswith("newbies"):
+    elif "newbies".startswith(type_token):
         ban_type = BanFlag.NEWBIES
-    elif type_token.startswith("permit"):
+    elif "permit".startswith(type_token):
         ban_type = BanFlag.PERMIT
     else:
         return "Acceptable ban types are all, newbies, and permit." + ROM_NEWLINE
