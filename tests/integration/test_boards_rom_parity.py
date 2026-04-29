@@ -341,3 +341,55 @@ def test_note_send_broadcasts_to_room(tmp_path):
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
+
+
+def test_note_write_discards_textless_in_progress_draft(tmp_path):
+    """Mirror ROM ``do_nwrite`` cancellation at ``src/board.c:482-488``.
+
+    BOARD-011: when a player issues ``note write`` and already has an
+    in-progress draft whose ``text`` is empty (e.g. they lost link before
+    typing any body), ROM frees the draft and notifies the actor that the
+    previous note was cancelled, then starts a fresh one.
+    """
+
+    from mud.models.board import NoteDraft
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+        # Switch to the General board (write_level=2 so level-5 PCs may write).
+        process_command(author, "board General")
+
+        general = notes.find_board("General")
+        assert general is not None
+
+        # Stage a draft as if the player had lost link mid-compose: subject
+        # set, recipients set, but no body text yet.
+        author.pcdata.in_progress = NoteDraft(
+            sender=author.name,
+            board_key=general.storage_key(),
+            to="all",
+            subject="Half-written",
+            text="",
+            expire=general.default_expire(),
+        )
+
+        result = process_command(author, "note write")
+
+        # ROM emits the cancellation notice to the actor before starting fresh.
+        assert "cancelled" in result.lower()
+
+        # The stale draft must have been discarded — the new in_progress is a
+        # blank slate (no leaked subject/text from the prior attempt).
+        new_draft = author.pcdata.in_progress
+        assert new_draft is not None
+        assert new_draft.subject == ""
+        assert new_draft.text == ""
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)

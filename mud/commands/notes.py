@@ -327,15 +327,26 @@ def do_note(char: Character, args: str) -> str:
     if subcmd == "write":
         if not board.can_write(trust):
             return "You cannot write on this board."
+        # Mirror ROM do_nwrite at src/board.c:482-488 — discard an in-progress
+        # draft whose text is empty (lost-link mid-compose) before continuing.
+        cancellation = ""
+        existing = pcdata.in_progress
+        if existing is not None and not existing.text:
+            pcdata.in_progress = None
+            cancellation = (
+                "Note in progress cancelled because you did not manage to write any text\n"
+                "before losing link.\n\n"
+            )
         draft = _ensure_draft(char, board)
         # Mirror ROM do_nwrite act() at src/board.c:503 — broadcast to the
         # actor's room (excluding the actor) so bystanders see the action.
         room = getattr(char, "room", None)
         if room is not None and hasattr(room, "broadcast"):
             room.broadcast(f"{char.name} starts writing a note.", exclude=char)
-        message = [
-            ("You continue your note on the" if (draft.subject or draft.text) else "You begin writing a note on the")
-        ]
+        message = [cancellation] if cancellation else []
+        message.append(
+            "You continue your note on the" if (draft.subject or draft.text) else "You begin writing a note on the"
+        )
         message.append(f" {board.name} board.")
         if board.force_type is BoardForceType.INCLUDE and board.default_recipients:
             message.append(f" The recipient list must include {board.default_recipients}.")
