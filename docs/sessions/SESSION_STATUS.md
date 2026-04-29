@@ -1,64 +1,46 @@
-# Session Status — 2026-04-29 — `string.c` ✅ Audited (12 gaps deferred to OLC cluster)
+# Session Status — 2026-04-29 — `string.c` ✅ 100% closure + OLC-023
 
 ## Current State
 
-- **Active audit**: none — `string.c` just flipped to ✅ Audited 5%. Pick the next file from `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`.
-- **Last completed**: `string.c` — full Phase 1 inventory + 12 stable gap IDs (`STRING-001..STRING-012`) filed and DEFERRED to the OLC audit cluster. Stale tracker entry (`mud/utils.py`, 85%) corrected to `mud/utils/text.py`, 5% (only `smash_tilde` is ported, and that one is owned by `merc.h` rather than `string.c`).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_STRING_C_AUDIT.md](SESSION_SUMMARY_2026-04-29_STRING_C_AUDIT.md)
+- **Active audit**: `olc.c` (Phase 4 — gap closures; in progress, mostly held)
+- **Last completed**: STRING-001/002/003/004/005 + OLC-023 (6 gaps; `string.c`
+  flipped ✅ AUDITED 100%)
+- **Pointer to latest summary**:
+  [SESSION_SUMMARY_2026-04-29_STRING_C_CLOSURE_OLC_023.md](SESSION_SUMMARY_2026-04-29_STRING_C_CLOSURE_OLC_023.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.53 |
-| Tests | 1455 passed / 10 skipped (no code changes this session). |
-| ROM C files audited | 20 / 43 (47%) ✅ Audited; `string.c` ✅ Audited 5% (12 gaps deferred to OLC). |
-| Active focus | none — pick next file from tracker. |
-
-## `string.c` close-out
-
-Phase 1 inventory complete. **0 of 12 gaps closed this session** by design — every
-helper in `src/string.c` operates on descriptor-level OLC editor state
-(`ch->desc->pString`, `ch->desc->editor`) and Python has no OLC editor plumbing
-yet (`mud/olc/` skeleton only). Closing them in isolation would yield code with
-zero callers and zero integration coverage.
-
-Deferred-by-design (close alongside OLC audit):
-
-- 🔄 `STRING-001` `string_edit` — enter EDIT mode.
-- 🔄 `STRING-002` `string_append` — enter APPEND mode.
-- 🔄 `STRING-003` `string_replace` — substring substitute.
-- 🔄 `STRING-004` `string_add` — editor input dispatcher (`.c`/`.s`/`.r`/`.f`/`.h`/`.ld`/`.li`/`.lr`/`~`/`@`). **CRITICAL** — must be ported faithfully or not at all.
-- 🔄 `STRING-005` `format_string` — word-wrap + sentence capitalization + paren rewrite.
-- 🔄 `STRING-006` `first_arg` — quote/paren-aware single-arg parser.
-- 🔄 `STRING-007` `string_unpad` — trim spaces.
-- 🔄 `STRING-008` `string_proper` — title-case each word.
-- 🔄 `STRING-009` `string_linedel` — delete line N (1-indexed).
-- 🔄 `STRING-010` `string_lineadd` — insert line at N (1-indexed).
-- 🔄 `STRING-011` `merc_getline` — read one `\n`-terminated line.
-- 🔄 `STRING-012` `numlines` — line-numbered listing.
-
-## Remaining audit work
-
-7 files left on the 43-file tracker:
-
-| File | Status | Notes |
-|------|--------|-------|
-| `olc.c` | ❌ Not Audited 30% | Largest remaining single audit; closes STRING-001..012, BIT-001..003, CONST-007 deferrals. |
-| `olc_act.c` | ❌ Not Audited 30% | Bundles with `olc.c`. |
-| `olc_save.c` | ❌ Not Audited 25% | Bundles with `olc.c`. |
-| `olc_mpcode.c` | ❌ Not Audited 20% | Mobprog editor; bundles with `olc.c`. |
-| `hedit.c` | ❌ Not Audited 30% | Help-system editor; bundles with `olc.c`. |
-| `board.c` | ⚠️ Partial 95% | Only 2 deferred-by-design (BOARD-010 cosmetic, BOARD-014 architectural). Quick close. |
-| `string.c` | ✅ Audited 5% | (this session) — closure tied to OLC cluster. |
+| Version | 2.6.71 |
+| Tests (cluster sweep) | 216 / 216 passing in scoped areas |
+| ROM C files audited | ~21 / 43 (`string.c` flipped to ✅ this session) |
+| Active focus | `olc.c` (1/5 of the original CRITICAL OLC gaps closed; remaining 4 gated on held `olc_act.c` audit) |
 
 ## Next Intended Task
 
-Two reasonable paths:
+Lift "hold sibling audits" or pick up the *unblocked* OLC gaps in priority
+order:
 
-1. **`olc.c`** — the heavyweight remaining audit. Picks up 12 STRING + 3 BIT + 1 CONST deferrals as a side effect. ~2–3 sessions.
-2. **`board.c`** — quick close-out of 2 deferred-by-design items. ~1 short session, then back to OLC.
+1. **Unblocked, no sibling audit needed**:
+   - `OLC-020` — `display_resets` per-command (M/O/P/G/E/D/R) formatting
+     + pet-shop overlay + wear-loc/door flag-string decoding. Depends on
+     `BIT-002` (closed earlier in the day).
+   - `OLC-022` — `do_resets` `inside <vnum>` / wear-loc decode / `random`
+     / 6-line syntax help. Depends on `BIT-001` (closed earlier).
+2. **Blocked on sibling audit** (decision point for next session):
+   - `OLC-016` (cmd_aedit `create`), `OLC-017` (cmd_redit
+     `reset`/`create`/`<vnum>` teleport), `OLC-018` (cmd_oedit `create`),
+     `OLC-019` (cmd_medit `create`) — all CRITICAL, all gated on the
+     `aedit_create`/`redit_create`/`oedit_create`/`medit_create` builders
+     in `src/olc_act.c`. Closing requires `/rom-parity-audit olc_act.c`
+     first.
+3. **Repo hygiene (separate coordinated commit, NOT parity work)**:
+   README still says "13 of 43 files at 100%"; actual is now ~21/43 with
+   `string.c` flipping this session. Per AGENTS.md Repo Hygiene, refresh
+   README + AGENTS tracker pointers + this SESSION_STATUS in a single
+   commit.
 
-Run `/rom-parity-audit <file>.c` to start a new file audit, or `/rom-gap-closer <ID>` if jumping to an existing OPEN gap.
-
-**Repo Hygiene flag (carried forward)**: README.md still says "13 of 43 files at 100%" (lines 172, 335). Actual is **20 / 43** as of this session. Per Repo Hygiene §2, the next commit that touches README must coordinate-refresh AGENTS.md tracker pointers + this `SESSION_STATUS.md`.
+Recommended next session start: pick `OLC-020` and `OLC-022` (both
+unblocked, both in `mud/commands/imm_olc.py`, both depend on already-closed
+BIT helpers).
