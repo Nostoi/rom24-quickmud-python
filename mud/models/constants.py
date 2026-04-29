@@ -19,6 +19,7 @@ class Direction(IntEnum):
 # Canonical room/object vnums (merc.h)
 ROOM_VNUM_LIMBO = 2
 ROOM_VNUM_TEMPLE = 3001
+ROOM_VNUM_CHAT = 1200  # ROM src/merc.h:1250 — immortal default login room
 ROOM_VNUM_ALTAR = 3054
 ROOM_VNUM_SCHOOL = 3700
 

@@ -346,6 +346,36 @@ def test_account_login_disconnects_on_wrong_password(monkeypatch):
 
 
 @pytest.mark.p1
+def test_immortal_without_saved_room_routes_to_chat_room():
+    """NANNY-006 — ROM routes immortals to ROOM_VNUM_CHAT (1200) when no saved room.
+
+    ROM C: src/nanny.c:791-802
+        ```c
+        else if (ch->in_room  != NULL) char_to_room(ch, ch->in_room);
+        else if (IS_IMMORTAL(ch))      char_to_room(ch, get_room_index(ROOM_VNUM_CHAT));
+        else                            char_to_room(ch, get_room_index(ROOM_VNUM_TEMPLE));
+        ```
+
+    A returning immortal whose saved room can't be loaded should land in
+    the immortal chat room (1200), not the temple (3001).
+    """
+    from mud.net.connection import default_login_room_vnum
+    from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_TEMPLE
+
+    immortal = Character(name="ImmortalSouL", level=60)
+    immortal.is_admin = True
+    immortal.is_npc = False
+
+    mortal = Character(name="MortalCoil", level=10)
+    mortal.is_admin = False
+    mortal.is_npc = False
+
+    # mirrors ROM src/nanny.c:795-797 — immortal fallback room
+    assert default_login_room_vnum(immortal) == int(ROOM_VNUM_CHAT)
+    assert default_login_room_vnum(mortal) == int(ROOM_VNUM_TEMPLE)
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

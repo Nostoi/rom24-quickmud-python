@@ -40,7 +40,7 @@ from mud.utils.act import act_format
 from mud.db.models import PlayerAccount
 from mud.loaders import help_loader
 from mud.logging import log_game_event
-from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_LIMBO
+from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
@@ -493,6 +493,19 @@ async def _prompt_ansi_preference(conn: TelnetStream) -> tuple[bool, bool] | Non
         if lowered.startswith("n"):
             return False, True
         await _send_line(conn, "Please answer Y or N.")
+
+
+def default_login_room_vnum(char: Character) -> int:
+    """Return the fallback room vnum when a character has no saved room.
+
+    mirrors ROM src/nanny.c:791-802 — when `ch->in_room == NULL` at the
+    end of CON_READ_MOTD, ROM picks `ROOM_VNUM_CHAT` for immortals and
+    `ROOM_VNUM_TEMPLE` for mortals. Python proxies `IS_IMMORTAL(ch)` via
+    the persisted `is_admin` flag on the character record.
+    """
+    if bool(getattr(char, "is_admin", False)):
+        return int(ROOM_VNUM_CHAT)
+    return int(ROOM_VNUM_TEMPLE)
 
 
 def is_character_denied_access(char: Character) -> bool:
@@ -1589,6 +1602,12 @@ async def handle_connection_with_stream(
         _apply_colour_preference(char, desired_colour)
         conn.set_ansi(char.ansi_enabled)
 
+        # mirroring ROM src/nanny.c:791-802 — fall back to ROOM_VNUM_CHAT for
+        # immortals or ROOM_VNUM_TEMPLE for mortals when no saved room is loadable
+        if char.room is None:
+            from mud.registry import room_registry
+
+            char.room = room_registry.get(default_login_room_vnum(char))
         if char.room:
             try:
                 char.room.add_character(char)
@@ -1817,6 +1836,12 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         _apply_colour_preference(char, desired_colour)
         conn.set_ansi(char.ansi_enabled)
 
+        # mirroring ROM src/nanny.c:791-802 — fall back to ROOM_VNUM_CHAT for
+        # immortals or ROOM_VNUM_TEMPLE for mortals when no saved room is loadable
+        if char.room is None:
+            from mud.registry import room_registry
+
+            char.room = room_registry.get(default_login_room_vnum(char))
         if char.room:
             try:
                 char.room.add_character(char)
