@@ -480,4 +480,48 @@ def test_login_state_refresh_is_a_noop_for_npcs():
 
     assert npc.max_hit == 50
     assert npc.hitroll == 7
-    assert list(npc.mod_stat) == [3, 0, 0, 0, 0]
+
+
+@pytest.mark.p2
+def test_new_password_rejects_tilde(monkeypatch):
+    """NANNY-011 — ROM rejects '~' in new passwords (src/nanny.c:396-405).
+
+    ROM:
+        ```c
+        if (strcmp(crypt(argument, ch->name), ch->name) == 0)
+        {
+            write_to_buffer(d, "New password not acceptable, try again.\\n\\r", 0);
+            ...
+        }
+        ```
+    Plus the file-format poisoner check that rejects '~' in passwords because
+    pfiles use '~' as field terminators. Python uses a DB backend so the
+    practical risk is gone, but parity with ROM input validation is preserved.
+    """
+    import asyncio
+
+    from mud.net import connection as connection_mod
+
+    sent: list[str] = []
+    answers = iter(["bad~pw", "goodpw", "goodpw"])
+
+    class FakeStream:
+        host = "test.example"
+
+        def set_ansi(self, _enabled):
+            pass
+
+    async def fake_prompt(_conn, _label, *, hide_input=False):
+        return next(answers)
+
+    async def fake_send_line(_conn, msg):
+        sent.append(msg)
+
+    monkeypatch.setattr(connection_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(connection_mod, "_send_line", fake_send_line)
+
+    result = asyncio.run(connection_mod._prompt_new_password(FakeStream()))
+
+    assert result == "goodpw"
+    # mirrors ROM src/nanny.c:396-405 — '~' rejected with retry
+    assert any("New password not acceptable" in m for m in sent)

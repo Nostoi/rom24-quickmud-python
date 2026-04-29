@@ -837,6 +837,10 @@ async def _prompt_new_password(conn: TelnetStream) -> str | None:
         if len(password) < 5:
             await _send_line(conn, "Password must be at least five characters long.")
             continue
+        # mirrors ROM src/nanny.c:396-405 — '~' is the pfile field terminator
+        if "~" in password:
+            await _send_line(conn, "New password not acceptable, try again.")
+            continue
         confirm = await _prompt(conn, "Confirm password: ", hide_input=True)
         if confirm is None:
             return None
