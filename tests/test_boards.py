@@ -16,11 +16,16 @@ def _setup_boards(tmp_path):
     orig_dir = notes.BOARDS_DIR
     notes.BOARDS_DIR = tmp_path
     notes.board_registry.clear()
+    # Reset ROM `last_note_stamp` global (src/board.c:81) between tests so
+    # explicit ``timestamp=`` arguments take effect instead of being bumped
+    # past a high-water mark left by a previous test.
+    notes._last_note_stamp = 0.0
     return orig_dir
 
 
 def _teardown_boards(orig_dir):
     notes.board_registry.clear()
+    notes._last_note_stamp = 0.0
     notes.BOARDS_DIR = orig_dir
 
 

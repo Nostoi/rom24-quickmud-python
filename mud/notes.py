@@ -32,6 +32,33 @@ def _normalize_board_name(name: str) -> str:
 
 board_registry: dict[str, Board] = {}
 
+# ROM ``last_note_stamp`` global (``src/board.c:81``). Tracks the most recently
+# assigned ``date_stamp`` so two notes posted in the same wall-clock second
+# still get distinct, monotonically increasing timestamps. ``finish_note``
+# (``src/board.c:154-160``) consults / increments this.
+_last_note_stamp: float = 0.0
+
+
+def next_note_stamp(base: float) -> float:
+    """Return a unique note timestamp ≥ ``base``.
+
+    Mirrors ROM ``finish_note`` at ``src/board.c:154-160``:
+
+        if (last_note_stamp >= current_time)
+            note->date_stamp = ++last_note_stamp;
+        else {
+            note->date_stamp = current_time;
+            last_note_stamp = current_time;
+        }
+    """
+
+    global _last_note_stamp
+    if _last_note_stamp >= base:
+        _last_note_stamp += 1
+    else:
+        _last_note_stamp = base
+    return _last_note_stamp
+
 
 def _seed_default_boards() -> None:
     """Seed the ROM hardcoded board table from ``src/board.c:67-76``.

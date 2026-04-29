@@ -147,7 +147,7 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-001 | CRITICAL | `src/board.c:67-76` | `mud/notes.py:23` (no seed) | The five ROM default boards (General/Ideas/Announce/Bugs/Personal) are not seeded with their ROM levels/force-types/purge-days at startup. | ✅ FIXED |
 | BOARD-002 | IMPORTANT | `src/board.c:503` | `mud/commands/notes.py:341-355` | Starting a note does not emit `act("$n starts writing a note.", TO_ROOM)`. | 🔄 OPEN |
 | BOARD-003 | IMPORTANT | `src/board.c:1181` | `mud/commands/notes.py:388-418` | Posting a note does not emit `act("$n finishes $s note.", TO_ROOM)`. | 🔄 OPEN |
-| BOARD-004 | CRITICAL | `src/board.c:154-160` | `mud/models/board.py:102-114` | `Board.post` uses `time.time()` directly; lacks ROM `last_note_stamp` collision logic — same-second posts share a stamp and silently break the `> last_read` unread cursor. | 🔄 OPEN |
+| BOARD-004 | CRITICAL | `src/board.c:154-160` | `mud/models/board.py:102-114` | `Board.post` uses `time.time()` directly; lacks ROM `last_note_stamp` collision logic — same-second posts share a stamp and silently break the `> last_read` unread cursor. | ✅ FIXED |
 | BOARD-005 | CRITICAL | `src/board.c:444-460` | `mud/models/board.py:121-125` | `Board.unread_count` does not filter notes by recipient (`is_note_to`); leaks Personal/per-name notes into non-recipients' unread counts. | 🔄 OPEN |
 | BOARD-006 | IMPORTANT | `src/board.c:758-769,793-798,828-832` | `mud/commands/notes.py:190-237` | `do_board` enumeration uses `can_read(trust)` instead of ROM's `unread_notes != BOARD_NOACCESS`; resolved transitively once BOARD-005 lands but the listing also needs to call the recipient-aware unread helper. | 🔄 OPEN |
 | BOARD-007 | MINOR | `src/board.c:790-812` | `mud/commands/notes.py:225-231` | `do_board <N>` numbers boards by accessible position, matching ROM once BOARD-006 is closed; no separate fix needed. | 🔄 OPEN (subsumed) |
@@ -177,7 +177,7 @@ install, only edge cases or out-of-scope architectural plumbing.
 | BOARD-001 | `tests/integration/test_boards_rom_parity.py::test_rom_default_boards_seeded_on_load` | (this commit) | ✅ |
 | BOARD-002 | | | 🔄 |
 | BOARD-003 | | | 🔄 |
-| BOARD-004 | | | 🔄 |
+| BOARD-004 | `tests/integration/test_boards_rom_parity.py::test_post_assigns_unique_timestamp_when_called_in_same_second` | (this commit) | ✅ |
 | BOARD-005 | | | 🔄 |
 | BOARD-008 | | | 🔄 |
 

@@ -23,11 +23,13 @@ def _setup_boards(tmp_path):
     orig_dir = notes.BOARDS_DIR
     notes.BOARDS_DIR = tmp_path
     notes.board_registry.clear()
+    notes._last_note_stamp = 0.0
     return orig_dir
 
 
 def _teardown_boards(orig_dir):
     notes.board_registry.clear()
+    notes._last_note_stamp = 0.0
     notes.BOARDS_DIR = orig_dir
 
 

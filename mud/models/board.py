@@ -99,7 +99,12 @@ class Board:
         resolved_to, _, _ = self.resolve_recipients(to)
         if not resolved_to:
             resolved_to = (self.default_recipients or "all").strip() or "all"
-        actual_timestamp = time.time() if timestamp is None else timestamp
+        from mud.notes import next_note_stamp  # local import to avoid cycle
+
+        base = time.time() if timestamp is None else timestamp
+        # Mirror ROM finish_note (src/board.c:154-160): assign a unique
+        # monotonic stamp so rapid posts in the same second don't collide.
+        actual_timestamp = next_note_stamp(base)
         note = Note(
             sender=sender,
             to=resolved_to,
