@@ -6,13 +6,61 @@ ROM Reference: Various source files
 
 from __future__ import annotations
 
+from enum import IntFlag
 from typing import TYPE_CHECKING
 
 from mud.commands.imm_commands import MAX_LEVEL, get_char_world, get_trust
 from mud.models.character import Character
+from mud.models.constants import (
+    ActFlag,
+    AffectFlag,
+    CommFlag,
+    FormFlag,
+    ImmFlag,
+    PartFlag,
+    PlayerFlag,
+)
 
 if TYPE_CHECKING:
     pass
+
+
+# Field name → (Character attribute, IntFlag enum, NPC-only?, PC-only?).
+# Mirrors ROM src/flags.c:105-187 do_flag dispatcher. Immunity / resist / vuln
+# all share imm_flags as the lookup table per ROM 141-151.
+_FLAG_FIELDS: dict[str, tuple[str, type[IntFlag], bool, bool]] = {
+    # ROM src/flags.c:105-115 — act: NPC act_flags
+    "act": ("act", ActFlag, True, False),
+    # ROM src/flags.c:117-127 — plr: PC plr_flags (stored in victim->act)
+    "plr": ("act", PlayerFlag, False, True),
+    # ROM src/flags.c:129-133 — aff: shared affect_flags
+    "aff": ("affected_by", AffectFlag, False, False),
+    # ROM src/flags.c:135-139 — immunity uses imm_flags table
+    "immunity": ("imm_flags", ImmFlag, False, False),
+    # ROM src/flags.c:141-145 — resist uses imm_flags table (yes, same table)
+    "resist": ("res_flags", ImmFlag, False, False),
+    # ROM src/flags.c:147-151 — vuln uses imm_flags table
+    "vuln": ("vuln_flags", ImmFlag, False, False),
+    # ROM src/flags.c:153-163 — form: NPC form_flags
+    "form": ("form", FormFlag, True, False),
+    # ROM src/flags.c:165-175 — parts: NPC part_flags
+    "parts": ("parts", PartFlag, True, False),
+    # ROM src/flags.c:177-187 — comm: PC comm_flags
+    "comm": ("comm", CommFlag, False, True),
+}
+
+
+def _lookup_flag_bit(token: str, flag_enum: type[IntFlag]) -> int | None:
+    """Case-insensitive lookup of a ROM flag name on an IntFlag enum.
+
+    Returns the bit value or None if no member matches.
+    Mirrors ROM `flag_lookup(word, flag_table)` (src/lookup.c).
+    """
+    upper = token.upper()
+    for member in flag_enum.__members__.values():
+        if member.name.upper() == upper:
+            return int(member)
+    return None
 
 
 # Comm flags
@@ -336,11 +384,14 @@ def do_flag(char: Character, args: str) -> str:
             "  otherwise flag toggles the flags listed."
         )
 
-    parts = args.strip().split()
-    if len(parts) < 4:
+    tokens = args.strip().split()
+    if len(tokens) < 4:
         return "Syntax: flag <mob|char> <name> <field> <flags>\n  Example: flag char Bob plr +holylight"
 
-    flag_type, target_name, field, flags = parts[0].lower(), parts[1], parts[2].lower(), " ".join(parts[3:])
+    flag_type = tokens[0].lower()
+    target_name = tokens[1]
+    field = tokens[2].lower()
+    rest = tokens[3:]
 
     if flag_type not in ("mob", "char"):
         return "First argument must be 'mob' or 'char'."
@@ -349,16 +400,70 @@ def do_flag(char: Character, args: str) -> str:
     if victim is None:
         return "You can't find them."
 
-    victim_name = getattr(victim, "name", "someone")
     is_npc = getattr(victim, "is_npc", False)
 
-    # Validate field for character type
+    # mirroring ROM src/flags.c:107-110, 119-123 — NPC-only / PC-only field guards.
     if field == "act" and not is_npc:
         return "Use 'plr' for PCs."
     if field == "plr" and is_npc:
         return "Use 'act' for NPCs."
+    if field == "form" and not is_npc:
+        return "Form can't be set on PCs."
+    if field == "parts" and not is_npc:
+        return "Parts can't be set on PCs."
+    if field == "comm" and is_npc:
+        return "Comm can't be set on NPCs."
 
-    return f"Flag '{flags}' toggled on {field} for {victim_name}."
+    field_spec = _FLAG_FIELDS.get(field)
+    if field_spec is None:
+        # mirroring ROM src/flags.c:189-193 — unknown field falls through to error.
+        return "That's not an acceptable flag."
+
+    attr_name, flag_enum, _npc_only, _pc_only = field_spec
+
+    # mirroring ROM src/flags.c:58-61 — leading '=', '+', or '-' selects mode;
+    # otherwise the operator is implicit toggle.
+    op = "toggle"
+    if rest and rest[0] in ("=", "+", "-"):
+        op = {"=": "set", "+": "add", "-": "remove"}[rest[0]]
+        rest = rest[1:]
+    elif rest and rest[0][:1] in ("=", "+", "-") and len(rest[0]) > 1:
+        # ROM `argument[0]` is the leading byte; `=holylight` is also valid.
+        op = {"=": "set", "+": "add", "-": "remove"}[rest[0][0]]
+        rest[0] = rest[0][1:]
+
+    if not rest:
+        return "Which flags do you wish to change?"
+
+    # mirroring ROM src/flags.c:202-218 — accumulate `marked` mask; bail on
+    # any unknown flag name with `That flag doesn't exist!`.
+    marked = 0
+    for token in rest:
+        if not token:
+            continue
+        bit = _lookup_flag_bit(token, flag_enum)
+        if bit is None:
+            return "That flag doesn't exist!"
+        marked |= bit
+
+    old = int(getattr(victim, attr_name, 0) or 0)
+    # mirroring ROM src/flags.c:198-199 — `=` resets baseline to 0; everything
+    # else starts from the existing value.
+    new = 0 if op == "set" else old
+
+    # mirroring ROM src/flags.c:220-247 — apply marked bits per operator.
+    # (FLAG-002 deferred: ROM also preserves non-`settable` bits across `=`;
+    # Python IntFlag carries no per-bit settable metadata yet.)
+    if op in ("set", "add"):
+        new |= marked
+    elif op == "remove":
+        new &= ~marked
+    else:  # toggle
+        new ^= marked
+
+    setattr(victim, attr_name, new)
+    victim_name = getattr(victim, "name", "someone")
+    return f"Flag '{field}' updated on {victim_name}."
 
 
 def do_mob(char: Character, args: str) -> str:

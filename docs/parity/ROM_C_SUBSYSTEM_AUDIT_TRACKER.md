@@ -38,7 +38,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **58% Audited** (25 audited, 8 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (sha256.c flipped to AUDITED).  
+**Overall**: ⚠️ **60% Audited** (26 audited, 7 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (flags.c flipped to AUDITED via FLAG-001 closure).  
 **handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
 **save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
 **db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
@@ -96,7 +96,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `const.c` | P3 | ⚠️ Partial | `mud/models/constants.py` | 80% | Most constants ported |
 | `tables.c` | P3 | ⚠️ Partial | `mud/data/` | 70% | Lookup tables partial |
 | `lookup.c` | P3 | ⚠️ Partial | `mud/data/` | 65% | Lookups partial |
-| `flags.c` | P3 | ⚠️ Partial | `mud/flags.py` | 75% | Flag handling partial |
+| `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | Apr 28, 2026 — FLAG-001 closed (do_flag fully implemented: operator parsing, 9-field dispatcher, IntFlag name lookup, bit mutation). FLAG-002 (settable-bit preservation) deferred MINOR. See FLAGS_C_AUDIT.md |
 | `bit.c` | P3 | ⚠️ Partial | `mud/utils.py` | 90% | Bit operations ported |
 | `string.c` | P3 | ⚠️ Partial | `mud/utils.py` | 85% | String utils partial |
 | `recycle.c` | P3 | N/A | - | N/A | Python GC handles this |

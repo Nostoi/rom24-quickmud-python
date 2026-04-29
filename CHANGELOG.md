@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `FLAG-001` — `do_flag` (`mud/commands/remaining_rom.py`) is now a fully-wired immortal command instead of a syntax-validator stub. Mirrors ROM `src/flags.c:44-251`: parses the `=`/`+`/`-`/toggle operator, dispatches `act`/`plr`/`aff`/`immunity`/`resist`/`vuln`/`form`/`parts`/`comm` to the matching Character attribute and IntFlag enum (`ActFlag`, `PlayerFlag`, `AffectFlag`, `ImmFlag`, `FormFlag`, `PartFlag`, `CommFlag`), enforces NPC-only / PC-only field guards (`Use 'plr' for PCs.`, `Use 'act' for NPCs.`, `Form/Parts can't be set on PCs.`, `Comm can't be set on NPCs.`), looks up flag names case-insensitively, rejects unknown flags with `That flag doesn't exist!`, and mutates the matching bit on the victim. Previously the command returned a confirmation string but performed no mutation. New 9-test integration suite in `tests/integration/test_flag_command_parity.py`. FLAG-002 (preserve ROM `flag_type.settable=FALSE` bits across the `=` operator) deferred as MINOR — requires per-bit settable metadata on the IntFlag enums.
+
 ### Changed
 
 - `sha256.c` audit completed (`docs/parity/SHA256_C_AUDIT.md`). SHA-256 primitive is delegated to Python's stdlib `hashlib` (byte-for-byte equivalent to ROM `src/sha256.c:131-318`). The `sha256_crypt` password hash (ROM `src/sha256.c:320-336`, plain unsalted single-round SHA-256) is replaced by PBKDF2-HMAC-SHA256 with a 16-byte random salt and 100 000 rounds in `mud/security/hash_utils.py` — a deliberate security upgrade with no observable gameplay parity surface (no pfile compatibility goal). Tracker row flipped from ⚠️ Partial → ✅ AUDITED.
