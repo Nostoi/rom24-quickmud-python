@@ -9,6 +9,49 @@ Descriptor plumbing is provided by `mud/olc/editor_state.py`
 from __future__ import annotations
 
 
+def first_arg(argument: str, lower: bool = False) -> tuple[str, str]:
+    """Quote/paren-aware single-arg parser.
+
+    Mirrors ROM ``first_arg`` (src/string.c:468-508). Returns
+    ``(rest, word)`` — the remainder of *argument* (with leading spaces
+    stripped) and the parsed first word.
+
+    Recognized quote characters: ``'``, ``"``, ``%`` (each pairs with
+    itself); ``(`` pairs with ``)``. Quoted words may contain spaces.
+    Unterminated quotes consume the rest of the input.
+
+    When ``lower`` is True (ROM ``fCase``), the parsed word is
+    lowercased; otherwise its case is preserved.
+    """
+
+    i = 0
+    n = len(argument)
+    while i < n and argument[i] == " ":
+        i += 1
+
+    end_char = " "
+    if i < n and argument[i] in ("'", '"', "%", "("):
+        if argument[i] == "(":
+            end_char = ")"
+        else:
+            end_char = argument[i]
+        i += 1
+
+    chars: list[str] = []
+    while i < n:
+        c = argument[i]
+        if c == end_char:
+            i += 1
+            break
+        chars.append(c.lower() if lower else c)
+        i += 1
+
+    while i < n and argument[i] == " ":
+        i += 1
+
+    return argument[i:], "".join(chars)
+
+
 def string_proper(argument: str) -> str:
     """Uppercase the first character of each space-delimited word.
 
