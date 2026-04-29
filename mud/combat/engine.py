@@ -12,6 +12,7 @@ from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.math.c_compat import c_div, urange
+from mud.math.stat_apps import get_hitroll
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     AC_BASH,
@@ -408,7 +409,10 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
             if diceroll < 20:
                 break
         # Compute class-based thac0 with hitroll/skill contributions
-        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=attacker.hitroll, skill=skill_total)
+        # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit to ch->hitroll.
+        th = compute_thac0(
+            attacker.level, attacker.ch_class, hitroll=get_hitroll(attacker), skill=skill_total
+        )
         vac = c_div(victim_ac, 10)
         # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
         if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
@@ -417,7 +421,8 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
             return f"You miss {victim.name}."
     else:
         # Percent model kept for parity stability outside feature flag
-        to_hit = 50 + attacker.hitroll
+        # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit.
+        to_hit = 50 + get_hitroll(attacker)
         # Use C-style division for negative AC to match ROM semantics
         to_hit += c_div(victim_ac, 2)
         to_hit = urange(5, to_hit, 100)
