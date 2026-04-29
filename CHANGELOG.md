@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `STRING-010` — `mud/utils/string_editor.py:string_lineadd(string, newstr, line) -> str`. Mirrors ROM `src/string.c:607-645`: insert *newstr* as the 1-indexed line N. The inserted line gets a `\n\r` suffix. If line is past the end, insertion doesn't happen (never reached). Used by `.li` and `.lr` dot-commands. Test: `tests/integration/test_string_editor_lineadd.py` (10 cases).
 - `STRING-009` — `mud/utils/string_editor.py:string_linedel(string, line) -> str`. Mirrors ROM `src/string.c:574-605`: remove the 1-indexed line N from the string, preserving `\n\r` line endings. Out-of-range line numbers are a no-op. Used by `.ld` dot-command. Test: `tests/integration/test_string_editor_linedel.py` (8 cases).
 - `STRING-012` — `mud/utils/string_editor.py:numlines(string) -> str`. Mirrors ROM `src/string.c:676-692`: format string as line-numbered listing (`%2d. <line>\n\r`), 1-indexed. Used by `.s` dot-command and `string_append` greeting. Test: `tests/integration/test_string_editor_numlines.py` (7 cases).
 - `STRING-011` — `mud/utils/string_editor.py:merc_getline(string) -> tuple[str, str]`. Mirrors ROM `src/string.c:647-674`: read one `\n`-terminated line; consume trailing `\r` when present (ROM `\n\r` canonical line ending). Returns `(rest, line)`. Test: `tests/integration/test_string_editor_merc_getline.py` (6 cases).

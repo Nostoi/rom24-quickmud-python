@@ -160,3 +160,48 @@ def string_linedel(string: str, line: int) -> str:
         i += 1
 
     return "".join(buf)
+
+
+def string_lineadd(string: str, newstr: str, line: int) -> str:
+    """Insert newstr as the 1-indexed line N.
+
+    Mirrors ROM ``string_lineadd`` (src/string.c:607-645). Inserts
+    *newstr* as the line at position *line* (1-indexed). The inserted
+    line gets a ``\n\r`` suffix.
+
+    Used by ``.li`` and ``.lr`` dot-commands.
+    """
+
+    buf: list[str] = []
+    cnt = 1
+    done = False
+    i = 0
+
+    # Iterate through string; continue past end if insertion hasn't happened yet
+    # and we've reached the target line number
+    while i < len(string):
+        # Check if we should insert at this line number
+        if cnt == line and not done:
+            buf.append(newstr)
+            buf.append("\n\r")
+            cnt += 1
+            done = True
+
+        c = string[i]
+        buf.append(c)
+
+        if c == "\n":
+            if i + 1 < len(string) and string[i + 1] == "\r":
+                buf.append(string[i + 1])
+                i += 1
+            cnt += 1
+
+        i += 1
+
+    # After exhausting the string, if insertion hasn't happened and we've
+    # reached the target line, insert now (for appending past the end)
+    if cnt == line and not done:
+        buf.append(newstr)
+        buf.append("\n\r")
+
+    return "".join(buf)
