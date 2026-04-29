@@ -1,30 +1,35 @@
-# Session Status — 2026-04-29 — `const.c` CONST-003 Closed (combat-math triplet 2/3)
+# Session Status — 2026-04-29 — `const.c` CONST-004 Closed (combat-math triplet 3/3 ✅)
 
 ## Current State
 
-- **Active audit**: `const.c` (Phase 4 — per-gap closures in flight).
-- **Last completed**: `CONST-003` (`GET_DAMROLL` adds `str_app[STR].todam`; `mud/math/stat_apps.py::get_damroll` + swap at `mud/combat/engine.py:1189`). Commit `b08d5c9`.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_CONST_003_GET_DAMROLL.md](SESSION_SUMMARY_2026-04-29_CONST_003_GET_DAMROLL.md)
+- **Active audit**: `const.c` (Phase 4 — combat-math triplet complete; advancement gaps remain).
+- **Last completed**: `CONST-004` (`GET_AC` adds `dex_app[DEX].defensive` with `IS_AWAKE` gate; new `DEX_APP[26]` table + `get_ac` accessor in `mud/math/stat_apps.py`; combat + score + wiz "stat char" AC reads all wired through it). Commit `4fcfb23`.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-04-29_CONST_004_GET_AC.md](SESSION_SUMMARY_2026-04-29_CONST_004_GET_AC.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.49 |
-| Tests | 1436 passing / 10 skipped (full integration + combat suite). 1 pre-existing unit-suite failure in `test_area_loader.py` unrelated to combat. |
-| ROM C files audited | 18 / 43 (42%) ✅ Audited; `const.c` ⚠️ Partial 80% (2 CRITICAL + 2 IMPORTANT + 1 MINOR open: CONST-004, CONST-005, CONST-006, CONST-001 deferred to NANNY-009, CONST-007 deferred to OLC). |
-| Active focus | `const.c` — combat-math triplet, 2/3 closed. |
+| Version | 2.6.50 |
+| Tests | 1569 passing / 10 skipped (full integration + combat suite). 1 pre-existing unit-suite failure in `test_area_loader.py` unrelated to combat. |
+| ROM C files audited | 18 / 43 (42%) ✅ Audited; `const.c` ⚠️ Partial 80% (1 CRITICAL + 2 IMPORTANT + 1 MINOR open: CONST-005, CONST-006, CONST-001 deferred to NANNY-009, CONST-007 deferred to OLC). |
+| Active focus | `const.c` — advancement gaps next (CONST-005 + CONST-006). |
 
 ## Next Intended Task
 
-**`CONST-004`** (CRITICAL) — `GET_AC` adds `dex_app[DEX].defensive` with `IS_AWAKE` gate. This is the heaviest of the triplet:
+**`CONST-005`** (CRITICAL) — `advance_level` per-level HP gain. Currently uses static `LEVEL_BONUS[ch_class]` in `mud/advancement.py:91`; ROM `src/update.c:74-79` rolls `number_range(class_table.hp_min, class_table.hp_max) + con_app[CON].hitp`.
 
-1. Port `dex_app[26]` from `src/const.c:821-848` (single column `defensive`) into `mud/math/stat_apps.py` as `DEX_APP`.
-2. Add `get_ac(ch, ac_type)` accessor mirroring `src/merc.h:2104-2106` — `ch->armor[ac_type] + (IS_AWAKE(ch) ? dex_app[DEX].defensive : 0)`. Sleeping/stunned victims do NOT get the DEX defensive.
-3. Combat consumer: `mud/combat/engine.py:391` (currently reads `victim.armor[ac_idx]` raw) → swap to `get_ac(victim, ac_idx)`.
-4. Display consumers: score path in `mud/commands/session.py:208`-area and imm "stat char" at `mud/commands/imm_search.py:986` — both read raw armor; ROM `act_info.c:1594-1645` runs them through `GET_AC` for the per-AC tier display strings. Confirm by re-reading both Python sites against the ROM display strings.
-5. Test: parametrized DEX values matching `dex_app[26]`, an `IS_AWAKE`-off case (sleeping victim's AC equals raw armor), an engine-level integration varying victim DEX with pinned RNG.
+Pre-flight checks before writing the test:
 
-After CONST-004: `CONST-005` (advance_level HP roll + `con_app[CON].hitp`; verify `class_table.hp_min/hp_max` are present on `mud/models/classes.py:ClassType` first), then `CONST-006` (`wis_app[WIS].practice` in `advance_level`). `CONST-001` parked for NANNY-009; `CONST-007` parked for OLC audit.
+1. Read `mud/advancement.py:advance_level` end-to-end against `src/update.c:30-150`.
+2. Verify `class_table.hp_min` and `hp_max` are present on `mud/models/classes.py:ClassType`. If absent, port them from `src/const.c:394-419` (4-class table) **as a separate sub-step inside this gap** — they're prerequisite data, not a separate gap.
+3. Port `con_app[26]` (single column `hitp`; ROM also defines `shock` but it's dead data per the audit — verified by grep on `src/`) into `mud/math/stat_apps.py` as `CON_APP`. Add `_curr_con(ch)` helper using the existing `_curr_stat`.
+4. Decide accessor shape — likely `con_hitp_bonus(ch) -> int` rather than a full `get_max_hit_gain` since the RNG roll lives in `advance_level`, not in the table accessor.
 
-Run `/rom-gap-closer CONST-004` to continue.
+Test: seed `rng_mm.seed_mm(<known seed>)` inside the test (overriding the autouse 12345), then assert exact HP gain for a high-CON vs low-CON character of the same class. Verify the difference equals `con_app[hi].hitp - con_app[lo].hitp` and that the base random component matches `number_range(class.hp_min, class.hp_max)`.
+
+After CONST-005: **`CONST-006`** (`wis_app[WIS].practice` in `advance_level`; same function, single-column `wis_app` table from `src/const.c:790-817`).
+
+After both close, flip `const.c` row in `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` from ⚠️ Partial 80% → ✅ Audited (CONST-001 parked for NANNY-009; CONST-007 parked for OLC).
+
+Run `/rom-gap-closer CONST-005` to continue.
