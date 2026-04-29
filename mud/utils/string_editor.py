@@ -99,3 +99,29 @@ def string_unpad(argument: str) -> str:
     """
 
     return argument.strip(" ")
+
+
+def numlines(string: str) -> str:
+    """Format string as line-numbered listing (``%2d. <line>\n\r``).
+
+    Mirrors ROM ``numlines`` (src/string.c:676-692). Returns a string where
+    each line from the input is prefixed with its 1-indexed line number in
+    ``%2d`` format (right-aligned 2-char width), followed by a period and
+    the line content, with ``\n\r`` appended to each line.
+
+    Used by ``.s`` dot-command and `string_append` greeting.
+    """
+
+    if not string:
+        return ""
+
+    lines: list[str] = []
+    line_num = 1
+    rest = string
+
+    while rest:
+        rest, line = merc_getline(rest)
+        lines.append(f"{line_num:2d}. {line}\n\r")
+        line_num += 1
+
+    return "".join(lines)

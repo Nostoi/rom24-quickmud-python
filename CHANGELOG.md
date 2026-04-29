@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `STRING-012` — `mud/utils/string_editor.py:numlines(string) -> str`. Mirrors ROM `src/string.c:676-692`: format string as line-numbered listing (`%2d. <line>\n\r`), 1-indexed. Used by `.s` dot-command and `string_append` greeting. Test: `tests/integration/test_string_editor_numlines.py` (7 cases).
 - `STRING-011` — `mud/utils/string_editor.py:merc_getline(string) -> tuple[str, str]`. Mirrors ROM `src/string.c:647-674`: read one `\n`-terminated line; consume trailing `\r` when present (ROM `\n\r` canonical line ending). Returns `(rest, line)`. Test: `tests/integration/test_string_editor_merc_getline.py` (6 cases).
 - `STRING-006` — `mud/utils/string_editor.py:first_arg(argument, lower=False) -> tuple[str, str]`. Mirrors ROM `src/string.c:468-508`: quote/paren-aware single-arg parser. Recognizes `'`/`"`/`%` (self-pair quotes) and `(`/`)` (balanced pair). Unterminated quotes consume the entire remainder. The `lower` flag (ROM `fCase`) lowercases the parsed word. Test: `tests/integration/test_string_editor_first_arg.py` (10 cases).
 - `STRING-008` — `mud/utils/string_editor.py:string_proper(argument) -> str`. Mirrors ROM `src/string.c:551-572`: uppercases first char of each space-delimited word, leaves rest of each word as-is. Differs from Python `str.title()` which also lowercases the rest. Test: `tests/integration/test_string_editor_proper.py` (8 cases).
