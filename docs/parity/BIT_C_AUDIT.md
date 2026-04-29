@@ -69,7 +69,7 @@ Python has **no `flag_string` decoder**. Existing flag-display code uses ad-hoc 
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
-| `BIT-001` | MINOR | `src/bit.c:111-142` | (no file) | Standalone reusable `flag_value(table, argument)` helper not ported. Current sole consumer (`do_flag`) inlines stricter ROM-`do_flag`-faithful accumulator instead. Will be needed by OLC port. | 🔄 DEFERRED — close alongside OLC audit |
+| `BIT-001` | MINOR | `src/bit.c:111-142` | `mud/utils/bit.py:flag_value` | Standalone reusable `flag_value(table, argument)` helper not ported. Current sole consumer (`do_flag`) inlines stricter ROM-`do_flag`-faithful accumulator instead. Will be needed by OLC port. | ✅ FIXED — `flag_value(table, argument) -> int \| None` accumulates IntFlag tokens (OR) and returns single value for IntEnum (stat) tables; returns None on no match (ROM `NO_FLAG`). Test: `tests/integration/test_bit_flag_value.py` (9 cases). |
 | `BIT-002` | MINOR | `src/bit.c:151-177` | (no file) | `flag_string(table, bits)` decoder not ported. Current display paths each handcraft their own formatter. Will be needed by OLC `show`/`save` paths. | 🔄 DEFERRED — close alongside OLC audit |
 | `BIT-003` | MINOR | `src/bit.c:50-104` | (no file) | `flag_stat_table[]` registry + `is_stat(table)` helper not ported. Stat-vs-flag distinction is currently encoded in the Python type system (IntEnum vs IntFlag) and resolved at the call site. Will be needed if OLC introduces a generic table dispatcher. | 🔄 DEFERRED — close alongside OLC audit |
 
