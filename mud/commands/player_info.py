@@ -65,17 +65,11 @@ def do_show(char: Character, args: str) -> str:
 
 
 def do_play(char: Character, args: str) -> str:
-    """
-    Play a song on a jukebox.
+    """Play a song on a jukebox.
 
-    ROM Reference: src/music.c do_play (lines 220-350)
-
-    Usage:
-    - play list           - List available songs
-    - play list artist    - List by artist
-    - play <song>         - Play a song
-    - play loud <song>    - Play globally
+    ROM Reference: src/music.c:220-354 (`do_play`).
     """
+    # mirroring ROM src/music.c:234-238 — empty argument → "Play what?"
     if not args or not args.strip():
         return "Play what?"
 
@@ -83,9 +77,9 @@ def do_play(char: Character, args: str) -> str:
     if not room:
         return "You see nothing to play."
 
-    # Find a jukebox in the room
     from mud.models.constants import ItemType
 
+    # mirroring ROM src/music.c:229-232 — first ITEM_JUKEBOX in the room.
     jukebox = None
     contents = getattr(room, "contents", [])
     for obj in contents:
@@ -106,17 +100,14 @@ def do_play(char: Character, args: str) -> str:
     arg = parts[0].lower()
 
     if arg == "list":
-        # List songs
         juke_name = getattr(jukebox, "short_descr", "The jukebox")
         lines = [f"{juke_name} has the following songs available:"]
 
-        # Get song list from global or jukebox
         from mud import registry
 
         songs = getattr(registry, "song_table", [])
 
         if not songs:
-            # Default songs if none loaded
             songs = [
                 {"name": "The Temple Bell", "group": "Unknown"},
                 {"name": "Battle Hymn", "group": "Unknown"},
@@ -136,10 +127,64 @@ def do_play(char: Character, args: str) -> str:
 
         return "\n".join(lines)
 
-    # Play a song
-    song_name = " ".join(parts)
-    if arg == "loud" and len(parts) > 1:
-        song_name = " ".join(parts[1:])
+    from mud.music import MAX_GLOBAL, MAX_SONGS, channel_songs, song_table
+
+    # mirroring ROM src/music.c:294-298 — "loud" prefix triggers global queue.
+    global_play = False
+    if arg == "loud":
+        global_play = True
+        remainder = parts[1:]
+    else:
+        remainder = parts
+
+    # mirroring ROM src/music.c:300-304 — empty after stripping "loud".
+    if not remainder:
+        return "Play what?"
+
+    needle = " ".join(remainder).lower()
+
+    # mirroring ROM src/music.c:306-311 — tail slot occupied → queue full.
+    if global_play:
+        if channel_songs[MAX_GLOBAL] > -1:
+            return "The jukebox is full up right now."
+    else:
+        values = jukebox.value
+        if len(values) < 5:
+            values.extend([-1] * (5 - len(values)))
+        if values[4] > -1:
+            return "The jukebox is full up right now."
+
+    # mirroring ROM src/music.c:313-328 — first str_prefix match wins; an empty
+    # slot or end-of-table both surface as "That song isn't available."
+    selected = -1
+    for idx in range(MAX_SONGS):
+        song = song_table[idx]
+        if song is None or song.name is None:
+            break
+        if song.name.lower().startswith(needle):
+            selected = idx
+            break
+
+    if selected < 0:
+        return "That song isn't available."
+
+    if global_play:
+        # mirroring ROM src/music.c:332-341 — first free channel_songs[1..MAX_GLOBAL] slot.
+        for slot in range(1, MAX_GLOBAL + 1):
+            if channel_songs[slot] < 0:
+                if slot == 1:
+                    channel_songs[0] = -1
+                channel_songs[slot] = selected
+                break
+    else:
+        # mirroring ROM src/music.c:343-352 — first free juke->value[1..4] slot.
+        values = jukebox.value
+        for slot in range(1, 5):
+            if values[slot] < 0:
+                if slot == 1:
+                    values[0] = -1
+                values[slot] = selected
+                break
 
     return "Coming right up."
 
