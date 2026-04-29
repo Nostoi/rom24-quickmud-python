@@ -1239,7 +1239,7 @@ def test_spec_nasty_ambushes_stronger_players(monkeypatch) -> None:
     try:
         result = spec_module.spec_nasty(assassin)
         assert result is True
-        assert calls == [("do_backstab", "Champion"), ("do_kill", "Champion")]
+        assert calls == [("do_backstab", "Champion"), ("do_murder", "Champion")]
     finally:
         room.people.remove(assassin)
         room.remove_character(target)
