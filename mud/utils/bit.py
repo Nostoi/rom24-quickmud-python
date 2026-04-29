@@ -57,3 +57,44 @@ def flag_value(table: type, argument: str) -> int | None:
         return None
 
     raise TypeError(f"flag_value: unsupported table type {table!r}; expected IntFlag or IntEnum subclass")
+
+
+def flag_string(table: type, bits: int) -> str:
+    """Return a space-joined string of every flag name set in *bits*.
+
+    Mirrors ROM ``flag_string`` (src/bit.c:151-177):
+
+    - When *table* is an ``IntFlag`` (ROM "flag" table): for each member
+      whose bit is set in *bits*, append the lowercase name; join with
+      single spaces (ROM strips the leading space at return).
+    - When *table* is an ``IntEnum`` (ROM "stat" table): return the single
+      lowercase name whose value equals *bits*; ROM ``break``s on the
+      first match.
+    - Returns the literal ``"none"`` when nothing matched.
+
+    The ROM rotating two-buffer trick (``buf[2][512]``, ``cnt`` toggled)
+    is unnecessary in Python because strings are immutable.
+    """
+
+    if isinstance(table, type) and issubclass(table, IntFlag):
+        names: list[str] = []
+        for member in table.__members__.values():
+            value = int(member)
+            if value == 0:
+                continue
+            # Only emit single-bit members; composite alias members would
+            # double-print. ROM tables are pure single-bit anyway.
+            if value & (value - 1) != 0:
+                continue
+            if (bits & value) == value:
+                names.append(member.name.lower())
+        return " ".join(names) if names else "none"
+
+    if isinstance(table, type) and issubclass(table, IntEnum):
+        # mirrors ROM src/bit.c:169-174 — stat table: equality match, then break.
+        for member in table.__members__.values():
+            if int(member) == bits:
+                return member.name.lower()
+        return "none"
+
+    raise TypeError(f"flag_string: unsupported table type {table!r}; expected IntFlag or IntEnum subclass")

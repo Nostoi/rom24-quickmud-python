@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from enum import IntEnum, IntFlag
 
-from mud.utils.bit import flag_value
 from mud.models.constants import ActFlag, Position
+from mud.utils.bit import flag_value
 
 
 class _StatTable(IntEnum):
