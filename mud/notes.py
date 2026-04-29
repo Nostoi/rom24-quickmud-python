@@ -6,8 +6,56 @@ from pathlib import Path
 
 from mud.models.board import Board, BoardForceType
 from mud.models.board_json import BoardJson
-from mud.models.constants import LEVEL_IMMORTAL
+from mud.models.constants import LEVEL_IMMORTAL, MAX_LEVEL
 from mud.models.json_io import dump_dataclass, load_dataclass
+
+if False:  # TYPE_CHECKING
+    from mud.models.character import Character
+    from mud.models.note import Note
+
+
+_IMMORTAL_TOKENS = frozenset({"imm", "imms", "immortal", "immortals", "god", "gods"})
+_IMPLEMENTOR_TOKENS = frozenset({"imp", "imps", "implementor", "implementors"})
+
+
+def _split_recipient_tokens(value: str) -> set[str]:
+    return {token.lower() for token in value.replace(",", " ").split() if token}
+
+
+def is_note_to(char, note) -> bool:
+    """Return True if ``note`` is addressed to ``char``.
+
+    Mirrors ROM ``is_note_to`` at ``src/board.c:408-440``: the sender always
+    sees their own notes; "all" / immortal / implementor tokens; an explicit
+    name match against ``ch->name``; and a numeric ``to_list`` meaning
+    "trust ≥ that number" (``src/board.c:436-437``).
+    """
+
+    name = (getattr(char, "name", None) or "").strip().lower()
+    sender = (getattr(note, "sender", None) or "").strip().lower()
+    if name and sender and name == sender:
+        return True
+
+    tokens = _split_recipient_tokens(getattr(note, "to", None) or "")
+    if "all" in tokens:
+        return True
+
+    is_immortal_fn = getattr(char, "is_immortal", None)
+    if callable(is_immortal_fn) and is_immortal_fn() and tokens & _IMMORTAL_TOKENS:
+        return True
+
+    trust = getattr(char, "trust", 0) or getattr(char, "level", 0) or 0
+    if trust == MAX_LEVEL and tokens & _IMPLEMENTOR_TOKENS:
+        return True
+
+    if name and name in tokens:
+        return True
+
+    to_field = (getattr(note, "to", None) or "").strip()
+    if to_field.isdigit() and trust >= int(to_field):
+        return True
+
+    return False
 
 BOARDS_DIR = Path("data/boards")
 

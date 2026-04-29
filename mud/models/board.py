@@ -124,10 +124,28 @@ class Board:
         return self.name.strip().lower()
 
     def unread_count(self, last_read: float | None) -> int:
-        """Return the number of notes posted after ``last_read``."""
+        """Return the number of notes posted after ``last_read``.
+
+        Recipient-blind variant kept for callers that don't have a character
+        in scope (e.g. JSON snapshots). Use ``unread_count_for`` to mirror
+        ROM ``unread_notes`` (``src/board.c:444-460``).
+        """
 
         cutoff = last_read or 0.0
         return sum(1 for note in self.notes if note.timestamp > cutoff)
+
+    def unread_count_for(self, char, last_read: float | None) -> int:
+        """Return the unread count for ``char`` mirroring ROM at ``src/board.c:444-460``.
+
+        ROM's ``unread_notes`` only counts notes where ``is_note_to(ch, note)``
+        is true AND ``last_read < note->date_stamp``. Without the recipient
+        filter, Personal-board notes leak into non-recipients' counts.
+        """
+
+        from mud.notes import is_note_to  # local import to avoid cycle
+
+        cutoff = last_read or 0.0
+        return sum(1 for note in self.notes if note.timestamp > cutoff and is_note_to(char, note))
 
     def can_read(self, trust: int) -> bool:
         return trust >= self.read_level

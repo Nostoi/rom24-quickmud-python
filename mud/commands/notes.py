@@ -9,6 +9,7 @@ from mud.notes import (
     DEFAULT_BOARD_NAME,
     find_board,
     get_board,
+    is_note_to,
     iter_boards,
     save_board,
 )
@@ -77,32 +78,9 @@ def _split_tokens(value: str) -> set[str]:
 
 
 def _is_note_visible_to(char: Character, note) -> bool:
-    """Mirror ROM is_note_to checks for removal visibility."""
+    """Delegate to ``mud.notes.is_note_to`` (ROM ``is_note_to`` at src/board.c:408-440)."""
 
-    name = (char.name or "").strip().lower()
-    sender = (note.sender or "").strip().lower()
-    if name and sender and name == sender:
-        return True
-
-    tokens = _split_tokens(note.to or "")
-    if "all" in tokens:
-        return True
-
-    if char.is_immortal() and tokens & _IMMORTAL_TOKENS:
-        return True
-
-    trust = _get_trust(char)
-    if trust == MAX_LEVEL and tokens & _IMPLEMENTOR_TOKENS:
-        return True
-
-    if name and name in tokens:
-        return True
-
-    to_field = (note.to or "").strip()
-    if to_field.isdigit() and trust >= int(to_field):
-        return True
-
-    return False
+    return is_note_to(char, note)
 
 
 def _find_visible_note_index(char: Character, board, number: int) -> int | None:
@@ -204,7 +182,8 @@ def do_board(char: Character, args: str) -> str:
         ]
         for idx, board in available:
             last_read = _board_last_read(pcdata, board)
-            unread = board.unread_count(last_read)
+            # ROM unread_notes (src/board.c:444-460) filters by is_note_to.
+            unread = board.unread_count_for(char, last_read)
             unread_color = "{G" if unread else "{g"
             lines.append(
                 f"({{W{idx:2d}{{x) {{g{board.name:<12}{{x [{unread_color}{unread:4}{{x] {{y{board.description}{{x"
