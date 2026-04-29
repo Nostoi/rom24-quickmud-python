@@ -8,7 +8,10 @@ Descriptor plumbing is provided by `mud/olc/editor_state.py`
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
+
+_log = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from mud.olc.editor_state import StringEdit
@@ -232,6 +235,177 @@ def string_replace(orig: str, old: str, new: str) -> str:
 
     # Replace: prefix + new + suffix (skipping the old substring)
     return orig[:idx] + new + orig[idx + len(old) :]
+
+
+def format_string(string: str) -> str:  # mirrors ROM src/string.c:299-451
+    """Word-wrap *string* to 77 columns with sentence capitalization.
+
+    Two-phase implementation mirroring ROM's char-by-char state machine:
+
+    Phase 1 (src/string.c:311-400) — tokenize and normalize:
+      - Collapse \\n, \\r, and runs of spaces to a single space (leading
+        whitespace at buffer position 0 is silently dropped).
+      - After ``.``/``?``/``!`` emit two spaces and set the capitalize flag;
+        if the punctuation is immediately followed by ``"`` consume it too,
+        emitting ``<punct>"  `` (four chars total).
+      - When ``)`` follows ``<punct><space><space>`` rebalance the parens:
+        replace the two trailing spaces with ``)`` and one space.
+      - Any other char is appended; if the capitalize flag is set, emit the
+        uppercase form and clear the flag.
+
+    Phase 2 (src/string.c:407-447) — wrap at 77 columns:
+      - While remaining text is ≥ 77 chars: search backward from column 73
+        (first wrap) or 76 (subsequent wraps) for a space; break there and
+        emit ``\\n\\r``.
+      - If no space is found (word > 77 chars): emit a ``bug`` log, break at
+        column 75 with a ``-\\n\\r`` fallback.
+      - Append the final segment and ensure the output ends with ``\\n\\r``.
+    """
+    # ------------------------------------------------------------------ #
+    # Phase 1 — normalize whitespace, punctuation, capitalization          #
+    # mirrors ROM src/string.c:311-400                                     #
+    # ------------------------------------------------------------------ #
+    buf: list[str] = []
+    cap = True  # ROM: bool cap = TRUE
+    rdesc = 0
+    n = len(string)
+
+    while rdesc < n:
+        c = string[rdesc]
+
+        if c == "\n":  # mirrors ROM src/string.c:313-320
+            # Treat \n as a space; but only if buf is non-empty and last != ' '
+            if buf and buf[-1] != " ":
+                buf.append(" ")
+
+        elif c == "\r":  # mirrors ROM src/string.c:321 (else if (*rdesc=='\r');)
+            pass  # silently skip
+
+        elif c == " ":  # mirrors ROM src/string.c:322-329
+            if buf and buf[-1] != " ":
+                buf.append(" ")
+            # at i==0 (buf empty) leading space is simply dropped
+
+        elif c == ")":  # mirrors ROM src/string.c:330-346
+            # Paren rebalance: if buf ends in '<punct><space><space>' rewrite
+            if (
+                len(buf) >= 3
+                and buf[-1] == " "
+                and buf[-2] == " "
+                and buf[-3] in (".", "?", "!")
+            ):
+                # Replace the two trailing spaces: buf[-2]= ')', buf[-1]= ' ', append ' '
+                buf[-2] = ")"
+                buf[-1] = " "
+                buf.append(" ")
+            else:
+                buf.append(c)
+
+        elif c in (".", "?", "!"):  # mirrors ROM src/string.c:347-388
+            # Check if buf already ends in '<punct><space><space>' (consecutive sentence-end)
+            if (
+                len(buf) >= 3
+                and buf[-1] == " "
+                and buf[-2] == " "
+                and buf[-3] in (".", "?", "!")
+            ):
+                # Overwrite the earlier trailing punct with new one
+                buf[-3] = c
+                # Check if next char is '"'
+                if rdesc + 1 < n and string[rdesc + 1] == '"':
+                    buf[-2] = '"'
+                    buf[-1] = " "
+                    buf.append(" ")
+                    rdesc += 1  # consume the '"'
+                # else the two spaces stay as-is (already present)
+            else:
+                buf.append(c)
+                if rdesc + 1 < n and string[rdesc + 1] == '"':
+                    buf.append('"')
+                    buf.append(" ")
+                    buf.append(" ")
+                    rdesc += 1  # consume the '"'
+                else:
+                    buf.append(" ")
+                    buf.append(" ")
+            cap = True  # mirrors ROM src/string.c:387
+
+        else:  # mirrors ROM src/string.c:389-398
+            if cap:
+                cap = False
+                buf.append(c.upper())
+            else:
+                buf.append(c)
+
+        rdesc += 1
+
+    xbuf2 = "".join(buf)
+
+    # ------------------------------------------------------------------ #
+    # Phase 2 — word-wrap at 77 columns                                   #
+    # mirrors ROM src/string.c:407-447                                     #
+    # ------------------------------------------------------------------ #
+    result: list[str] = []
+    pos = 0  # current read position in xbuf2
+    first_wrap = True  # ROM: xbuf[0] ? → subsequent wraps use col 76, first uses col 73
+
+    while True:
+        remaining = xbuf2[pos:]
+
+        # ROM: for (i=0; i<77; i++) { if (!*(rdesc+i)) break; }
+        # Count chars up to 77; if we hit end before 77, no more wrapping.
+        chunk_len = 0
+        for chunk_len in range(77):
+            if chunk_len >= len(remaining):
+                break
+        else:
+            chunk_len = 77  # all 77 chars exist → need to check if we wrap
+
+        if chunk_len < 77:
+            # Fewer than 77 chars remain → done with wrapping
+            break
+
+        # ROM: i = (xbuf[0] ? 76 : 73) — first wrap scans from 73, rest from 76
+        scan_from = 73 if first_wrap else 76  # mirrors ROM src/string.c:418
+
+        # Search backward from scan_from for a space
+        space_at = -1
+        for i in range(scan_from, 0, -1):
+            if i < len(remaining) and remaining[i] == " ":
+                space_at = i
+                break
+
+        if space_at > 0:  # mirrors ROM src/string.c:423-431
+            result.append(remaining[:space_at])
+            result.append("\n\r")
+            pos += space_at + 1
+            # Skip leading spaces on new line (ROM: while (*rdesc==' ') rdesc++)
+            while pos < len(xbuf2) and xbuf2[pos] == " ":
+                pos += 1
+            first_wrap = False
+        else:  # mirrors ROM src/string.c:432-438: no space found — mid-word break
+            _log.warning("format_string: no spaces")  # mirrors ROM bug("No spaces", 0)
+            result.append(remaining[:75])
+            result.append("-\n\r")
+            pos += 76
+            first_wrap = False
+
+    # Append remaining tail (mirrors ROM src/string.c:445-447)
+    tail = xbuf2[pos:]
+
+    # ROM trailing-trim (src/string.c:441-444): strip trailing spaces/\n/\r from tail
+    # (the i-decrement loop; in practice usually a no-op for normal text)
+    tail = tail.rstrip(" \n\r")
+
+    result.append(tail)
+
+    xbuf_final = "".join(result)
+
+    # Ensure output ends with \n\r (mirrors ROM src/string.c:446-447)
+    if not xbuf_final or xbuf_final[-2:] != "\n\r":
+        xbuf_final += "\n\r"
+
+    return xbuf_final
 
 
 def string_edit(string_edit_obj: StringEdit) -> str:
