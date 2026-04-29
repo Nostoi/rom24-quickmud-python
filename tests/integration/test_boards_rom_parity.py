@@ -343,6 +343,41 @@ def test_note_send_broadcasts_to_room(tmp_path):
         _teardown_boards(orig_dir)
 
 
+def test_note_unknown_subcommand_shows_help(tmp_path):
+    """Mirror ROM ``do_note`` fallthrough at ``src/board.c:736-737``.
+
+    BOARD-012: when ``do_note`` is called with an unrecognized verb (i.e.
+    not one of ``read``/``list``/``write``/``remove``/``purge``/``archive``/
+    ``catchup``), ROM dispatches to ``do_help (ch, "note")`` rather than
+    silently failing. The Python port must do the same.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        from mud.commands.help import do_help
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+
+        result = process_command(author, "note xyzzy")
+
+        # Should not fall through to the generic dispatcher "Huh?" reply.
+        assert result is not None
+        assert result.strip().lower() != "huh?"
+        # Parity: do_note's unknown-verb branch returns exactly what
+        # do_help(ch, "note") would return.
+        expected = do_help(author, "note")
+        assert result == expected
+        assert "note" in result.lower()
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
 def test_note_write_discards_textless_in_progress_draft(tmp_path):
     """Mirror ROM ``do_nwrite`` cancellation at ``src/board.c:482-488``.
 

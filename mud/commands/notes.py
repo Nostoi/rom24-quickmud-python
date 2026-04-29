@@ -473,4 +473,8 @@ def do_note(char: Character, args: str) -> str:
         _set_last_read(pcdata, board, last_note.timestamp)
         return "All mesages skipped."
 
-    return "Huh?"
+    # Mirror ROM do_note fallthrough at src/board.c:736-737 — unknown
+    # subcommands dispatch to do_help(ch, "note") rather than failing silently.
+    from mud.commands.help import do_help
+
+    return do_help(char, "note")
