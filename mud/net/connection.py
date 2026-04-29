@@ -529,19 +529,39 @@ def broadcast_entry_to_room(char: Character) -> None:
 
     mirrors ROM src/nanny.c:804 — `act("$n has entered the game.", ch, NULL,
     NULL, TO_ROOM)`. TO_ROOM excludes the actor; everyone else in the room
-    sees the formatted message. ROM also broadcasts the same line for
-    `ch->pet` at nanny.c:813-814 (handled by NANNY-008).
+    sees the formatted message. ROM also moves `ch->pet` into the same room
+    and broadcasts the same line for the pet (nanny.c:810-815).
     """
     room = getattr(char, "room", None)
     if room is None:
         return
     occupants = getattr(room, "people", None)
-    if not occupants:
+    if occupants:
+        for occupant in list(occupants):
+            if occupant is char:
+                continue
+            message = act_format("$n has entered the game.", recipient=occupant, actor=char)
+            if not message:
+                continue
+            messages = getattr(occupant, "messages", None)
+            if isinstance(messages, list):
+                messages.append(message)
+
+    # mirroring ROM src/nanny.c:810-815 — pet follows owner into room and emits TO_ROOM
+    pet = getattr(char, "pet", None)
+    if pet is None:
         return
-    for occupant in list(occupants):
-        if occupant is char:
+    if pet.room is not room:
+        from mud.models.room import char_to_room as _char_to_room
+
+        _char_to_room(pet, room)
+    pet_occupants = getattr(room, "people", None)
+    if not pet_occupants:
+        return
+    for occupant in list(pet_occupants):
+        if occupant is pet:
             continue
-        message = act_format("$n has entered the game.", recipient=occupant, actor=char)
+        message = act_format("$n has entered the game.", recipient=occupant, actor=pet)
         if not message:
             continue
         messages = getattr(occupant, "messages", None)

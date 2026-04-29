@@ -109,6 +109,55 @@ def test_login_broadcasts_entry_to_room():
 
 
 @pytest.mark.p1
+def test_login_pet_follows_owner_into_room():
+    """NANNY-008 — pet follows owner into the login room and is broadcast.
+
+    ROM C: src/nanny.c:810-815
+        ```c
+        if (ch->pet != NULL)
+        {
+            char_to_room (ch->pet, ch->in_room);
+            act ("$n has entered the game.", ch->pet, NULL, NULL, TO_ROOM);
+        }
+        ```
+
+    On login, if the owner has a pet, the pet is placed in the owner's
+    room and a TO_ROOM "<Pet> has entered the game." broadcast fires
+    (excluding the pet itself).
+    """
+    from mud.models.room import Room
+    from mud.net.connection import broadcast_entry_to_room
+
+    room = Room(vnum=9002, name="Pet Login Room", description="", room_flags=0, sector_type=0)
+    room.people = []
+
+    owner = Character(name="Owner", level=10)
+    owner.is_npc = False
+    onlooker = Character(name="Onlooker", level=10)
+    onlooker.is_npc = False
+
+    pet = Character(name="Fido", short_descr="the dog Fido", level=5)
+    pet.is_npc = True
+    owner.pet = pet
+    # Pet starts un-roomed (ROM treats the pet as detached until owner logs in).
+    pet.room = None
+
+    for occupant in (owner, onlooker):
+        room.people.append(occupant)
+        occupant.room = room
+
+    broadcast_entry_to_room(owner)
+
+    # mirrors ROM src/nanny.c:812 — char_to_room(ch->pet, ch->in_room)
+    assert pet.room is room
+    assert pet in room.people
+    # mirrors ROM src/nanny.c:813 — TO_ROOM broadcast for the pet excludes the pet
+    assert any("Fido has entered the game." in m for m in onlooker.messages)
+    assert any("Owner has entered the game." in m for m in onlooker.messages)
+    assert all("entered the game" not in m for m in (pet.messages or []))
+
+
+@pytest.mark.p1
 def test_denied_character_is_blocked_from_login():
     """NANNY-002 — characters with PLR_DENY must be denied access.
 
