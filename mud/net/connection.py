@@ -729,16 +729,17 @@ async def _read_player_command(conn: TelnetStream, session: Session) -> str | No
         original = command
 
         if session.show_buffer:
-            stripped = original.strip().lower()
-            if stripped in ("", "c"):
+            # mirrors ROM src/comm.c:632-633 + show_string at src/comm.c:2131-2141.
+            # While paging, ROM dispatches input to show_string instead of
+            # interpret(): empty input continues paging; ANY non-empty input
+            # is consumed as the abort signal and is NOT executed as a command.
+            if original.strip() == "":
                 has_more = await session.send_next_page()
                 if not has_more:
                     return " "
                 continue
-            if stripped == "q":
-                session.clear_paging()
-                return " "
             session.clear_paging()
+            return " "
 
         should_track = len(original) > 1 or (original and original[0] == "!")
         if should_track:

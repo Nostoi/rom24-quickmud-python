@@ -178,8 +178,59 @@ def test_show_string_paginates_output():
     asyncio.run(send_to_char(char, long_text))
     fake_conn.queue_responses(["look"])
     result = asyncio.run(_read_player_command(fake_conn, session))
-    assert result == "look"
+    # mirrors ROM src/comm.c:632-633 + show_string at src/comm.c:2131-2141 —
+    # any non-empty input while paging is consumed by show_string as the
+    # abort signal; it is not dispatched to interpret(). The user has to
+    # re-type the command after the pager clears.
+    assert result == " "
     assert session.show_buffer is None
+
+
+def test_show_string_pager_aborts_on_any_non_empty_input_per_rom():
+    """ROM src/comm.c:632-633 dispatches input to show_string instead of
+    interpret() while paging; show_string at src/comm.c:2131-2141 aborts on
+    any non-empty input and consumes it as no-op (it is NOT executed as a
+    command). 'c' is non-empty under ROM semantics — it aborts."""
+
+    long_text = "L1\r\nL2\r\nL3\r\nL4\r\nL5\r\n"
+
+    # 'c' is non-empty: ROM aborts (it does not have a "continue" hotkey).
+    fake_conn = FakeConn([])
+    char = SimpleNamespace(
+        name="Pager",
+        lines=2,
+        ansi_enabled=True,
+        connection=fake_conn,
+        messages=[],
+        act=0,
+    )
+    session = Session(name="Pager", character=char, reader=None, connection=fake_conn)
+    char.desc = session
+    asyncio.run(send_to_char(char, long_text))
+    assert session.show_buffer is not None
+    fake_conn.queue_responses(["c"])
+    result = asyncio.run(_read_player_command(fake_conn, session))
+    assert result == " "
+    assert session.show_buffer is None
+
+    # Arbitrary command typed mid-page is consumed as abort, NOT dispatched.
+    fake_conn2 = FakeConn([])
+    char2 = SimpleNamespace(
+        name="Pager",
+        lines=2,
+        ansi_enabled=True,
+        connection=fake_conn2,
+        messages=[],
+        act=0,
+    )
+    session2 = Session(name="Pager", character=char2, reader=None, connection=fake_conn2)
+    char2.desc = session2
+    asyncio.run(send_to_char(char2, long_text))
+    assert session2.show_buffer is not None
+    fake_conn2.queue_responses(["kill dragon"])
+    result = asyncio.run(_read_player_command(fake_conn2, session2))
+    assert result == " "
+    assert session2.show_buffer is None
 
 
 def test_send_to_char_accepts_iterables():
