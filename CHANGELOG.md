@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `TABLES-002` — `mud/utils/prefix_lookup.py:prefix_lookup_intflag` now consults a ROM `src/tables.c` table-name alias map (`rom_flag_aliases`) before falling back to Python IntFlag member names. ROM-style abbreviations like `+npc`/`+healer`/`+changer`/`+can_loot`/`+dirt_kick`/`+noclangossip` now resolve to the matching Python flag member (`IS_NPC`/`IS_HEALER`/`IS_CHANGER`/`CANLOOT`/`KICK_DIRT`/`NOAUCTION`), restoring ROM `flag_lookup` parity for `do_flag` and OLC.
+
 ### Added
 
 - `tables.c` parity audit (`docs/parity/TABLES_C_AUDIT.md`): Phase 1 inventory of all 38 ROM data tables in `src/tables.c` mapped to Python `IntFlag`/`IntEnum` equivalents in `mud/models/constants.py`; Phase 2 spot-checks confirm `ActFlag` / `PlayerFlag` / `OffFlag` / `CommFlag` bit positions match ROM letters A..dd. Three gaps documented: **TABLES-001 (CRITICAL)** — `AffectFlag` bit positions diverge from ROM `merc.h:953-982` (e.g. `AFF_DETECT_GOOD=G=1<<6` in ROM, but `AffectFlag.SANCTUARY=1<<6` in Python); `convert_flags_from_letters` decodes ROM letters with the ROM-correct mapping, so any area-file `AFF G` is silently mis-decoded as `SANCTUARY`. Closure deferred — requires `AffectFlag` renumber + persistence migration plan. TABLES-002 (ROM-name aliases for prefix-match) and TABLES-003 (per-table value verification for the remaining 30+ tables) also open. New `tests/integration/test_tables_parity.py` (4 passing spot-checks + 1 xfail reproducer for TABLES-001).

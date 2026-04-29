@@ -41,14 +41,85 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
 
     Mirrors ROM `flag_lookup(name, flag_table)` (src/bit.c). Returns ``None``
     on no match — callers map that to ROM's ``NO_FLAG`` semantics.
+
+    Lookup order (ROM-faithful):
+
+    1. The ROM ``src/tables.c`` table-name alias map for *flag_enum*
+       (`rom_flag_aliases`). ROM table names like ``npc``/``healer``/
+       ``can_loot``/``dirt_kick`` differ from Python member names
+       (``IS_NPC``/``IS_HEALER``/``CANLOOT``/``KICK_DIRT``) but must
+       prefix-match per ROM `flag_lookup`. Alias keys are lowercase.
+    2. Fallback to Python member names (case-insensitive prefix-match).
+
+    See TABLES-002 in `docs/parity/TABLES_C_AUDIT.md`.
     """
     if not name:
         return None
     needle = name.lower()
+
+    # mirroring ROM src/tables.c — table NAMES are the ROM-canonical strings
+    # `flag_lookup` matches against. Consult the alias map first so ROM names
+    # win when they would otherwise be hidden by a non-prefix Python member name.
+    aliases = rom_flag_aliases(flag_enum)
+    for alias_name, member in aliases.items():
+        if alias_name.startswith(needle):
+            return int(member)
+
     for member in flag_enum.__members__.values():
         if member.name and member.name.lower().startswith(needle):
             return int(member)
     return None
+
+
+# ROM `src/tables.c` table-name → Python IntFlag member aliases.
+# Populated lazily on first call to `rom_flag_aliases` to avoid an import
+# cycle with `mud.models.constants` at module-load time. See TABLES-002.
+_ROM_FLAG_ALIAS_CACHE: dict[type[IntFlag], dict[str, IntFlag]] = {}
+
+
+def rom_flag_aliases(flag_enum: type[IntFlag]) -> dict[str, IntFlag]:
+    """Return the ROM table-name → IntFlag member alias map for *flag_enum*.
+
+    Mirrors ROM `src/tables.c` flag-table names that don't directly
+    prefix-match Python member names. Empty for IntFlags whose Python
+    member names already match ROM table names.
+    """
+    cached = _ROM_FLAG_ALIAS_CACHE.get(flag_enum)
+    if cached is not None:
+        return cached
+
+    from mud.models.constants import (
+        ActFlag,
+        CommFlag,
+        OffFlag,
+        PlayerFlag,
+    )
+
+    aliases: dict[type[IntFlag], dict[str, IntFlag]] = {
+        # ROM src/tables.c:82-106 act_flags table.
+        ActFlag: {
+            "npc": ActFlag.IS_NPC,
+            "healer": ActFlag.IS_HEALER,
+            "changer": ActFlag.IS_CHANGER,
+        },
+        # ROM src/tables.c:108-128 plr_flags table.
+        PlayerFlag: {
+            "npc": PlayerFlag.IS_NPC,
+            "can_loot": PlayerFlag.CANLOOT,
+        },
+        # ROM src/tables.c:163-186 off_flags table.
+        OffFlag: {
+            "dirt_kick": OffFlag.KICK_DIRT,
+        },
+        # ROM src/tables.c:271-296 comm_flags table —
+        # ROM table name `noclangossip` for the auction-channel slot.
+        CommFlag: {
+            "noclangossip": CommFlag.NOAUCTION,
+        },
+    }
+    result = aliases.get(flag_enum, {})
+    _ROM_FLAG_ALIAS_CACHE[flag_enum] = result
+    return result
 
 
 def liq_lookup(name: str | None) -> int:

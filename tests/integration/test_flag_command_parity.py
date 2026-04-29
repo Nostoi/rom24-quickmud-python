@@ -186,6 +186,38 @@ def test_flag_prefix_match_accepts_abbreviation():
     )
 
 
+def test_flag_rom_name_alias_can_loot_matches_canloot():
+    # TABLES-002 — ROM `src/tables.c:108-128` lists the bit as `can_loot`, but
+    # Python `PlayerFlag.CANLOOT` has no underscore. ROM accepts the table
+    # name verbatim via `flag_lookup`; Python must accept ROM names through
+    # an alias map. Mirrors ROM src/lookup.c:39-51 + src/tables.c plr_flags.
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Bob", 3001)
+    victim.act = 0
+
+    do_flag(immortal, "char Bob plr +can_loot")
+
+    assert victim.act & int(PlayerFlag.CANLOOT), (
+        "ROM `can_loot` must resolve to PlayerFlag.CANLOOT via TABLES-002 alias map."
+    )
+
+
+def test_flag_rom_name_alias_npc_matches_is_npc():
+    # TABLES-002 — ROM `src/tables.c:82-106` lists act_flags A as `npc`;
+    # Python ActFlag.IS_NPC has the `IS_` prefix.
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Bob", 3001)
+    victim.act = 0
+
+    do_flag(immortal, "char Bob plr +npc")
+
+    assert victim.act & int(PlayerFlag.IS_NPC), (
+        "ROM `npc` must resolve to PlayerFlag.IS_NPC via TABLES-002 alias map."
+    )
+
+
 def test_flag_unknown_flag_name_rejected():
     # mirrors ROM src/flags.c:211-214 — "That flag doesn't exist!"
     _room(3001)
