@@ -51,6 +51,23 @@ def prefix_lookup_intflag(name: str | None, flag_enum: type[IntFlag]) -> int | N
     return None
 
 
+def sex_lookup(name: str | None) -> int:
+    """Return the int Sex index whose name is prefix-matched by *name*.
+
+    Mirrors ROM ``sex_lookup`` (src/lookup.c:81-93). Returns ``-1`` on miss.
+    """
+    # mirroring ROM src/lookup.c:81-93 — sex_lookup uses str_prefix.
+    from mud.models.constants import Sex
+
+    if not name:
+        return -1
+    needle = name.lower()
+    for member in Sex.__members__.values():
+        if member.name and member.name.lower().startswith(needle):
+            return int(member)
+    return -1
+
+
 def position_lookup(name: str | None) -> int:
     """Return the int Position index whose name is prefix-matched by *name*.
 

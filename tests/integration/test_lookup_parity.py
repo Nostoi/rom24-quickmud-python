@@ -52,6 +52,19 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_sex_lookup_prefix_and_unknown():
+    # mirrors ROM src/lookup.c:81-93 — sex_lookup uses str_prefix; -1 on miss.
+    # ROM sex_table: { "none", "male", "female", "either" } — Python Sex enum
+    # is identical (NONE=0, MALE=1, FEMALE=2, EITHER=3).
+    # Closes LOOKUP-005.
+    from mud.utils.prefix_lookup import sex_lookup
+
+    assert sex_lookup("male") == 1
+    assert sex_lookup("fem") == 2
+    assert sex_lookup("either") == 3
+    assert sex_lookup("xyz") == -1
+
+
 def test_position_lookup_prefix_and_unknown():
     # mirrors ROM src/lookup.c:67-79 — position_lookup uses str_prefix; -1 on miss.
     # Closes LOOKUP-004.
