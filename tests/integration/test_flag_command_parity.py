@@ -170,6 +170,22 @@ def test_flag_unknown_field_rejected():
     assert "not an acceptable flag" in out.lower()
 
 
+def test_flag_prefix_match_accepts_abbreviation():
+    # mirrors ROM src/lookup.c:39-51 — flag_lookup uses str_prefix; ROM accepts
+    # `+holy` as a prefix of `HOLYLIGHT`. Closes LOOKUP-002 in FLAGS_C_AUDIT.md.
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Bob", 3001)
+    victim.act = 0
+
+    do_flag(immortal, "char Bob plr +holy")
+
+    assert victim.act & int(PlayerFlag.HOLYLIGHT), (
+        "ROM accepts `holy` as a prefix abbreviation of HOLYLIGHT; "
+        "Python must use prefix-match, not exact-match."
+    )
+
+
 def test_flag_unknown_flag_name_rejected():
     # mirrors ROM src/flags.c:211-214 — "That flag doesn't exist!"
     _room(3001)

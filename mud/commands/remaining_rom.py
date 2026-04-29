@@ -51,16 +51,16 @@ _FLAG_FIELDS: dict[str, tuple[str, type[IntFlag], bool, bool]] = {
 
 
 def _lookup_flag_bit(token: str, flag_enum: type[IntFlag]) -> int | None:
-    """Case-insensitive lookup of a ROM flag name on an IntFlag enum.
+    """Case-insensitive prefix-match lookup of a ROM flag name on an IntFlag.
 
-    Returns the bit value or None if no member matches.
-    Mirrors ROM `flag_lookup(word, flag_table)` (src/lookup.c).
+    Mirrors ROM ``flag_lookup(word, flag_table)`` (src/bit.c → src/lookup.c:39-51):
+    accepts ``token`` when it is a prefix of any enum member's name. Returns
+    the bit value or ``None`` if no member matches (ROM ``NO_FLAG``).
     """
-    upper = token.upper()
-    for member in flag_enum.__members__.values():
-        if member.name.upper() == upper:
-            return int(member)
-    return None
+    # mirroring ROM src/lookup.c:39-51 — str_prefix accepts abbreviations.
+    from mud.utils.prefix_lookup import prefix_lookup_intflag
+
+    return prefix_lookup_intflag(token, flag_enum)
 
 
 # Comm flags
