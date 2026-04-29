@@ -94,7 +94,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `music.c` | P2 | ⚠️ Partial | `mud/music.py` | 60% | Song update works |
 | **Utilities & Helpers** | | | | | |
 | `const.c` | P3 | ⚠️ Partial | `mud/models/constants.py` | 80% | Most constants ported |
-| `tables.c` | P3 | ⚠️ Partial | `mud/data/` | 70% | Lookup tables partial |
+| `tables.c` | P3 | ⚠️ Partial | `mud/models/constants.py` | 75% | Apr 28, 2026 — Phase 1 inventory + Phase 2 spot-checks done. **TABLES-001 (CRITICAL):** `AffectFlag` bit positions diverge from ROM `merc.h:953-982`; reproducer xfail in `tests/integration/test_tables_parity.py`. Closure deferred (persistence migration). TABLES-002/003 also open. See `docs/parity/TABLES_C_AUDIT.md`. |
 | `lookup.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/models/races.py`, `mud/models/clans.py`, `mud/commands/remaining_rom.py` | 100% | Apr 28, 2026 — all 8 gaps closed (LOOKUP-001..008). New `mud/utils/prefix_lookup.py` provides ROM-faithful prefix-match helpers + `position_lookup`, `sex_lookup`, `size_lookup`, `item_lookup`, `liq_lookup`. `race_lookup`, `_lookup_flag_bit`, `lookup_clan_id` migrated to prefix-match. help_lookup/had_lookup UNVERIFIED (help-system audit). See LOOKUP_C_AUDIT.md |
 | `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | Apr 28, 2026 — FLAG-001 closed (do_flag fully implemented: operator parsing, 9-field dispatcher, IntFlag name lookup, bit mutation). FLAG-002 (settable-bit preservation) deferred MINOR. See FLAGS_C_AUDIT.md |
 | `bit.c` | P3 | ⚠️ Partial | `mud/utils.py` | 90% | Bit operations ported |
