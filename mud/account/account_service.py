@@ -587,8 +587,8 @@ def is_valid_account_name(username: str) -> bool:
     if capitalized != "Alander" and (capitalized.startswith("Alan") or capitalized.endswith("Alander")):
         return False
 
-    # mirrors ROM src/comm.c:check_parse_name — length must be in [3, 12]
-    if len(candidate) < 3 or len(candidate) > 12:
+    # mirroring ROM src/comm.c:1729,1738 — length must be in [2, 12]
+    if len(candidate) < 2 or len(candidate) > 12:
         return False
 
     f_ill = True

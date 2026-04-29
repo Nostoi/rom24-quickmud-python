@@ -155,7 +155,7 @@ a single-gap close.
 |----|----------|---------|------------|-------------|--------|
 | COMM-001 | CRITICAL | `src/comm.c:1420-1595` | `mud/utils/prompt.py:bust_a_prompt`, `mud/net/connection.py:1698,1923` | `bust_a_prompt` ported. Tokens `%h %H %m %M %v %V %x %X %g %s %a %r %R %z %% %e %c %o %O` expand against character state; default `<%dhp %dm %dmv> %s` fallback when `ch->prompt` unset; `COMM_AFK` short-circuits to `<AFK>`. `do_prompt` now stores on `Character.prompt` (matches ROM `ch->prompt`) instead of the `PCData.prompt` colour-triplet field. `send_prompt` applies ANSI rendering so `{p…{x` colour wrappers don't leak. | ✅ FIXED |
 | COMM-002 | IMPORTANT | `src/comm.c:1941-2174` | (none) | `page_to_char` / `show_string` pager not implemented. Long output (`help`, `score` on imm, long board reads) is not paged at `ch->lines`; ROM's `[Hit Return to continue]` interactive paging is missing. | 🔄 OPEN |
-| COMM-003 | IMPORTANT | `src/comm.c:1729` | `mud/account/account_service.py:591` | `check_parse_name` length lower bound is `< 3`, ROM is `< 2`. Two-letter ROM-legal names (e.g. `Bo`) rejected. The dependent `total_caps > strlen/2 && strlen < 3` clause at ROM:1774-1776 becomes reachable only after the bound is fixed. | 🔄 OPEN |
+| COMM-003 | IMPORTANT | `src/comm.c:1729` | `mud/account/account_service.py:591` | `check_parse_name` length lower bound was `< 3`, ROM is `< 2`. Two-letter ROM-legal names (e.g. `Bo`) were rejected. Fixed by flipping the bound to `< 2` and updating `test_name_validator_matches_rom_check_parse_name` (NANNY-012) which had locked in the wrong threshold with a docstring misreading ROM. | ✅ FIXED |
 | COMM-004 | IMPORTANT | `src/comm.c:1782-1796` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't reject names that match a `MOB_INDEX_DATA.player_name`. Allows player → mob name collision (`kill self` ambiguity). | 🔄 OPEN |
 | COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't sweep `descriptor_list` for not-yet-`CON_PLAYING` duplicates and doesn't emit the `"Double newbie alert (%s)"` wiznet broadcast. | 🔄 OPEN |
 | COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't reject names matching `clan_table[].name`. (`loner` is incidentally covered by `_RESERVED_NAMES`, but other clans aren't.) | 🔄 OPEN |
@@ -178,6 +178,17 @@ a single-gap close.
 ---
 
 ## Phase 4 — Gap Closures
+
+### COMM-003 — `check_parse_name` length floor (IMPORTANT)
+
+- **Test:** `tests/integration/test_nanny_login_parity.py::test_name_validator_matches_rom_check_parse_name`
+  rewritten to assert ROM's `< 2` bound (`Bo` accepted, `a` rejected). The
+  prior assertion `is_valid_account_name("xy") is False` had locked in the
+  buggy `< 3` Python behaviour with a docstring misreading ROM
+  (`src/comm.c:1729` is `strlen < 2`). Per AGENTS.md "test contradicting ROM
+  C is a bug in the test."
+- **Implementation:** `mud/account/account_service.py:591` — bound flipped
+  from `< 3` to `< 2`.
 
 ### COMM-001 — `bust_a_prompt` rendering (CRITICAL)
 
