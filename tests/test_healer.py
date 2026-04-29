@@ -19,8 +19,8 @@ def test_healer_lists_services_and_prices():
     ch = create_test_character("Buyer", 3001)
     place_healer(ch)
     out = process_command(ch, "heal")
-    assert "refresh 5 gold" in out
-    assert "heal 50 gold" in out
+    assert "refresh: restore movement      5 gold" in out
+    assert "heal: healing spell          50 gold" in out
 
 
 def test_healer_refresh_and_heal_effects_and_pricing():
@@ -34,12 +34,12 @@ def test_healer_refresh_and_heal_effects_and_pricing():
     ch.hit = 20
 
     out1 = process_command(ch, "heal refresh")
-    assert "feel refreshed" in out1.lower()
-    assert ch.move == 100
+    assert out1 == "You feel less tired."
+    assert 10 < ch.move < 100
     assert ch.gold == 55
 
     out2 = process_command(ch, "heal heal")
-    assert "wounds mend" in out2.lower()
+    assert out2 == "A warm feeling fills your body."
     assert ch.hit == 100
     assert ch.gold == 5
 

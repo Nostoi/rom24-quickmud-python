@@ -129,7 +129,7 @@ def test_healer_refresh_effect():
 
     result = do_heal(char, "refresh")
 
-    assert "refresh" in result.lower()
+    assert result == "You feel less tired."
     assert char.move >= 10
 
 

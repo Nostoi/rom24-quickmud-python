@@ -7,8 +7,6 @@ ROM C Reference: src/healer.c:41-197
 
 from __future__ import annotations
 
-import pytest
-
 from mud.commands.healer import PRICE_GOLD
 
 
