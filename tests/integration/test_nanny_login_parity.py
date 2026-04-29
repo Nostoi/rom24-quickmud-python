@@ -376,6 +376,71 @@ def test_immortal_without_saved_room_routes_to_chat_room():
 
 
 @pytest.mark.p1
+def test_first_login_resources_at_max():
+    """NANNY-013 — first-login `hit=max_hit; mana=max_mana; move=max_move`.
+
+    ROM C: src/nanny.c:772-775
+        ```c
+        ch->exp     = exp_per_level (ch, ch->pcdata->points);
+        ch->hit     = ch->max_hit;
+        ch->mana    = ch->max_mana;
+        ch->move    = ch->max_move;
+        ```
+
+    A freshly-created character should enter the world at full
+    resources. Python persists characters at level 1 with `hp=100` and
+    `perm_hit=100`; `from_orm` sets max_* from perm_* and `hit` from
+    saved hp. Combined with `apply_login_state_refresh` (NANNY-014)
+    which restores max_* on every login, a brand-new character lands
+    at full HP/mana/move.
+    """
+    from types import SimpleNamespace
+
+    from mud.models.character import from_orm
+
+    db_char = SimpleNamespace(
+        name="Fresh",
+        level=1,
+        hp=100,
+        room_vnum=3700,
+        race=0,
+        ch_class=0,
+        sex=1,
+        true_sex=1,
+        alignment=0,
+        act=0,
+        hometown_vnum=3001,
+        perm_stats="",
+        size=0,
+        form=0,
+        parts=0,
+        imm_flags=0,
+        res_flags=0,
+        vuln_flags=0,
+        practice=5,
+        train=3,
+        perm_hit=100,
+        perm_mana=100,
+        perm_move=100,
+        default_weapon_vnum=0,
+        newbie_help_seen=False,
+        creation_points=40,
+        creation_groups="",
+        creation_skills="",
+        prompt=None,
+        comm=0,
+        player=None,
+    )
+
+    char = from_orm(db_char)
+
+    # mirrors ROM src/nanny.c:772-775 — fresh character at full resources
+    assert char.hit == char.max_hit == 100
+    assert char.mana == char.max_mana == 100
+    assert char.move == char.max_move == 100
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

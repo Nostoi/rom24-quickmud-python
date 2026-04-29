@@ -185,7 +185,7 @@ ROM enforces length 3–12, alpha-only, and rejects reserved tokens including `a
 | `NANNY-009` | IMPORTANT | `nanny.c:778-780` | — | `title_table[class][level][sex]` data and `set_title("the …")` first-login call missing — new chars get no class title. | 🔄 OPEN |
 | `NANNY-010` | IMPORTANT | `nanny.c:307-352` | `mud/net/connection.py:1420-1443` | `CON_BREAK_CONNECT` Y-path doesn't iterate the full descriptor list; only closes one duplicate session. | 🔄 OPEN |
 | `NANNY-012` | IMPORTANT | `nanny.c:188` (`check_parse_name`) | `mud/account/account_service.py:572-613` | Name validator allows length 2 (ROM minimum is 3) and is missing `god` / `imp` from reserved-name list. | 🔄 OPEN |
-| `NANNY-013` | IMPORTANT | `nanny.c:772-775` | `mud/net/connection.py:1554` | First-login `hit=max_hit; mana=max_mana; move=max_move; exp=exp_per_level(ch,points)` not explicitly applied at MOTD completion. | 🔄 OPEN |
+| `NANNY-013` | IMPORTANT | `nanny.c:772-775` | `mud/models/character.py:from_orm` + NANNY-014 reset_char | First-login `hit=max_hit; mana=max_mana; move=max_move; exp=exp_per_level(ch,points)` not explicitly applied at MOTD completion. | ✅ VERIFIED — Python persists fresh chars with hp=100 and perm_hit=100; `from_orm` initialises max_hit/mana/move from perm_* and `hit` from saved hp, so a brand-new char is at full resources on first login. NANNY-014 reset_char further guarantees max_* come back from perm_* on every subsequent login. Test: `tests/integration/test_nanny_login_parity.py::test_first_login_resources_at_max`. |
 | `NANNY-011` | MINOR | `nanny.c:396-405` | `mud/net/connection.py:768-782` | New password is not scanned for `~` characters (ROM file-format poisoner check). Python uses a DB backend; preserved for parity completeness. | 🔄 OPEN |
 
 ---
