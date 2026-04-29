@@ -205,3 +205,25 @@ def string_lineadd(string: str, newstr: str, line: int) -> str:
         buf.append("\n\r")
 
     return "".join(buf)
+
+
+def string_replace(orig: str, old: str, new: str) -> str:
+    """Replace the FIRST occurrence of `old` substring with `new`.
+
+    Mirrors ROM ``string_replace`` (src/string.c:95-112). Replaces only
+    the first occurrence of *old* within *orig*. If *old* is not found,
+    returns *orig* unchanged.
+
+    Used by `string_add::.r` dot-command (STRING-004) and `aedit_builder`.
+    """
+
+    if not old or old not in orig:
+        return orig
+
+    # Find the index of the first occurrence
+    idx = orig.find(old)
+    if idx == -1:
+        return orig
+
+    # Replace: prefix + new + suffix (skipping the old substring)
+    return orig[:idx] + new + orig[idx + len(old) :]

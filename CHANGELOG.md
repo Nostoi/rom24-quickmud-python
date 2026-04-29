@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `STRING-003` — `mud/utils/string_editor.py:string_replace(orig, old, new) -> str`. Mirrors ROM `src/string.c:95-112`: replace the first occurrence of *old* substring within *orig* with *new*. If *old* is not found, returns *orig* unchanged. Empty *old* returns *orig* unchanged (ROM behavior). Used by `string_add::.r` dot-command (STRING-004) and `aedit_builder::replace`. Test: `tests/integration/test_string_editor_replace.py` (9 cases).
 - `STRING-010` — `mud/utils/string_editor.py:string_lineadd(string, newstr, line) -> str`. Mirrors ROM `src/string.c:607-645`: insert *newstr* as the 1-indexed line N. The inserted line gets a `\n\r` suffix. If line is past the end, insertion doesn't happen (never reached). Used by `.li` and `.lr` dot-commands. Test: `tests/integration/test_string_editor_lineadd.py` (10 cases).
 - `STRING-009` — `mud/utils/string_editor.py:string_linedel(string, line) -> str`. Mirrors ROM `src/string.c:574-605`: remove the 1-indexed line N from the string, preserving `\n\r` line endings. Out-of-range line numbers are a no-op. Used by `.ld` dot-command. Test: `tests/integration/test_string_editor_linedel.py` (8 cases).
 - `STRING-012` — `mud/utils/string_editor.py:numlines(string) -> str`. Mirrors ROM `src/string.c:676-692`: format string as line-numbered listing (`%2d. <line>\n\r`), 1-indexed. Used by `.s` dot-command and `string_append` greeting. Test: `tests/integration/test_string_editor_numlines.py` (7 cases).
