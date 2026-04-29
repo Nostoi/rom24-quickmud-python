@@ -52,6 +52,16 @@ def test_race_lookup_unknown_returns_zero():
     assert race_lookup("zzznotarace") == 0
 
 
+def test_clan_lookup_prefix_match():
+    # mirrors ROM src/lookup.c:53-65 — clan_lookup uses str_prefix.
+    # Closes LOOKUP-003.
+    from mud.models.clans import lookup_clan_id
+
+    # CLAN_TABLE: 0="", 1="loner", 2="rom"
+    assert lookup_clan_id("lo") == 1, "ROM accepts `lo` as a prefix of `loner`"
+    assert lookup_clan_id("ro") == 2, "ROM accepts `ro` as a prefix of `rom`"
+
+
 def test_persistence_pet_race_restore_does_not_raise_import_error():
     # mirrors ROM src/save.c pet load path. The QuickMUD persistence module
     # imports `race_lookup` lazily inside the pet-restore block; if the symbol

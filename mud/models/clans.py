@@ -68,8 +68,10 @@ def lookup_clan_id(name: str | int | None) -> int:
     lowered = text.lower()
     if lowered in {"none", "0"}:
         return 0
+    # mirroring ROM src/lookup.c:53-65 — clan_lookup uses str_prefix; accept
+    # any prefix of a clan name (so `lo` matches `loner`).
     for idx, clan in enumerate(CLAN_TABLE):
-        if clan.name.lower() == lowered:
+        if clan.name and clan.name.lower().startswith(lowered):
             return idx
     return 0
 
