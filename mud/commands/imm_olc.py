@@ -12,6 +12,7 @@ from mud.models.character import Character
 from mud.utils.olc_tables import (
     DIR_NAMES,
     door_reset_string_for,
+    wear_loc_flag_lookup,
     wear_loc_string_for,
 )
 
@@ -217,6 +218,23 @@ def _display_resets(room) -> str:
     return "\n".join(lines)
 
 
+def _add_reset(room, pReset, insert_loc: int) -> None:
+    """Insert pReset at 1-indexed position insert_loc in room.resets.
+
+    Negative / zero insert_loc -> tail insertion; idx=1 -> head.
+    Mirrors ROM src/olc.c:add_reset linked-list insert semantics
+    (Python list approximation — see OLC-021 for edge-case gap).
+
+    ROM Reference: src/olc.c:1192-1228
+    """
+    if not hasattr(room, "resets") or room.resets is None:
+        room.resets = []
+    if insert_loc <= 0:
+        room.resets.append(pReset)
+    else:
+        room.resets.insert(insert_loc - 1, pReset)
+
+
 def do_resets(char: Character, args: str) -> str:
     """
     View or modify room resets.
@@ -251,68 +269,154 @@ def do_resets(char: Character, args: str) -> str:
 
     parts = args.strip().split()
 
+    # mirroring ROM src/olc.c:1279-1465 — take index number and search for commands
     if len(parts) >= 2 and parts[0].isdigit():
-        idx = int(parts[0])
-        action = parts[1].lower()
+        from types import SimpleNamespace
 
-        if action == "delete":
+        from mud.models.constants import ItemType, WearLocation
+        from mud.registry import mob_registry, obj_registry
+
+        insert_loc = int(parts[0])
+        arg2 = parts[1].lower()
+        # Extract remaining args (mirrors ROM one_argument peeling of arg3..arg7)
+        arg3 = parts[2] if len(parts) > 2 else ""
+        arg4 = parts[3] if len(parts) > 3 else ""
+        arg5 = parts[4] if len(parts) > 4 else ""
+        arg6 = parts[5] if len(parts) > 5 else ""
+        arg7 = parts[6] if len(parts) > 6 else ""
+
+        # --- Delete a reset --- mirroring ROM src/olc.c:1287-1334
+        if arg2 == "delete":
             resets = getattr(room, "resets", [])
-            if idx < 1 or idx > len(resets):
-                return "Reset not found."
+            if not resets:
+                return "No resets in this area.\n\r"
+            if insert_loc < 1 or insert_loc > len(resets):
+                return "Reset not found.\n\r"
+            resets.pop(insert_loc - 1)
+            return "Reset deleted.\n\r"
 
-            resets.pop(idx - 1)
-            return "Reset deleted."
+        # --- Mobile reset --- mirroring ROM src/olc.c:1341-1362
+        if arg2 == "mob" and arg3.lstrip("-").isdigit():
+            mob_vnum = int(arg3)
+            mob_idx = mob_registry.get(mob_vnum)
+            if mob_idx is None:
+                return "Mob doesn't exist.\n\r"
 
-        if action == "mob" and len(parts) >= 3:
-            if not parts[2].isdigit():
-                return "Mob vnum must be a number."
+            # arg4 = max # in area (default 1), arg5 = max # in room (default 1)
+            # mirroring ROM src/olc.c:1359,1361
+            max_area = int(arg4) if arg4.lstrip("-").isdigit() else 1
+            max_room = int(arg5) if arg5.lstrip("-").isdigit() else 1
 
-            from mud import registry
-            vnum = int(parts[2])
+            pReset = SimpleNamespace(
+                command="M",
+                arg1=mob_vnum,
+                arg2=max_area,  # max # in area
+                arg3=room.vnum,
+                arg4=max_room,  # max # in room
+            )
+            _add_reset(room, pReset, insert_loc)
+            return "Reset added.\n\r"
 
-            if vnum not in registry.mob_prototypes:
-                return "No mobile has that vnum."
+        # --- Object reset --- mirroring ROM src/olc.c:1363-1432
+        if arg2 == "obj" and arg3.lstrip("-").isdigit():
+            obj_vnum = int(arg3)
 
-            # Add reset (simplified)
-            resets = getattr(room, "resets", None)
-            if resets is None:
-                room.resets = []
-                resets = room.resets
+            # --- Inside another object (P-reset) --- ROM src/olc.c:1376-1391
+            if arg4.lower().startswith("inside"):
+                # mirroring ROM src/olc.c:1376: !str_prefix(arg4, "inside")
+                container_vnum = int(arg5) if arg5.lstrip("-").isdigit() else 1
+                temp = obj_registry.get(container_vnum)
+                if temp is None:
+                    return "Vnum doesn't exist.\n\r"
+                # ROM src/olc.c:1381-1385 — must be ITEM_CONTAINER or ITEM_CORPSE_NPC
+                temp_type = int(getattr(temp, "item_type", 0))
+                if temp_type not in (int(ItemType.CONTAINER), int(ItemType.CORPSE_NPC)):
+                    return "Object 2 is not a container.\n\r"
+                # arg6=limit (default 1), arg7=count (default 1)
+                # mirroring ROM src/olc.c:1388-1390
+                limit = int(arg6) if arg6.lstrip("-").isdigit() else 1
+                count = int(arg7) if arg7.lstrip("-").isdigit() else 1
+                pReset = SimpleNamespace(
+                    command="P",
+                    arg1=obj_vnum,
+                    arg2=limit,
+                    arg3=container_vnum,
+                    arg4=count,
+                )
+                _add_reset(room, pReset, insert_loc)
+                return "Reset added.\n\r"
 
-            # Create reset entry
-            from types import SimpleNamespace
-            reset = SimpleNamespace(command='M', arg1=vnum, arg2=1, arg3=room.vnum)
-            resets.insert(idx - 1 if idx > 0 else len(resets), reset)
+            # --- Inside the room (O-reset) --- ROM src/olc.c:1397-1408
+            if arg4.lower() == "room":
+                # mirroring ROM src/olc.c:1399-1403 — validate obj vnum exists
+                if obj_registry.get(obj_vnum) is None:
+                    return "Vnum doesn't exist.\n\r"
+                pReset = SimpleNamespace(
+                    command="O",
+                    arg1=obj_vnum,
+                    arg2=0,
+                    arg3=room.vnum,
+                    arg4=0,
+                )
+                _add_reset(room, pReset, insert_loc)
+                return "Reset added.\n\r"
 
-            return f"Mobile reset added at position {idx}."
+            # --- Into a mobile's inventory (G or E reset) --- ROM src/olc.c:1409-1431
+            wear_val = wear_loc_flag_lookup(arg4)
+            if wear_val is None:
+                # mirroring ROM src/olc.c:1415-1417
+                return "Resets: '? wear-loc'\n\r"
+            # ROM src/olc.c:1420-1423 — validate obj vnum
+            if obj_registry.get(obj_vnum) is None:
+                return "Vnum doesn't exist.\n\r"
+            # ROM src/olc.c:1427-1430 — WEAR_NONE -> G, else E
+            if wear_val == int(WearLocation.NONE):
+                cmd = "G"
+            else:
+                cmd = "E"
+            pReset = SimpleNamespace(
+                command=cmd,
+                arg1=obj_vnum,
+                arg2=0,
+                arg3=wear_val,
+                arg4=0,
+            )
+            _add_reset(room, pReset, insert_loc)
+            return "Reset added.\n\r"
 
-        if action == "obj" and len(parts) >= 3:
-            if not parts[2].isdigit():
-                return "Object vnum must be a number."
+        # --- Random exits reset (R-reset) --- ROM src/olc.c:1437-1451
+        if arg2 == "random" and arg3.lstrip("-").isdigit():
+            n_exits = int(arg3)
+            if n_exits < 1 or n_exits > 6:
+                return "Invalid argument.\n\r"
+            pReset = SimpleNamespace(
+                command="R",
+                arg1=room.vnum,
+                arg2=n_exits,
+                arg3=0,
+                arg4=0,
+            )
+            _add_reset(room, pReset, insert_loc)
+            return "Random exits reset added.\n\r"
 
-            from mud import registry
-            vnum = int(parts[2])
+        # --- Syntax help for unrecognized subcommand --- ROM src/olc.c:1452-1465
+        return (
+            "Syntax: RESET <number> OBJ <vnum> <wear_loc>\n\r"
+            "        RESET <number> OBJ <vnum> inside <vnum> [limit] [count]\n\r"
+            "        RESET <number> OBJ <vnum> room\n\r"
+            "        RESET <number> MOB <vnum> [max #x area] [max #x room]\n\r"
+            "        RESET <number> DELETE\n\r"
+            "        RESET <number> RANDOM [#x exits]\n\r"
+        )
 
-            if vnum not in registry.obj_prototypes:
-                return "No object has that vnum."
-
-            # Add reset
-            resets = getattr(room, "resets", None)
-            if resets is None:
-                room.resets = []
-                resets = room.resets
-
-            from types import SimpleNamespace
-            reset = SimpleNamespace(command='O', arg1=vnum, arg2=0, arg3=room.vnum)
-            resets.insert(idx - 1 if idx > 0 else len(resets), reset)
-
-            return f"Object reset added at position {idx}."
-
-    return ("Syntax:\n"
-            "  resets                       - Display resets\n"
-            "  resets <num> delete          - Delete reset\n"
-            "  resets <num> mob <vnum>      - Add mob reset\n"
-            "  resets <num> obj <vnum>      - Add obj reset")
+    return (
+        "Syntax: RESET <number> OBJ <vnum> <wear_loc>\n\r"
+        "        RESET <number> OBJ <vnum> inside <vnum> [limit] [count]\n\r"
+        "        RESET <number> OBJ <vnum> room\n\r"
+        "        RESET <number> MOB <vnum> [max #x area] [max #x room]\n\r"
+        "        RESET <number> DELETE\n\r"
+        "        RESET <number> RANDOM [#x exits]\n\r"
+    )
 
 
 def do_alist(char: Character, args: str) -> str:
