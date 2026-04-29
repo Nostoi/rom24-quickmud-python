@@ -441,6 +441,29 @@ def test_first_login_resources_at_max():
 
 
 @pytest.mark.p1
+def test_name_validator_matches_rom_check_parse_name():
+    """NANNY-012 — name validator: length ≥ 3, reject `god`/`imp`.
+
+    ROM C: src/comm.c:check_parse_name (called from nanny.c:188).
+    ROM rejects names shorter than 3 chars and reserves
+    `all auto immortal self someone something the you loner none god imp`.
+
+    Python's `is_valid_account_name` allowed length 2 and omitted
+    `god`/`imp` from the reserved set.
+    """
+    from mud.account import is_valid_account_name
+
+    # mirrors ROM src/comm.c:check_parse_name length floor of 3
+    assert is_valid_account_name("xy") is False
+    assert is_valid_account_name("Bob") is True
+
+    # mirrors ROM reserved-words list (god, imp added)
+    assert is_valid_account_name("god") is False
+    assert is_valid_account_name("imp") is False
+    assert is_valid_account_name("all") is False  # already covered, sanity check
+
+
+@pytest.mark.p1
 def test_login_state_refresh_is_a_noop_for_npcs():
     """reset_char early-returns on NPCs (handler.py:1067-1069). The login helper
     must preserve that behaviour — NPCs never traverse nanny.c login states.

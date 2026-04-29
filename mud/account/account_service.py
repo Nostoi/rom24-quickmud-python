@@ -67,6 +67,7 @@ class LoginResult(NamedTuple):
 _active_accounts: set[str] = set()
 
 _RESERVED_NAMES = {
+    # mirrors ROM src/comm.c reserved_words[] (called from nanny.c:188)
     "all",
     "auto",
     "immortal",
@@ -77,6 +78,8 @@ _RESERVED_NAMES = {
     "you",
     "loner",
     "none",
+    "god",
+    "imp",
 }
 
 
@@ -584,7 +587,8 @@ def is_valid_account_name(username: str) -> bool:
     if capitalized != "Alander" and (capitalized.startswith("Alan") or capitalized.endswith("Alander")):
         return False
 
-    if len(candidate) < 2 or len(candidate) > 12:
+    # mirrors ROM src/comm.c:check_parse_name — length must be in [3, 12]
+    if len(candidate) < 3 or len(candidate) > 12:
         return False
 
     f_ill = True
