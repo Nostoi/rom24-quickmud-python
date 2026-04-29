@@ -421,7 +421,7 @@ Status will flip to ✅ AUDITED only after:
 - OLC_ACT-007..012 (IMPORTANT gaps) closed or explicitly deferred with justification.
 - TIER C functions receive a follow-up deep-audit pass (the ~78 functions marked 🔄 NEEDS DEEP AUDIT above).
 
-**Human follow-up questions**:
-1. `aedit_create` in ROM creates an area with `min_vnum=0`/`max_vnum=0` by default — `get_vnum_area(0)` would then match it for any out-of-range vnum. Is this intentional ROM behavior or a quirk we should replicate?
-2. The `redit_<vnum>` teleport uses `char_from_room`/`char_to_room` — does the Python engine's movement system support silent teleportation (no room-exit messages) needed for OLC?
-3. `medit_shop` (ROM 3932–4117) is 185 lines — it handles creating/editing shop entries on mobs. Should this be TIER B (moderate audit) or keep as TIER C given the shop system is already partially ported?
+**Human follow-up questions** (locked 2026-04-29):
+1. **LOCKED — replicate**: `aedit_create` initializes `min_vnum=0`/`max_vnum=0` per ROM. Closure subagents replicate verbatim. Parity-faithful ROM quirk, not a bug to patch.
+2. **LOCKED — reuse silent primitives**: `redit <vnum>` teleport reuses the existing silent helpers `_char_from_room`/`_char_to_room` in `mud/commands/imm_commands.py`. No new `silent_relocate` infra needed. `do_goto` itself is noisy (bamfout/bamfin acts) but its underlying primitives are silent — exactly what ROM `redit_<vnum>` requires.
+3. **LOCKED — stay TIER C**: `medit_shop` remains TIER C. Shop-edit path is unreachable until OLC_ACT-006 (`medit_create`) lands; revisit in a follow-up audit pass after the six anchor gaps close.
