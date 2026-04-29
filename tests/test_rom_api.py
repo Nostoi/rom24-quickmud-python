@@ -18,12 +18,17 @@ def test_board_lookup_finds_existing_board():
 
     initialize_world(use_json=True)
 
-    # Create the board first
+    # Create the board first (after world init the General board is already
+    # seeded with ROM defaults from src/board.c:67-76; get_board returns
+    # that existing entry and only the case-insensitive lookup matches).
     get_board("general", description="General discussion", read_level=0, write_level=0)
 
     board = board_lookup("general")
     assert board is not None
-    assert board.name == "general"
+    # ROM's hardcoded short_name is "General" (src/board.c:70); storage_key
+    # is the lowercased lookup key. Both must round-trip.
+    assert board.name.lower() == "general"
+    assert board.storage_key() == "general"
 
 
 def test_board_number_is_alias_for_lookup():
