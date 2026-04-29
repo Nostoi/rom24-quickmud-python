@@ -247,12 +247,15 @@ def _render_ban_listing() -> str:
     lines = ["Banned sites  level  type     status"]
     for entry in entries:
         pattern = entry.to_pattern()
+        # mirrors ROM src/ban.c:166-168 — chained ternary; "" when none of NEWBIES/PERMIT/ALL set
         if entry.flags & BanFlag.NEWBIES:
             type_text = "newbies"
         elif entry.flags & BanFlag.PERMIT:
             type_text = "permit"
-        else:
+        elif entry.flags & BanFlag.ALL:
             type_text = "all"
+        else:
+            type_text = ""
         status = "perm" if entry.flags & BanFlag.PERMANENT else "temp"
         # mirrors ROM src/ban.c:164 — "%-12s    %-3d  %-7s  %s" (level left-aligned)
         lines.append(f"{pattern:<12}    {entry.level:<3d}  {type_text:<7}  {status}")
