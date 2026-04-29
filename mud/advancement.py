@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 
 from mud.math.c_compat import c_div
-from mud.math.stat_apps import con_hitp_bonus
+from mud.math.stat_apps import con_hitp_bonus, wis_practice_bonus
 from mud.models.character import Character
 from mud.models.classes import CLASS_TABLE, ClassType
 from mud.models.constants import LEVEL_HERO
@@ -111,10 +111,13 @@ def advance_level(char: Character) -> None:
     add_hp = c_div(add_hp * 9, 10)
     hp = max(2, add_hp)
 
+    # ROM src/update.c:87 — add_prac = wis_app[get_curr_stat(ch, STAT_WIS)].practice
+    practice_gain = wis_practice_bonus(char)
+
     char.max_hit += hp
     char.max_mana += mana
     char.max_move += move
-    char.practice += PRACTICES_PER_LEVEL
+    char.practice += practice_gain
     char.train += TRAINS_PER_LEVEL
 
     pcdata = getattr(char, "pcdata", None)
@@ -138,11 +141,11 @@ def advance_level(char: Character) -> None:
 
     if hasattr(char, "send_to_char") and not getattr(char, "is_npc", False):
         hit_suffix = "" if hp == 1 else "s"
-        practice_suffix = "" if PRACTICES_PER_LEVEL == 1 else "s"
+        practice_suffix = "" if practice_gain == 1 else "s"
         message = (
             "You gain "
             f"{hp} hit point{hit_suffix}, {mana} mana, {move} move, and "
-            f"{PRACTICES_PER_LEVEL} practice{practice_suffix}.{ROM_NEWLINE}"
+            f"{practice_gain} practice{practice_suffix}.{ROM_NEWLINE}"
         )
         char.send_to_char(message)
 

@@ -11,8 +11,8 @@ from mud.advancement import (
 from mud.commands.advancement import do_practice, do_train
 from mud.models import Room
 from mud.models.character import Character, PCData
-from mud.models.constants import Position
 from mud.models.classes import CLASS_TABLE
+from mud.models.constants import Position
 from mud.models.mob import MobIndex
 from mud.models.races import list_playable_races
 from mud.skills.registry import load_skills, skill_registry
@@ -238,7 +238,8 @@ def test_advance_level_updates_permanent_stats(monkeypatch):
     assert char.max_hit == 30 + expected_hp
     assert char.max_mana == 46
     assert char.max_move == 54
-    assert char.practice == 3
+    # Post-CONST-006: practice gain = wis_app[WIS].practice. WIS-13 → 1.
+    assert char.practice == 2
     assert char.train == 1
 
 
@@ -246,6 +247,9 @@ def test_advance_level_reports_gains(monkeypatch):
     """Post-CONST-005: HP in the gain message is the ROM-rolled value.
     With number_range pinned to hp_min, cleric hp_min=7, CON-13 hitp=0,
     (0+7)*9/10 == 6 HP per level.
+
+    Post-CONST-006: practice gain = wis_app[WIS].practice. WIS-13 → 1
+    (singular "practice", not "practices").
     """
 
     from mud.utils import rng_mm
@@ -264,7 +268,7 @@ def test_advance_level_reports_gains(monkeypatch):
 
     advance_level(char)
 
-    expected = f"You gain 6 hit points, 8 mana, 4 move, and 2 practices.{ROM_NEWLINE}"
+    expected = f"You gain 6 hit points, 8 mana, 4 move, and 1 practice.{ROM_NEWLINE}"
     assert expected in char.messages
 
 

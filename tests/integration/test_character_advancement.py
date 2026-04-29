@@ -18,7 +18,7 @@ from mud.math.stat_apps import CON_APP
 from mud.models.character import Character
 from mud.models.classes import CLASS_TABLE
 from mud.models.constants import LEVEL_HERO
-from mud.registry import room_registry, area_registry, mob_registry, obj_registry
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
@@ -84,9 +84,10 @@ def test_kill_mob_grants_xp_integration(test_character, test_mob):
     get 0 XP from trivial mobs (ROM parity). Using equal levels
     ensures XP is granted for testing the XP flow itself.
     """
+    import time
+
     from mud.models.constants import Position
     from mud.utils import rng_mm
-    import time
 
     rng_mm.seed_mm(int(time.time()))
 
@@ -250,7 +251,9 @@ def test_level_up_grants_practices_and_trains(test_character):
     When advance_level called
     Then practices and trains increase
 
-    ROM Parity: advancement.py PRACTICES_PER_LEVEL=2, TRAINS_PER_LEVEL=1
+    ROM Parity: advance_level practice gain = wis_app[WIS].practice
+    (src/update.c:87, src/const.c:790-817). WIS-13 default → 1 practice/level.
+    TRAINS_PER_LEVEL = 1.
     """
     char = test_character
     char.level = 1
@@ -259,7 +262,7 @@ def test_level_up_grants_practices_and_trains(test_character):
 
     advance_level(char)
 
-    assert char.practice == 7, "Should gain 2 practices per level"
+    assert char.practice == 6, "WIS-13 → wis_app[13].practice == 1"
     assert char.train == 4, "Should gain 1 train per level"
 
 
@@ -478,7 +481,8 @@ def test_character_advancement_from_level_1_to_10(test_character, monkeypatch):
     assert char.max_mana == expected_mana, f"Expected {expected_mana} mana at level {char.level}"
     assert char.max_move == expected_move, f"Expected {expected_move} move at level {char.level}"
 
-    expected_practices = 5 + (level_ups * 2)
+    # CONST-006: WIS-13 default → wis_app[13].practice == 1 per level.
+    expected_practices = 5 + (level_ups * 1)
     expected_trains = 3 + (level_ups * 1)
 
     assert char.practice == expected_practices, f"Expected {expected_practices} practices at level {char.level}"

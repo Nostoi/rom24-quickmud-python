@@ -69,6 +69,12 @@ class DexAppRow(NamedTuple):
     defensive: int
 
 
+class WisAppRow(NamedTuple):
+    """One row of ROM ``wis_app[26]`` — see src/const.c:790-817."""
+
+    practice: int
+
+
 class ConAppRow(NamedTuple):
     """One row of ROM ``con_app[26]`` — see src/const.c:850-878.
 
@@ -110,6 +116,37 @@ DEX_APP: tuple[DexAppRow, ...] = (
     DexAppRow(-90),   # DEX 23
     DexAppRow(-105),  # DEX 24
     DexAppRow(-120),  # DEX 25
+)
+
+
+# ROM src/const.c:790-817 — verbatim port of wis_app[26].
+WIS_APP: tuple[WisAppRow, ...] = (
+    WisAppRow(0),    # WIS  0
+    WisAppRow(0),    # WIS  1
+    WisAppRow(0),    # WIS  2
+    WisAppRow(0),    # WIS  3
+    WisAppRow(0),    # WIS  4
+    WisAppRow(1),    # WIS  5
+    WisAppRow(1),    # WIS  6
+    WisAppRow(1),    # WIS  7
+    WisAppRow(1),    # WIS  8
+    WisAppRow(1),    # WIS  9
+    WisAppRow(1),    # WIS 10
+    WisAppRow(1),    # WIS 11
+    WisAppRow(1),    # WIS 12
+    WisAppRow(1),    # WIS 13
+    WisAppRow(1),    # WIS 14
+    WisAppRow(2),    # WIS 15
+    WisAppRow(2),    # WIS 16
+    WisAppRow(2),    # WIS 17
+    WisAppRow(3),    # WIS 18
+    WisAppRow(3),    # WIS 19
+    WisAppRow(3),    # WIS 20
+    WisAppRow(3),    # WIS 21
+    WisAppRow(4),    # WIS 22
+    WisAppRow(4),    # WIS 23
+    WisAppRow(4),    # WIS 24
+    WisAppRow(5),    # WIS 25
 )
 
 
@@ -178,6 +215,12 @@ def _curr_con(ch) -> int:
     return _curr_stat(ch, Stat.CON)
 
 
+def _curr_wis(ch) -> int:
+    """Return ch's current WIS clamped to the wis_app index range [0, 25]."""
+
+    return _curr_stat(ch, Stat.WIS)
+
+
 def _is_awake(ch) -> bool:
     """ROM IS_AWAKE: position > POS_SLEEPING (4). See src/merc.h:2103."""
 
@@ -239,3 +282,13 @@ def con_hitp_bonus(ch) -> int:
     """
 
     return CON_APP[_curr_con(ch)].hitp
+
+
+def wis_practice_bonus(ch) -> int:
+    """Return ROM ``wis_app[get_curr_stat(ch, STAT_WIS)].practice``.
+
+    Mirrors src/const.c:790-817. Consumed at src/update.c:87
+    (advance_level per-level practice gain).
+    """
+
+    return WIS_APP[_curr_wis(ch)].practice
