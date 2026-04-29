@@ -412,17 +412,14 @@ def do_prompt(char: Character, args: str) -> str:
             return "You will now see prompts."
 
     if arg.lower() == "all":
-        # Set default prompt
-        pcdata = getattr(char, "pcdata", None)
-        if pcdata:
-            pcdata.prompt = "<%hhp %mm %vmv> "
+        # mirroring ROM src/act_info.c:935-952 — store on ch->prompt (string),
+        # not pcdata->prompt (which in ROM is the colour triplet).
+        char.prompt = "<%hhp %mm %vmv> "
         char.comm = getattr(char, "comm", 0) | CommFlag.PROMPT
         return "Prompt set."
 
-    # Custom prompt
-    pcdata = getattr(char, "pcdata", None)
-    if pcdata:
-        pcdata.prompt = arg
+    # mirroring ROM src/act_info.c:951-952 — ch->prompt = str_dup(buf)
+    char.prompt = arg
     char.comm = getattr(char, "comm", 0) | CommFlag.PROMPT
     return "Prompt set."
 

@@ -26,7 +26,7 @@ class TestPromptCommand:
         output = do_prompt(player, "<%h/%H hp>")
 
         assert player.pcdata is not None
-        assert player.pcdata.prompt == "<%h/%H hp>"
+        assert player.prompt == "<%h/%H hp>"
         assert "set" in output.lower()
 
     def test_prompt_all_sets_default_format(self):
@@ -35,7 +35,7 @@ class TestPromptCommand:
         output = do_prompt(player, "all")
 
         assert player.pcdata is not None
-        assert player.pcdata.prompt == "<%hhp %mm %vmv> "
+        assert player.prompt == "<%hhp %mm %vmv> "
         assert "set" in output.lower()
 
     def test_prompt_length_not_enforced_at_input(self):
@@ -45,7 +45,7 @@ class TestPromptCommand:
         do_prompt(player, long_prompt)
 
         assert player.pcdata is not None
-        assert player.pcdata.prompt == long_prompt
+        assert player.prompt == long_prompt
 
     def test_prompt_toggle_off_from_on(self):
         player = create_test_character("Toggler", 3001)
@@ -70,7 +70,7 @@ class TestPromptCommand:
         do_prompt(player, "This is not a valid prompt format")
 
         assert player.pcdata is not None
-        assert player.pcdata.prompt == "This is not a valid prompt format"
+        assert player.prompt == "This is not a valid prompt format"
 
 
 class TestPromptPCDataRequirement:

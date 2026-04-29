@@ -159,7 +159,8 @@ def test_prompt_set_all(test_char):
 
     output = do_prompt(test_char, "all")
     assert "Prompt set" in output
-    assert test_char.pcdata.prompt == "<%hhp %mm %vmv> ", "Default prompt should match ROM C"
+    # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt, not pcdata->prompt
+    assert test_char.prompt == "<%hhp %mm %vmv> ", "Default prompt should match ROM C"
     assert test_char.comm & CommFlag.PROMPT, "COMM_PROMPT should be set"
 
 
@@ -174,7 +175,8 @@ def test_prompt_custom(test_char):
 
     output = do_prompt(test_char, "<%h hp>")
     assert "Prompt set" in output
-    assert test_char.pcdata.prompt == "<%h hp>", "Custom prompt should be stored"
+    # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt, not pcdata->prompt
+    assert test_char.prompt == "<%h hp>", "Custom prompt should be stored"
     assert test_char.comm & CommFlag.PROMPT, "COMM_PROMPT should be set"
 
 

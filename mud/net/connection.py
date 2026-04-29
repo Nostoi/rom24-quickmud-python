@@ -37,6 +37,7 @@ from mud.commands.help import do_help
 from mud.config import get_qmconfig
 from mud.handler import reset_char
 from mud.utils.act import act_format
+from mud.utils.prompt import bust_a_prompt
 from mud.db.models import PlayerAccount
 from mud.loaders import help_loader
 from mud.logging import log_game_event
@@ -363,7 +364,8 @@ class TelnetStream:
 
     async def send_prompt(self, prompt: str, *, go_ahead: bool | None = None) -> None:
         await self.flush()
-        data = prompt.encode()
+        # mirroring ROM src/comm.c:1587-1590 — colourconv before write
+        data = self._render(prompt).encode()
         self.writer.write(data)
         use_ga = self._go_ahead_enabled if go_ahead is None else bool(go_ahead)
         if go_ahead is not None:
@@ -1695,7 +1697,8 @@ async def handle_connection_with_stream(
         # Main game loop
         while True:
             try:
-                await conn.send_prompt("> ", go_ahead=session.go_ahead_enabled)
+                # mirroring ROM src/comm.c:bust_a_prompt — render player prompt
+                await conn.send_prompt(bust_a_prompt(char), go_ahead=session.go_ahead_enabled)
                 command = await _read_player_command(conn, session)
                 if command is None:
                     break
@@ -1920,7 +1923,8 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         while True:
             try:
-                await conn.send_prompt("> ", go_ahead=session.go_ahead_enabled)
+                # mirroring ROM src/comm.c:bust_a_prompt — render player prompt
+                await conn.send_prompt(bust_a_prompt(char), go_ahead=session.go_ahead_enabled)
                 command = await _read_player_command(conn, session)
                 if command is None:
                     break

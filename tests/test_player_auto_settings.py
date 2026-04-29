@@ -421,7 +421,8 @@ class TestPrompt:
         output = do_prompt(player, "<%hhp %mm %vmv>")
 
         assert player.comm & COMM_PROMPT
-        assert pcdata.prompt == "<%hhp %mm %vmv>"
+        # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt
+        assert player.prompt == "<%hhp %mm %vmv>"
         assert "set" in output.lower()
 
     @pytest.mark.p0
@@ -437,8 +438,9 @@ class TestPrompt:
 
         assert player.comm & COMM_PROMPT
         # ROM default: "<%hhp %mm %vmv> "
-        assert pcdata.prompt is not None
-        assert "hp" in pcdata.prompt.lower()
+        # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt
+        assert player.prompt is not None
+        assert "hp" in player.prompt.lower()
 
 
 class TestCommunicationFlags:
