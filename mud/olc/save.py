@@ -152,6 +152,20 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
     resist = getattr(mob_proto, "resist", "") or ""
     vuln = getattr(mob_proto, "vuln", "") or ""
 
+    # OLC_SAVE-002: persist form/parts/size/material so save→reload preserves
+    # physical descriptors. Mirrors ROM src/olc_save.c:213-219 (save_mobile
+    # emits Form/Parts/Size/Material). MobIndex stores these as str|int|enum;
+    # serialize as strings to match json_loader._load_mobs_from_json defaults.
+    form_raw = getattr(mob_proto, "form", "0")
+    parts_raw = getattr(mob_proto, "parts", "0")
+    size_raw = getattr(mob_proto, "size", "medium")
+    material_raw = getattr(mob_proto, "material", "0")
+    size_str = getattr(size_raw, "name", None)
+    if isinstance(size_str, str):
+        size_value = size_str.lower()
+    else:
+        size_value = str(size_raw) if size_raw is not None else "medium"
+
     return {
         "id": vnum,
         "name": getattr(mob_proto, "short_descr", "") or "",
@@ -174,6 +188,10 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
         "immune": str(immune),
         "resist": str(resist),
         "vuln": str(vuln),
+        "form": str(form_raw) if form_raw is not None else "0",
+        "parts": str(parts_raw) if parts_raw is not None else "0",
+        "size": size_value,
+        "material": str(material_raw) if material_raw is not None else "0",
         "start_pos": str(getattr(mob_proto, "start_pos", "stand") or "stand"),
         "default_pos": str(getattr(mob_proto, "default_pos", "stand") or "stand"),
         "sex": sex_str,
