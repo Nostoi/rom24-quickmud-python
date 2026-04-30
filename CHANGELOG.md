@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `OLC_ACT-014` — Locked the `area.changed = True` protocol divergence between Python and ROM. ROM `src/olc.c:452-463`/`:510-521` dispatchers `SET_BIT(pArea->area_flags, AREA_CHANGED)` whenever a subcommand handler returns `TRUE`; Python uses an imperative pattern where each `_interpret_*edit` branch sets `area.changed = True` directly after a successful mutation. Structural divergence with equivalent behavior. Added a ROM-cite comment to `_mark_area_changed` (`mud/commands/build.py:220`) and a regression test that exercises one representative `name` mutation per editor (aedit/redit/oedit/medit), one secondary subcommand (aedit `security`), and one failed-mutation no-op case mirroring ROM's "handler returned FALSE → no SET_BIT" path. Test: `tests/integration/test_olc_act_014_area_changed_protocol.py` (6 cases).
 - `OLC_ACT-013` — Locked the equivalence between Python `_get_area_for_vnum` (`mud/commands/build.py:1352`) and ROM `get_vnum_area` (`src/olc_act.c:588-599`). ROM walks the `area_first` linked list; Python iterates `area_registry.values()`. CPython dicts preserve insertion order (3.7+), so load-order traversal is equivalent to ROM's linked-list walk. Added a ROM-cite comment to the function and a regression test that locks the dict insertion-order guarantee plus first-match-on-overlap behavior. Test: `tests/integration/test_olc_act_013_get_area_for_vnum_order.py` (3 cases).
 
 ### Added

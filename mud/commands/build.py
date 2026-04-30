@@ -218,6 +218,12 @@ def _has_help_security(char: Character) -> bool:
 
 
 def _mark_area_changed(room: Room | None) -> None:
+    # mirrors ROM AREA_CHANGED protocol (src/olc.c:452-463/:510-521).
+    # ROM dispatchers SET_BIT(pArea->area_flags, AREA_CHANGED) when an OLC
+    # subcommand handler returns TRUE; Python uses an imperative pattern —
+    # each `_interpret_*edit` branch (or its helper) calls this after a
+    # successful mutation. Documented divergence per OLC_ACT-014; locked
+    # by tests/integration/test_olc_act_014_area_changed_protocol.py.
     if not room:
         return
     area = getattr(room, "area", None)
