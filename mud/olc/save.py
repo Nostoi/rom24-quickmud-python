@@ -107,6 +107,33 @@ def _serialize_affect(affect: object) -> dict[str, Any]:
     }
 
 
+def _serialize_help(entry: object) -> dict[str, Any]:
+    """Mirrors ROM src/olc_save.c:826-843 (save_helps row).
+
+    JSON-authoritative analogue of ``<level> <keywords>~\\n<text>~\\n``.
+    Accepts either a ``HelpEntry`` dataclass or a plain dict and emits
+    the canonical ``{level, keywords, text}`` shape consumed by
+    ``mud/loaders/json_loader.py``.
+    """
+    if isinstance(entry, dict):
+        keywords = entry.get("keywords") or []
+        if isinstance(keywords, str):
+            keywords = keywords.split()
+        return {
+            "level": int(entry.get("level", 0) or 0),
+            "keywords": [str(k) for k in keywords],
+            "text": str(entry.get("text", "") or ""),
+        }
+    keywords = getattr(entry, "keywords", []) or []
+    if isinstance(keywords, str):
+        keywords = keywords.split()
+    return {
+        "level": int(getattr(entry, "level", 0) or 0),
+        "keywords": [str(k) for k in keywords],
+        "text": str(getattr(entry, "text", "") or ""),
+    }
+
+
 def _serialize_reset(reset: object) -> dict[str, Any]:
     return {
         "command": getattr(reset, "command", ""),
@@ -419,6 +446,11 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
     shops_list = _collect_shops(area, min_vnum, max_vnum)
     specials_list = _collect_specials(area, min_vnum, max_vnum)
 
+    # OLC_SAVE-009 — mirror ROM save_helps (src/olc_save.c:826-843) under
+    # JSON-authoritative framing: emit a per-area `helps` list so a
+    # save→reload cycle preserves hedit-authored entries.
+    helps_list = [_serialize_help(h) for h in getattr(area, "helps", []) or []]
+
     builders_str = getattr(area, "builders", "") or ""
     builders_list = [b.strip() for b in builders_str.replace(",", " ").split() if b.strip()]
 
@@ -435,6 +467,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
         "mob_programs": mob_programs_list,
         "shops": shops_list,
         "specials": specials_list,
+        "helps": helps_list,
     }
 
     credits = getattr(area, "credits", None)

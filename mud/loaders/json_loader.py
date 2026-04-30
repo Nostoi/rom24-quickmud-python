@@ -239,6 +239,10 @@ def load_area_from_json(json_file_path: str) -> Area:
     # Load objects
     _load_objects_from_json(data.get(objects_key, []), area)
 
+    # OLC_SAVE-009 — load area-grouped helps written by `_serialize_help`
+    # in mud/olc/save.py (mirrors ROM save_helps src/olc_save.c:826-843).
+    _load_helps_from_json(data.get("helps", []), area)
+
     for room in list(room_registry.values()):
         if getattr(room, "area", None) is area:
             room.resets.clear()
@@ -495,6 +499,26 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         )
 
         obj_registry[obj.vnum] = obj
+
+
+def _load_helps_from_json(helps_data: list[dict[str, Any]], area: Area) -> None:
+    """Mirror ROM src/olc_save.c:826-843 (save_helps) on the JSON read
+    path. Append each entry to ``area.helps`` and register it in
+    ``help_registry`` so ``do help`` keeps resolving after a save→reload.
+    """
+    from mud.models.help import HelpEntry, register_help
+
+    for raw in helps_data or []:
+        keywords = raw.get("keywords") or []
+        if isinstance(keywords, str):
+            keywords = keywords.split()
+        entry = HelpEntry(
+            keywords=[str(k) for k in keywords],
+            text=str(raw.get("text", "") or ""),
+            level=int(raw.get("level", 0) or 0),
+        )
+        area.helps.append(entry)
+        register_help(entry)
 
 
 def _load_shops_from_json(shops_data: list[dict[str, Any]]) -> None:
