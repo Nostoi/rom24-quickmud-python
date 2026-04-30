@@ -224,6 +224,25 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
     }
 
 
+def _collect_specials(area: Area, min_vnum: int, max_vnum: int) -> list[dict[str, Any]]:
+    """Mirrors ROM src/olc_save.c:578-606 (save_specials).
+
+    Walks every mob in the area; if the mob has a non-empty ``spec_fun``,
+    emit a ``{"mob_vnum", "spec"}`` entry matching the format consumed
+    by ``mud.loaders.specials_loader.apply_specials_from_json``.
+    """
+    specials: list[dict[str, Any]] = []
+    for vnum in range(min_vnum, max_vnum + 1):
+        mob_proto = mob_registry.get(vnum)
+        if mob_proto is None or getattr(mob_proto, "area", None) is not area:
+            continue
+        spec = getattr(mob_proto, "spec_fun", None)
+        if not spec:
+            continue
+        specials.append({"mob_vnum": int(vnum), "spec": str(spec)})
+    return specials
+
+
 def _collect_shops(area: Area, min_vnum: int, max_vnum: int) -> list[dict[str, Any]]:
     """Mirrors ROM src/olc_save.c:786-824 (save_shops).
 
@@ -341,6 +360,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
     # mob_programs payload.
     mob_programs_list = _collect_mob_programs(area, min_vnum, max_vnum)
     shops_list = _collect_shops(area, min_vnum, max_vnum)
+    specials_list = _collect_specials(area, min_vnum, max_vnum)
 
     builders_str = getattr(area, "builders", "") or ""
     builders_list = [b.strip() for b in builders_str.replace(",", " ").split() if b.strip()]
@@ -357,6 +377,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
         "objects": objects_list,
         "mob_programs": mob_programs_list,
         "shops": shops_list,
+        "specials": specials_list,
     }
 
     credits = getattr(area, "credits", None)
