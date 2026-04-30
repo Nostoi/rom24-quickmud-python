@@ -17,10 +17,13 @@ from mud.models.constants import (
     EX_NOLOCK,
     EX_NOPASS,
     EX_PICKPROOF,
+    ActFlag,
     AreaFlag,
     Direction,
     RoomFlag,
     Sector,
+    Sex,
+    Size,
     WearFlag,
     WearLocation,
     convert_flags_from_letters,
@@ -1825,6 +1828,12 @@ def cmd_medit(char: Character, args: str) -> str:
     if session.editor == "medit":
         return _interpret_medit(session, char, arg)
 
+    # mirrors ROM medit_table dispatch — explicit `create <vnum>` path.
+    parts = arg.split(None, 1)
+    if parts and parts[0].lower() == "create":
+        rest = parts[1] if len(parts) > 1 else ""
+        return _medit_create(session, char, rest)
+
     if not arg:
         return "Syntax: @medit <mobile vnum>"
 
@@ -1833,20 +1842,13 @@ def cmd_medit(char: Character, args: str) -> str:
     except ValueError:
         return "Mobile vnum must be a number."
 
-    from mud.models.mob import MobIndex, mob_registry
+    from mud.models.mob import mob_registry
 
     mob_proto = mob_registry.get(mob_vnum)
     if mob_proto is None:
-        area = _get_area_for_vnum(mob_vnum)
-        if area is None:
-            return "That vnum is not assigned to an area."
-        if not _is_builder(char, area):
-            return "You do not have builder rights for that area."
-        mob_proto = MobIndex(vnum=mob_vnum, area=area)
-        mob_registry[mob_vnum] = mob_proto
-        if area:
-            area.changed = True
-        return f"New mobile prototype created (vnum {mob_vnum}).\nType 'show' to display, 'done' to exit."
+        # mirrors ROM `do_medit` — without explicit `create`, unknown vnum is
+        # an error, not auto-allocate.
+        return "That mobile does not exist. Use 'medit create <vnum>' to create it."
 
     area = getattr(mob_proto, "area", None)
     if not _is_builder(char, area):
@@ -1854,6 +1856,68 @@ def cmd_medit(char: Character, args: str) -> str:
 
     _ensure_session_mob(session, mob_proto)
     return f"Now editing mobile {mob_proto.short_descr or '(unnamed)'} (vnum {mob_vnum}).\nType 'show' to display, 'done' to exit."
+
+
+def _medit_create(session: Session, char: Character, argument: str) -> str:
+    """Allocate a fresh mobile prototype.
+
+    Mirrors ROM `medit_create` (`src/olc_act.c:3704-3753`). Defaults from
+    `new_mob_index` (`src/mem.c:365-424`): player_name="no name",
+    short_descr="(no short description)", long_descr="(no long description)\\n\\r",
+    description="", level=0, sex=0 (NONE), size=SIZE_MEDIUM, start/default_pos=
+    POS_STANDING, material="unknown", new_format=True. Critically, ROM sets
+    `pMob->act = ACT_IS_NPC` (src/olc_act.c:3745) — without this, every NPC
+    classification check downstream misclassifies the new mob as a player.
+    """
+
+    from mud.models.mob import MobIndex, mob_registry
+
+    arg = argument.strip()
+    try:
+        vnum = int(arg) if arg else 0
+    except ValueError:
+        vnum = 0
+
+    # mirrors ROM src/olc_act.c:3712-3716.
+    if not arg or vnum == 0:
+        return "Syntax:  medit create [vnum]\n\r"
+
+    area = _get_area_for_vnum(vnum)
+    # mirrors ROM src/olc_act.c:3718-3724.
+    if area is None:
+        return "MEdit:  That vnum is not assigned an area.\n\r"
+
+    # mirrors ROM src/olc_act.c:3726-3730 — IS_BUILDER security gate.
+    if not _is_builder(char, area):
+        return "MEdit:  Vnum in an area you cannot build in.\n\r"
+
+    # mirrors ROM src/olc_act.c:3732-3736.
+    if vnum in mob_registry:
+        return "MEdit:  Mobile vnum already exists.\n\r"
+
+    proto = MobIndex(
+        vnum=vnum,
+        area=area,
+        player_name="no name",
+        short_descr="(no short description)",
+        long_descr="(no long description)\n\r",
+        description="",
+        level=0,
+        alignment=0,
+        sex=Sex.NONE,
+        size=Size.MEDIUM,
+        start_pos="standing",
+        default_pos="standing",
+        material="unknown",
+        wealth=0,
+        new_format=True,
+        # mirrors ROM src/olc_act.c:3745 — pMob->act = ACT_IS_NPC.
+        act_flags=ActFlag.IS_NPC,
+        act=int(ActFlag.IS_NPC),
+    )
+    mob_registry[vnum] = proto
+    _ensure_session_mob(session, proto)
+    return "Mobile Created.\n\r"
 
 
 def _ensure_session_mob(session: Session, mob_proto) -> None:
@@ -1897,6 +1961,11 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
     if cmd in {"done", "exit"}:
         _clear_session(session)
         return "Exiting mobile editor."
+
+    if cmd == "create":
+        # mirrors ROM medit_table dispatch — `create <vnum>` typed inside an
+        # active medit session also allocates and switches the edit target.
+        return _medit_create(session, char, " ".join(args_parts))
 
     if cmd == "show":
         return _medit_show(mob_proto)

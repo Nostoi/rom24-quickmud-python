@@ -75,6 +75,8 @@ def test_room(test_area):
 @pytest.fixture
 def test_mob_proto(test_area):
     """Create a test mob prototype for editing."""
+    from mud.models.mob import mob_registry as mob_index_registry
+
     mob = MobIndex(
         vnum=1002,
         short_descr="a test mob",
@@ -82,8 +84,12 @@ def test_mob_proto(test_area):
         level=5,
         area=test_area,
     )
+    # `cmd_medit` consults `mud.models.mob.mob_registry`; legacy
+    # `mud.registry.mob_registry` is a separate dict (historical drift).
+    mob_index_registry[1002] = mob
     mob_registry[1002] = mob
     yield mob
+    mob_index_registry.pop(1002, None)
     mob_registry.pop(1002, None)
 
 

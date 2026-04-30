@@ -131,7 +131,7 @@
 | ROM Symbol | ROM Lines | Python Counterpart | Tier | Status |
 |---|---|---|---|---|
 | `medit_show` | 3519–3703 | `_medit_show` (build.py:~1795) partial | A | ⚠️ PARTIAL — missing many fields |
-| `medit_create` | 3704–3753 | embedded in `cmd_medit` (build.py:1742) — no `create` keyword | A | ⚠️ PARTIAL (OLC_ACT-006) |
+| `medit_create` | 3704–3753 | `cmd_medit` + `_medit_create` (build.py) | A | ✅ FIXED (OLC_ACT-006) |
 | `medit_spec` | 3757–3787 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_damtype` | 3789–3809 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_align` | 3810–3829 | inline in `_interpret_medit` (build.py) | C | ⚠️ PARTIAL |
@@ -382,7 +382,7 @@ These all follow the same ROM pattern: check empty arg → return syntax; `free_
 | OLC_ACT-003 | CRITICAL | src/olc.c:766–781 `do_redit` reset branch | missing — `cmd_redit` (build.py:1071) has no `reset` subpath | `redit reset` subcommand missing; area cannot be reset from within room editor | 🔄 OPEN |
 | OLC_ACT-004 | CRITICAL | src/olc.c:783–821 `do_redit` vnum branch | missing — `cmd_redit` (build.py:1071) has no numeric-vnum path | `redit <vnum>` teleport-and-edit missing; builder must physically walk to a room before editing it | 🔄 OPEN |
 | OLC_ACT-005 | CRITICAL | src/olc_act.c:3178–3225 `oedit_create` | `mud/commands/build.py:_oedit_create` | Explicit `oedit create <vnum>` keyword wired with full ROM validation chain: vnum required → `_get_area_for_vnum` → `_is_builder` security → already-exists. ROM `new_obj_index` defaults applied (name="no name", short_descr="(no short description)", description="(no description)", item_type="trash", material="unknown", value=[0]*5, new_format=True). Auto-create-on-unknown-vnum behavior removed. 11 integration tests. | ✅ FIXED |
-| OLC_ACT-006 | CRITICAL | src/olc_act.c:3704–3753 `medit_create` | ⚠️ partial — `cmd_medit` (build.py:1742) auto-creates but missing `ACT_IS_NPC` flag | `medit create <vnum>`: new mob missing `ACT_IS_NPC` flag — all NPC checks will fail on newly-created mobs; also missing explicit `create` keyword and security gate | 🔄 OPEN |
+| OLC_ACT-006 | CRITICAL | src/olc_act.c:3704–3753 `medit_create` | `mud/commands/build.py:_medit_create` | Explicit `medit create <vnum>` keyword wired with full ROM validation chain. `ActFlag.IS_NPC` set on both `act_flags` (modern) and legacy `act` field per ROM `src/olc_act.c:3745`. ROM `new_mob_index` defaults applied (player_name="no name", short_descr="(no short description)", long_descr="(no long description)\\n\\r", description="", level=0, sex=NONE, size=MEDIUM, start/default_pos="standing", material="unknown", new_format=True). Auto-create-on-unknown-vnum behavior removed. 12 integration tests. | ✅ FIXED |
 | OLC_ACT-007 | IMPORTANT | src/olc_act.c:644–646 `aedit_show` flags row | `_aedit_show` (build.py) — missing flags row | `aedit show` omits `Flags: [AREA_ADDED AREA_CHANGED]` line; builder cannot see area status flags | 🔄 OPEN |
 | OLC_ACT-008 | IMPORTANT | src/olc_act.c:1068–1241 `redit_show` | `_redit_show` (build.py) — many fields missing | `redit show` missing sector/room-flag decoded strings, exit details (flags, keyword, key-vnum, to-vnum), extra-descs, clan, owner | 🔄 OPEN |
 | OLC_ACT-009 | IMPORTANT | src/olc_act.c:2733–2817 `oedit_show` | `_oedit_show` (build.py) — type-specific values missing | `oedit show` missing `show_obj_values` type-specific section, extra/wear flag decoded strings, affects list | 🔄 OPEN |
