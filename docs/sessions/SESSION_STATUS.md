@@ -1,51 +1,56 @@
-# Session Status — 2026-04-29 — `olc_act.c` MINORs closed + `olc_save.c` audit filed
+# Session Status — 2026-04-29 — `olc_save.c` CRITICAL block 6/8 closed
 
 ## Current State
 
-- **Active audit**: `olc_save.c` (Phase 1–3 filed; Phase 4 closures
-  pending, starting with the OLC_SAVE-001..008 round-trip data-loss block)
-- **Last completed**: OLC_ACT-013/014 (both MINOR structural gaps
-  closed); `olc_save.c` audit doc filed with stable gap IDs
-  OLC_SAVE-001..020
+- **Active audit**: `olc_save.c` (Phase 4 in flight — CRITICAL block
+  6/8 closed; OLC_SAVE-007/008 remain before IMPORTANT block opens)
+- **Last completed**: OLC_SAVE-001..006 (all CRITICAL except the two
+  structured-data closures); each landed as a single-gap TDD commit
+  with paired loader-side change where required
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-04-29_OLC_ACT_FINAL_AND_OLC_SAVE_AUDIT.md](SESSION_SUMMARY_2026-04-29_OLC_ACT_FINAL_AND_OLC_SAVE_AUDIT.md)
+  [SESSION_SUMMARY_2026-04-29_OLC_SAVE_001_TO_006_CRITICAL_BLOCK.md](SESSION_SUMMARY_2026-04-29_OLC_SAVE_001_TO_006_CRITICAL_BLOCK.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.87 |
-| OLC integration tests | 158 passing (9 new this session: 3 OLC_ACT-013, 6 OLC_ACT-014) |
-| ROM C files audited | ~22 / 43 (`olc_act.c` ⚠️ Partial, TIER A/B 100% closed; `olc_save.c` ⚠️ Partial, Phase 1–3 filed) |
-| Active focus | `olc_save.c` — Phase 4 closures begin with OLC_SAVE-001..008 |
+| Version | 2.6.93 |
+| OLC_SAVE integration tests | 18/18 passing (6 closures × 3 cases each) |
+| ROM C files audited | ~22 / 43 (`olc_save.c` ⚠️ Partial — 6/8 CRITICAL closed; round-trip data-loss still open for affects + extra_descr) |
+| Active focus | `olc_save.c` — OLC_SAVE-007 (object affect chain) next |
 
 ## Next Intended Task
 
-Begin `olc_save.c` Phase 4 closures, **CRITICAL block first**
-(OLC_SAVE-001..008 — round-trip data loss). Recommended starting gap:
-**OLC_SAVE-001** (mob `off_flags`/`imm_flags`/`res_flags`/`vuln_flags`
-not persisted on JSON save). Use `rom-gap-closer` per gap. Each closure
-must include a round-trip integration test (load .are → save JSON →
-load JSON → assert proto equals original) and may include a paired
-change in `mud/loaders/json_loader.py` to read the new field back —
-both sides land in one commit per the audit's locked closure rule.
+Close **OLC_SAVE-007** (object structured affect chain) using
+`rom-gap-closer`. Current `_serialize_object` does
+`list(...affects, [])` raw pass-through; ROM emits structured
+`where`/`location`/`modifier`/`bitvector` tuples per
+`src/olc_save.c:399-429` (TO_OBJECT applies vs
+TO_AFFECTS/IMMUNE/RESIST/VULN). Closure must include:
 
-Alternative paths:
-- **OLC_SAVE-009..013** (IMPORTANT) if the loader-side data-model work
-  for OLC_SAVE-001..008 turns out blocking.
-- **`olc_mpcode.c` audit** — the last unaudited OLC editor file
-  (~300 lines), would close out the OLC editor cluster's audit phase.
+1. Serializer-side dataclass→dict conversion (introduce a small
+   `_serialize_affect` helper; mirror the existing
+   `_serialize_extra_descr` pattern).
+2. Loader-side `_load_objects_from_json` needs to hydrate dicts back
+   into `Affect` instances — currently it does raw pass-through which
+   leaves `obj.affects` as a list of dicts after JSON load. Verify
+   with a round-trip test.
+3. Both sides land in one commit per the audit's locked closure rule.
 
-`olc_act.c` cannot flip to ✅ AUDITED until the ~78 TIER C functions
-receive a deep-audit pass and the three OLC_ACT-010 sub-gaps
-(10b/c/d — dice/AC byte format, shop/mprogs/spec_fun rendering, mob
-flag-table names) are addressed. Those depend on data-model alignment;
-defer until in scope.
+After OLC_SAVE-007, immediately follow with OLC_SAVE-008 (object
+extra_descr — same structural shape: dataclass↔dict pair). After both
+land, the round-trip data-loss block is fully closed and the audit can
+shift to the IMPORTANT block (OLC_SAVE-009..013).
 
-## Subagent reliability note
+### Subagent reliability note (carried forward)
 
-Sonnet subagents continue to terminate mid-investigation in this
-codebase (now four sessions reproduced). For multi-step parity work
-(audits, multi-step closures), prefer inline execution. Haiku subagents
-remain reliable for small string-drift / single-keyword gap closures.
-The `olc_save.c` audit was run inline per the session brief.
+Sonnet subagents continue to terminate mid-investigation. Run
+OLC_SAVE-007/008 closures inline. Haiku reliable only for trivial
+single-keyword fixes; the structured-affect closure is not a fit.
+
+### GitNexus
+
+Index was stale at session start; `npx gitnexus analyze` ran in
+background and completed mid-session. Re-run at the start of the next
+session if `gitnexus_impact` results look implausible (the build.py /
+combat.py 32 KB-cap caveat in CLAUDE.md still applies).
