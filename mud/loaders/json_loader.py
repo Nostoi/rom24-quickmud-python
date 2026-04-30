@@ -19,6 +19,7 @@ from ..models.obj import ObjIndex
 from ..models.room import Exit, ExtraDescr, Room
 from ..models.room_json import ResetJson
 from ..mobprog import register_program_code, resolve_trigger_flag
+from .obj_loader import _resolve_item_type_code
 from .specials_loader import apply_specials_from_json
 
 
@@ -483,7 +484,7 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
             short_descr=obj_data.get("name", ""),
             description=obj_data.get("description", ""),
             material=obj_data.get("material", ""),
-            item_type=obj_data.get("item_type", "trash"),
+            item_type=_resolve_item_type_code(obj_data.get("item_type")),
             extra_flags=_rom_flags_to_int(obj_data.get("extra_flags", "")),
             wear_flags=obj_data.get("wear_flags", ""),
             # OLC_SAVE-006: hydrate object level from JSON (mirrors ROM

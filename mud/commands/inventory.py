@@ -491,7 +491,15 @@ def do_get(char: Character, args: str) -> str:
 
         # ROM C lines 270-289: Container type validation
         container_proto = getattr(container, "prototype", container)
-        item_type = int(getattr(container_proto, "item_type", 0) or 0)
+        # Prototypes loaded from legacy or partial paths may carry the raw
+        # string token (e.g. "npc_corpse") instead of the int — coerce both.
+        from mud.loaders.obj_loader import _resolve_item_type_code
+
+        raw_item_type = getattr(container_proto, "item_type", 0) or 0
+        if isinstance(raw_item_type, str):
+            item_type = _resolve_item_type_code(raw_item_type)
+        else:
+            item_type = int(raw_item_type)
 
         if item_type not in (int(ItemType.CONTAINER), int(ItemType.CORPSE_NPC), int(ItemType.CORPSE_PC)):
             return "That's not a container."

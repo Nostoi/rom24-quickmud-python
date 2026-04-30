@@ -20,7 +20,7 @@ import pytest
 
 from mud.commands.inventory import do_get
 from mud.models.character import Character, character_registry
-from mud.models.constants import ItemType
+from mud.models.constants import ItemType, WearFlag
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
@@ -106,11 +106,13 @@ def test_do_get_corpse_handles_string_item_type(crash_char):
         name="coins silver",
         short_descr="some coins",
         item_type="money",
+        wear_flags=int(WearFlag.TAKE),
     )
     coin_proto.value = [10, 0, 0, 0, 0]
     coin = Object(instance_id=None, prototype=coin_proto)
     coin.item_type = int(ItemType.MONEY)
     coin.value = [10, 0, 0, 0, 0]
+    coin.wear_flags = int(WearFlag.TAKE)
     corpse.contained_items.append(coin)
     crash_char.room.contents.append(corpse)
 
