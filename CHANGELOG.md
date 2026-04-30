@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `olc_save.c` parity audit (`docs/parity/OLC_SAVE_C_AUDIT.md`) — Phase 1–3 complete. 17 ROM functions inventoried. **JSON-authoritative framing locked**: Python writes JSON via `mud/olc/save.py` (`save_area_to_json`); `.are` remains read-only legacy input via `mud/loaders/area_loader.py`. Format-level divergences (ROM `fwrite_flag` A–Za–z encoding, `fix_string` tilde strip, `.are` column widths) are documented as N/A under this framing. 20 stable gap IDs filed (OLC_SAVE-001..020): **8 CRITICAL** round-trip data-loss bugs (mob `off`/`imm`/`res`/`vuln` flags, `form`/`parts`/`size`/`material`, mprog list, shop binding, spec_fun binding; object `level`, structured affect chain, structured extra-descr); **5 IMPORTANT** (no help-save path, `cmd_asave area` only handles `redit`, no autosave entry, NPC security gate gap, `save_area_list` missing `social.are` + HELP_AREA prepend); **7 MINOR** (4 string-drift cases, condition-letter ladder, exit lock-flag normalization, door-reset synthesis). Closures pending via `rom-gap-closer` per-gap. Tracker: `olc_save.c` row flipped ❌ Not Audited → ⚠️ Partial.
+
 ### Fixed
 
 - `OLC_ACT-014` — Locked the `area.changed = True` protocol divergence between Python and ROM. ROM `src/olc.c:452-463`/`:510-521` dispatchers `SET_BIT(pArea->area_flags, AREA_CHANGED)` whenever a subcommand handler returns `TRUE`; Python uses an imperative pattern where each `_interpret_*edit` branch sets `area.changed = True` directly after a successful mutation. Structural divergence with equivalent behavior. Added a ROM-cite comment to `_mark_area_changed` (`mud/commands/build.py:220`) and a regression test that exercises one representative `name` mutation per editor (aedit/redit/oedit/medit), one secondary subcommand (aedit `security`), and one failed-mutation no-op case mirroring ROM's "handler returned FALSE → no SET_BIT" path. Test: `tests/integration/test_olc_act_014_area_changed_protocol.py` (6 cases).

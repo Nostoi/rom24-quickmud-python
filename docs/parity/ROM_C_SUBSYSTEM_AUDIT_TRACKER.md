@@ -82,7 +82,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **OLC (Online Creation)** | | | | | |
 | `olc.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Basic OLC exists |
 | `olc_act.c` | P2 | ⚠️ Partial | `mud/commands/build.py`, `mud/olc/` | 30% | 2026-04-29 — Phase 1–3 audit filed (`OLC_ACT_C_AUDIT.md`). 14 gap IDs (OLC_ACT-001..014): 6 CRITICAL (four `*_create` builders missing/divergent, `redit reset`, `redit <vnum>`), 6 IMPORTANT (`*_show` completeness, message strings, `aedit reset`), 2 MINOR. Closures pending. |
-| `olc_save.c` | P2 | ❌ Not Audited | `mud/olc/` | 25% | OLC save partial |
+| `olc_save.c` | P2 | ⚠️ Partial | `mud/olc/save.py`, `mud/commands/build.py:cmd_asave` | 25% | 2026-04-29 — Phase 1–3 audit filed (`OLC_SAVE_C_AUDIT.md`). JSON-authoritative framing locked (Python writes JSON, not `.are`; `.are` remains read-only legacy input). 20 gap IDs (OLC_SAVE-001..020): **8 CRITICAL** (round-trip data loss — mob off/imm/res/vuln flags, form/parts/size/material, mprogs, shop, spec_fun; obj level, structured affect chain, structured extra_descr), **5 IMPORTANT** (help save path, `cmd_asave area` editor coverage, autosave entry, NPC gate, `save_area_list` `social.are` prepend), **7 MINOR** (message string drift × 4, condition letter, exit lock-flag normalization, door-reset synthesis). Closures pending. |
 | `olc_mpcode.c` | P2 | ❌ Not Audited | `mud/olc/` | 20% | Mobprog editing missing |
 | `hedit.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Help editor basic |
 | **Special Procedures** | | | | | |
