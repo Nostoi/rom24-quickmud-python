@@ -117,7 +117,7 @@
 | `oedit_value4` | 3130–3139 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_weight` | 3140–3157 | inline in `_interpret_oedit` (build.py) | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_cost` | 3158–3177 | inline in `_interpret_oedit` (build.py) | C | 🔄 NEEDS DEEP AUDIT |
-| `oedit_create` | 3178–3225 | embedded in `cmd_oedit` (build.py:1458) — no `create` keyword | A | ⚠️ PARTIAL (OLC_ACT-005) |
+| `oedit_create` | 3178–3225 | `cmd_oedit` + `_oedit_create` (build.py) | A | ✅ FIXED (OLC_ACT-005) |
 | `oedit_ed` | 3229–3369 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_extra` | 3370–3393 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_wear` | 3394–3417 | — | C | 🔄 NEEDS DEEP AUDIT |
@@ -381,7 +381,7 @@ These all follow the same ROM pattern: check empty arg → return syntax; `free_
 | OLC_ACT-002 | CRITICAL | src/olc_act.c:1716–1766 `redit_create` | missing — `cmd_redit` (build.py:1071) has no `create` subpath | `redit create <vnum>` subcommand missing; rooms cannot be created by vnum via OLC | 🔄 OPEN |
 | OLC_ACT-003 | CRITICAL | src/olc.c:766–781 `do_redit` reset branch | missing — `cmd_redit` (build.py:1071) has no `reset` subpath | `redit reset` subcommand missing; area cannot be reset from within room editor | 🔄 OPEN |
 | OLC_ACT-004 | CRITICAL | src/olc.c:783–821 `do_redit` vnum branch | missing — `cmd_redit` (build.py:1071) has no numeric-vnum path | `redit <vnum>` teleport-and-edit missing; builder must physically walk to a room before editing it | 🔄 OPEN |
-| OLC_ACT-005 | CRITICAL | src/olc_act.c:3178–3225 `oedit_create` | ⚠️ partial — `cmd_oedit` (build.py:1452–1462) auto-creates but with wrong trigger and missing `IS_BUILDER` check | `oedit create <vnum>` semantics diverge: Python auto-creates on any unknown vnum without security gate; ROM requires explicit `create` keyword; `top_vnum_obj` not tracked | 🔄 OPEN |
+| OLC_ACT-005 | CRITICAL | src/olc_act.c:3178–3225 `oedit_create` | `mud/commands/build.py:_oedit_create` | Explicit `oedit create <vnum>` keyword wired with full ROM validation chain: vnum required → `_get_area_for_vnum` → `_is_builder` security → already-exists. ROM `new_obj_index` defaults applied (name="no name", short_descr="(no short description)", description="(no description)", item_type="trash", material="unknown", value=[0]*5, new_format=True). Auto-create-on-unknown-vnum behavior removed. 11 integration tests. | ✅ FIXED |
 | OLC_ACT-006 | CRITICAL | src/olc_act.c:3704–3753 `medit_create` | ⚠️ partial — `cmd_medit` (build.py:1742) auto-creates but missing `ACT_IS_NPC` flag | `medit create <vnum>`: new mob missing `ACT_IS_NPC` flag — all NPC checks will fail on newly-created mobs; also missing explicit `create` keyword and security gate | 🔄 OPEN |
 | OLC_ACT-007 | IMPORTANT | src/olc_act.c:644–646 `aedit_show` flags row | `_aedit_show` (build.py) — missing flags row | `aedit show` omits `Flags: [AREA_ADDED AREA_CHANGED]` line; builder cannot see area status flags | 🔄 OPEN |
 | OLC_ACT-008 | IMPORTANT | src/olc_act.c:1068–1241 `redit_show` | `_redit_show` (build.py) — many fields missing | `redit show` missing sector/room-flag decoded strings, exit details (flags, keyword, key-vnum, to-vnum), extra-descs, clan, owner | 🔄 OPEN |

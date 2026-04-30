@@ -90,6 +90,8 @@ def test_mob_proto(test_area):
 @pytest.fixture
 def test_obj_proto(test_area):
     """Create a test object prototype for editing."""
+    from mud.models.obj import obj_index_registry
+
     obj = ObjIndex(
         vnum=1003,
         name="test object",
@@ -97,9 +99,14 @@ def test_obj_proto(test_area):
         item_type=0,  # ITEM_LIGHT
         level=1,
         value=[0, 0, 0, 0, 0],
+        area=test_area,
     )
+    # `cmd_oedit` consults `mud.models.obj.obj_index_registry`; legacy
+    # `mud.registry.obj_registry` is a separate dict (historical drift).
+    obj_index_registry[1003] = obj
     obj_registry[1003] = obj
     yield obj
+    obj_index_registry.pop(1003, None)
     obj_registry.pop(1003, None)
 
 

@@ -1480,6 +1480,13 @@ def cmd_oedit(char: Character, args: str) -> str:
     if session.editor == "oedit":
         return _interpret_oedit(session, char, arg)
 
+    # mirrors ROM oedit_table dispatch — `create <vnum>` is its own subcommand,
+    # not implicit on every unknown vnum.
+    parts = arg.split(None, 1)
+    if parts and parts[0].lower() == "create":
+        rest = parts[1] if len(parts) > 1 else ""
+        return _oedit_create(session, char, rest)
+
     if not arg:
         return "Syntax: @oedit <object vnum>"
 
@@ -1488,20 +1495,13 @@ def cmd_oedit(char: Character, args: str) -> str:
     except ValueError:
         return "Object vnum must be a number."
 
-    from mud.models.obj import ObjIndex, obj_index_registry
+    from mud.models.obj import obj_index_registry
 
     obj_proto = obj_index_registry.get(obj_vnum)
     if obj_proto is None:
-        area = _get_area_for_vnum(obj_vnum)
-        if area is None:
-            return "That vnum is not assigned to an area."
-        if not _is_builder(char, area):
-            return "You do not have builder rights for that area."
-        obj_proto = ObjIndex(vnum=obj_vnum, area=area)
-        obj_index_registry[obj_vnum] = obj_proto
-        if area:
-            area.changed = True
-        return f"New object prototype created (vnum {obj_vnum}).\nType 'show' to display, 'done' to exit."
+        # mirrors ROM `do_oedit` — without explicit `create`, an unknown vnum is
+        # an error, not an auto-allocate.
+        return "That object does not exist. Use 'oedit create <vnum>' to create it."
 
     area = getattr(obj_proto, "area", None)
     if not _is_builder(char, area):
@@ -1509,6 +1509,62 @@ def cmd_oedit(char: Character, args: str) -> str:
 
     _ensure_session_obj(session, obj_proto)
     return f"Now editing object {obj_proto.short_descr or '(unnamed)'} (vnum {obj_vnum}).\nType 'show' to display, 'done' to exit."
+
+
+def _oedit_create(session: Session, char: Character, argument: str) -> str:
+    """Allocate a fresh object prototype.
+
+    Mirrors ROM `oedit_create` (`src/olc_act.c:3178-3225`). Defaults from
+    `new_obj_index` (`src/mem.c:297-335`): name="no name", short_descr=
+    "(no short description)", description="(no description)", item_type=
+    ITEM_TRASH (Python "trash"), extra_flags=0, wear_flags=0, weight=0,
+    cost=0, material="unknown", value=[0]*5, new_format=True. Validation
+    chain: vnum required → area assignment → IS_BUILDER → already-exists.
+    """
+
+    from mud.models.obj import ObjIndex, obj_index_registry
+
+    arg = argument.strip()
+    try:
+        vnum = int(arg) if arg else 0
+    except ValueError:
+        vnum = 0
+
+    # mirrors ROM src/olc_act.c:3186-3190 — empty or zero vnum.
+    if not arg or vnum == 0:
+        return "Syntax:  oedit create [vnum]\n\r"
+
+    area = _get_area_for_vnum(vnum)
+    # mirrors ROM src/olc_act.c:3192-3197 — vnum must belong to an area.
+    if area is None:
+        return "OEdit:  That vnum is not assigned an area.\n\r"
+
+    # mirrors ROM src/olc_act.c:3199-3203 — IS_BUILDER security gate.
+    if not _is_builder(char, area):
+        return "OEdit:  Vnum in an area you cannot build in.\n\r"
+
+    # mirrors ROM src/olc_act.c:3205-3209 — already-exists check.
+    if vnum in obj_index_registry:
+        return "OEdit:  Object vnum already exists.\n\r"
+
+    proto = ObjIndex(
+        vnum=vnum,
+        area=area,
+        name="no name",
+        short_descr="(no short description)",
+        description="(no description)",
+        material="unknown",
+        item_type="trash",
+        extra_flags=0,
+        wear_flags=0,
+        weight=0,
+        cost=0,
+        value=[0, 0, 0, 0, 0],
+        new_format=True,
+    )
+    obj_index_registry[vnum] = proto
+    _ensure_session_obj(session, proto)
+    return "Object Created.\n\r"
 
 
 def _ensure_session_obj(session: Session, obj_proto) -> None:
@@ -1552,6 +1608,11 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
     if cmd in {"done", "exit"}:
         _clear_session(session)
         return "Exiting object editor."
+
+    if cmd == "create":
+        # mirrors ROM oedit_table dispatch — `create <vnum>` typed inside an
+        # active oedit session also allocates and switches the edit target.
+        return _oedit_create(session, char, " ".join(args_parts))
 
     if cmd == "show":
         return _oedit_show(obj_proto)
