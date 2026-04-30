@@ -1073,17 +1073,12 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
 
 
 def cmd_redit(char: Character, args: str) -> str:
-    room = getattr(char, "room", None)
-    if room is None:
-        return "You are nowhere."
-
-    if not _is_builder(char, getattr(room, "area", None)):
-        return "You do not have builder rights for this area."
-
+    """Room editor entry point — ROM `do_redit` (src/olc.c:745-821)."""
     session = _get_session(char)
     if session is None:
         return "You do not have an active connection to edit from."
 
+    room = getattr(char, "room", None)
     trimmed = args.strip()
 
     if trimmed and trimmed.lower() in {"done", "exit"}:
@@ -1091,6 +1086,36 @@ def cmd_redit(char: Character, args: str) -> str:
             _clear_session(session)
             return "Exiting room editor."
         return "You are not editing any room."
+
+    parts = trimmed.split(None, 1)
+    first = parts[0].lower() if parts else ""
+    rest = parts[1] if len(parts) > 1 else ""
+
+    # mirrors ROM src/olc.c:757-769 — `redit reset`.
+    if first == "reset":
+        if room is None:
+            return "You are nowhere."
+        area = getattr(room, "area", None)
+        if not _is_builder(char, area):
+            return "Insufficient security to modify room.\n\r"
+        _apply_resets_for_redit(area)
+        if area is not None:
+            area.changed = True
+        return "Room reset.\n\r"
+
+    # mirrors ROM src/olc.c:770-787 — `redit create <vnum>`.
+    if first == "create":
+        return _redit_create(session, char, rest)
+
+    # mirrors ROM src/olc.c:789-808 — `redit <vnum>` silent teleport.
+    if first.isdigit() or (first.startswith("-") and first[1:].isdigit()):
+        return _redit_vnum_teleport(session, char, int(first))
+
+    # Bare or session-already-active path: mirror existing behavior.
+    if room is None:
+        return "You are nowhere."
+    if not _is_builder(char, getattr(room, "area", None)):
+        return "You do not have builder rights for this area."
 
     if session.editor == "redit" and trimmed:
         return _interpret_redit(session, char, trimmed)
@@ -1104,6 +1129,98 @@ def cmd_redit(char: Character, args: str) -> str:
 
     _ensure_session_room(session, room)
     return "Room editor activated. Type 'show' to review the room and 'done' to exit."
+
+
+def _apply_resets_for_redit(area: Area | None) -> None:
+    """Wrapper around `apply_resets` for `redit reset`.
+
+    ROM `do_redit` calls `reset_room(pRoom)` (src/olc.c:765); Python reuses
+    `apply_resets(area)` since no per-room reset helper has been ported yet.
+    Documented broader-scope divergence — fully closing it would require
+    porting `src/db.c:reset_room`. Indirected through this wrapper so tests
+    can monkeypatch it.
+    """
+
+    if area is None:
+        return
+    from mud.spawning.reset_handler import apply_resets
+
+    apply_resets(area)
+
+
+def _redit_create(session: Session, char: Character, argument: str) -> str:
+    """Allocate a fresh room and move the builder into it.
+
+    Mirrors ROM `redit_create` (`src/olc_act.c:1716-1766`) and the
+    `do_redit` create branch (`src/olc.c:770-787`). Defaults from
+    `new_room_index` (`src/mem.c:181-218`): heal_rate=100, mana_rate=100,
+    everything else zeroed/empty. After successful create, builder is moved
+    into the new room via silent `_char_from_room`/`_char_to_room`.
+    """
+
+    arg = argument.strip()
+    try:
+        vnum = int(arg) if arg else 0
+    except ValueError:
+        vnum = 0
+
+    # mirrors ROM src/olc.c:772-775 — empty/zero vnum.
+    if not arg or vnum <= 0:
+        return "Syntax:  edit room create [vnum]\n\r"
+
+    area = _get_area_for_vnum(vnum)
+    # mirrors ROM src/olc_act.c:1733-1738.
+    if area is None:
+        return "REdit:  That vnum is not assigned an area.\n\r"
+
+    # mirrors ROM src/olc_act.c:1740-1744 — IS_BUILDER security gate.
+    if not _is_builder(char, area):
+        return "REdit:  Vnum in an area you cannot build in.\n\r"
+
+    # mirrors ROM src/olc_act.c:1746-1750.
+    if vnum in room_registry:
+        return "REdit:  Room vnum already exists.\n\r"
+
+    new_room = Room(vnum=vnum, area=area, heal_rate=100, mana_rate=100)
+    room_registry[vnum] = new_room
+
+    # mirrors ROM src/olc.c:781-784 — relocate builder + AREA_CHANGED.
+    from mud.commands.imm_commands import _char_from_room, _char_to_room
+
+    if char.room is not None:
+        _char_from_room(char)
+    _char_to_room(char, new_room)
+    area.changed = True
+
+    _ensure_session_room(session, new_room)
+    return "Room created.\n\r"
+
+
+def _redit_vnum_teleport(session: Session, char: Character, vnum: int) -> str:
+    """Silently teleport the builder into the target room and start editing.
+
+    Mirrors ROM `do_redit` vnum branch (`src/olc.c:789-808`). Reuses the
+    silent primitives `_char_from_room`/`_char_to_room` from imm_commands
+    (no `act()` broadcasts) — exactly what ROM does. After the relocate,
+    the descriptor's edit pointer is set to the target room.
+    """
+
+    target = room_registry.get(vnum)
+    # mirrors ROM src/olc.c:793-797.
+    if target is None:
+        return "REdit : Nonexistant room.\n\r"
+
+    # mirrors ROM src/olc.c:799-804 — IS_BUILDER on TARGET area.
+    if not _is_builder(char, getattr(target, "area", None)):
+        return "REdit : Insufficient security to modify room.\n\r"
+
+    from mud.commands.imm_commands import _char_from_room, _char_to_room
+
+    if char.room is not None:
+        _char_from_room(char)
+    _char_to_room(char, target)
+    _ensure_session_room(session, target)
+    return ""
 
 
 def handle_redit_command(char: Character, session: Session, input_str: str) -> str:
