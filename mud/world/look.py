@@ -4,6 +4,18 @@ from mud.models.character import Character
 from mud.models.constants import Direction, Position
 from mud.world.vision import can_see_character, describe_character
 
+def _ed_fields(ed) -> tuple[str | None, str | None]:
+    """Return (keyword, description) for an EXTRA_DESCR entry.
+
+    JSON-loaded prototypes store extra_descr as raw dicts (per ObjIndex's
+    `list[dict]` annotation); runtime ObjectData/ExtraDescr instances expose
+    them as attributes. Accept both shapes.
+    """
+    if isinstance(ed, dict):
+        return ed.get("keyword"), ed.get("description")
+    return getattr(ed, "keyword", None), getattr(ed, "description", None)
+
+
 dir_names = {
     Direction.NORTH: "north",
     Direction.EAST: "east",
@@ -100,9 +112,9 @@ def look(char: Character, args: str = "") -> str:
 
     # Check extra descriptions in room
     for ed in getattr(room, "extra_descr", []):
-        keyword = getattr(ed, "keyword", None)
+        keyword, description = _ed_fields(ed)
         if keyword and args.lower() in keyword.lower().split():
-            return ed.description or "You see nothing special."
+            return description or "You see nothing special."
 
     return "You do not see that here."
 
@@ -271,16 +283,18 @@ def _look_obj(char: Character, obj) -> str:
     # ROM src/act_info.c lines 1221-1235
     # First check object's own extra_descr
     for ed in getattr(obj, "extra_descr", []):
-        if ed.description:
-            lines.append(ed.description)
+        _, description = _ed_fields(ed)
+        if description:
+            lines.append(description)
             break
     else:
         # If no extra_descr found, check prototype (pIndexData->extra_descr)
         prototype = getattr(obj, "prototype", None)
         if prototype:
             for ed in getattr(prototype, "extra_descr", []):
-                if ed.description:
-                    lines.append(ed.description)
+                _, description = _ed_fields(ed)
+                if description:
+                    lines.append(description)
                     break
 
     return "\n".join(lines)
