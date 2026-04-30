@@ -120,19 +120,19 @@ def test_oedit_starts_session(builder_char, test_object):
 
 
 def test_oedit_show_command(builder_char, test_object):
+    """OLC_ACT-009: `oedit show` matches ROM `oedit_show` byte layout."""
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "show")
 
-    assert "Object: a test object" in result
-    assert "Vnum:     1001" in result
-    assert "Name:     test object" in result
-    assert "Short:    a test object" in result
-    assert "Long:     A test object lies here." in result
-    assert "Type:     treasure" in result
-    assert "Level:    10" in result
-    assert "Weight:   5" in result
-    assert "Cost:     100" in result
-    assert "Material: wood" in result
+    assert "Name:        [test object]" in result
+    assert "Vnum:        [ 1001]" in result
+    assert "Type:        [treasure]" in result
+    assert "Level:       [   10]" in result
+    assert "Material:    [wood]" in result
+    assert "Weight:      [    5]" in result
+    assert "Cost:        [  100]" in result
+    assert "Short desc:  a test object" in result
+    assert "Long desc:\n     A test object lies here." in result
 
 
 def test_oedit_name_command(builder_char, test_object):

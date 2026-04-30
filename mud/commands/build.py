@@ -7,6 +7,7 @@ from mud.models.area import Area
 from mud.models.character import Character
 from mud.models.clans import get_clan, lookup_clan_id
 from mud.models.constants import (
+    ATTACK_TABLE,
     EX_CLOSED,
     EX_EASY,
     EX_HARD,
@@ -17,15 +18,22 @@ from mud.models.constants import (
     EX_NOLOCK,
     EX_NOPASS,
     EX_PICKPROOF,
+    LIQUID_TABLE,
     ActFlag,
     AreaFlag,
+    ContainerFlag,
     Direction,
+    ExtraFlag,
+    FurnitureFlag,
+    PortalFlag,
     RoomFlag,
     Sector,
     Sex,
     Size,
     WearFlag,
     WearLocation,
+    WeaponFlag,
+    WeaponType,
     convert_flags_from_letters,
 )
 from mud.models.object import Object
@@ -83,6 +91,101 @@ _EXIT_FLAG_DISPLAY: tuple[tuple[int, str], ...] = (
     (EX_NOCLOSE, "noclose"),
     (EX_NOLOCK, "nolock"),
 )
+
+# mirroring ROM src/tables.c:463-483 wear_flags — labels match ROM verbatim
+# (no `wear_` prefix on the body slots; "nosac"/"wearfloat" not "no_sac"/"wear_float").
+_WEAR_FLAG_DISPLAY: tuple[tuple[int, str], ...] = (
+    (int(WearFlag.TAKE), "take"),
+    (int(WearFlag.WEAR_FINGER), "finger"),
+    (int(WearFlag.WEAR_NECK), "neck"),
+    (int(WearFlag.WEAR_BODY), "body"),
+    (int(WearFlag.WEAR_HEAD), "head"),
+    (int(WearFlag.WEAR_LEGS), "legs"),
+    (int(WearFlag.WEAR_FEET), "feet"),
+    (int(WearFlag.WEAR_HANDS), "hands"),
+    (int(WearFlag.WEAR_ARMS), "arms"),
+    (int(WearFlag.WEAR_SHIELD), "shield"),
+    (int(WearFlag.WEAR_ABOUT), "about"),
+    (int(WearFlag.WEAR_WAIST), "waist"),
+    (int(WearFlag.WEAR_WRIST), "wrist"),
+    (int(WearFlag.WIELD), "wield"),
+    (int(WearFlag.HOLD), "hold"),
+    (int(WearFlag.NO_SAC), "nosac"),
+    (int(WearFlag.WEAR_FLOAT), "wearfloat"),
+)
+
+# mirroring ROM src/tables.c:434-459 extra_flags. ROM omits bit T (1<<19),
+# so Python's ExtraFlag.NOLOCATE is intentionally not displayed.
+_EXTRA_FLAG_DISPLAY: tuple[tuple[int, str], ...] = (
+    (int(ExtraFlag.GLOW), "glow"),
+    (int(ExtraFlag.HUM), "hum"),
+    (int(ExtraFlag.DARK), "dark"),
+    (int(ExtraFlag.LOCK), "lock"),
+    (int(ExtraFlag.EVIL), "evil"),
+    (int(ExtraFlag.INVIS), "invis"),
+    (int(ExtraFlag.MAGIC), "magic"),
+    (int(ExtraFlag.NODROP), "nodrop"),
+    (int(ExtraFlag.BLESS), "bless"),
+    (int(ExtraFlag.ANTI_GOOD), "antigood"),
+    (int(ExtraFlag.ANTI_EVIL), "antievil"),
+    (int(ExtraFlag.ANTI_NEUTRAL), "antineutral"),
+    (int(ExtraFlag.NOREMOVE), "noremove"),
+    (int(ExtraFlag.INVENTORY), "inventory"),
+    (int(ExtraFlag.NOPURGE), "nopurge"),
+    (int(ExtraFlag.ROT_DEATH), "rotdeath"),
+    (int(ExtraFlag.VIS_DEATH), "visdeath"),
+    (int(ExtraFlag.NONMETAL), "nonmetal"),
+    (int(ExtraFlag.MELT_DROP), "meltdrop"),
+    (int(ExtraFlag.HAD_TIMER), "hadtimer"),
+    (int(ExtraFlag.SELL_EXTRACT), "sellextract"),
+    (int(ExtraFlag.BURN_PROOF), "burnproof"),
+    (int(ExtraFlag.NOUNCURSE), "nouncurse"),
+)
+
+# mirroring ROM src/merc.h:1205-1231 APPLY_* + src/tables.c:489-516 apply_flags.
+# APPLY_SAVES (20) and APPLY_SAVING_PARA (20) collide; ROM's flag_string returns
+# the first match in the table, "saves".
+_APPLY_NAMES: dict[int, str] = {
+    0: "none",
+    1: "strength",
+    2: "dexterity",
+    3: "intelligence",
+    4: "wisdom",
+    5: "constitution",
+    6: "sex",
+    7: "class",
+    8: "level",
+    9: "age",
+    10: "height",
+    11: "weight",
+    12: "mana",
+    13: "hp",
+    14: "move",
+    15: "gold",
+    16: "experience",
+    17: "ac",
+    18: "hitroll",
+    19: "damroll",
+    20: "saves",
+    21: "savingrod",
+    22: "savingpetri",
+    23: "savingbreath",
+    24: "savingspell",
+    25: "spellaffect",
+}
+
+# mirroring ROM src/tables.c weapon_class — names match WeaponType members lowercased.
+_WEAPON_CLASS_NAMES: dict[int, str] = {
+    int(WeaponType.EXOTIC): "exotic",
+    int(WeaponType.SWORD): "sword",
+    int(WeaponType.DAGGER): "dagger",
+    int(WeaponType.SPEAR): "spear",
+    int(WeaponType.MACE): "mace",
+    int(WeaponType.AXE): "axe",
+    int(WeaponType.FLAIL): "flail",
+    int(WeaponType.WHIP): "whip",
+    int(WeaponType.POLEARM): "polearm",
+}
 
 
 def _get_session(char: Character) -> Session | None:
@@ -1843,30 +1946,210 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
     return f"Unknown object editor command: {cmd}"
 
 
+def _format_wear_flags(bits: int) -> str:
+    tokens = [label for bit, label in _WEAR_FLAG_DISPLAY if bits & bit]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_extra_flags(bits: int) -> str:
+    tokens = [label for bit, label in _EXTRA_FLAG_DISPLAY if bits & bit]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_weapon_special(bits: int) -> str:
+    tokens = [m.name.lower() for m in WeaponFlag if bits & int(m)]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_container_flags(bits: int) -> str:
+    tokens = [m.name.lower() for m in ContainerFlag if bits & int(m)]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_furniture_flags(bits: int) -> str:
+    tokens = [m.name.lower() for m in FurnitureFlag if bits & int(m)]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_portal_flags(bits: int) -> str:
+    tokens = [m.name.lower() for m in PortalFlag if bits & int(m)]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _format_exit_flags_raw(bits: int) -> str:
+    tokens = [label for bit, label in _EXIT_FLAG_DISPLAY if bits & bit]
+    return " ".join(tokens) if tokens else "none"
+
+
+def _coerce_int(value, default: int = 0) -> int:
+    try:
+        if isinstance(value, str):
+            return int(value, 10)
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _show_obj_values(obj_proto) -> list[str]:
+    """Mirroring ROM src/olc_act.c:2210-2374 show_obj_values — emit
+    type-specific value rows. Returns lines (each WITHOUT trailing newline).
+    """
+    item_type = obj_proto.item_type
+    if isinstance(item_type, str):
+        kind = item_type.lower()
+    else:
+        kind = str(item_type).lower()
+    values = obj_proto.value if isinstance(obj_proto.value, list) else [0, 0, 0, 0, 0]
+    v = [_coerce_int(values[i]) if i < len(values) else 0 for i in range(5)]
+    out: list[str] = []
+
+    if kind == "light":
+        # ROM olc_act.c:2219-2225
+        if v[2] in (-1, 999):
+            out.append("[v2] Light:  Infinite[-1]")
+        else:
+            out.append(f"[v2] Light:  [{v[2]}]")
+    elif kind in ("wand", "staff"):
+        # ROM olc_act.c:2227-2240 — spell name lookup by index not yet ported;
+        # emit raw v[3] index as fallback.
+        out.append(f"[v0] Level:          [{v[0]}]")
+        out.append(f"[v1] Charges Total:  [{v[1]}]")
+        out.append(f"[v2] Charges Left:   [{v[2]}]")
+        out.append(f"[v3] Spell:          {'none' if v[3] == -1 else f'[{v[3]}]'}")
+    elif kind == "portal":
+        # ROM olc_act.c:2242-2253
+        out.append(f"[v0] Charges:        [{v[0]}]")
+        out.append(f"[v1] Exit Flags:     {_format_exit_flags_raw(v[1])}")
+        out.append(f"[v2] Portal Flags:   {_format_portal_flags(v[2])}")
+        out.append(f"[v3] Goes to (vnum): [{v[3]}]")
+    elif kind == "furniture":
+        # ROM olc_act.c:2255-2267
+        out.append(f"[v0] Max people:      [{v[0]}]")
+        out.append(f"[v1] Max weight:      [{v[1]}]")
+        out.append(f"[v2] Furniture Flags: {_format_furniture_flags(v[2])}")
+        out.append(f"[v3] Heal bonus:      [{v[3]}]")
+        out.append(f"[v4] Mana bonus:      [{v[4]}]")
+    elif kind in ("scroll", "potion", "pill"):
+        # ROM olc_act.c:2269-2288 — spell-name lookup by index not yet ported.
+        out.append(f"[v0] Level:  [{v[0]}]")
+        for i in (1, 2, 3, 4):
+            out.append(f"[v{i}] Spell:  {'none' if v[i] == -1 else f'[{v[i]}]'}")
+    elif kind == "armor":
+        # ROM olc_act.c:2292-2301
+        out.append(f"[v0] Ac pierce       [{v[0]}]")
+        out.append(f"[v1] Ac bash         [{v[1]}]")
+        out.append(f"[v2] Ac slash        [{v[2]}]")
+        out.append(f"[v3] Ac exotic       [{v[3]}]")
+    elif kind == "weapon":
+        # ROM olc_act.c:2306-2320
+        wclass = _WEAPON_CLASS_NAMES.get(v[0], "exotic")
+        out.append(f"[v0] Weapon class:   {wclass}")
+        out.append(f"[v1] Number of dice: [{v[1]}]")
+        out.append(f"[v2] Type of dice:   [{v[2]}]")
+        attack_name = "none"
+        if 0 <= v[3] < len(ATTACK_TABLE):
+            entry = ATTACK_TABLE[v[3]]
+            if entry.name is not None:
+                attack_name = entry.name
+        out.append(f"[v3] Type:           {attack_name}")
+        out.append(f"[v4] Special type:   {_format_weapon_special(v[4])}")
+    elif kind == "container":
+        # ROM olc_act.c:2322-2335 — key-vnum->short_descr lookup omitted (display
+        # only); ROM's "[v2] Key:     %s [%d]" simplified to show vnum only.
+        out.append(f"[v0] Weight:     [{v[0]} kg]")
+        out.append(f"[v1] Flags:      [{_format_container_flags(v[1])}]")
+        out.append(f"[v2] Key:     [{v[2]}]")
+        out.append(f"[v3] Capacity    [{v[3]}]")
+        out.append(f"[v4] Weight Mult [{v[4]}]")
+    elif kind in ("drink_con", "drinkcontainer"):
+        # ROM olc_act.c:2337-2348
+        liq_name = LIQUID_TABLE[v[2]].name if 0 <= v[2] < len(LIQUID_TABLE) else "unknown"
+        out.append(f"[v0] Liquid Total: [{v[0]}]")
+        out.append(f"[v1] Liquid Left:  [{v[1]}]")
+        out.append(f"[v2] Liquid:       {liq_name}")
+        out.append(f"[v3] Poisoned:     {'Yes' if v[3] != 0 else 'No'}")
+    elif kind == "fountain":
+        # ROM olc_act.c:2350-2358
+        liq_name = LIQUID_TABLE[v[2]].name if 0 <= v[2] < len(LIQUID_TABLE) else "unknown"
+        out.append(f"[v0] Liquid Total: [{v[0]}]")
+        out.append(f"[v1] Liquid Left:  [{v[1]}]")
+        out.append(f"[v2] Liquid:        {liq_name}")
+    elif kind == "food":
+        # ROM olc_act.c:2360-2368
+        out.append(f"[v0] Food hours: [{v[0]}]")
+        out.append(f"[v1] Full hours: [{v[1]}]")
+        out.append(f"[v3] Poisoned:   {'Yes' if v[3] != 0 else 'No'}")
+    elif kind == "money":
+        # ROM olc_act.c:2370-2373
+        out.append(f"[v0] Gold:   [{v[0]}]")
+    # default: no values (matches ROM's `default: break;`)
+
+    return out
+
+
 def _oedit_show(obj_proto) -> str:
-    lines = []
-    lines.append(f"Object: {obj_proto.short_descr or '(unnamed)'}")
-    lines.append(f"Vnum:     {obj_proto.vnum}")
-    lines.append(f"Name:     {obj_proto.name or '(none)'}")
-    lines.append(f"Short:    {obj_proto.short_descr or '(none)'}")
-    lines.append(f"Long:     {obj_proto.description or '(none)'}")
-    lines.append(f"Type:     {obj_proto.item_type}")
-    lines.append(f"Level:    {obj_proto.level}")
-    lines.append(f"Weight:   {obj_proto.weight}")
-    lines.append(f"Cost:     {obj_proto.cost}")
-    lines.append(f"Material: {obj_proto.material or '(none)'}")
-
-    value_list = obj_proto.value if isinstance(obj_proto.value, list) else [0, 0, 0, 0, 0]
-    for i in range(5):
-        val = value_list[i] if i < len(value_list) else 0
-        lines.append(f"Value[{i}]: {val}")
-
+    """Mirroring ROM src/olc_act.c:2733-2812 oedit_show — emit object proto
+    fields in ROM's exact line order/labels/column widths.
+    """
     area = getattr(obj_proto, "area", None)
-    area_name = getattr(area, "name", "Unknown") if area else "None"
-    lines.append(f"Area:     {area_name}")
+    area_vnum = -1 if area is None else int(getattr(area, "vnum", 0) or 0)
+    area_name = "No Area" if area is None else (getattr(area, "name", None) or "No Area")
+    name = obj_proto.name or ""
+    item_type = obj_proto.item_type
+    if isinstance(item_type, str):
+        type_label = item_type.lower()
+    else:
+        type_label = str(item_type).lower()
+    wear_flags = _coerce_int(getattr(obj_proto, "wear_flags", 0))
+    extra_flags = _coerce_int(getattr(obj_proto, "extra_flags", 0))
+    level = _coerce_int(getattr(obj_proto, "level", 0))
+    weight = _coerce_int(getattr(obj_proto, "weight", 0))
+    cost = _coerce_int(getattr(obj_proto, "cost", 0))
+    condition = _coerce_int(getattr(obj_proto, "condition", 0))
+    material = obj_proto.material or ""
+    short_descr = obj_proto.short_descr or ""
+    description = obj_proto.description or ""
 
-    if obj_proto.extra_descr:
-        lines.append(f"Extra descriptions: {len(obj_proto.extra_descr)}")
+    lines: list[str] = [
+        f"Name:        [{name}]",
+        f"Area:        [{area_vnum:5}] {area_name}",
+        f"Vnum:        [{obj_proto.vnum:5}]",
+        f"Type:        [{type_label}]",
+        f"Level:       [{level:5}]",
+        f"Wear flags:  [{_format_wear_flags(wear_flags)}]",
+        f"Extra flags: [{_format_extra_flags(extra_flags)}]",
+        f"Material:    [{material}]",
+        f"Condition:   [{condition:5}]",
+        f"Weight:      [{weight:5}]",
+        f"Cost:        [{cost:5}]",
+    ]
+
+    # mirroring ROM olc_act.c:2776-2790 — Ex desc kwd row only when any present.
+    extra_descrs = obj_proto.extra_descr or []
+    if extra_descrs:
+        keywords = "".join(
+            f"[{(ed.get('keyword') if isinstance(ed, dict) else getattr(ed, 'keyword', '')) or ''}]"
+            for ed in extra_descrs
+        )
+        lines.append(f"Ex desc kwd: {keywords}")
+
+    # mirroring ROM olc_act.c:2792-2794 — Short desc + indented Long desc.
+    lines.append(f"Short desc:  {short_descr}")
+    lines.append(f"Long desc:\n     {description}")
+
+    # mirroring ROM olc_act.c:2796-2807 — affects table only when any present.
+    affects = getattr(obj_proto, "affected", None) or []
+    for cnt, paf in enumerate(affects):
+        if cnt == 0:
+            lines.append("Number Modifier Affects")
+            lines.append("------ -------- -------")
+        location = _coerce_int(getattr(paf, "location", 0))
+        modifier = _coerce_int(getattr(paf, "modifier", 0))
+        loc_name = _APPLY_NAMES.get(location, "none")
+        lines.append(f"[{cnt:4}] {modifier:<8} {loc_name}")
+
+    # mirroring ROM olc_act.c:2809 — show_obj_values appended last.
+    lines.extend(_show_obj_values(obj_proto))
 
     return "\n".join(lines)
 
