@@ -171,7 +171,7 @@ inside the RESETS section.
 
 | Gap ID | Severity | ROM C ref | Python ref | Description | Status |
 |---|---|---|---|---|---|
-| OLC_SAVE-001 | CRITICAL | src/olc_save.c:205-208 | `_serialize_mobile` (save.py:136) | Mob `off_flags`/`imm_flags`/`res_flags`/`vuln_flags` not persisted. Round-trip OLC save+reload erases mob defensive/offensive flag sets. | 🔄 OPEN |
+| OLC_SAVE-001 | CRITICAL | src/olc_save.c:205-208 | `_serialize_mobile` (save.py:136) | Mob `off_flags`/`imm_flags`/`res_flags`/`vuln_flags` not persisted. Round-trip OLC save+reload erases mob defensive/offensive flag sets. | ✅ FIXED — `_serialize_mobile` now emits `offensive`/`immune`/`resist`/`vuln` letter-strings; round-trip locked by `tests/integration/test_olc_save_001_mob_defensive_flags.py` |
 | OLC_SAVE-002 | CRITICAL | src/olc_save.c:213-219 | `_serialize_mobile` (save.py:136) | Mob `form`/`parts`/`size`/`material` not persisted. | 🔄 OPEN |
 | OLC_SAVE-003 | CRITICAL | src/olc_save.c:245-250 + 151-169 | `_serialize_mobile` (save.py:136) + `save_area_to_json` | Mob `mprogs` (MPROG_LIST per mob + #MOBPROGS section per area) not persisted. Round-trip erases mob progs entirely. | 🔄 OPEN |
 | OLC_SAVE-004 | CRITICAL | src/olc_save.c:786-824 | `_serialize_mobile` (save.py:136) + `save_area_to_json` | Mob `pShop` (keeper, buy_type[5], profit_buy/sell, open_hour/close_hour) not persisted. Round-trip erases shop bindings. | 🔄 OPEN |

@@ -143,6 +143,15 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
     else:
         sex_str = str(sex_value) if sex_value else "neutral"
 
+    # OLC_SAVE-001: persist defensive/offensive flag sets so save→reload
+    # preserves them. Mirrors ROM src/olc_save.c:205-208 (save_mobile emits
+    # Off/Imm/Res/Vuln via fwrite_flag). JSON-authoritative framing stores
+    # the ROM letter-strings directly, matching json_loader._load_mobs_from_json.
+    offensive = getattr(mob_proto, "offensive", "") or ""
+    immune = getattr(mob_proto, "immune", "") or ""
+    resist = getattr(mob_proto, "resist", "") or ""
+    vuln = getattr(mob_proto, "vuln", "") or ""
+
     return {
         "id": vnum,
         "name": getattr(mob_proto, "short_descr", "") or "",
@@ -161,6 +170,10 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
         "mana_dice": str(getattr(mob_proto, "mana_dice", "1d1+0") or "1d1+0"),
         "damage_dice": str(getattr(mob_proto, "damage_dice", "1d1+0") or "1d1+0"),
         "damage_type": str(getattr(mob_proto, "dam_type", "none") or "none"),
+        "offensive": str(offensive),
+        "immune": str(immune),
+        "resist": str(resist),
+        "vuln": str(vuln),
         "start_pos": str(getattr(mob_proto, "start_pos", "stand") or "stand"),
         "default_pos": str(getattr(mob_proto, "default_pos", "stand") or "stand"),
         "sex": sex_str,
