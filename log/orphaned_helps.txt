@@ -2878,3 +2878,20 @@
 [ 3001] TestChar: motd
 [ 3001] TestChar: imotd
 [ 3001] TestChar: story
+[ 3700] Eddol: motd
+[ 3006] Eddol: get
+[ 3006] Eddol: commands
+[ 3006] Eddol: get
+[ 3006] Eddol: loot
+[ 3008] Eddol: read
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story

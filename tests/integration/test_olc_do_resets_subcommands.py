@@ -35,6 +35,8 @@ def builder_char(olc_room):
     char.trust = 60
     char.room = olc_room
     char.pcdata = type("PCData", (), {"security": 9})()
+
+    char.is_npc = False
     return char
 
 

@@ -87,6 +87,8 @@ def test_autosave_world_player_path_still_returns_message(two_areas):
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
+
+    char.is_npc = False
     char.desc = Session(name=char.name, character=char, reader=None, connection=None)
 
     result = cmd_asave(char, "world")

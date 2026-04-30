@@ -96,6 +96,8 @@ def builder_char(home_room):
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
+
+    char.is_npc = False
     char.room = home_room
     home_room.people.append(char)
     session = Session(name=char.name or "", character=char, reader=None, connection=None)

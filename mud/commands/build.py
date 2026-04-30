@@ -199,6 +199,11 @@ def _get_session(char: Character) -> Session | None:
 def _is_builder(char: Character, area: Area | None) -> bool:
     if area is None:
         return False
+    # mirrors ROM IS_BUILDER macro (src/merc.h) — leading `!IS_NPC(ch)`
+    # short-circuits NPCs before the security/builders comparison, also
+    # mirroring `cmd_asave` `IS_NPC(ch) → sec = 0` (src/olc_save.c:933).
+    if getattr(char, "is_npc", False):
+        return False
     pcdata = getattr(char, "pcdata", None)
     area_security = int(getattr(area, "security", 0))
     char_security = int(getattr(pcdata, "security", 0)) if pcdata else 0

@@ -56,6 +56,8 @@ def builder_char(builder_area):
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
+
+    char.is_npc = False
     session = Session(name=char.name or "", character=char, reader=None, connection=None)
     char.desc = session
     return char
@@ -70,6 +72,8 @@ def non_builder_char(builder_area):
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 0})()
+
+    char.is_npc = False
     session = Session(name=char.name or "", character=char, reader=None, connection=None)
     char.desc = session
     return char
