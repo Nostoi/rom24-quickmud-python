@@ -277,9 +277,7 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
         # ExtraDescr-dataclass inputs both produce a flat
         # `{"keyword", "description"}` payload (mirrors ROM
         # src/olc_save.c:431-435).
-        "extra_descriptions": [
-            _serialize_extra_descr(e) for e in getattr(obj_proto, "extra_descr", []) or []
-        ],
+        "extra_descriptions": [_serialize_extra_descr(e) for e in getattr(obj_proto, "extra_descr", []) or []],
     }
 
 
@@ -472,6 +470,8 @@ def save_area_list(output_file: Path | str = "data/areas/area.lst") -> bool:
 
     try:
         with open(output_path, "w", encoding="utf-8") as f:
+            # mirrors ROM src/olc_save.c:94 — "social.are" prepend (ROM OLC convention)
+            f.write("social.are\n")
             for area in sorted(area_registry.values(), key=lambda a: getattr(a, "vnum", 0)):
                 file_name = getattr(area, "file_name", None)
                 if file_name:
