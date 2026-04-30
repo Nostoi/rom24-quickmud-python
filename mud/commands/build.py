@@ -1569,6 +1569,13 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
     if cmd == "show":
         return _aedit_show(area)
 
+    if cmd == "reset":
+        # mirroring ROM src/olc_act.c:653-663 aedit_reset — calls
+        # `reset_area(pArea)` and sends "Area reset.\n\r".
+        _apply_resets_for_redit(area)
+        area.changed = True
+        return "Area reset."
+
     if cmd == "name":
         if not args_parts:
             return "Usage: name <new area name>"
