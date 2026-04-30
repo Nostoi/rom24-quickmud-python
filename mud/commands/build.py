@@ -1443,16 +1443,44 @@ def cmd_asave(char: Character, args: str) -> str:
         if session is None:
             return "You do not have an active connection."
 
-        if session.editor != "redit":
+        # mirroring ROM src/olc_save.c:1085-1115 — dispatch on ch->desc->editor
+        # across ED_AREA / ED_ROOM / ED_OBJECT / ED_MOBILE / ED_HELP.
+        editor = session.editor
+        if editor in (None, "", "none"):
             return "You are not editing an area, therefore an area vnum is required."
 
-        room = session.editor_state.get("room") if session.editor_state else None
-        if not isinstance(room, Room):
-            return "You are not editing a room."
+        state = session.editor_state or {}
+        area: Area | None = None
 
-        area = getattr(room, "area", None)
+        if editor == "aedit":
+            candidate = state.get("area")
+            if isinstance(candidate, Area):
+                area = candidate
+        elif editor == "redit":
+            room = state.get("room")
+            if isinstance(room, Room):
+                area = getattr(room, "area", None)
+        elif editor == "oedit":
+            obj_proto = state.get("obj_proto")
+            if obj_proto is not None:
+                area = getattr(obj_proto, "area", None)
+        elif editor == "medit":
+            mob_proto = state.get("mob_proto")
+            if mob_proto is not None:
+                area = getattr(mob_proto, "area", None)
+        elif editor == "hedit":
+            # mirroring ROM src/olc_save.c:1110-1113 — ED_HELP branch sends
+            # "Grabando area : " then save_other_helps(). Help-save port is
+            # tracked separately as OLC_SAVE-009.
+            return "Grabando area : help save not yet implemented (OLC_SAVE-009)."
+        else:
+            # Unknown editor — fall through to ROM's default (use ch->in_room->area).
+            current_room = getattr(char, "room", None)
+            if isinstance(current_room, Room):
+                area = getattr(current_room, "area", None)
+
         if area is None:
-            return "The room you are editing has no area."
+            return "You are not editing an area, therefore an area vnum is required."
 
         if not _is_builder(char, area):
             return "You are not a builder for this area."
