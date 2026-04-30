@@ -139,7 +139,7 @@ def test_oedit_name_command(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "name sword weapon blade")
 
-    assert "Object name (keywords) set to: sword weapon blade" in result
+    assert "Name set." in result
     assert test_object.name == "sword weapon blade"
     assert test_object.area.changed is True
 

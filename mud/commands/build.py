@@ -1140,7 +1140,8 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
             return "Usage: name <new room name>"
         room.name = value
         _mark_area_changed(room)
-        return f"Room name set to {value}"
+        # mirroring ROM src/olc_act.c:1770-1787 redit_name — message verbatim.
+        return "Name set."
 
     if cmd in {"desc", "description"}:
         if not value:
@@ -1574,7 +1575,8 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
         new_name = " ".join(args_parts)
         area.name = new_name
         area.changed = True
-        return f"Area name set to: {new_name}"
+        # mirroring ROM src/olc_act.c:683-700 aedit_name — message verbatim.
+        return "Name set."
 
     if cmd == "credits":
         if not args_parts:
@@ -1855,7 +1857,8 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
         new_name = " ".join(args_parts)
         obj_proto.name = new_name
         _mark_obj_changed(obj_proto)
-        return f"Object name (keywords) set to: {new_name}"
+        # mirroring ROM src/olc_act.c:2990-3010 oedit_name — message verbatim.
+        return "Name set."
 
     if cmd == "short":
         if not args_parts:
@@ -2385,7 +2388,8 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         new_name = " ".join(args_parts)
         mob_proto.player_name = new_name
         _mark_mob_changed(mob_proto)
-        return f"Player name set to: {new_name}"
+        # mirroring ROM src/olc_act.c:3913-3931 medit_name — message verbatim.
+        return "Name set."
 
     if cmd == "short":
         if not args_parts:

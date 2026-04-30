@@ -98,7 +98,7 @@ def test_aedit_name_command(builder_char, test_area):
     cmd_aedit(builder_char, "1")
     result = cmd_aedit(builder_char, "name New Area Name")
 
-    assert "Area name set to: New Area Name" in result
+    assert "Name set." in result
     assert test_area.name == "New Area Name"
     assert test_area.changed is True
 

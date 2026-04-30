@@ -143,7 +143,7 @@ def test_medit_name_command(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "name guard soldier")
 
-    assert "Player name set to: guard soldier" in result
+    assert "Name set." in result
     assert test_mobile.player_name == "guard soldier"
     assert test_mobile.area.changed is True
 
