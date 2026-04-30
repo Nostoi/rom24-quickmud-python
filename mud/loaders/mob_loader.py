@@ -1,9 +1,9 @@
+from mud.mobprog import resolve_trigger_flag
 from mud.models.mob import MobIndex, MobProgram
-from mud.models.races import get_race
+from mud.models.races import get_race, get_race_by_index
 from mud.registry import mob_registry
 
 from .base_loader import BaseTokenizer
-from mud.mobprog import resolve_trigger_flag
 
 
 def _flag_int_to_letters(value: int) -> str:
@@ -33,10 +33,10 @@ def merge_race_flags(mob: MobIndex) -> None:
     """Mirror ROM src/db2.c:239-242,279-286,295-297 — OR race_table[]
     flag bits into the mob's letter-based flag fields."""
 
-    race_name = mob.race if isinstance(mob.race, str) else None
-    if not race_name:
-        return
-    race = get_race(race_name)
+    if isinstance(mob.race, str):
+        race = get_race(mob.race)
+    else:
+        race = get_race_by_index(int(mob.race or 0))
     if race is None:
         return
 

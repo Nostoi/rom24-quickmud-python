@@ -14,6 +14,7 @@ import pytest
 
 from mud.models.area import Area
 from mud.models.mob import MobIndex
+from mud.models.races import race_lookup
 from mud.olc.save import _serialize_mobile, save_area_to_json
 from mud.registry import mob_registry
 
@@ -113,3 +114,12 @@ def test_default_size_serializes_as_medium_string(tmp_path: Path):
     assert isinstance(written["form"], str)
     assert isinstance(written["parts"], str)
     assert isinstance(written["material"], str)
+
+
+def test_serialize_mobile_emits_race_name_from_rom_index():
+    """Mirrors ROM src/olc_save.c:184 — save_mobile writes race_table name."""
+    mob = MobIndex(vnum=9004, short_descr="indexed race mob", race=race_lookup("human"))
+
+    payload = _serialize_mobile(mob)
+
+    assert payload["race"] == "human"

@@ -39,6 +39,7 @@ from mud.models.constants import (
     VulnFlag,
 )
 from mud.models.mob import MobIndex
+from mud.models.races import race_lookup
 
 
 def _make_proto(**overrides) -> MobIndex:
@@ -88,6 +89,12 @@ def test_header_uses_rom_byte_layout() -> None:
     assert "Align: [   0]" in output
     assert "Hitroll: [ 5]" in output
     assert "Dam Type:    [slash]" in output
+
+
+def test_header_displays_race_name_from_rom_index() -> None:
+    proto = _make_proto(race=race_lookup("human"))
+    output = _medit_show(proto)
+    assert "Race: [human]" in output
 
 
 def test_act_and_affected_by_rows_present() -> None:

@@ -26,6 +26,7 @@ from mud.models.constants import (
     WearFlag,
 )
 from mud.models.obj import Affect
+from mud.models.races import race_lookup
 from mud.models.room import ExtraDescr
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
@@ -469,3 +470,29 @@ class TestJSONLD014DoorResets:
         assert east_exit.exit_info == east_exit.rs_flags
         assert all(reset.command != "D" for reset in area.resets)
         assert all(reset.command != "D" for reset in room_registry[3000].resets)
+
+
+class TestJSONLD012MobRaceIndex:
+    """JSONLD-012: JSON mob race names resolve to ROM race_table indexes."""
+
+    def test_mob_race_name_resolves_to_int_index(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["mobiles"] = [{"id": 3000, "name": "a human", "race": "human"}]
+        p = _write_json(tmp_path, area_data)
+
+        load_area_from_json(str(p))
+
+        mob = mob_registry[3000]
+        assert isinstance(mob.race, int)
+        assert mob.race == race_lookup("human")
+
+    def test_mob_race_prefix_matches_rom_race_lookup(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["mobiles"] = [{"id": 3001, "name": "a dragon", "race": "drag"}]
+        p = _write_json(tmp_path, area_data)
+
+        load_area_from_json(str(p))
+
+        mob = mob_registry[3001]
+        assert isinstance(mob.race, int)
+        assert mob.race == race_lookup("dragon")

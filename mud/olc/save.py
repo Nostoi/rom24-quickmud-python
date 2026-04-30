@@ -12,6 +12,7 @@ from typing import Any
 
 from mud.models.area import Area
 from mud.models.constants import Direction
+from mud.models.races import get_race_by_index
 from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
@@ -134,6 +135,17 @@ def _serialize_help(entry: object) -> dict[str, Any]:
     }
 
 
+def _serialize_race_name(value: object) -> str:
+    """Mirrors ROM src/olc_save.c:184 — save race_table[index].name."""
+    if isinstance(value, str):
+        return value or "human"
+    try:
+        race = get_race_by_index(int(value or 0))
+    except (TypeError, ValueError):
+        race = None
+    return getattr(race, "name", None) or "human"
+
+
 def _serialize_reset(reset: object) -> dict[str, Any]:
     return {
         "command": getattr(reset, "command", ""),
@@ -247,7 +259,7 @@ def _serialize_mobile(mob_proto: object) -> dict[str, Any]:
         "player_name": getattr(mob_proto, "player_name", "") or "",
         "long_description": getattr(mob_proto, "long_descr", "") or "",
         "description": getattr(mob_proto, "description", "") or "",
-        "race": getattr(mob_proto, "race", "human") or "human",
+        "race": _serialize_race_name(getattr(mob_proto, "race", "human")),
         "act_flags": str(getattr(mob_proto, "act", "") or "0"),
         "affected_by": str(getattr(mob_proto, "affected_by", "") or "0"),
         "alignment": int(getattr(mob_proto, "alignment", 0)),

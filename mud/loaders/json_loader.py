@@ -31,6 +31,7 @@ from ..models.constants import (
 )
 from ..models.mob import MobIndex, MobProgram
 from ..models.obj import Affect, ObjIndex
+from ..models.races import race_lookup
 from ..models.room import Exit, ExtraDescr, Room
 from ..models.room_json import ResetJson
 from .obj_loader import _resolve_item_type_code
@@ -161,6 +162,13 @@ def _to_int_flags(flag_letters: str, flag_cls: type) -> int:
     if isinstance(flag_letters, int):
         return flag_letters
     return int(convert_flags_from_letters(flag_letters, flag_cls))
+
+
+def _to_race_index(value: Any) -> int:
+    """Resolve JSON race names to ROM ``race_table`` indexes."""
+    if isinstance(value, int):
+        return value
+    return race_lookup(str(value or ""))
 
 
 def _coerce_reset_arg(value: Any) -> int:
@@ -513,6 +521,7 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             hitroll = int(hitroll) if hitroll.lstrip("-").isdigit() else 0
 
         # Create mob with all fields
+        race_index = _to_race_index(mob_data.get("race", ""))
         mob = MobIndex(
             vnum=mob_data["id"],
             player_name=mob_data.get("player_name", ""),
@@ -521,7 +530,8 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             # long_descr/description to defend against lowercase typos.
             long_descr=(lambda s: (s[0].upper() + s[1:]) if s else s)(mob_data.get("long_description", "")),
             description=(lambda s: (s[0].upper() + s[1:]) if s else s)(mob_data.get("description", "")),
-            race=mob_data.get("race", ""),
+            # mirroring ROM src/db2.c:234 — race_lookup(fread_string) stores an int index.
+            race=race_index,
             # Mirrors ROM src/db2.c:239 — force ``ACT_IS_NPC`` (letter
             # ``A``) into every mob's act_flags string.
             act_flags=("A" + mob_data.get("act_flags", "")) if "A" not in mob_data.get("act_flags", "") else mob_data.get("act_flags", ""),

@@ -38,6 +38,7 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.models.object import Object
+from mud.models.races import get_race_by_index
 from mud.models.room import Exit, ExtraDescr, Room
 from mud.models.room_json import ResetJson
 from mud.net.session import Session
@@ -2657,6 +2658,16 @@ def _format_size(value) -> str:
         return "medium"
 
 
+def _format_race(value: object) -> str:
+    if isinstance(value, str):
+        return value
+    try:
+        race = get_race_by_index(int(value or 0))
+    except (TypeError, ValueError):
+        race = None
+    return getattr(race, "name", None) or str(value)
+
+
 def _format_sex(value) -> str:
     """Mirroring ROM olc_act.c:3537-3541 — pad male/female to 7 chars."""
     if hasattr(value, "name"):
@@ -2705,9 +2716,7 @@ def _medit_show(mob_proto) -> str:
     name = mob_proto.player_name or ""
     act_bits = int(mob_proto.get_act_flags()) if hasattr(mob_proto, "get_act_flags") else _coerce_int(mob_proto.act_flags)
     sex = _format_sex(getattr(mob_proto, "sex", 0))
-    race = getattr(mob_proto, "race", "")
-    if not isinstance(race, str):
-        race = str(race)
+    race = _format_race(getattr(mob_proto, "race", ""))
     level = _coerce_int(getattr(mob_proto, "level", 0))
     align = _coerce_int(getattr(mob_proto, "alignment", 0))
     hitroll = _coerce_int(getattr(mob_proto, "hitroll", 0))
@@ -2948,7 +2957,7 @@ def cmd_mstat(char: Character, args: str) -> str:
     lines.append(f"Level: {mob_proto.level}")
     lines.append(f"Alignment: {mob_proto.alignment}")
     lines.append(f"Hitroll: {mob_proto.hitroll}")
-    lines.append(f"Race: {mob_proto.race}")
+    lines.append(f"Race: {_format_race(getattr(mob_proto, 'race', ''))}")
 
     sex_val = mob_proto.sex
     if hasattr(sex_val, "name"):
