@@ -69,7 +69,7 @@ def get_char_world(char: Character, name: str):
 
     # Search all characters
     for ch in getattr(registry, "char_list", []):
-        ch_name = getattr(ch, "name", "").lower()
+        ch_name = (getattr(ch, "name", None) or "").lower()
         if name_lower in ch_name or name_lower == ch_name:
             count += 1
             if count == number:
@@ -77,7 +77,7 @@ def get_char_world(char: Character, name: str):
 
     # Also check players
     for player in getattr(registry, "players", {}).values():
-        p_name = getattr(player, "name", "").lower()
+        p_name = (getattr(player, "name", None) or "").lower()
         if name_lower in p_name or name_lower == p_name:
             count += 1
             if count == number:
@@ -103,7 +103,7 @@ def get_char_room(char: Character, name: str):
 
     count = 0
     for person in getattr(room, "people", []):
-        p_name = getattr(person, "name", "").lower()
+        p_name = (getattr(person, "name", None) or "").lower()
         if name_lower in p_name or name_lower == p_name:
             count += 1
             if count == number:

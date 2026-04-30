@@ -125,7 +125,7 @@ def do_permit(char: Character, args: str) -> str:
     
     victim = None
     for person in getattr(room, "people", []):
-        if target_name.lower() in getattr(person, "name", "").lower():
+        if target_name.lower() in (getattr(person, "name", None) or "").lower():
             victim = person
             break
     
@@ -174,7 +174,7 @@ def do_peek(char: Character, args: str) -> str:
     
     victim = None
     for person in getattr(room, "people", []):
-        if target_name.lower() in getattr(person, "name", "").lower():
+        if target_name.lower() in (getattr(person, "name", None) or "").lower():
             victim = person
             break
     
@@ -262,7 +262,7 @@ def _get_skill(char: Character, skill_name: str) -> int:
     
     from mud import registry
     for sn, skill in enumerate(getattr(registry, "skill_table", [])):
-        if skill and getattr(skill, "name", "").lower() == skill_name.lower():
+        if skill and (getattr(skill, "name", None) or "").lower() == skill_name.lower():
             return learned.get(sn, 0)
     
     return 0

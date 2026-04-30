@@ -189,7 +189,7 @@ def do_put(char: Character, args: str) -> str:
         for obj in carrying:
             # Skip if doesn't match filter
             if filter_name:
-                obj_name = getattr(obj, "name", "").lower()
+                obj_name = (getattr(obj, "name", None) or "").lower()
                 if filter_name not in obj_name:
                     continue
 

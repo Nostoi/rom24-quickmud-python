@@ -56,7 +56,7 @@ def get_char_room(char: "Character", name: str) -> "Character | None":
         if not can_see_character(char, occupant):
             continue
 
-        occupant_name = getattr(occupant, "name", "").lower()
+        occupant_name = (getattr(occupant, "name", None) or "").lower()
         occupant_short = (getattr(occupant, "short_descr", "") or "").lower()
 
         if name_lower in occupant_name or name_lower in occupant_short:
@@ -104,7 +104,7 @@ def get_char_world(char: "Character", name: str) -> "Character | None":
         if not can_see_character(char, ch):
             continue
 
-        ch_name = getattr(ch, "name", "").lower()
+        ch_name = (getattr(ch, "name", None) or "").lower()
         ch_short = (getattr(ch, "short_descr", "") or "").lower()
 
         if name_lower in ch_name or name_lower in ch_short:

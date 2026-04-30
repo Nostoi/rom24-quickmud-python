@@ -41,7 +41,7 @@ def get_obj_carry(char: "Character", name: str) -> "Obj | None":
     # ROM C handler.c:2306: if (obj->wear_loc == WEAR_NONE && ...)
     # QuickMUD: inventory = unequipped items, equipment = equipped items
     for obj in getattr(char, "inventory", []):
-        obj_name = getattr(obj, "name", "").lower()
+        obj_name = (getattr(obj, "name", None) or "").lower()
         obj_short = (getattr(obj, "short_descr", "") or "").lower()
 
         if name_lower in obj_name or name_lower in obj_short:
@@ -81,7 +81,7 @@ def get_obj_wear(char: "Character", name: str) -> "Obj | None":
         if obj is None:
             continue
 
-        obj_name = getattr(obj, "name", "").lower()
+        obj_name = (getattr(obj, "name", None) or "").lower()
         obj_short = (getattr(obj, "short_descr", "") or "").lower()
 
         if name_lower in obj_name or name_lower in obj_short:
@@ -155,7 +155,7 @@ def get_obj_world(char: "Character", name: str) -> "Obj | None":
 
     # object_registry is a list of ObjectData instances (ROM C: object_list)
     for obj in object_registry:
-        obj_name = getattr(obj, "name", "").lower()
+        obj_name = (getattr(obj, "name", None) or "").lower()
         obj_short = (getattr(obj, "short_descr", "") or "").lower()
 
         if name_lower in obj_name or name_lower in obj_short:

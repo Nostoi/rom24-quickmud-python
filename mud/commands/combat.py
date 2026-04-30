@@ -755,7 +755,7 @@ def do_cast(char: Character, args: str) -> str:
         if room:
             target_lower = target_name.lower()
             for candidate in getattr(room, "characters", []):
-                candidate_name = getattr(candidate, "name", "").lower()
+                candidate_name = (getattr(candidate, "name", None) or "").lower()
                 if target_lower in candidate_name:
                     target = candidate
                     break

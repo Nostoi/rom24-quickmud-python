@@ -102,8 +102,8 @@ def do_mfind(char: Character, args: str) -> str:
 
     lines = []
     for vnum, mob in sorted(registry.mob_prototypes.items()):
-        mob_name = getattr(mob, "name", "").lower()
-        short_desc = getattr(mob, "short_descr", "").lower()
+        mob_name = (getattr(mob, "name", None) or "").lower()
+        short_desc = (getattr(mob, "short_descr", None) or "").lower()
 
         if search_name in mob_name or search_name in short_desc:
             display_name = getattr(mob, "short_descr", mob_name)
@@ -132,8 +132,8 @@ def do_ofind(char: Character, args: str) -> str:
 
     lines = []
     for vnum, obj in sorted(registry.obj_prototypes.items()):
-        obj_name = getattr(obj, "name", "").lower()
-        short_desc = getattr(obj, "short_descr", "").lower()
+        obj_name = (getattr(obj, "name", None) or "").lower()
+        short_desc = (getattr(obj, "short_descr", None) or "").lower()
 
         if search_name in obj_name or search_name in short_desc:
             display_name = getattr(obj, "short_descr", obj_name)
@@ -198,7 +198,7 @@ def do_owhere(char: Character, args: str) -> str:
     max_found = 200
 
     for obj in getattr(registry, "object_list", []):
-        obj_name = getattr(obj, "name", "").lower()
+        obj_name = (getattr(obj, "name", None) or "").lower()
         if search_name not in obj_name:
             continue
 
@@ -274,7 +274,7 @@ def do_mwhere(char: Character, args: str) -> str:
     count = 0
 
     for ch in getattr(registry, "char_list", []):
-        ch_name = getattr(ch, "name", "").lower()
+        ch_name = (getattr(ch, "name", None) or "").lower()
         room = getattr(ch, "room", None)
 
         if search_name in ch_name and room:
@@ -316,11 +316,11 @@ def do_sockets(char: Character, args: str) -> str:
 
         # mirrors ROM: can_see check and name filter
         if filter_lower:
-            char_name = getattr(character, "name", "").lower()
+            char_name = (getattr(character, "name", None) or "").lower()
             orig_name = ""
             original = getattr(desc, "original", None)
             if original:
-                orig_name = getattr(original, "name", "").lower()
+                orig_name = (getattr(original, "name", None) or "").lower()
             if filter_lower not in char_name and (not orig_name or filter_lower not in orig_name):
                 continue
 

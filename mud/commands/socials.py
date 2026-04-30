@@ -37,7 +37,7 @@ def perform_social(char: Character, name: str, arg: str) -> str:
         for person in char.room.people:
             if person is char:
                 continue
-            if getattr(person, "name", "").lower().startswith(arg_lower):
+            if (getattr(person, "name", None) or "").lower().startswith(arg_lower):
                 victim = person
                 break
     if victim and victim is not char:

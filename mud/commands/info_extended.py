@@ -160,7 +160,7 @@ def do_whois(char: Character, args: str) -> str:
             continue
 
         wch = desc.character
-        wch_name = getattr(wch, "name", "").lower()
+        wch_name = (getattr(wch, "name", None) or "").lower()
 
         if wch_name.startswith(target_name):
             level = getattr(wch, "level", 1)
