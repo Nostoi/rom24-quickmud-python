@@ -12,6 +12,11 @@ Bugs covered:
 - BUG-CORPSEINT: ``get coins corpse`` crashes with
   ``invalid literal for int() with base 10: 'npc_corpse'`` because the JSON
   loader stores prototype ``item_type`` as the raw string token.
+- BUG-MOBHP: every JSON-loaded mob spawns with ``max_hit=0`` / ``current_hp=1``
+  (so look reports "awful condition" and a level 1 PC one-shots Hassan),
+  because ``_parse_dice`` short-circuits on the default ``(0,0,0)`` primary
+  tuple and never consults the ``hit_dice`` string fallback the loader
+  populated.
 """
 
 from __future__ import annotations
@@ -119,3 +124,28 @@ def test_do_get_corpse_handles_string_item_type(crash_char):
     # Must not raise ValueError on int("npc_corpse").
     result = do_get(crash_char, "coins corpse")
     assert "coin" in result.lower() or "silver" in result.lower()
+
+
+def test_mob_spawn_uses_hit_dice_fallback_when_proto_hit_is_zero():
+    """BUG-MOBHP: from_prototype must roll ``hit_dice`` when ``proto.hit`` is unset.
+
+    Mirrors ROM ``src/db.c:fread_mobile`` which stores hit as
+    ``(number, size, bonus)``; JSON-loaded prototypes only populate the
+    ``hit_dice`` string (e.g. ``"1d1+499"``) and leave the tuple at the
+    default ``(0, 0, 0)``. ``_parse_dice`` must fall through to the string.
+    """
+    from mud.models.mob import MobIndex
+    from mud.spawning.templates import MobInstance
+
+    proto = MobIndex(
+        vnum=99500,
+        player_name="testdummy",
+        short_descr="a test dummy",
+        long_descr="A test dummy is here.",
+        level=45,
+        hit=(0, 0, 0),
+        hit_dice="1d1+499",
+    )
+    mob = MobInstance.from_prototype(proto)
+    assert mob.max_hit == 500, f"expected max_hit≈500, got {mob.max_hit}"
+    assert mob.current_hp == 500, f"expected current_hp=500, got {mob.current_hp}"

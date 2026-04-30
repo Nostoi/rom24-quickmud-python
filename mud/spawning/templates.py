@@ -143,14 +143,25 @@ def _parse_size(value: object) -> Size:
 def _parse_dice(primary: object, fallback: object) -> tuple[int, int, int]:
     if isinstance(primary, (tuple, list)) and len(primary) == 3:
         try:
-            return (int(primary[0]), int(primary[1]), int(primary[2]))
+            parsed = (int(primary[0]), int(primary[1]), int(primary[2]))
         except (TypeError, ValueError):
-            pass
+            parsed = None
+        # Treat the all-zero tuple as "unset" and fall through to the string
+        # fallback. JSON-loaded MobIndex prototypes leave the dice tuple at
+        # its default and carry the actual value in ``hit_dice`` /
+        # ``mana_dice`` / ``damage_dice`` strings.
+        if parsed is not None and parsed != (0, 0, 0):
+            return parsed
     if isinstance(fallback, str):
         match = _DICE_RE.match(fallback.strip())
         if match:
             number, size, bonus = match.groups()
             return (int(number), int(size), int(bonus or 0))
+    if isinstance(primary, (tuple, list)) and len(primary) == 3:
+        try:
+            return (int(primary[0]), int(primary[1]), int(primary[2]))
+        except (TypeError, ValueError):
+            pass
     return (0, 0, 0)
 
 
