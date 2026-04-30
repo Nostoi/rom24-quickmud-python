@@ -1118,12 +1118,16 @@ doesn't populate parallel tuple fields (`proto.hit` from `hit_dice`).
 
 ### Action items (next parity passes)
 
-1. **`mud/loaders/json_loader.py` ↔ `src/db.c`** — full audit pass,
-   comparing field-by-field against `fread_obj` / `fread_mobile` /
-   `fread_room` / `load_extra_descr`. Treat as a P1 audit task; add a
-   `JSON_LOADER_AUDIT.md` if needed. The JSON schema also dropped ROM's
-   separate `name` (keyword) field on objects — a data-side parity gap
-   distinct from the loader code gap, also needs documentation.
+1. **`mud/loaders/json_loader.py` ↔ `src/db.c`** — ✅ audit doc landed
+   2026-04-30 as [`JSON_LOADER_C_AUDIT.md`](JSON_LOADER_C_AUDIT.md).
+   18 gaps documented (7 CRITICAL, 8 IMPORTANT, 3 MINOR). Top issues:
+   `JSONLD-001` (object keyword list missing from schema — multi-commit
+   project), `JSONLD-007` (mob `hitroll` populated from `thac0` field —
+   silent attack-roll bonus drift), `JSONLD-005`/`006` (`wear_flags`
+   stored as raw string; `obj.affected` typed list never populated).
+   Phase 4 closures are downstream work — start with single-commit
+   loader fixes (JSONLD-002, 004, 005, 006, 007, 008, 011) before
+   tackling the schema/converter changes.
 2. **`mud/world/{obj_find,char_find}.py` ↔ `src/handler.c`** — verify every
    `is_name` / `get_*` helper handles the documented `name: str | None`
    prototype shape. Defense applied 2026-04-30 (commit `658d319`).

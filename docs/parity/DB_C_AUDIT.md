@@ -512,3 +512,16 @@ ports correctly:
 until a focused `mud/loaders/json_loader.py` audit pass closes the JSON
 path gaps, or split the certification into two scopes (`.are` loaders ✅
 vs JSON loader ⚠️). Decision deferred to next session.
+
+**2026-04-30 update — JSON-loader audit doc landed**:
+[`JSON_LOADER_C_AUDIT.md`](JSON_LOADER_C_AUDIT.md) documents 18 gaps
+(7 CRITICAL / 8 IMPORTANT / 3 MINOR) against `src/db.c:fread_obj`,
+`fread_mobile`, `fread_room`, `load_resets`, `load_shops`. The four
+runtime bugs above appear there as `JSONLD-001` (keyword list),
+`JSONLD-002` (typed `ExtraDescr`), `JSONLD-003` (item_type — ✅ FIXED in
+loader), `JSONLD-004` (hit/mana/damage tuples). Additional CRITICAL
+findings from the audit: `JSONLD-005` (`wear_flags` raw string),
+`JSONLD-006` (`obj.affected` typed list never populated), `JSONLD-007`
+(mob `hitroll` populated from wrong JSON key). Until those close, the
+db.c "100% certified" header on this file applies only to the
+`.are` loader path.
