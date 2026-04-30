@@ -45,8 +45,10 @@ _SECTOR_NAMES: dict[int, str] = {
     int(Sector.FOREST): "forest",
     int(Sector.HILLS): "hills",
     int(Sector.MOUNTAIN): "mountain",
-    int(Sector.WATER_SWIM): "water_swim",
-    int(Sector.WATER_NOSWIM): "water_noswim",
+    # mirroring ROM src/tables.c:391-392 sector_flags — display labels
+    # are "swim"/"noswim" (not "water_swim"/"water_noswim").
+    int(Sector.WATER_SWIM): "swim",
+    int(Sector.WATER_NOSWIM): "noswim",
     int(Sector.UNUSED): "unused",
     int(Sector.AIR): "air",
     int(Sector.DESERT): "desert",
@@ -284,8 +286,12 @@ def _room_summary(room: Room) -> str:
         key = int(getattr(exit_obj, "key", 0) or 0)
         exit_info = int(getattr(exit_obj, "exit_info", 0) or 0)
         reset_info = int(getattr(exit_obj, "rs_flags", 0) or 0)
+        # mirroring ROM src/olc_act.c:1184-1196 redit_show — the first
+        # sprintf ends with "Key: [%5d] " (trailing space) and ROM then
+        # strcat()s " Exit flags: [", producing two spaces between the
+        # closing ']' and "Exit flags".
         lines.append(
-            f"-{direction.name.capitalize():<5} to [{target_vnum:5}] Key: [{key:5}] "
+            f"-{direction.name.capitalize():<5} to [{target_vnum:5}] Key: [{key:5}]  "
             f"Exit flags: [{_format_exit_flags_for_show(exit_info, reset_info)}]"
         )
         keyword = getattr(exit_obj, "keyword", None)
