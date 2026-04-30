@@ -1,49 +1,51 @@
-# Session Status — 2026-04-29 — `olc_act.c` IMPORTANTs closed (OLC_ACT-007..012)
+# Session Status — 2026-04-29 — `olc_act.c` MINORs closed + `olc_save.c` audit filed
 
 ## Current State
 
-- **Active audit**: `olc_act.c` (Phase 4 — IMPORTANT tier complete; 2
-  MINOR + 3 sub-gaps + ~78 TIER C functions remain)
-- **Last completed**: OLC_ACT-007/008/009/010/011/012 (six IMPORTANT gaps)
+- **Active audit**: `olc_save.c` (Phase 1–3 filed; Phase 4 closures
+  pending, starting with the OLC_SAVE-001..008 round-trip data-loss block)
+- **Last completed**: OLC_ACT-013/014 (both MINOR structural gaps
+  closed); `olc_save.c` audit doc filed with stable gap IDs
+  OLC_SAVE-001..020
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-04-29_OLC_ACT_007-012.md](SESSION_SUMMARY_2026-04-29_OLC_ACT_007-012.md)
+  [SESSION_SUMMARY_2026-04-29_OLC_ACT_FINAL_AND_OLC_SAVE_AUDIT.md](SESSION_SUMMARY_2026-04-29_OLC_ACT_FINAL_AND_OLC_SAVE_AUDIT.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.84 |
-| OLC integration tests | 149 passing (30 new this session) |
-| ROM C files audited | ~21 / 43 (`olc_act.c` still ⚠️ Partial — 12/14 gaps closed) |
-| Active focus | `olc_act.c` — CRITICAL + IMPORTANT tiers closed |
+| Version | 2.6.87 |
+| OLC integration tests | 158 passing (9 new this session: 3 OLC_ACT-013, 6 OLC_ACT-014) |
+| ROM C files audited | ~22 / 43 (`olc_act.c` ⚠️ Partial, TIER A/B 100% closed; `olc_save.c` ⚠️ Partial, Phase 1–3 filed) |
+| Active focus | `olc_save.c` — Phase 4 closures begin with OLC_SAVE-001..008 |
 
 ## Next Intended Task
 
-Three viable options for next session:
+Begin `olc_save.c` Phase 4 closures, **CRITICAL block first**
+(OLC_SAVE-001..008 — round-trip data loss). Recommended starting gap:
+**OLC_SAVE-001** (mob `off_flags`/`imm_flags`/`res_flags`/`vuln_flags`
+not persisted on JSON save). Use `rom-gap-closer` per gap. Each closure
+must include a round-trip integration test (load .are → save JSON →
+load JSON → assert proto equals original) and may include a paired
+change in `mud/loaders/json_loader.py` to read the new field back —
+both sides land in one commit per the audit's locked closure rule.
 
-1. **OLC_ACT-013 / OLC_ACT-014 (MINOR)** — last two structural gaps in
-   `OLC_ACT_C_AUDIT.md`. Quick follow-ups; puts `olc_act.c` closer to
-   ✅ AUDITED.
-2. **`olc_save.c` audit** — last unaudited OLC editor file (1136 lines,
-   `.are` text-format writer). Filing this audit moves the OLC cluster
-   toward fully retired.
-3. **OLC_ACT TIER C deep-audit pass** — ~78 functions at "🔄 NEEDS DEEP
-   AUDIT". Required before `olc_act.c` row can flip ⚠️ Partial →
-   ✅ AUDITED. Heavy investment.
+Alternative paths:
+- **OLC_SAVE-009..013** (IMPORTANT) if the loader-side data-model work
+  for OLC_SAVE-001..008 turns out blocking.
+- **`olc_mpcode.c` audit** — the last unaudited OLC editor file
+  (~300 lines), would close out the OLC editor cluster's audit phase.
 
-Three sub-gaps were recorded during this session's OLC_ACT-010 work
-(`OLC_ACT-010b/c/d` — dice/AC byte format, shop/mprogs/spec_fun
-rendering, ROM-faithful flag-table names for 10 mob enums). They
-depend on data-model alignment and should be deferred until that
-alignment is in scope.
-
-Recommended start: **option 1** (OLC_ACT-013/014). Small, self-
-contained, and clears the IMPORTANT/MINOR severity bar entirely for
-`olc_act.c`.
+`olc_act.c` cannot flip to ✅ AUDITED until the ~78 TIER C functions
+receive a deep-audit pass and the three OLC_ACT-010 sub-gaps
+(10b/c/d — dice/AC byte format, shop/mprogs/spec_fun rendering, mob
+flag-table names) are addressed. Those depend on data-model alignment;
+defer until in scope.
 
 ## Subagent reliability note
 
 Sonnet subagents continue to terminate mid-investigation in this
-codebase (now reproduced across three sessions). For multi-step parity
-work, prefer inline execution. Haiku subagents remain reliable for
-small string-drift / single-keyword gaps.
+codebase (now four sessions reproduced). For multi-step parity work
+(audits, multi-step closures), prefer inline execution. Haiku subagents
+remain reliable for small string-drift / single-keyword gap closures.
+The `olc_save.c` audit was run inline per the session brief.
