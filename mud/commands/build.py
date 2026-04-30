@@ -1367,10 +1367,20 @@ def _get_area_for_vnum(vnum: int) -> Area | None:
     return None
 
 
-def cmd_asave(char: Character, args: str) -> str:
+def cmd_asave(char: Character | None, args: str) -> str:
+    # mirrors ROM src/olc_save.c:931-936 — `if (!ch) sec = 9` is the
+    # autosave-timer entry: do_asave(NULL, "world") must persist every
+    # area regardless of builder. Null-ch path is silent (`if (ch) send_to_char`).
     from mud.olc.save import save_area_list, save_area_to_json
 
     arg = args.strip().lower()
+
+    if char is None:
+        # ROM autosave only ever calls do_asave(NULL, "world"). Other
+        # null-ch paths aren't reachable in ROM; return silently rather
+        # than crash on later char-attribute access.
+        if arg != "world":
+            return ""
 
     if not arg:
         return (
@@ -1401,14 +1411,18 @@ def cmd_asave(char: Character, args: str) -> str:
             return "Failed to save area."
 
     if arg == "world":
+        # mirrors ROM src/olc_save.c:1000-1018 — autosave (ch=NULL) saves
+        # every area, skipping the IS_BUILDER gate; player path keeps it.
         save_area_list()
         saved_count = 0
         for area in area_registry.values():
-            if not _is_builder(char, area):
+            if char is not None and not _is_builder(char, area):
                 continue
             if save_area_to_json(area):
                 saved_count += 1
 
+        if char is None:
+            return ""
         return f"You saved the world. ({saved_count} areas)"
 
     if arg == "changed":
