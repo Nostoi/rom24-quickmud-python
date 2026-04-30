@@ -482,6 +482,9 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
             item_type=obj_data.get("item_type", "trash"),
             extra_flags=_rom_flags_to_int(obj_data.get("extra_flags", "")),
             wear_flags=obj_data.get("wear_flags", ""),
+            # OLC_SAVE-006: hydrate object level from JSON (mirrors ROM
+            # src/olc_save.c:378 save_object level emission).
+            level=int(obj_data.get("level", 0) or 0),
             weight=obj_data.get("weight", 0),
             cost=obj_data.get("cost", 0),
             condition=obj_data.get("condition", "P"),

@@ -215,6 +215,8 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
         "item_type": getattr(obj_proto, "item_type", "trash") or "trash",
         "extra_flags": str(getattr(obj_proto, "extra_flags", 0) or 0),
         "wear_flags": str(getattr(obj_proto, "wear_flags", "") or ""),
+        # OLC_SAVE-006: persist object level (mirrors ROM src/olc_save.c:378).
+        "level": int(getattr(obj_proto, "level", 0) or 0),
         "weight": int(getattr(obj_proto, "weight", 0)),
         "cost": int(getattr(obj_proto, "cost", 0)),
         "condition": str(getattr(obj_proto, "condition", "P") or "P"),
