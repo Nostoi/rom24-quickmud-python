@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (act_wiz.c stat family parity closures — WIZ-039..044)
+
+- **WIZ-039** — `do_mstat` practices now uses caller's NPC status (`char.is_npc`) instead of victim's, matching ROM `IS_NPC(ch) ? 0 : victim->practice`.
+- **WIZ-040** — `do_mstat` Hit/Dam now use `get_hitroll(victim)` / `get_damroll(victim)` (including STR-app bonuses) per ROM `GET_HITROLL` / `GET_DAMROLL`.
+- **WIZ-041** — `do_mstat` Age/Played/Last_Level now computed via `get_age(victim)`, `(played + current_time - logon) / 3600`, and `pcdata.last_level` per ROM instead of hardcoded 17/0/0.
+- **WIZ-042** — `do_mstat` Carry weight now uses `get_carry_weight(victim) // 10` (includes coin burden) per ROM.
+- **WIZ-043** — `do_ostat` Number/Weight line now uses `_object_carry_number(obj)` and `_get_obj_weight(obj)` per ROM `get_obj_number` / `get_obj_weight` / `get_true_weight`.
+- **WIZ-044** — `do_rstat` Objects list now has 3 spaces after colon per ROM `".\n\rObjects:   "`.
+
+### Fixed (JSON loader parity closures — v2.6.105)
+
+- **JSONLD-012** — JSON-loaded mob `race` values now resolve through ROM `race_lookup` into integer `race_table` indexes at load time, matching ROM `src/db2.c:234`. Race flag merging, OLC JSON save, and `medit show` display now handle integer-backed mob races without losing the human-readable race name.
+
 ### Fixed (JSON loader parity closures — v2.6.104)
 
 - **JSONLD-009** — JSON-loaded areas now default `security` to 9 for both supported JSON formats, preserving explicit JSON values when present. This mirrors ROM `src/db.c:452` / `src/db.c:531` and restores the expected OLC builder-security default.

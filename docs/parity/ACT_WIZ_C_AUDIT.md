@@ -167,6 +167,12 @@ Python now:
 | `WIZ-036` | MEDIUM | `src/act_wiz.c:3958-4067` | `mud/commands/imm_set.py:366` | `do_oset` missing `smash_tilde`; missing `v0`-`v4` short aliases (ROM allows `v0` as alias for `value0`); `value0` not capped at `UMIN(50,value)` per ROM:3998; missing `timer` field; unknown field re-invokes `do_oset("")` per ROM; all messages missing `\n\r`. | ✅ FIXED |
 | `WIZ-037` | MEDIUM | `src/act_wiz.c:4071-4136` | `mud/commands/imm_set.py:457` | `do_rset` missing `smash_tilde`; uses `registry.rooms.get(vnum)` instead of ROM `find_location(ch, arg1)`; missing private-room check (`is_room_owner`/`room_is_private`); missing `"Value must be numeric.\n\r"` check; unknown field re-invokes `do_rset("")`; `"No such location.\n\r"` vs `"No such room."`; all messages missing `\n\r`. | ✅ FIXED |
 | `WIZ-038` | MEDIUM | `src/act_wiz.c:3793-3954` | `mud/commands/imm_set.py:516` | `do_string` missing `smash_tilde`; `spec` field entirely missing (NPC-only, uses `spec_lookup`); `long` appends `\n` instead of ROM `\n\r`; `title` uses `" " + value` instead of ROM `set_title(victim, arg3)`; `desc` uses exact match instead of `str_prefix`; extended description stub instead of ROM `extra_descr` insertion; bad type re-invokes `do_string("")` per ROM; all messages missing `\n\r`. | ✅ FIXED |
+| `WIZ-039` | CRITICAL | `src/act_wiz.c:1601` | `mud/commands/imm_search.py:955` | `do_mstat` practices check used `is_npc` (victim's NPC status) instead of `char.is_npc` (caller's NPC status). ROM uses `IS_NPC(ch) ? 0 : victim->practice`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_mstat_practices_uses_caller_npc_not_victim` |
+| `WIZ-040` | HIGH | `src/act_wiz.c:1617-1618` | `mud/commands/imm_search.py:989-990` | `do_mstat` Hit/Dam used raw `victim.hitroll`/`victim.damroll` instead of `GET_HITROLL(victim)`/`GET_DAMROLL(victim)` which include STR-app bonuses. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_mstat_uses_get_hitroll_and_get_damroll` |
+| `WIZ-041` | HIGH | `src/act_wiz.c:1651-1657` | `mud/commands/imm_search.py:1037-1041` | `do_mstat` Age/Played/Last_Level was hardcoded (17/0/0) instead of computed via `get_age(victim)` and `(played + current_time - logon) / 3600` and `pcdata.last_level`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_mstat_age_played_last_level_computed` |
+| `WIZ-042` | MEDIUM | `src/act_wiz.c:1646` | `mud/commands/imm_search.py:1039-1040` | `do_mstat` Carry weight used raw `victim.carry_weight // 10` instead of `get_carry_weight(victim) / 10` (ROM includes coin burden). | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_mstat_carry_weight_uses_get_carry_weight` |
+| `WIZ-043` | HIGH | `src/act_wiz.c:1258-1260` | `mud/commands/imm_search.py:662` | `do_ostat` Number/Weight line hardcoded `1/1 weight/weight/weight` instead of `1/get_obj_number(obj) obj->weight/get_obj_weight(obj)/get_true_weight(obj)`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_ostat_number_and_weight_uses_helpers` |
+| `WIZ-044` | LOW | `src/act_wiz.c:1187` | `mud/commands/imm_search.py:600` | `do_rstat` Objects list had 2 spaces after colon; ROM has 3 (`".\n\rObjects:   "`). | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_rstat_objects_spacing_matches_rom` |
 
 ## Phase 4 — Closures
 
@@ -276,10 +282,18 @@ Completed this session (WIZ-023..038):
   - All messages have `\n\r` line endings
 - All modified commands have `\n\r` line endings.
 
+Completed this session (WIZ-039..044):
+- `do_mstat` practices now uses `char.is_npc` (caller) instead of `victim.is_npc` per ROM `IS_NPC(ch)`.
+- `do_mstat` Hit/Dam now use `get_hitroll(victim)` / `get_damroll(victim)` (with STR bonuses) per ROM `GET_HITROLL` / `GET_DAMROLL`.
+- `do_mstat` Age/Played/Last_Level now computed via `get_age(victim)` and `(played + current_time - logon) / 3600` and `pcdata.last_level` per ROM.
+- `do_mstat` Carry weight now uses `get_carry_weight(victim) // 10` per ROM.
+- `do_ostat` Number/Weight now uses `_object_carry_number(obj)`, `getattr(obj, "weight", ...)` with prototype fallback, `_get_obj_weight(obj)` per ROM `get_obj_number` / `get_obj_weight` / `get_true_weight`.
+- `do_rstat` Objects line now has 3 spaces after colon per ROM.
+
 Still outstanding: (none — act_wiz.c fully audited)
 
 Validation:
-- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `102 passed` (+27 new tests)
+- `pytest tests/integration/test_act_wiz_command_parity.py -q` — `108 passed` (+6 new tests)
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
 - `pytest tests/test_wiznet.py -q` — `32 passed`
 - `ruff check` — clean (no F/E9 errors)

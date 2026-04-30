@@ -466,7 +466,147 @@ def test_ostat_empty_arg() -> None:
     assert "Stat what?" in result
 
 
-# ── Punish commands (WIZ-008) ──────────────────────────────────────
+# ── Stat family residual gaps (WIZ-039..044) ──────────────────────────
+
+
+def test_mstat_practices_uses_caller_npc_not_victim() -> None:
+    # mirrors ROM src/act_wiz.c:1601 — IS_NPC(ch) ? 0 : victim->practice
+    # Practices must be 0 when the CALLER is an NPC, regardless of victim.
+    from mud.commands.imm_search import do_mstat
+
+    room = _room(9240, name="StatRoom")
+    pc = _imm("PCTarget", room.vnum, trust=5)
+    pc.is_npc = False
+    pc.practice = 7
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if pc not in global_registry.char_list:
+        global_registry.char_list.append(pc)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+    result = do_mstat(admin, "PCTarget")
+    assert "Practices: 7" in result
+
+
+def test_mstat_uses_get_hitroll_and_get_damroll() -> None:
+    # mirrors ROM src/act_wiz.c:1617-1618 — GET_HITROLL/GET_DAMROLL include STR bonuses
+    from mud.commands.imm_search import do_mstat
+
+    room = _room(9241, name="StatRoom")
+    mob = create_test_character("hitdam mob", room.vnum)
+    mob.is_npc = True
+    mob.hitroll = 5
+    mob.damroll = 3
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if mob not in global_registry.char_list:
+        global_registry.char_list.append(mob)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+    result = do_mstat(admin, "hitdam mob")
+    assert "Hit:" in result
+    assert "Dam:" in result
+    # GET_HITROLL and GET_DAMROLL add STR-app bonuses; must not be raw values
+    from mud.math.stat_apps import get_hitroll, get_damroll
+
+    assert f"Hit: {get_hitroll(mob)}" in result
+    assert f"Dam: {get_damroll(mob)}" in result
+
+
+def test_mstat_age_played_last_level_computed() -> None:
+    # mirrors ROM src/act_wiz.c:1651-1657 — get_age, (played+current_time-logon)/3600, pcdata.last_level
+    from mud.commands.imm_search import do_mstat
+    from mud.handler import get_age
+    import time
+
+    room = _room(9242, name="StatRoom")
+    pc = _imm("AgeTarget", room.vnum, trust=5)
+    pc.is_npc = False
+    pc.played = 7200
+    pc.logon = time.time() - 3600
+    pc.pcdata.last_level = 12
+    pc.timer = 5
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if pc not in global_registry.char_list:
+        global_registry.char_list.append(pc)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+    result = do_mstat(admin, "AgeTarget")
+    assert "Age:" in result
+    assert "Played:" in result
+    assert "Last Level: 12" in result
+    assert "Timer: 5" in result
+    expected_age = get_age(pc)
+    assert f"Age: {expected_age}" in result
+    expected_played = int((7200 + (time.time() - pc.logon)) / 3600)
+    assert f"Played: {expected_played}" in result
+
+
+def test_mstat_carry_weight_uses_get_carry_weight() -> None:
+    # mirrors ROM src/act_wiz.c:1646 — get_carry_weight(victim) / 10
+    from mud.commands.imm_search import do_mstat
+    from mud.world.movement import get_carry_weight
+
+    room = _room(9243, name="StatRoom")
+    pc = _imm("WeightTarget", room.vnum, trust=5)
+    pc.is_npc = False
+    pc.carry_weight = 150
+    pc.silver = 100
+    pc.gold = 25
+    if not hasattr(global_registry, "char_list"):
+        global_registry.char_list = []
+    if pc not in global_registry.char_list:
+        global_registry.char_list.append(pc)
+
+    admin = _imm("Admin", room.vnum, trust=60)
+    result = do_mstat(admin, "WeightTarget")
+    assert "Carry number:" in result
+    assert "Carry weight:" in result
+    expected_weight = get_carry_weight(pc) // 10
+    assert f"Carry weight: {expected_weight}" in result
+
+
+def test_ostat_number_and_weight_uses_helpers() -> None:
+    # mirrors ROM src/act_wiz.c:1258-1260 — get_obj_number, get_obj_weight, get_true_weight
+    from mud.commands.imm_search import do_ostat
+    from mud.models.character import _object_carry_number
+    from mud.models.obj import ObjIndex, object_registry
+    from mud.models.object import Object
+    from mud.commands.obj_manipulation import _get_obj_weight
+
+    room = _room(9244, name="StatRoom")
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    proto = ObjIndex(vnum=92440, name="weight test sword", short_descr="a weighty sword", description="A heavy sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
+    obj = Object(instance_id=77002, prototype=proto, location=-1, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    obj.in_room = room
+    room.contents.append(obj)
+    object_registry.append(obj)
+
+    result = do_ostat(admin, "weight test sword")
+    assert "Number:" in result
+    assert "Weight:" in result
+    expected_number = _object_carry_number(obj)
+    expected_weight = _get_obj_weight(obj)
+    assert f"Number: 1/{expected_number}" in result
+    # For a non-container, all three weight values should be 50 (from prototype)
+    assert f"Weight: 50/{expected_weight}/{expected_weight}" in result
+
+    if obj in object_registry:
+        object_registry.remove(obj)
+
+
+def test_rstat_objects_spacing_matches_rom() -> None:
+    # mirrors ROM src/act_wiz.c:1187 — "Objects:   " with 3 spaces after colon
+    from mud.commands.imm_search import do_rstat
+
+    room = _room(9245, name="SpacingRoom")
+    room.description = "A test room."
+    admin = _imm("Admin", room.vnum, trust=60)
+
+    result = do_rstat(admin, "")
+    assert "Objects:   " in result
 
 
 def test_nochannels_sets_and_removes_comm_flag() -> None:

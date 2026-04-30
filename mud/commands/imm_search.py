@@ -447,7 +447,8 @@ def do_clone(char: Character, args: str) -> str:
                 room.contents.append(clone)
                 clone.in_room = room
 
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         wiznet("$N clones $p.", char, clone, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
         return "You clone $p.\n\r"
 
@@ -458,11 +459,14 @@ def do_clone(char: Character, args: str) -> str:
 
         # mirrors ROM src/act_wiz.c:2423-2432 — trust check
         mob_level = getattr(mob, "level", 0)
-        from mud.models.constants import LEVEL_AVATAR, LEVEL_DEMI, LEVEL_IMMORTAL, LEVEL_GOD
-        if (mob_level > 20 and get_trust(char) < LEVEL_GOD) or \
-           (mob_level > 10 and get_trust(char) < LEVEL_IMMORTAL) or \
-           (mob_level > 5 and get_trust(char) < LEVEL_DEMI) or \
-           (mob_level > 0 and get_trust(char) < LEVEL_AVATAR):
+        from mud.models.constants import LEVEL_AVATAR, LEVEL_DEMI, LEVEL_GOD, LEVEL_IMMORTAL
+
+        if (
+            (mob_level > 20 and get_trust(char) < LEVEL_GOD)
+            or (mob_level > 10 and get_trust(char) < LEVEL_IMMORTAL)
+            or (mob_level > 5 and get_trust(char) < LEVEL_DEMI)
+            or (mob_level > 0 and get_trust(char) < LEVEL_AVATAR)
+        ):
             return "Your powers are not great enough for such a task.\n\r"
 
         from mud.spawning.mob_spawner import spawn_mob
@@ -485,7 +489,8 @@ def do_clone(char: Character, args: str) -> str:
                 room.people = []
             room.people.append(clone)
 
-        from mud.wiznet import wiznet, WiznetFlag
+        from mud.wiznet import WiznetFlag, wiznet
+
         clone_short = getattr(clone, "short_descr", "something")
         wiznet(f"$N clones {clone_short}.", char, None, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
         return "You clone $N.\n\r"
@@ -597,7 +602,7 @@ def do_rstat(char: Character, args: str) -> str:
         if can_see_character(char, rch):
             name = getattr(rch, "name", "?")
             buf += f" {name.split()[0] if name else '?'}"
-    buf += ".\n\rObjects:  "
+    buf += ".\n\rObjects:   "
     for obj in getattr(location, "contents", []):
         name = getattr(obj, "name", "?")
         buf += f" {name.split()[0] if name else '?'}"
@@ -656,10 +661,15 @@ def do_ostat(char: Character, args: str) -> str:
     extra_flags_val = int(getattr(obj, "extra_flags", 0))
     buf += f"Wear bits: {wear_bit_name(wear_flags_val)}\n\rExtra bits: {extra_bit_name(extra_flags_val)}\n\r"
 
-    obj_number = 1
-    obj_weight = int(getattr(obj, "weight", 0))
-    true_weight = obj_weight
-    buf += f"Number: 1/{obj_number}  Weight: {obj_weight}/{obj_weight}/{true_weight} (10th pounds)\n\r"
+    from mud.commands.obj_manipulation import _get_obj_weight
+    from mud.models.character import _object_carry_number
+
+    obj_number = _object_carry_number(obj)
+    # mirroring ROM src/act_wiz.c:1258-1260 — raw weight, weight incl. contents, true weight
+    raw_weight = int(getattr(obj, "weight", 0) or getattr(getattr(obj, "prototype", None), "weight", 0))
+    obj_weight_total = _get_obj_weight(obj)
+    true_weight = obj_weight_total
+    buf += f"Number: 1/{obj_number}  Weight: {raw_weight}/{obj_weight_total}/{true_weight} (10th pounds)\n\r"
 
     obj_level = int(getattr(obj, "level", 0))
     obj_cost = int(getattr(obj, "cost", 0))
@@ -952,7 +962,7 @@ def do_mstat(char: Character, args: str) -> str:
     max_mana = int(getattr(victim, "max_mana", 0))
     move = int(getattr(victim, "move", 0))
     max_move = int(getattr(victim, "max_move", 0))
-    practice = 0 if is_npc else int(getattr(victim, "practice", 0))
+    practice = 0 if getattr(char, "is_npc", False) else int(getattr(victim, "practice", 0))
     buf += f"Hp: {hit}/{max_hit}  Mana: {mana}/{max_mana}  Move: {move}/{max_move}  Practices: {practice}\n\r"
 
     level = int(getattr(victim, "level", 1))
@@ -982,8 +992,11 @@ def do_mstat(char: Character, args: str) -> str:
     ac_exotic = get_ac(victim, AC_EXOTIC)
     buf += f"Armor: pierce: {ac_pierce}  bash: {ac_bash}  slash: {ac_slash}  magic: {ac_exotic}\n\r"
 
-    hitroll = int(getattr(victim, "hitroll", 0))
-    damroll = int(getattr(victim, "damroll", 0))
+    # mirroring ROM src/act_wiz.c:1617-1618 — GET_HITROLL/GET_DAMROLL include STR bonuses
+    from mud.math.stat_apps import get_damroll, get_hitroll
+
+    hitroll = get_hitroll(victim)
+    damroll = get_damroll(victim)
     saving_throw = int(getattr(victim, "saving_throw", 0))
     size_val = int(getattr(victim, "size", 0))
     pos_val = int(getattr(victim, "position", 8))
@@ -1030,13 +1043,23 @@ def do_mstat(char: Character, args: str) -> str:
                 buf += f"Thirst: {thirst}  Hunger: {hunger}  Full: {full}  Drunk: {drunk}\n\r"
 
     carry_number = int(getattr(victim, "carry_number", 0))
-    carry_weight = int(getattr(victim, "carry_weight", 0))
+    from mud.world.movement import get_carry_weight
+
+    carry_weight = get_carry_weight(victim)
     buf += f"Carry number: {carry_number}  Carry weight: {carry_weight // 10}\n\r"
 
     if not is_npc:
-        age = 17
-        played = 0
-        last_level = 0
+        # mirroring ROM src/act_wiz.c:1651-1657 — compute age and played
+        import time
+
+        from mud.handler import get_age
+
+        age = get_age(victim)
+        played_raw = int(getattr(victim, "played", 0))
+        logon = float(getattr(victim, "logon", time.time()))
+        played = int((played_raw + (time.time() - logon)) / 3600)
+        pcdata3 = getattr(victim, "pcdata", None)
+        last_level = int(getattr(pcdata3, "last_level", 0)) if pcdata3 else 0
         timer = int(getattr(victim, "timer", 0))
         buf += f"Age: {age}  Played: {played}  Last Level: {last_level}  Timer: {timer}\n\r"
 
