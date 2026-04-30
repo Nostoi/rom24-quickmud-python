@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `OLC_ACT-013` — Locked the equivalence between Python `_get_area_for_vnum` (`mud/commands/build.py:1352`) and ROM `get_vnum_area` (`src/olc_act.c:588-599`). ROM walks the `area_first` linked list; Python iterates `area_registry.values()`. CPython dicts preserve insertion order (3.7+), so load-order traversal is equivalent to ROM's linked-list walk. Added a ROM-cite comment to the function and a regression test that locks the dict insertion-order guarantee plus first-match-on-overlap behavior. Test: `tests/integration/test_olc_act_013_get_area_for_vnum_order.py` (3 cases).
+
 ### Added
 
 - `OLC-016` / `OLC-017` / `OLC-018` / `OLC-019` — sibling-audit dispatcher gaps closed transitively by OLC_ACT-001/002/003/004/005/006. The OLC-NNN gaps were filed in `OLC_C_AUDIT.md` as "missing dispatcher subcommand" entries; the OLC_ACT-NNN gaps are the corresponding builder-logic closures in `src/olc_act.c`. In Python, the dispatcher and builder live in the same `cmd_*edit` function in `mud/commands/build.py`, so closing the OLC_ACT side automatically closes the OLC side. All four CRITICAL `do_*edit create` paths are now wired with full ROM validation chains and authoritative `new_*_index` defaults from `src/mem.c`.

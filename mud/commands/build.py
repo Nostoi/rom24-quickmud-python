@@ -1350,6 +1350,11 @@ _REVERSE_DIRECTIONS: dict[Direction, Direction] = {
 
 
 def _get_area_for_vnum(vnum: int) -> Area | None:
+    # mirrors ROM src/olc_act.c:588-599 get_vnum_area — ROM walks the
+    # `area_first` linked list; Python iterates `area_registry.values()`.
+    # CPython dicts preserve insertion order (3.7+), so load-order traversal
+    # is equivalent to ROM's linked-list walk. Locked by
+    # tests/integration/test_olc_act_013_get_area_for_vnum_order.py.
     for area in area_registry.values():
         if getattr(area, "min_vnum", 0) <= vnum <= getattr(area, "max_vnum", 0):
             return area
