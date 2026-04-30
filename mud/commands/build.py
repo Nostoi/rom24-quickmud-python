@@ -35,6 +35,7 @@ from mud.net.session import Session
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
+from mud.utils.bit import flag_string
 from mud.utils.text import format_rom_string
 
 _SECTOR_NAMES: dict[int, str] = {
@@ -1545,6 +1546,8 @@ def _aedit_show(area: Area) -> str:
     lines.append(f"Security: {area.security}")
     lines.append(f"Builders: {area.builders or 'None'}")
     lines.append(f"Credits:  {area.credits or '(none)'}")
+    # mirroring ROM src/olc_act.c:644-646 aedit_show flags row
+    lines.append(f"Flags:    [{flag_string(AreaFlag, area.area_flags)}]")
     lines.append(f"Changed:  {'Yes' if area.changed else 'No'}")
     return "\n".join(lines)
 
