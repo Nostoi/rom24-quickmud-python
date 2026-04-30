@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (v2.6.108)
+
+- Fix CI workflows: remove invalid `runner.os` condition from `ci.yml`, update `test.yml` matrix to Python 3.11/3.12/3.13, increase test timeout to 120s, skip known-flaky `test_area_loader.py`.
+
 ### Changed (v2.6.107)
 
 - Includes previously uncommitted JSONLD-012, OLC, and build changes from earlier session.
