@@ -224,6 +224,46 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
     }
 
 
+def _collect_mob_programs(area: Area, min_vnum: int, max_vnum: int) -> list[dict[str, Any]]:
+    """Group per-mob mprog assignments by program vnum for JSON emit.
+
+    Mirrors ROM src/olc_save.c:151-169 (save_mobprogs) — Python's JSON
+    layout (see mud/loaders/json_loader.py:_load_mob_programs_from_json)
+    keeps program code at the area level and links via assignments, so
+    we reverse the loader's projection here.
+    """
+    from mud.mobprog import format_trigger_flag
+
+    grouped: dict[int, dict[str, Any]] = {}
+    for vnum in range(min_vnum, max_vnum + 1):
+        mob_proto = mob_registry.get(vnum)
+        if mob_proto is None or getattr(mob_proto, "area", None) is not area:
+            continue
+        for prog in getattr(mob_proto, "mprogs", []) or []:
+            prog_vnum = int(getattr(prog, "vnum", 0) or 0)
+            if prog_vnum <= 0:
+                continue
+            entry = grouped.get(prog_vnum)
+            if entry is None:
+                entry = {
+                    "vnum": prog_vnum,
+                    "code": getattr(prog, "code", "") or "",
+                    "assignments": [],
+                }
+                grouped[prog_vnum] = entry
+            elif not entry["code"] and getattr(prog, "code", None):
+                entry["code"] = prog.code
+            trigger_name = format_trigger_flag(int(getattr(prog, "trig_type", 0) or 0))
+            entry["assignments"].append(
+                {
+                    "mob_vnum": int(vnum),
+                    "trigger": trigger_name,
+                    "phrase": getattr(prog, "trig_phrase", "") or "",
+                }
+            )
+    return [grouped[k] for k in sorted(grouped)]
+
+
 def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool:
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -259,6 +299,14 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
         if obj_proto is not None and getattr(obj_proto, "area", None) is area:
             objects_list.append(_serialize_object(obj_proto))
 
+    # OLC_SAVE-003: mirror ROM src/olc_save.c:151-169 (save_mobprogs) +
+    # ROM src/olc_save.c:245-250 (per-mob MPROG list inside save_mobile).
+    # JSON layout factors program code area-wide and links via assignments
+    # (see mud/loaders/json_loader.py:496-530). Walk every mob in this
+    # area, group their mprogs by program vnum, and emit the structured
+    # mob_programs payload.
+    mob_programs_list = _collect_mob_programs(area, min_vnum, max_vnum)
+
     builders_str = getattr(area, "builders", "") or ""
     builders_list = [b.strip() for b in builders_str.replace(",", " ").split() if b.strip()]
 
@@ -272,6 +320,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
         "rooms": rooms_list,
         "mobiles": mobiles_list,
         "objects": objects_list,
+        "mob_programs": mob_programs_list,
     }
 
     credits = getattr(area, "credits", None)
