@@ -59,6 +59,42 @@ def _serialize_extra_descr(extra: object) -> dict[str, Any]:
     }
 
 
+def _serialize_affect(affect: object) -> dict[str, Any]:
+    """Normalize a prototype affect into a json-safe dict.
+
+    Mirrors ROM src/olc_save.c:399-429 (save_object affect emission).
+    Accepts either a plain dict (already produced by `mud/loaders/obj_loader.py`
+    A-line / F-line parsers) or an `Affect` dataclass instance. Emits a
+    flat dict with whichever ROM fields are populated; unset fields fall
+    back to ROM defaults (`type=-1`, `duration=-1`, `bitvector=0`).
+    """
+    if isinstance(affect, dict):
+        result: dict[str, Any] = {}
+        if "where" in affect:
+            result["where"] = affect["where"]
+        if "type" in affect:
+            result["type"] = int(affect["type"])
+        if "level" in affect:
+            result["level"] = int(affect["level"])
+        if "duration" in affect:
+            result["duration"] = int(affect["duration"])
+        result["location"] = int(affect.get("location", 0) or 0)
+        result["modifier"] = int(affect.get("modifier", 0) or 0)
+        if "bitvector" in affect:
+            result["bitvector"] = int(affect["bitvector"])
+        return result
+
+    return {
+        "where": int(getattr(affect, "where", 0) or 0),
+        "type": int(getattr(affect, "type", -1)),
+        "level": int(getattr(affect, "level", 0) or 0),
+        "duration": int(getattr(affect, "duration", -1)),
+        "location": int(getattr(affect, "location", 0) or 0),
+        "modifier": int(getattr(affect, "modifier", 0) or 0),
+        "bitvector": int(getattr(affect, "bitvector", 0) or 0),
+    }
+
+
 def _serialize_reset(reset: object) -> dict[str, Any]:
     return {
         "command": getattr(reset, "command", ""),
@@ -221,7 +257,10 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
         "cost": int(getattr(obj_proto, "cost", 0)),
         "condition": str(getattr(obj_proto, "condition", "P") or "P"),
         "values": values[:5],
-        "affects": list(getattr(obj_proto, "affects", []) or []),
+        # OLC_SAVE-007: structured affect emission (mirrors ROM
+        # src/olc_save.c:399-429). Accepts dict or Affect dataclass on
+        # input; emits json-safe dicts.
+        "affects": [_serialize_affect(a) for a in getattr(obj_proto, "affects", []) or []],
         "extra_descriptions": list(getattr(obj_proto, "extra_descr", []) or []),
     }
 
