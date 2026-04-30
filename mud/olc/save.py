@@ -224,6 +224,40 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
     }
 
 
+def _collect_shops(area: Area, min_vnum: int, max_vnum: int) -> list[dict[str, Any]]:
+    """Mirrors ROM src/olc_save.c:786-824 (save_shops).
+
+    Walks every mob in the area; if the mob has a ``pShop`` binding,
+    serialize keeper / buy_types / profit_buy / profit_sell / open_hour /
+    close_hour. Mob without ``pShop`` contribute nothing.
+    """
+    from mud.registry import shop_registry
+
+    shops: list[dict[str, Any]] = []
+    for vnum in range(min_vnum, max_vnum + 1):
+        mob_proto = mob_registry.get(vnum)
+        if mob_proto is None or getattr(mob_proto, "area", None) is not area:
+            continue
+        shop = getattr(mob_proto, "pShop", None) or shop_registry.get(int(vnum))
+        if shop is None:
+            continue
+        keeper = int(getattr(shop, "keeper", vnum) or vnum)
+        buy_types = list(getattr(shop, "buy_types", []) or [])
+        while len(buy_types) < 5:
+            buy_types.append(0)
+        shops.append(
+            {
+                "keeper": keeper,
+                "buy_types": [int(b) for b in buy_types[:5]],
+                "profit_buy": int(getattr(shop, "profit_buy", 100)),
+                "profit_sell": int(getattr(shop, "profit_sell", 100)),
+                "open_hour": int(getattr(shop, "open_hour", 0)),
+                "close_hour": int(getattr(shop, "close_hour", 23)),
+            }
+        )
+    return shops
+
+
 def _collect_mob_programs(area: Area, min_vnum: int, max_vnum: int) -> list[dict[str, Any]]:
     """Group per-mob mprog assignments by program vnum for JSON emit.
 
@@ -306,6 +340,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
     # area, group their mprogs by program vnum, and emit the structured
     # mob_programs payload.
     mob_programs_list = _collect_mob_programs(area, min_vnum, max_vnum)
+    shops_list = _collect_shops(area, min_vnum, max_vnum)
 
     builders_str = getattr(area, "builders", "") or ""
     builders_list = [b.strip() for b in builders_str.replace(",", " ").split() if b.strip()]
@@ -321,6 +356,7 @@ def save_area_to_json(area: Area, output_dir: Path | str = "data/areas") -> bool
         "mobiles": mobiles_list,
         "objects": objects_list,
         "mob_programs": mob_programs_list,
+        "shops": shops_list,
     }
 
     credits = getattr(area, "credits", None)

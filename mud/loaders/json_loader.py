@@ -233,6 +233,7 @@ def load_area_from_json(json_file_path: str) -> Area:
     # Load mobs
     _load_mobs_from_json(data.get(mobs_key, []), area)
     _load_mob_programs_from_json(data.get("mob_programs", []))
+    _load_shops_from_json(data.get("shops", []))
     apply_specials_from_json(data.get("specials", []))
 
     # Load objects
@@ -491,6 +492,37 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         )
 
         obj_registry[obj.vnum] = obj
+
+
+def _load_shops_from_json(shops_data: list[dict[str, Any]]) -> None:
+    """Mirror ROM src/db.c:load_shops on the JSON read path.
+
+    Restore ``shop_registry[keeper]`` entries serialized by
+    ``mud.olc.save._collect_shops`` and re-attach ``MobIndex.pShop``.
+    """
+    from mud.loaders.shop_loader import Shop
+    from mud.registry import mob_registry as _mob_registry
+    from mud.registry import shop_registry as _shop_registry
+
+    for entry in shops_data:
+        keeper = int(entry.get("keeper", 0) or 0)
+        if keeper <= 0:
+            continue
+        buy_types = [int(b) for b in entry.get("buy_types", [])]
+        while len(buy_types) < 5:
+            buy_types.append(0)
+        shop = Shop(
+            keeper=keeper,
+            buy_types=buy_types[:5],
+            profit_buy=int(entry.get("profit_buy", 100)),
+            profit_sell=int(entry.get("profit_sell", 100)),
+            open_hour=int(entry.get("open_hour", 0)),
+            close_hour=int(entry.get("close_hour", 23)),
+        )
+        _shop_registry[keeper] = shop
+        mob = _mob_registry.get(keeper)
+        if mob is not None:
+            mob.pShop = shop
 
 
 def _load_mob_programs_from_json(programs_data: list[dict[str, Any]]) -> None:
