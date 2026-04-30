@@ -26,6 +26,7 @@ from mud.models.constants import (
     ExtraFlag,
     FurnitureFlag,
     PortalFlag,
+    Position,
     RoomFlag,
     Sector,
     Sex,
@@ -2566,42 +2567,156 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
     return f"Unknown mobile editor command: {cmd}"
 
 
-def _medit_show(mob_proto) -> str:
-    lines = []
-    lines.append(f"Mobile: {mob_proto.short_descr or '(unnamed)'}")
-    lines.append(f"Vnum:       {mob_proto.vnum}")
-    lines.append(f"Name:       {mob_proto.player_name or '(none)'}")
-    lines.append(f"Short:      {mob_proto.short_descr or '(none)'}")
-    lines.append(f"Long:       {mob_proto.long_descr or '(none)'}")
-    lines.append(f"Description: {mob_proto.description or '(none)'}")
-    lines.append(f"Level:      {mob_proto.level}")
-    lines.append(f"Alignment:  {mob_proto.alignment}")
-    lines.append(f"Hitroll:    {mob_proto.hitroll}")
-    lines.append(f"Race:       {mob_proto.race}")
+def _format_intflag(enum_cls, bits: int) -> str:
+    """Lowercase space-joined enum-name representation. Falls back to "none"
+    when no bits are set. Note: ROM's display strings for these tables
+    (act/affect/form/part/imm/res/vuln/off — `src/tables.c:82-690`) differ
+    in some cases from Python enum-name lowercasing (e.g. ROM "stay_area"
+    vs Python "STAY_AREA"). Tracked under OLC_ACT-010d.
+    """
+    bits = int(bits or 0)
+    tokens = [m.name.lower() for m in enum_cls if int(m) and (bits & int(m)) == int(m)]
+    return " ".join(tokens) if tokens else "none"
 
-    sex_val = mob_proto.sex
-    if hasattr(sex_val, "name"):
-        sex_str = sex_val.name.lower()
-    elif sex_val == 1:
-        sex_str = "male"
-    elif sex_val == 2:
-        sex_str = "female"
+
+def _format_position(value) -> str:
+    if isinstance(value, str):
+        return value.lower() or "standing"
+    try:
+        return Position(int(value)).name.lower()
+    except (TypeError, ValueError):
+        return "standing"
+
+
+def _format_size(value) -> str:
+    if isinstance(value, Size):
+        return value.name.lower()
+    if isinstance(value, str):
+        return value.lower() or "medium"
+    try:
+        return Size(int(value)).name.lower()
+    except (TypeError, ValueError):
+        return "medium"
+
+
+def _format_sex(value) -> str:
+    """Mirroring ROM olc_act.c:3537-3541 — pad male/female to 7 chars."""
+    if hasattr(value, "name"):
+        ival = int(value)
+    elif isinstance(value, str):
+        ival = {"male": 1, "female": 2, "either": 3, "random": 3}.get(value.lower(), 0)
     else:
-        sex_str = "neutral"
-    lines.append(f"Sex:        {sex_str}")
+        try:
+            ival = int(value)
+        except (TypeError, ValueError):
+            ival = 0
+    if ival == 1:
+        return "male   "
+    if ival == 2:
+        return "female "
+    if ival == 3:
+        return "random "
+    return "neutral"
 
-    lines.append(f"Wealth:     {mob_proto.wealth}")
-    lines.append(f"Group:      {mob_proto.group}")
-    lines.append(f"Hit dice:   {mob_proto.hit_dice}")
-    lines.append(f"Mana dice:  {mob_proto.mana_dice}")
-    lines.append(f"Damage dice: {mob_proto.damage_dice}")
-    lines.append(f"Damage type: {mob_proto.damage_type}")
-    lines.append(f"AC:         {mob_proto.ac}")
-    lines.append(f"Material:   {mob_proto.material or '(none)'}")
+
+def _medit_show(mob_proto) -> str:
+    """Mirroring ROM src/olc_act.c:3519-3699 medit_show — emit mob proto
+    fields in ROM's exact line order/labels.
+
+    Sub-gaps documented but not closed in this commit:
+    - OLC_ACT-010b: dice/AC stored as strings ("15d8+50") in Python; ROM
+      stores 3 ints per dice. Emitted as-is in `[...]`.
+    - OLC_ACT-010c: shop / mprogs / spec_fun rendering. ROM emits these
+      conditionally; needs MobShop/MProg model alignment.
+    - OLC_ACT-010d: ROM-faithful flag-table name strings (see
+      `_format_intflag` docstring).
+    """
+    from mud.models.constants import (
+        AffectFlag,
+        FormFlag,
+        ImmFlag,
+        OffFlag,
+        PartFlag,
+        ResFlag,
+        VulnFlag,
+    )
 
     area = getattr(mob_proto, "area", None)
-    area_name = getattr(area, "name", "Unknown") if area else "None"
-    lines.append(f"Area:       {area_name}")
+    area_vnum = -1 if area is None else int(getattr(area, "vnum", 0) or 0)
+    area_name = "No Area" if area is None else (getattr(area, "name", None) or "No Area")
+    name = mob_proto.player_name or ""
+    act_bits = int(mob_proto.get_act_flags()) if hasattr(mob_proto, "get_act_flags") else _coerce_int(mob_proto.act_flags)
+    sex = _format_sex(getattr(mob_proto, "sex", 0))
+    race = getattr(mob_proto, "race", "")
+    if not isinstance(race, str):
+        race = str(race)
+    level = _coerce_int(getattr(mob_proto, "level", 0))
+    align = _coerce_int(getattr(mob_proto, "alignment", 0))
+    hitroll = _coerce_int(getattr(mob_proto, "hitroll", 0))
+    dam_type_idx = _coerce_int(getattr(mob_proto, "dam_type", 0))
+    if 0 <= dam_type_idx < len(ATTACK_TABLE) and ATTACK_TABLE[dam_type_idx].name:
+        dam_type_name = ATTACK_TABLE[dam_type_idx].name
+    else:
+        dam_type_name = "none"
+    affected_by = _coerce_int(getattr(mob_proto, "affected_by", 0))
+    form = _coerce_int(getattr(mob_proto, "form", 0))
+    parts = _coerce_int(getattr(mob_proto, "parts", 0))
+    imm = _coerce_int(getattr(mob_proto, "imm_flags", 0))
+    res = _coerce_int(getattr(mob_proto, "res_flags", 0))
+    vuln = _coerce_int(getattr(mob_proto, "vuln_flags", 0))
+    off = _coerce_int(getattr(mob_proto, "off_flags", 0))
+    size = _format_size(getattr(mob_proto, "size", Size.MEDIUM))
+    material = getattr(mob_proto, "material", "") or ""
+    start_pos = _format_position(getattr(mob_proto, "start_pos", "standing"))
+    default_pos = _format_position(getattr(mob_proto, "default_pos", "standing"))
+    wealth = _coerce_int(getattr(mob_proto, "wealth", 0))
+    group = _coerce_int(getattr(mob_proto, "group", 0))
+    hit_dice = getattr(mob_proto, "hit_dice", "") or ""
+    mana_dice = getattr(mob_proto, "mana_dice", "") or ""
+    damage_dice = getattr(mob_proto, "damage_dice", "") or ""
+    ac = getattr(mob_proto, "ac", "") or ""
+    short_descr = (mob_proto.short_descr or "").rstrip("\n")
+    long_descr = (mob_proto.long_descr or "").rstrip("\n")
+    description = (mob_proto.description or "").rstrip("\n")
+
+    lines: list[str] = [
+        # mirroring ROM olc_act.c:3527-3535
+        f"Name:        [{name}]",
+        f"Area:        [{area_vnum:5}] {area_name}",
+        f"Act:         [{_format_intflag(ActFlag, act_bits)}]",
+        # mirroring ROM olc_act.c:3537-3548 — 3-up Vnum/Sex/Race; Level/Align/Hitroll/DamType.
+        f"Vnum:        [{mob_proto.vnum:5}] Sex:   [{sex}]   Race: [{race}]",
+        f"Level:       [{level:2}]    Align: [{align:4}]      Hitroll: [{hitroll:2}] Dam Type:    [{dam_type_name}]",
+    ]
+    if group:
+        lines.append(f"Group:       [{group:5}]")
+    # mirroring ROM olc_act.c:3557-3570 — dice rows (Python data model
+    # uses string format; OLC_ACT-010b sub-gap).
+    lines.append(f"Hit dice:    [{hit_dice}] Damage dice: [{damage_dice}] Mana dice:   [{mana_dice}]")
+    # mirroring ROM olc_act.c:3574-3576
+    lines.append(f"Affected by: [{_format_intflag(AffectFlag, affected_by)}]")
+    # mirroring ROM olc_act.c:3580-3584 — armor display via raw AC string
+    # (data-model divergence per OLC_ACT-010b).
+    lines.append(f"Armor:       [pierce: {ac}  bash: {ac}  slash: {ac}  magic: {ac}]")
+    # mirroring ROM olc_act.c:3586-3623
+    lines.append(f"Form:        [{_format_intflag(FormFlag, form)}]")
+    lines.append(f"Parts:       [{_format_intflag(PartFlag, parts)}]")
+    lines.append(f"Imm:         [{_format_intflag(ImmFlag, imm)}]")
+    lines.append(f"Res:         [{_format_intflag(ResFlag, res)}]")
+    lines.append(f"Vuln:        [{_format_intflag(VulnFlag, vuln)}]")
+    lines.append(f"Off:         [{_format_intflag(OffFlag, off)}]")
+    lines.append(f"Size:        [{size}]")
+    lines.append(f"Material:    [{material}]")
+    lines.append(f"Start pos.   [{start_pos}]")
+    lines.append(f"Default pos  [{default_pos}]")
+    lines.append(f"Wealth:      [{wealth:5}]")
+    # mirroring ROM olc_act.c:3636-3641
+    lines.append(f"Short descr: {short_descr}")
+    lines.append(f"Long descr:\n{long_descr}")
+    lines.append(f"Description:\n{description}")
+
+    # ROM olc_act.c:3643-3697 — shop / mprogs / spec_fun rendering deferred
+    # to OLC_ACT-010c.
 
     return "\n".join(lines)
 

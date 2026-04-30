@@ -122,21 +122,20 @@ def test_medit_starts_session(builder_char, test_mobile):
 
 
 def test_medit_show_command(builder_char, test_mobile):
+    """OLC_ACT-010: `medit show` matches ROM `medit_show` byte layout."""
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "show")
 
-    assert "Mobile: a test mob" in result
-    assert "Vnum:       1001" in result
-    assert "Name:       test mob" in result
-    assert "Short:      a test mob" in result
-    assert "Long:       A test mob is standing here." in result
-    assert "Description: This is a test mob." in result
-    assert "Level:      10" in result
-    assert "Alignment:  0" in result
-    assert "Hitroll:    5" in result
-    assert "Race:       human" in result
-    assert "Sex:        none" in result
-    assert "Wealth:     100" in result
+    assert "Name:        [test mob]" in result
+    assert "Vnum:        [ 1001]" in result
+    assert "Race: [human]" in result
+    assert "Level:       [10]" in result
+    assert "Align: [   0]" in result
+    assert "Hitroll: [ 5]" in result
+    assert "Wealth:      [  100]" in result
+    assert "Short descr: a test mob" in result
+    assert "Long descr:\nA test mob is standing here." in result
+    assert "Description:\nThis is a test mob." in result
 
 
 def test_medit_name_command(builder_char, test_mobile):
