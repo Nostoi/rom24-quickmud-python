@@ -53,9 +53,21 @@ def _serialize_exit(exit_obj: object, direction_idx: int) -> dict[str, Any] | No
 
 
 def _serialize_extra_descr(extra: object) -> dict[str, Any]:
+    """Normalize a prototype extra_descr into a json-safe dict.
+
+    Mirrors ROM src/olc_save.c:431-435. Accepts either a plain dict
+    (produced by `mud/loaders/obj_loader.py`) or an `ExtraDescr`
+    dataclass instance and emits a flat `{"keyword", "description"}`
+    payload.
+    """
+    if isinstance(extra, dict):
+        return {
+            "keyword": str(extra.get("keyword", "") or ""),
+            "description": str(extra.get("description", "") or ""),
+        }
     return {
-        "keyword": getattr(extra, "keyword", "") or "",
-        "description": getattr(extra, "description", "") or "",
+        "keyword": str(getattr(extra, "keyword", "") or ""),
+        "description": str(getattr(extra, "description", "") or ""),
     }
 
 
@@ -261,7 +273,13 @@ def _serialize_object(obj_proto: object) -> dict[str, Any]:
         # src/olc_save.c:399-429). Accepts dict or Affect dataclass on
         # input; emits json-safe dicts.
         "affects": [_serialize_affect(a) for a in getattr(obj_proto, "affects", []) or []],
-        "extra_descriptions": list(getattr(obj_proto, "extra_descr", []) or []),
+        # OLC_SAVE-008: route through `_serialize_extra_descr` so dict-or-
+        # ExtraDescr-dataclass inputs both produce a flat
+        # `{"keyword", "description"}` payload (mirrors ROM
+        # src/olc_save.c:431-435).
+        "extra_descriptions": [
+            _serialize_extra_descr(e) for e in getattr(obj_proto, "extra_descr", []) or []
+        ],
     }
 
 
