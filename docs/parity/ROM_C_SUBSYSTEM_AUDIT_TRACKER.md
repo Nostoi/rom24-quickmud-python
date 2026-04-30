@@ -1092,6 +1092,57 @@ These do NOT count against audit completion:
 
 ---
 
+## Re-audit Triggers from In-Game Debug Pass (2026-04-30)
+
+A live in-game debug session surfaced four runtime bugs that earlier audits
+missed. Each points to a previously-audited file or audit doc that needs a
+focused parity re-review. Source of truth remains ROM C (`src/`); the Python
+ports below are what require another pass against the C.
+
+| Bug | Live symptom | Affected Python | ROM C reference | Audit doc to re-review | Re-audit reason |
+|-----|--------------|-----------------|-----------------|------------------------|-----------------|
+| BUG-NLOWER | `'NoneType' object has no attribute 'lower'` on `look corpse`, `open south` | `mud/world/{obj_find,char_find}.py`; `mud/commands/{obj_manipulation,combat,misc_player,info_extended,imm_commands,imm_search,socials,remaining_rom}.py` | `src/handler.c` (`is_name`, `get_obj_carry`, `get_obj_wear`, `get_char_room`); `src/act_obj.c`; `src/act_info.c` | `HANDLER_C_AUDIT.md`, `ACT_OBJ_C_AUDIT.md`, `ACT_INFO_C_AUDIT.md` | Defensive coalesce (`getattr(x, "name", None) or ""`) was missing across ~15 sites. Must verify each helper handles the JSON-loaded prototype shape (`name=None`). |
+| BUG-EDDICT | `'dict' object has no attribute 'description'` on `look fountain`, `read letter` | `mud/world/look.py` | `src/act_info.c:do_look` (extra_descr lookup); `src/db.c:fread_obj` (extra_descr load) | `ACT_INFO_C_AUDIT.md`, `DB_C_AUDIT.md` | JSON loader stores `extra_descr` as raw dicts; look code accessed `.description` attribute-style. Must verify the JSON loader constructs `ExtraDescr` instances per ROM `EXTRA_DESCR_DATA`. |
+| BUG-CORPSEINT | `int('npc_corpse')` ValueError on `get coins corpse` | `mud/loaders/json_loader.py:_load_objects_from_json`; `mud/commands/inventory.py:do_get` | `src/db.c:load_objects` (item_type via `flag_value`) | `DB_C_AUDIT.md` | JSON loader skipped item_type token→int normalization that the legacy `.are` loader performs (`mud/loaders/obj_loader.py:_resolve_item_type_code`). |
+| BUG-MOBHP | All mobs spawn at HP=1 ("awful condition" universal); level 1 one-shots Hassan (level 45) | `mud/spawning/templates.py:_parse_dice/from_prototype`; `mud/loaders/json_loader.py` | `src/db.c:fread_mobile` (writes `pMobIndex->hit[NUMBER/TYPE/BONUS]` as ints); `src/db.c:create_mobile` | `DB_C_AUDIT.md` | JSON loader writes `hit_dice` / `mana_dice` / `damage_dice` as strings only; `_parse_dice` short-circuited on the default `(0,0,0)` primary tuple before consulting the string fallback. ROM stores both forms. |
+
+### Common root cause
+
+All four bugs trace back to **`mud/loaders/json_loader.py` being a partial
+port of `src/db.c:load_objects` / `load_mobiles` / `load_rooms` / `fread_obj`
+/ `fread_mobile`**. The legacy `.are` loader (`mud/loaders/obj_loader.py`,
+`mud/loaders/mob_loader.py`) is more complete; the JSON path silently drops
+fields (separate `name`/keyword list), skips token-to-int normalization
+(`item_type`), fails to construct typed instances (`ExtraDescr`), and
+doesn't populate parallel tuple fields (`proto.hit` from `hit_dice`).
+
+### Action items (next parity passes)
+
+1. **`mud/loaders/json_loader.py` ↔ `src/db.c`** — full audit pass,
+   comparing field-by-field against `fread_obj` / `fread_mobile` /
+   `fread_room` / `load_extra_descr`. Treat as a P1 audit task; add a
+   `JSON_LOADER_AUDIT.md` if needed. The JSON schema also dropped ROM's
+   separate `name` (keyword) field on objects — a data-side parity gap
+   distinct from the loader code gap, also needs documentation.
+2. **`mud/world/{obj_find,char_find}.py` ↔ `src/handler.c`** — verify every
+   `is_name` / `get_*` helper handles the documented `name: str | None`
+   prototype shape. Defense applied 2026-04-30 (commit `658d319`).
+3. **`mud/world/look.py` ↔ `src/act_info.c:do_look`** — verify `EXTRA_DESCR`
+   handling matches ROM (keyword match semantics, prototype-fallback order,
+   container/weapon/etc. branches). Patch landed 2026-04-30 (commit
+   `cb4eed7`).
+4. **`mud/spawning/templates.py:from_prototype` ↔ `src/db.c:create_mobile`**
+   — verify dice rolls (`hit`, `mana`, `damage`) match ROM rolling order
+   exactly. The spawn now consumes RNG that previously was silently skipped,
+   which can shift seeded-test outcomes (handled in commit `715469d`).
+
+The `db.c` "100% complete" badge currently overstates the JSON loader's
+parity. Recommend downgrading to ⚠️ Partial pending the `json_loader.py`
+re-audit, or adding a clear "JSON-path" caveat. Decision deferred to next
+session — flagged here so it's not lost.
+
+---
+
 ## Maintenance Notes
 
 ### When to Update

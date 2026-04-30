@@ -466,3 +466,49 @@ ROM's `db.c` is the **database/world loading subsystem** - one of the largest an
 ---
 
 **Next Priority**: Move to `effects.c` ROM C audit (spell affect application) or continue with db.c Phase 3 behavioral verification.
+
+---
+
+## ⚠️ 2026-04-30 — JSON-loader parity gap discovered (re-audit needed)
+
+The "100% certified" badge above covers the legacy `.are` loaders
+(`mud/loaders/{obj_loader,mob_loader,room_loader}.py`). It does **not**
+cover `mud/loaders/json_loader.py`, which is a partial port of the same
+ROM C functions (`fread_obj`, `fread_mobile`, `fread_room`,
+`load_extra_descr`, `load_objects`, `load_mobiles`).
+
+A live in-game debug pass on 2026-04-30 surfaced four runtime bugs
+(BUG-NLOWER, BUG-EDDICT, BUG-CORPSEINT, BUG-MOBHP — see
+`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` "Re-audit Triggers" section) that all
+trace to the JSON loader skipping ROM behaviors that the `.are` loader
+ports correctly:
+
+- **`item_type` token → int** (ROM `flag_value`): JSON path stored the
+  raw string; legacy path runs `_resolve_item_type_code`. Patched
+  2026-04-30 (commit `0f0d871`).
+- **`extra_descr` typed instances** (ROM `EXTRA_DESCR_DATA`): JSON path
+  stored raw dicts; ROM materializes the struct. Patched at the look
+  call sites 2026-04-30 (commit `cb4eed7`); a proper fix constructs
+  `ExtraDescr` instances at load time.
+- **`hit` / `mana` / `damage` tuple population** (ROM `fread_mobile`
+  writes `pMobIndex->hit[NUMBER/TYPE/BONUS]` as ints): JSON path stores
+  only the string `hit_dice` / `mana_dice` / `damage_dice`, leaves the
+  tuple at `(0, 0, 0)`. The spawn-time fallback in
+  `mud/spawning/templates.py:_parse_dice` was short-circuiting on the
+  default tuple. Patched 2026-04-30 (commit `715469d`); a proper fix
+  populates `proto.hit` etc. at load time so spawn doesn't have to
+  pattern-match strings.
+- **Object `name` (keyword list)**: ROM `fread_obj` reads `name` as a
+  separate field from `short_descr`. The JSON schema collapsed both into
+  one `name` field mapped to `short_descr`, dropping the keyword list
+  entirely. JSON-loaded prototypes carry `name=None`, which broke every
+  `is_name`-style match in `mud/world/{obj_find,char_find}.py` and ~12
+  command sites. Patched defensively at all match sites 2026-04-30
+  (commit `658d319`); the **data-side parity gap** (no keyword list in
+  JSON) remains and needs separate documentation/fix — likely a
+  schema/converter pass over `mud/scripts/convert_are_to_json.py`.
+
+**Recommendation**: downgrade the db.c parity badge above to ⚠️ Partial
+until a focused `mud/loaders/json_loader.py` audit pass closes the JSON
+path gaps, or split the certification into two scopes (`.are` loaders ✅
+vs JSON loader ⚠️). Decision deferred to next session.
