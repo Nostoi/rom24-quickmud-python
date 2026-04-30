@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (v2.6.107)
+
+- Includes previously uncommitted JSONLD-012, OLC, and build changes from earlier session.
+
 ### Fixed (act_wiz.c stat family parity closures — WIZ-039..044)
 
 - **WIZ-039** — `do_mstat` practices now uses caller's NPC status (`char.is_npc`) instead of victim's, matching ROM `IS_NPC(ch) ? 0 : victim->practice`.
