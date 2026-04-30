@@ -461,7 +461,6 @@ def _link_exits_for_area(area: Area) -> None:
             continue
 
         exits = getattr(room, "exits", []) or []
-        has_exit = False
 
         for idx, exit_obj in enumerate(exits):
             if exit_obj is None:
@@ -474,7 +473,6 @@ def _link_exits_for_area(area: Area) -> None:
             if to_room is None:
                 continue
 
-            has_exit = True
             reverse_dir = reverse_map.get(Direction(idx))
             if reverse_dir is None:
                 continue
@@ -489,8 +487,10 @@ def _link_exits_for_area(area: Area) -> None:
 
             reverse_exit.to_room = room
 
-        if not has_exit:
-            room.room_flags |= int(RoomFlag.ROOM_NO_MOB)
+        # JSONLD-018: ROM does NOT auto-add ROOM_NO_MOB to rooms with
+        # no exits; this was a JSON-path-only addition.  Removing it
+        # so that stub/disconnected rooms follow ROM semantics exactly.
+
 
 
 def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
@@ -654,22 +654,52 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
                     )
                 )
 
+        # JSONLD-001: Read keyword list from JSON.  ROM stores
+        # pObjIndex->name as the keyword list (src/db2.c:420) and
+        # pObjIndex->short_descr as the display name (src/db2.c:421).
+        # The JSON `keywords` key carries the keyword list; fall back to
+        # the display `name` so that is_name() always has a non-None
+        # string to match against.
+        keywords = obj_data.get("keywords") or obj_data.get("name", "")
+
+        # JSONLD-016: ROM convert_object normalises short_descr to
+        # lowercase-first and description to uppercase-first
+        # (src/db2.c:869-870).  Apply the same to JSON-loaded objects.
+        descr = obj_data.get("description", "")
+        if isinstance(descr, str) and descr:
+            descr = descr[0].upper() + descr[1:]
+        sdescr = obj_data.get("name", "")
+        if isinstance(sdescr, str) and sdescr:
+            sdescr = sdescr[0].lower() + sdescr[1:]
+
+        # JSONLD-015: Run per-type value coercion at load time, mirroring
+        # ROM src/db2.c:429-478 and obj_loader._parse_item_values.  The
+        # JSON converter already emits pre-resolved integers, but this
+        # ensures any string values (weapon_type names, spell names,
+        # liquid names) are resolved to their canonical integer indices.
+        raw_values = obj_data.get("values", [0, 0, 0, 0, 0])
+        item_type_int = _resolve_item_type_code(obj_data.get("item_type"))
+        from .obj_loader import _parse_item_values
+        values = _parse_item_values(item_type_int, [str(v) for v in raw_values])
+
         # Create object with all fields
         obj = ObjIndex(
             vnum=obj_data["id"],
-            short_descr=obj_data.get("name", ""),
-            description=obj_data.get("description", ""),
+            # JSONLD-001: name = keyword list for is_name() matching
+            name=keywords,
+            short_descr=sdescr,
+            description=descr,
             material=obj_data.get("material", ""),
-            item_type=_resolve_item_type_code(obj_data.get("item_type")),
+            item_type=item_type_int,
             extra_flags=_rom_flags_to_int(obj_data.get("extra_flags", "")),
             wear_flags=wear_flags,
-            # OLC_SAVE-006: hydrate object level from JSON (mirrors ROM
-            # src/olc_save.c:378 save_object level emission).
+            # JSONLD-003 / OLC_SAVE-006: hydrate object level from JSON.
+            # ROM src/db2.c:479: pObjIndex->level = fread_number(fp).
             level=obj_level,
             weight=obj_data.get("weight", 0),
             cost=obj_data.get("cost", 0),
             condition=obj_data.get("condition", "P"),
-            value=obj_data.get("values", [0, 0, 0, 0, 0]),
+            value=values,
             affects=affects_list,
             extra_descr=extra_descr_list,
             affected=affected_list,

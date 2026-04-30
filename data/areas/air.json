@@ -1310,8 +1310,8 @@
       "default_pos": "stand",
       "sex": "none",
       "wealth": 1,
-      "form": "0",
-      "parts": "0",
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
       "size": "medium",
       "material": "0"
     },
@@ -1345,8 +1345,8 @@
       "default_pos": "stand",
       "sex": "male",
       "wealth": 25,
-      "form": "0",
-      "parts": "0",
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
       "size": "medium",
       "material": "0"
     }
@@ -1355,11 +1355,13 @@
     {
       "id": 1001,
       "name": "a red rose",
+      "keywords": "rose",
       "description": "A red rose is lying on the ground.",
       "material": "oldstyle",
       "item_type": "treasure",
       "extra_flags": 0,
       "wear_flags": 17,
+      "level": 0,
       "weight": 80,
       "cost": 0,
       "condition": 100,

@@ -496,3 +496,228 @@ class TestJSONLD012MobRaceIndex:
         mob = mob_registry[3001]
         assert isinstance(mob.race, int)
         assert mob.race == race_lookup("dragon")
+
+
+class TestJSONLD001ObjectKeywords:
+    """JSONLD-001: object keyword list populated from JSON for is_name() matching."""
+
+    def test_name_populated_from_keywords_key(self, tmp_path: pathlib.Path):
+        """When JSON has a keywords field, use it for ObjIndex.name."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3000, "name": "a scimitar", "keywords": "scimitar blade sword", "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3000]
+        assert obj.name == "scimitar blade sword"
+        assert obj.short_descr == "a scimitar"
+
+    def test_name_falls_back_to_display_name(self, tmp_path: pathlib.Path):
+        """When JSON lacks a keywords field, fall back to the display name so is_name() works."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3001, "name": "a battle axe", "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3001]
+        assert obj.name == "a battle axe"
+        assert obj.short_descr == "a battle axe"
+
+    def test_is_name_matches_keywords(self, tmp_path: pathlib.Path):
+        """is_name() should match words from the keyword list."""
+        from mud.world.char_find import is_name
+
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3002, "name": "Hassan's scimitar", "keywords": "scimitar blade", "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3002]
+        assert is_name("scimitar", obj.name)
+        assert is_name("blade", obj.name)
+        assert not is_name("sword", obj.name)
+
+
+class TestJSONLD003ObjectLevel:
+    """JSONLD-003: object level field loaded from JSON."""
+
+    def test_level_read_from_json_when_present(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3000, "name": "a sword", "level": 42, "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3000]
+        assert obj.level == 42
+
+    def test_level_defaults_to_zero_when_absent(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3001, "name": "a rock", "item_type": "treasure"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3001]
+        assert obj.level == 0
+
+
+class TestJSONLD015ValueCoercion:
+    """JSONLD-015: per-type value coercion applied at load time."""
+
+    def test_weapon_value_coercion_int_passthrough(self, tmp_path: pathlib.Path):
+        """Pre-resolved integer weapon values pass through coercion unchanged."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3000,
+                "name": "a dagger",
+                "item_type": "weapon",
+                "values": [2, 1, 4, 2, 0],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3000]
+        # DAGGER weapon_type=2, num=1, type=4, attack=POUND=2
+        assert obj.value == [2, 1, 4, 2, 0]
+
+    def test_wand_staff_value_coercion_int_passthrough(self, tmp_path: pathlib.Path):
+        """Pre-resolved integer wand/staff values pass through coercion unchanged."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3001,
+                "name": "a wand",
+                "item_type": "wand",
+                "values": [4, 10, 10, 64, 0],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3001]
+        assert obj.value == [4, 10, 10, 64, 0]
+
+    def test_potion_value_coercion_int_passthrough(self, tmp_path: pathlib.Path):
+        """Pre-resolved integer potion values pass through coercion unchanged."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3002,
+                "name": "a potion",
+                "item_type": "potion",
+                "values": [20, 55, 0, 0, 0],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3002]
+        assert obj.value == [20, 55, 0, 0, 0]
+
+    def test_drink_value_coercion_int_passthrough(self, tmp_path: pathlib.Path):
+        """Pre-resolved integer drink container values pass through coercion unchanged."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3003,
+                "name": "a barrel",
+                "item_type": "drink",
+                "values": [300, 300, 1, 0, 0],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3003]
+        assert obj.value == [300, 300, 1, 0, 0]
+
+    def test_container_value_coercion_int_passthrough(self, tmp_path: pathlib.Path):
+        """Pre-resolved integer container values pass through coercion unchanged."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3004,
+                "name": "a bag",
+                "item_type": "container",
+                "values": [50, 0, 0, 5, 100],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3004]
+        assert obj.value == [50, 0, 0, 5, 100]
+
+    def test_drink_value_coercion_resolves_liquid_name(self, tmp_path: pathlib.Path):
+        """A string liquid name in value[2] is resolved to its integer index."""
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {
+                "id": 3005,
+                "name": "a bottle",
+                "item_type": "drink",
+                "values": [16, 16, "beer", 0, 0],
+            }
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3005]
+        # beer is liquid index 1 in ROM LIQUID_TABLE
+        assert obj.value[2] == 1
+
+
+class TestJSONLD016CaseNormalization:
+    """JSONLD-016: short_descr lowercased-first, description uppercased-first."""
+
+    def test_short_descr_first_char_lowered(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3000, "name": "A Shiny Sword", "description": "a shiny sword lies here.", "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3000]
+        assert obj.short_descr == "a Shiny Sword"
+
+    def test_description_first_char_uppered(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["objects"] = [
+            {"id": 3001, "name": "a sword", "description": "a gleaming blade.", "item_type": "weapon"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        obj = obj_registry[3001]
+        assert obj.description == "A gleaming blade."
+
+
+class TestJSONLD017RoomLight:
+    """JSONLD-017: room light field defaults to 0 (via Room dataclass default)."""
+
+    def test_room_light_defaults_to_zero(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [
+            {"id": 3000, "name": "Test Room", "description": "A test room.", "sector_type": "inside"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        room = room_registry[3000]
+        assert room.light == 0
+
+
+class TestJSONLD018NoMobOnNoExitRooms:
+    """JSONLD-018: ROM does NOT auto-add ROOM_NO_MOB to rooms without exits."""
+
+    def test_room_with_no_exits_does_not_get_room_no_mob(self, tmp_path: pathlib.Path):
+        from mud.models.constants import RoomFlag
+
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [
+            {"id": 3000, "name": "Isolated Room", "description": "No exits.", "sector_type": "inside"}
+        ]
+        p = _write_json(tmp_path, area_data)
+        load_area_from_json(str(p))
+        room = room_registry[3000]
+        assert not (room.room_flags & int(RoomFlag.ROOM_NO_MOB)), (
+            f"ROOM_NO_MOB should not be auto-added by the JSON loader; room_flags={room.room_flags}"
+        )

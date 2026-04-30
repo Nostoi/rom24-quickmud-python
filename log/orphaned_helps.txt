@@ -3367,3 +3367,124 @@
 [ 3001] TestChar: motd
 [ 3001] TestChar: imotd
 [ 3001] TestChar: story
+[ 3001] TestChar: motd
+[ 3001] TestChar: rules
+[ 3001] TestChar: story
+[ 3001] TestChar: rules
+[ 3001] TestChar: story
+[ 3001] TestChar: motd
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3700] Nova: motd
+[ 3700] Nova: motd
+[ 3700] Borogon: motd
+[    0] unknown: premise
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3700] Nova: motd
+[ 3700] Nova: motd
+[ 3700] Borogon: motd
+[    0] unknown: premise
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3700] Nova: motd
+[ 3700] Nova: motd
+[ 3700] Borogon: motd
+[    0] unknown: premise
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3700] Ansi: motd
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3001] Author: note
+[ 3001] Author: note
+[ 3001] TestPlayer: immortal commands
+[ 3001] TestPlayer: nonexistent_topic_xyz
+[ 3001] TestPlayer: inventory
+[ 3001] TestPlayer: xyz
+[ 3001] TestPlayer: negative test
+[ 3001] TestPlayer: score
+[ 3001] TestChar: motd
+[ 3001] TestChar: imotd
+[ 3001] TestChar: story
+[ 3700] Ggttf: motd

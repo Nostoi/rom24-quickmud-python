@@ -3,8 +3,8 @@ import json
 from pathlib import Path
 
 from mud.loaders.area_loader import load_area_file
-from mud.math.c_compat import c_div
 from mud.loaders.reset_loader import validate_resets
+from mud.math.c_compat import c_div
 from mud.mobprog import clear_registered_programs, format_trigger_flag, get_registered_program
 from mud.models.constants import Direction, Sector
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -109,14 +109,26 @@ def mob_to_dict(mob) -> dict:
 
 
 def object_to_dict(obj) -> dict:
-    return {
+    # JSONLD-001: Emit keyword list separately from display name.
+    # ROM src/db2.c:420-421 — pObjIndex->name = keyword list,
+    # pObjIndex->short_descr = display name.
+    keywords = getattr(obj, "name", None)
+    name_val = obj.short_descr or ""
+    if keywords is None and isinstance(name_val, str):
+        keywords = " ".join(name_val.split())
+    result = {
         "id": obj.vnum,
-        "name": obj.short_descr or "",
+        "name": name_val,
+        "keywords": keywords or "",
         "description": obj.description or "",
         "material": obj.material or "",
         "item_type": getattr(obj, "item_type", "trash"),
         "extra_flags": getattr(obj, "extra_flags", ""),
         "wear_flags": getattr(obj, "wear_flags", ""),
+        # JSONLD-003: Emit level so the JSON loader can hydrate
+        # ObjIndex.level.  ROM src/db2.c:479 reads
+        # pObjIndex->level = fread_number(fp).
+        "level": getattr(obj, "level", 0) or 0,
         "weight": getattr(obj, "weight", 0),
         "cost": getattr(obj, "cost", 0),
         "condition": getattr(obj, "condition", "P"),
@@ -124,6 +136,7 @@ def object_to_dict(obj) -> dict:
         "affects": getattr(obj, "affects", []),
         "extra_descriptions": getattr(obj, "extra_descr", []),
     }
+    return result
 
 
 def convert_area(path: str) -> dict:
@@ -168,7 +181,7 @@ def convert_area(path: str) -> dict:
     for vnum, record in mob_program_records.items():
         program_obj = get_registered_program(vnum)
         if program_obj and getattr(program_obj, "code", ""):
-            record["code"] = getattr(program_obj, "code")
+            record["code"] = program_obj.code
 
     # Convert area-level resets
     resets = []

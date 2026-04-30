@@ -50,6 +50,7 @@ jobs:
   telnet-tests:
     name: Telnet Server Tests (Linux-only)
     runs-on: ubuntu-latest
+    if: runner.os == 'Linux'
     timeout-minutes: 5
     needs: test
     steps:

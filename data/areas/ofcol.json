@@ -1,12 +1,12 @@
 {
-  "area": {
-    "vnum": 5500,
-    "name": "Ofcol",
-    "filename": "ofcol.are",
-    "min_level": 0,
-    "max_level": 0,
-    "builders": null
+  "name": "Ofcol",
+  "vnum_range": {
+    "min": 5500,
+    "max": 5599
   },
+  "builders": [
+    "None"
+  ],
   "rooms": [
     {
       "id": 5550,
@@ -29,7 +29,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -59,7 +58,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -89,7 +87,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -118,7 +115,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -136,7 +132,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -154,7 +149,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -172,7 +166,6 @@
         }
       },
       "extra_descriptions": [],
-      "resets": [],
       "area": 5500
     },
     {
@@ -196,10 +189,96 @@
           "description": "These pictures show the friend's and foe's of Ravan.\nThey are easy to separate, as most of the foe's have the letters\nR.I.P. inscripted underneath them.\n"
         }
       ],
-      "resets": [],
       "area": 5500
     }
   ],
-  "mobs": [],
-  "objects": []
+  "mobiles": [],
+  "objects": [],
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 303,
+      "arg2": 5,
+      "arg3": 5556,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 303,
+      "arg2": 5,
+      "arg3": 5550,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 304,
+      "arg2": 5,
+      "arg3": 5553,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 304,
+      "arg2": 5,
+      "arg3": 5552,
+      "arg4": 3
+    },
+    {
+      "command": "E",
+      "arg1": 3020,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 306,
+      "arg2": 1,
+      "arg3": 5555,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 304,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 3030,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 308,
+      "arg2": 1,
+      "arg3": 5556,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 3000,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 3001,
+      "arg2": 100,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 350,
+      "arg2": 1,
+      "arg3": 5577,
+      "arg4": 1
+    }
+  ],
+  "specials": []
 }

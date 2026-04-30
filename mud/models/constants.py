@@ -1,7 +1,6 @@
 from enum import IntEnum, IntFlag
 from typing import NamedTuple, TypeVar
 
-
 F = TypeVar("F", bound=IntFlag)
 
 
@@ -689,12 +688,25 @@ ATTACK_TABLE: tuple[AttackType, ...] = (
 
 
 def attack_lookup(name: str) -> int:
-    """Case-insensitive prefix lookup mirroring ROM attack_lookup."""
+    """Case-insensitive prefix lookup mirroring ROM attack_lookup.
+
+    Handles both numeric-string representations (return the int if
+    in-range) and name strings (prefix-match against ATTACK_TABLE).
+    """
 
     if not name:
         return 0
     lowered = name.strip().lower()
     if not lowered:
+        return 0
+    numeric = lowered.lstrip("-")
+    if numeric.isdigit():
+        try:
+            value = int(lowered)
+        except ValueError:
+            return 0
+        if 0 <= value < len(ATTACK_TABLE):
+            return value
         return 0
     for idx, attack in enumerate(ATTACK_TABLE):
         attack_name = attack.name

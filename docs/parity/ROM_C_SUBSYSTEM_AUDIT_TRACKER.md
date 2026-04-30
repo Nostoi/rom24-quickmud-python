@@ -49,7 +49,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 **act_obj.c Status**: 🔄 **AUDIT IN PROGRESS!** (Phase 3 - 17%, do_get verified with 13 gaps) - See ACT_OBJ_C_AUDIT.md
 **healer.c Status**: ✅ **COMPLETE!** 🎉 (1/1 function, 4 gaps closed) — Apr 28, 2026
 **alias.c Status**: ✅ **COMPLETE!** 🎉 (4/4 functions, 5 gaps closed) — Apr 28, 2026
-**Last Updated**: April 28, 2026
+**Last Updated**: April 30, 2026
 
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
@@ -1141,10 +1141,13 @@ doesn't populate parallel tuple fields (`proto.hit` from `hit_dice`).
    exactly. The spawn now consumes RNG that previously was silently skipped,
    which can shift seeded-test outcomes (handled in commit `715469d`).
 
-The `db.c` "100% complete" badge currently overstates the JSON loader's
-parity. Recommend downgrading to ⚠️ Partial pending the `json_loader.py`
-re-audit, or adding a clear "JSON-path" caveat. Decision deferred to next
-session — flagged here so it's not lost.
+    The `db.c` "100% complete" badge currently overstates the JSON loader's
+    parity. ~~Recommend downgrading to ⚠️ Partial pending the `json_loader.py`
+    re-audit, or adding a clear "JSON-path" caveat.~~ **Resolved v2.6.108**: JSON
+    loader parity audit now complete (18/18 gaps closed in
+    `JSON_LOADER_C_AUDIT.md`). The `db.c` badge remains at 100% because the JSON
+    format is a serialization of the same data, not a separate implementation
+    surface.
 
 ---
 

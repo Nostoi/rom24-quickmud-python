@@ -1,23 +1,27 @@
-# Session Status — 2026-04-30 — `act_wiz.c` stat family parity review (WIZ-039..044)
+# Session Status — 2026-04-30 — JSON loader parity audit complete (remaining 6 of 18 gaps)
 
 ## Current State
 
-- **Active audit**: `act_wiz.c` ↔ `mud/commands/imm_search.py` (stat family review — 6 residual gaps closed)
-- **Last completed**: WIZ-039..044 (`do_mstat` practices/hitroll/damroll/age/carry-weight fixes; `do_ostat` number/weight helpers; `do_rstat` objects spacing)
+- **Active audit**: `json_loader.py` ↔ `src/db.c`/`src/db2.c` (JSON_LOADER_C_AUDIT.md)
+- **Last completed**: JSONLD-001/003/015/016/017/018 — all 18 gaps now closed
 - **Pointer to latest summary**:
-  (session summary to be written on handoff)
+  `docs/sessions/SESSION_SUMMARY_2026-04-30_JSON_LOADER_FINAL_SIX_GAPS.md`
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.6.106 |
-| act_wiz.c audit | All 44 gaps closed (`ACT_WIZ_C_AUDIT.md`) |
-| Wiz parity tests | 108 passed (`test_act_wiz_command_parity.py`) |
-| Full integration suite | `pytest tests/integration/ -q` — 1804 passed (1 known flaky excluded) |
-| Active focus | Continue `act_wiz.c` or move to next audit target |
+| Version | 2.6.108 |
+| JSON loader audit | 🎉 **ALL 18 GAPS CLOSED** (`JSON_LOADER_C_AUDIT.md`) |
+| JSON loader tests | 44 passed (`test_json_loader_parity.py`) |
+| act_wiz.c audit | All 44 gaps closed |
+| P0 files | 7/7 audited (100%) |
+| P1 files | 11/11 audited (100%) |
+| P2 files | 2 partial (OLC), several audited |
+| Full integration suite | `pytest tests/integration/ -q` — running |
 
 ## Next Intended Task
 
-Continue reviewing `act_wiz.c` for any remaining gaps, or move to the next P0/P1 file per
-`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`.
+OLC cluster work — `olc_act.c` (14 gaps) and `olc_save.c` (7 remaining of 20)
+have Phase 1–3 audit docs filed and closures pending. Alternatively, `olc_mpcode.c`
+and `hedit.c` await initial audits.

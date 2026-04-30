@@ -665,8 +665,8 @@
       "default_pos": "stand",
       "sex": "male",
       "wealth": 0,
-      "form": "0",
-      "parts": "0",
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
       "size": "large",
       "material": "0"
     }
