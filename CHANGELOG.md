@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (JSON loader parity closures — v2.6.104)
+
+- **JSONLD-009** — JSON-loaded areas now default `security` to 9 for both supported JSON formats, preserving explicit JSON values when present. This mirrors ROM `src/db.c:452` / `src/db.c:531` and restores the expected OLC builder-security default.
+- **JSONLD-010** — Format 1 JSON areas now hydrate `credits` from the JSON payload when present, mirroring ROM `src/db.c:457`.
+- **JSONLD-013** — JSON room `clan` values now resolve through `lookup_clan_id`, including ROM-style prefix matching, instead of preserving raw strings. Mirrors ROM `src/db.c:1192`.
+- **JSONLD-014** — JSON `D` resets now apply boot-time door state and are discarded rather than retained in `area.resets` / `room.resets`, mirroring ROM `src/db.c:1058-1104`.
+
 ### Fixed (JSON loader parity closures — v2.6.103)
 
 - **JSONLD-002** — Object `extra_descr` now stores `ExtraDescr` instances instead of raw dicts, matching the `.are` loader and ROM (`src/db2.c:571-580`). Consumer sites no longer need dict-aware fallback.

@@ -13,7 +13,18 @@ import pathlib
 import pytest
 
 from mud.loaders.json_loader import load_area_from_json
-from mud.models.constants import FormFlag, ImmFlag, OffFlag, PartFlag, ResFlag, VulnFlag, WearFlag
+from mud.models.constants import (
+    EX_CLOSED,
+    EX_ISDOOR,
+    EX_LOCKED,
+    FormFlag,
+    ImmFlag,
+    OffFlag,
+    PartFlag,
+    ResFlag,
+    VulnFlag,
+    WearFlag,
+)
 from mud.models.obj import Affect
 from mud.models.room import ExtraDescr
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -326,3 +337,135 @@ class TestJSONLD011FormParts:
         assert isinstance(mob.form, int)
         # Human race adds SENTIENT|BIPED|MAMMAL = H|M|V bits = (1<<7)|(1<<12)|(1<<21)
         assert mob.form & int(FormFlag.SENTIENT)
+
+
+class TestJSONLD009AreaSecurity:
+    """JSONLD-009: area security defaults to ROM's builder security value."""
+
+    def test_format1_area_security_defaults_to_nine(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        p = _write_json(tmp_path, area_data)
+
+        area = load_area_from_json(str(p))
+
+        assert area.security == 9
+
+    def test_format2_area_security_defaults_to_nine_when_missing(self, tmp_path: pathlib.Path):
+        area_data = {
+            "area": {
+                "vnum": 3200,
+                "name": "Format Two Area",
+                "filename": "format_two",
+                "builders": "Tester",
+            },
+            "rooms": [],
+            "mobs": [],
+            "objects": [],
+            "resets": [],
+        }
+        p = _write_json(tmp_path, area_data)
+
+        area = load_area_from_json(str(p))
+
+        assert area.security == 9
+
+    def test_format2_area_security_uses_json_value_when_present(self, tmp_path: pathlib.Path):
+        area_data = {
+            "area": {
+                "vnum": 3201,
+                "name": "Format Two Area",
+                "filename": "format_two",
+                "builders": "Tester",
+                "security": 4,
+            },
+            "rooms": [],
+            "mobs": [],
+            "objects": [],
+            "resets": [],
+        }
+        p = _write_json(tmp_path, area_data)
+
+        area = load_area_from_json(str(p))
+
+        assert area.security == 4
+
+
+class TestJSONLD010AreaCredits:
+    """JSONLD-010: Format 1 area credits load from JSON when present."""
+
+    def test_format1_area_credits_loaded_from_json(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["credits"] = "ROM area credits string"
+        p = _write_json(tmp_path, area_data)
+
+        area = load_area_from_json(str(p))
+
+        assert area.credits == "ROM area credits string"
+
+
+class TestJSONLD013RoomClan:
+    """JSONLD-013: room clan names resolve through ROM clan_lookup semantics."""
+
+    def test_room_clan_name_resolves_to_clan_id(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [{"id": 3000, "name": "Clan Room", "description": "", "clan": "rom"}]
+        p = _write_json(tmp_path, area_data)
+
+        load_area_from_json(str(p))
+
+        assert room_registry[3000].clan == 2
+
+    def test_room_clan_prefix_resolves_to_clan_id(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [{"id": 3000, "name": "Clan Room", "description": "", "clan": "lo"}]
+        p = _write_json(tmp_path, area_data)
+
+        load_area_from_json(str(p))
+
+        assert room_registry[3000].clan == 1
+
+    def test_room_clan_integer_passes_through(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [{"id": 3000, "name": "Clan Room", "description": "", "clan": 2}]
+        p = _write_json(tmp_path, area_data)
+
+        load_area_from_json(str(p))
+
+        assert room_registry[3000].clan == 2
+
+
+class TestJSONLD014DoorResets:
+    """JSONLD-014: D resets apply boot door state and are discarded."""
+
+    def test_d_reset_locks_forward_exit_and_is_not_stored(self, tmp_path: pathlib.Path):
+        area_data = dict(_MINIMAL_AREA)
+        area_data["rooms"] = [
+            {
+                "id": 3000,
+                "name": "West Room",
+                "description": "",
+                "exits": {
+                    "east": {
+                        "to_room": 3001,
+                        "description": "",
+                        "keyword": "door",
+                        "flags": EX_ISDOOR,
+                    }
+                },
+            },
+            {"id": 3001, "name": "East Room", "description": ""},
+        ]
+        # mirrors ROM src/db.c:1058-1104 — D reset sets boot door state and is freed.
+        area_data["resets"] = [{"command": "D", "arg1": 3000, "arg2": 1, "arg3": 2}]
+        p = _write_json(tmp_path, area_data)
+
+        area = load_area_from_json(str(p))
+
+        east_exit = room_registry[3000].exits[1]
+        assert east_exit is not None
+        assert east_exit.rs_flags & EX_ISDOOR
+        assert east_exit.rs_flags & EX_CLOSED
+        assert east_exit.rs_flags & EX_LOCKED
+        assert east_exit.exit_info == east_exit.rs_flags
+        assert all(reset.command != "D" for reset in area.resets)
+        assert all(reset.command != "D" for reset in room_registry[3000].resets)

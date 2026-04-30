@@ -15,7 +15,11 @@ from mud.registry import area_registry, mob_registry, obj_registry, room_registr
 
 from ..mobprog import register_program_code, resolve_trigger_flag
 from ..models.area import Area
+from ..models.clans import lookup_clan_id
 from ..models.constants import (
+    EX_CLOSED,
+    EX_ISDOOR,
+    EX_LOCKED,
     FormFlag,
     ImmFlag,
     OffFlag,
@@ -207,6 +211,36 @@ def _resolve_room_target(command: str, reset: ResetJson, current_room: int | Non
     return room_vnum, new_current
 
 
+def _apply_door_reset(reset: ResetJson) -> None:
+    """Apply a boot-time D reset and discard it like ROM ``load_resets``."""
+
+    room = room_registry.get(int(reset.arg1 or 0))
+    if room is None:
+        logger.warning("Invalid D reset room %s", reset.arg1)
+        return
+
+    door = int(reset.arg2 or 0)
+    if door < 0 or door >= len(room.exits):
+        logger.warning("Invalid D reset direction %s in room %s", door, reset.arg1)
+        return
+
+    exit_obj = room.exits[door]
+    if exit_obj is None or not (int(getattr(exit_obj, "rs_flags", 0) or 0) & EX_ISDOOR):
+        logger.warning("Invalid D reset non-door exit %s in room %s", door, reset.arg1)
+        return
+
+    # mirroring ROM src/db.c:1058-1104 — D resets set boot door state, then free the reset.
+    state = int(reset.arg3 or 0)
+    if state == 1:
+        exit_obj.rs_flags |= EX_CLOSED
+        exit_obj.exit_info |= EX_CLOSED
+    elif state == 2:
+        exit_obj.rs_flags |= EX_CLOSED | EX_LOCKED
+        exit_obj.exit_info |= EX_CLOSED | EX_LOCKED
+    elif state != 0:
+        logger.warning("Invalid D reset lock state %s in room %s", state, reset.arg1)
+
+
 def load_area_from_json(json_file_path: str) -> Area:
     """Load a complete area from JSON file with all ROM fields."""
 
@@ -228,7 +262,7 @@ def load_area_from_json(json_file_path: str) -> Area:
             min_vnum=area_data.get("min_vnum", area_data.get("vnum", 0)),
             max_vnum=area_data.get("max_vnum", area_data.get("vnum", 0)),
             area_flags=area_data.get("area_flags", 0),
-            security=area_data.get("security", 0),
+            security=area_data.get("security", 9),
         )
         rooms_key = "rooms"
         mobs_key = "mobs"
@@ -243,10 +277,11 @@ def load_area_from_json(json_file_path: str) -> Area:
             low_range=vnum_range.get("min", 0),
             high_range=vnum_range.get("max", 0),
             builders=", ".join(data.get("builders", [])),
+            credits=data.get("credits", ""),
             min_vnum=vnum_range.get("min", 0),
             max_vnum=vnum_range.get("max", 0),
             area_flags=0,  # Not in JSON, default to 0
-            security=0,  # Not in JSON, default to 0
+            security=data.get("security", 9),
         )
         rooms_key = "rooms"
         mobs_key = "mobiles"  # Different key in format 1
@@ -316,9 +351,13 @@ def load_area_from_json(json_file_path: str) -> Area:
                 arg4 = 1
 
         reset = ResetJson(command=command, arg1=arg1, arg2=arg2, arg3=arg3, arg4=arg4)
-        area.resets.append(reset)
-
         room_vnum, last_room_vnum = _resolve_room_target(command, reset, last_room_vnum)
+
+        if command == "D":
+            _apply_door_reset(reset)
+            continue
+
+        area.resets.append(reset)
         if room_vnum is not None:
             room = room_registry.get(room_vnum)
             if room is not None:
@@ -361,7 +400,7 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
         # Set ROM defaults
         room.heal_rate = room_data.get("heal_rate", 100)
         room.mana_rate = room_data.get("mana_rate", 100)
-        room.clan = room_data.get("clan", 0)
+        room.clan = lookup_clan_id(room_data.get("clan", 0))
         room.owner = room_data.get("owner", "")
 
         # Set ROOM_LAW flag for Midgaard law zone (vnums 3000-3400)

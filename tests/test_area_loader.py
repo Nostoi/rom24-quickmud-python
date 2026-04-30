@@ -6,16 +6,17 @@ import pytest
 from mud.loaders import load_area_file
 from mud.loaders.json_loader import load_area_from_json
 from mud.loaders.reset_loader import validate_resets
+from mud.mobprog import Trigger, clear_registered_programs, get_registered_program
 from mud.models.constants import (
+    EX_CLOSED,
+    EX_ISDOOR,
+    EX_PICKPROOF,
+    LIQUID_TABLE,
     AffectFlag,
     AreaFlag,
     ContainerFlag,
     Direction,
-    EX_CLOSED,
-    EX_ISDOOR,
-    EX_PICKPROOF,
     ExtraFlag,
-    LIQUID_TABLE,
     RoomFlag,
     WeaponFlag,
     WeaponType,
@@ -24,11 +25,10 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.models.help import clear_help_registry, help_registry
-from mud.mobprog import Trigger, clear_registered_programs, get_registered_program
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.scripts.convert_are_to_json import clear_registries, convert_area
-from mud.spawning.obj_spawner import spawn_object
 from mud.skills.metadata import ROM_SKILL_NAMES_BY_INDEX
+from mud.spawning.obj_spawner import spawn_object
 
 
 def test_duplicate_area_vnum_raises_value_error(tmp_path):
@@ -682,7 +682,7 @@ def test_convert_area_preserves_clan_and_owner(tmp_path):
         "~\n"
         "0 0 0\n"
         "H 150 M 90\n"
-        "C test_clan~\n"
+        "C rom~\n"
         "O test_owner~\n"
         "S\n"
         "#0\n"
@@ -697,7 +697,7 @@ def test_convert_area_preserves_clan_and_owner(tmp_path):
 
     assert room_data["heal_rate"] == 150
     assert room_data["mana_rate"] == 90
-    assert room_data["clan"] == "test_clan"
+    assert room_data["clan"] == "rom"
     assert room_data["owner"] == "test_owner"
 
     json_path = tmp_path / "tmp.json"
@@ -710,7 +710,7 @@ def test_convert_area_preserves_clan_and_owner(tmp_path):
     loaded_room = room_registry[100]
     assert loaded_room.heal_rate == 150
     assert loaded_room.mana_rate == 90
-    assert loaded_room.clan == "test_clan"
+    assert loaded_room.clan == 2
     assert loaded_room.owner == "test_owner"
 
     area_registry.clear()
