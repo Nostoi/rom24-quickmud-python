@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 from types import SimpleNamespace
@@ -34,6 +36,7 @@ from mud.magic.effects import (
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
+    ATTACK_TABLE,
     LEVEL_HERO,
     LEVEL_IMMORTAL,
     LIQ_WATER,
@@ -64,8 +67,6 @@ from mud.models.constants import (
     WeaponFlag,
     WeaponType,
     WearLocation,
-    ATTACK_TABLE,
-    attack_damage_type,
 )
 from mud.models.obj import Affect, ObjectData
 from mud.models.object import Object
@@ -461,6 +462,12 @@ _WEAPON_FLAG_LABELS: tuple[tuple[int, str], ...] = (
 def _send_to_char(character: Character, message: str) -> None:
     """Append a message to the character similar to ROM send_to_char."""
 
+    # Direct delivery for connected characters
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, message))
     if hasattr(character, "send_to_char"):
         try:
             character.send_to_char(message)

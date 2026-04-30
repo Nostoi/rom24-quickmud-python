@@ -1,19 +1,23 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum
 
+from mud.account.account_manager import save_character
+from mud.admin_logging.admin import rotate_admin_log
 from mud.affects.engine import tick_spell_effects
 from mud.ai import aggressive_update, mobile_update
 from mud.characters.conditions import gain_condition
 from mud.combat.engine import update_pos
-from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick, get_pulse_violence
+from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick
 from mud.imc import pump_idle
 from mud.math.c_compat import c_div
-from mud.admin_logging.admin import rotate_admin_log
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
+    LEVEL_IMMORTAL,
+    ROOM_VNUM_LIMBO,
     AffectFlag,
     Condition,
     ItemType,
@@ -23,20 +27,16 @@ from mud.models.constants import (
     Stat,
     WearFlag,
     WearLocation,
-    LEVEL_IMMORTAL,
-    ROOM_VNUM_LIMBO,
 )
 from mud.models.obj import ObjectData, object_registry
 from mud.models.room import room_registry
-from mud.net.protocol import broadcast_global
 from mud.music import song_update
-from mud.account.account_manager import save_character
+from mud.net.protocol import broadcast_global
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
-
 
 _AUTOSAVE_ROTATION = 0
 _AUTOSAVE_WINDOW = 30
@@ -336,6 +336,12 @@ def move_gain(character: Character) -> int:
 
 
 def _send_to_char(character: Character, message: str) -> None:
+    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, message))
     messages = getattr(character, "messages", None)
     if isinstance(messages, list):
         messages.append(message)
@@ -414,7 +420,7 @@ def _set_light_remaining(obj: object, remaining: int) -> None:
         while len(updated) <= 2:
             updated.append(0)
         updated[2] = remaining
-        setattr(obj, "value", updated)
+        obj.value = updated
 
 
 def _destroy_light(character: Character, slot_key: object | None, obj: object) -> None:
@@ -922,7 +928,7 @@ def _clear_object_affect(obj: ObjectData, affect) -> None:
     if bitvector:
         if where == _TO_OBJECT:
             flags = int(getattr(obj, "extra_flags", 0) or 0)
-            setattr(obj, "extra_flags", flags & ~bitvector)
+            obj.extra_flags = flags & ~bitvector
         elif where == _TO_WEAPON:
             values = getattr(obj, "value", None)
             if isinstance(values, list) and len(values) > 4:
@@ -1192,6 +1198,7 @@ async def async_game_loop() -> None:
     except on server shutdown (CancelledError).
     """
     import asyncio
+
     from mud.config import PULSE_PER_SECOND
 
     # ROM standard: 4 pulses per second (250ms per pulse)

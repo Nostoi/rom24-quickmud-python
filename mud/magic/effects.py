@@ -15,6 +15,7 @@ All functions follow ROM probability formula with diminishing returns.
 
 from __future__ import annotations
 
+import asyncio
 from enum import IntEnum
 from typing import TYPE_CHECKING, Any
 
@@ -32,7 +33,6 @@ from mud.models.constants import (
 from mud.utils import rng_mm
 
 if TYPE_CHECKING:
-    from mud.models.character import Character
     from mud.models.object import Object
 
 
@@ -135,16 +135,23 @@ def _calculate_chance(level: int, damage: int, obj: Object, item_type_modifier: 
 
 
 def _send_effect_message(obj: Object, message: str) -> None:
-    """Send effect message to room or carrier.
-
-    ROM pattern: act(message, NULL, obj, NULL, TO_ROOM) or act(message, carrier, obj, NULL, TO_ALL)
-    QuickMUD: Send messages to carrier if present.
-    """
+    """Send effect message to room or carrier."""
     carrier = getattr(obj, "carried_by", None)
+    if carrier is not None:
+        _push_message(carrier, str(message))
 
-    if carrier is not None and hasattr(carrier, "messages") and isinstance(carrier.messages, list):
-        # Send to carrier (QuickMUD message system)
-        carrier.messages.append(f"{message}")
+
+def _push_message(character, message: str) -> None:
+    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
+    if character is None:
+        return
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, str(message)))
+    if hasattr(character, "messages") and isinstance(character.messages, list):
+        character.messages.append(str(message))
 
 
 def _dump_container_contents(obj: Object, level: int, damage: int, effect_func: Any) -> None:
@@ -395,7 +402,7 @@ def cold_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
             # Apply chill touch affect (-1 STR, duration 6)
             # TODO: Implement full affect_to_char with skill_lookup("chill touch")
             if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                victim.messages.append("You feel a chill sink deep into your bones.")
+                _push_message(victim, "You feel a chill sink deep into your bones.")
 
         # ROM L234-235: Hunger increase (warmth sucked out)
         # TODO: Implement gain_condition(victim, COND_HUNGER, dam/20)
@@ -502,7 +509,7 @@ def fire_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
                 # Apply fire breath blindness (-4 hitroll, duration 0 to level/10)
                 # TODO: Implement full affect_to_char with skill_lookup("fire breath")
                 if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                    victim.messages.append("You are blinded by smoke!")
+                    _push_message(victim, "You are blinded by smoke!")
 
         # ROM L340-341: Thirst increase (heat dehydration)
         # TODO: Implement gain_condition(victim, COND_THIRST, dam/20)
@@ -619,7 +626,7 @@ def poison_effect(target: Any, level: int, damage: int, target_type: int | Spell
             # Apply poison affect (gsn_poison: AFF_POISON, -1 STR, duration level/2)
             # TODO: Implement full affect_to_char with skill_lookup("poison")
             if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                victim.messages.append("You feel poison coursing through your veins.")
+                _push_message(victim, "You feel poison coursing through your veins.")
 
         # ROM L481-485: Process inventory
         inventory = list(getattr(victim, "inventory", []))
@@ -711,7 +718,7 @@ def shock_effect(target: Any, level: int, damage: int, target_type: int | SpellT
             victim.daze = max(current_daze, daze_pulses)
 
             if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                victim.messages.append("Your muscles stop responding.")
+                _push_message(victim, "Your muscles stop responding.")
 
         # ROM L558-562: Process inventory
         inventory = list(getattr(victim, "inventory", []))

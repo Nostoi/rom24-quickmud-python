@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import asyncio
 from types import SimpleNamespace
 
 from mud import mobprog
+from mud.account.account_manager import save_character
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
 from mud.characters import is_clan_member, is_same_clan, is_same_group
 from mud.characters.follow import stop_follower
 from mud.combat.death import raw_kill
-from mud.combat.messages import DamageMessages, TYPE_HIT, dam_message
+from mud.combat.messages import TYPE_HIT, DamageMessages, dam_message
 from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
+from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.math.c_compat import c_div, urange
 from mud.math.stat_apps import get_ac, get_damroll, get_hitroll
 from mud.models.character import Character, character_registry
@@ -19,8 +22,7 @@ from mud.models.constants import (
     AC_EXOTIC,
     AC_PIERCE,
     AC_SLASH,
-    ItemType,
-    PlayerFlag,
+    LEVEL_IMMORTAL,
     WEAPON_FLAMING,
     WEAPON_FROST,
     WEAPON_POISON,
@@ -28,20 +30,19 @@ from mud.models.constants import (
     WEAPON_VAMPIRIC,
     AffectFlag,
     DamageType,
+    ItemType,
+    PlayerFlag,
     Position,
     WeaponType,
-    attack_damage_type,
-    LEVEL_IMMORTAL,
     WearFlag,
+    attack_damage_type,
 )
-from mud.account.account_manager import save_character
-from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.models.social import expand_placeholders
-from mud.utils import rng_mm
+from mud.net.protocol import broadcast_room as _broadcast_room
 from mud.skills import check_improve
+from mud.utils import rng_mm
 from mud.wiznet import WiznetFlag, wiznet
 from mud.world.vision import can_see_object
-
 
 HAND_TO_HAND_SKILL = "hand to hand"
 
@@ -114,21 +115,21 @@ def _weapon_attack_index(weapon) -> int:
 
 def _weapon_is_new_format(weapon) -> bool:
     if hasattr(weapon, "new_format"):
-        return bool(getattr(weapon, "new_format"))
+        return bool(weapon.new_format)
     if hasattr(weapon, "prototype") and hasattr(weapon.prototype, "new_format"):
-        return bool(getattr(weapon.prototype, "new_format"))
+        return bool(weapon.prototype.new_format)
     return False
 
 
 def _weapon_level(weapon) -> int:
     if hasattr(weapon, "level"):
         try:
-            return int(getattr(weapon, "level"))
+            return int(weapon.level)
         except (TypeError, ValueError):
             return 0
     if hasattr(weapon, "prototype") and hasattr(weapon.prototype, "level"):
         try:
-            return int(getattr(weapon.prototype, "level"))
+            return int(weapon.prototype.level)
         except (TypeError, ValueError):
             return 0
     return 0
@@ -202,8 +203,24 @@ def _get_skill_percent(attacker: Character, skill_name: str, fallback_attr: str 
 
 
 def _push_message(character: Character | None, message: str) -> None:
+    """Deliver a message to a character, mirroring ROM C write_to_buffer.
+
+    ROM C calls write_to_buffer(desc, buf, 0) directly from dam_message/act —
+    inline, synchronous, to the socket output buffer.  We mirror that by
+    scheduling an asyncio send for connected characters.  The queue fallback
+    exists only for test compatibility (test chars have no connection).
+
+    See docs/divergences/MESSAGE_DELIVERY.md for the design rationale.
+    """
     if character is None:
         return
+    # Direct delivery — mirroring ROM C write_to_buffer(desc, buf, 0).
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, message))
+    # Queue fallback for tests and disconnected characters.
     mailbox = getattr(character, "messages", None)
     if isinstance(mailbox, list):
         mailbox.append(message)
@@ -231,14 +248,13 @@ def _dispatch_damage_messages(
         return
 
     if messages.self_inflicted:
-        room.broadcast(messages.room, exclude=victim)
+        _broadcast_room(room, messages.room, exclude=victim)
         return
 
     for occupant in getattr(room, "people", []):
         if occupant is attacker or occupant is victim:
             continue
-        if hasattr(occupant, "messages"):
-            occupant.messages.append(messages.room)
+        _push_message(occupant, messages.room)
 
 
 def get_weapon_skill(attacker: Character, weapon_sn: str | None) -> int:
@@ -673,25 +689,31 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
     """Generate position change message following ROM logic."""
     if victim.position == Position.MORTAL:
         if hasattr(victim, "room") and victim.room is not None:
-            victim.room.broadcast(
+            _broadcast_room(
+                victim.room,
                 f"{victim.name} is mortally wounded, and will die soon, if not aided.",
                 exclude=victim,
             )
         return "You are mortally wounded, and will die soon, if not aided."
     elif victim.position == Position.INCAP:
         if hasattr(victim, "room") and victim.room is not None:
-            victim.room.broadcast(
+            _broadcast_room(
+                victim.room,
                 f"{victim.name} is incapacitated and will slowly die, if not aided.",
                 exclude=victim,
             )
         return "You are incapacitated and will slowly die, if not aided."
     elif victim.position == Position.STUNNED:
         if hasattr(victim, "room") and victim.room is not None:
-            victim.room.broadcast(f"{victim.name} is stunned, but will probably recover.", exclude=victim)
+            _broadcast_room(
+                victim.room,
+                f"{victim.name} is stunned, but will probably recover.",
+                exclude=victim,
+            )
         return "You are stunned, but will probably recover."
     elif victim.position == Position.DEAD:
         if hasattr(victim, "room") and victim.room is not None:
-            victim.room.broadcast(f"{victim.name} is DEAD!!!", exclude=victim)
+            _broadcast_room(victim.room, f"{victim.name} is DEAD!!!", exclude=victim)
         return "You have been KILLED!!"
     return ""
 
@@ -827,7 +849,7 @@ def _auto_collect_loot(attacker: Character, corpse) -> bool:
         moved = True
 
     if moved:
-        attacker.send_to_char("You quickly gather the loot from the corpse.")
+        _push_message(attacker, "You quickly gather the loot from the corpse.")
     return moved
 
 
@@ -843,7 +865,7 @@ def _auto_collect_coins(attacker: Character, corpse) -> bool:
     if not _transfer_corpse_coins(attacker, corpse):
         return False
 
-    attacker.send_to_char("You quickly gather the loot from the corpse.")
+    _push_message(attacker, "You quickly gather the loot from the corpse.")
     return True
 
 
@@ -875,12 +897,13 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
 
     attacker.silver = current_silver + silver_reward
     if silver_reward == 1:
-        attacker.send_to_char("Mota gives you one silver coin for your sacrifice.")
+        _push_message(attacker, "Mota gives you one silver coin for your sacrifice.")
     else:
-        attacker.send_to_char(f"Mota gives you {silver_reward} silver coins for your sacrifice.")
+        _push_message(attacker, f"Mota gives you {silver_reward} silver coins for your sacrifice.")
 
     corpse_name = getattr(corpse, "short_descr", None) or getattr(corpse, "name", "") or "corpse"
-    room.broadcast(
+    _broadcast_room(
+        room,
         expand_placeholders("$n sacrifices $N to Mota.", attacker, SimpleNamespace(name=corpse_name)),
         exclude=attacker,
     )
@@ -909,16 +932,16 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
                 corpse.contained_items.clear()
             except AttributeError:
                 corpse.contained_items = []
-        setattr(corpse, "gold", 0)
-        setattr(corpse, "silver", 0)
+        corpse.gold = 0
+        corpse.silver = 0
 
     if hasattr(corpse, "contained_items"):
         try:
             corpse.contained_items.clear()
         except AttributeError:  # pragma: no cover - defensive guard
             corpse.contained_items = []
-    setattr(corpse, "gold", 0)
-    setattr(corpse, "silver", 0)
+    corpse.gold = 0
+    corpse.silver = 0
 
     if hasattr(room, "contents") and corpse in room.contents:
         room.contents.remove(corpse)
@@ -939,7 +962,7 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
 
     member_count = len(group_members)
     if member_count < 2:
-        attacker.send_to_char("Just keep it all.")
+        _push_message(attacker, "Just keep it all.")
         return
     if silver_reward <= 1:
         return
@@ -947,19 +970,18 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
     share = silver_reward // member_count
     remainder = silver_reward % member_count
     if share == 0:
-        attacker.send_to_char("Don't even bother, cheapskate.")
+        _push_message(attacker, "Don't even bother, cheapskate.")
         return
 
     attacker.silver = current_silver + share + remainder
-    attacker.send_to_char(f"You split {silver_reward} silver coins. Your share is {share + remainder} silver.")
+    _push_message(attacker, f"You split {silver_reward} silver coins. Your share is {share + remainder} silver.")
 
     split_message = f"$n splits {silver_reward} silver coins. Your share is {share} silver."
     for member in group_members:
         if member is attacker:
             continue
         member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
-        if hasattr(member, "messages"):
-            member.messages.append(expand_placeholders(split_message, attacker, member))
+        _push_message(member, expand_placeholders(split_message, attacker, member))
 
 
 def _handle_auto_actions(attacker: Character, corpse) -> None:
@@ -1046,7 +1068,7 @@ def check_killer(attacker: Character | None, victim: Character | None) -> None:
     if getattr(attacker, "fighting", None) is resolved_victim:
         return
 
-    attacker.send_to_char("*** You are now a KILLER!! ***")
+    _push_message(attacker, "*** You are now a KILLER!! ***")
     attacker.act = attacker_act | int(PlayerFlag.KILLER)
     victim_name = getattr(resolved_victim, "name", None) or "someone"
     wiznet(f"$N is attempting to murder {victim_name}", attacker, None, WiznetFlag.WIZ_FLAGS, None, 0)
@@ -1445,9 +1467,9 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     # Get weapon flags - support both extra_flags (for ObjIndex) and weapon_flags attribute
     weapon_flags = 0
     if hasattr(wield, "weapon_flags"):
-        weapon_flags = int(getattr(wield, "weapon_flags"))
+        weapon_flags = int(wield.weapon_flags)
     elif hasattr(wield, "extra_flags"):
-        weapon_flags = int(getattr(wield, "extra_flags"))
+        weapon_flags = int(wield.extra_flags)
 
     weapon_level = _weapon_level(wield) or 1
     weapon_name = getattr(wield, "name", None) or getattr(wield, "short_descr", None) or "the weapon"
@@ -1459,8 +1481,9 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
 
         if not saves_spell(level // 2, victim, DamageType.POISON):
             _push_message(victim, "You feel poison coursing through your veins.")
-            if room is not None and hasattr(room, "broadcast"):
-                room.broadcast(
+            if room is not None:
+                _broadcast_room(
+                    room,
                     f"{victim.name} is poisoned by the venom on {weapon_name}.",
                     exclude=victim,
                 )
@@ -1472,8 +1495,8 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     if weapon_flags & WEAPON_VAMPIRIC:
         dam = rng_mm.number_range(1, weapon_level // 5 + 1)
         _push_message(victim, f"You feel {weapon_name} drawing your life away.")
-        if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(f"{weapon_name} draws life from {victim.name}.", exclude=victim)
+        if room is not None:
+            _broadcast_room(room, f"{weapon_name} draws life from {victim.name}.", exclude=victim)
 
         # Apply vampiric damage (additional negative damage) without extra messages
         apply_damage(attacker, victim, dam, DamageType.NEGATIVE, show=False)
@@ -1493,8 +1516,8 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     if weapon_flags & WEAPON_FLAMING:
         dam = rng_mm.number_range(1, weapon_level // 4 + 1)
         _push_message(victim, f"{weapon_name} sears your flesh.")
-        if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(f"{victim.name} is burned by {weapon_name}.", exclude=victim)
+        if room is not None:
+            _broadcast_room(room, f"{victim.name} is burned by {weapon_name}.", exclude=victim)
         fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
         messages.append(f"{weapon_name} sears your flesh.")
@@ -1503,8 +1526,8 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     if weapon_flags & WEAPON_FROST:
         dam = rng_mm.number_range(1, weapon_level // 6 + 2)
         _push_message(victim, "The cold touch surrounds you with ice.")
-        if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(f"{victim.name} is frozen by {weapon_name}.", exclude=victim)
+        if room is not None:
+            _broadcast_room(room, f"{victim.name} is frozen by {weapon_name}.", exclude=victim)
         cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
         messages.append("The cold touch surrounds you with ice.")
@@ -1513,8 +1536,9 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     if weapon_flags & WEAPON_SHOCKING:
         dam = rng_mm.number_range(1, weapon_level // 5 + 2)
         _push_message(victim, "You are shocked by the weapon.")
-        if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(
+        if room is not None:
+            _broadcast_room(
+                room,
                 f"{victim.name} is struck by lightning from {weapon_name}.",
                 exclude=victim,
             )

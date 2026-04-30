@@ -7,9 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Combat message delivery** — combat messages (damage, parry, dodge, position
+  changes, weapon specials) now reach connected players immediately via
+  fire-and-forget asyncio tasks, matching ROM C's `write_to_buffer()` real-time
+  delivery. Previously messages were queued in `char.messages` and only drained
+  when the player typed a command, causing combat to appear frozen.
+  See `docs/divergences/MESSAGE_DELIVERY.md` for the design rationale.
+
 ### Changed (v2.6.108)
 
-- Fix CI workflows: remove invalid `runner.os` condition from `ci.yml`, update `test.yml` matrix to Python 3.11/3.12/3.13, increase test timeout to 120s, skip known-flaky `test_area_loader.py`.
+- **JSON_LOADER_C_AUDIT.md** — all 18 gaps now closed (remaining 6 in this batch).
+- JSON loader applies per-type value coercion (`_parse_item_values`) at load time, mirroring ROM `src/db2.c:429-478` and the `.are` loader path.
+- `attack_lookup` now handles numeric-string inputs (in-range passes through, out-of-range falls to name prefix-match), consistent with `_skill_lookup`/`_liq_lookup`/`_weapon_type_lookup`.
+
+### Fixed (json_loader.py parity closures — JSONLD-001,003,015,016,017,018)
+
+- **JSONLD-001** — Object keyword list populated from JSON `keywords` key (with `name` fallback) so `is_name()` matching works on JSON-loaded objects. Converter (`convert_are_to_json.py`) now emits `keywords` separately from display `name`. All 44 area JSONs regenerated.
+- **JSONLD-003** — Object `level` field emitted by converter (`convert_are_to_json.py:object_to_dict`) and read by JSON loader. All area JSONs regenerated with `level` for every object.
+- **JSONLD-015** — JSON loader now calls `_parse_item_values` (from `obj_loader`) to apply per-type value coercion at load time. `attack_lookup` updated to handle pre-resolved integer values from JSON.
+- **JSONLD-016** — Object `short_descr` lowercased-first and `description` uppercased-first at load time, mirroring ROM `src/db2.c:869-870`.
+- **JSONLD-017** — Room `light` verified at dataclass default 0 (ROM `src/db.c:1164`). Explicit init deemed redundant — closed-by-design.
+- **JSONLD-018** — JSON-only `ROOM_NO_MOB` auto-add on no-exit rooms removed. ROM does not do this; rooms now behave identically to the `.are` path.
 
 ### Changed (v2.6.107)
 

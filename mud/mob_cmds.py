@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -331,9 +332,14 @@ def _move_to_room(ch: Character, destination: Room) -> None:
 
 
 def _append_message(target: Character, message: str) -> None:
-    if not hasattr(target, "messages"):
-        return
-    target.messages.append(message)
+    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
+    writer = getattr(target, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(target, message))
+    if hasattr(target, "messages"):
+        target.messages.append(message)
 
 
 def do_mpat(ch: Character, argument: str) -> None:
@@ -408,8 +414,7 @@ def do_mpgecho(ch: Character, argument: str) -> None:
     from mud.models.character import character_registry
 
     for target in character_registry:
-        if hasattr(target, "messages"):
-            target.messages.append(argument)
+        _append_message(target, argument)
 
 
 def do_mpzecho(ch: Character, argument: str) -> None:
@@ -889,8 +894,8 @@ def _mptransfer_auto_look(victim: Character) -> None:
         result = do_look(victim, "auto")
     except Exception:
         return
-    if isinstance(result, str) and result and hasattr(victim, "messages"):
-        victim.messages.append(result)
+    if isinstance(result, str) and result:
+        _append_message(victim, result)
 
 
 def do_mptransfer(ch: Character, argument: str) -> None:

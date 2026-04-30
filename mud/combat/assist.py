@@ -6,10 +6,11 @@ ROM Reference: src/fight.c check_assist (lines 105-181)
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
-from mud.combat.engine import multi_hit, is_good, is_evil, is_neutral
+from mud.combat.engine import is_evil, is_good, is_neutral, multi_hit
 from mud.combat.safety import is_safe
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag
 from mud.utils import rng_mm
@@ -176,7 +177,6 @@ def _emote(char: Character, message: str) -> None:
     ROM C uses: do_function(rch, &do_emote, "screams and attacks!");
     Python equivalent: Send message to room.
     """
-    from mud.models.social import expand_placeholders
 
     room = getattr(char, "room", None)
     if not room:
@@ -194,12 +194,18 @@ def _emote(char: Character, message: str) -> None:
 
 
 def _send_to_char(char: Character, message: str) -> None:
-    """Send a message to a character."""
+    """Send a message to a character, mirroring ROM C write_to_buffer."""
+    # Direct delivery for connected characters
+    writer = getattr(char, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(char, message + "\n"))
+    # Queue fallback for tests
     send = getattr(char, "send", None)
     if callable(send):
         send(message + "\n")
     else:
-        # Fallback: add to messages list if it exists
         messages = getattr(char, "messages", None)
         if isinstance(messages, list):
             messages.append(message + "\n")

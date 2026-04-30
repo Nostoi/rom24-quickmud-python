@@ -73,6 +73,20 @@ These are non-negotiable. Violations are bugs even if tests pass.
 Mandatory reading before any audit or integration-test work:
 [`docs/ROM_PARITY_VERIFICATION_GUIDE.md`](docs/ROM_PARITY_VERIFICATION_GUIDE.md).
 
+### Message Delivery (Architectural Divergence)
+
+ROM C delivers messages directly to the socket descriptor via `write_to_buffer()`
+during the game tick. Python cannot do synchronous socket writes inside the
+synchronous `game_tick()`.  Instead, we use `asyncio.create_task(send_to_char(...))`
+for fire-and-forget delivery, matching ROM C's real-time prompt behavior.
+
+**Messages generated during combat ticks must reach connected players
+immediately.**  The `char.messages` list is a test fallback only — it must NOT
+be the primary delivery mechanism for combat output.  Use `_push_message()` from
+`engine.py` or `broadcast_room()` from `protocol.py`.
+
+Full rationale: [`docs/divergences/MESSAGE_DELIVERY.md`](docs/divergences/MESSAGE_DELIVERY.md).
+
 ---
 
 ## Build / Lint / Test

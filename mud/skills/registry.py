@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -196,6 +197,7 @@ class SkillRegistry:
             failure_message = self._failure_message(skill)
             if hasattr(caster, "messages") and isinstance(caster.messages, list):
                 caster.messages.append(failure_message)
+            _deliver_message(caster, failure_message)
             result = SkillUseResult(
                 success=False,
                 message=failure_message,
@@ -337,6 +339,7 @@ class SkillRegistry:
             improve_chance = max(5, min(95, 100 - learned))
             if rng_mm.number_percent() < improve_chance:
                 caster.skills[name] = min(adept, learned + 1)
+                _deliver_message(caster, f"You have become better at {skill.name}!")
                 caster.messages.append(f"You have become better at {skill.name}!")
                 gain_exp(caster, 2 * rating)
         else:
@@ -344,6 +347,7 @@ class SkillRegistry:
             if rng_mm.number_percent() < improve_chance:
                 increment = rng_mm.number_range(1, 3)
                 caster.skills[name] = min(adept, learned + increment)
+                _deliver_message(caster, f"You learn from your mistakes, and your {skill.name} skill improves.")
                 caster.messages.append(f"You learn from your mistakes, and your {skill.name} skill improves.")
                 gain_exp(caster, 2 * rating)
 
@@ -379,3 +383,14 @@ def check_improve(caster, name: str, success: bool, multiplier: int = 1) -> None
     """Convenience wrapper delegating to the global skill registry."""
 
     skill_registry.check_improve(caster, name, success, multiplier)
+
+
+def _deliver_message(character, message: str) -> None:
+    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
+    if character is None:
+        return
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, str(message)))

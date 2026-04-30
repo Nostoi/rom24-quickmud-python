@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.spawning.templates import MobInstance
 
-from .constants import Direction, ItemType, ROOM_VNUM_TEMPLE, WearLocation
+from .constants import ROOM_VNUM_TEMPLE, Direction, ItemType, WearLocation
 from .room_json import ResetJson
 
 
@@ -181,9 +182,21 @@ class Room:
         mob.room = self
 
     def broadcast(self, message: str, exclude: Character | None = None) -> None:
+        """Send a message to all characters in the room.
+
+        Mirroring ROM C write_to_buffer(desc, buf, 0) — connected
+        characters receive the message immediately via fire-and-forget
+        asyncio task.  The queue fallback exists for tests.
+        See docs/divergences/MESSAGE_DELIVERY.md.
+        """
         for char in self.people:
             if char is exclude:
                 continue
+            writer = getattr(char, "connection", None)
+            if writer is not None:
+                from mud.net.protocol import send_to_char as _send
+
+                asyncio.create_task(_send(char, message))
             if hasattr(char, "messages"):
                 char.messages.append(message)
 
