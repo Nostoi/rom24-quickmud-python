@@ -1120,14 +1120,15 @@ doesn't populate parallel tuple fields (`proto.hit` from `hit_dice`).
 
 1. **`mud/loaders/json_loader.py` ↔ `src/db.c`** — ✅ audit doc landed
    2026-04-30 as [`JSON_LOADER_C_AUDIT.md`](JSON_LOADER_C_AUDIT.md).
-   18 gaps documented (7 CRITICAL, 8 IMPORTANT, 3 MINOR). Top issues:
-   `JSONLD-001` (object keyword list missing from schema — multi-commit
-   project), `JSONLD-007` (mob `hitroll` populated from `thac0` field —
-   silent attack-roll bonus drift), `JSONLD-005`/`006` (`wear_flags`
-   stored as raw string; `obj.affected` typed list never populated).
-   Phase 4 closures are downstream work — start with single-commit
-   loader fixes (JSONLD-002, 004, 005, 006, 007, 008, 011) before
-   tackling the schema/converter changes.
+   18 gaps documented (7 CRITICAL, 8 IMPORTANT, 3 MINOR). **7 of 18 closed
+   in v2.6.103**: JSONLD-002 (ExtraDescr instances), JSONLD-004 (dice tuples
+   parsed), JSONLD-005 (wear_flags int), JSONLD-006 (Affect instances),
+   JSONLD-007 (hitroll key), JSONLD-008 (off/imm/res/vuln ints), JSONLD-011
+   (form/parts ints). Remaining open: JSONLD-001 (keyword list — schema),
+   JSONLD-003 (obj level — converter), JSONLD-009 (area security default),
+   JSONLD-010 (area credits), JSONLD-012 (race as string), JSONLD-013 (room
+   clan lookup), JSONLD-014 (D-reset semantics), JSONLD-015 (value coercion),
+   JSONLD-016/017/018 (MINOR).
 2. **`mud/world/{obj_find,char_find}.py` ↔ `src/handler.c`** — verify every
    `is_name` / `get_*` helper handles the documented `name: str | None`
    prototype shape. Defense applied 2026-04-30 (commit `658d319`).

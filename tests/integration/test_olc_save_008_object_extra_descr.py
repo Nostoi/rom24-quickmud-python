@@ -79,9 +79,11 @@ def test_round_trip_preserves_dict_extra_descriptions(tmp_path: Path):
 
     reloaded = obj_registry[9001]
     assert len(reloaded.extra_descr) == 2
-    assert reloaded.extra_descr[0]["keyword"] == "candlestick"
-    assert reloaded.extra_descr[0]["description"].startswith("An old pewter")
-    assert reloaded.extra_descr[1]["keyword"] == "pewter"
+    # JSONLD-002: objects now store ExtraDescr instances, not raw dicts
+    ed0 = reloaded.extra_descr[0]
+    assert ed0.keyword == "candlestick"
+    assert ed0.description.startswith("An old pewter")
+    assert reloaded.extra_descr[1].keyword == "pewter"
 
 
 def test_object_with_extradescr_dataclass_survives_json_dump(tmp_path: Path):

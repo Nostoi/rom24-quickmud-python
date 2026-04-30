@@ -13,12 +13,22 @@ from typing import Any
 from mud.models.constants import Direction, RoomFlag, Sector, Sex
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
+from ..mobprog import register_program_code, resolve_trigger_flag
 from ..models.area import Area
+from ..models.constants import (
+    FormFlag,
+    ImmFlag,
+    OffFlag,
+    PartFlag,
+    ResFlag,
+    VulnFlag,
+    WearFlag,
+    convert_flags_from_letters,
+)
 from ..models.mob import MobIndex, MobProgram
-from ..models.obj import ObjIndex
+from ..models.obj import Affect, ObjIndex
 from ..models.room import Exit, ExtraDescr, Room
 from ..models.room_json import ResetJson
-from ..mobprog import register_program_code, resolve_trigger_flag
 from .obj_loader import _resolve_item_type_code
 from .specials_loader import apply_specials_from_json
 
@@ -121,6 +131,32 @@ def _parse_room_flags(raw: Any) -> int:
             bits |= _parse_room_flags(entry)
         return bits
     return 0
+
+
+_DICE_RE = __import__("re").compile(r"(\d+)d(\d+)(?:[+](\d+))?")
+
+
+def _parse_dice_tuple(dice_str: str) -> tuple[int, int, int]:
+    """Parse a ROM dice string like ``3d5+2`` into ``(number, sides, bonus)``.
+
+    Mirrors ``src/db2.c:fread_number`` sequencing for hit/mana/damage tuples.
+    Returns ``(0, 0, 0)`` on unparseable input.
+    """
+    if not dice_str:
+        return (0, 0, 0)
+    m = _DICE_RE.match(dice_str.strip())
+    if not m:
+        return (0, 0, 0)
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3) or 0))
+
+
+def _to_int_flags(flag_letters: str, flag_cls: type) -> int:
+    """Convert ROM letter flags to an int bitmask via ``convert_flags_from_letters``."""
+    if not flag_letters or flag_letters == "0":
+        return 0
+    if isinstance(flag_letters, int):
+        return flag_letters
+    return int(convert_flags_from_letters(flag_letters, flag_cls))
 
 
 def _coerce_reset_arg(value: Any) -> int:
@@ -422,6 +458,21 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             logger.warning(f"Unknown sex: {sex_str}, defaulting to NONE")
             sex = Sex.NONE
 
+        # JSONLD-004: Parse dice strings into (number, sides, bonus) tuples
+        # at load time, mirroring ROM src/db2.c:251-269 which populates
+        # pMobIndex->hit[3]/mana[3]/damage[3] on read.
+        hit_dice_str = mob_data.get("hit_dice", "1d1+0")
+        mana_dice_str = mob_data.get("mana_dice", "1d1+0")
+        damage_dice_str = mob_data.get("damage_dice", "1d4+0")
+
+        # JSONLD-007: Populate ``hitroll`` from ``hitroll`` key if present,
+        # falling back to ``thac0``.  ROM src/db2.c:248 stores the attack-roll
+        # bonus in ``pMobIndex->hitroll``; the ``thac0`` key in JSON is a
+        # legacy field that should not be the sole source.
+        hitroll = mob_data.get("hitroll", mob_data.get("thac0", 0))
+        if isinstance(hitroll, str):
+            hitroll = int(hitroll) if hitroll.lstrip("-").isdigit() else 0
+
         # Create mob with all fields
         mob = MobIndex(
             vnum=mob_data["id"],
@@ -440,10 +491,16 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             group=mob_data.get("group", 0),
             level=mob_data.get("level", 1),
             thac0=mob_data.get("thac0", 20),
+            # JSONLD-007: hitroll now populated from JSON
+            hitroll=hitroll,
             ac=mob_data.get("ac", "1d1+0"),
-            hit_dice=mob_data.get("hit_dice", "1d1+0"),
-            mana_dice=mob_data.get("mana_dice", "1d1+0"),
-            damage_dice=mob_data.get("damage_dice", "1d4+0"),
+            hit_dice=hit_dice_str,
+            mana_dice=mana_dice_str,
+            damage_dice=damage_dice_str,
+            # JSONLD-004: populate int tuples at load time
+            hit=_parse_dice_tuple(hit_dice_str),
+            mana=_parse_dice_tuple(mana_dice_str),
+            damage=_parse_dice_tuple(damage_dice_str),
             damage_type=mob_data.get("damage_type", "beating"),
             # JSON files mirror the raw .are number; mirror ROM
             # src/db2.c:273-276 by multiplying each AC field by 10 on read.
@@ -471,6 +528,22 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
         from mud.loaders.mob_loader import merge_race_flags
 
         merge_race_flags(mob)
+
+        # JSONLD-008: After merge_race_flags has merged race bits into
+        # the letter-string fields, convert the merged strings to integer
+        # bitmasks and store in the parallel int fields.  Mirrors ROM
+        # src/db2.c:279-286 which resolves via fread_flag at load time.
+        mob.off_flags = _to_int_flags(mob.offensive, OffFlag)
+        mob.imm_flags = _to_int_flags(mob.immune, ImmFlag)
+        mob.res_flags = _to_int_flags(mob.resist, ResFlag)
+        mob.vuln_flags = _to_int_flags(mob.vuln, VulnFlag)
+
+        # JSONLD-011: Convert merged form/parts letter strings to int
+        # bitmasks, mirroring ROM src/db2.c:295-297 which resolves via
+        # fread_flag at load time.
+        mob.form = _to_int_flags(mob.form if isinstance(mob.form, str) else "", FormFlag)
+        mob.parts = _to_int_flags(mob.parts if isinstance(mob.parts, str) else "", PartFlag)
+
         mob_registry[mob.vnum] = mob
 
 
@@ -478,6 +551,60 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
     """Load objects from JSON data with complete field mapping."""
 
     for obj_data in objects_data:
+        # JSONLD-005: Convert wear_flags from ROM letter string to int
+        # bitmask, mirroring obj_loader.py:389 which calls
+        # _parse_flag_field(wear_flags_token, WearFlag).
+        wear_flags_raw = obj_data.get("wear_flags", "")
+        if isinstance(wear_flags_raw, str):
+            wear_flags = int(convert_flags_from_letters(wear_flags_raw, WearFlag)) if wear_flags_raw and wear_flags_raw != "0" else 0
+        elif isinstance(wear_flags_raw, int):
+            wear_flags = wear_flags_raw
+        else:
+            wear_flags = 0
+
+        # JSONLD-002: Construct ExtraDescr instances for object
+        # extra_descriptions, mirroring the room loader (line 358) and
+        # ROM src/db2.c:571-580 which allocates EXTRA_DESCR_DATA structs.
+        raw_extra = obj_data.get("extra_descriptions", [])
+        extra_descr_list: list[ExtraDescr] = []
+        for ed in raw_extra:
+            if isinstance(ed, dict):
+                extra_descr_list.append(
+                    ExtraDescr(keyword=ed.get("keyword", ""), description=ed.get("description", ""))
+                )
+            elif isinstance(ed, ExtraDescr):
+                extra_descr_list.append(ed)
+
+        # JSONLD-006: Construct Affect instances for object affects,
+        # mirroring obj_loader.py:438-447 which builds typed Affect
+        # structs alongside the raw-dict list.
+        raw_affects = obj_data.get("affects", [])
+        affects_list: list[dict] = []
+        affected_list: list[Affect] = []
+        obj_level = int(obj_data.get("level", 0) or 0)
+        for af in raw_affects:
+            if isinstance(af, dict):
+                affects_list.append(af)
+                location = int(af.get("location", 0)) if not isinstance(af.get("location"), int) else af.get("location", 0)
+                modifier = int(af.get("modifier", 0)) if not isinstance(af.get("modifier"), int) else af.get("modifier", 0)
+                where = af.get("where", "TO_OBJECT")
+                if isinstance(where, str):
+                    where_int = {"TO_OBJECT": 1, "TO_AFFECTS": 0, "TO_IMMUNE": 2, "TO_RESIST": 3, "TO_VULN": 4}.get(where.upper(), 1)
+                else:
+                    where_int = int(where) if isinstance(where, int) else 1
+                bitvector = int(af.get("bitvector", 0)) if not isinstance(af.get("bitvector"), int) else af.get("bitvector", 0)
+                affected_list.append(
+                    Affect(
+                        where=where_int,
+                        type=-1,
+                        level=obj_level,
+                        duration=-1,
+                        location=location,
+                        modifier=modifier,
+                        bitvector=bitvector,
+                    )
+                )
+
         # Create object with all fields
         obj = ObjIndex(
             vnum=obj_data["id"],
@@ -486,16 +613,17 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
             material=obj_data.get("material", ""),
             item_type=_resolve_item_type_code(obj_data.get("item_type")),
             extra_flags=_rom_flags_to_int(obj_data.get("extra_flags", "")),
-            wear_flags=obj_data.get("wear_flags", ""),
+            wear_flags=wear_flags,
             # OLC_SAVE-006: hydrate object level from JSON (mirrors ROM
             # src/olc_save.c:378 save_object level emission).
-            level=int(obj_data.get("level", 0) or 0),
+            level=obj_level,
             weight=obj_data.get("weight", 0),
             cost=obj_data.get("cost", 0),
             condition=obj_data.get("condition", "P"),
             value=obj_data.get("values", [0, 0, 0, 0, 0]),
-            affects=obj_data.get("affects", []),
-            extra_descr=obj_data.get("extra_descriptions", []),
+            affects=affects_list,
+            extra_descr=extra_descr_list,
+            affected=affected_list,
             area=area,
         )
 

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (JSON loader parity closures — v2.6.103)
+
+- **JSONLD-002** — Object `extra_descr` now stores `ExtraDescr` instances instead of raw dicts, matching the `.are` loader and ROM (`src/db2.c:571-580`). Consumer sites no longer need dict-aware fallback.
+- **JSONLD-004** — Mob `hit`/`mana`/`damage` int tuples now parsed from `hit_dice`/`mana_dice`/`damage_dice` strings at load time via `_parse_dice_tuple`, matching ROM (`src/db2.c:251-269`). The `templates.py:_parse_dice` fallback still works as defense.
+- **JSONLD-005** — Object `wear_flags` now converted from ROM letter string to int bitmask via `convert_flags_from_letters(WearFlag)`, matching the `.are` loader (`obj_loader.py:389`).
+- **JSONLD-006** — Object `affected` list now populated with typed `Affect` instances from `affects` dicts, matching ROM (`src/db2.c:519-568`). `obj.affected` is no longer empty on JSON-loaded objects.
+- **JSONLD-007** — Mob `hitroll` now populated from JSON `hitroll` key (falling back to `thac0`), matching ROM (`src/db2.c:248`). Previously `hitroll` was always 0 for JSON-loaded mobs.
+- **JSONLD-008** — Mob `off_flags`/`imm_flags`/`res_flags`/`vuln_flags` int fields now populated after `merge_race_flags` via `_to_int_flags`, matching ROM (`src/db2.c:279-286`). Previously these stayed 0 on JSON-loaded mobs.
+- **JSONLD-011** — Mob `form`/`parts` now converted from letter strings to int bitmasks after `merge_race_flags`, matching ROM (`src/db2.c:295-297`). Previously `IS_SET(mob.form, FORM_EDIBLE)` would fail with `ValueError`.
+
 ### Fixed (in-game runtime bugs surfaced 2026-04-30)
 
 - `BUG-MOBHP` — Every JSON-loaded mob spawned with `max_hit=0` / `current_hp=1`, so look reported "awful condition" universally and a level 1 PC could one-shot Hassan (level 45). `mud/spawning/templates.py:_parse_dice` short-circuited on the default `(0,0,0)` primary tuple before consulting the `hit_dice` / `mana_dice` / `damage_dice` string fallback the JSON loader populated. Now treats all-zero primary as "unset" and falls through. ROM ref: `src/db.c:fread_mobile`. (commit `715469d`)
