@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from mud.commands.build import _oedit_show
 from mud.models.area import Area
-from mud.models.constants import ExtraFlag, WearFlag, WeaponFlag, WeaponType
+from mud.models.constants import ExtraFlag, WeaponFlag, WeaponType, WearFlag
 from mud.models.obj import Affect, ObjIndex
 
 
