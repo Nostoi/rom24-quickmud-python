@@ -43,9 +43,21 @@ def _ensure_perm_stat_columns(conn) -> None:
         conn.exec_driver_sql("ALTER TABLE characters ADD COLUMN perm_move INTEGER DEFAULT 100")
 
 
+def _ensure_password_hash_column(conn) -> None:
+    """Add characters.password_hash for ROM character-first login (src/save.c PCData.pwd)."""
+    inspector = inspect(conn)
+    try:
+        columns = {column["name"] for column in inspector.get_columns("characters")}
+    except Exception:
+        return
+    if "password_hash" not in columns:
+        conn.exec_driver_sql("ALTER TABLE characters ADD COLUMN password_hash VARCHAR DEFAULT ''")
+
+
 def run_migrations() -> None:
     with engine.begin() as conn:
         Base.metadata.create_all(bind=conn)
         _ensure_true_sex_column(conn)
         _ensure_perm_stat_columns(conn)
+        _ensure_password_hash_column(conn)
     print("✅ Migrations complete.")

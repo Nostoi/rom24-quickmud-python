@@ -315,7 +315,7 @@ def test_chosen_weapon_skill_seeded_at_40_percent():
 
 
 @pytest.mark.p1
-def test_account_login_disconnects_on_wrong_password(monkeypatch):
+def test_character_login_disconnects_on_wrong_password(monkeypatch):
     """NANNY-001 — ROM closes the socket on the first wrong password.
 
     ROM C: src/nanny.c:269-274
@@ -329,18 +329,16 @@ def test_account_login_disconnects_on_wrong_password(monkeypatch):
         ```
 
     ROM grants exactly one password attempt; failure closes the
-    descriptor. The Python account-login loop instead let the user retry
+    descriptor. The Python login loop instead let the user retry
     indefinitely, which diverges from ROM's "one chance" rule and weakens
     brute-force protection.
 
-    This test asserts the run-account-login coroutine returns None
-    (closing the connection) the first time `login_with_host` reports
-    BAD_CREDENTIALS, instead of looping back to the Account prompt.
+    This test asserts the character-login coroutine returns None
+    (closing the connection) after a single bad password, instead of
+    looping back to a non-ROM account prompt.
     """
     import asyncio
-    from types import SimpleNamespace
 
-    from mud.account import LoginFailureReason
     from mud.net import connection as connection_mod
 
     sent: list[str] = []
@@ -358,12 +356,12 @@ def test_account_login_disconnects_on_wrong_password(monkeypatch):
         # returning None so the test fails on assertion instead of
         # hanging forever. ROM disconnects on first failure, so this
         # path should never trip.
-        account_count = sum(1 for p in prompts if "Account" in p)
-        if account_count > 1:
+        name_count = sum(1 for p in prompts if p == "Name: ")
+        if name_count > 1:
             return None
-        if "Account" in label:
+        if label == "Name: ":
             return "tester"
-        if "Password" in label:
+        if label == "Password: ":
             return "wrongpw"
         return ""
 
@@ -372,26 +370,16 @@ def test_account_login_disconnects_on_wrong_password(monkeypatch):
 
     monkeypatch.setattr(connection_mod, "_prompt", fake_prompt)
     monkeypatch.setattr(connection_mod, "_send_line", fake_send_line)
-    monkeypatch.setattr(connection_mod, "account_exists", lambda _name: True)
-    monkeypatch.setattr(connection_mod, "is_account_active", lambda _name: False)
-    monkeypatch.setattr(
-        connection_mod,
-        "login_with_host",
-        lambda _name, _pw, _host, allow_reconnect=False: SimpleNamespace(
-            account=None,
-            failure=LoginFailureReason.BAD_CREDENTIALS,
-            was_reconnect=False,
-        ),
-    )
+    monkeypatch.setattr(connection_mod, "character_exists", lambda _name: True, raising=False)
+    monkeypatch.setattr(connection_mod, "login_character", lambda _name, _pw: None, raising=False)
 
-    result = asyncio.run(connection_mod._run_account_login(FakeStream(), None))
+    result = asyncio.run(connection_mod._run_character_login(FakeStream(), None))
 
     # mirrors ROM src/nanny.c:269-274 — one attempt, then close
     assert result is None
     assert any("Wrong password" in m for m in sent)
-    # Account prompt must appear exactly once — no retry loop
-    account_prompts = [p for p in prompts if "Account" in p]
-    assert len(account_prompts) == 1
+    assert prompts.count("Name: ") == 1
+    assert "Account: " not in prompts
 
 
 @pytest.mark.p1

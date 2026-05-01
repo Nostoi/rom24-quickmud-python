@@ -25,6 +25,7 @@ import time
 
 from mud.commands.dispatcher import process_command
 from mud.game_loop import game_tick
+from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import Position, Stat, ItemType, WearFlag, WearLocation
 from mud.spawning.templates import MobInstance
@@ -86,6 +87,39 @@ def skilled_character(movable_char_factory, object_factory):
 
 class TestCombatSkillsIntegration:
     """Test combat skills work through the game loop."""
+
+    def test_combat_rounds_do_not_advance_before_violence_boundary(
+        self,
+        monkeypatch,
+        skilled_character,
+        movable_mob_factory,
+    ):
+        import mud.game_loop as gl
+
+        char = skilled_character
+        mob = movable_mob_factory(3000, 3001)
+        char.position = Position.FIGHTING
+        mob.position = Position.FIGHTING
+        char.fighting = mob
+        mob.fighting = char
+
+        gl._pulse_counter = 0
+        gl._point_counter = 999999
+        gl._area_counter = 999999
+        gl._music_counter = 999999
+        gl._mobile_counter = 999999
+        gl._violence_counter = get_pulse_violence()
+
+        rounds: list[int] = []
+        monkeypatch.setattr(
+            "mud.combat.engine.attack_round",
+            lambda *args, **kwargs: rounds.append(gl._pulse_counter) or "hit",
+        )
+
+        for _ in range(get_pulse_violence() - 1):
+            gl.game_tick()
+
+        assert rounds == []
 
     def test_backstab_triggers_combat_round(self, skilled_character, movable_mob_factory):
         """

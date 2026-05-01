@@ -14,7 +14,7 @@ from mud.config import (
     set_ip_address,
     set_telnetga,
 )
-from mud.db.models import Base, PlayerAccount
+from mud.db.models import Base
 from mud.db.session import SessionLocal, engine
 from mud.security.hash_utils import hash_password
 from mud.net.connection import (
@@ -22,6 +22,7 @@ from mud.net.connection import (
     TelnetStream,
     _apply_qmconfig_telnetga,
     _read_player_command,
+    handle_connection_with_stream,
 )
 from mud.net.session import Session
 from mud.net.telnet_server import create_server
@@ -47,7 +48,7 @@ async def negotiate_ansi_prompt(
     payload = reply.strip() if reply else b""
     writer.write(payload + b"\r\n")
     await writer.drain()
-    greeting = await asyncio.wait_for(reader.readuntil(b"Account: "), timeout=5)
+    greeting = await asyncio.wait_for(reader.readuntil(b"Name: "), timeout=5)
     return prompt, greeting
 
 
@@ -92,6 +93,30 @@ async def _make_telnet_stream() -> tuple[TelnetStream, MemoryTransport, asyncio.
     protocol.connection_made(transport)
     writer = asyncio.StreamWriter(transport, protocol, reader, loop)
     return TelnetStream(reader, writer), transport, protocol
+
+
+async def _wait_for_buffer_contains(transport: MemoryTransport, marker: bytes, timeout: float = 1.0) -> bytes:
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while loop.time() < deadline:
+        snapshot = bytes(transport.buffer)
+        if marker in snapshot:
+            return snapshot
+        await asyncio.sleep(0.01)
+    raise AssertionError(f"Timed out waiting for {marker!r}; saw {bytes(transport.buffer)!r}")
+
+
+async def _wait_for_any_buffer_marker(
+    transport: MemoryTransport, markers: tuple[bytes, ...], timeout: float = 1.0
+) -> bytes:
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while loop.time() < deadline:
+        snapshot = bytes(transport.buffer)
+        if any(marker in snapshot for marker in markers):
+            return snapshot
+        await asyncio.sleep(0.01)
+    raise AssertionError(f"Timed out waiting for one of {markers!r}; saw {bytes(transport.buffer)!r}")
 
 
 @pytest.mark.telnet
@@ -205,24 +230,14 @@ def test_telnet_pagination_normalizes_crlf():
 )
 def test_telnet_server_handles_look_command():
     from mud.account.account_service import clear_active_accounts
-    from mud.security.hash_utils import hash_password
 
     async def run():
         clear_active_accounts()
-        session = SessionLocal()
-        session.add(
-            PlayerAccount(
-                username="Looker",
-                email="",
-                password_hash=hash_password("pass"),
-            )
-        )
-        session.commit()
-        session.close()
+        from mud.account.account_service import create_account
+        assert create_account("Looker", "pass")
 
         account = login("Looker", "pass")
         assert account is not None
-        create_character(account, "Looker")
 
         server = await create_server(host="127.0.0.1", port=0)
         host, port = server.sockets[0].getsockname()
@@ -252,6 +267,32 @@ def test_telnet_server_handles_look_command():
             server_task.cancel()
             with suppress(asyncio.CancelledError):
                 await server_task
+
+    asyncio.run(run())
+
+
+@pytest.mark.telnet
+def test_telnet_server_prompts_for_name_without_account_branch(qmconfig_snapshot):
+    async def run():
+        set_ansiprompt(True)
+        stream, transport, protocol = await _make_telnet_stream()
+        login_task = asyncio.create_task(handle_connection_with_stream(stream, connection_type="Telnet"))
+        try:
+            initial = await _wait_for_buffer_contains(transport, b"Do you want ANSI? (Y/n) ")
+            assert b"Do you want ANSI? (Y/n) " in initial
+
+            transport.buffer.clear()
+            protocol.data_received(b"\r\n")
+
+            post_ansi = await _wait_for_any_buffer_marker(transport, (b"Name: ", b"Account: "))
+            assert b"Name: " in post_ansi
+            assert b"Account: " not in post_ansi
+        finally:
+            login_task.cancel()
+            protocol.connection_lost(None)
+            with suppress(asyncio.CancelledError):
+                await login_task
+            transport.close()
 
     asyncio.run(run())
 
@@ -382,9 +423,10 @@ def test_telnet_negotiates_iac_and_disables_echo():
             assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in combined
             assert bytes([TELNET_IAC, TELNET_DO, TELNET_TELOPT_SUPPRESS_GA]) in combined
 
+            # mirroring ROM nanny flow: new char name -> confirm -> password -> confirm password
             writer.write(b"negotiator\r\n")
             await writer.drain()
-            await reader.readuntil(b"(Y/N) ")
+            await reader.readuntil(b"(Y/N)? ")
             writer.write(b"y\r\n")
             await writer.drain()
 
@@ -398,12 +440,6 @@ def test_telnet_negotiates_iac_and_disables_echo():
             assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in confirm_prompt
             assert bytes([TELNET_IAC, TELNET_WILL, TELNET_TELOPT_ECHO]) in confirm_prompt
             assert b"secret" not in confirm_prompt
-
-            writer.write(b"secret\r\n")
-            await writer.drain()
-
-            created = await reader.readuntil(b"Account created.")
-            assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in created
 
             writer.close()
             await writer.wait_closed()
@@ -430,15 +466,10 @@ def test_telnet_server_handles_multiple_connections():
     clear_active_accounts()
     reset_lockdowns()
 
-    assert create_account("Alice", "pw")
-    alice_account = login("Alice", "pw")
-    assert alice_account is not None
-    assert create_character(alice_account, "Alice")
-
-    assert create_account("Bob", "pw")
-    bob_account = login("Bob", "pw")
-    assert bob_account is not None
-    assert create_character(bob_account, "Bob")
+    # ROM model: characters are their own identities — create them directly
+    from mud.account.account_service import create_character_record
+    assert create_character_record("Alice", "pw", level=1)
+    assert create_character_record("Bob", "pw", level=1)
 
     async def run():
         server = await create_server(host="127.0.0.1", port=0)
@@ -454,18 +485,12 @@ def test_telnet_server_handles_multiple_connections():
             await r1.readuntil(b"Password: ")
             w1.write(b"pw\n")
             await w1.drain()
-            await r1.readuntil(b"Character: ")
-            w1.write(b"Alice\n")
-            await w1.drain()
 
             await negotiate_ansi_prompt(r2, w2)
             w2.write(b"Bob\n")
             await w2.drain()
             await r2.readuntil(b"Password: ")
             w2.write(b"pw\n")
-            await w2.drain()
-            await r2.readuntil(b"Character: ")
-            w2.write(b"Bob\n")
             await w2.drain()
 
             await asyncio.wait_for(r1.readuntil(b"> "), timeout=5)
@@ -500,20 +525,8 @@ def test_telnet_server_handles_multiple_connections():
 def test_telnet_break_connect_prompts_and_reconnects():
     async def run():
         clear_active_accounts()
-        session = SessionLocal()
-        session.add(
-            PlayerAccount(
-                username="Breaker",
-                email="",
-                password_hash=hash_password("pw"),
-            )
-        )
-        session.commit()
-        session.close()
-
-        account = login("Breaker", "pw")
-        assert account is not None
-        create_character(account, "Breaker")
+        from mud.account.account_service import create_character_record
+        assert create_character_record("Breaker", "pw", level=1)
 
         server = await create_server(host="127.0.0.1", port=0)
         host, port = server.sockets[0].getsockname()
@@ -526,17 +539,15 @@ def test_telnet_break_connect_prompts_and_reconnects():
             await asyncio.wait_for(r1.readuntil(b"Password: "), timeout=5)
             w1.write(b"pw\n")
             await w1.drain()
-            await asyncio.wait_for(r1.readuntil(b"Character: "), timeout=5)
-            w1.write(b"Breaker\n")
-            await w1.drain()
             await asyncio.wait_for(r1.readuntil(b"> "), timeout=5)
 
             r2, w2 = await asyncio.open_connection(host, port)
             await negotiate_ansi_prompt(r2, w2)
             w2.write(b"Breaker\n")
             await w2.drain()
+            # mirroring ROM nanny.c: duplicate session prompt at name stage
             account_reconnect = await asyncio.wait_for(
-                r2.readuntil(b"Reconnect? (Y/N) "),
+                r2.readuntil(b"(Y/N) "),
                 timeout=5,
             )
             assert b"already playing" in account_reconnect
@@ -544,9 +555,6 @@ def test_telnet_break_connect_prompts_and_reconnects():
             await w2.drain()
             await asyncio.wait_for(r2.readuntil(b"Password: "), timeout=5)
             w2.write(b"pw\n")
-            await w2.drain()
-            await asyncio.wait_for(r2.readuntil(b"Character: "), timeout=5)
-            w2.write(b"Breaker\n")
             await w2.drain()
 
             reconnect_prompt = await asyncio.wait_for(r2.readuntil(b"? "), timeout=5)

@@ -1,7 +1,7 @@
 import mud.game_loop as gl
 from types import SimpleNamespace
 from mud.ai import mobile_update
-from mud.config import get_pulse_tick
+from mud.config import get_pulse_tick, get_pulse_violence
 from mud.game_loop import (
     SkyState,
     char_update,
@@ -156,6 +156,37 @@ def test_timed_event_fires_after_delay():
     assert not triggered
     game_tick()
     assert triggered == [1]
+
+
+def test_violence_update_waits_for_pulse_violence(monkeypatch):
+    room = object()
+    attacker = Character(name="Attacker", is_npc=False, position=int(Position.FIGHTING))
+    victim = Character(name="Victim", is_npc=False, position=int(Position.FIGHTING))
+    attacker.room = room
+    victim.room = room
+    attacker.fighting = victim
+    victim.fighting = attacker
+    character_registry.extend([attacker, victim])
+
+    gl._pulse_counter = 0
+    gl._point_counter = 999999
+    gl._area_counter = 999999
+    gl._music_counter = 999999
+    gl._mobile_counter = 999999
+    gl._violence_counter = get_pulse_violence()
+
+    calls: list[int] = []
+    monkeypatch.setattr("mud.combat.engine.multi_hit", lambda ch, vic, dt=None: calls.append(gl._pulse_counter))
+    monkeypatch.setattr("mud.combat.engine.stop_fighting", lambda ch, both=False: None)
+
+    for _ in range(get_pulse_violence() - 1):
+        game_tick()
+
+    assert calls == []
+
+    game_tick()
+
+    assert calls == [get_pulse_violence(), get_pulse_violence()]
 
 
 def test_aggressive_mobile_attacks_player(monkeypatch):

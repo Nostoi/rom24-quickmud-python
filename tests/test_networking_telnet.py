@@ -151,27 +151,27 @@ def test_select_character_blocks_unpermitted_from_permit_host(monkeypatch):
 
 
 def test_select_character_allows_permit_from_permit_host(monkeypatch):
-    account = SimpleNamespace(characters=[SimpleNamespace(name="Guardian", act=int(PlayerFlag.PERMIT))])
-    fake_conn = FakeConn(["Guardian"], host="permit.example")
-
+    # ROM model: account *is* the character ORM row — PERMIT flag is on the char itself
     permitted_char = SimpleNamespace(
         name="Guardian",
         act=int(PlayerFlag.PERMIT),
         messages=[],
     )
 
+    fake_conn = FakeConn([], host="permit.example")
+
     monkeypatch.setattr(
         connection,
         "load_character",
-        lambda username, name: permitted_char,
+        lambda name: permitted_char,
     )
 
     async def runner() -> tuple | None:
         connection.SESSIONS.clear()
         return await connection._select_character(
             fake_conn,
-            account,
-            "warden",
+            permitted_char,  # account IS the character row in ROM model
+            "guardian",
             permit_banned=True,
         )
 

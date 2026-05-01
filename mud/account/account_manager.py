@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 
 from mud.db.models import Character as DBCharacter
-from mud.db.models import PlayerAccount
 from mud.db.session import SessionLocal
 from mud.models.character import Character, from_orm
 from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
@@ -13,22 +12,19 @@ from mud.models.conversion import (
 )
 
 
-def load_character(username: str, char_name: str) -> Character | None:
+def load_character(char_name: str, _ignored: str | None = None) -> Character | None:
+    """Load a character by name from the database.
+
+    The second argument is accepted but ignored for backward compatibility;
+    previously it was a username (account name).  Characters are now
+    standalone identities — mirroring ROM src/save.c:fread_char.
+    """
     session = None
     try:
         session = SessionLocal()
-        db_char = (
-            session.query(DBCharacter)
-            .join(PlayerAccount)
-            .filter(
-                DBCharacter.name == char_name,
-                PlayerAccount.username == username,
-            )
-            .first()
-        )
+        db_char = session.query(DBCharacter).filter(DBCharacter.name == char_name).first()
         char = from_orm(db_char) if db_char else None
         if char and db_char:
-            _ = db_char.player  # load relationship
             char.inventory, char.equipment = load_objects_for_character(db_char)
         return char
     except Exception as e:
@@ -45,39 +41,11 @@ def save_character(character: Character) -> None:
         session = SessionLocal()
         db_char = session.query(DBCharacter).filter_by(name=character.name).first()
         if not db_char:
-            # Character doesn't exist in database - create it
-            # This handles cases where character was created via JSON or other means
             print(f"[WARN] Character '{character.name}' not found in database, creating new record")
-            
-            # CRITICAL: Try to find and link the player account
-            player_id = None
-            pcdata = getattr(character, "pcdata", None)
-            if pcdata:
-                account_name = getattr(pcdata, "account_name", None)
-                if account_name:
-                    player_account = session.query(PlayerAccount).filter_by(username=account_name).first()
-                    if player_account:
-                        player_id = player_account.id
-                        print(f"[INFO] Linked character '{character.name}' to account '{account_name}' (id={player_id})")
-                    else:
-                        print(f"[WARN] Could not find player account '{account_name}' for character '{character.name}'")
-            
-            db_char = DBCharacter(name=character.name, player_id=player_id)
+            db_char = DBCharacter(name=character.name)
             session.add(db_char)
-        
-        # Update all fields
+
         if db_char:
-            # Ensure player_id is set if we have account information
-            if not db_char.player_id:
-                pcdata = getattr(character, "pcdata", None)
-                if pcdata:
-                    account_name = getattr(pcdata, "account_name", None)
-                    if account_name:
-                        player_account = session.query(PlayerAccount).filter_by(username=account_name).first()
-                        if player_account:
-                            db_char.player_id = player_account.id
-                            print(f"[INFO] Fixed missing player_id for character '{character.name}' -> account '{account_name}'")
-            
             db_char.level = character.level
             db_char.hp = character.hit
             db_char.race = int(character.race or 0)
@@ -105,10 +73,15 @@ def save_character(character: Character) -> None:
                 db_char.perm_mana = int(getattr(pcdata, "perm_mana", character.max_mana or 100))
                 db_char.perm_move = int(getattr(pcdata, "perm_move", character.max_move or 100))
             else:
-                # Fallback if no pcdata
                 db_char.perm_hit = int(character.max_hit or 20)
                 db_char.perm_mana = int(character.max_mana or 100)
                 db_char.perm_move = int(character.max_move or 100)
+
+            # Persist password hash if available on runtime character
+            if pcdata:
+                pwd = getattr(pcdata, "pwd", None) or ""
+                if pwd and not getattr(db_char, "password_hash", ""):
+                    db_char.password_hash = pwd
 
             db_char.default_weapon_vnum = int(character.default_weapon_vnum or 0)
             db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)

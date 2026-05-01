@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from mud.account import (
     LoginFailureReason,
     account_exists,
+    character_exists,
     create_account,
     create_character,
     get_creation_classes,
@@ -27,6 +28,7 @@ from mud.account import (
     lookup_hometown,
     lookup_weapon_choice,
     release_account,
+    release_character,
     roll_creation_stats,
     sanitize_account_name,
     save_character,
@@ -39,7 +41,7 @@ from mud.config import get_qmconfig
 from mud.handler import reset_char
 from mud.utils.act import act_format
 from mud.utils.prompt import bust_a_prompt
-from mud.db.models import PlayerAccount
+from mud.db.models import Character as DBCharacter
 from mud.loaders import help_loader
 from mud.logging import log_game_event
 from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
@@ -880,9 +882,17 @@ def _format_stats(stats: Iterable[int]) -> str:
     return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[PlayerAccount, str, bool] | None:
+async def _run_character_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[DBCharacter, str, bool, bool] | None:
+    """ROM-faithful character-first login.
+
+    mirroring ROM src/nanny.c:CON_GET_NAME / CON_GET_OLD_PASSWORD /
+    CON_CONFIRM_NEW_NAME — the first prompt is always "Name:", then we
+    branch to password (returning character) or new-character confirm.
+
+    Returns (account, username, was_reconnect, is_new_character).
+    """
     while True:
-        submitted = await _prompt(conn, "Account: ")
+        submitted = await _prompt(conn, "Name: ")
         if submitted is None:
             return None
         username = sanitize_account_name(submitted)
@@ -892,14 +902,14 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
             await _send_line(conn, "Illegal name, try another.")
             continue
 
-        if account_exists(username):
+        if character_exists(username):
             allow_reconnect = False
             if is_account_active(username):
-                decision = await _prompt_yes_no(conn, "This account is already playing. Reconnect? (Y/N) ")
+                decision = await _prompt_yes_no(conn, "This character is already playing. Reconnect? (Y/N) ")
                 if decision is None:
                     return None
                 if not decision:
-                    await _send_line(conn, "Ok, please choose another account.")
+                    await _send_line(conn, "Ok, please choose another name.")
                     continue
                 allow_reconnect = True
 
@@ -908,11 +918,11 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
                 return None
             result = login_with_host(username, password, host_for_ban, allow_reconnect=allow_reconnect)
             if result.account:
-                return result.account, username, bool(result.was_reconnect)
+                return result.account, username, bool(result.was_reconnect), False
 
             reason = result.failure
             if reason is LoginFailureReason.DUPLICATE_SESSION:
-                await _send_line(conn, "Ok, please choose another account.")
+                await _send_line(conn, "Ok, please choose another name.")
                 continue
             if reason is LoginFailureReason.BAD_CREDENTIALS:
                 # mirroring ROM src/nanny.c:269-274 — one attempt, then close
@@ -937,6 +947,12 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
             await _send_line(conn, "Login failed.")
             continue
 
+        # New character — apply pre-creation bans before confirming the name.
+        # mirroring ROM src/comm.c:check_parse_name — reject mob-keyword collisions early
+        if not is_valid_character_name(username):
+            await _send_line(conn, "Illegal name, try another.")
+            continue
+
         precheck = login_with_host(username, "", host_for_ban)
         failure = precheck.failure
         if failure and failure is not LoginFailureReason.UNKNOWN_ACCOUNT:
@@ -951,27 +967,27 @@ async def _run_account_login(conn: TelnetStream, host_for_ban: str | None) -> tu
             elif failure is LoginFailureReason.ACCOUNT_BANNED:
                 await _send_line(conn, "You are denied access.")
             else:
-                await _send_line(conn, "Account creation is unavailable right now.")
+                await _send_line(conn, "Character creation is unavailable right now.")
             return None
 
-        confirm = await _prompt_yes_no(conn, f"Create new account '{username.capitalize()}'? (Y/N) ")
+        # mirroring ROM src/nanny.c:CON_CONFIRM_NEW_NAME
+        confirm = await _prompt_yes_no(conn, f"Did I get that right, {username.capitalize()} (Y/N)? ")
         if confirm is None:
             return None
         if not confirm:
-            await _send_line(conn, "Ok, please choose another account.")
+            await _send_line(conn, "Ok, what IS it, then?")
             continue
 
         password = await _prompt_new_password(conn)
         if password is None:
             return None
         if not create_account(username, password):
-            await _send_line(conn, "Account creation failed.")
+            await _send_line(conn, "Character creation failed.")
             continue
 
         result = login_with_host(username, password, host_for_ban)
         if result.account:
-            await _send_line(conn, "Account created.")
-            return result.account, username, bool(result.was_reconnect)
+            return result.account, username, bool(result.was_reconnect), True
 
         await _send_line(conn, "Login failed.")
         return None
@@ -1367,7 +1383,7 @@ async def _prompt_for_weapon(conn: TelnetStream, class_type: "ClassType") -> int
 
 async def _run_character_creation_flow(
     conn: TelnetStream,
-    account: PlayerAccount,
+    account: object,
     name: str,
     *,
     permit_banned: bool = False,
@@ -1397,11 +1413,6 @@ async def _run_character_creation_flow(
         room=None,
     )
     await _send_line(conn, f"Creating new character '{display}'.")
-    confirm = await _prompt_yes_no(conn, f"Is '{display}' correct? (Y/N) ")
-    if confirm is None:
-        return False
-    if not confirm:
-        return False
 
     race = await _prompt_for_race(conn, preview_character)
     if race is None:
@@ -1470,92 +1481,70 @@ async def _run_character_creation_flow(
 
 async def _select_character(
     conn: TelnetStream,
-    account: PlayerAccount,
+    account: object,
     username: str,
     *,
     permit_banned: bool = False,
     newbie_banned: bool = False,
 ) -> tuple["Character", bool] | None:
-    permit_bit = int(PlayerFlag.PERMIT)
-    while True:
-        all_characters = list_characters(account)
-        characters = list_characters(account, require_act_flags=permit_bit) if permit_banned else all_characters
+    """Resolve which character enters the game.
 
-        if permit_banned and not characters:
+    For ROM character-first login the ``account`` object *is* the character
+    ORM record returned by :func:`_run_character_login`.  We use ``username``
+    as the character name.
+    """
+    permit_bit = int(PlayerFlag.PERMIT)
+    chosen_name = sanitize_account_name(username).capitalize()
+
+    if permit_banned:
+        act_flags = int(getattr(account, "act", 0) or 0)
+        if not (act_flags & permit_bit):
             await _send_line(conn, "Your site has been banned from this mud.")
             return None
 
-        if characters:
-            await _send_line(conn, "Characters: " + ", ".join(characters))
-        response = await _prompt(conn, "Character: ")
-        if response is None:
-            return None
-        candidate = response.strip()
-        if not candidate:
-            continue
-
-        lookup = {entry.lower(): entry for entry in characters}
-        chosen_name = lookup.get(candidate.lower())
-        if permit_banned and chosen_name is None:
-            all_lookup = {entry.lower(): entry for entry in all_characters}
-            if candidate.lower() in all_lookup:
-                await _send_line(conn, "Your site has been banned from this mud.")
+    existing_session = SESSIONS.get(chosen_name)
+    if existing_session:
+        active_connection = getattr(existing_session, "connection", None)
+        if active_connection is not None:
+            decision = await _prompt_yes_no(
+                conn,
+                f"That character is already playing. Reconnect? (Y/N) ",
+            )
+            if decision is None:
+                return None
+            if not decision:
+                await _send_line(conn, "Ok, goodbye.")
                 return None
 
-        if chosen_name is None:
-            created = await _run_character_creation_flow(
-                conn,
-                account,
-                candidate,
-                permit_banned=permit_banned,
-                newbie_banned=newbie_banned,
-            )
-            if not created:
-                continue
-            chosen_name = sanitize_account_name(candidate).capitalize()
-
-        existing_session = SESSIONS.get(chosen_name)
-        if existing_session:
-            active_connection = getattr(existing_session, "connection", None)
-            if active_connection is not None:
-                decision = await _prompt_yes_no(
-                    conn,
-                    f"That character is already playing. Reconnect? (Y/N) ",
-                )
-                if decision is None:
-                    return None
-                if not decision:
-                    await _send_line(conn, "Ok, please choose another character.")
-                    continue
-
-            transferred_char = await _disconnect_session(existing_session)
-            if transferred_char is not None:
-                if permit_banned and not _has_permit_flag(transferred_char):
-                    await _send_line(conn, "Your site has been banned from this mud.")
-                    return None
-                # mirroring ROM src/nanny.c:197-205 — PLR_DENY blocks access
-                if is_character_denied_access(transferred_char):
-                    log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
-                    await _send_line(conn, "You are denied access.")
-                    return None
-                return transferred_char, True
-
-            if active_connection is not None:
-                await _send_line(conn, "Reconnect attempt failed.")
-                continue
-
-        char = load_character(username, chosen_name)
-        if char:
-            if permit_banned and not _has_permit_flag(char):
+        transferred_char = await _disconnect_session(existing_session)
+        if transferred_char is not None:
+            if permit_banned and not _has_permit_flag(transferred_char):
                 await _send_line(conn, "Your site has been banned from this mud.")
                 return None
             # mirroring ROM src/nanny.c:197-205 — PLR_DENY blocks access
-            if is_character_denied_access(char):
+            if is_character_denied_access(transferred_char):
                 log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
                 await _send_line(conn, "You are denied access.")
                 return None
-            return char, False
-        await _send_line(conn, "Failed to load that character. Please try again.")
+            return transferred_char, True
+
+        if active_connection is not None:
+            await _send_line(conn, "Reconnect attempt failed.")
+            return None
+
+    char = load_character(chosen_name)
+    if char:
+        if permit_banned and not _has_permit_flag(char):
+            await _send_line(conn, "Your site has been banned from this mud.")
+            return None
+        # mirroring ROM src/nanny.c:197-205 — PLR_DENY blocks access
+        if is_character_denied_access(char):
+            log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
+            await _send_line(conn, "You are denied access.")
+            return None
+        return char, False
+    await _send_line(conn, "Failed to load that character. Please try again.")
+    return None
 
 
 async def handle_connection_with_stream(
@@ -1576,7 +1565,6 @@ async def handle_connection_with_stream(
     """
     session = None
     char = None
-    account: PlayerAccount | None = None
     username = ""
     
     # Set peer host if not already set
@@ -1604,10 +1592,10 @@ async def handle_connection_with_stream(
         conn.set_ansi(ansi_preference)
         await _send_help_greeting(conn)
 
-        login_result = await _run_account_login(conn, host_for_ban)
+        login_result = await _run_character_login(conn, host_for_ban)
         if not login_result:
             return
-        account, username, was_reconnect = login_result
+        account, username, was_reconnect, is_new_character = login_result
 
         selection = await _select_character(
             conn,
@@ -1621,6 +1609,24 @@ async def handle_connection_with_stream(
 
         char, forced_reconnect = selection
         reconnecting = bool(was_reconnect or forced_reconnect)
+
+        if is_new_character and not reconnecting:
+            created = await _run_character_creation_flow(
+                conn,
+                account,
+                username,
+                permit_banned=permit_banned,
+                newbie_banned=newbie_banned,
+            )
+            if not created:
+                release_character(username)
+                return
+            # reload char with full creation data
+            reloaded = load_character(sanitize_account_name(username).capitalize())
+            if reloaded is None:
+                release_character(username)
+                return
+            char = reloaded
 
         if char is None:
             return
@@ -1817,7 +1823,6 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         host_for_ban = addr
     session = None
     char = None
-    account: PlayerAccount | None = None
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
@@ -1842,10 +1847,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         conn.set_ansi(ansi_preference)
         await _send_help_greeting(conn)
 
-        login_result = await _run_account_login(conn, host_for_ban)
+        login_result = await _run_character_login(conn, host_for_ban)
         if not login_result:
             return
-        account, username, was_reconnect = login_result
+        account, username, was_reconnect, is_new_character = login_result
 
         selection = await _select_character(
             conn,
@@ -1859,6 +1864,23 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
 
         char, forced_reconnect = selection
         reconnecting = bool(was_reconnect or forced_reconnect)
+
+        if is_new_character and not reconnecting:
+            created = await _run_character_creation_flow(
+                conn,
+                account,
+                username,
+                permit_banned=permit_banned,
+                newbie_banned=newbie_banned,
+            )
+            if not created:
+                release_character(username)
+                return
+            reloaded = load_character(sanitize_account_name(username).capitalize())
+            if reloaded is None:
+                release_character(username)
+                return
+            char = reloaded
 
         # mirroring ROM src/nanny.c:760 — reset_char(ch) runs on every login
         apply_login_state_refresh(char)

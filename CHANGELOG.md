@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] — ROM Character-First Login
+
+### Changed
+
+- **Login model replaced with ROM-faithful character-first auth** — the
+  `PlayerAccount` ORM table and account-layer have been removed entirely.
+  Characters now authenticate directly (mirroring ROM `nanny.c`/`save.c`):
+  the server prompts `Name:`, branches to `Password:` for returning chars or
+  `Did I get that right, <Name> (Y/N)?` → `New password:` → `Confirm
+  password:` for new ones.  The `PlayerAccount` class is gone; `password_hash`
+  now lives on the `Character` row.
+- **`_select_character` simplified** — no character-selection menu; the login
+  name *is* the character name, matching ROM's single-character-per-login model.
+- **`login_with_host` / `login_character`** updated to query `Character` directly;
+  `create_account` / `list_characters` / `release_account` kept as thin shims
+  for call-site compatibility.
+- **Reconnect flow** — duplicate-session detection and reconnect prompt now
+  occur at the `Name:` stage (before password), matching ROM nanny behaviour.
+
+### Fixed
+
+- **`negotiate_ansi_prompt` test helper** — was waiting for `b"Account: "` after
+  the ANSI negotiation; updated to `b"Name: "` to match the new login prompt.
+- **`test_select_character_allows_permit_from_permit_host`** — monkeypatched
+  `load_character` now uses single-arg signature; `account` arg updated to be
+  the character row directly (ROM model).
+- **`test_websocket_boots_loaded_world_and_uses_account_login_flow`** — rewritten
+  for ROM flow (`Name:` → confirm → `New password:` → `Confirm password:`).
+- **`test_telnet_server_handles_multiple_connections`** and
+  **`test_telnet_break_connect_prompts_and_reconnects`** — updated to ROM login
+  flow (no `Character:` prompt step).
+
 ### Fixed
 
 - **Combat message delivery** — combat messages (damage, parry, dodge, position

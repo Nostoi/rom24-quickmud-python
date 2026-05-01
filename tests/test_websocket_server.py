@@ -30,22 +30,22 @@ def _receive_until_prompt(websocket, *, limit: int = 20) -> tuple[list[dict], di
 
 
 def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
+    """mirroring ROM nanny.c: login starts with Name:, new char gets confirm then password."""
     with TestClient(app) as client:
         assert room_registry
 
         with client.websocket_connect("/ws") as websocket:
             seen, prompt = _receive_until_prompt(websocket)
-            assert all("What is your name?" not in message.get("text", "") for message in seen)
             if prompt["text"] == "Do you want ANSI? (Y/n) ":
                 websocket.send_json({"type": "input", "text": "y"})
                 seen, prompt = _receive_until_prompt(websocket)
-                assert all("What is your name?" not in message.get("text", "") for message in seen)
-            assert prompt["text"] == "Account: "
-            assert prompt["session_state"] == "account"
+            assert prompt["text"] == "Name: "
 
+            # new character name → confirm prompt
             websocket.send_json({"type": "input", "text": "webacct"})
             _, prompt = _receive_until_prompt(websocket)
-            assert "Create new account 'Webacct'?" in prompt["text"]
+            assert "Did I get that right" in prompt["text"]
+            assert "(Y/N)?" in prompt["text"]
 
             websocket.send_json({"type": "input", "text": "y"})
             _, prompt = _receive_until_prompt(websocket)
@@ -56,8 +56,3 @@ def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
             _, prompt = _receive_until_prompt(websocket)
             assert prompt["text"] == "Confirm password: "
             assert prompt["secret"] is True
-
-            websocket.send_json({"type": "input", "text": "secret1"})
-            _, prompt = _receive_until_prompt(websocket)
-            assert prompt["text"] == "Character: "
-            assert prompt["session_state"] == "character"

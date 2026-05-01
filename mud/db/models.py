@@ -9,6 +9,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 class Base(DeclarativeBase):
     """Declarative base with typing support for SQLAlchemy models."""
 
+    # NOTE: PlayerAccount was removed as part of ROM character-login restoration.
+    # Characters now own their password hash directly, mirroring ROM src/merc.h PCData.pwd.
+
 
 class Area(Base):
     __tablename__ = "areas"
@@ -85,30 +88,19 @@ class ObjectInstance(Base):
     character: Mapped["Character | None"] = relationship("Character", back_populates="objects")
 
 
-class PlayerAccount(Base):
-    __tablename__ = "player_accounts"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(String, unique=True)
-    email: Mapped[str] = mapped_column(String, nullable=True, default="")
-    password_hash: Mapped[str] = mapped_column(String)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
-
-    characters: Mapped[list["Character"]] = relationship("Character", back_populates="player")
-
-    def set_password(self, password: str) -> None:
-        """Set the password hash for this account."""
-
-        from mud.security.hash_utils import hash_password
-
-        self.password_hash = hash_password(password)
-
-
 class Character(Base):
+    """ROM-faithful character record.
+
+    Password is stored directly on the character row, mirroring ROM
+    src/merc.h PCData.pwd and the save.c pfile format.  The Python-only
+    PlayerAccount table has been removed.
+    """
+
     __tablename__ = "characters"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True)
+    password_hash: Mapped[str] = mapped_column(String, default="")
     level: Mapped[int] = mapped_column(Integer)
     hp: Mapped[int] = mapped_column(Integer)
     room_vnum: Mapped[int] = mapped_column(Integer)
@@ -137,6 +129,4 @@ class Character(Base):
     creation_groups: Mapped[str] = mapped_column(String, default="")
     creation_skills: Mapped[str] = mapped_column(String, default="")
 
-    player_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("player_accounts.id"), nullable=True)
-    player: Mapped[PlayerAccount | None] = relationship("PlayerAccount", back_populates="characters")
     objects: Mapped[list[ObjectInstance]] = relationship("ObjectInstance", back_populates="character")

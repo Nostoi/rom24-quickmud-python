@@ -21,7 +21,7 @@ from mud.account.account_service import (
     login,
 )
 from mud.commands.dispatcher import process_command
-from mud.db.models import Base, Character as DBCharacter, PlayerAccount
+from mud.db.models import Base, Character as DBCharacter
 from mud.db.session import SessionLocal, engine
 from mud.models.character import Character
 from mud.models.constants import ROOM_VNUM_SCHOOL, Stat

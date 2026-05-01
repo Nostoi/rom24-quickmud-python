@@ -1,4 +1,4 @@
-from mud.db.models import Base, Character, PlayerAccount
+from mud.db.models import Base, Character
 from mud.db.seed import create_test_account
 from mud.db.session import SessionLocal, engine
 from mud.security.hash_utils import verify_password
@@ -12,15 +12,14 @@ def setup_module(module):
 def test_seed_creates_admin_with_hashed_password():
     create_test_account()
     session = SessionLocal()
-    acc = session.query(PlayerAccount).filter_by(username="admin").first()
-    assert acc and acc.is_admin
-    assert ":" in acc.password_hash
-    assert verify_password("admin", acc.password_hash)
-    char = session.query(Character).filter_by(name="Testman").first()
-    assert char and char.player_id == acc.id
+    char = session.query(Character).filter_by(name="Admin").first()
+    assert char is not None
+    assert ":" in char.password_hash
+    assert verify_password("admin", char.password_hash)
     session.close()
 
+    # idempotent — second call must not create a duplicate
     create_test_account()
     session = SessionLocal()
-    assert session.query(PlayerAccount).filter_by(username="admin").count() == 1
+    assert session.query(Character).filter_by(name="Admin").count() == 1
     session.close()

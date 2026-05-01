@@ -6,7 +6,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Final, Iterable, NamedTuple
 
-from mud.db.models import Character, PlayerAccount
+from mud.db.models import Character
 from mud.db.session import SessionLocal
 from mud.models.classes import (
     ClassType,
@@ -44,7 +44,7 @@ from mud.advancement import exp_per_level_for_creation
 
 
 class LoginFailureReason(Enum):
-    """Reasons an account login can be rejected."""
+    """Reasons a character login can be rejected."""
 
     ACCOUNT_BANNED = "account_banned"
     HOST_BANNED = "host_banned"
@@ -59,12 +59,12 @@ class LoginFailureReason(Enum):
 class LoginResult(NamedTuple):
     """Outcome of a login attempt."""
 
-    account: PlayerAccount | None
+    account: object | None  # kept for API compatibility; now holds a Character or None
     failure: LoginFailureReason | None
     was_reconnect: bool
 
 
-_active_accounts: set[str] = set()
+_active_characters: set[str] = set()
 
 _RESERVED_NAMES = {
     # mirrors ROM src/comm.c reserved_words[] (called from nanny.c:188)
@@ -663,15 +663,94 @@ def _normalize(username: str) -> str:
     return username.strip().lower()
 
 
-def account_exists(username: str) -> bool:
-    """Return True if the account name already exists."""
+def character_exists(name: str) -> bool:
+    """Return True if a character with this name already exists.
 
-    username = sanitize_account_name(username)
-    if not username:
+    mirroring ROM src/nanny.c:CON_GET_NAME — check pfile before prompting for password.
+    """
+    name = sanitize_account_name(name)
+    if not name:
         return False
     session = SessionLocal()
     try:
-        return session.query(PlayerAccount).filter_by(username=username).first() is not None
+        return session.query(Character).filter_by(name=name.capitalize()).first() is not None
+    finally:
+        session.close()
+
+
+# Keep account_exists as an alias for backwards compat with any callers.
+def account_exists(username: str) -> bool:
+    """Alias for character_exists; kept for backward compatibility."""
+    return character_exists(username)
+
+
+def login_character(name: str, raw_password: str) -> Character | None:
+    """Return the ORM Character record if credentials match.
+
+    mirroring ROM src/nanny.c:CON_GET_OLD_PASSWORD — verify password hash.
+    Also enforces account-level bans (mirrors ROM ban.c check_ban logic).
+    """
+    from mud.security.bans import is_account_banned
+
+    name = sanitize_account_name(name)
+    if not name:
+        return None
+    if is_account_banned(name):
+        return None
+    session = SessionLocal()
+    try:
+        record = session.query(Character).filter_by(name=name.capitalize()).first()
+        if record is None:
+            return None
+        pwd = getattr(record, "password_hash", "") or ""
+        if not pwd or not verify_password(raw_password, pwd):
+            return None
+        session.expunge(record)
+        return record
+    finally:
+        session.close()
+
+
+def create_character_record(
+    name: str,
+    password: str,
+    *,
+    level: int = 0,
+    hp: int = 20,
+    room_vnum: int | None = None,
+    skip_newlock: bool = False,
+) -> bool:
+    """Create a minimal character row with a hashed password.
+
+    Used by tests and the seed helper.  Full creation (race/class/etc.) goes
+    through the nanny flow via :func:`create_character`.
+    Respects newlock unless ``skip_newlock=True`` is passed (admin/seed use).
+    """
+    from mud.models.constants import ROOM_VNUM_SCHOOL
+    from mud.world.world_state import is_newlock_enabled
+
+    sanitized = sanitize_account_name(name)
+    if not sanitized:
+        return False
+    if not skip_newlock and is_newlock_enabled():
+        return False
+    session = SessionLocal()
+    try:
+        if session.query(Character).filter_by(name=sanitized.capitalize()).first():
+            return False
+        new_char = Character(
+            name=sanitized.capitalize(),
+            password_hash=hash_password(password),
+            level=level,
+            hp=hp,
+            room_vnum=room_vnum if room_vnum is not None else int(ROOM_VNUM_SCHOOL),
+        )
+        session.add(new_char)
+        session.commit()
+        return True
+    except Exception as exc:
+        print(f"[ERROR] create_character_record failed for '{name}': {exc}")
+        return False
     finally:
         session.close()
 
@@ -734,78 +813,53 @@ def _group_cost_for_class(name: str, class_type: ClassType) -> int | None:
     return group.cost_for_class_index(_class_index_for(class_type))
 
 
-def _mark_account_active(username: str) -> None:
-    _active_accounts.add(_normalize(username))
+def _mark_character_active(name: str) -> None:
+    _active_characters.add(_normalize(name))
 
 
+def release_character(name: str) -> None:
+    """Clear the active-session marker for this character."""
+    _active_characters.discard(_normalize(name))
+
+
+# Keep release_account as alias so existing call sites still work.
 def release_account(username: str) -> None:
-    """Clear the active-session marker for this account."""
-
-    _active_accounts.discard(_normalize(username))
+    """Alias for release_character; kept for backward compatibility."""
+    release_character(username)
 
 
 def clear_active_accounts() -> None:
     """Reset all active-session markers (test helper)."""
-
-    _active_accounts.clear()
+    _active_characters.clear()
 
 
 def active_accounts() -> Iterable[str]:
-    """Return a snapshot of active account usernames (lowercased)."""
+    """Return a snapshot of active character names (lowercased)."""
+    return tuple(_active_characters)
 
-    return tuple(_active_accounts)
 
-
-def _is_account_active(username: str) -> bool:
-    return _normalize(username) in _active_accounts
+def _is_character_active(name: str) -> bool:
+    return _normalize(name) in _active_characters
 
 
 def is_account_active(username: str) -> bool:
-    """Return True when the account currently has an active session."""
-
-    return _is_account_active(username)
+    """Return True when this character currently has an active session."""
+    return _is_character_active(username)
 
 
 def create_account(username: str, raw_password: str) -> bool:
-    """Create a new PlayerAccount if username is available."""
-    username = sanitize_account_name(username)
-    if not is_valid_account_name(username):
-        return False
-    if is_newlock_enabled():
-        return False
-    session = SessionLocal()
-    if session.query(PlayerAccount).filter_by(username=username).first():
-        session.close()
-        return False
-    account = PlayerAccount(
-        username=username,
-        email="",
-        password_hash=hash_password(raw_password),
-    )
-    session.add(account)
-    session.commit()
-    session.close()
-    return True
+    """Create a new character record (replaces old account creation).
+
+    This is kept for call-site compat; it creates a bare character row with
+    the given password hash so the nanny can proceed.
+    Skips newlock check — the nanny flow enforces newlock before calling this.
+    """
+    return create_character_record(username, raw_password, skip_newlock=True)
 
 
-def login(username: str, raw_password: str) -> PlayerAccount | None:
-    """Return PlayerAccount if credentials match."""
-    username = sanitize_account_name(username)
-    if not username:
-        return None
-    # Enforce account-name bans irrespective of host.
-    if bans.is_account_banned(username):
-        return None
-    session = SessionLocal()
-    account = session.query(PlayerAccount).filter_by(username=username).first()
-    if account and verify_password(raw_password, account.password_hash):
-        # pre-load characters before detaching
-        _ = account.characters  # type: ignore[unused-any]
-        session.expunge(account)
-        session.close()
-        return account
-    session.close()
-    return None
+def login(username: str, raw_password: str) -> object | None:
+    """Return the ORM Character if credentials match (compat shim)."""
+    return login_character(username, raw_password)
 
 
 def login_with_host(
@@ -815,21 +869,20 @@ def login_with_host(
     *,
     allow_reconnect: bool = False,
 ) -> LoginResult:
-    """Login that also enforces site bans.
+    """Character login with host-ban enforcement.
 
-    Returns a :class:`LoginResult` detailing the authenticated account (if
-    successful) or the reason the attempt failed so callers can mirror ROM's
-    nanny prompts.
+    Returns a :class:`LoginResult` detailing the authenticated character (in
+    the ``account`` field for compat) or the reason for failure.
     """
-
     username = sanitize_account_name(username)
     if not is_valid_account_name(username):
         return LoginResult(None, LoginFailureReason.UNKNOWN_ACCOUNT, False)
 
+    # character-name bans map to account bans in ROM
     if bans.is_account_banned(username):
         return LoginResult(None, LoginFailureReason.ACCOUNT_BANNED, False)
 
-    was_active = _is_account_active(username)
+    was_active = _is_character_active(username)
     reconnect_requested = was_active and allow_reconnect
     if was_active and not allow_reconnect:
         return LoginResult(None, LoginFailureReason.DUPLICATE_SESSION, False)
@@ -839,27 +892,25 @@ def login_with_host(
         return LoginResult(None, LoginFailureReason.HOST_BANNED, reconnect_requested)
 
     session = SessionLocal()
-    account_record: PlayerAccount | None = None
+    char_record: Character | None = None
     exists = False
     is_admin = False
     password_valid = False
     has_permit_character = False
     try:
-        account_record = session.query(PlayerAccount).filter_by(username=username).first()
-        if account_record:
+        char_record = session.query(Character).filter_by(name=username.capitalize()).first()
+        if char_record:
             exists = True
-            is_admin = bool(getattr(account_record, "is_admin", False))
+            act_flags = int(getattr(char_record, "act", 0) or 0)
+            is_admin = bool(act_flags & int(PlayerFlag.PERMIT))  # immortals have PERMIT
             if permit_ban:
-                for character in getattr(account_record, "characters", ()):
-                    act_flags = int(getattr(character, "act", 0) or 0)
-                    if act_flags & int(PlayerFlag.PERMIT):
-                        has_permit_character = True
-                        break
-            password_valid = verify_password(raw_password, account_record.password_hash)
+                if act_flags & int(PlayerFlag.PERMIT):
+                    has_permit_character = True
+            pwd = getattr(char_record, "password_hash", "") or ""
+            if pwd:
+                password_valid = verify_password(raw_password, pwd)
             if password_valid:
-                # Preload related characters before detaching.
-                _ = account_record.characters  # type: ignore[unused-any]
-                session.expunge(account_record)
+                session.expunge(char_record)
     finally:
         session.close()
 
@@ -873,56 +924,47 @@ def login_with_host(
     if is_wizlock_enabled() and not is_admin and not (allow_reconnect and was_active):
         return LoginResult(None, LoginFailureReason.WIZLOCK, reconnect_requested)
 
-    account: PlayerAccount | None = None
-    if password_valid and account_record is not None:
-        account = account_record
+    char: Character | None = None
+    if password_valid and char_record is not None:
+        char = char_record
 
-    if account:
+    if char:
         if was_active:
-            release_account(username)
-        _mark_account_active(username)
-        return LoginResult(account, None, reconnect_requested)
+            release_character(username)
+        _mark_character_active(username)
+        return LoginResult(char, None, reconnect_requested)
 
     failure = LoginFailureReason.BAD_CREDENTIALS if exists else LoginFailureReason.UNKNOWN_ACCOUNT
     return LoginResult(None, failure, reconnect_requested)
 
 
 def list_characters(
-    account: PlayerAccount,
+    account: object,
     *,
     require_act_flags: int | PlayerFlag | None = None,
 ) -> list[str]:
-    """Return list of character names for this account.
+    """Return character names associated with the given account object.
 
-    When ``require_act_flags`` is provided, only characters whose ``act`` bitvector
-    includes the requested flags are returned. This mirrors ROM nanny behaviour
-    where BAN_PERMIT sites can only select characters flagged with
-    ``PLR_PERMIT``.
+    For ROM character-first login the ``account`` argument is unused (each
+    character is its own identity), but the signature is retained for
+    call-site compatibility.
     """
-
-    required_bits: int | None
-    if require_act_flags is None:
-        required_bits = None
-    elif isinstance(require_act_flags, PlayerFlag):
-        required_bits = int(require_act_flags)
-    else:
-        required_bits = int(require_act_flags)
-
-    result: list[str] = []
-    for record in getattr(account, "characters", ()) or ():
-        name = getattr(record, "name", None)
-        if not name:
-            continue
-        if required_bits is not None:
-            act_flags = int(getattr(record, "act", 0) or 0)
-            if act_flags & required_bits != required_bits:
-                continue
-        result.append(name)
-    return result
+    # account is now the character ORM record itself; return its name
+    if account is None:
+        return []
+    name = getattr(account, "name", None)
+    if not name:
+        return []
+    if require_act_flags is not None:
+        required_bits = int(require_act_flags) if not isinstance(require_act_flags, PlayerFlag) else int(require_act_flags)
+        act_flags = int(getattr(account, "act", 0) or 0)
+        if act_flags & required_bits != required_bits:
+            return []
+    return [name]
 
 
 def create_character(
-    account: PlayerAccount,
+    account: object,
     name: str,
     *,
     race: PcRaceType | None = None,
@@ -939,12 +981,18 @@ def create_character(
     creation_groups: Iterable[str] | None = None,
     creation_skills: Iterable[str] | None = None,
     starting_room_vnum: int = ROOM_VNUM_SCHOOL,
+    password: str = "",
 ) -> bool:
-    """Create a new character for the account with ROM creation metadata."""
+    """Create a new character with ROM creation metadata.
+
+    The ``account`` argument is accepted but ignored; characters are now
+    standalone identities.  A ``password`` keyword argument allows callers
+    to persist the password hash at creation time.
+    """
 
     sanitized = sanitize_account_name(name)
     # mirroring ROM src/comm.c:check_parse_name — full validator including
-    # mob-keyword collision (vs. is_valid_account_name which is syntactic-only)
+    # mob-keyword collision check.
     if not is_valid_character_name(sanitized):
         return False
 
@@ -977,47 +1025,73 @@ def create_character(
     practice_value = practice if practice is not None else 5
     train_value = train if train is not None else 3
 
+    # Derive password hash from account object if not explicitly provided
+    if not password and account is not None:
+        # account used to be a PlayerAccount; tolerate that for test compat
+        pwd_hash = getattr(account, "password_hash", None)
+        if pwd_hash:
+            _persisted_hash = pwd_hash
+        else:
+            _persisted_hash = ""
+    else:
+        _persisted_hash = hash_password(password) if password else ""
+
+    # Build the full set of fields to apply (used for both insert and update).
+    creation_fields: dict[str, object] = {
+        "password_hash": _persisted_hash,
+        "level": 1,
+        "hp": 100,
+        "room_vnum": starting_room_vnum,
+        "race": _race_index_for(selected_race),
+        "ch_class": _class_index_for(selected_class),
+        "sex": sex_value,
+        "true_sex": sex_value,
+        "alignment": alignment,
+        "hometown_vnum": hometown,
+        "perm_stats": json.dumps([int(val) for val in finalized_stats]),
+        "size": int(selected_race.size),
+        "form": int(archetype.form_flags) if archetype else 0,
+        "parts": int(archetype.part_flags) if archetype else 0,
+        "imm_flags": int(archetype.immunity_flags) if archetype else 0,
+        "res_flags": int(archetype.resistance_flags) if archetype else 0,
+        "vuln_flags": int(archetype.vulnerability_flags) if archetype else 0,
+        "practice": int(practice_value),
+        "train": int(train_value),
+        "perm_hit": 100,
+        "perm_mana": 100,
+        "perm_move": 100,
+        "act": int(PlayerFlag.NOSUMMON),
+        "default_weapon_vnum": weapon_vnum,
+        "newbie_help_seen": False,
+        "creation_points": int(creation_points_value),
+        "creation_groups": json.dumps(list(groups_tuple)),
+        "creation_skills": json.dumps(list(skills_tuple)),
+    }
+
     session = SessionLocal()
     try:
-        existing = session.query(Character).filter_by(name=sanitized).first()
+        existing = session.query(Character).filter_by(name=sanitized.capitalize()).first()
         if existing:
-            print(f"[ERROR] Character creation failed: name '{sanitized}' already exists (id={existing.id})")
-            return False
+            # A bare character row was pre-created by create_account() during the
+            # name/password phase of the nanny flow (level=0). Promote it to a
+            # fully-created character by updating all fields in place.
+            # mirroring ROM src/nanny.c: character data is only finalised at the
+            # end of the creation menu, not at CON_CONFIRM_NEW_NAME.
+            if existing.level != 0:
+                print(f"[ERROR] Character creation failed: name '{sanitized}' already exists (id={existing.id})")
+                return False
+            for field, value in creation_fields.items():
+                setattr(existing, field, value)
+            session.commit()
+            account_label = getattr(account, "username", None) or getattr(account, "name", "standalone")
+            print(f"[INFO] Character '{sanitized}' promoted from bare row (account={account_label}, id={existing.id})")
+            return True
 
-        new_char = Character(
-            name=sanitized.capitalize(),
-            level=1,
-            hp=100,
-            room_vnum=starting_room_vnum,
-            race=_race_index_for(selected_race),
-            ch_class=_class_index_for(selected_class),
-            sex=sex_value,
-            true_sex=sex_value,
-            alignment=alignment,
-            hometown_vnum=hometown,
-            perm_stats=json.dumps([int(val) for val in finalized_stats]),
-            size=int(selected_race.size),
-            form=int(archetype.form_flags) if archetype else 0,
-            parts=int(archetype.part_flags) if archetype else 0,
-            imm_flags=int(archetype.immunity_flags) if archetype else 0,
-            res_flags=int(archetype.resistance_flags) if archetype else 0,
-            vuln_flags=int(archetype.vulnerability_flags) if archetype else 0,
-            practice=int(practice_value),
-            train=int(train_value),
-            perm_hit=100,
-            perm_mana=100,
-            perm_move=100,
-            act=int(PlayerFlag.NOSUMMON),
-            default_weapon_vnum=weapon_vnum,
-            newbie_help_seen=False,
-            creation_points=int(creation_points_value),
-            creation_groups=json.dumps(list(groups_tuple)),
-            creation_skills=json.dumps(list(skills_tuple)),
-            player_id=account.id,
-        )
+        new_char = Character(name=sanitized.capitalize(), **creation_fields)
         session.add(new_char)
         session.commit()
-        print(f"[INFO] Character '{sanitized}' created successfully for account {account.username} (id={new_char.id})")
+        account_label = getattr(account, "username", None) or getattr(account, "name", "standalone")
+        print(f"[INFO] Character '{sanitized}' created successfully (account={account_label}, id={new_char.id})")
         return True
     except Exception as e:
         print(f"[ERROR] Failed to create character '{sanitized}': {e}")

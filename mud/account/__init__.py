@@ -1,11 +1,17 @@
-"""Account management utilities."""
+"""Account management utilities.
+
+The Python-only PlayerAccount layer has been removed.  Characters now own
+their passwords directly, mirroring ROM src/merc.h PCData.pwd.
+"""
 
 from .account_manager import load_character, save_character
 from .account_service import (
     CreationSelection,
     account_exists,
+    character_exists,
     create_account,
     create_character,
+    create_character_record,
     clear_active_accounts,
     get_creation_classes,
     get_creation_races,
@@ -15,6 +21,7 @@ from .account_service import (
     is_account_active,
     is_valid_account_name,
     is_valid_character_name,
+    login_character,
     lookup_creation_class,
     lookup_creation_race,
     lookup_hometown,
@@ -28,17 +35,21 @@ from .account_service import (
     finalize_creation_stats,
     sanitize_account_name,
     release_account,
+    release_character,
 )
 
 __all__ = [
     "load_character",
     "save_character",
     "account_exists",
+    "character_exists",
     "create_account",
+    "create_character",
+    "create_character_record",
     "login",
+    "login_character",
     "login_with_host",
     "list_characters",
-    "create_character",
     "CreationSelection",
     "get_creation_races",
     "lookup_creation_race",
@@ -57,6 +68,7 @@ __all__ = [
     "clear_active_accounts",
     "is_account_active",
     "release_account",
+    "release_character",
     "LoginFailureReason",
     "LoginResult",
 ]

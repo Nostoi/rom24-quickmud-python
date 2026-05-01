@@ -1056,12 +1056,17 @@ def from_orm(db_char: DBCharacter) -> Character:
     char.perm_stat = _decode_perm_stats(db_char.perm_stats)
     char.is_npc = False
     char.sex = true_sex_value
-    if db_char.player is not None:
-        char.is_admin = bool(getattr(db_char.player, "is_admin", False))
+    # ROM: admin status is conveyed via trust/level on the Character row,
+    # not via a separate account table.  is_admin is set by login flow if needed.
     return char
 
 
-def to_orm(character: Character, player_id: int) -> DBCharacter:
+def to_orm(character: Character, player_id: int = 0) -> DBCharacter:
+    """Convert a runtime Character to a DBCharacter ORM row.
+
+    ``player_id`` is accepted but ignored; the PlayerAccount table has been
+    removed — characters are now standalone ROM identities.
+    """
     from mud.db.models import Character as DBCharacter
 
     return DBCharacter(
@@ -1088,7 +1093,6 @@ def to_orm(character: Character, player_id: int) -> DBCharacter:
         creation_points=int(getattr(character, "creation_points", 0) or 0),
         creation_groups=_encode_creation_groups(getattr(character, "creation_groups", ())),
         creation_skills=_encode_creation_skills(getattr(character, "creation_skills", ())),
-        player_id=player_id,
     )
 
 
