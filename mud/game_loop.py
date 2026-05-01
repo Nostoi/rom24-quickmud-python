@@ -1132,7 +1132,9 @@ def violence_tick() -> None:
             continue
 
         # If awake and in same room, fight! Otherwise stop fighting
-        if ch.is_awake() and getattr(ch, "room", None) == getattr(victim, "room", None):
+        # Use getattr to support both Character and MobInstance types.
+        if (getattr(ch, "position", Position.STANDING) > Position.SLEEPING
+                and getattr(ch, "room", None) == getattr(victim, "room", None)):
             multi_hit(ch, victim, dt=None)
         else:
             stop_fighting(ch, both=False)

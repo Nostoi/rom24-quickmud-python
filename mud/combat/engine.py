@@ -288,14 +288,18 @@ def _normalize_dt(dt: str | int | None) -> str | None:
 
 
 def _should_check_weapon_defenses(dt: str | int | None) -> bool:
-    """Return True when ROM weapon defenses should be consulted for this attack."""
+    """Return True when ROM weapon defenses should be consulted for this attack.
 
+    ROM C (fight.c:793) gates defense checks with ``dt >= TYPE_HIT``.
+    For base weapon attacks from violence_update, dt is TYPE_UNDEFINED,
+    so defense checks are skipped.
+    """
     if isinstance(dt, int):
         return dt >= TYPE_HIT
     if isinstance(dt, str):
         return False
-    # ``dt`` defaults to ``None`` for basic weapon attacks in the port.
-    return True
+    # dt=None mirrors ROM C's TYPE_UNDEFINED — no defense checks.
+    return False
 
 
 def multi_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
@@ -431,9 +435,8 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         vac = c_div(victim_ac, 10)
         # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
         if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
-            # Handle miss - still set fighting positions
-            _handle_miss_fighting_state(attacker, victim)
-            return f"You miss {victim.name}."
+            # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
+            return apply_damage(attacker, victim, 0, int(dam_type), dt=dt)
     else:
         # Percent model kept for parity stability outside feature flag
         # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit.
@@ -442,9 +445,8 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         to_hit += c_div(victim_ac, 2)
         to_hit = urange(5, to_hit, 100)
         if rng_mm.number_percent() > to_hit:
-            # Handle miss - still set fighting positions
-            _handle_miss_fighting_state(attacker, victim)
-            return f"You miss {victim.name}."
+            # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
+            return apply_damage(attacker, victim, 0, int(dam_type), dt=dt)
 
     # Hit determined - calculate weapon damage following C src/fight.c:one_hit logic
     damage = calculate_weapon_damage(
@@ -716,23 +718,6 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
             _broadcast_room(victim.room, f"{victim.name} is DEAD!!!", exclude=victim)
         return "You have been KILLED!!"
     return ""
-
-
-def _handle_miss_fighting_state(attacker: Character, victim: Character) -> None:
-    """Handle fighting state setup on miss following ROM logic."""
-    if victim != attacker:
-        # Victim starts fighting back if able
-        if victim.position > Position.STUNNED:
-            if victim.fighting is None:
-                set_fighting(victim, attacker)
-            # Update victim to fighting position if timer allows
-            if getattr(victim, "timer", 0) <= 4:
-                victim.position = Position.FIGHTING
-
-        # Attacker starts fighting if not already
-        if victim.position > Position.STUNNED:
-            if attacker.fighting is None:
-                set_fighting(attacker, victim)
 
 
 def _player_has_flag(character: Character | None, flag: PlayerFlag) -> bool:
