@@ -48,7 +48,7 @@ from mud.olc.editor_state import EditorMode
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
-from mud.utils.bit import flag_string
+from mud.utils.bit import flag_string, flag_value
 from mud.utils.text import format_rom_string
 
 _SECTOR_NAMES: dict[int, str] = {
@@ -1777,6 +1777,15 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
     if cmd in {"done", "exit"}:
         _clear_session(session)
         return "Exiting area editor."
+
+    # mirroring ROM src/olc.c:443-449 — flag_value(area_flags, command) toggle
+    # prefix; checked before aedit_table[] dispatch so builders can type a flag
+    # name directly to toggle it (e.g. "loading", "added").
+    _flag_val = flag_value(AreaFlag, cmd)
+    if _flag_val is not None:
+        area.area_flags ^= _flag_val  # TOGGLE_BIT
+        area.changed = True
+        return "Flag toggled."
 
     if cmd == "create":
         # mirrors ROM aedit_table dispatch (src/olc.c:222) — `create` typed

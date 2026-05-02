@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **OLC-004/005**: Active OLC editors now support ROM-style `commands` listings with five fixed-width columns, mirroring `src/olc.c:153-209`.
 - **OLC-010/015**: `do_olc` / `editor_table[]` ported — `olc <area|room|object|mobile|mpcode|hedit>` now dispatches to the real per-editor entry points via prefix matching (`str_prefix` parity), NPC guard, and remainder-arg forwarding, mirroring ROM `src/olc.c:646-690`. Both `olc` and `edit` command aliases are live. Integration tests: `tests/integration/test_olc_010_015_do_olc_router.py` (14 cases).
+- **OLC-011**: `aedit` flag-toggle prefix ported — typing a bare `area_flags` name (e.g. `loading`, `added`) inside an active aedit session now toggles the flag via `flag_value(AreaFlag, command)` and sends `"Flag toggled."`, mirroring ROM `src/olc.c:443-449`. Integration tests: `tests/integration/test_olc_011_aedit_flag_toggle.py` (7 cases).
 
 ## [2.7.1] — update.c Parity Gap Closures (GL-004/005/009/011/012/013/014/015/018)
 
