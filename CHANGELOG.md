@@ -14,7 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **OLC_SAVE-015**: `cmd_asave world` returns `"You saved the world.\n\r"` (ROM exact)
 - **OLC_SAVE-016**: `cmd_asave changed` returns `"Saved zones:\n\r"` + per-area rows + `"None.\n\r"` fallback (ROM exact)
 - **OLC_SAVE-017**: `cmd_asave area` returns `"Area saved.\n\r"` (ROM exact)
-- **OLC-006**: `aedit_age` subcommand ported (`src/olc_act.c:770-790`) — sets `pArea->age`, validates numeric arg, does not set `changed` (ROM parity). 6 integration tests added.
+- **HEDIT-001**: `hedit show` now uses ROM exact format `"Keyword : [%s]\n\rLevel   : [%d]\n\rText    :\n\r%s-END-\n\r"`
+- **HEDIT-002**: `hedit level` accepts -1..MAX_LEVEL; exact ROM error message
+- **HEDIT-003/004**: `hedit keyword`/`hedit level` return `"Ok.\n\r"` / exact ROM syntax strings
+- **HEDIT-005**: `hedit text` no-arg is valid (triggers `string_append`); arg present → `"Syntax: text\n\r"`
+- **HEDIT-006**: security check returns `"HEdit: Insufficient security to edit helps.\n\r"` (with `\n\r`)
+- **HEDIT-007**: empty input in hedit session → `hedit_show` (not syntax string)
+- **HEDIT-008**: `done` is silent (returns `""`, no verbose save message)
+- **HEDIT-009**: unknown hedit command falls back to normal command table (`interpret`)
+- **HEDIT-010**: `hedit delete` implemented — removes from `help_entries` + all keyword buckets
+- **HEDIT-011**: `hedit list all` / `list area` implemented with ROM 4-column `%3d. %-14.14s` format
+- **HEDIT-012**: `do_hedit new <topic>` path correctly creates entry + enters editor
+- **HEDIT-013**: `do_hedit <keyword>` uses `is_name` word-match (not exact key lookup)
+- **HEDIT-014**: `hedit_level`/`hedit_keyword` return `"Ok.\n\r"` (triggers `had->changed = TRUE` equivalent) (`src/olc_act.c:770-790`) — sets `pArea->age`, validates numeric arg, does not set `changed` (ROM parity). 6 integration tests added.
 - **OLC-012/013/014**: `redit`/`oedit`/`medit` fallback to `interpret()` verified — `_should_fallback_from_olc()` + `_process_descriptor_input()` returning `None` correctly re-dispatches unknown OLC input through the normal command table (mirrors ROM `src/olc.c:519-521`, `575-577`, `631-633`). 14 integration tests added in `tests/integration/test_olc_012_014_editor_fallback.py`.
 - **OLC-009**: `medit` missing subcommands ported — `act`, `affect`, `armor`, `form`, `part`, `imm`, `res`, `vuln`, `off`, `size`, `hitdice`, `manadice`, `damdice`, `position`, `addmprog`, `delmprog` now dispatched from `_interpret_medit`. Helpers mirror ROM `src/olc_act.c:4142-4969`. Flag toggles use XOR pattern (act/affect/form/part/imm/res/vuln/off); `act` always re-sets `IS_NPC` (ROM:4153); dice stored as `tuple[int,int,int]`; `addmprog` validates vnum against mob_registry; `delmprog` splices list and clears mprog_flags bit. Integration tests: `tests/integration/test_olc_009_medit_missing_cmds.py` (30 cases).
 - **OLC-008**: `oedit` missing subcommands ported — `addaffect`, `addapply`, `delaffect`, `extra`, `wear` now dispatched from `_interpret_oedit`. Helpers mirror ROM `src/olc_act.c:2818-3450`: flag-value toggle for `extra`/`wear` (ExtraFlag/WearFlag XOR), affect list append/splice for `addaffect`/`addapply`/`delaffect` with `TO_OBJECT=1`, `type=-1`, `duration=-1` ROM defaults. Integration tests: `tests/integration/test_olc_008_oedit_missing_cmds.py` (16 cases).

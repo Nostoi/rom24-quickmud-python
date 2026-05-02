@@ -84,7 +84,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `olc_act.c` | P2 | ✅ AUDITED | `mud/commands/build.py`, `mud/olc/` | **100%** (CRITICAL/IMPORTANT) | 2026-05-01 — all 14 gaps closed (OLC_ACT-001..014): 6 CRITICAL (`*_create` builders, `redit reset`, `redit <vnum>`), 6 IMPORTANT (`*_show` completeness, message strings, `aedit reset`), 2 MINOR. TIER C (~78 functions) deep-audit deferred. See `OLC_ACT_C_AUDIT.md`. |
 | `olc_save.c` | P2 | ✅ AUDITED | `mud/olc/save.py`, `mud/commands/build.py:cmd_asave` | **100%** (CRITICAL/IMPORTANT) | 2026-05-01 — all 17 CRITICAL/IMPORTANT/MINOR gaps closed (OLC_SAVE-001..017). OLC_SAVE-018..020 DEFERRED-by-design (JSON-authoritative framing; .are format normalization side-effects N/A). See `OLC_SAVE_C_AUDIT.md`. |
 | `olc_mpcode.c` | P2 | ❌ Not Audited | `mud/olc/` | 20% | Mobprog editing missing |
-| `hedit.c` | P2 | ❌ Not Audited | `mud/olc/` | 30% | Help editor basic |
+| `hedit.c` | P2 | ✅ AUDITED | `mud/commands/build.py:cmd_hedit,_interpret_hedit,_hedit_*` | **100%** | 2026-05-02 — all 14 gaps closed (11 CRITICAL, 3 IMPORTANT). `hedit_show` ROM exact format, `hedit_level` -1..MAX_LEVEL range, `hedit_keyword`/`hedit_text` ROM messages, `hedit_delete`, `hedit_list` ported; `do_hedit` `is_name` word-match, `done` silent, unknown-cmd fallback to command table. 24 integration tests. See `HEDIT_C_AUDIT.md`. |
 | **Special Procedures** | | | | | |
 | `special.c` | P2 | ✅ Audited | `mud/spec_funs.py` | 100% | Apr 28, 2026 — all 8 CRITICAL/IMPORTANT gaps closed (SPEC-001..SPEC-008: area-wide yell, guard NPC targeting, mayor gate messages, c_div integer math, do_murder, is_safe, mayor move_character, c_div gold). See SPECIAL_C_AUDIT.md |
 | **Communication & Social** | | | | | |

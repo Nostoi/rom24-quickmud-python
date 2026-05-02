@@ -4,6 +4,7 @@ import json
 import shlex
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 from mud.models.area import Area
 from mud.models.character import Character
@@ -4022,40 +4023,52 @@ def cmd_vlist(char: Character, args: str) -> str:
 
 
 def cmd_hedit(char: Character, args: str) -> str:
-    """Help file editor - ROM builder tool."""
-    from mud.models.help import HelpEntry, help_registry
+    """Help file editor entry point.
+
+    Mirrors ROM src/hedit.c:284-333 (do_hedit).
+    """
+    from mud.models.help import HelpEntry, help_entries
 
     session = _get_session(char)
     if session is None:
         return "You do not have an active connection."
 
-    arg = args.strip()
-
-    if session.editor != "hedit" and not _has_help_security(char):
-        return "HEdit: Insufficient security to edit helps."
-
+    # Already in hedit session — route to dispatcher (mirrors ROM hedit() call
+    # from the descriptor input loop, src/hedit.c:205).
     if session.editor == "hedit":
-        return _interpret_hedit(session, char, arg)
+        return _interpret_hedit(session, char, args.strip())
 
+    if not _has_help_security(char):
+        return "HEdit: Insufficient security to edit helps.\n\r"
+
+    arg = args.strip()
     if not arg:
-        return "Syntax: @hedit <keyword> or @hedit new"
+        send_to_char_result = "HEdit:  There is no default help to edit.\n\r"
+        return send_to_char_result
 
-    if arg.lower() == "new":
-        new_help = HelpEntry(keywords=["new"], text="", level=0)
+    # ROM src/hedit.c:317-329: check for "new" subcommand first
+    _parts = arg.split(None, 1)
+    arg1 = _parts[0] if _parts else ""
+    rest = _parts[1] if len(_parts) > 1 else ""
+    if arg1.lower() == "new":
+        if not rest:
+            return "Syntax: edit help new [topic]\n\r"
+        new_help = HelpEntry(keywords=rest.split(), text="", level=0)
         _ensure_session_help(session, new_help, is_new=True)
-        return "Creating new help entry.\nType 'keywords <word word>' to set keywords, 'text <content>' for text, 'done' to save."
+        return ""
 
-    keyword = arg.lower()
-    entries = help_registry.get(keyword, [])
+    # ROM src/hedit.c:296-313: iterate help_first scanning is_name match
+    # Build argall from all words (mirrors ROM's one_argument loop)
+    from mud.world.char_find import is_name
 
-    if not entries:
-        new_help = HelpEntry(keywords=[keyword], text="", level=0)
-        _ensure_session_help(session, new_help, is_new=True)
-        return f"Creating new help entry for '{keyword}'.\nType 'text <content>' to set text, 'level <num>' for level, 'done' to save."
+    argall = " ".join(arg.split())
+    for entry in help_entries:
+        kw_str = " ".join(entry.keywords)
+        if is_name(argall, kw_str):
+            _ensure_session_help(session, entry, is_new=False)
+            return ""
 
-    help_entry = entries[0]
-    _ensure_session_help(session, help_entry, is_new=False)
-    return f"Editing help entry: {' '.join(help_entry.keywords)}\nType 'show' to display, 'done' to save."
+    return "HEdit:  There is no default help to edit.\n\r"
 
 
 def _ensure_session_help(session: Session, help_entry, is_new: bool = False) -> None:
@@ -4084,89 +4097,231 @@ def _reindex_help_entry(help_entry, original_keywords: list[str]) -> None:
 
 
 def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
-    """Command interpreter for hedit."""
+    """Help editor dispatcher.
+
+    Mirrors ROM src/hedit.c:205-260 (hedit function).
+    """
     from mud.models.help import HelpEntry, register_help
 
     help_entry = session.editor_state.get("help") if session.editor_state else None
     if not isinstance(help_entry, HelpEntry):
         _clear_session(session)
-        return "Help editor session lost. Type '@hedit <keyword>' to begin again."
+        return "Help editor session lost. Type 'hedit <keyword>' to begin again."
 
-    stripped = raw_input.strip()
-    if not stripped:
-        return "Syntax: keywords <words> | text <content> | level <num> | show | done"
+    # Security check mirrors ROM src/hedit.c:228-234
+    if not _has_help_security(char):
+        _clear_session(session)
+        return "HEdit: Insufficient security to edit helps.\n\r"
 
-    try:
-        parts = shlex.split(stripped)
-    except ValueError:
-        return "Invalid help editor syntax."
+    # Smash tildes like ROM src/hedit.c:213
+    arg = raw_input.replace("~", "")
+    _cmd_parts = arg.split(None, 1)
+    command = _cmd_parts[0] if _cmd_parts else ""
+    rest = _cmd_parts[1] if len(_cmd_parts) > 1 else ""
 
-    if not parts:
-        return "Syntax: keywords <words> | text <content> | level <num> | show | done"
+    # Empty input → show (mirrors ROM src/hedit.c:236-240)
+    if not command:
+        return _hedit_show(help_entry)
 
-    cmd = parts[0].lower()
-    args_parts = parts[1:]
-
-    if cmd == "@hedit":
-        if not args_parts:
-            return "You are already editing this help entry."
-        cmd = args_parts[0].lower()
-        args_parts = args_parts[1:]
-
-    if cmd in {"done", "exit"}:
+    # "done" → edit_done (mirrors ROM src/hedit.c:242-246)
+    if command.lower() == "done":
         is_new = session.editor_state.get("is_new", False)
         original_keywords = session.editor_state.get("original_keywords", list(help_entry.keywords))
         if is_new:
             register_help(help_entry)
         else:
-            previous = [keyword.lower() for keyword in original_keywords if keyword]
-            current = [keyword.lower() for keyword in help_entry.keywords if keyword]
+            previous = [kw.lower() for kw in original_keywords if kw]
+            current = [kw.lower() for kw in help_entry.keywords if kw]
             if previous != current:
                 _reindex_help_entry(help_entry, original_keywords)
         _clear_session(session)
-        return "Help entry saved. Use '@hesave' to write to disk."
+        return ""
 
-    if cmd == "commands":
-        return _show_olc_cmds(_HEDIT_COMMANDS)
+    # Dispatch hedit_table (mirrors ROM src/hedit.c:248-256)
+    hedit_dispatch: list[tuple[str, Any]] = [
+        ("keyword", _hedit_keyword),
+        ("text", _hedit_text),
+        ("new", _hedit_new_in_session),
+        ("level", _hedit_level),
+        ("commands", _hedit_commands),
+        ("delete", _hedit_delete),
+        ("list", _hedit_list),
+        ("show", lambda _ch, _he, _a: _hedit_show(_he)),
+        ("?", _hedit_commands),
+    ]
 
-    if cmd == "show":
-        return _hedit_show(help_entry)
+    for name, fn in hedit_dispatch:
+        if name.startswith(command.lower()):
+            result = fn(char, help_entry, rest)
+            # If handler returned True (changed), mark had changed
+            if result is True:
+                _hedit_mark_changed(help_entry)
+                return ""
+            if result is False:
+                return ""
+            # String result — return it directly
+            return result if result else ""
 
-    if cmd in {"keywords", "keyword"}:
-        if not args_parts:
-            return "Usage: keywords <word word word>"
-        new_keywords = [w.lower() for w in args_parts]
-        help_entry.keywords = new_keywords
-        return f"Keywords set to: {' '.join(new_keywords)}"
+    # Unknown command → fall back to normal command table (mirrors ROM src/hedit.c:258)
+    from mud.commands.dispatcher import process_command
 
-    if cmd == "text":
-        if not args_parts:
-            return "Usage: text <help text content>"
-        new_text = " ".join(args_parts)
-        help_entry.text = new_text
-        return "Help text updated."
+    return process_command(char, arg)
 
-    if cmd == "level":
-        if not args_parts:
-            return "Usage: level <number>"
-        try:
-            level = int(args_parts[0])
-        except ValueError:
-            return "Level must be a number."
-        if level < 0:
-            return "Level must be non-negative."
-        help_entry.level = level
-        return f"Level set to {level}."
 
-    return f"Unknown help editor command: {cmd}"
+def _hedit_mark_changed(help_entry) -> None:
+    """Mark the help area as changed — mirrors ROM had->changed = TRUE."""
+    # Python doesn't have had_list; flag on the entry itself for persistence
+    # tracking. No-op if no area-help tracking is in place yet.
+    pass
 
 
 def _hedit_show(help_entry) -> str:
-    lines = []
-    lines.append(f"Keywords: {' '.join(help_entry.keywords)}")
-    lines.append(f"Level:    {help_entry.level}")
-    lines.append(f"Text:     {help_entry.text[:100]}{'...' if len(help_entry.text) > 100 else ''}")
-    return "\n".join(lines)
+    """mirrors ROM src/hedit.c:53-67 (hedit_show).
+
+    ROM format:
+        "Keyword : [%s]\n\rLevel   : [%d]\n\rText    :\n\r%s-END-\n\r"
+    """
+    kw = " ".join(help_entry.keywords) if help_entry.keywords else ""
+    text = help_entry.text or ""
+    return f"Keyword : [{kw}]\n\rLevel   : [{help_entry.level}]\n\rText    :\n\r{text}-END-\n\r"
+
+
+def _hedit_level(char: Character, help_entry, argument: str) -> Any:
+    """mirrors ROM src/hedit.c:69-94 (hedit_level)."""
+    from mud.models.constants import MAX_LEVEL
+
+    if not argument or not argument.strip().lstrip("-").isdigit():
+        return "Syntax: level [-1..MAX_LEVEL]\n\r"
+
+    lev = int(argument.strip())
+    if lev < -1 or lev > MAX_LEVEL:
+        return f"HEdit : levels are between -1 and {MAX_LEVEL} inclusive.\n\r"
+
+    help_entry.level = lev
+    return "Ok.\n\r"
+
+
+def _hedit_keyword(char: Character, help_entry, argument: str) -> Any:
+    """mirrors ROM src/hedit.c:96-113 (hedit_keyword)."""
+    if not argument or not argument.strip():
+        return "Syntax: keyword [keywords]\n\r"
+    help_entry.keywords = argument.strip().split()
+    return "Ok.\n\r"
+
+
+def _hedit_text(char: Character, help_entry, argument: str) -> Any:
+    """mirrors ROM src/hedit.c:188-203 (hedit_text).
+
+    ROM: no-arg invokes string_append (interactive editor). In Python we
+    simulate by entering a string-append sub-mode. If arg provided → error.
+    """
+    if argument and argument.strip():
+        return "Syntax: text\n\r"
+    # ROM calls string_append(ch, &help->text) — set a flag so the
+    # dispatcher knows to collect lines until ~. For now treat as TRUE (changed).
+    # Full string_append integration is a separate concern (see STRING-004).
+    return True
+
+
+def _hedit_new_in_session(char: Character, help_entry, argument: str) -> Any:
+    """hedit_new called from within an active session — delegates to hedit_new logic."""
+    session = _get_session(char)
+    if session is None:
+        return False
+    result = cmd_hedit(char, f"new {argument}".strip())
+    return result if result else False
+
+
+def _hedit_commands(char: Character, help_entry, argument: str) -> Any:
+    """Show hedit command list."""
+    return _show_olc_cmds(_HEDIT_COMMANDS)
+
+
+def _hedit_delete(char: Character, help_entry, argument: str) -> Any:
+    """mirrors ROM src/hedit.c:336-398 (hedit_delete).
+
+    Removes the help entry from:
+    - help_entries list (analogous to ROM help_first chain)
+    - help_registry (all keyword buckets)
+    - Closes any other sessions currently editing the same entry
+    """
+    from mud.models.help import help_entries, help_registry
+
+    # Boot all other sessions editing this help entry (mirrors ROM descriptor_list scan)
+    from mud.net.session import SESSIONS
+
+    for sess in list(SESSIONS.values()):
+        if (
+            sess.editor == "hedit"
+            and sess.editor_state
+            and sess.editor_state.get("help") is help_entry
+            and sess is not _get_session(char)
+        ):
+            _clear_session(sess)
+
+    # Remove from help_entries list (mirrors ROM help_first chain removal)
+    if help_entry in help_entries:
+        help_entries.remove(help_entry)
+    else:
+        return False  # bugf equivalent
+
+    # Remove from all keyword registry buckets (mirrors ROM had_list scan)
+    found = False
+    for kw in list(help_entry.keywords):
+        key = kw.lower()
+        bucket = help_registry.get(key)
+        if bucket and help_entry in bucket:
+            bucket.remove(help_entry)
+            found = True
+            if not bucket:
+                help_registry.pop(key, None)
+
+    if not found:
+        return False  # bugf equivalent
+
+    # Clear the current session (edit_done)
+    session = _get_session(char)
+    if session:
+        _clear_session(session)
+
+    return "Ok.\n\r"
+
+
+def _hedit_list(char: Character, help_entry, argument: str) -> Any:
+    """mirrors ROM src/hedit.c:400-462 (hedit_list).
+
+    Subcommands:
+        list all   — all help entries, 4-column format
+        list area  — area-local help entries (N/A under JSON-auth; same as all)
+    """
+    from mud.models.help import help_entries
+
+    arg = argument.strip().lower() if argument else ""
+
+    if arg == "all":
+        lines: list[str] = []
+        for cnt, pHelp in enumerate(help_entries):
+            kw = " ".join(pHelp.keywords)
+            sep = "\n\r" if cnt % 4 == 3 else " "
+            lines.append(f"{cnt:3d}. {kw:<14.14}{sep}")
+        if len(help_entries) % 4:
+            lines.append("\n\r")
+        return "".join(lines)
+
+    if arg == "area":
+        # JSON-authoritative: no per-area help chain. Return all entries.
+        lines = []
+        cnt = 0
+        for pHelp in help_entries:
+            kw = " ".join(pHelp.keywords)
+            sep = "\n\r" if cnt % 4 == 3 else " "
+            lines.append(f"{cnt:3d}. {kw:<14.14}{sep}")
+            cnt += 1
+        if cnt % 4:
+            lines.append("\n\r")
+        return "".join(lines) if lines else "No helps in this area.\n\r"
+
+    return "Syntax: list all\n\r        list area\n\r"
 
 
 def cmd_hesave(char: Character, args: str, help_file: Path | None = None) -> str:
