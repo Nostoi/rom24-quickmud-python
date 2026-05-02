@@ -22,17 +22,24 @@ from mud.models.constants import (
     EX_PICKPROOF,
     LIQUID_TABLE,
     ActFlag,
+    AffectFlag,
     AreaFlag,
     ContainerFlag,
     Direction,
     ExtraFlag,
+    FormFlag,
     FurnitureFlag,
+    ImmFlag,
+    OffFlag,
+    PartFlag,
     PortalFlag,
     Position,
+    ResFlag,
     RoomFlag,
     Sector,
     Sex,
     Size,
+    VulnFlag,
     WeaponFlag,
     WeaponType,
     WearFlag,
@@ -2907,6 +2914,341 @@ def _ensure_session_mob(session: Session, mob_proto) -> None:
     session.editor_state = {"mob_proto": mob_proto}
 
 
+def _medit_act(mob_proto, arg: str) -> str:
+    """Toggle act flag — mirrors ROM src/olc_act.c:4142-4165 medit_act.
+
+    ACT_IS_NPC is always re-set after the XOR (ROM src/olc_act.c:4153).
+    """
+    if arg:
+        val = flag_value(ActFlag, arg)
+        if val is not None:
+            mob_proto.act = (int(mob_proto.act or 0) ^ val) | int(ActFlag.IS_NPC)
+            # keep act_flags in sync and invalidate cache
+            mob_proto.act_flags = mob_proto.act
+            mob_proto._act_cache = None
+            _mark_mob_changed(mob_proto)
+            return "Act flag toggled."
+    return "Syntax: act [flag]\nType '? act' for a list of flags."
+
+
+def _medit_affect(mob_proto, arg: str) -> str:
+    """Toggle affect flag — mirrors ROM src/olc_act.c:4167-4191 medit_affect."""
+    if arg:
+        val = flag_value(AffectFlag, arg)
+        if val is not None:
+            mob_proto.affected_by = int(mob_proto.affected_by or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Affect flag toggled."
+    return "Syntax: affect [flag]\nType '? affect' for a list of flags."
+
+
+def _medit_armor(mob_proto, arg: str) -> str:
+    """Set AC values — mirrors ROM src/olc_act.c:4192-4254 medit_ac.
+
+    Syntax: armor [pierce [bash [slash [exotic]]]]
+    Unspecified trailing values are left unchanged.
+    """
+    parts = arg.split()
+    if not parts:
+        return "Syntax:  ac [ac-pierce [ac-bash [ac-slash [ac-exotic]]]]\nhelp MOB_AC  gives a list of reasonable ac-values."
+    ints: list[int] = []
+    for p in parts[:4]:
+        if not p.lstrip("-").isdigit():
+            return "Syntax:  ac [ac-pierce [ac-bash [ac-slash [ac-exotic]]]]\nhelp MOB_AC  gives a list of reasonable ac-values."
+        ints.append(int(p))
+    if len(ints) >= 1:
+        mob_proto.ac_pierce = ints[0]
+    if len(ints) >= 2:
+        mob_proto.ac_bash = ints[1]
+    if len(ints) >= 3:
+        mob_proto.ac_slash = ints[2]
+    if len(ints) >= 4:
+        mob_proto.ac_exotic = ints[3]
+    _mark_mob_changed(mob_proto)
+    return "Ac set."
+
+
+def _medit_form(mob_proto, arg: str) -> str:
+    """Toggle form flag — mirrors ROM src/olc_act.c:4256-4278 medit_form."""
+    if arg:
+        val = flag_value(FormFlag, arg)
+        if val is not None:
+            mob_proto.form = int(mob_proto.form or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Form toggled."
+    return "Syntax: form [flags]\nType '? form' for a list of flags."
+
+
+def _medit_part(mob_proto, arg: str) -> str:
+    """Toggle part flag — mirrors ROM src/olc_act.c:4278-4300 medit_part."""
+    if arg:
+        val = flag_value(PartFlag, arg)
+        if val is not None:
+            mob_proto.parts = int(mob_proto.parts or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Parts toggled."
+    return "Syntax: part [flags]\nType '? part' for a list of flags."
+
+
+def _medit_imm(mob_proto, arg: str) -> str:
+    """Toggle immunity flag — mirrors ROM src/olc_act.c:4300-4322 medit_imm."""
+    if arg:
+        val = flag_value(ImmFlag, arg)
+        if val is not None:
+            mob_proto.imm_flags = int(mob_proto.imm_flags or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Immunity toggled."
+    return "Syntax: imm [flags]\nType '? imm' for a list of flags."
+
+
+def _medit_res(mob_proto, arg: str) -> str:
+    """Toggle resistance flag — mirrors ROM src/olc_act.c:4322-4344 medit_res."""
+    if arg:
+        val = flag_value(ResFlag, arg)
+        if val is not None:
+            mob_proto.res_flags = int(mob_proto.res_flags or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Resistance toggled."
+    return "Syntax: res [flags]\nType '? res' for a list of flags."
+
+
+def _medit_vuln(mob_proto, arg: str) -> str:
+    """Toggle vulnerability flag — mirrors ROM src/olc_act.c:4344-4366 medit_vuln."""
+    if arg:
+        val = flag_value(VulnFlag, arg)
+        if val is not None:
+            mob_proto.vuln_flags = int(mob_proto.vuln_flags or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Vulnerability toggled."
+    return "Syntax: vuln [flags]\nType '? vuln' for a list of flags."
+
+
+def _medit_off(mob_proto, arg: str) -> str:
+    """Toggle offensive flag — mirrors ROM src/olc_act.c:4385-4407 medit_off."""
+    if arg:
+        val = flag_value(OffFlag, arg)
+        if val is not None:
+            mob_proto.off_flags = int(mob_proto.off_flags or 0) ^ val
+            _mark_mob_changed(mob_proto)
+            return "Offensive behaviour toggled."
+    return "Syntax: off [flags]\nType '? off' for a list of flags."
+
+
+def _medit_size(mob_proto, arg: str) -> str:
+    """Set mob size — mirrors ROM src/olc_act.c:4407-4429 medit_size.
+
+    ROM uses flag_value(size_flags, argument) which returns a Size enum value (not a bitmask).
+    """
+    if arg:
+        val = flag_value(Size, arg)
+        if val is not None:
+            mob_proto.size = Size(val)
+            _mark_mob_changed(mob_proto)
+            return "Size set."
+    return "Syntax: size [size]\nType '? size' for a list of sizes."
+
+
+def _parse_dice(arg: str) -> tuple[int, int, int] | None:
+    """Parse '3 8 10' or '3d8+10' into (number, type, bonus).
+
+    Accepts both ROM-style 'num d type + bonus' (tokens separated by any
+    non-digit) and simple '3 8 10' space-separated form.
+    Mirrors the pointer-walk in ROM src/olc_act.c:4429-4480.
+    Returns None on parse error.
+    """
+    import re
+    # strip inner non-digit separators so both "3 8 10" and "3d8+10" work
+    tokens = re.split(r"[^\d]+", arg.strip())
+    tokens = [t for t in tokens if t]
+    if len(tokens) < 3:
+        return None
+    try:
+        num, typ, bonus = int(tokens[0]), int(tokens[1]), int(tokens[2])
+    except ValueError:
+        return None
+    if num < 1 or typ < 1 or bonus < 0:
+        return None
+    return (num, typ, bonus)
+
+
+def _medit_hitdice(mob_proto, arg: str) -> str:
+    """Set hit dice — mirrors ROM src/olc_act.c:4429-4480 medit_hitdice.
+
+    Syntax: hitdice <number> d <type> + <bonus>
+    """
+    if arg:
+        dice = _parse_dice(arg)
+        if dice is not None:
+            mob_proto.hit = dice
+            _mark_mob_changed(mob_proto)
+            return "Hitdice set."
+    return "Syntax:  hitdice <number> d <type> + <bonus>"
+
+
+def _medit_manadice(mob_proto, arg: str) -> str:
+    """Set mana dice — mirrors ROM src/olc_act.c:4480-4531 medit_manadice."""
+    if arg:
+        dice = _parse_dice(arg)
+        if dice is not None:
+            mob_proto.mana = dice
+            _mark_mob_changed(mob_proto)
+            return "Manadice set."
+    return "Syntax:  manadice <number> d <type> + <bonus>"
+
+
+def _medit_damdice(mob_proto, arg: str) -> str:
+    """Set damage dice — mirrors ROM src/olc_act.c:4531-4588 medit_damdice."""
+    if arg:
+        dice = _parse_dice(arg)
+        if dice is not None:
+            mob_proto.damage = dice
+            _mark_mob_changed(mob_proto)
+            return "Damdice set."
+    return "Syntax:  damdice <number> d <type> + <bonus>"
+
+
+# Position name → Position enum value mapping (mirrors ROM position_flags[]).
+_POSITION_NAME_MAP: dict[str, int] = {
+    "dead": 0,
+    "mortal": 1,
+    "incapacitated": 2,
+    "stunned": 3,
+    "sleeping": 4,
+    "resting": 5,
+    "sitting": 6,
+    "fighting": 7,
+    "standing": 8,
+}
+
+
+def _position_value(name: str) -> int | None:
+    """Prefix-match position name → int or None (mirrors flag_value(position_flags, ...))."""
+    name_lo = name.lower()
+    for key, val in _POSITION_NAME_MAP.items():
+        if key.startswith(name_lo):
+            return val
+    return None
+
+
+def _medit_position(mob_proto, arg: str) -> str:
+    """Set start/default position — mirrors ROM src/olc_act.c:4639-4699 medit_position.
+
+    Syntax: position [start/default] [position]
+    """
+    parts = arg.split()
+    if len(parts) >= 2:
+        which, pos_name = parts[0].lower(), parts[1].lower()
+        val = _position_value(pos_name)
+        if val is not None:
+            if "start".startswith(which) and len(which) >= 1:
+                mob_proto.start_pos = pos_name
+                _mark_mob_changed(mob_proto)
+                return "Start position set."
+            if "default".startswith(which) and len(which) >= 1:
+                mob_proto.default_pos = pos_name
+                _mark_mob_changed(mob_proto)
+                return "Default position set."
+    return "Syntax:  position [start/default] [position]\nType '? position' for a list of positions."
+
+
+# MobProg trigger name table — mirrors ROM mprog_flags[] in src/tables.c.
+_MPROG_TRIG_TABLE: dict[str, int] = {
+    "act": 1 << 0,
+    "speech": 1 << 1,
+    "rand": 1 << 2,
+    "fight": 1 << 3,
+    "death": 1 << 4,
+    "hitprcnt": 1 << 5,
+    "entry": 1 << 6,
+    "greet": 1 << 7,
+    "grall": 1 << 8,
+    "give": 1 << 9,
+    "bribe": 1 << 10,
+    "hour": 1 << 11,
+    "time": 1 << 12,
+    "wear": 1 << 13,
+    "door": 1 << 14,
+    "discard": 1 << 15,
+    "look": 1 << 16,
+    "examine": 1 << 17,
+    "zap": 1 << 18,
+    "get": 1 << 19,
+    "drop": 1 << 20,
+    "damage": 1 << 21,
+    "repair": 1 << 22,
+    "greet_all": 1 << 23,
+}
+
+
+def _mprog_trig_value(name: str) -> int | None:
+    """Prefix-match mprog trigger name → int or None."""
+    name_lo = name.lower()
+    for key, val in _MPROG_TRIG_TABLE.items():
+        if key.startswith(name_lo):
+            return val
+    return None
+
+
+def _medit_addmprog(mob_proto, arg: str) -> str:
+    """Add mob program — mirrors ROM src/olc_act.c:4864-4910 medit_addmprog.
+
+    Syntax: addmprog <vnum> <trigger> <phrase>
+    Python: looks up mprog code by vnum in mob_registry; if missing returns error.
+    """
+    from mud.models.mob import MobProgram
+    from mud.registry import mob_registry
+
+    parts = arg.split(None, 2)
+    if len(parts) < 3:
+        return "Syntax:   addmprog [vnum] [trigger] [phrase]"
+    vnum_str, trig_name, phrase = parts
+    if not vnum_str.isdigit():
+        return "Syntax:   addmprog [vnum] [trigger] [phrase]"
+    trig_val = _mprog_trig_value(trig_name)
+    if trig_val is None:
+        return "Valid flags are:\n(use 'act', 'speech', 'rand', 'fight', 'death', 'hitprcnt', 'entry', 'greet', 'give', 'bribe', etc.)"
+    vnum = int(vnum_str)
+    # mirroring ROM src/olc_act.c:4893-4896 — get_mprog_index; Python uses mob_registry for vnum lookup
+    mob_index = mob_registry.get(vnum)
+    if mob_index is None:
+        return "No such MOBProgram."
+    mp = MobProgram(
+        trig_type=trig_val,
+        trig_phrase=phrase,
+        vnum=vnum,
+        code=getattr(mob_index, "mprog_code", None),
+    )
+    mob_proto.mprogs.insert(0, mp)   # mirroring ROM list->next = pMob->mprogs; pMob->mprogs = list
+    mob_proto.mprog_flags |= trig_val
+    _mark_mob_changed(mob_proto)
+    return "Mprog Added."
+
+
+def _medit_delmprog(mob_proto, arg: str) -> str:
+    """Remove mprog by index — mirrors ROM src/olc_act.c:4911-4969 medit_delmprog."""
+    if not arg or not arg.strip().isdigit():
+        return "Syntax:  delmprog [#mprog]"
+    value = int(arg.strip())
+    if value < 0:
+        return "Only non-negative mprog-numbers allowed."
+    mprogs = mob_proto.mprogs
+    if not mprogs:
+        return "MEdit:  Non existant mprog."
+    if value == 0:
+        # mirroring ROM src/olc_act.c:4951-4955 — remove head
+        removed = mprogs[0]
+        mob_proto.mprogs = mprogs[1:]
+        mob_proto.mprog_flags &= ~removed.trig_type
+    else:
+        if value >= len(mprogs):
+            return "No such mprog."
+        removed = mprogs[value]
+        mob_proto.mprogs = mprogs[:value] + mprogs[value + 1:]
+        mob_proto.mprog_flags &= ~removed.trig_type
+    _mark_mob_changed(mob_proto)
+    return "Mprog removed."
+
+
 def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
     """Command interpreter for medit - ROM src/olc.c:medit_table."""
     from mud.models.mob import MobIndex
@@ -3128,6 +3470,70 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         mob_proto.material = material
         _mark_mob_changed(mob_proto)
         return f"Material set to: {material}"
+
+    if cmd == "act":
+        # mirroring ROM src/olc_act.c:4142-4165 medit_act
+        return _medit_act(mob_proto, " ".join(args_parts))
+
+    if cmd == "affect":
+        # mirroring ROM src/olc_act.c:4167-4191 medit_affect
+        return _medit_affect(mob_proto, " ".join(args_parts))
+
+    if cmd in {"armor", "ac"}:
+        # mirroring ROM src/olc_act.c:4192-4254 medit_ac
+        return _medit_armor(mob_proto, " ".join(args_parts))
+
+    if cmd == "form":
+        # mirroring ROM src/olc_act.c:4256-4278 medit_form
+        return _medit_form(mob_proto, " ".join(args_parts))
+
+    if cmd == "part":
+        # mirroring ROM src/olc_act.c:4278-4300 medit_part
+        return _medit_part(mob_proto, " ".join(args_parts))
+
+    if cmd == "imm":
+        # mirroring ROM src/olc_act.c:4300-4322 medit_imm
+        return _medit_imm(mob_proto, " ".join(args_parts))
+
+    if cmd == "res":
+        # mirroring ROM src/olc_act.c:4322-4344 medit_res
+        return _medit_res(mob_proto, " ".join(args_parts))
+
+    if cmd == "vuln":
+        # mirroring ROM src/olc_act.c:4344-4366 medit_vuln
+        return _medit_vuln(mob_proto, " ".join(args_parts))
+
+    if cmd == "off":
+        # mirroring ROM src/olc_act.c:4385-4407 medit_off
+        return _medit_off(mob_proto, " ".join(args_parts))
+
+    if cmd == "size":
+        # mirroring ROM src/olc_act.c:4407-4429 medit_size
+        return _medit_size(mob_proto, " ".join(args_parts))
+
+    if cmd == "hitdice":
+        # mirroring ROM src/olc_act.c:4429-4480 medit_hitdice
+        return _medit_hitdice(mob_proto, " ".join(args_parts))
+
+    if cmd == "manadice":
+        # mirroring ROM src/olc_act.c:4480-4531 medit_manadice
+        return _medit_manadice(mob_proto, " ".join(args_parts))
+
+    if cmd == "damdice":
+        # mirroring ROM src/olc_act.c:4531-4588 medit_damdice
+        return _medit_damdice(mob_proto, " ".join(args_parts))
+
+    if cmd == "position":
+        # mirroring ROM src/olc_act.c:4639-4699 medit_position
+        return _medit_position(mob_proto, " ".join(args_parts))
+
+    if cmd == "addmprog":
+        # mirroring ROM src/olc_act.c:4864-4910 medit_addmprog
+        return _medit_addmprog(mob_proto, " ".join(args_parts))
+
+    if cmd == "delmprog":
+        # mirroring ROM src/olc_act.c:4911-4969 medit_delmprog
+        return _medit_delmprog(mob_proto, " ".join(args_parts))
 
     return f"Unknown mobile editor command: {cmd}"
 
