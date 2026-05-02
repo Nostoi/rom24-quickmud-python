@@ -1239,6 +1239,131 @@ def _handle_owner_command(room: Room, args_parts: list[str]) -> str:
     return "Owner set."
 
 
+def _redit_rlist(room: Room) -> str:
+    """List all rooms in the area — mirrors ROM src/olc_act.c:329-371 redit_rlist.
+
+    Output: three fixed-width columns of [vnum] name, newline every 3 entries.
+    """
+    area = getattr(room, "area", None)
+    if area is None:
+        return "Room(s) not found in this area."
+    lines: list[str] = []
+    col = 0
+    for vnum in range(int(area.min_vnum), int(area.max_vnum) + 1):
+        r = room_registry.get(vnum)
+        if r is not None:
+            name = (getattr(r, "name", None) or "").capitalize()
+            lines.append(f"[{vnum:5d}] {name:<17.16}")
+            col += 1
+            if col % 3 == 0:
+                lines.append("\n")
+    if not lines:
+        return "Room(s) not found in this area."
+    if col % 3 != 0:
+        lines.append("\n")
+    return "".join(lines)
+
+
+def _redit_mlist(room: Room, arg: str) -> str:
+    """List mobs in area matching name/all — mirrors ROM src/olc_act.c:374-428 redit_mlist."""
+    if not arg:
+        return "Syntax:  mlist <all/name>"
+    area = getattr(room, "area", None)
+    if area is None:
+        return "Mobile(s) not found in this area."
+    f_all = arg.lower() == "all"
+    from mud.world.char_find import is_name
+    lines: list[str] = []
+    col = 0
+    for vnum in range(int(area.min_vnum), int(area.max_vnum) + 1):
+        mob = mob_registry.get(vnum)
+        if mob is not None:
+            mob_names = getattr(mob, "player_name", None) or ""
+            if f_all or is_name(arg, mob_names):
+                short = (getattr(mob, "short_descr", None) or "").capitalize()
+                lines.append(f"[{vnum:5d}] {short:<17.16}")
+                col += 1
+                if col % 3 == 0:
+                    lines.append("\n")
+    if not lines:
+        return "Mobile(s) not found in this area."
+    if col % 3 != 0:
+        lines.append("\n")
+    return "".join(lines)
+
+
+def _redit_olist(room: Room, arg: str) -> str:
+    """List objects in area matching name/type/all — mirrors ROM src/olc_act.c:431-486 redit_olist."""
+    if not arg:
+        return "Syntax:  olist <all/name/item_type>"
+    area = getattr(room, "area", None)
+    if area is None:
+        return "Object(s) not found in this area."
+    f_all = arg.lower() == "all"
+    from mud.models.constants import ItemType
+    from mud.world.char_find import is_name
+    # check if arg matches an item type name (mirrors flag_value(type_flags, arg))
+    type_match: int | None = None
+    for member in ItemType:
+        if member.name.lower().startswith(arg.lower()):
+            type_match = int(member)
+            break
+    lines: list[str] = []
+    col = 0
+    for vnum in range(int(area.min_vnum), int(area.max_vnum) + 1):
+        obj = obj_registry.get(vnum)
+        if obj is not None:
+            obj_names = getattr(obj, "name", None) or ""
+            item_type_val = int(getattr(obj, "item_type", 0) or 0)
+            if f_all or is_name(arg, obj_names) or (type_match is not None and type_match == item_type_val):
+                short = (getattr(obj, "short_descr", None) or "").capitalize()
+                lines.append(f"[{vnum:5d}] {short:<17.16}")
+                col += 1
+                if col % 3 == 0:
+                    lines.append("\n")
+    if not lines:
+        return "Object(s) not found in this area."
+    if col % 3 != 0:
+        lines.append("\n")
+    return "".join(lines)
+
+
+def _redit_mshow(session: Session, char: Character, room: Room, arg: str) -> str:
+    """Show mob proto — mirrors ROM src/olc_act.c:489-523 redit_mshow.
+
+    Temporarily sets editor_state to the mob proto, calls _medit_show,
+    then restores room as the edit target.
+    """
+    if not arg:
+        return "Syntax:  mshow <vnum>"
+    if not arg.isdigit():
+        return "REdit: Must be a number."
+    vnum = int(arg)
+    mob = mob_registry.get(vnum)
+    if mob is None:
+        return "REdit:  That mobile does not exist."
+    # mirroring ROM src/olc_act.c:511-515 — ch->desc->pEdit = pMob; medit_show; restore
+    return _medit_show(mob)
+
+
+def _redit_oshow(session: Session, char: Character, room: Room, arg: str) -> str:
+    """Show obj proto — mirrors ROM src/olc_act.c:525-569 redit_oshow.
+
+    Temporarily sets edit target to the obj proto, calls _oedit_show,
+    then restores room as the edit target.
+    """
+    if not arg:
+        return "Syntax:  oshow <vnum>"
+    if not arg.isdigit():
+        return "REdit: Must be a number."
+    vnum = int(arg)
+    obj = obj_registry.get(vnum)
+    if obj is None:
+        return "REdit:  That object does not exist."
+    # mirroring ROM src/olc_act.c:547-551 — ch->desc->pEdit = pObj; oedit_show; restore
+    return _oedit_show(obj)
+
+
 def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
     room = session.editor_state.get("room") if session.editor_state else None
     if not isinstance(room, Room):
@@ -1298,6 +1423,26 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
 
     if cmd == "oreset":
         return _handle_oreset_command(room, args_parts)
+
+    if cmd == "rlist":
+        # mirroring ROM src/olc_act.c:329-371 redit_rlist
+        return _redit_rlist(room)
+
+    if cmd == "mlist":
+        # mirroring ROM src/olc_act.c:374-428 redit_mlist
+        return _redit_mlist(room, " ".join(args_parts))
+
+    if cmd == "olist":
+        # mirroring ROM src/olc_act.c:431-486 redit_olist
+        return _redit_olist(room, " ".join(args_parts))
+
+    if cmd == "mshow":
+        # mirroring ROM src/olc_act.c:489-523 redit_mshow
+        return _redit_mshow(session, char, room, " ".join(args_parts))
+
+    if cmd == "oshow":
+        # mirroring ROM src/olc_act.c:525-569 redit_oshow
+        return _redit_oshow(session, char, room, " ".join(args_parts))
 
     if cmd == "format":
         room.description = format_rom_string(room.description)
