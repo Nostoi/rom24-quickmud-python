@@ -1523,5 +1523,35 @@
   "level_range": {
     "low": 1000,
     "high": 1099
-  }
+  },
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1005,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1022,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1000,
+      "arg2": 10,
+      "arg3": 1019,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 1001,
+      "arg2": 3,
+      "arg3": 1034,
+      "arg4": 3
+    }
+  ]
 }

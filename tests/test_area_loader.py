@@ -307,8 +307,11 @@ def test_mob_flag_removal_lines_clear_flags(tmp_path):
     assert mob.immune == "EF"
     assert mob.resist == "G"
     assert mob.vuln == "JK"
-    assert mob.form == "BC"
-    assert mob.parts == "FG"
+    # Race "human" merges form letters AHMV and part letters ABCDEFGHIJK
+    # (mirroring ROM src/db2.c:295-297) BEFORE the F-line removals are applied,
+    # so "F for AD" leaves BCHMV and "F par EH" leaves ABCDFGIJK.
+    assert mob.form == "BCHMV"
+    assert mob.parts == "FGABCDIJK"
 
     area_registry.clear()
     mob_registry.clear()
@@ -1003,7 +1006,10 @@ def test_json_loader_links_exit_targets(tmp_path):
     assert south_exit.to_room is north_room
     assert north_exit.rs_flags == north_flags
     assert south_exit.rs_flags == south_flags
-    assert dead_end.room_flags & RoomFlag.ROOM_NO_MOB
+    # JSONLD-018: removed the JSON-only ROOM_NO_MOB auto-add for exit-less
+    # rooms. ROM ``boot_db`` only sets that flag when the .are loader sees no
+    # exits at all, so the JSON path now mirrors that explicitly.
+    assert not (dead_end.room_flags & RoomFlag.ROOM_NO_MOB)
 
     clear_registries()
 

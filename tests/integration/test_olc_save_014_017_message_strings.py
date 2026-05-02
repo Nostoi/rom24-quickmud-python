@@ -24,6 +24,29 @@ def setup_module(module):
     initialize_world("area/area.lst")
 
 
+@pytest.fixture(autouse=True)
+def _redirect_olc_writes(tmp_path, monkeypatch):
+    """Prevent ``cmd_asave`` from overwriting checked-in ``data/areas`` files.
+
+    ``asave world``/``asave changed`` invoke ``save_area_to_json`` with the
+    default ``output_dir="data/areas"``. Without this redirect the test
+    silently rewrites production area JSONs and breaks unrelated parity tests.
+    """
+    import mud.olc.save as olc_save
+
+    real_save = olc_save.save_area_to_json
+    real_list = olc_save.save_area_list
+
+    def safe_save(area, output_dir="data/areas"):
+        return real_save(area, output_dir=str(tmp_path))
+
+    def safe_list(output_file="data/areas/area.lst"):
+        return real_list(output_file=str(tmp_path / "area.lst"))
+
+    monkeypatch.setattr(olc_save, "save_area_to_json", safe_save)
+    monkeypatch.setattr(olc_save, "save_area_list", safe_list)
+
+
 @pytest.fixture()
 def builder_char(tmp_path):
     char = create_test_character("Builder", 3001)

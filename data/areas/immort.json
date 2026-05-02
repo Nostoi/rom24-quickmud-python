@@ -676,5 +676,98 @@
   "level_range": {
     "low": 1200,
     "high": 1299
-  }
+  },
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 1200,
+      "arg2": 1,
+      "arg3": 1221,
+      "arg4": 1
+    },
+    {
+      "command": "D",
+      "arg1": 1204,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1218,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1207,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1217,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1208,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1203,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1209,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1203,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1210,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1217,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1211,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 1218,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    }
+  ]
 }

@@ -5595,5 +5595,791 @@
   "level_range": {
     "low": 7000,
     "high": 7499
-  }
+  },
+  "resets": [
+    {
+      "command": "M",
+      "arg1": 7001,
+      "arg2": 12,
+      "arg3": 7041,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7001,
+      "arg2": 12,
+      "arg3": 7025,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7001,
+      "arg2": 12,
+      "arg3": 7004,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 7001,
+      "arg2": 12,
+      "arg3": 7004,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 7002,
+      "arg2": 7,
+      "arg3": 7049,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 7002,
+      "arg2": 7,
+      "arg3": 7031,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7039,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7039,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7039,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7037,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7037,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7003,
+      "arg2": 8,
+      "arg3": 7050,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7004,
+      "arg2": 3,
+      "arg3": 7102,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7005,
+      "arg2": 7,
+      "arg3": 7112,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 7005,
+      "arg2": 7,
+      "arg3": 7112,
+      "arg4": 4
+    },
+    {
+      "command": "M",
+      "arg1": 7005,
+      "arg2": 7,
+      "arg3": 7122,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7002,
+      "arg2": 7,
+      "arg3": 7104,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7103,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7103,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7006,
+      "arg2": 6,
+      "arg3": 7102,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7006,
+      "arg2": 6,
+      "arg3": 7104,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7006,
+      "arg2": 6,
+      "arg3": 7101,
+      "arg4": 2
+    },
+    {
+      "command": "D",
+      "arg1": 7116,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7280,
+      "arg2": 4,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7201,
+      "arg2": 3,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7201,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7202,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7208,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7200,
+      "arg2": 1,
+      "arg3": 7201,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7200,
+      "arg2": 4,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7203,
+      "arg2": 4,
+      "arg3": 3,
+      "arg4": 0
+    },
+    {
+      "command": "G",
+      "arg1": 7205,
+      "arg2": -1,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 7204,
+      "arg2": 6,
+      "arg3": 7200,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7201,
+      "arg2": 1,
+      "arg3": 7203,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7201,
+      "arg2": 4,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7202,
+      "arg2": 2,
+      "arg3": 7205,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7202,
+      "arg2": 8,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7202,
+      "arg2": 2,
+      "arg3": 7207,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7202,
+      "arg2": 8,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "O",
+      "arg1": 7206,
+      "arg2": 4,
+      "arg3": 7206,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7214,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7213,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7215,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7217,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 7208,
+      "arg2": 20,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7219,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7209,
+      "arg2": 4,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7221,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 7208,
+      "arg2": 20,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7223,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7209,
+      "arg2": 4,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7225,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7233,
+      "arg4": 1
+    },
+    {
+      "command": "G",
+      "arg1": 7208,
+      "arg2": 20,
+      "arg3": 0,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7203,
+      "arg2": 10,
+      "arg3": 7233,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7209,
+      "arg2": 4,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7211,
+      "arg2": 16,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7204,
+      "arg2": 1,
+      "arg3": 7234,
+      "arg4": 1
+    },
+    {
+      "command": "D",
+      "arg1": 7280,
+      "arg2": 4,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7116,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7002,
+      "arg2": 7,
+      "arg3": 7285,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7190,
+      "arg2": 10,
+      "arg3": 2,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7002,
+      "arg2": 7,
+      "arg3": 7285,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7286,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7013,
+      "arg2": 8,
+      "arg3": 7286,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7281,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7281,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7000,
+      "arg2": 8,
+      "arg3": 7280,
+      "arg4": 1
+    },
+    {
+      "command": "D",
+      "arg1": 7116,
+      "arg2": 5,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7280,
+      "arg2": 4,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7415,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7416,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7418,
+      "arg2": 1,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7421,
+      "arg2": 3,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7424,
+      "arg2": 1,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7425,
+      "arg2": 3,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7405,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7406,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7404,
+      "arg2": 2,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "D",
+      "arg1": 7405,
+      "arg2": 0,
+      "arg3": 1,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7040,
+      "arg2": 1,
+      "arg3": 7428,
+      "arg4": 1
+    },
+    {
+      "command": "E",
+      "arg1": 7304,
+      "arg2": 99,
+      "arg3": 5,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7305,
+      "arg2": 99,
+      "arg3": 7,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7306,
+      "arg2": 99,
+      "arg3": 9,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7307,
+      "arg2": 99,
+      "arg3": 6,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7308,
+      "arg2": 99,
+      "arg3": 11,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7309,
+      "arg2": 99,
+      "arg3": 10,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7310,
+      "arg2": 99,
+      "arg3": 8,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7216,
+      "arg2": 99,
+      "arg3": 16,
+      "arg4": 0
+    },
+    {
+      "command": "E",
+      "arg1": 7303,
+      "arg2": 99,
+      "arg3": 17,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7041,
+      "arg2": 2,
+      "arg3": 7444,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7042,
+      "arg2": 2,
+      "arg3": 7435,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7043,
+      "arg2": 3,
+      "arg3": 7439,
+      "arg4": 3
+    },
+    {
+      "command": "O",
+      "arg1": 7300,
+      "arg2": 8,
+      "arg3": 7439,
+      "arg4": 0
+    },
+    {
+      "command": "M",
+      "arg1": 7044,
+      "arg2": 6,
+      "arg3": 7406,
+      "arg4": 6
+    },
+    {
+      "command": "M",
+      "arg1": 7045,
+      "arg2": 1,
+      "arg3": 7419,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 7046,
+      "arg2": 1,
+      "arg3": 7424,
+      "arg4": 1
+    },
+    {
+      "command": "M",
+      "arg1": 7010,
+      "arg2": 2,
+      "arg3": 7429,
+      "arg4": 2
+    },
+    {
+      "command": "M",
+      "arg1": 7013,
+      "arg2": 3,
+      "arg3": 7403,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7013,
+      "arg2": 3,
+      "arg3": 7412,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7011,
+      "arg2": 3,
+      "arg3": 7423,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7007,
+      "arg2": 3,
+      "arg3": 7422,
+      "arg4": 3
+    },
+    {
+      "command": "M",
+      "arg1": 7008,
+      "arg2": 4,
+      "arg3": 7401,
+      "arg4": 4
+    }
+  ]
 }
