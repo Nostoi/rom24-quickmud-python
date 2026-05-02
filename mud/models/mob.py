@@ -20,6 +20,31 @@ class MobProgram:
 
 
 @dataclass
+class MprogCode:
+    """Standalone mob-program code block — mirrors ROM MPROG_CODE.
+
+    ROM src/recycle.h: MPROG_CODE * { int vnum; char *code; MPROG_CODE *next; }
+    Python uses a flat registry (mprog_code_registry) instead of a linked list.
+    """
+
+    vnum: int
+    code: str = ""
+
+
+# Global registry of standalone mprog code blocks — mirrors ROM mprog_list.
+# Key: vnum (int), Value: MprogCode instance.
+mprog_code_registry: dict[int, MprogCode] = {}
+
+
+def get_mprog_index(vnum: int) -> MprogCode | None:
+    """Look up a standalone mob-program code block by vnum.
+
+    # mirroring ROM src/olc_mpcode.c:108 — get_mprog_index(vnum)
+    """
+    return mprog_code_registry.get(vnum)
+
+
+@dataclass
 class MobIndex:
     """Python representation of MOB_INDEX_DATA"""
 
