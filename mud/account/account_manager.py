@@ -4,7 +4,7 @@ import json
 
 from mud.db.models import Character as DBCharacter
 from mud.db.session import SessionLocal
-from mud.models.character import Character, from_orm
+from mud.models.character import Character, character_registry, from_orm
 from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.models.conversion import (
     load_objects_for_character,
@@ -18,6 +18,13 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
     The second argument is accepted but ignored for backward compatibility;
     previously it was a username (account name).  Characters are now
     standalone identities — mirroring ROM src/save.c:fread_char.
+
+    The loaded character is appended to ``character_registry`` so the game
+    loop's per-pulse handlers (violence_tick, char_update, idle pump) iterate
+    them — mirroring ROM ``char_list`` membership, set in ``src/save.c`` after
+    ``fread_char`` succeeds. Without this, combat is one-way (mobs hit the PC
+    but the PC never swings back), HP regen never fires, and idle timeout
+    never trips.
     """
     session = None
     try:
@@ -26,6 +33,8 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
         char = from_orm(db_char) if db_char else None
         if char and db_char:
             char.inventory, char.equipment = load_objects_for_character(db_char)
+        if char is not None and char not in character_registry:
+            character_registry.append(char)
         return char
     except Exception as e:
         print(f"[ERROR] Failed to load character {char_name}: {e}")

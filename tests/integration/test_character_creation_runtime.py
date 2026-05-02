@@ -61,7 +61,7 @@ def create_and_load_character(username: str, password: str, char_name: str, **cr
     assert create_character(account, char_name, **create_kwargs)
 
     capitalized_name = char_name.capitalize()
-    return load_character(username, capitalized_name)
+    return load_character(capitalized_name, username)
 
 
 class TestCharacterRuntimeInitialization:
@@ -251,8 +251,45 @@ class TestCharacterPersistence:
 
         save_character(runtime_char)
 
-        reloaded_char = load_character("persistuser", "Testpersist")
+        reloaded_char = load_character("Testpersist", "persistuser")
         assert reloaded_char is not None
 
         assert reloaded_char.level == 2
         assert reloaded_char.practice == 10
+
+
+class TestCharacterRegistryRegistration:
+    """Loaded PCs must enter ``character_registry`` so the game-loop ticks
+    (violence_tick, char_update, idle pump) iterate them.
+
+    Regression: ``mud.account.account_manager.load_character`` previously
+    returned a Character without registering it. Symptoms: snail attacks the
+    player every PULSE_VIOLENCE but the player's own ``multi_hit`` never fires,
+    HP never regens, idle timeout never trips.
+    """
+
+    def test_loaded_character_appears_in_character_registry(self):
+        from mud.models.character import character_registry
+
+        before = list(character_registry)
+        runtime_char = create_and_load_character(
+            "registryuser", "password", "RegEddol"
+        )
+        assert runtime_char is not None
+        try:
+            assert runtime_char in character_registry, (
+                "load_character must append the PC to character_registry — "
+                "otherwise violence_tick, char_update, and the idle pump "
+                "will never iterate the player and combat is one-way."
+            )
+            assert runtime_char.is_npc is False
+        finally:
+            # Cleanup so other tests don't see this leak.
+            try:
+                character_registry.remove(runtime_char)
+            except ValueError:
+                pass
+            # Restore prior snapshot if anything else changed.
+            character_registry[:] = [
+                c for c in before if c is not runtime_char
+            ] + [c for c in character_registry if c not in before]
