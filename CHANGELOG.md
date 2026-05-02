@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **OLC_SAVE-015**: `cmd_asave world` returns `"You saved the world.\n\r"` (ROM exact)
 - **OLC_SAVE-016**: `cmd_asave changed` returns `"Saved zones:\n\r"` + per-area rows + `"None.\n\r"` fallback (ROM exact)
 - **OLC_SAVE-017**: `cmd_asave area` returns `"Area saved.\n\r"` (ROM exact)
+- **BOARD-010**: `note read again` is now a no-op (returns `""`) — mirrors ROM `src/board.c:569-572` empty `if`-body
 - **MPEDIT-003**: Added `MprogCode` dataclass + `mprog_code_registry` dict + `get_mprog_index()` — mirrors ROM `MPROG_CODE` struct and `mprog_list` linked list (`src/olc_mpcode.c`)
 - **MPEDIT-002**: `do_mpedit` now looks up `mprog_code_registry` (not `mob_prototypes`); opens `mpedit` session silently on success; exact Spanish error strings; `create` branch delegates to `_mpedit_create`
 - **MPEDIT-001**: `_interpret_mpedit` session loop — smash_tilde, empty→show, `done` silent, security re-check, area=NULL→edit_done, dispatch table, fallback to `interpret()`

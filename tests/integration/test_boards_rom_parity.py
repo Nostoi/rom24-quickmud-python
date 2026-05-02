@@ -428,3 +428,24 @@ def test_note_write_discards_textless_in_progress_draft(tmp_path):
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
+
+
+def test_board_010_note_read_again_is_noop(movable_char_factory, tmp_path):
+    """BOARD-010: 'note read again' is a no-op — mirrors ROM src/board.c:569-572.
+
+    ROM has an empty `if (!str_cmp(argument, "again")) { }` body, so the
+    subcommand silently does nothing.  Python must not return 'Read which note?'.
+    """
+    orig_dir = _setup_boards(tmp_path)
+    notes.load_boards()
+    try:
+        author = movable_char_factory("Tester", 3001)
+        from mud.commands.notes import do_note
+        result = do_note(author, "read again")
+        # ROM: empty if-body → no output (empty string or None)
+        assert result == "" or result is None
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+

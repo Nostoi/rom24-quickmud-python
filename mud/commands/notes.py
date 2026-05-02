@@ -313,6 +313,9 @@ def do_note(char: Character, args: str) -> str:
     if subcmd == "read":
         if not rest_str.strip():
             return _read_next_unread_note(char, pcdata, board, trust)
+        # mirroring ROM src/board.c:569-572 — "again" is an empty if-body (no-op)
+        if rest_str.strip().lower() == "again":
+            return ""
         try:
             number = int(rest_str.strip())
         except ValueError:
