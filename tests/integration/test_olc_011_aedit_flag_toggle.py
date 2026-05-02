@@ -20,7 +20,7 @@ This check happens **before** the aedit_table[] dispatch and **after** the
 from __future__ import annotations
 
 from mud.commands.build import _interpret_aedit
-from mud.models.constants import AreaFlag, LEVEL_HERO
+from mud.models.constants import LEVEL_HERO, AreaFlag
 from mud.net.session import Session
 from mud.world import create_test_character, initialize_world
 
@@ -152,3 +152,51 @@ def test_name_command_not_shadowed():
     char, session, area = _builder_in_aedit()
     result = _interpret_aedit(session, char, "name TestAreaName")
     assert "Flag toggled" not in result
+
+
+# ── OLC-006: aedit_age — ROM src/olc_act.c:770-790 ──────────────────────────
+
+def test_aedit_age_sets_value():
+    """``age <n>`` sets pArea->age — ROM src/olc_act.c:785."""
+    char, session, area = _builder_in_aedit()
+    result = _interpret_aedit(session, char, "age 15")
+    assert result == "Age set.\n\r", repr(result)
+    assert area.age == 15
+
+
+def test_aedit_age_no_arg_returns_syntax():
+    """Empty arg → syntax message — ROM src/olc_act.c:778-782."""
+    char, session, area = _builder_in_aedit()
+    result = _interpret_aedit(session, char, "age")
+    assert result == "Syntax:  age [#xage]\n\r", repr(result)
+
+
+def test_aedit_age_non_numeric_returns_syntax():
+    """Non-numeric arg → syntax message — ROM src/olc_act.c:778-782."""
+    char, session, area = _builder_in_aedit()
+    result = _interpret_aedit(session, char, "age foo")
+    assert result == "Syntax:  age [#xage]\n\r", repr(result)
+
+
+def test_aedit_age_does_not_set_changed():
+    """ROM aedit_age does NOT set pArea->changed — src/olc_act.c:770-790."""
+    char, session, area = _builder_in_aedit()
+    area.changed = False
+    _interpret_aedit(session, char, "age 5")
+    assert area.changed is False
+
+
+def test_aedit_age_one_argument_only():
+    """``age 5 extra junk`` — only first token used (ROM one_argument)."""
+    char, session, area = _builder_in_aedit()
+    result = _interpret_aedit(session, char, "age 5 extra junk")
+    assert result == "Age set.\n\r", repr(result)
+    assert area.age == 5
+
+
+def test_aedit_age_zero():
+    """age 0 is valid — no bounds check in ROM."""
+    char, session, area = _builder_in_aedit()
+    result = _interpret_aedit(session, char, "age 0")
+    assert result == "Age set.\n\r"
+    assert area.age == 0

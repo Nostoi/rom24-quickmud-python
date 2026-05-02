@@ -1939,6 +1939,16 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
         area.changed = True
         return "Flag toggled."
 
+    if cmd == "age":
+        # mirroring ROM src/olc_act.c:770-790 aedit_age
+        # one_argument → first token only; reject non-numeric or empty.
+        # ROM does NOT set pArea->changed for age.
+        age_str = args_parts[0] if args_parts else ""
+        if not age_str or not age_str.lstrip("-").isdigit():
+            return "Syntax:  age [#xage]\n\r"
+        area.age = int(age_str)
+        return "Age set.\n\r"
+
     if cmd == "create":
         # mirrors ROM aedit_table dispatch (src/olc.c:222) — `create` typed
         # inside an active aedit session also allocates a new area and
