@@ -1,7 +1,7 @@
 # `olc_mpcode.c` Parity Audit
 
-**Status**: ⚠️ IN PROGRESS — Phases 1–3 complete; Phase 4 in progress
-**Date**: 2026-05-02
+**Status**: ✅ AUDITED — all 6 gaps closed (MPEDIT-001..006); 23 integration tests green.
+**Date**: 2026-05-02 (completed)
 **Auditor**: OpenCode
 
 ---
@@ -90,13 +90,13 @@ Python: not implemented.
 
 | Gap ID | Severity | ROM Reference | Python Reference | Description | Status |
 |---|---|---|---|---|---|
-| MPEDIT-001 | CRITICAL | `olc_mpcode.c:35–94` | `imm_olc.py:517` | `_interpret_mpedit` session loop entirely missing; no dispatch table, no smash_tilde, no security re-check, no area-changed flag, no fallback to interpret | 🔄 OPEN |
-| MPEDIT-002 | CRITICAL | `olc_mpcode.c:96–151` | `imm_olc.py:517` | `do_mpedit` looks up `mob_prototypes` instead of mprog code registry; no session open; no `create` branch; no security check; wrong error messages | 🔄 OPEN |
-| MPEDIT-003 | CRITICAL | `olc_mpcode.c:153–196` | (missing) | `mpedit_create` entirely missing — no standalone `MprogCode` model, no registry, no vnum check, no area check, no builder check | 🔄 OPEN |
-| MPEDIT-004 | CRITICAL | `olc_mpcode.c:198–211` | (missing) | `mpedit_show` entirely missing — exact ROM format `"Vnum:       [%d]\n\rCode:\n\r%s\n\r"` | 🔄 OPEN |
-| MPEDIT-005 | CRITICAL | `olc_mpcode.c:213–226` | (missing) | `mpedit_code` entirely missing — no-arg enters string_append; arg → syntax error | 🔄 OPEN |
-| MPEDIT-006 | CRITICAL | `olc_mpcode.c:228–272` | (missing) | `mpedit_list` entirely missing — `[%3d] (%c) %5d\n\r` format, all/area filter, empty fallback messages | 🔄 OPEN |
-| MPEDIT-007 | IMPORTANT | `olc_mpcode.c:261–266` | (missing) | `mpedit_list` empty message: `"MobPrograms do not exist!\n\r"` vs `"MobPrograms do not exist in this area.\n\r"` based on fAll | 🔄 OPEN (part of MPEDIT-006) |
+| MPEDIT-001 | CRITICAL | `olc_mpcode.c:35–94` | `imm_olc.py:517` | `_interpret_mpedit` session loop entirely missing; no dispatch table, no smash_tilde, no security re-check, no area-changed flag, no fallback to interpret | ✅ FIXED |
+| MPEDIT-002 | CRITICAL | `olc_mpcode.c:96–151` | `imm_olc.py:517` | `do_mpedit` looks up `mob_prototypes` instead of mprog code registry; no session open; no `create` branch; no security check; wrong error messages | ✅ FIXED |
+| MPEDIT-003 | CRITICAL | `olc_mpcode.c:153–196` | (missing) | `mpedit_create` entirely missing — no standalone `MprogCode` model, no registry, no vnum check, no area check, no builder check | ✅ FIXED |
+| MPEDIT-004 | CRITICAL | `olc_mpcode.c:198–211` | (missing) | `mpedit_show` entirely missing — exact ROM format `"Vnum:       [%d]\n\rCode:\n\r%s\n\r"` | ✅ FIXED |
+| MPEDIT-005 | CRITICAL | `olc_mpcode.c:213–226` | (missing) | `mpedit_code` entirely missing — no-arg enters string_append; arg → syntax error | ✅ FIXED |
+| MPEDIT-006 | CRITICAL | `olc_mpcode.c:228–272` | (missing) | `mpedit_list` entirely missing — `[%3d] (%c) %5d\n\r` format, all/area filter, empty fallback messages | ✅ FIXED |
+| MPEDIT-007 | IMPORTANT | `olc_mpcode.c:261–266` | (missing) | `mpedit_list` empty message: `"MobPrograms do not exist!\n\r"` vs `"MobPrograms do not exist in this area.\n\r"` based on fAll | ✅ FIXED (part of MPEDIT-006) |
 
 **Total: 6 independent gaps (MPEDIT-001..006); MPEDIT-007 is sub-item of MPEDIT-006.**
 

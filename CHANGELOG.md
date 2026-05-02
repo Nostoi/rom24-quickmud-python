@@ -14,7 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **OLC_SAVE-015**: `cmd_asave world` returns `"You saved the world.\n\r"` (ROM exact)
 - **OLC_SAVE-016**: `cmd_asave changed` returns `"Saved zones:\n\r"` + per-area rows + `"None.\n\r"` fallback (ROM exact)
 - **OLC_SAVE-017**: `cmd_asave area` returns `"Area saved.\n\r"` (ROM exact)
-- **HEDIT-001**: `hedit show` now uses ROM exact format `"Keyword : [%s]\n\rLevel   : [%d]\n\rText    :\n\r%s-END-\n\r"`
+- **MPEDIT-003**: Added `MprogCode` dataclass + `mprog_code_registry` dict + `get_mprog_index()` — mirrors ROM `MPROG_CODE` struct and `mprog_list` linked list (`src/olc_mpcode.c`)
+- **MPEDIT-002**: `do_mpedit` now looks up `mprog_code_registry` (not `mob_prototypes`); opens `mpedit` session silently on success; exact Spanish error strings; `create` branch delegates to `_mpedit_create`
+- **MPEDIT-001**: `_interpret_mpedit` session loop — smash_tilde, empty→show, `done` silent, security re-check, area=NULL→edit_done, dispatch table, fallback to `interpret()`
+- **MPEDIT-004**: `_mpedit_show` — ROM exact format `"Vnum:       [%d]\n\rCode:\n\r%s\n\r"`
+- **MPEDIT-005**: `_mpedit_code` — no-arg enters string_edit mode; arg → `"Syntax: code\n\r"`
+- **MPEDIT-006**: `_mpedit_list` — `[%3d] (%c) %5d\n\r` format; `*/space/?` builder indicator; `all`/area filter; exact empty messages
 - **HEDIT-002**: `hedit level` accepts -1..MAX_LEVEL; exact ROM error message
 - **HEDIT-003/004**: `hedit keyword`/`hedit level` return `"Ok.\n\r"` / exact ROM syntax strings
 - **HEDIT-005**: `hedit text` no-arg is valid (triggers `string_append`); arg present → `"Syntax: text\n\r"`
