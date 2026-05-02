@@ -99,7 +99,8 @@
         "east": {
           "to_room": 601,
           "description": "You see a big intersection.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5554,
@@ -194,91 +195,13 @@
   ],
   "mobiles": [],
   "objects": [],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 303,
-      "arg2": 5,
-      "arg3": 5556,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 303,
-      "arg2": 5,
-      "arg3": 5550,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 304,
-      "arg2": 5,
-      "arg3": 5553,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 304,
-      "arg2": 5,
-      "arg3": 5552,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 3020,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 306,
-      "arg2": 1,
-      "arg3": 5555,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 304,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 3030,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 308,
-      "arg2": 1,
-      "arg3": 5556,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 3000,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 3001,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 350,
-      "arg2": 1,
-      "arg3": 5577,
-      "arg4": 1
-    }
-  ],
-  "specials": []
+  "mob_programs": [],
+  "shops": [],
+  "specials": [],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 5500,
+    "high": 5599
+  }
 }

@@ -2146,7 +2146,7 @@
         "down": {
           "to_room": 7280,
           "keyword": "secret trapdoor entrance",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2430,14 +2430,14 @@
           "to_room": 7202,
           "description": "You look back through the door into the lair.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 7200,
           "description": "You see the treasury.\n",
           "keyword": "door stone",
-          "flags": "1",
+          "flags": "7",
           "key": 7205
         }
       },
@@ -2455,7 +2455,7 @@
           "to_room": 7201,
           "description": "You can see the inner lair.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2697,7 +2697,7 @@
           "to_room": 7204,
           "description": "You can see the lair.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -3306,7 +3306,7 @@
         "up": {
           "to_room": 7116,
           "keyword": "secret door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3668,7 +3668,7 @@
           "to_room": 7405,
           "description": "You can see an opening behind the stone.\n",
           "keyword": "flat round stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -3696,14 +3696,14 @@
           "to_room": 7404,
           "description": "You see a round stone door.\n",
           "keyword": "round stone door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 7406,
           "description": "You see a grey block.\n",
           "keyword": "grey block",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3730,7 +3730,7 @@
           "to_room": 7405,
           "description": "You can see nothing at all.\n",
           "keyword": "grey block",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -3956,7 +3956,7 @@
           "to_room": 7416,
           "description": "You see a primitive picture\n",
           "keyword": "sun",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -3984,7 +3984,7 @@
           "to_room": 7415,
           "description": "you can see a picture with some persons crawling around a\nhuge moon.\n",
           "keyword": "door picture sun moon",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -4035,7 +4035,7 @@
           "to_room": 7421,
           "description": "You see a wooden door\n",
           "keyword": "wooden door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -4146,7 +4146,7 @@
           "to_room": 7418,
           "description": "You can see a wooden door.\n",
           "keyword": "wooden door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -4214,7 +4214,7 @@
           "to_room": 7425,
           "description": "you see nothing special.\n",
           "keyword": "green head dragon sculpture face",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -4261,7 +4261,7 @@
           "to_room": 7424,
           "description": "You can see the outline of a door. Just like in the\ndescription!\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -4272,7 +4272,7 @@
       "id": 7426,
       "name": "The crossing",
       "description": "You are standing in a crossing of hallways. You can leave this place\nin every direction, except up and down. In the dust you notice strange\nfootprints.\n",
-      "sector_type": "-1",
+      "sector_type": "inside",
       "flags": 0,
       "exits": {
         "north": {
@@ -4807,7 +4807,7 @@
       "long_description": "A horrifying mudmonster is slowly evolving from the mud ...\n",
       "description": "It sure looks like something out of a horror movie. It strongly resembles\na huge figure made up from mud alone, and it sure looks like it had human \nflesh for breakfast and is strongly intent on having the same for dinner.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -250,
       "group": 0,
@@ -4817,23 +4817,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "none",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 7001,
@@ -4842,7 +4838,7 @@
       "long_description": "The small fierce-looking bat is hanging from the ceiling.\n",
       "description": "You have never in your entire life seen such a mean looking small creature,\nthough it looks rather peaceful, hanging there. The thought of arousing this\ncruel creature doesn't seem appealing.\n",
       "race": "bat",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "PTZ",
       "alignment": -500,
       "group": 0,
@@ -4852,23 +4848,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0S",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7002,
@@ -4877,7 +4869,7 @@
       "long_description": "The huge hungry-looking sewer rat sits here.\n",
       "description": "",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -1000,
       "group": 0,
@@ -4887,23 +4879,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 7003,
@@ -4912,7 +4900,7 @@
       "long_description": "The small hairy spider.\n",
       "description": "",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -700,
       "group": 0,
@@ -4922,23 +4910,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7004,
@@ -4947,7 +4931,7 @@
       "long_description": "The giant mean-looking earth beetle crawls towards you.\n",
       "description": "",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -300,
       "group": 0,
@@ -4957,23 +4941,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 7005,
@@ -4982,7 +4962,7 @@
       "long_description": "The giant maggot crawls toward you.\n",
       "description": "",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 300,
       "group": 0,
@@ -4992,23 +4972,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7006,
@@ -5017,7 +4993,7 @@
       "long_description": "The snake slithers towards you.\n",
       "description": "",
       "race": "snake",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -5027,23 +5003,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7007,
@@ -5052,7 +5024,7 @@
       "long_description": "The evil wanderer stares at you.\n",
       "description": "The evil wanderer is very thin.  He is dressed in a grey cloak.\n",
       "race": "human",
-      "act_flags": "ACH",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -1000,
       "group": 0,
@@ -5062,23 +5034,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 15,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 15
     },
     {
       "id": 7008,
@@ -5087,7 +5055,7 @@
       "long_description": "The homonculus is here, looking at you with an evil look.\n",
       "description": "The Homonculus appears in a man-like form, about 18'' tall, it has a\ngreenish, reptilian skin, leathery wings, and a bat-like mouth, with\nteeth gleaming yellow.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -780,
       "group": 0,
@@ -5097,23 +5065,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 7010,
@@ -5122,7 +5086,7 @@
       "long_description": "The chreffn are crawling here, looking around with their yellow eyes.\n",
       "description": "The head and torso of a chreffn is copper-covered, with yellow,\nglowing eyes. The lower body is in an orange shading.\n",
       "race": "human",
-      "act_flags": "ACH",
+      "act_flags": "0",
       "affected_by": "DP",
       "alignment": -830,
       "group": 0,
@@ -5132,23 +5096,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 7011,
@@ -5157,7 +5117,7 @@
       "long_description": "The morkoth is standing here, waiting for someone to KILL!\n",
       "description": "It's a five feet tall, shadow monster. The shape of this creature lies\nsomewhere between a human and a rat. It breaths very heavily, while staring\nat you with such a glint in the eyes that reminds you of immense hunger.\n",
       "race": "human",
-      "act_flags": "AFH",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -900,
       "group": 0,
@@ -5167,23 +5127,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7013,
@@ -5192,7 +5148,7 @@
       "long_description": "A horrifying mudmonster is slowly evolving from the mud ...\n",
       "description": "It sure looks like something out of a horror movie. It strongly resembles\na huge figure made up from mud alone, and it sure looks like it had human \nflesh for breakfast and is strongly intent on having the same for dinner.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -250,
       "group": 0,
@@ -5202,23 +5158,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 7040,
@@ -5227,7 +5179,7 @@
       "long_description": "The red fierce-looking dragon stares at you angrily.\n",
       "description": "The red dragon stares at you, angrily, as it wakes when you\narrives.  It says 'Oh, human YOU woke me up ... Hsss', while\nit moves closer.  'Can one NEVER sleep in peace ... Hsss'.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -1000,
       "group": 0,
@@ -5237,23 +5189,19 @@
       "hit_dice": "16d9+100",
       "mana_dice": "6d4+9",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -10,
-      "ac_bash": -10,
-      "ac_slash": -10,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 7041,
@@ -5262,7 +5210,7 @@
       "long_description": "The sea hag is swimming around here.\n",
       "description": "The sea hag is so ghastly looking that you feel the deepest fear.\nBig yellow eyes and sharp teeth.  Its ears are very big,\nand it has small sharp horns.  It hates beauty.\n",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -800,
       "group": 0,
@@ -5272,23 +5220,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7042,
@@ -5297,7 +5241,7 @@
       "long_description": "The guardian naga looks kindly at you.\n",
       "description": "The naga are a snake-liked creature. She is covered in green-gold\nscale with silvery triangles along her back. Her eyes are golden.\nShe notice that you look at her, and she says: 'Watch out. This way\nleads to some evil creatures'.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 700,
       "group": 0,
@@ -5307,23 +5251,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d4+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 7043,
@@ -5332,7 +5272,7 @@
       "long_description": "The scaled basilisk crawls towards you slowly.\n",
       "description": "The basilisk is a reptilian monster. It has eight legs, and a strong\ntoothy jaws. It is dull brown with yellowish underbelly. It's eyes are\nglowing pale green.\n",
       "race": "human",
-      "act_flags": "ACF",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -250,
       "group": 0,
@@ -5342,23 +5282,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 17,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 17
     },
     {
       "id": 7044,
@@ -5367,7 +5303,7 @@
       "long_description": "The lemure blob slithers terribly precisely towards you for an attack!\n",
       "description": "This looks like a vaguely human blob. Big black yellow eyes, and a\nmouth going a little bit out from the face. The lemure does not look\ninterested in you at all, but anyway it attacks. It looks like it's\nmind has been burned out.\n",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -500,
       "group": 0,
@@ -5377,23 +5313,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7045,
@@ -5402,7 +5334,7 @@
       "long_description": "Jones 'Cruncher' the ettin is standing here glaring at you.\n",
       "description": "At the first sight you thought Jones was an orc, but when it came\ncloser you saw his second head. He wears an animal skin dress,\nfilthy and moth eaten. Jones really stinks...\n",
       "race": "human",
-      "act_flags": "ACF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -480,
       "group": 0,
@@ -5412,23 +5344,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 3,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3
     },
     {
       "id": 7046,
@@ -5437,7 +5365,7 @@
       "long_description": "Herald 'Mouse-Killer' the ettin is standing here looking confused at you.\n",
       "description": "When you look at Herald, you feel pity. His dress are really poor,\nand the one of his heads hangs down. At the rope around his stomach\nhangs dead mouses and rats. He does not smell good.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 200,
       "group": 0,
@@ -5447,23 +5375,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 7200,
@@ -5472,7 +5396,7 @@
       "long_description": "The master mindflayer is here, looking at you with an evil look.\n",
       "description": "It's a seven foot tall humanoid dressed in a purple cloak, and swinging a\nblack and purple rod above its head as if it was going to attack you any\nmoment now. In the middle of its head are four tentacles with sharp points.\n",
       "race": "human",
-      "act_flags": "ACFR",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -800,
       "group": 0,
@@ -5482,23 +5406,19 @@
       "hit_dice": "14d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 7201,
@@ -5507,7 +5427,7 @@
       "long_description": "The senior mindflayer walks around here, looking for something useful.\n",
       "description": "This is a horrifying monster indeed, 6'6\" high. Dressed in purple and black,\nand carrying a large mace in its hand. In the center of its head are four large\ntentacles with very sharp points.\n",
       "race": "human",
-      "act_flags": "ACFR",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -600,
       "group": 0,
@@ -5517,23 +5437,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 20,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 20
     },
     {
       "id": 7202,
@@ -5542,7 +5458,7 @@
       "long_description": "The junior mindflayer is here, watching you carefully from the corner.\n",
       "description": "This mindflayer is six foot high. It has a small mace in its belt, and is\ndressed in purple and black cloth. It has four small tentacles in the \ncenter of its head.\n",
       "race": "human",
-      "act_flags": "ACFR",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -350,
       "group": 0,
@@ -5552,23 +5468,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 7203,
@@ -5577,7 +5489,7 @@
       "long_description": "An ugly wererat is here, looking at you with a strange flick in his eyes.\n",
       "description": "The wererat is about four foot tall. It looks very much like rat, except\nthat it is standing.\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -700,
       "group": 0,
@@ -5587,23 +5499,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 7204,
@@ -5612,7 +5520,7 @@
       "long_description": "There is a gigantic rat here, looking at you with a hungry look.\n",
       "description": "The gigantic rat is about ten foot long from head to tail and has claws\nthe size of your head looking very nasty.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -800,
       "group": 0,
@@ -5622,1839 +5530,24 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 125,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 125
     }
   ],
-  "objects": [
-    {
-      "id": 7190,
-      "name": "a glinting ring of silver",
-      "keywords": "ring silver",
-      "description": "A lovely silver ring has been left here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 7,
-      "weight": 10,
-      "cost": 468,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        },
-        {
-          "location": 17,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7200,
-      "name": "the devil rod",
-      "keywords": "rod devil",
-      "description": "The mysterious devil rod lies on the floor.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 60,
-      "cost": 2300,
-      "condition": 100,
-      "values": [
-        0,
-        3,
-        4,
-        7,
-        4
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "devil rod",
-          "description": "This is indeed a mysterious rod.  It is dark black at the base but has four\nvery sharp purple tentacles at the end.\n"
-        }
-      ]
-    },
-    {
-      "id": 7201,
-      "name": "the large mace",
-      "keywords": "mace large",
-      "description": "A large mace lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 100,
-      "cost": 610,
-      "condition": 100,
-      "values": [
-        4,
-        1,
-        10,
-        8,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "large mace",
-          "description": "The mace is pretty large with a weight of 10 lbs.  The head is actually four\npurple tentacles tied together.\n"
-        }
-      ]
-    },
-    {
-      "id": 7202,
-      "name": "the small mace",
-      "keywords": "mace small",
-      "description": "A small mace has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 60,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        5,
-        8,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "small mace",
-          "description": "This weapon doesn't look like it does a lot of damage, but then you never know.\nIt consists of a black handle and a purple head.\n"
-        }
-      ]
-    },
-    {
-      "id": 7203,
-      "name": "a purple cloak",
-      "keywords": "cloak purple",
-      "description": "A purple cloak lies on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 5,
-      "level": 15,
-      "weight": 200,
-      "cost": 1250,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7204,
-      "name": "an neon blue potion",
-      "keywords": "potion neon blue",
-      "description": "A neon blue potion stands on the floor.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 17,
-      "weight": 40,
-      "cost": 1490,
-      "condition": 100,
-      "values": [
-        14,
-        23,
-        60,
-        88,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7205,
-      "name": "a black key",
-      "keywords": "key black",
-      "description": "A black key has been left on the floor.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7206,
-      "name": "a strange white skull",
-      "keywords": "skull white",
-      "description": "A strange white skull lies on the floor looking at you.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 192,
-      "wear_flags": 17,
-      "level": 0,
-      "weight": 300,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -4
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "writing text",
-          "description": "You read the number '666'.\n"
-        },
-        {
-          "keyword": "white skull",
-          "description": "The skull has two small horns in the forehead. You notice some writing on\nthe inside.\n"
-        }
-      ]
-    },
-    {
-      "id": 7208,
-      "name": "a small stick",
-      "keywords": "stick small light",
-      "description": "A small stick lies here.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 5,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        120,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "letters letter",
-          "description": "It reads 'Hold me'.\n"
-        },
-        {
-          "keyword": "small stick",
-          "description": "The small stick does not look interesting at all.  But just as you are going\nto throw it away you notice some small letters.\n"
-        }
-      ]
-    },
-    {
-      "id": 7209,
-      "name": "a pair of muddy boots",
-      "keywords": "boots muddy",
-      "description": "A pair of muddy boots has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 65,
-      "level": 7,
-      "weight": 200,
-      "cost": 900,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "The boots are muddy and they look well worn, but also very comfortable.",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "id": 7210,
-      "name": "a huge treasure",
-      "keywords": "treasure coins",
-      "description": "There is a huge treasure here, looking very valuable.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        400,
-        3,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "treasure",
-          "description": "This looks like a whole lot of coins.\n"
-        }
-      ]
-    },
-    {
-      "id": 7211,
-      "name": "a short sword",
-      "keywords": "sword short",
-      "description": "There lies a short sword.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 40,
-      "cost": 540,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        4,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7216,
-      "name": "a red dragon claw",
-      "keywords": "claw red redclaw",
-      "description": "On the floor rests an enormous red claw.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 31,
-      "weight": 190,
-      "cost": 5800,
-      "condition": 100,
-      "values": [
-        0,
-        2,
-        15,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 5
-        },
-        {
-          "location": 17,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "claw red redclaw",
-          "description": "This big claw looks like a part of a dragon.\n"
-        }
-      ]
-    },
-    {
-      "id": 7217,
-      "name": "a silvery breast plate",
-      "keywords": "plate breast silvery",
-      "description": "There is a silvery breast plate on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 9,
-      "level": 32,
-      "weight": 400,
-      "cost": 12400,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "plate breast silvery",
-          "description": "On the breast plate you notice a relief of large rose. The metal seems to be \nsome kind of silver or platinum.\n"
-        }
-      ]
-    },
-    {
-      "id": 7218,
-      "name": "some silvery leg plates",
-      "keywords": "plates leg silvery",
-      "description": "On the floor you see some silvery leg plates.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 33,
-      "level": 32,
-      "weight": 200,
-      "cost": 10100,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "leg plates silvery",
-          "description": "They seem to be made from silver or platinum.  You see the outline of a rose.\n"
-        }
-      ]
-    },
-    {
-      "id": 7219,
-      "name": "a pair of silvery gloves",
-      "keywords": "gloves silvery",
-      "description": "You can see a pair of silvery gloves on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 129,
-      "level": 27,
-      "weight": 140,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "gloves silvery",
-          "description": "The gloves are made of silver threads.\n"
-        }
-      ]
-    },
-    {
-      "id": 7220,
-      "name": "a silvery helmet",
-      "keywords": "helmet silvery",
-      "description": "The silvery helmet lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 17,
-      "level": 32,
-      "weight": 350,
-      "cost": 10600,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "helmet silvery",
-          "description": "The helmet is made from platinum or silver and has a white fur brush attached\non the top.\n"
-        }
-      ]
-    },
-    {
-      "id": 7221,
-      "name": "the shield of the rose",
-      "keywords": "shield",
-      "description": "The shield of the rose rests on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 513,
-      "level": 30,
-      "weight": 600,
-      "cost": 5800,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -7
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "shield",
-          "description": "On the shield you see a clear and perfect painting of a dark red rose on a white\nbackground. You also notice the inscription :'Pax Est Sanctuum'.\n"
-        }
-      ]
-    },
-    {
-      "id": 7222,
-      "name": "a pair of silvery boots",
-      "keywords": "boots silvery",
-      "description": "A pair of silvery boots stand on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 65,
-      "level": 32,
-      "weight": 400,
-      "cost": 10100,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "boots silvery",
-          "description": "The boots are made from a silvery metal.\n"
-        }
-      ]
-    },
-    {
-      "id": 7223,
-      "name": "some silvery arm plates",
-      "keywords": "plates arm silvery",
-      "description": "On the floor you see some silvery arm plates.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 257,
-      "level": 32,
-      "weight": 400,
-      "cost": 10100,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "plates arm silvery",
-          "description": "They seem to be made from silver or platinum. You see the outline of a rose.\n"
-        }
-      ]
-    },
-    {
-      "id": 7224,
-      "name": "a white cloak",
-      "keywords": "cloak white",
-      "description": "A white cloak lies on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 3392,
-      "wear_flags": 1025,
-      "level": 31,
-      "weight": 200,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "cloak white",
-          "description": "This is a very fine made cloak from an unknown material, in a bright white\ncolor.\n"
-        }
-      ]
-    },
-    {
-      "id": 7298,
-      "name": "a huge treasure",
-      "keywords": "treasure coins",
-      "description": "A huge treasure is lying here, looking very valuable.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        400,
-        12,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "treasure",
-          "description": "Looks like a LOT of coins.\n"
-        }
-      ]
-    },
-    {
-      "id": 7299,
-      "name": "a short sword",
-      "keywords": "sword short",
-      "description": "There lies a short sword.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 7,
-      "weight": 40,
-      "cost": 610,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        5,
-        2,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "short sword",
-          "description": "This is a very nice little weapon.\n"
-        }
-      ]
-    },
-    {
-      "id": 7300,
-      "name": "a backpack",
-      "keywords": "backpack pack back",
-      "description": "A backpack stands upright here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 0,
-      "weight": 20,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        60,
-        5,
-        0,
-        6,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7301,
-      "name": "a large beltpouch",
-      "keywords": "beltpouch pouch",
-      "description": "A large beltpouch lies here on the ground.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 2049,
-      "level": 0,
-      "weight": 10,
-      "cost": 20,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        0,
-        1,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7303,
-      "name": "the Red DragonOrb",
-      "keywords": "orb dragonorb",
-      "description": "A large reddish sphere is in the center of the room.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 576,
-      "wear_flags": 16385,
-      "level": 21,
-      "weight": 50,
-      "cost": 18600,
-      "condition": 100,
-      "values": [
-        13,
-        10,
-        10,
-        78,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 2
-        },
-        {
-          "location": 3,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7304,
-      "name": "a red dragon torso",
-      "keywords": "red torso",
-      "description": "There is a pile of red dragonscale on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 9,
-      "level": 29,
-      "weight": 300,
-      "cost": 6400,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7305,
-      "name": "red dragonscale leggings",
-      "keywords": "leggings red",
-      "description": "On the floor you see two red dragonscale leggings.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 33,
-      "level": 29,
-      "weight": 170,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7306,
-      "name": "a pair of red dragon claws",
-      "keywords": "claws dragonclaws red",
-      "description": "You can see a pair of large red dragon claws on the floor.",
-      "material": "oldstyle",
-      "item_type": "furniture",
-      "extra_flags": 576,
-      "wear_flags": 129,
-      "level": 20,
-      "weight": 40,
-      "cost": 1150,
-      "condition": 100,
-      "values": [
-        9,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7307,
-      "name": "a red dragonhelm",
-      "keywords": "skull dragonhelm red",
-      "description": "A helmet fashioned into the likeness of a dragon skull is here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 17,
-      "level": 29,
-      "weight": 150,
-      "cost": 7000,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 2
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7308,
-      "name": "the red dragon shield",
-      "keywords": "shield red",
-      "description": "A large red dragon shield rests on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 513,
-      "level": 35,
-      "weight": 100,
-      "cost": 6900,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7309,
-      "name": "a pair of a red dragon's rear claws",
-      "keywords": "greaves red",
-      "description": "A pair of a red dragon's rear claws is on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 65,
-      "level": 29,
-      "weight": 400,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -1
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 7310,
-      "name": "red dragon arm guards",
-      "keywords": "arm guards red",
-      "description": "On the ground you see two red arm guards.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 257,
-      "level": 29,
-      "weight": 400,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -1
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 7001,
-      "arg2": 12,
-      "arg3": 7041,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7001,
-      "arg2": 12,
-      "arg3": 7025,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7001,
-      "arg2": 12,
-      "arg3": 7004,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7001,
-      "arg2": 12,
-      "arg3": 7004,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7002,
-      "arg2": 7,
-      "arg3": 7049,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7002,
-      "arg2": 7,
-      "arg3": 7031,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7039,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7039,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7039,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7037,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7037,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7003,
-      "arg2": 8,
-      "arg3": 7050,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7004,
-      "arg2": 3,
-      "arg3": 7102,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7005,
-      "arg2": 7,
-      "arg3": 7112,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 7005,
-      "arg2": 7,
-      "arg3": 7112,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 7005,
-      "arg2": 7,
-      "arg3": 7122,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7002,
-      "arg2": 7,
-      "arg3": 7104,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7103,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7103,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7006,
-      "arg2": 6,
-      "arg3": 7102,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7006,
-      "arg2": 6,
-      "arg3": 7104,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7006,
-      "arg2": 6,
-      "arg3": 7101,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 7116,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7280,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7201,
-      "arg2": 3,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7201,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7202,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7208,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7200,
-      "arg2": 1,
-      "arg3": 7201,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7200,
-      "arg2": 4,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7203,
-      "arg2": 4,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7205,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 7204,
-      "arg2": 6,
-      "arg3": 7200,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7201,
-      "arg2": 1,
-      "arg3": 7203,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7201,
-      "arg2": 4,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7202,
-      "arg2": 2,
-      "arg3": 7205,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7202,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7202,
-      "arg2": 2,
-      "arg3": 7207,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7202,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 7206,
-      "arg2": 4,
-      "arg3": 7206,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7214,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7213,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7215,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7217,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7208,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7219,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7209,
-      "arg2": 4,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7221,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7208,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7223,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7209,
-      "arg2": 4,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7225,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7233,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7208,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7203,
-      "arg2": 10,
-      "arg3": 7233,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7209,
-      "arg2": 4,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7211,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7204,
-      "arg2": 1,
-      "arg3": 7234,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 7280,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7116,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7002,
-      "arg2": 7,
-      "arg3": 7285,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7190,
-      "arg2": 10,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7002,
-      "arg2": 7,
-      "arg3": 7285,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7286,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7013,
-      "arg2": 8,
-      "arg3": 7286,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7281,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7281,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7000,
-      "arg2": 8,
-      "arg3": 7280,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 7116,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7280,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7415,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7416,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7418,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7421,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7424,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7425,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7405,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7406,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7404,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7405,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7040,
-      "arg2": 1,
-      "arg3": 7428,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7304,
-      "arg2": 99,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7305,
-      "arg2": 99,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7306,
-      "arg2": 99,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7307,
-      "arg2": 99,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7308,
-      "arg2": 99,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7309,
-      "arg2": 99,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7310,
-      "arg2": 99,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7216,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7303,
-      "arg2": 99,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7041,
-      "arg2": 2,
-      "arg3": 7444,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7042,
-      "arg2": 2,
-      "arg3": 7435,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7043,
-      "arg2": 3,
-      "arg3": 7439,
-      "arg4": 3
-    },
-    {
-      "command": "O",
-      "arg1": 7300,
-      "arg2": 8,
-      "arg3": 7439,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7044,
-      "arg2": 6,
-      "arg3": 7406,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7045,
-      "arg2": 1,
-      "arg3": 7419,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7046,
-      "arg2": 1,
-      "arg3": 7424,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7010,
-      "arg2": 2,
-      "arg3": 7429,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 7013,
-      "arg2": 3,
-      "arg3": 7403,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7013,
-      "arg2": 3,
-      "arg3": 7412,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7011,
-      "arg2": 3,
-      "arg3": 7423,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7007,
-      "arg2": 3,
-      "arg3": 7422,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 7008,
-      "arg2": 4,
-      "arg3": 7401,
-      "arg4": 4
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 7006,
@@ -7496,5 +5589,11 @@
       "mob_vnum": 7204,
       "spec": "spec_poison"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 7000,
+    "high": 7499
+  }
 }

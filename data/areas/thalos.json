@@ -18,12 +18,14 @@
         "east": {
           "to_room": 5256,
           "description": "You see a trail out of this blasted place.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5201,
           "description": "You see devastation everywhere. Houses lie in ruin and skeletons litter\nthe streets. You see strange beasts stalking the shadows.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -39,22 +41,26 @@
         "north": {
           "to_room": 5239,
           "description": "It's a dark alley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5200,
           "description": "The entrance to the city lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5255,
           "description": "It's a dark alley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5202,
           "description": "Main Street lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -70,21 +76,25 @@
         "north": {
           "to_room": 5236,
           "description": "The remnants of a store lie this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5201,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5232,
           "description": "It looks like what used to be the main building in the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5203,
           "description": "A withered garden path lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -100,22 +110,26 @@
         "north": {
           "to_room": 5204,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5202,
           "description": "This is the main street leading to the city's entrance\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5206,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5250,
           "description": "Inside the temple, small patches of light shoot through each doorway as\nwell as a few holes in the ceiling.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -131,17 +145,20 @@
         "north": {
           "to_room": 5211,
           "description": "A side street leads off to the northern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5203,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5205,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -157,12 +174,14 @@
         "east": {
           "to_room": 5204,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5250,
           "description": "Inside the temple, small patches of light shoot through each doorway as\nwell as a few holes in the ceiling.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -178,12 +197,14 @@
         "north": {
           "to_room": 5203,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5212,
           "description": "A small side street leads to the southern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -199,17 +220,20 @@
         "north": {
           "to_room": 5225,
           "description": "A small table has been toppled over, spilling fine jewelery and gems\nonto the ground.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5220,
           "description": "Rotted remains of fruits and vegetables lie strewn about.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5208,
           "description": "The market place continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -225,17 +249,20 @@
         "north": {
           "to_room": 5222,
           "description": "Tattered carpets and ruined bales of silk sit idly by a run down stand.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5207,
           "description": "The center of the market lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5217,
           "description": "From the massive stench, this must have been a meat and poultry stand.\nIt lies totally bare.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -250,15 +277,18 @@
       "exits": {
         "east": {
           "to_room": 5243,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5210,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5228,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -273,7 +303,8 @@
       "exits": {
         "north": {
           "to_room": 5209,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5244,
@@ -283,12 +314,14 @@
         },
         "south": {
           "to_room": 5211,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5226,
           "description": "A small clay dwelling sits here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -303,22 +336,26 @@
       "exits": {
         "north": {
           "to_room": 5210,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5237,
           "description": "An unusually tall dwelling stands looming over you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5204,
           "description": "A garden path circles around the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5227,
           "description": "Here lies a small stone house with a thatched roof.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -334,21 +371,25 @@
         "north": {
           "to_room": 5206,
           "description": "A small garden path encircles the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5232,
           "description": "This possibly could be the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5213,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5221,
           "description": "Inside the building you see long pieces of metal, an oven, and some\nanvils.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -363,21 +404,25 @@
       "exits": {
         "north": {
           "to_room": 5212,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5230,
           "description": "From the looks of it, this was once a two story abode. The entire second\nfloor has collapsed leaving a very little part of the bar still free\nfrom debris.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5214,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5219,
           "description": "This seems to be the only guild house in the entire city. Its dark nature\nmakes you wonder about its origins.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -392,19 +437,23 @@
       "exits": {
         "north": {
           "to_room": 5213,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5251,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5229,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5218,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -419,15 +468,18 @@
       "exits": {
         "north": {
           "to_room": 5216,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5218,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5247,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -443,12 +495,14 @@
         "north": {
           "to_room": 5217,
           "description": "You see the back-side of the market place meat stand.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5215,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -464,16 +518,19 @@
         "north": {
           "to_room": 5208,
           "description": "The market place lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5220,
           "description": "This is a cart full of rotted vegetables and fruits.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5216,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -489,12 +546,14 @@
         "east": {
           "to_room": 5214,
           "description": "A small side street greets you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5215,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -510,7 +569,8 @@
         "east": {
           "to_room": 5213,
           "description": "A small side street runs past the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -526,12 +586,14 @@
         "north": {
           "to_room": 5207,
           "description": "The market place is deserted.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5217,
           "description": "A strong stench emanates from the meat stand next to you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -547,7 +609,8 @@
         "east": {
           "to_room": 5212,
           "description": "A small side street runs past the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -562,17 +625,20 @@
       "exits": {
         "north": {
           "to_room": 5223,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5225,
           "description": "A fine jewelry stand lies in ruin next to you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5208,
           "description": "The market place is deserted.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -588,11 +654,13 @@
         "north": {
           "to_room": 5224,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5222,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -607,16 +675,19 @@
       "exits": {
         "east": {
           "to_room": 5228,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5223,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5246,
           "description": "Above you looms a tall watchtower.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -632,12 +703,14 @@
         "south": {
           "to_room": 5207,
           "description": "The market place is deserted.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5222,
           "description": "Next to you is a stand full of ruined clothes and rugs.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -653,7 +726,8 @@
         "east": {
           "to_room": 5210,
           "description": "Outside is a small side street.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -669,7 +743,8 @@
         "east": {
           "to_room": 5211,
           "description": "A small side street runs past the house.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -684,11 +759,13 @@
       "exits": {
         "east": {
           "to_room": 5209,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5224,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -704,7 +781,8 @@
         "north": {
           "to_room": 5214,
           "description": "A small side street runs past the shop.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -720,7 +798,8 @@
         "west": {
           "to_room": 5213,
           "description": "A small side street runs past the tavern.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -736,11 +815,13 @@
         "north": {
           "to_room": 5232,
           "description": "The long hallway leads back to the main reception area of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5234,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -756,21 +837,25 @@
         "north": {
           "to_room": 5202,
           "description": "Main street runs past the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5233,
           "description": "A hallway leads to the east wing of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5231,
           "description": "A hallway leads to the south wing of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5212,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -785,11 +870,13 @@
       "exits": {
         "south": {
           "to_room": 5234,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5232,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -804,11 +891,13 @@
       "exits": {
         "north": {
           "to_room": 5233,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5231,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -824,7 +913,8 @@
         "east": {
           "to_room": 5255,
           "description": "The alley runs by this building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -840,7 +930,8 @@
         "south": {
           "to_room": 5202,
           "description": "Main street runs past this ruined home.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -855,17 +946,20 @@
       "exits": {
         "east": {
           "to_room": 5238,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5211,
           "description": "A small side street winds past the dwelling.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5245,
           "description": "The stairs and even the entire second floor itself looks very unsafe\nfor travel. Gusts of wind make them creak and shudder.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -880,7 +974,8 @@
       "exits": {
         "west": {
           "to_room": 5237,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -895,12 +990,14 @@
       "exits": {
         "north": {
           "to_room": 5240,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5201,
           "description": "Main street runs past here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -916,11 +1013,13 @@
         "north": {
           "to_room": 5241,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5239,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -935,16 +1034,19 @@
       "exits": {
         "south": {
           "to_room": 5240,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5243,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5248,
           "description": "Winds howl high above your head in the tower above.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -959,12 +1061,14 @@
       "exits": {
         "north": {
           "to_room": 5243,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5244,
           "description": "The wall has collapsed on the adjoining house, creating a new opening\nin it.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -980,16 +1084,19 @@
         "east": {
           "to_room": 5241,
           "description": "A watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5242,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5209,
           "description": "A side street runs by here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1004,12 +1111,14 @@
       "exits": {
         "east": {
           "to_room": 5242,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5210,
           "description": "A small side street runs past the house.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1035,7 +1144,8 @@
         "down": {
           "to_room": 5224,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1051,7 +1161,8 @@
         "down": {
           "to_room": 5215,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1067,7 +1178,8 @@
         "down": {
           "to_room": 5241,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1083,12 +1195,14 @@
         "north": {
           "to_room": 5205,
           "description": "A side street leads to the northern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5203,
           "description": "Main street leads out to the main gate of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1104,12 +1218,14 @@
         "east": {
           "to_room": 5252,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5214,
           "description": "A small side street greets you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1124,15 +1240,18 @@
       "exits": {
         "north": {
           "to_room": 5253,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5251,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5254,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1148,12 +1267,14 @@
         "north": {
           "to_room": 5255,
           "description": "The alley continues to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5252,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1169,7 +1290,8 @@
         "down": {
           "to_room": 5252,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -1190,16 +1312,19 @@
         "north": {
           "to_room": 5201,
           "description": "You see main street.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5253,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5235,
           "description": "It looks in bad shape inside, but structurally intact.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1215,12 +1340,14 @@
         "east": {
           "to_room": 5257,
           "description": "You see the trail.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5200,
           "description": "You see Thalos!\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1236,12 +1363,14 @@
         "east": {
           "to_room": 5258,
           "description": "You see the intersection.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5256,
           "description": "You see the trail continue on.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1257,17 +1386,20 @@
         "north": {
           "to_room": 5259,
           "description": "You see the trail lead back north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5262,
           "description": "You can't see into the gloom of this forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5257,
           "description": "You see the trail branch off.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1283,12 +1415,14 @@
         "north": {
           "to_room": 5260,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5258,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1304,12 +1438,14 @@
         "north": {
           "to_room": 5261,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5259,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1325,12 +1461,14 @@
         "north": {
           "to_room": 3502,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5260,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1346,12 +1484,14 @@
         "east": {
           "to_room": 5263,
           "description": "You see a darker part of the forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5258,
           "description": "You see the lighter forest and the T-intersection west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1367,12 +1507,14 @@
         "south": {
           "to_room": 5264,
           "description": "You see nothing in the gloom south of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5262,
           "description": "You see the dwarf forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1388,12 +1530,14 @@
         "north": {
           "to_room": 5263,
           "description": "You see nothing in the gloom north of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5265,
           "description": "You see nothing in the gloom east of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1409,12 +1553,14 @@
         "east": {
           "to_room": 5266,
           "description": "You see nothing in the gloom east of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5264,
           "description": "You see nothing in the gloom west of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1430,12 +1576,14 @@
         "west": {
           "to_room": 5265,
           "description": "You see nothing in the gloom west of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5267,
           "description": "You see the trail lead down into gloom.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1450,27 +1598,31 @@
       "exits": {
         "north": {
           "to_room": 5271,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1701,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 9201,
           "description": "You see a large mountain on the far side of a canyon.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5268,
           "description": "You see a dark fox hole.\n",
           "keyword": "hole fox",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "up": {
           "to_room": 5266,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1487,13 +1639,14 @@
           "to_room": 5267,
           "description": "You see the exit from here!\n",
           "keyword": "fox hole",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 5269,
           "description": "You see more of the cave.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -1514,12 +1667,14 @@
         "north": {
           "to_room": 5268,
           "description": "You see more of the cave.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5270,
           "description": "You see a path leading down into the dark gloom.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -1544,13 +1699,14 @@
         "up": {
           "to_room": 5269,
           "description": "You see your only way back up.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5100,
           "description": "You see nothing on the floor except skeletons.\n",
           "keyword": "secret",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1572,12 +1728,14 @@
         "north": {
           "to_room": 5272,
           "description": "You see a trail away from this gloomy valley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5267,
           "description": "You see more of this gloomy valley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1593,12 +1751,14 @@
         "north": {
           "to_room": 5273,
           "description": "You can actually see the trail north of you!\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5271,
           "description": "You can barely see the gloomy valley south of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1614,17 +1774,20 @@
         "north": {
           "to_room": 5274,
           "description": "You see the dim trail lead north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5280,
           "description": "You see the small path.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5272,
           "description": "You see the dim trail lead south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1640,12 +1803,14 @@
         "north": {
           "to_room": 5275,
           "description": "You see the dim trail lead north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5273,
           "description": "You see the dim trail lead south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1661,12 +1826,14 @@
         "south": {
           "to_room": 5274,
           "description": "You see the dim trail lead south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5276,
           "description": "You see the trail lead west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1682,12 +1849,14 @@
         "east": {
           "to_room": 5275,
           "description": "The trail continues east to the dimmer parts of the forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5277,
           "description": "The trail continues west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1703,12 +1872,14 @@
         "east": {
           "to_room": 5276,
           "description": "The trail continues east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5278,
           "description": "The trail continues west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1724,12 +1895,14 @@
         "east": {
           "to_room": 5277,
           "description": "The trail continues east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5279,
           "description": "The trail continues west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1768,12 +1941,14 @@
         "south": {
           "to_room": 2300,
           "description": "You see the dark path.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5273,
           "description": "You see the trail back to the Dwarven Forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1789,7 +1964,8 @@
         "north": {
           "to_room": 5279,
           "description": "You see the trail leading north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1804,7 +1980,7 @@
       "long_description": "You meet a beholder's deadly gaze!\n",
       "description": "It has a large central eye that projects an anti-magic ray and ten\neyestalks atop the round body which can do anything from charm you\nto disintegrate you.  Beholders are not known for their personality.\n",
       "race": "human",
-      "act_flags": "ABFHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -870,
       "group": 0,
@@ -1814,23 +1990,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1128,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1128
     },
     {
       "id": 5201,
@@ -1839,7 +2011,7 @@
       "long_description": "A strange lamia stands here waiting for her next meal.\n",
       "description": "This is a creature with the upper torso of a beautiful woman, but the lower\nbody of a four-legged beast.  She licks her lips as she looks at you greedily.\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -999,
       "group": 0,
@@ -1849,23 +2021,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5202,
@@ -1874,7 +2042,7 @@
       "long_description": "A strong chest lies in one corner of the room.\n",
       "description": "A strong, wooden chest bound with iron straps and a heavy pad-lock on the\nfront.\n",
       "race": "human",
-      "act_flags": "ABCFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": 10,
       "group": 0,
@@ -1884,23 +2052,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5203,
@@ -1909,7 +2073,7 @@
       "long_description": "Two skeletons lie crushed under a large boulder.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -10,
       "group": 0,
@@ -1919,23 +2083,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5204,
@@ -1944,7 +2104,7 @@
       "long_description": "The stone floor of this house has been ripped apart.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -140,
       "group": 0,
@@ -1954,23 +2114,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5205,
@@ -1979,7 +2135,7 @@
       "long_description": "Some broken shards of pottery lie strewn about the floor.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": 200,
       "group": 0,
@@ -1989,23 +2145,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5206,
@@ -2014,7 +2166,7 @@
       "long_description": "A few wooden planks lie stacked on a low shelf.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": 0,
       "group": 0,
@@ -2024,23 +2176,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5207,
@@ -2049,7 +2197,7 @@
       "long_description": "A small horned lizard flicks his tongue and slithers away.\n",
       "description": "A cute little lizard, that is, if you like reptiles!\n",
       "race": "lizard",
-      "act_flags": "AH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2059,23 +2207,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
+      "form": "276824129",
+      "parts": "2163901",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGXc",
-      "parts": "0ACDEFHKQV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5208,
@@ -2084,7 +2228,7 @@
       "long_description": "In the corner you see a large, stone golem faithfully standing watch.\n",
       "description": "It is a big chunk of rock that has been magically formed into a giant\nstone creature. He stands here still guarding the city.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "N",
       "alignment": 600,
       "group": 0,
@@ -2094,1735 +2238,34 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 212,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 212
     }
   ],
-  "objects": [
-    {
-      "id": 5200,
-      "name": "a mithril vest",
-      "keywords": "mithril vest",
-      "description": "A vest made of mithril plates lies heaped on the floor.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 9,
-      "level": 26,
-      "weight": 300,
-      "cost": 7600,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 2
-        },
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5201,
-      "name": "a mithril helm",
-      "keywords": "helm mithril",
-      "description": "Here lies a large mithril helm.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 17,
-      "level": 27,
-      "weight": 100,
-      "cost": 3400,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5202,
-      "name": "a pair of mithril gauntlets",
-      "keywords": "gauntlets mithril",
-      "description": "A pair of mithril gauntlets rests on the ground.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 129,
-      "level": 25,
-      "weight": 100,
-      "cost": 2700,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5203,
-      "name": "some mithril sleeves",
-      "keywords": "sleeves mithril",
-      "description": "A set of mithril sleeves lies on the ground.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 257,
-      "level": 25,
-      "weight": 100,
-      "cost": 2700,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5204,
-      "name": "a pair of mithril boots",
-      "keywords": "boots mithril",
-      "description": "A pair of mithril boots stands has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 65,
-      "level": 25,
-      "weight": 60,
-      "cost": 3100,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5205,
-      "name": "a set of mithril leggings",
-      "keywords": "leggings mithril",
-      "description": "A set of mithril leggings lie here unattended.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 33,
-      "level": 25,
-      "weight": 100,
-      "cost": 3100,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5206,
-      "name": "a mithril girth",
-      "keywords": "girth mithril",
-      "description": "A large iron girth lies at your feet.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 2049,
-      "level": 26,
-      "weight": 60,
-      "cost": 5200,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5207,
-      "name": "a battered iron breast plate",
-      "keywords": "breast plate iron",
-      "description": "A battered iron breast plate lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 4,
-      "weight": 450,
-      "cost": 9100,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5208,
-      "name": "a sturdy iron shield",
-      "keywords": "shield iron",
-      "description": "A small, but sturdy, iron shield has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 513,
-      "level": 24,
-      "weight": 50,
-      "cost": 4400,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5210,
-      "name": "a black potion",
-      "keywords": "potion black",
-      "description": "A jet black potion sits upright waiting to be taken.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 96,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 50,
-      "cost": 880,
-      "condition": 100,
-      "values": [
-        16,
-        4,
-        78,
-        53,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5211,
-      "name": "an orange potion",
-      "keywords": "potion orange",
-      "description": "A small orange potion lies here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 96,
-      "wear_flags": 1,
-      "level": 4,
-      "weight": 100,
-      "cost": 400,
-      "condition": 100,
-      "values": [
-        20,
-        32,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5214,
-      "name": "a smooth quartz ball",
-      "keywords": "ball quartz",
-      "description": "A smooth quartz ball lies here gleaming.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 300,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        72,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5215,
-      "name": "a tattered scroll",
-      "keywords": "scroll tattered",
-      "description": "A worn and tattered scroll has been left here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 8,
-      "weight": 150,
-      "cost": 1280,
-      "condition": 100,
-      "values": [
-        24,
-        41,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5216,
-      "name": "a bound scroll",
-      "keywords": "scroll bound",
-      "description": "A bound scroll of detection lies at your feet.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 500,
-      "condition": 100,
-      "values": [
-        15,
-        30,
-        33,
-        34,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5217,
-      "name": "a silver flute",
-      "keywords": "flute silver",
-      "description": "A brilliant silver flute glimmers from beneath a rock.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 9,
-      "weight": 10,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        17,
-        1,
-        1,
-        13,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5218,
-      "name": "a demon-faced talisman",
-      "keywords": "talisman demon",
-      "description": "A demon-faced talisman glares at you angrily.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 65,
-      "wear_flags": 5,
-      "level": 0,
-      "weight": 110,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -8
-        },
-        {
-          "location": 1,
-          "modifier": -10
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5219,
-      "name": "a chunk of venison",
-      "keywords": "venison chunk",
-      "description": "A large chunk of venison sits here ready to be eaten.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 200,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        24,
-        24,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5220,
-      "name": "a large cracked fountain",
-      "keywords": "fountain water",
-      "description": "Some stagnant water lies in the bottom of the fountain.",
-      "material": "oldstyle",
-      "item_type": "fountain",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5221,
-      "name": "a two-handed sword",
-      "keywords": "two-handed two sword",
-      "description": "A nice two-handed sword hangs on a hook in the wall.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1088,
-      "wear_flags": 8193,
-      "level": 26,
-      "weight": 240,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        12,
-        25,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5222,
-      "name": "a black silk robe",
-      "keywords": "robe black silk",
-      "description": "A black silk robe lies heaped in one corner.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 5,
-      "weight": 60,
-      "cost": 410,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        1,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 10
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5223,
-      "name": "a dark green cloak",
-      "keywords": "cloak green",
-      "description": "A beautiful dark green cloak has been dropped by someone.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 576,
-      "wear_flags": 5,
-      "level": 20,
-      "weight": 120,
-      "cost": 1600,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5224,
-      "name": "an engraved ebony seal",
-      "keywords": "seal ebony",
-      "description": "A small, engraved ebony seal is here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        30,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5225,
-      "name": "the desk",
-      "keywords": "desk curved",
-      "description": "A dirty, crumbling curved desk is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        100,
-        13,
-        5224,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5226,
-      "name": "an engraved ivory seal",
-      "keywords": "seal ivory",
-      "description": "A small, engraved ivory seal lies here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        31,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5227,
-      "name": "the glass cabinet",
-      "keywords": "cabinet glass",
-      "description": "A broken glass cabinet is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        13,
-        5226,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5228,
-      "name": "a rotten arm",
-      "keywords": "arm rotted",
-      "description": "A rotted arm floats lazily by your feet.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 200,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        50,
-        50,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5230,
-      "name": "a pale blue stone",
-      "keywords": "stone pale blue",
-      "description": "A pale blue stone sits here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5231,
-      "name": "a scarlet and blue stone",
-      "keywords": "stone scarlet blue",
-      "description": "A pretty scarlet and blue stone has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5232,
-      "name": "an incandescent blue stone",
-      "keywords": "stone blue incandescent",
-      "description": "A small incandescent blue stone lies here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5233,
-      "name": "a deep red stone",
-      "keywords": "stone red deep",
-      "description": "Someone has left a deep red stone here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5234,
-      "name": "a pink stone",
-      "keywords": "stone pink",
-      "description": "A tiny pink stone lies at your feet.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5235,
-      "name": "a pearly white stone",
-      "keywords": "stone pearly white",
-      "description": "This pearly white stone would probably sell for a good price.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 5,
-      "weight": 10,
-      "cost": 11,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5237,
-      "name": "a lavender and green stone",
-      "keywords": "stone lavender green",
-      "description": "A stunning lavender and green stone rests on the ground.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 0,
-      "weight": 10,
-      "cost": 150,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5239,
-      "name": "a dull grey stone",
-      "keywords": "stone grey dull",
-      "description": "You can barely make out a dull grey stone on the ground.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5241,
-      "name": "a pink and green stone",
-      "keywords": "stone pink green",
-      "description": "A bright pink and green stone has been left here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 0,
-      "weight": 10,
-      "cost": 500,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5243,
-      "name": "a clear stone",
-      "keywords": "stone clear",
-      "description": "A odd clear stone lies at your feet.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 64,
-      "wear_flags": 65537,
-      "level": 0,
-      "weight": 10,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5250,
-      "name": "a mandolin",
-      "keywords": "mandolin",
-      "description": "A mandolin lies against the wall.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 9,
-      "weight": 100,
-      "cost": 2500,
-      "condition": 100,
-      "values": [
-        13,
-        3,
-        3,
-        23,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5251,
-      "name": "a golden harp",
-      "keywords": "harp golden",
-      "description": "A battered golden harp has been tipped over.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 500,
-      "cost": 2700,
-      "condition": 100,
-      "values": [
-        18,
-        1,
-        1,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5252,
-      "name": "a long slim dagger",
-      "keywords": "long dagger slim",
-      "description": "A long slim dagger has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 10,
-      "cost": 590,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        5,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 5200,
-      "arg2": 1,
-      "arg3": 5250,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5208,
-      "arg2": 3,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5223,
-      "arg2": 10,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5234,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5232,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5232,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5217,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5236,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5237,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5240,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5241,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5218,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5250,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5216,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5233,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5219,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5231,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5220,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5226,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5235,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5224,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5243,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5204,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5251,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5201,
-      "arg2": 12,
-      "arg3": 5205,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5230,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5228,
-      "arg2": 10,
-      "arg3": 5242,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5219,
-      "arg2": 5,
-      "arg3": 5217,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5220,
-      "arg2": 1,
-      "arg3": 5234,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5207,
-      "arg2": 5,
-      "arg3": 5229,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5202,
-      "arg2": 1,
-      "arg3": 5229,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5210,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5214,
-      "arg2": 4,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5203,
-      "arg2": 1,
-      "arg3": 5226,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5215,
-      "arg2": 8,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 5239,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5204,
-      "arg2": 1,
-      "arg3": 5219,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5218,
-      "arg2": 8,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 5211,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5205,
-      "arg2": 1,
-      "arg3": 5238,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5214,
-      "arg2": 4,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5206,
-      "arg2": 1,
-      "arg3": 5236,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5222,
-      "arg2": 8,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5207,
-      "arg2": 4,
-      "arg3": 5232,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5207,
-      "arg2": 4,
-      "arg3": 5217,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5207,
-      "arg2": 4,
-      "arg3": 5227,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5207,
-      "arg2": 4,
-      "arg3": 5244,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5208,
-      "arg2": 8,
-      "arg3": 5247,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": 80,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5224,
-      "arg2": 8,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5200,
-      "arg2": 8,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5204,
-      "arg2": 8,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5208,
-      "arg2": 8,
-      "arg3": 5246,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": 80,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5226,
-      "arg2": 8,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5203,
-      "arg2": 8,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5208,
-      "arg2": 8,
-      "arg3": 5248,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": 80,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5205,
-      "arg2": 8,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5206,
-      "arg2": 8,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5208,
-      "arg2": 8,
-      "arg3": 5254,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": 80,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5201,
-      "arg2": 8,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5202,
-      "arg2": 8,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5225,
-      "arg2": 1,
-      "arg3": 5231,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 5215,
-      "arg2": 4,
-      "arg3": 5225,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 5216,
-      "arg2": 4,
-      "arg3": 5225,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 5227,
-      "arg2": 1,
-      "arg3": 5233,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 3105,
-      "arg2": 8,
-      "arg3": 5227,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 5267,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 5268,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 5270,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5110,
-      "arg2": 2,
-      "arg3": 5270,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5100,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5110,
-      "arg2": 2,
-      "arg3": 5270,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5100,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5111,
-      "arg2": 2,
-      "arg3": 5267,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5100,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5111,
-      "arg2": 2,
-      "arg3": 5272,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5100,
-      "arg2": 99,
-      "arg3": 16,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 5200,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 5200,
+    "high": 5299
+  }
 }

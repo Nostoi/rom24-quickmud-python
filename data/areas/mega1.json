@@ -18,12 +18,14 @@
         "north": {
           "to_room": 5062,
           "description": "You see the glowing sand of the badlands.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8002,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -39,12 +41,14 @@
         "north": {
           "to_room": 8001,
           "description": "The entrance to Mega-City One is in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8003,
           "description": "There is an intersection ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -60,22 +64,26 @@
         "north": {
           "to_room": 8002,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8010,
           "description": "Junket way continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8004,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8021,
           "description": "The Pustule Palace Cafe is in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -91,12 +99,14 @@
         "north": {
           "to_room": 8003,
           "description": "An intersection lies in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8005,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -112,22 +122,26 @@
         "north": {
           "to_room": 8004,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8011,
           "description": "A dark alley lies to the east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8006,
           "description": "A large plaza is in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8022,
           "description": "A building is in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -143,22 +157,26 @@
         "north": {
           "to_room": 8005,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8012,
           "description": "Max Jaffa Boulevard goes in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8007,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8023,
           "description": "A home for Sarky people is to the west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -174,22 +192,26 @@
         "north": {
           "to_room": 8006,
           "description": "A plaza is to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8013,
           "description": "Ed Hilldreth Mem. Parkwy is to the east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8008,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8024,
           "description": "A City Block lies to the west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -205,12 +227,14 @@
         "north": {
           "to_room": 8007,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8009,
           "description": "The Megway continues in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -226,22 +250,26 @@
         "north": {
           "to_room": 8008,
           "description": "The Megway is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8014,
           "description": "There is construction this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8020,
           "description": "There is construction ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8025,
           "description": "Ziggi Piggi's Home the Semi-Stiff is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -257,12 +285,14 @@
         "east": {
           "to_room": 8015,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8003,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -278,12 +308,14 @@
         "east": {
           "to_room": 8017,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8005,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -299,12 +331,14 @@
         "east": {
           "to_room": 8018,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8006,
           "description": "A large plaza is to the west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -320,12 +354,14 @@
         "east": {
           "to_room": 8019,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8007,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -341,7 +377,8 @@
         "west": {
           "to_room": 8009,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -357,12 +394,14 @@
         "south": {
           "to_room": 8016,
           "description": "Threep Lane continues ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8010,
           "description": "Junket Way is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -378,18 +417,21 @@
         "north": {
           "to_room": 8015,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 8026,
           "description": "A door to the east bodes ill.\n",
           "keyword": "door",
-          "flags": "1"
+          "flags": "3",
+          "key": -1
         },
         "south": {
           "to_room": 8017,
           "description": "Threep Lane continues south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -410,17 +452,20 @@
         "north": {
           "to_room": 8016,
           "description": "Threep Lane continues north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8018,
           "description": "An intersection is ahead.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8011,
           "description": "A dark alley is west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -436,17 +481,20 @@
         "north": {
           "to_room": 8017,
           "description": "Threep Lane continues north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 8019,
           "description": "Threep Lane continues south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8012,
           "description": "Max Jaffa Blvd continues west\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -462,12 +510,14 @@
         "north": {
           "to_room": 8018,
           "description": "Threep Lane continues north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 8013,
           "description": "Ed Hilldreth continues west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -483,7 +533,8 @@
         "north": {
           "to_room": 8009,
           "description": "An intersection lies north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -499,7 +550,8 @@
         "east": {
           "to_room": 8003,
           "description": "An intersection lies east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -515,7 +567,8 @@
         "east": {
           "to_room": 8005,
           "description": "An intersection lies east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -531,7 +584,8 @@
         "east": {
           "to_room": 8006,
           "description": "A large plaza lies east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -547,7 +601,8 @@
         "east": {
           "to_room": 8007,
           "description": "An intersection lies east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -563,7 +618,8 @@
         "east": {
           "to_room": 8009,
           "description": "An intersection lies east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -585,7 +641,8 @@
         "west": {
           "to_room": 8016,
           "keyword": "door",
-          "flags": "1"
+          "flags": "3",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -650,7 +707,7 @@
       "long_description": "A juve is standing here plotting mischief.\n",
       "description": "He is a tall, thin boy.  He is looking for his gang mates.  He and his\nmates have cost city authorities many millions of creds a week in\nvandalism repairs.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -660,23 +717,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8001,
@@ -685,7 +738,7 @@
       "long_description": "A punk is here plotting a crime wave.\n",
       "description": "This punk is from one of the rowdiest, scruffiest, and definitely most\nfashionable of all gangs -- the Grunge Mongers.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -695,23 +748,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8002,
@@ -720,7 +769,7 @@
       "long_description": "A Futsie is here reciting Monty Python sketches.\n",
       "description": "A sad victim of Future Shock, this man is immensely dangerous and will\nnot be stopped by anyone who tries to deter him from revenge upon the\nJustice Department.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 0,
       "group": 0,
@@ -730,23 +779,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8003,
@@ -755,7 +800,7 @@
       "long_description": "A Citi-Def Militiaman is here contemplating a Block War.\n",
       "description": "A member of a local Block's Citi-Def militia, this man is well-armed\nand undersupervised.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 0,
       "group": 0,
@@ -765,23 +810,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8004,
@@ -790,7 +831,7 @@
       "long_description": "A dunk is here blending into the crowd.\n",
       "description": "He blends into the crowd as his hand travels into another citizen's pocket.\n",
       "race": "human",
-      "act_flags": "ACGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -150,
       "group": 0,
@@ -800,23 +841,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8005,
@@ -825,7 +862,7 @@
       "long_description": "A tap is here eyeing your belongings.\n",
       "description": "A practitioner in Mega-City One's largest growth industry, mugging, is\nlooking you over for a possible business transaction.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -835,23 +872,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8006,
@@ -860,7 +893,7 @@
       "long_description": "A Rookie judge is on his first beat here.\n",
       "description": "A member of Mega-City One's Justice Department is here considering what\ncrimes you have committed.  Being a rookie he will probably be easier on\nyou though.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 300,
       "group": 0,
@@ -870,23 +903,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8007,
@@ -895,7 +924,7 @@
       "long_description": "Mr. Gleep is here wanting to know what you want.\n",
       "description": "Wallaby Gleep is a heavy-set man who gives you the impression that he is\nunintelligent and unimaginative, but looks can be deceiving.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "DFJ",
       "alignment": -600,
       "group": 0,
@@ -905,23 +934,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8008,
@@ -930,7 +955,7 @@
       "long_description": "Pinky Throt is here Wringing his hands.\n",
       "description": "He is a thin angular crook, pretty close to everyone's idea of Ebeneezer\nScrooge.  Indeed, the only thing guaranteed to bring a spark to his dead\neyes is the mention of money.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -900,
       "group": 0,
@@ -940,23 +965,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8009,
@@ -965,7 +986,7 @@
       "long_description": "Ernie Ramirez is here collecting for the mob.\n",
       "description": "Ramirez is a dour man who knows that he's never going to get a better\ndeal out of life.  He is content to run the bite fights for Throt and\nGleep.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -975,23 +996,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8010,
@@ -1000,7 +1017,7 @@
       "long_description": "Judge Eckersely is here shaking down a Perp.\n",
       "description": "He is a dedicated, if somewhat pessimistic Judge.  He is the Senior Judge\nof the Downtown Quadrant.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "DFH",
       "alignment": 300,
       "group": 0,
@@ -1010,23 +1027,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8011,
@@ -1035,7 +1048,7 @@
       "long_description": "Judge Beddows is here calling Resyk.\n",
       "description": "Beddows is a clone from the same stock as the ex-Chief Judge McGruder.\nShe is fanatically dedicated to her job and has no ambitions other than\nto enforce the LAW.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 500,
       "group": 0,
@@ -1045,23 +1058,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8012,
@@ -1070,7 +1079,7 @@
       "long_description": "A bite fighter is here sharpening his teeth.\n",
       "description": "A bite fighter is here with sharpened teeth and a bad attitude.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -1080,980 +1089,24 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     }
   ],
-  "objects": [
-    {
-      "id": 8000,
-      "name": "a spit gun",
-      "keywords": "spitgun spit gun",
-      "description": "There is a spit gun laying here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 17,
-      "weight": 20,
-      "cost": 48900,
-      "condition": 100,
-      "values": [
-        20,
-        10,
-        10,
-        94,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "spit gun",
-          "description": "A standard weapon in Mega-City One.  It uses general\npurpose ammunition.\n"
-        }
-      ]
-    },
-    {
-      "id": 8001,
-      "name": "a set of knee pads",
-      "keywords": "knee pads",
-      "description": "There are some knee pads laying here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 33,
-      "level": 5,
-      "weight": 30,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "knee pads",
-          "description": "It is a set of Grak Brothers knee pads.  They are currently\npopular with the juve and punk gangs.\n"
-        }
-      ]
-    },
-    {
-      "id": 8002,
-      "name": "a stooky gland",
-      "keywords": "stooky gland",
-      "description": "There is a stooky gland laying here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 13,
-      "weight": 10,
-      "cost": 1000,
-      "condition": 100,
-      "values": [
-        20,
-        0,
-        26,
-        55,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "stooky gland",
-          "description": "Stooky glands are known for the restorative properties.\n"
-        }
-      ]
-    },
-    {
-      "id": 8003,
-      "name": "a lawgiver",
-      "keywords": "lawgiver",
-      "description": "There is a lawgiver laying here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 27,
-      "weight": 20,
-      "cost": 58000,
-      "condition": 100,
-      "values": [
-        30,
-        10,
-        10,
-        95,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "lawgiver gun",
-          "description": "The standard weapon for the city's Judges.  It uses general\nhigh explosive ammunition.\n"
-        }
-      ]
-    },
-    {
-      "id": 8004,
-      "name": "the magnetically shielded safe",
-      "keywords": "safe",
-      "description": "A indestructible, immobile safe is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 2,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1005,
-        13,
-        8005,
-        200,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "safe",
-          "description": "This safe looks like not even a Sov-Cit Nuke could open it.\nYou better find the code box.\n"
-        }
-      ]
-    },
-    {
-      "id": 8005,
-      "name": "a code box",
-      "keywords": "code box",
-      "description": "A code box of indeterminate use is here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 2,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "code box",
-          "description": "The box looks like some kind of access device.\n"
-        }
-      ]
-    },
-    {
-      "id": 8006,
-      "name": "a bashball bat",
-      "keywords": "bashball bat two-handed",
-      "description": "A bashball bat is laying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 14,
-      "weight": 30,
-      "cost": 870,
-      "condition": 100,
-      "values": [
-        4,
-        3,
-        5,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "bashball bat",
-          "description": "This is the same type of bat used by the little spuggers\nto play bashball.\n"
-        }
-      ]
-    },
-    {
-      "id": 8007,
-      "name": "the vibroblade",
-      "keywords": "vibroblade",
-      "description": "The vibroblade is here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 35,
-      "wear_flags": 8193,
-      "level": 18,
-      "weight": 20,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        5,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 1
-        },
-        {
-          "location": 5,
-          "modifier": 1
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "vibroblade",
-          "description": "Obviously of alien manufacture, this blade enhances fighting\nand survival skills.\n"
-        }
-      ]
-    },
-    {
-      "id": 8008,
-      "name": "a Hoover vacuum cleaner",
-      "keywords": "vacuum cleaner two-handed",
-      "description": "A Hoover vacuum cleaner is here idling.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 2,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 100,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        0,
-        4,
-        4,
-        12,
-        32
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "vacuum cleaner",
-          "description": "This vacuum looks well built and will last you many years of\ncleaning pleasure.\n"
-        }
-      ]
-    },
-    {
-      "id": 8009,
-      "name": "a knife",
-      "keywords": "knife",
-      "description": "A knife is sitting here...contemplating life.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 10,
-      "cost": 360,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        4,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "knife",
-          "description": "It is a knife. 'Nuff said. (Marvel joke).\n"
-        }
-      ]
-    },
-    {
-      "id": 8010,
-      "name": "a wet noodle",
-      "keywords": "wet noodle",
-      "description": "A wet noodle is laying here with clam sauce on it.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 10,
-      "cost": 670,
-      "condition": 100,
-      "values": [
-        7,
-        1,
-        4,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "noodle",
-          "description": "It looks like a noodle freshly made at the Olive Garden.\n"
-        }
-      ]
-    },
-    {
-      "id": 8011,
-      "name": "a Judge's club",
-      "keywords": "judge club",
-      "description": "A Judge's club is resting here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 17,
-      "weight": 30,
-      "cost": 1050,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        8,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "judge club",
-          "description": "It is a standard Justice Hall issue club.  Many a Perp's\nhead has been bashed with this baby.\n"
-        }
-      ]
-    },
-    {
-      "id": 8012,
-      "name": "a vault key",
-      "keywords": "vault key",
-      "description": "A vault key is here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 2,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "vault key",
-          "description": "The key looks like it could be useful.\n"
-        }
-      ]
-    },
-    {
-      "id": 8013,
-      "name": "a key card",
-      "keywords": "key card",
-      "description": "A key card is laying here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "key card",
-          "description": "It looks like it fits a slot somewhere.\n"
-        }
-      ]
-    },
-    {
-      "id": 8014,
-      "name": "a Judge's club",
-      "keywords": "judge club",
-      "description": "A Judge's club is resting here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 26,
-      "weight": 30,
-      "cost": 1700,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        12,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "judge club",
-          "description": "It is a head judge Justice Hall issue club.  Many a Perp's\nhead has been bashed with this baby.\n"
-        }
-      ]
-    },
-    {
-      "id": 8015,
-      "name": "a shock club",
-      "keywords": "club electric shock",
-      "description": "A sparking electric club is here.",
-      "material": "steel",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 30,
-      "cost": 750,
-      "condition": 100,
-      "values": [
-        4,
-        3,
-        5,
-        36,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 8016,
-      "name": "a police stun stick",
-      "keywords": "stunner police stick",
-      "description": "A police issue stunner is here, must be stolen.",
-      "material": "rubber",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 23,
-      "weight": 20,
-      "cost": 1160,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        11,
-        7,
-        64
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 8000,
-      "arg2": 4,
-      "arg3": 8004,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8000,
-      "arg2": 4,
-      "arg3": 8004,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8000,
-      "arg2": 4,
-      "arg3": 8006,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8000,
-      "arg2": 4,
-      "arg3": 8015,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 8001,
-      "arg2": 40,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8001,
-      "arg2": 5,
-      "arg3": 8006,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8001,
-      "arg2": 5,
-      "arg3": 8009,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 8001,
-      "arg2": 40,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8001,
-      "arg2": 5,
-      "arg3": 8011,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8009,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8003,
-      "arg2": 4,
-      "arg3": 8013,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8001,
-      "arg2": 40,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8003,
-      "arg2": 4,
-      "arg3": 8014,
-      "arg4": 2
-    },
-    {
-      "command": "G",
-      "arg1": 8000,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8002,
-      "arg2": 4,
-      "arg3": 8023,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8008,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8002,
-      "arg2": 4,
-      "arg3": 8024,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8010,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8004,
-      "arg2": 3,
-      "arg3": 8003,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8004,
-      "arg2": 3,
-      "arg3": 8006,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8004,
-      "arg2": 3,
-      "arg3": 8005,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8005,
-      "arg2": 3,
-      "arg3": 8010,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8006,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8005,
-      "arg2": 3,
-      "arg3": 8017,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8015,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8005,
-      "arg2": 3,
-      "arg3": 8019,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8006,
-      "arg2": 3,
-      "arg3": 8018,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8011,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8006,
-      "arg2": 3,
-      "arg3": 8012,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8011,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8006,
-      "arg2": 3,
-      "arg3": 8025,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8011,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8007,
-      "arg2": 1,
-      "arg3": 8027,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8016,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8012,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8009,
-      "arg2": 1,
-      "arg3": 8021,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8006,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8002,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8013,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8010,
-      "arg2": 1,
-      "arg3": 8007,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8014,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8003,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8011,
-      "arg2": 1,
-      "arg3": 8009,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8014,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8003,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8012,
-      "arg2": 2,
-      "arg3": 8011,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8012,
-      "arg2": 2,
-      "arg3": 8011,
-      "arg4": 2
-    },
-    {
-      "command": "O",
-      "arg1": 8004,
-      "arg2": 1,
-      "arg3": 8028,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8008,
-      "arg2": 1,
-      "arg3": 8028,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8016,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8005,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 8007,
-      "arg2": 10,
-      "arg3": 8004,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 8016,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8026,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8026,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8027,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8027,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8028,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 8003,
@@ -2075,5 +1128,11 @@
       "mob_vnum": 8011,
       "spec": "spec_cast_judge"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 8000,
+    "high": 8099
+  }
 }

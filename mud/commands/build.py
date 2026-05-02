@@ -1721,7 +1721,8 @@ def cmd_asave(char: Character | None, args: str) -> str:
         save_area_list()
         success = save_area_to_json(area)
         if success:
-            return f"Area {area.name} (vnum {area.vnum}) saved."
+            # mirroring ROM src/olc_save.c:982-995 — numeric branch is silent on success
+            return ""
         else:
             return "Failed to save area."
 
@@ -1738,11 +1739,16 @@ def cmd_asave(char: Character | None, args: str) -> str:
 
         if char is None:
             return ""
-        return f"You saved the world. ({saved_count} areas)"
+        # mirroring ROM src/olc_save.c:1013 — "You saved the world.\n\r"
+        return "You saved the world.\n\r"
 
     if arg == "changed":
+        # mirroring ROM src/olc_save.c:1023-1064
         save_area_list()
-        saved_areas: list[str] = []
+        # ROM always sends "Saved zones:\n\r" header first, then per-area rows,
+        # then "None.\n\r" if nothing was saved.
+        lines: list[str] = ["Saved zones:\n\r"]
+        any_saved = False
 
         for area in area_registry.values():
             if not _is_builder(char, area):
@@ -1752,13 +1758,16 @@ def cmd_asave(char: Character | None, args: str) -> str:
                 if save_area_to_json(area):
                     area_name = getattr(area, "name", "Unknown") or "Unknown"
                     file_name = getattr(area, "file_name", "unknown") or "unknown"
-                    saved_areas.append(f"{area_name:24} - '{file_name}'")
+                    # ROM: sprintf(buf, "%24s - '%s'") + send "\n\r"
+                    lines.append(f"{area_name:24} - '{file_name}'\n\r")
+                    area.changed = False
+                    any_saved = True
 
-        if not saved_areas:
-            return "No changed areas to save."
+        if not any_saved:
+            # mirroring ROM src/olc_save.c:1059-1064 — "None.\n\r"
+            lines.append("None.\n\r")
 
-        result = "Saved zones:\n" + "\n".join(saved_areas)
-        return result
+        return "".join(lines)
 
     if arg == "list":
         success = save_area_list()
@@ -1817,7 +1826,8 @@ def cmd_asave(char: Character | None, args: str) -> str:
         save_area_list()
         success = save_area_to_json(area)
         if success:
-            return f"Area {area.name} saved."
+            # mirroring ROM src/olc_save.c:1126 — "Area saved.\n\r"
+            return "Area saved.\n\r"
         else:
             return "Failed to save area."
 

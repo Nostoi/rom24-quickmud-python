@@ -1115,17 +1115,17 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1547,
+          "to_room": 1551,
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 1549,
+          "to_room": 1547,
           "flags": "0",
           "key": -1
         },
-        "west": {
-          "to_room": 1551,
+        "south": {
+          "to_room": 1549,
           "flags": "0",
           "key": -1
         }
@@ -1140,12 +1140,12 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "south": {
+        "north": {
           "to_room": 1550,
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "east": {
           "to_room": 1548,
           "flags": "0",
           "key": -1
@@ -1166,7 +1166,7 @@
           "flags": "0",
           "key": -1
         },
-        "south": {
+        "west": {
           "to_room": 1555,
           "flags": "0",
           "key": -1
@@ -1182,13 +1182,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "east": {
-          "to_room": 1548,
+        "north": {
+          "to_room": 1552,
           "flags": "0",
           "key": -1
         },
         "south": {
-          "to_room": 1552,
+          "to_room": 1548,
           "flags": "0",
           "key": -1
         }
@@ -1225,12 +1225,12 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1552,
+          "to_room": 1554,
           "flags": "0",
           "key": -1
         },
-        "east": {
-          "to_room": 1554,
+        "south": {
+          "to_room": 1552,
           "flags": "0",
           "key": -1
         }
@@ -1251,12 +1251,12 @@
           "key": -1
         },
         "east": {
-          "to_room": 1555,
+          "to_room": 1553,
           "flags": "0",
           "key": -1
         },
-        "west": {
-          "to_room": 1553,
+        "south": {
+          "to_room": 1555,
           "flags": "0",
           "key": -1
         }
@@ -1271,13 +1271,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
-          "to_room": 1550,
+        "east": {
+          "to_room": 1554,
           "flags": "0",
           "key": -1
         },
-        "west": {
-          "to_room": 1554,
+        "south": {
+          "to_room": 1550,
           "flags": "0",
           "key": -1
         }
@@ -2078,7 +2078,7 @@
       "long_description": "A gnome child is playing around here.\n",
       "description": "The little tyke looks so innocent playing with his boomerang that you \njust want to pick him up and hug him.\n",
       "race": "human",
-      "act_flags": "ACE",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -2088,23 +2088,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 1501,
@@ -2113,7 +2109,7 @@
       "long_description": "A gnome woman is standing here, trying to look beautiful.\n",
       "description": "The woman is short and gnarled, but acts like a woman several times her beauty.\nShe's starting to look pretty attractive to you ...\n",
       "race": "human",
-      "act_flags": "ACE",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -2123,23 +2119,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 1502,
@@ -2148,7 +2140,7 @@
       "long_description": "A gnome man is walking here, on his way to work.\n",
       "description": "This is a prime example of a gnome.  He looks short and weak, but at the\nsame time an intelligent creature who could outsmart you.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2158,23 +2150,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 22,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 22
     },
     {
       "id": 1503,
@@ -2183,7 +2171,7 @@
       "long_description": "A scientist wanders around deep in thought.\n",
       "description": "You see a gnome who is lost deep into some invention that he is about\nto make.  His hair is white, but he looks fairly strong.\n",
       "race": "human",
-      "act_flags": "ABCR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2193,23 +2181,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 1504,
@@ -2218,7 +2202,7 @@
       "long_description": "A gnome guard stands here guarding something.\n",
       "description": "This is a well trained gnome.  He might not have a lot of strength but\nhe makes up for it with his weapons skill.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 400,
       "group": 0,
@@ -2228,23 +2212,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 1505,
@@ -2253,7 +2233,7 @@
       "long_description": "A powerful looking gnome stands here wearing ornate clothes.\n",
       "description": "The Chief looks like he could whap you hard.  He looks not only powerful\nbut wise and resourceful.  You better not mess with him.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 550,
       "group": 0,
@@ -2263,23 +2243,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 1507,
@@ -2288,7 +2264,7 @@
       "long_description": "A small troll grunts as he takes a swing at you.\n",
       "description": "The small troll is a short and stocky beast with a human-like face\nbut with the eyes and fangs of a wild beast.\n",
       "race": "troll",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "0FJc",
       "alignment": -900,
       "group": 0,
@@ -2298,23 +2274,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNRD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
+      "form": "2101379",
+      "parts": "3147775",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 40,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 40
     },
     {
       "id": 1508,
@@ -2323,7 +2295,7 @@
       "long_description": "A small mouse runs across your foot.\n",
       "description": "The Mouse is a cute little creature.\n",
       "race": "human",
-      "act_flags": "ABCI",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -2333,23 +2305,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1509,
@@ -2358,7 +2326,7 @@
       "long_description": "A small rat shrieks and runs around.\n",
       "description": "The rat is a little evil creature that deserves death.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -2368,23 +2336,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1510,
@@ -2393,7 +2357,7 @@
       "long_description": "A large rat runs up to you and nibbles on your boots.\n",
       "description": "You have the urge to kill this vile creature.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -2403,23 +2367,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1511,
@@ -2428,7 +2388,7 @@
       "long_description": "A giant rat growls at you and prepares to attack.\n",
       "description": "This rat has grown up to be the size of an average dog.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -2438,23 +2398,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 1512,
@@ -2463,7 +2419,7 @@
       "long_description": "A giant troll lumbers around.\n",
       "description": "You see before you a huge mass of living flesh.  You cringe in fear as\nhe lifts his powerful arm to bludgeon you.\n",
       "race": "troll",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0FJc",
       "alignment": -800,
       "group": 0,
@@ -2473,23 +2429,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNRD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
+      "form": "2101379",
+      "parts": "3147775",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 450,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 450
     },
     {
       "id": 1513,
@@ -2498,7 +2450,7 @@
       "long_description": "A black bat hangs from the ceiling.\n",
       "description": "The bat is a grotesque little creature with large wings and fangs.\n",
       "race": "bat",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -500,
       "group": 0,
@@ -2508,23 +2460,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0S",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1514,
@@ -2533,7 +2481,7 @@
       "long_description": "A zombie gnome shuffles his way towards you.\n",
       "description": "This is a creature which has passed away long ago.  His body has been\npulled out of its resting place by some evil force.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -700,
       "group": 0,
@@ -2543,23 +2491,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 34,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 34
     },
     {
       "id": 1515,
@@ -2568,7 +2512,7 @@
       "long_description": "The fire bat flames brightly and prepares to attack.\n",
       "description": "You see a huge flame which resembles the shape of a bat.  The creature\nhangs from the ceiling and bites at you.\n",
       "race": "bat",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "DTZ",
       "alignment": -900,
       "group": 0,
@@ -2578,23 +2522,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0S",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 1516,
@@ -2603,7 +2543,7 @@
       "long_description": "The hobgoblin guard attacks first, thinks later.\n",
       "description": "This is an extra large, extra ugly goblin like creature.  He grins evilly\nas he attempts to brain you.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -700,
       "group": 0,
@@ -2613,23 +2553,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 37,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 37
     },
     {
       "id": 1517,
@@ -2638,7 +2574,7 @@
       "long_description": "A hobgoblin soldier stands here.\n",
       "description": "This is just a low life hobgoblin, who couldn't make it to the ranks\nof the elite guards.  He looks pissed.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -600,
       "group": 0,
@@ -2648,23 +2584,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 1518,
@@ -2673,7 +2605,7 @@
       "long_description": "A hobgoblin bodyguard guards the king with his life.\n",
       "description": "This is one of the elite hobgoblin guards.  He stands tall for his short\nstature.  He grins a toothy grin as he prepares to attack.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -2683,23 +2615,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 30
     },
     {
       "id": 1519,
@@ -2708,7 +2636,7 @@
       "long_description": "There is a great king here, sitting in his throne.\n",
       "description": "The king is a silly looking hobgoblin whose muscles bulge out of his robes,\ndestroying the sophisticated effect he was trying to create.\n",
       "race": "human",
-      "act_flags": "ABR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -2718,23 +2646,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 1520,
@@ -2743,7 +2667,7 @@
       "long_description": "A hobgoblin miner stands here looking for gold.\n",
       "description": "The miner is totally covered in dust.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -2753,23 +2677,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 35,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 35
     },
     {
       "id": 1521,
@@ -2778,7 +2698,7 @@
       "long_description": "A treasurer is here counting out money.\n",
       "description": "The hobgoblin treasurer is an old goblin with glasses.  It appears that he\ncan only see a couple feet in front of him.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -2788,23 +2708,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 1522,
@@ -2813,7 +2729,7 @@
       "long_description": "A gnome prisoner is here resting in the straw.\n",
       "description": "The prisoner is just barely alive.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -2823,23 +2739,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1523,
@@ -2848,7 +2760,7 @@
       "long_description": "A human prisoner is here resting in the straw.\n",
       "description": "The prisoner is just barely alive.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -2858,23 +2770,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1524,
@@ -2883,7 +2791,7 @@
       "long_description": "A hermit crab crawls towards you.\n",
       "description": "The hermit crab is about 5 feet high and looks mad that you had the nerve\nto wake it up.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -10,
       "group": 0,
@@ -2893,23 +2801,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 1526,
@@ -2918,7 +2822,7 @@
       "long_description": "A hobgoblin cook stands here cooking something.\n",
       "description": "The cook is a dirty and fat hobgoblin.  He burps as he stirs up something\nin a pot.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -2928,1458 +2832,24 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 130,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 130
     }
   ],
-  "objects": [
-    {
-      "id": 1500,
-      "name": "a bloody key",
-      "keywords": "key bloody",
-      "description": "A bloody key is stuck to the floor.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        2,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1501,
-      "name": "a dirty key",
-      "keywords": "key dirty",
-      "description": "A dirty key lies here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        2,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1502,
-      "name": "a toy boomerang",
-      "keywords": "toy boomerang",
-      "description": "A toy boomerang wants to be picked up.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        0,
-        2,
-        4,
-        7,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1503,
-      "name": "a gnarled staff",
-      "keywords": "staff gnarled",
-      "description": "A gnarled staff is here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 150,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        0,
-        1,
-        9,
-        7,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1504,
-      "name": "a gnome sword",
-      "keywords": "sword gnome",
-      "description": "A gnome sword catches your eye.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 7,
-      "weight": 150,
-      "cost": 610,
-      "condition": 100,
-      "values": [
-        1,
-        3,
-        3,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1505,
-      "name": "a studded shield",
-      "keywords": "shield studded",
-      "description": "A studded wooden shield lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 513,
-      "level": 5,
-      "weight": 160,
-      "cost": 750,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1506,
-      "name": "a bloody potion",
-      "keywords": "potion bloody",
-      "description": "A bloody potion lies here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 7,
-      "weight": 220,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        15,
-        22,
-        23,
-        53,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1507,
-      "name": "a bloody cloak",
-      "keywords": "cloak bloody",
-      "description": "A bloody cloak lies in a corner.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 5,
-      "level": 5,
-      "weight": 150,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1508,
-      "name": "a bat ring",
-      "keywords": "ring bat",
-      "description": "A ring in the shape of a bat lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 10,
-      "weight": 20,
-      "cost": 270,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 15
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1509,
-      "name": "a bead necklace",
-      "keywords": "necklace bead",
-      "description": "A string of beads is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 5,
-      "weight": 80,
-      "cost": 220,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1510,
-      "name": "an electrum sword",
-      "keywords": "sword electrum",
-      "description": "An electrum sword lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 12,
-      "weight": 200,
-      "cost": 930,
-      "condition": 100,
-      "values": [
-        1,
-        4,
-        3,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1511,
-      "name": "a wicker basket",
-      "keywords": "basket wicker",
-      "description": "A wicker basket sits here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        90,
-        0,
-        0,
-        20,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1512,
-      "name": "some peanuts",
-      "keywords": "peanuts",
-      "description": "Peanuts lie here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 90,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        16,
-        16,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1513,
-      "name": "some grain",
-      "keywords": "grain",
-      "description": "There is some grain here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 80,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        15,
-        15,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1514,
-      "name": "a skiff",
-      "keywords": "skiff",
-      "description": "A small skiff is here.",
-      "material": "oldstyle",
-      "item_type": "boat",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 240,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1515,
-      "name": "a pair of gnome boots",
-      "keywords": "boots gnome",
-      "description": "You notice a pair of Gnome Boots.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 65,
-      "level": 7,
-      "weight": 120,
-      "cost": 610,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 10
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1516,
-      "name": "a pile of coins",
-      "keywords": "coins",
-      "description": "A pile of coins.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        100,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1517,
-      "name": "a pile of coins",
-      "keywords": "coins",
-      "description": "A pile of coins.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1519,
-      "name": "a stone shield",
-      "keywords": "shield stone",
-      "description": "A stone slab lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 513,
-      "level": 16,
-      "weight": 350,
-      "cost": 3700,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1520,
-      "name": "heavy banded mail",
-      "keywords": "mail heavy banded",
-      "description": "A large suit of heavy banded mail is here",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 15,
-      "weight": 300,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1521,
-      "name": "a large club",
-      "keywords": "club large two-handed",
-      "description": "A large club sits here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 220,
-      "cost": 460,
-      "condition": 100,
-      "values": [
-        4,
-        1,
-        12,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1522,
-      "name": "a banana",
-      "keywords": "banana",
-      "description": "There is a banana here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1523,
-      "name": "a potion of life healing",
-      "keywords": "life potion",
-      "description": "A potion of life healing has left here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 128,
-      "wear_flags": 1,
-      "level": 6,
-      "weight": 10,
-      "cost": 630,
-      "condition": 100,
-      "values": [
-        32,
-        26,
-        3,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1524,
-      "name": "a wooden club",
-      "keywords": "club wooden",
-      "description": "A wooden club sits here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 3,
-      "weight": 100,
-      "cost": 220,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        3,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 1502,
-      "arg2": 3,
-      "arg3": 1503,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1503,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1502,
-      "arg2": 3,
-      "arg3": 1505,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1503,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1502,
-      "arg2": 3,
-      "arg3": 1506,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1503,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1500,
-      "arg2": 3,
-      "arg3": 1509,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1502,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1501,
-      "arg2": 3,
-      "arg3": 1509,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1500,
-      "arg2": 3,
-      "arg3": 1510,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1502,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1501,
-      "arg2": 3,
-      "arg3": 1510,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1500,
-      "arg2": 3,
-      "arg3": 1511,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1502,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1501,
-      "arg2": 3,
-      "arg3": 1511,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1503,
-      "arg2": 3,
-      "arg3": 1513,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1511,
-      "arg2": 12,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1513,
-      "arg2": 12,
-      "arg3": 1511,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1503,
-      "arg2": 3,
-      "arg3": 1514,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1511,
-      "arg2": 12,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1512,
-      "arg2": 12,
-      "arg3": 1511,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1503,
-      "arg2": 3,
-      "arg3": 1515,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1514,
-      "arg2": 12,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1504,
-      "arg2": 6,
-      "arg3": 1519,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1500,
-      "arg2": 3,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1506,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1507,
-      "arg2": 10,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1508,
-      "arg2": 2,
-      "arg3": 1522,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1508,
-      "arg2": 2,
-      "arg3": 1522,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1507,
-      "arg2": 1,
-      "arg3": 1524,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1504,
-      "arg2": 6,
-      "arg3": 1527,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1504,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1504,
-      "arg2": 6,
-      "arg3": 1530,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1504,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1504,
-      "arg2": 6,
-      "arg3": 1530,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1504,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1504,
-      "arg2": 6,
-      "arg3": 1534,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1504,
-      "arg2": 12,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1536,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1509,
-      "arg2": 3,
-      "arg3": 1541,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 1505,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1510,
-      "arg2": 3,
-      "arg3": 1542,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 1503,
-      "arg2": 12,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1511,
-      "arg2": 3,
-      "arg3": 1543,
-      "arg4": 3
-    },
-    {
-      "command": "R",
-      "arg1": 1548,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1549,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1550,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1551,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1552,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1553,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1554,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1555,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1512,
-      "arg2": 1,
-      "arg3": 1545,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1501,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1545,
-      "arg2": 3,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1546,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1513,
-      "arg2": 10,
-      "arg3": 1548,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1514,
-      "arg2": 10,
-      "arg3": 1548,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1513,
-      "arg2": 10,
-      "arg3": 1550,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1514,
-      "arg2": 10,
-      "arg3": 1550,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1513,
-      "arg2": 10,
-      "arg3": 1551,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1514,
-      "arg2": 10,
-      "arg3": 1551,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1513,
-      "arg2": 10,
-      "arg3": 1553,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1514,
-      "arg2": 10,
-      "arg3": 1553,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1513,
-      "arg2": 10,
-      "arg3": 1555,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1514,
-      "arg2": 10,
-      "arg3": 1555,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1515,
-      "arg2": 1,
-      "arg3": 1556,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1505,
-      "arg2": 18,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1512,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1516,
-      "arg2": 3,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1517,
-      "arg2": 3,
-      "arg3": 1557,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1505,
-      "arg2": 1,
-      "arg3": 1558,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1508,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1509,
-      "arg2": 12,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1510,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1520,
-      "arg2": 6,
-      "arg3": 1563,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1520,
-      "arg2": 6,
-      "arg3": 1565,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1518,
-      "arg2": 5,
-      "arg3": 1569,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 1521,
-      "arg2": 30,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1518,
-      "arg2": 5,
-      "arg3": 1569,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 1521,
-      "arg2": 30,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1518,
-      "arg2": 5,
-      "arg3": 1569,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 1521,
-      "arg2": 30,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1518,
-      "arg2": 5,
-      "arg3": 1569,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 1521,
-      "arg2": 30,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1518,
-      "arg2": 5,
-      "arg3": 1569,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 1521,
-      "arg2": 30,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1519,
-      "arg2": 1,
-      "arg3": 1569,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1520,
-      "arg2": 5,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1521,
-      "arg2": 1,
-      "arg3": 1570,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1516,
-      "arg2": 10,
-      "arg3": 1570,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1517,
-      "arg2": 10,
-      "arg3": 1570,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1571,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1571,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1571,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1571,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1572,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1572,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1572,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1572,
-      "arg4": 10
-    },
-    {
-      "command": "E",
-      "arg1": 1524,
-      "arg2": 40,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1521,
-      "arg2": 40,
-      "arg3": 1573,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1522,
-      "arg2": 5,
-      "arg3": 1577,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1522,
-      "arg2": 5,
-      "arg3": 1578,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1522,
-      "arg2": 5,
-      "arg3": 1579,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1523,
-      "arg2": 5,
-      "arg3": 1580,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1523,
-      "arg2": 5,
-      "arg3": 1581,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1583,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1583,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1584,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 1517,
-      "arg2": 30,
-      "arg3": 1584,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 1526,
-      "arg2": 1,
-      "arg3": 1587,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1524,
-      "arg2": 1,
-      "arg3": 1589,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1520,
-      "arg2": 6,
-      "arg3": 1590,
-      "arg4": 2
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 1503,
@@ -4417,5 +2887,11 @@
       "mob_vnum": 1519,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 1500,
+    "high": 1599
+  }
 }

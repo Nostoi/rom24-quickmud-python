@@ -19,7 +19,7 @@
           "to_room": 3124,
           "description": "Through the solid iron bars you see Elm Street. \n",
           "keyword": "grate",
-          "flags": "1",
+          "flags": "7",
           "key": 3121
         },
         "east": {
@@ -136,7 +136,7 @@
           "to_room": 3405,
           "description": "The chapel door is made of dark wood.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -171,7 +171,7 @@
         "down": {
           "to_room": 3607,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -193,7 +193,7 @@
         "up": {
           "to_room": 3606,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -222,7 +222,7 @@
         "down": {
           "to_room": 3609,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -244,7 +244,7 @@
         "up": {
           "to_room": 3608,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -273,7 +273,7 @@
         "down": {
           "to_room": 3611,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -295,7 +295,7 @@
         "up": {
           "to_room": 3610,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -325,7 +325,7 @@
           "to_room": 3613,
           "description": "It is a small black-painted shed with a wooden door.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -342,7 +342,7 @@
         "east": {
           "to_room": 3612,
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -371,7 +371,7 @@
         "down": {
           "to_room": 3615,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -393,7 +393,7 @@
         "up": {
           "to_room": 3614,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -422,7 +422,7 @@
         "down": {
           "to_room": 3617,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -444,7 +444,7 @@
         "up": {
           "to_room": 3616,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -473,7 +473,7 @@
         "down": {
           "to_room": 3619,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -495,7 +495,7 @@
         "up": {
           "to_room": 3618,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -524,7 +524,7 @@
         "down": {
           "to_room": 3639,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -546,7 +546,7 @@
         "up": {
           "to_room": 3638,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -575,7 +575,7 @@
         "down": {
           "to_room": 3641,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -597,7 +597,7 @@
         "up": {
           "to_room": 3640,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -626,7 +626,7 @@
         "down": {
           "to_room": 3643,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -648,7 +648,7 @@
         "up": {
           "to_room": 3642,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -677,7 +677,7 @@
         "down": {
           "to_room": 3645,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -699,7 +699,7 @@
         "up": {
           "to_room": 3644,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -728,7 +728,7 @@
         "down": {
           "to_room": 3647,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -750,7 +750,7 @@
         "up": {
           "to_room": 3646,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -779,7 +779,7 @@
         "down": {
           "to_room": 3649,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -801,7 +801,7 @@
         "up": {
           "to_room": 3648,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -830,7 +830,7 @@
         "down": {
           "to_room": 3651,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -852,7 +852,7 @@
         "up": {
           "to_room": 3650,
           "keyword": "tomb stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -868,7 +868,7 @@
       "long_description": "Henry the Gardener is sitting here, looking drunk.\n",
       "description": "He is a tall but bulky man in his late fifties.  His features are worn with\ndecades of hard work and his somewhat crouched expression is one of deep\nsorrow and depression.  He is haunted by a memory of a lost paradise.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -878,23 +878,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 3601,
@@ -903,7 +899,7 @@
       "long_description": "A rotting zombie is staggering towards you with outstretched hands.\n",
       "description": "Maggots crawl all over its decaying body.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -750,
       "group": 0,
@@ -913,23 +909,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 3602,
@@ -938,7 +930,7 @@
       "long_description": "A ghastly ghoul is here.\n",
       "description": "It is a walking corpse with long fangs and long, sharp nails that most of\nresemble claws.  Its eyes are a dark yellow colour and glare hungrily at you.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -750,
       "group": 0,
@@ -948,23 +940,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 3603,
@@ -973,7 +961,7 @@
       "long_description": "A dusty skeleton lies here.\n",
       "description": "The dusty bones are almost brown.  It must have been buried for a very long\ntime.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -750,
       "group": 0,
@@ -983,23 +971,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 3604,
@@ -1008,7 +992,7 @@
       "long_description": "A dusty skeleton lies here.\n",
       "description": "The dusty bones are almost brown.  It must have been buried for a very long\ntime.\n",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -750,
       "group": 0,
@@ -1018,23 +1002,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 3605,
@@ -1043,7 +1023,7 @@
       "long_description": "A rotting zombie is staggering towards you with outstretched hands.\n",
       "description": "Maggots crawl all over its decaying body.\n",
       "race": "human",
-      "act_flags": "AF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -750,
       "group": 0,
@@ -1053,736 +1033,24 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     }
   ],
-  "objects": [
-    {
-      "id": 3600,
-      "name": "a candlestick",
-      "keywords": "candlestick",
-      "description": "A pewter candlestick is standing here.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 50,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        24,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "candlestick",
-          "description": "It is a rather old-looking three-armed candlestick made from pewter.  Its\ncandles are a yellowish white colour.\n"
-        }
-      ]
-    },
-    {
-      "id": 3601,
-      "name": "a brandy bottle",
-      "keywords": "brandy bottle",
-      "description": "A brandy bottle is lying here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        32,
-        32,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "brandy bottle",
-          "description": "The bottle is a special 'Dragon Blood' brandy bottle.  Its neck is shaped\nlike a small dragon's head.  Bottles like these are often worth a small\namount money, even when empty.\n"
-        }
-      ]
-    },
-    {
-      "id": 3602,
-      "name": "a brandy bottle",
-      "keywords": "brandy bottle",
-      "description": "A brandy bottle is lying here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        32,
-        0,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "brandy bottle",
-          "description": "The bottle is a special 'Dragon Blood' brandy bottle.  Its neck is shaped\nlike a small dragon's head.  Bottles like these are often worth some money,\neven when empty.\n"
-        }
-      ]
-    },
-    {
-      "id": 3603,
-      "name": "a wheelbarrow",
-      "keywords": "wheelbarrow",
-      "description": "A green-painted wheelbarrow is standing here.",
-      "material": "oldstyle",
-      "item_type": "boat",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 1000,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "wheelbarrow",
-          "description": "It is a heavy wheelbarrow made from solid oaken planks that have been painted\na dark, green colour.\n"
-        }
-      ]
-    },
-    {
-      "id": 3604,
-      "name": "a shovel",
-      "keywords": "shovel",
-      "description": "A shovel is lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 0,
-      "weight": 80,
-      "cost": 169,
-      "condition": 100,
-      "values": [
-        4,
-        1,
-        5,
-        7,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "shovel",
-          "description": "It is a large metal shovel with a solid wooden handle.\n"
-        }
-      ]
-    },
-    {
-      "id": 3605,
-      "name": "a rake",
-      "keywords": "rake",
-      "description": "A rake is lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 0,
-      "weight": 80,
-      "cost": 140,
-      "condition": 100,
-      "values": [
-        4,
-        1,
-        4,
-        5,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "rake",
-          "description": "It is a large metal rake with a solid wooden handle.\n"
-        }
-      ]
-    },
-    {
-      "id": 3610,
-      "name": "a dusty skeleton",
-      "keywords": "skeleton",
-      "description": "A dusty skeleton lies here.",
-      "material": "oldstyle",
-      "item_type": "furniture",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "skeleton",
-          "description": "The dusty bones are almost brown.  It must have been buried for a very long\ntime.\nA dusty skeleton is in an excellent condition.\n"
-        }
-      ]
-    },
-    {
-      "id": 3611,
-      "name": "a amethyst",
-      "keywords": "amethyst gem",
-      "description": "A large, beautifully polished amethyst has been left here.",
-      "material": "oldstyle",
-      "item_type": "warp_stone",
-      "extra_flags": 524288,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 2500,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "amethyst",
-          "description": "It has a very deep purple colour.\n"
-        }
-      ]
-    },
-    {
-      "id": 3612,
-      "name": "a silver pendant",
-      "keywords": "pendant silver",
-      "description": "A silver pendant has been left here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 7,
-      "weight": 10,
-      "cost": 800,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        },
-        {
-          "location": 17,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "pendant silver",
-          "description": "It resembles Thor's hammer and appears to be made of solid silver.\n"
-        }
-      ]
-    },
-    {
-      "id": 3613,
-      "name": "a silver dagger",
-      "keywords": "dagger silver",
-      "description": "A long silver dagger is lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 10,
-      "cost": 430,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        4,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "dagger silver",
-          "description": "It has a long, sharp blade that is made entirely from silver.  A small rune\nhas been engraved on the blade next to the hilt.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "D",
-      "arg1": 3124,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3600,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3604,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3606,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3607,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3610,
-      "arg2": 13,
-      "arg3": 3607,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3608,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3609,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3603,
-      "arg2": 4,
-      "arg3": 3609,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 3610,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3611,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3603,
-      "arg2": 4,
-      "arg3": 3611,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 3613,
-      "arg2": 10,
-      "arg3": 3611,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3612,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3613,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3600,
-      "arg2": 1,
-      "arg3": 3613,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 3601,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3602,
-      "arg2": -1,
-      "arg3": 3613,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3603,
-      "arg2": 1,
-      "arg3": 3613,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3604,
-      "arg2": -1,
-      "arg3": 3613,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3605,
-      "arg2": -1,
-      "arg3": 3613,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3614,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3615,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3610,
-      "arg2": 13,
-      "arg3": 3615,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3616,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3617,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3602,
-      "arg2": 1,
-      "arg3": 3617,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 3612,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3618,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3619,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3610,
-      "arg2": 13,
-      "arg3": 3619,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3638,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3639,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3603,
-      "arg2": 4,
-      "arg3": 3639,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 3640,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3641,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3610,
-      "arg2": 13,
-      "arg3": 3641,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3642,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3643,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3603,
-      "arg2": 5,
-      "arg3": 3643,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3644,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3645,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3601,
-      "arg2": 1,
-      "arg3": 3645,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 3611,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3646,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3647,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 3610,
-      "arg2": 13,
-      "arg3": 3647,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3648,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3649,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3603,
-      "arg2": 4,
-      "arg3": 3649,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 3650,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 3651,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3604,
-      "arg2": 4,
-      "arg3": 3606,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3604,
-      "arg2": 4,
-      "arg3": 3604,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3604,
-      "arg2": 4,
-      "arg3": 3612,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3604,
-      "arg2": 4,
-      "arg3": 3640,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3605,
-      "arg2": 3,
-      "arg3": 3651,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3605,
-      "arg2": 3,
-      "arg3": 3644,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3605,
-      "arg2": 3,
-      "arg3": 3638,
-      "arg4": 1
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 3601,
@@ -1804,5 +1072,11 @@
       "mob_vnum": 3605,
       "spec": "spec_cast_undead"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 3600,
+    "high": 3699
+  }
 }

@@ -271,7 +271,7 @@
           "to_room": 8708,
           "description": "You see some sandy stones pressed closely together to form a hard surface.\n",
           "keyword": "stones",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -308,7 +308,7 @@
           "to_room": 8706,
           "description": "You see the sandy stones of the ceiling.\n",
           "keyword": "stones",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -355,7 +355,7 @@
           "to_room": 8710,
           "description": "You see a large stone door, covered in sigils and hieroglyphs.\n",
           "keyword": "door stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "up": {
@@ -388,7 +388,7 @@
           "to_room": 8709,
           "description": "You see a large stone door.\n",
           "keyword": "door stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -877,7 +877,7 @@
           "to_room": 8730,
           "description": "You see a seam in the stone wall.\n",
           "keyword": "stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "up": {
@@ -906,7 +906,7 @@
           "to_room": 8729,
           "description": "You see a seam in the stone wall.\n",
           "keyword": "stone",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -941,7 +941,7 @@
           "to_room": 8732,
           "description": "You see a seam in the stone floor.\n",
           "keyword": "tomb",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -964,7 +964,7 @@
           "to_room": 8731,
           "description": "That leads back the way you came.\n",
           "keyword": "tomb",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1241,7 +1241,7 @@
           "to_room": 8744,
           "description": "The floor is quite dusty, and made of stone.  You see some cracks.\n",
           "keyword": "floor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1264,14 +1264,14 @@
           "to_room": 8745,
           "description": "You see the tomb of the pharoahs.\n",
           "keyword": "tomb",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "up": {
           "to_room": 8743,
           "description": "The stone ceiling has some cracks in it, through which a dim light streams.\n",
           "keyword": "ceiling",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1298,7 +1298,7 @@
           "to_room": 8744,
           "description": "That way leads back out of the tomb.\n",
           "keyword": "tomb",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1561,7 +1561,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 8754,
+          "to_room": 8755,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1573,13 +1573,13 @@
           "key": -1
         },
         "south": {
-          "to_room": 8756,
+          "to_room": 8754,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 8755,
+          "to_room": 8756,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1601,7 +1601,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 8755,
+          "to_room": 8756,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1613,13 +1613,13 @@
           "key": -1
         },
         "south": {
-          "to_room": 8757,
+          "to_room": 8755,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 8756,
+          "to_room": 8757,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1641,7 +1641,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 8756,
+          "to_room": 8757,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1659,7 +1659,7 @@
           "key": -1
         },
         "west": {
-          "to_room": 8757,
+          "to_room": 8756,
           "description": "You see only a wall of whirling, blowing, dry sand.\n",
           "flags": "0",
           "key": -1
@@ -1736,7 +1736,7 @@
       "long_description": "A small, poisonous asp slithers over your feet.\n",
       "description": "The asp is a small, smooth-scaled snake the color of worn pottery.\nThe poison bite of this snake has felled many a mighty pharoah.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1746,23 +1746,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 8701,
@@ -1771,7 +1767,7 @@
       "long_description": "A cobra snake rears up and opens its fearsome hood.\n",
       "description": "The cobra snake waves back and forth before you, its hood displaying brilliant\ncolors designed to serve notice to its prey that it is about to strike.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1781,23 +1777,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 8702,
@@ -1806,7 +1798,7 @@
       "long_description": "A small mongoose slinks along the ground, hunting snakes.\n",
       "description": "The mongoose is a wily rodent, a quick hunter of nasty poisonous snakes.\nShe sniffs you and appears to be looking for food in your hand.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 10,
       "group": 0,
@@ -1816,23 +1808,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 8703,
@@ -1841,7 +1829,7 @@
       "long_description": "The pyramid watcher protects the tombs from intruders.\n",
       "description": "The pyramid watcher has made a pledge to destroy any would-be looters of\nthe tombs of the pharoahs.  He is clad from head to foot in utilitarian\nsand-colored clothing.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 250,
       "group": 0,
@@ -1851,23 +1839,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 8704,
@@ -1876,7 +1860,7 @@
       "long_description": "A sneaky tomb thief moves about in search of treasure.\n",
       "description": "The thief brushes against you briefly, then slinks back into the shadows.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DFP",
       "alignment": -250,
       "group": 0,
@@ -1886,23 +1870,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 8705,
@@ -1911,7 +1891,7 @@
       "long_description": "Ali Baba is here, hunting for the pharoah's tomb.\n",
       "description": "You see a tall, full-bearded man with a mischevious glint in his eye.  Ali Baba\nhas made his life from stealing things from others, including many items stolen\nrecently from under the nose of the hapless guardians of this pyramid.  Someday\nhe might get caught, but not today...\n",
       "race": "human",
-      "act_flags": "ACGS",
+      "act_flags": "0",
       "affected_by": "DFP",
       "alignment": -300,
       "group": 0,
@@ -1921,23 +1901,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 8706,
@@ -1946,7 +1922,7 @@
       "long_description": "A small woven carpet lies under your feet.\n",
       "description": "The carpet is simply beautiful, made from intricately woven silken material.  \nIt seems to rise up at the touch of your feet.  Wait, it is rising, a few feet\nabove the ground!  In fact, it seems to be ALIVE!\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 500,
       "group": 0,
@@ -1956,23 +1932,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 12,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 12
     },
     {
       "id": 8707,
@@ -1981,7 +1953,7 @@
       "long_description": "A mummy reaches for you, disturbed by your presence.\n",
       "description": "You only see the disfigured, rotting features of decaying human flesh,\nanimated by the distempered spirit of a long-deceased person.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -600,
       "group": 0,
@@ -1991,23 +1963,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 37,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 37
     },
     {
       "id": 8708,
@@ -2016,7 +1984,7 @@
       "long_description": "A sandman rises up from the desert floor.\n",
       "description": "The sandman is exactly that -- some sort of strange being formed from the sands\nof the desert floor.  It seems quite large and strong and at home in the heat\nand sandy winds.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 0,
       "group": 0,
@@ -2026,23 +1994,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 8709,
@@ -2051,7 +2015,7 @@
       "long_description": "The efreeti stands here, sheathed in a column of fire.\n",
       "description": "The efreeti is a mighty being formed from living fire.  He gazes down at you \nwith disdain and scorn, arms folded across his mighty chest.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -600,
       "group": 0,
@@ -2061,23 +2025,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 550,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 550
     },
     {
       "id": 8710,
@@ -2086,7 +2046,7 @@
       "long_description": "A sandstone column stands here, carved into a feminine figure.\n",
       "description": "The column has been carved into a set of four shapely women, each facing\noutward into the room.  The sandstone of the caryatid is smooth with age,\nbut you can still make out a deadly stone sword in the hands of each figure.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 0,
       "group": 0,
@@ -2096,23 +2056,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1750,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1750
     },
     {
       "id": 8711,
@@ -2121,7 +2077,7 @@
       "long_description": "The djinn issues forth from the confines of a small lamp.\n",
       "description": "The djinn is a mighty being formed from the air itself and frequently\nimprisoned in a small lamp, used to do the bidding of those who find him.\nHe smiles down at you congenially, arms folded across his blue-tinged \nskin, and strokes his goatee.\n",
       "race": "human",
-      "act_flags": "ABR",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 600,
       "group": 0,
@@ -2131,23 +2087,19 @@
       "hit_dice": "28d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 3000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3000
     },
     {
       "id": 8712,
@@ -2156,7 +2108,7 @@
       "long_description": "A hieracosphinx looks at you cunningly.\n",
       "description": "The hieracosphinx are cunning, small, but nasty creatures, having the heads\nof birds, mighty wingspans, and a full set of four paws to rend their victims\nto pieces.  They tend to be quite jealous of the sharper wits of their older\ncousins.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -200,
       "group": 0,
@@ -2166,23 +2118,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 375,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 375
     },
     {
       "id": 8713,
@@ -2191,7 +2139,7 @@
       "long_description": "A gynosphinx sits here, befuddled by a riddle.\n",
       "description": "The gynosphinx is a crafty but gentle creature, having the body of a\nbeautiful dark-skinned woman from the waist up, a feathery set of wings\nand the hind legs of a mighty cat.  Right now she is confused, having \njust heard a puzzling riddle from a cousin criosphinx.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -2201,23 +2149,19 @@
       "hit_dice": "19d9+100",
       "mana_dice": "3d4+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 8714,
@@ -2226,7 +2170,7 @@
       "long_description": "A criosphinx calmly watches you.\n",
       "description": "The criosphinx is a calm and friendly creature, having the head of a ram atop\nthe body of a well-furred feline with eagle-like wings.  He delights in riddles,\nand in poking occasional fun at his easily confused lesser cousins.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 300,
       "group": 0,
@@ -2236,23 +2180,19 @@
       "hit_dice": "23d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1250
     },
     {
       "id": 8715,
@@ -2261,7 +2201,7 @@
       "long_description": "A mighty androsphinx tosses its lion-like mane.\n",
       "description": "The mighty androsphinx is a huge creature, with the body of a lion whose\nface  is quite man-like, perhaps even handsome, and a massive pair of feathered\nwings.  Tales are told of pharoahs that were rendered permanently deaf by the \nmighty roar of this sphinx.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 400,
       "group": 0,
@@ -2271,23 +2211,19 @@
       "hit_dice": "27d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 8716,
@@ -2296,7 +2232,7 @@
       "long_description": "A mighty sphinx rests here in the sand, dormant now for centuries.\nThe great sphinx appears to be indestructible!\n",
       "description": "The great sphinx towers tens of feet above you, resting here in a state of \ndormancy.  It has become almost indistinguishable from the sand that surrounds\nit, although you can still make out the features of the handsome face that once\nadvised many rulers.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "DEHN",
       "alignment": 500,
       "group": 0,
@@ -2306,23 +2242,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "4d8+14",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -14,
-      "ac_bash": -14,
-      "ac_slash": -14,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 6250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 6250
     },
     {
       "id": 8717,
@@ -2331,7 +2263,7 @@
       "long_description": "You have awakened the mighty servant to the pharoahs, Ramses.\n",
       "description": "As your light spills over his face and body, you can see his features begin\nto fill out, swell, and harden, until an apparently healthy man stands before\nyou, clad only in the raiments he was left in when he last slept.  His hair is\na soft black, his skin a deep chocolate, and his tall frame is totally still, \nhis chest not even moving to breathe.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "DEHJN",
       "alignment": 150,
       "group": 0,
@@ -2341,1709 +2273,24 @@
       "hit_dice": "38d9+100",
       "mana_dice": "3d10+12",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -13,
-      "ac_bash": -13,
-      "ac_slash": -13,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 4400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 4400
     }
   ],
-  "objects": [
-    {
-      "id": 8700,
-      "name": "an egyptian mace",
-      "keywords": "egyptian mace",
-      "description": "A hierogylph-engraved mace has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 100,
-      "cost": 370,
-      "condition": 100,
-      "values": [
-        4,
-        1,
-        10,
-        7,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "egyptian mace",
-          "description": "The mace is formed from solid brass, and engraved in strange hieroglyphs.\n"
-        }
-      ]
-    },
-    {
-      "id": 8701,
-      "name": "sand-colored robes",
-      "keywords": "sand robes",
-      "description": "Sand-colored robes lie here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 5,
-      "weight": 50,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "sand robes",
-          "description": "The robes are colored a sandy off-white, and are in fact caked and covered\nwith sand as well.  You don't seem to be able to remove all of the sand, no\nmatter how much you try.\n"
-        }
-      ]
-    },
-    {
-      "id": 8702,
-      "name": "an obsidian dirk",
-      "keywords": "obsidian dirk",
-      "description": "A flat dirk made of chipped obsidian lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 10,
-      "cost": 910,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        8,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "obsidian dirk",
-          "description": "The blade of the dirk is black, glassy obsidian, chipped razor sharp.\n"
-        }
-      ]
-    },
-    {
-      "id": 8703,
-      "name": "a dirty cloth turban",
-      "keywords": "cloth turban",
-      "description": "A dirty cloth turban has been forgotten here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 17,
-      "level": 13,
-      "weight": 100,
-      "cost": 1470,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 5
-        },
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "cloth turban",
-          "description": "The turban used to be white cloth, now it is covered with oil and dirt from\nthe head and hair of its previous owner, who must not have bathed much.\n"
-        }
-      ]
-    },
-    {
-      "id": 8704,
-      "name": "some cloth wrappings",
-      "keywords": "cloth wrappings",
-      "description": "Long cloth wrappings lie on the ground in a pile.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 10,
-      "weight": 150,
-      "cost": 1450,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "cloth wrappings",
-          "description": "The cloth wrappings are old, wrinkled, and stink of embalming fluid.\n"
-        }
-      ]
-    },
-    {
-      "id": 8705,
-      "name": "a bottle of embalming fluid",
-      "keywords": "bottle fluid",
-      "description": "A dusty bottle lies here on the ground.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 3,
-      "weight": 50,
-      "cost": 270,
-      "condition": 100,
-      "values": [
-        5,
-        70,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "bottle fluid",
-          "description": "The bottle is dusty and the fluid has a strange sickly-sweet smell to it.\n"
-        }
-      ]
-    },
-    {
-      "id": 8706,
-      "name": "a jar of formaldehyde",
-      "keywords": "jar formaldehyde",
-      "description": "A small jar lies here on the ground.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 60,
-      "cost": 200,
-      "condition": 100,
-      "values": [
-        10,
-        25,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "jar formaldehyde",
-          "description": "The jar is sticky and smells really bad.\n"
-        }
-      ]
-    },
-    {
-      "id": 8707,
-      "name": "a small hot ball of fire",
-      "keywords": "ball fire",
-      "description": "A little ball of fire hovers in the air before your eyes.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 20,
-      "weight": 100,
-      "cost": 720,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        -1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 20
-        },
-        {
-          "location": 13,
-          "modifier": 10
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ball fire",
-          "description": "The ball of fire is hot to the touch and very very bright.\n"
-        }
-      ]
-    },
-    {
-      "id": 8708,
-      "name": "a stone scimitar",
-      "keywords": "stone scimitar",
-      "description": "A curved scimitar made of stone rests on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 66,
-      "wear_flags": 8193,
-      "level": 20,
-      "weight": 180,
-      "cost": 1820,
-      "condition": 100,
-      "values": [
-        5,
-        3,
-        6,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "stone scimitar",
-          "description": "The scimitar is formed from solid stone, chipped and carved to perfection,\nwith a sharp, cold blade that is marred only by a few nicks here and there.\n"
-        }
-      ]
-    },
-    {
-      "id": 8709,
-      "name": "a stone key",
-      "keywords": "stone key",
-      "description": "A stone key has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "stone key",
-          "description": "The key is made from stone, but is otherwise unremarkable.\n"
-        }
-      ]
-    },
-    {
-      "id": 8710,
-      "name": "a mighty stone sarcophagus",
-      "keywords": "stone sarcophagus",
-      "description": "A mighty stone sarcophagus lies in the center of the tomb.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        15,
-        8709,
-        500,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "stone sarcophagus",
-          "description": "The sarcophagus is engraved on the sides with the images of pharoahs,\ngreat wars fought long ago, mighty pyramids being constructed...\n\nA raised image atop the sarcophagus is formed in the visage of one of\nthe mighty pharoahs, painted in gold and studded with precious gems.\n\nYou see a small keyhole in the side of the sarcophagus.\n"
-        }
-      ]
-    },
-    {
-      "id": 8711,
-      "name": "some ancient dust",
-      "keywords": "dust",
-      "description": "A small pile of dust is being scattered by the breeze.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "dust",
-          "description": "The dust is old.  As you sift it through your hands you find tiny chips\nof aged bone inside -- it must be the ancient remains of something.\n"
-        }
-      ]
-    },
-    {
-      "id": 8712,
-      "name": "a small emerald scarab",
-      "keywords": "scarab",
-      "description": "A small emerald scarab lies here on the ground.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "scarab",
-          "description": "The scarab is intricately detailed, down to the tiny hairs on its\ninsectile legs and the faceting of the emeralds in its eyes.\n"
-        }
-      ]
-    },
-    {
-      "id": 8713,
-      "name": "the lamp",
-      "keywords": "lamp",
-      "description": "A small, tarnished, battered lamp has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 1091,
-      "wear_flags": 16385,
-      "level": 20,
-      "weight": 100,
-      "cost": 4700,
-      "condition": 100,
-      "values": [
-        25,
-        5,
-        5,
-        49,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        },
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "lamp",
-          "description": "The lamp is quite old and tarnished.  You rub at it to get some of the\ngrime off, but it doesn't seem like anybody is home.\n"
-        }
-      ]
-    },
-    {
-      "id": 8714,
-      "name": "an ankh",
-      "keywords": "ankh",
-      "description": "A small brass ankh has been left here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1280,
-      "wear_flags": 16385,
-      "level": 14,
-      "weight": 90,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        },
-        {
-          "location": 3,
-          "modifier": 1
-        },
-        {
-          "location": 17,
-          "modifier": -3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ankh",
-          "description": "The ankh is a small brass symbol of an ancient religion.\nIt glows with a soft bright light that is soothing to you.\n"
-        }
-      ]
-    },
-    {
-      "id": 8715,
-      "name": "a book of riddles",
-      "keywords": "book riddles",
-      "description": "A medium-sized parchment book with well-worn pages lies here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 10,
-      "weight": 150,
-      "cost": 1540,
-      "condition": 100,
-      "values": [
-        21,
-        58,
-        61,
-        44,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "book riddles",
-          "description": "The book has well-worn pages, containing many befuddling riddles\nto surprise, confuse, and amuse you.  You find yourself bewildered\nby its contents and put it down to sort your head out.\n"
-        }
-      ]
-    },
-    {
-      "id": 8716,
-      "name": "a lion's paw",
-      "keywords": "lion paw",
-      "description": "The mighty paw of a lion-like creature has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 26,
-      "weight": 200,
-      "cost": 4400,
-      "condition": 100,
-      "values": [
-        0,
-        5,
-        4,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        },
-        {
-          "location": 5,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "lion paw",
-          "description": "The massive paw has straps on it formed of bronze, so that it will\nfit snugly over your hand.  As you put it on, it melds with your hand,\nbecoming an extension of your arm.\n"
-        }
-      ]
-    },
-    {
-      "id": 8717,
-      "name": "the answer",
-      "keywords": "answer",
-      "description": "A small piece of parchment covered in hieroglyphics lies here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "answer hieroglyphics",
-          "description": "You cannot decipher the strange hieroglyphics that cover the\nsheet of parchment.\n"
-        }
-      ]
-    },
-    {
-      "id": 8718,
-      "name": "the treasure of the sphinx",
-      "keywords": "treasure",
-      "description": "The massive treasure of the sphinx lies here in a big pile.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 200,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1850,
-        23,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "treasure",
-          "description": "The treasure is incredibly large, filled with gold coins and valuables, more \nwealth than you could ever possibly imagine accumulated in one place.\n"
-        }
-      ]
-    },
-    {
-      "id": 8719,
-      "name": "a pile of sand",
-      "keywords": "pile sand",
-      "description": "You see a small pile of sand.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        129,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "pile sand",
-          "description": "You think you see some coins and valuables glinting amongst the grains of sand.\n"
-        }
-      ]
-    },
-    {
-      "id": 8720,
-      "name": "the curse of the mummy",
-      "keywords": "curse mummy",
-      "description": "Some fortunate soul has escaped the mummy's curse, for now.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 4304,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": -100
-        },
-        {
-          "location": 13,
-          "modifier": -50
-        },
-        {
-          "location": 5,
-          "modifier": -3
-        },
-        {
-          "location": 2,
-          "modifier": -3
-        },
-        {
-          "location": 1,
-          "modifier": -3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "curse mummy",
-          "description": "Rumor has it that whomever disturbs the grave of the mummy shall be \ncursed for all eternity, and that the descendents of that person shall\nlikewise be cursed for ten generations to follow.\n"
-        }
-      ]
-    },
-    {
-      "id": 8721,
-      "name": "a small elixir",
-      "keywords": "small elixir",
-      "description": "A small glass elixir lies under your feet.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 16,
-      "weight": 20,
-      "cost": 1820,
-      "condition": 100,
-      "values": [
-        30,
-        53,
-        83,
-        78,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "small elixir",
-          "description": "The elixir is deceptively small.  Something tells you that its\ncontents are truly quite potent.  Perhaps too potent for ordinary\nmortals to attempt to consume.\n"
-        }
-      ]
-    },
-    {
-      "id": 8722,
-      "name": "a golden mask",
-      "keywords": "golden mask",
-      "description": "A beautiful, intricately detailed mask has been forgotten here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 17,
-      "level": 33,
-      "weight": 100,
-      "cost": 5500,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        },
-        {
-          "location": 14,
-          "modifier": 30
-        },
-        {
-          "location": 13,
-          "modifier": 10
-        },
-        {
-          "location": 12,
-          "modifier": 25
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "golden mask",
-          "description": "This beautiful mask was shaped from solid gold and magically enchanted\nto perfectly fit the face of any who choose to wear it, its golden features\nand turquoise highlights even moving to match the expressions of the face\nof the wearer.\n"
-        }
-      ]
-    },
-    {
-      "id": 8723,
-      "name": "the diamond",
-      "keywords": "diamond",
-      "description": "",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "diamond",
-          "description": "Aha!\n\nYou see a multifaceted gemstone, which strangely reflects no\nlight, making it very hard to see when it lies on the ground.\n"
-        }
-      ]
-    },
-    {
-      "id": 8724,
-      "name": "a blazing sun wand",
-      "keywords": "sun wand",
-      "description": "A small length of brass shines here with its own light.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 24,
-      "weight": 100,
-      "cost": 29800,
-      "condition": 100,
-      "values": [
-        35,
-        25,
-        25,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sun wand",
-          "description": "This small brass shaft is a holy weapon used by the ancient people of \nthis land to defend against the deadliest of foes.  It shines with the \nbrilliant blazing light of the sun.\n"
-        }
-      ]
-    },
-    {
-      "id": 8725,
-      "name": "a sandy-colored ring",
-      "keywords": "sandy ring",
-      "description": "A small sandy-colored ring has been carelessly dropped here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 66,
-      "wear_flags": 3,
-      "level": 20,
-      "weight": 50,
-      "cost": 1300,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 20
-        },
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sandy ring",
-          "description": "The ring is small, smooth, sandy-colored and unremarkable, save that\nit gives off a continuous low humming noise that tickles your fingertips.\n"
-        }
-      ]
-    },
-    {
-      "id": 8726,
-      "name": "a small golden sphinx",
-      "keywords": "golden sphinx",
-      "description": "A small golden sphinx glints in the light.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 5,
-      "weight": 50,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "golden sphinx",
-          "description": "The golden sphinx is incredibly detailed and very small, fitting easily\ninto the palm of your hand.  You can even make out the expression\nof wisdom and peace on its face.\n"
-        }
-      ]
-    },
-    {
-      "id": 8727,
-      "name": "a pair of sphinxian leggings",
-      "keywords": "spinhxian leggings",
-      "description": "Massive leggings formed from the body of a sphinx stand here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1088,
-      "wear_flags": 33,
-      "level": 32,
-      "weight": 200,
-      "cost": 7800,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 30
-        },
-        {
-          "location": 1,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sphinxian leggings",
-          "description": "These magically fashioned leggings impart the strength and stamina\nof the mightiest of the ancient sphinxes.  You feel ancient power \nemanating from them; they seem to be almost alive.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "R",
-      "arg1": 8754,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 8755,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 8756,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 8757,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8706,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8708,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8709,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8710,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8722,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8723,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8726,
-      "arg2": 3,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8727,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8729,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8730,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8731,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8732,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8743,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8744,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8744,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8745,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 8758,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8700,
-      "arg2": 6,
-      "arg3": 8702,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8700,
-      "arg2": 6,
-      "arg3": 8705,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8700,
-      "arg2": 6,
-      "arg3": 8713,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8700,
-      "arg2": 6,
-      "arg3": 8740,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8701,
-      "arg2": 4,
-      "arg3": 8703,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8701,
-      "arg2": 4,
-      "arg3": 8741,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8702,
-      "arg2": 3,
-      "arg3": 8706,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8702,
-      "arg2": 3,
-      "arg3": 8716,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8702,
-      "arg2": 3,
-      "arg3": 8726,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8709,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8700,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8709,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8701,
-      "arg2": -1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8737,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8700,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8737,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8701,
-      "arg2": -1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8740,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8700,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8703,
-      "arg2": 6,
-      "arg3": 8740,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8701,
-      "arg2": -1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8725,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8726,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8733,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8734,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8735,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8704,
-      "arg2": 6,
-      "arg3": 8742,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8705,
-      "arg2": 1,
-      "arg3": 8743,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8703,
-      "arg2": -1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 8702,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8706,
-      "arg2": 1,
-      "arg3": 8723,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8707,
-      "arg2": 4,
-      "arg3": 8725,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8704,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8706,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8707,
-      "arg2": 4,
-      "arg3": 8725,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 8704,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8705,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8707,
-      "arg2": 4,
-      "arg3": 8737,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8704,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8707,
-      "arg2": 4,
-      "arg3": 8741,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8704,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8708,
-      "arg2": 4,
-      "arg3": 8754,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8708,
-      "arg2": 4,
-      "arg3": 8755,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8708,
-      "arg2": 4,
-      "arg3": 8756,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8708,
-      "arg2": 4,
-      "arg3": 8757,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8709,
-      "arg2": 1,
-      "arg3": 8711,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8707,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8710,
-      "arg2": 2,
-      "arg3": 8745,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8710,
-      "arg2": 2,
-      "arg3": 8745,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8709,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8710,
-      "arg2": 1,
-      "arg3": 8745,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 8711,
-      "arg2": 1,
-      "arg3": 8710,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 8712,
-      "arg2": 1,
-      "arg3": 8710,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8711,
-      "arg2": 1,
-      "arg3": 8723,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8713,
-      "arg2": -1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8712,
-      "arg2": 3,
-      "arg3": 8748,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8712,
-      "arg2": 3,
-      "arg3": 8749,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8712,
-      "arg2": 3,
-      "arg3": 8751,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 8713,
-      "arg2": 2,
-      "arg3": 8750,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8713,
-      "arg2": 2,
-      "arg3": 8750,
-      "arg4": 2
-    },
-    {
-      "command": "G",
-      "arg1": 8714,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8714,
-      "arg2": 2,
-      "arg3": 8752,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 8714,
-      "arg2": 2,
-      "arg3": 8752,
-      "arg4": 2
-    },
-    {
-      "command": "G",
-      "arg1": 8715,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8715,
-      "arg2": 1,
-      "arg3": 8747,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 8716,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8716,
-      "arg2": 1,
-      "arg3": 8758,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 8717,
-      "arg2": -1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8718,
-      "arg2": -1,
-      "arg3": 8759,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8724,
-      "arg2": -1,
-      "arg3": 8759,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8725,
-      "arg2": -1,
-      "arg3": 8759,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8726,
-      "arg2": -1,
-      "arg3": 8759,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8727,
-      "arg2": -1,
-      "arg3": 8759,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 8717,
-      "arg2": 1,
-      "arg3": 8732,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 8719,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8720,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8721,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 8721,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 8722,
-      "arg2": -1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 8723,
-      "arg2": 0,
-      "arg3": 8719,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 8700,
@@ -4089,5 +2336,11 @@
       "mob_vnum": 8717,
       "spec": "spec_cast_cleric"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 8700,
+    "high": 8799
+  }
 }

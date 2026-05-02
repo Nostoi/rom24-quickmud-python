@@ -666,7 +666,8 @@
         "north": {
           "to_room": 7800,
           "description": "You see a path toward the valley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 324,
@@ -1224,7 +1225,7 @@
       "long_description": "Aruncus the Druid is walking around here, searching for herbs.\n",
       "description": "Aruncus is a tall, skinny druid with a face marked by nature.\nHe seems to be in peace with himself and his surroundings.\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -1234,23 +1235,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 301,
@@ -1259,7 +1256,7 @@
       "long_description": "Sorbus the Hermit is sitting here, roasting a rabbit.\n",
       "description": "Sorbus bares the marks of a long, hard life in solitude.\nHe is dressed in simple clothing and looks like he has little\nor nothing to say.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1269,23 +1266,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 303,
@@ -1294,7 +1287,7 @@
       "long_description": "There is a citizen of Ofcol here glaring at you ... stranger!\n",
       "description": "He seems like a nice person with no interest in harming you or others.\nHe wears normal, light clothing and has an anonymous face.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1304,23 +1297,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 304,
@@ -1329,7 +1318,7 @@
       "long_description": "There is a citizen of Ofcol here glaring at you ... stranger!\n",
       "description": "She seems like a nice person with no interest in harming you or others.\nShe wears a minimum of clothing and has big ... eyes.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1339,23 +1328,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 305,
@@ -1364,7 +1349,7 @@
       "long_description": "Shudde-M'ell the Giant worm of G'harne is guarding his treasure.\n",
       "description": "Shudde-M'ell is about 15 ft long and is surrounded by an evil stench,\nThe worm is the protector of the treasure of G'harne and has been so\nfor as long anyone can remember.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -1000,
       "group": 0,
@@ -1374,23 +1359,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 683,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 683
     },
     {
       "id": 306,
@@ -1399,7 +1380,7 @@
       "long_description": "Luxan the Shopkeeper is here, eager to sell you anything.\n",
       "description": "Luxan is dressed in a strange jacket.\nHe looks like a mean trader from the outskirts of Midgaard.\nHis life is seems to be totally occupied with trading.\nHe looks very fit and capable of protecting his goods.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 400,
       "group": 0,
@@ -1409,23 +1390,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 308,
@@ -1434,7 +1411,7 @@
       "long_description": "An Innkeeper is here waiting for your order.\n",
       "description": "The Innkeeper looks skilled in brewing different beers and mixing the\nwierdest drinks known. He also looks very big.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -1444,23 +1421,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 309,
@@ -1469,7 +1442,7 @@
       "long_description": "A cute rabbit is here.\n",
       "description": "It is a small, furry creature with long ears and big feet.\n",
       "race": "rabbit",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1479,23 +1452,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "1725",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 350,
@@ -1504,7 +1473,7 @@
       "long_description": "Ravan's pet dragon is bouncing around here flapping her cute wings.\n",
       "description": "Ravan's pet dragon is about 3 ft. tall with small pointy teeth.\nThe small wings are eagerly trying to lift her from the ground,\nbut so far they haven't succeeded.\n",
       "race": "dragon",
-      "act_flags": "ABHR",
+      "act_flags": "0",
       "affected_by": "DHJT",
       "alignment": 1000,
       "group": 0,
@@ -1514,481 +1483,51 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
+      "form": "33554561",
+      "parts": "11634685",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHZ",
-      "parts": "0ACDEFGHIJKPQUVX",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     }
   ],
-  "objects": [
+  "objects": [],
+  "mob_programs": [],
+  "shops": [
     {
-      "id": 300,
-      "name": "a small dusk of timian herbs",
-      "keywords": "herbs herb timian",
-      "description": "Some herbs are lying here, small green leaves and tiny pink flowers.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 10,
-      "condition": 100,
-      "values": [
+      "keeper": 306,
+      "buy_types": [
         1,
-        1,
-        0,
-        0,
+        10,
+        11,
+        19,
         0
       ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "herbs herb timian",
-          "description": "This herb smells rather spicy; maybe you should try it?\n"
-        }
-      ]
+      "profit_buy": 120,
+      "profit_sell": 60,
+      "open_hour": 0,
+      "close_hour": 23
     },
     {
-      "id": 301,
-      "name": "a small dusk of black gyvel",
-      "keywords": "herbs herb gyvel",
-      "description": "Some black gyvel is lying here, dark green with black leaves and tiny\n\nblood red flowers.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "herbs herb gyvel",
-          "description": "This herb smells rather special, but is it poisonous?\n"
-        }
-      ]
-    },
-    {
-      "id": 302,
-      "name": "a small dusk of poison ivy",
-      "keywords": "plant ivy",
-      "description": "Some poison ivy is growing here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "plant ivy",
-          "description": "This plant has dark green juicy leaves.\nYou notice some small white thorns on it."
-        }
-      ]
-    },
-    {
-      "id": 303,
-      "name": "a dark red jar",
-      "keywords": "blood jar",
-      "description": "A small jar in a dark, red colour.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 20,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        13,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "blood jar",
-          "description": "The jar is made of dry clay, covered with markings suggesting its\noccult origin.\n"
-        }
-      ]
-    },
-    {
-      "id": 304,
-      "name": "wild flowers",
-      "keywords": "wild flowers",
-      "description": "A bunch of pretty wild flowers is here.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 1024,
-      "wear_flags": 16401,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
+      "keeper": 308,
+      "buy_types": [
         0,
         0,
         0,
         0,
         0
       ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "wild flowers",
-          "description": "These wild flowers are really pretty.\nJust like the flowers you would wear in your hair."
-        }
-      ]
-    },
-    {
-      "id": 307,
-      "name": "a strange amulet",
-      "keywords": "amulet",
-      "description": "A strange looking amulet is lying here, half covered with dust.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 192,
-      "wear_flags": 5,
-      "level": 0,
-      "weight": 10,
-      "cost": 1,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": 5
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "amulet",
-          "description": "Judging from the signs inscripted in the amulet, you gather it must\nhave belonged to a druid.  It is weird looking with symbols from nature\ndominating it.\n"
-        }
-      ]
-    },
-    {
-      "id": 308,
-      "name": "a druish staff",
-      "keywords": "staff stick",
-      "description": "A staff with druidic marks have been left here.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 40,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "staff stick",
-          "description": "Then staff is about 5 ft long, engraved with mythical signs and figures.\nOtherwise the staff seems of no real interest.\n"
-        }
-      ]
-    },
-    {
-      "id": 309,
-      "name": "a rabbit roast",
-      "keywords": "rabbit roast wabbit",
-      "description": "You see a deliciously looking rabbit roast.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        24,
-        24,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "roast rabbit wabbit",
-          "description": "Well the rabbit looks rather dead.\nYou guess that this once was a ferocious rabbit who's life now has\nchanged to that of a tasty wabbit woast.\n"
-        }
-      ]
-    },
-    {
-      "id": 310,
-      "name": "a strange template",
-      "keywords": "template scroll",
-      "description": "A strange template made of an exotic green metal is placed here",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 13,
-      "weight": 10,
-      "cost": 1870,
-      "condition": 100,
-      "values": [
-        15,
-        81,
-        4,
-        46,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "template scroll metal",
-          "description": "The template is made of an exotic green metal and looks\ncenturies old.\nInscripted upon is the words 'Ep ep fi'hur G'harne\n                             G'harne fhtagn Shudde-M'ell hyas Negg'h'\nAnd beneath the inscription you see horrifying death scenes depicted.\n"
-        }
-      ]
-    },
-    {
-      "id": 311,
-      "name": "a clear potion",
-      "keywords": "potion clear",
-      "description": "A clear potion wrapped in leather is unnoticed placed here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 300,
-      "condition": 100,
-      "values": [
-        20,
-        30,
-        33,
-        34,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "leather",
-          "description": "The leather wrapped around the potion is old and decayed, originating\nfrom an, to you, unknown creature."
-        },
-        {
-          "keyword": "potion clear",
-          "description": "As you examine the potion more, you notice the oddities of this\npotion. When you look through it you notice strange things...\nThe clear potion is certainly not of this world.\n"
-        }
-      ]
-    },
-    {
-      "id": 312,
-      "name": "a scroll titled 'jhyfrdow'",
-      "keywords": "scroll jhyfrdow",
-      "description": "An odd looking scroll is here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 2,
-      "weight": 10,
-      "cost": 640,
-      "condition": 100,
-      "values": [
-        18,
-        72,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "ritual men drawings",
-          "description": "The drawing pictures people gathered round giant stone formations,\nworshipping a giant worm like creature.\nIt seems they are sacrificing some of their own species.\n"
-        },
-        {
-          "keyword": "scroll jhyfrdow",
-          "description": "The scroll is titled 'jhyfrdow' and looks very old.\nAs you examine it closer you notice primitive drawings of\nmen doing some kind of a ritual.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "O",
-      "arg1": 300,
-      "arg2": 10,
-      "arg3": 327,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 301,
-      "arg2": 10,
-      "arg3": 319,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 304,
-      "arg2": 3,
-      "arg3": 316,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 304,
-      "arg2": 3,
-      "arg3": 323,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 304,
-      "arg2": 3,
-      "arg3": 338,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 305,
-      "arg2": 1,
-      "arg3": 344,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 310,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 311,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 10,
-      "arg3": 324,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 10,
-      "arg3": 318,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 10,
-      "arg3": 334,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 300,
-      "arg2": 1,
-      "arg3": 323,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 308,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 307,
-      "arg2": 2,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 312,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 302,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 301,
-      "arg2": 1,
-      "arg3": 331,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 303,
-      "arg2": 2,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 309,
-      "arg2": 30,
-      "arg3": 331,
-      "arg4": 0
+      "profit_buy": 110,
+      "profit_sell": 100,
+      "open_hour": 0,
+      "close_hour": 23
     }
   ],
   "specials": [
@@ -1996,5 +1535,11 @@
       "mob_vnum": 350,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 300,
+    "high": 399
+  }
 }

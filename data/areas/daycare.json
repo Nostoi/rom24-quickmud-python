@@ -324,18 +324,18 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "east": {
-          "to_room": 6614,
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
+        "north": {
           "to_room": 6615,
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "east": {
           "to_room": 6612,
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 6614,
           "flags": "0",
           "key": -1
         }
@@ -350,7 +350,7 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "south": {
+        "north": {
           "to_room": 6616,
           "flags": "0",
           "key": -1
@@ -371,13 +371,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
-          "to_room": 6613,
+        "south": {
+          "to_room": 6616,
           "flags": "0",
           "key": -1
         },
-        "east": {
-          "to_room": 6616,
+        "west": {
+          "to_room": 6613,
           "flags": "0",
           "key": -1
         }
@@ -398,12 +398,12 @@
           "key": -1
         },
         "south": {
-          "to_room": 6624,
+          "to_room": 6615,
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 6615,
+          "to_room": 6624,
           "flags": "0",
           "key": -1
         }
@@ -479,7 +479,7 @@
       "long_description": "A young dwarf plays with a toy axe.\n",
       "description": "This is a young but not totally harmless creature.\n",
       "race": "dwarf",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -5,
       "group": 0,
@@ -489,23 +489,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+2",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 6,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "DJR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "small",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "small",
-      "material": "0"
+      "sex": "none",
+      "wealth": 10
     },
     {
       "id": 6601,
@@ -514,7 +510,7 @@
       "long_description": "A cute and fuzzy teddy bear stands here.\n",
       "description": "This is a tiny little bear with a heart on his chest.\n",
       "race": "doll",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -524,23 +520,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+0",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 5,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "NR",
       "immune": "0ILMNPQR",
       "resist": "0ES",
       "vuln": "0GHJKO",
+      "form": "268440080",
+      "parts": "1223",
+      "size": "small",
+      "material": "cloth",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0EJMc",
-      "parts": "0ABCGHK",
-      "size": "small",
-      "material": "cloth"
+      "wealth": 0
     },
     {
       "id": 6602,
@@ -549,7 +541,7 @@
       "long_description": "A raggedy anne doll is sitting here.\n",
       "description": "You see a small little cute rag doll.\n",
       "race": "doll",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -559,23 +551,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d5+0",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 4,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "FHR",
       "immune": "0ILMNPQR",
       "resist": "0ES",
       "vuln": "0GHJKO",
+      "form": "268440080",
+      "parts": "1223",
+      "size": "small",
+      "material": "cloth",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0EJMc",
-      "parts": "0ABCGHK",
-      "size": "small",
-      "material": "cloth"
+      "wealth": 0
     },
     {
       "id": 6603,
@@ -584,7 +572,7 @@
       "long_description": "A toy soldier is standing here.\n",
       "description": "The toy is looking for target practice.\n",
       "race": "doll",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -594,23 +582,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 7,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "IR",
       "immune": "0ILMNPQR",
       "resist": "GES",
       "vuln": "EGHJKO",
+      "form": "268440080",
+      "parts": "1223",
+      "size": "small",
+      "material": "tin",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0EJMc",
-      "parts": "0ABCGHK",
-      "size": "small",
-      "material": "tin"
+      "wealth": 0
     },
     {
       "id": 6604,
@@ -619,7 +603,7 @@
       "long_description": "An ugly stuffed bear stands here.\n",
       "description": "This is obviously a reject from the factory.\nHe snarls and growls at you.\n",
       "race": "doll",
-      "act_flags": "ACF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -629,23 +613,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d6+1",
       "damage_dice": "chomp",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 3,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "DJNR",
       "immune": "0ILMNPQR",
       "resist": "0ES",
       "vuln": "0GHJKO",
+      "form": "268440080",
+      "parts": "1223",
+      "size": "small",
+      "material": "cloth",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0EJMc",
-      "parts": "0ABCGHK",
-      "size": "small",
-      "material": "cloth"
+      "wealth": 5
     },
     {
       "id": 6605,
@@ -654,7 +634,7 @@
       "long_description": "An abused and old doll is here.\n",
       "description": "This doll has been hugged and played with until there is almost nothing left.\n",
       "race": "doll",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -2,
       "group": 0,
@@ -664,23 +644,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+0",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 5,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "R",
       "immune": "0ILMNPQR",
       "resist": "0ES",
       "vuln": "0GHJKO",
+      "form": "268440080",
+      "parts": "1223",
+      "size": "small",
+      "material": "cloth",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0EJMc",
-      "parts": "0ABCGHK",
-      "size": "small",
-      "material": "cloth"
+      "wealth": 0
     },
     {
       "id": 6606,
@@ -689,7 +665,7 @@
       "long_description": "An old wrinkled nanny stands here, looking over the little ones.\n",
       "description": "You see an old dwarven lady who has been hunched over with age.  However, it\nappears that there is still some fight left in her.\n",
       "race": "dwarf",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": 10,
       "group": 0,
@@ -699,23 +675,19 @@
       "hit_dice": "5d4+100",
       "mana_dice": "1d6+1",
       "damage_dice": "slap",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "CDR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 6607,
@@ -724,7 +696,7 @@
       "long_description": "An armed guard stands here looking lost.\n",
       "description": "This is a big mean bully who is tired of being lost in this maze.\nYou suddenly think that you had better flee.\n",
       "race": "dwarf",
-      "act_flags": "ABCT",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -800,
       "group": 0,
@@ -734,23 +706,19 @@
       "hit_dice": "8d4+100",
       "mana_dice": "1d7+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 2,
-      "ac_slash": 3,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "CDJR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 120,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 120
     },
     {
       "id": 6608,
@@ -759,7 +727,7 @@
       "long_description": "A spoiled brat is crying here.\n",
       "description": "You see a little tyke who has always gotten what he wanted.  You have the\nbiggest urge to put him out of his misery.\n",
       "race": "dwarf",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -400,
       "group": 0,
@@ -769,618 +737,24 @@
       "hit_dice": "1d1+199",
       "mana_dice": "2d2+1",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "IJN",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "small",
-      "material": "0"
+      "wealth": 50
     }
   ],
-  "objects": [
-    {
-      "id": 6600,
-      "name": "a toy axe",
-      "keywords": "axe toy",
-      "description": "An axe made of wood lies here.",
-      "material": "wood",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 0,
-      "weight": 30,
-      "cost": 250,
-      "condition": 90,
-      "values": [
-        5,
-        1,
-        5,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "axe toy",
-          "description": "A small label says 'made in Taiwan'.\n"
-        }
-      ]
-    },
-    {
-      "id": 6601,
-      "name": "a pink ice ring",
-      "keywords": "ring pink ice",
-      "description": "A pink ice ring draws your eye.",
-      "material": "ice",
-      "item_type": "treasure",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 3,
-      "weight": 10,
-      "cost": 620,
-      "condition": 90,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 4
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ring pink ice",
-          "description": "How strange...it's made of ice, but it doesn't melt. It feels pleasantly \ncool to the touch.\n"
-        }
-      ]
-    },
-    {
-      "id": 6621,
-      "name": "a linen robe",
-      "keywords": "robe linen",
-      "description": "A linen robe is crumpled into a ball here.",
-      "material": "cloth",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 1025,
-      "level": 7,
-      "weight": 50,
-      "cost": 780,
-      "condition": 90,
-      "values": [
-        1,
-        2,
-        1,
-        1,
-        1
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 5
-        },
-        {
-          "location": 4,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "robe linen",
-          "description": "It radiates an aura of peace and wisdom.  The perfect garb for a teacher.\n"
-        }
-      ]
-    },
-    {
-      "id": 6622,
-      "name": "a broom",
-      "keywords": "broom",
-      "description": "A stout straw broom lies on the floor.",
-      "material": "wood",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 4,
-      "weight": 30,
-      "cost": 270,
-      "condition": 50,
-      "values": [
-        3,
-        2,
-        3,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        },
-        {
-          "location": 17,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "broom",
-          "description": "It's worn and tired, probably from swatting too many children.\n"
-        }
-      ]
-    },
-    {
-      "id": 6644,
-      "name": "a juicy steak",
-      "keywords": "meat steak",
-      "description": "A juicy steak sits on a plate here.",
-      "material": "meat",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        25,
-        25,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6645,
-      "name": "a rotten steak",
-      "keywords": "steak rotten",
-      "description": "A dry steak lies on the floor.",
-      "material": "meat",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 50,
-      "values": [
-        4,
-        4,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6646,
-      "name": "an amber potion",
-      "keywords": "potion amber",
-      "description": "An amber potion sits in a corner.",
-      "material": "glass",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 150,
-      "condition": 90,
-      "values": [
-        5,
-        25,
-        2,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion",
-          "description": "It's a tight-stoppered glass bottle with a thick amber liquid inside. It\ntastes kind of like whiskey.\n"
-        }
-      ]
-    },
-    {
-      "id": 6647,
-      "name": "a toy gun",
-      "keywords": "gun toy",
-      "description": "A toy gun with a sharp bayonet lies here.",
-      "material": "wood",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 4,
-      "weight": 20,
-      "cost": 300,
-      "condition": 90,
-      "values": [
-        3,
-        2,
-        3,
-        2,
-        32
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "gun toy",
-          "description": "It's just a toy...but the point looks kind of sharp.\nYou'll put your eye out, kid!\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "R",
-      "arg1": 6613,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 6614,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 6615,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 6616,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6607,
-      "arg2": 1,
-      "arg3": 6624,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3023,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6608,
-      "arg2": 1,
-      "arg3": 6631,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6602,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6601,
-      "arg2": 2,
-      "arg3": 6602,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6606,
-      "arg2": 2,
-      "arg3": 6602,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 6646,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 6644,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 6621,
-      "arg2": 20,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6603,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6604,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6602,
-      "arg2": 2,
-      "arg3": 6604,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6606,
-      "arg2": 2,
-      "arg3": 6604,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 6646,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 6622,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6605,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6602,
-      "arg2": 2,
-      "arg3": 6605,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 6645,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6605,
-      "arg2": 3,
-      "arg3": 6605,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6601,
-      "arg2": 20,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6608,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6603,
-      "arg2": 4,
-      "arg3": 6608,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6647,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6609,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6604,
-      "arg2": 2,
-      "arg3": 6609,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6603,
-      "arg2": 3,
-      "arg3": 6609,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6647,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6603,
-      "arg2": 4,
-      "arg3": 6609,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6647,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6600,
-      "arg2": 7,
-      "arg3": 6610,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6600,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6603,
-      "arg2": 4,
-      "arg3": 6610,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6647,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6605,
-      "arg2": 3,
-      "arg3": 6610,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6604,
-      "arg2": 2,
-      "arg3": 6611,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6603,
-      "arg2": 4,
-      "arg3": 6611,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6647,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6605,
-      "arg2": 3,
-      "arg3": 6606,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6601,
-      "arg2": 2,
-      "arg3": 6606,
-      "arg4": 1
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 6600,
@@ -1398,5 +772,11 @@
       "mob_vnum": 6608,
       "spec": "spec_thief"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 6600,
+    "high": 6699
+  }
 }

@@ -38,7 +38,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1307,
+          "to_room": 1304,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -50,13 +50,13 @@
           "key": -1
         },
         "south": {
-          "to_room": 1304,
+          "to_room": 1303,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 1303,
+          "to_room": 1307,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -79,19 +79,19 @@
           "key": -1
         },
         "east": {
-          "to_room": 1303,
-          "description": "The shadows cloud your vision.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
           "to_room": 1305,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "south": {
           "to_room": 1301,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1303,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -143,19 +143,19 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1301,
-          "description": "The shadows cloud your vision.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
           "to_room": 1305,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
-        "south": {
+        "east": {
           "to_room": 1307,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 1301,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -178,25 +178,25 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1302,
+          "to_room": 1304,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 1306,
-          "description": "The shadows cloud your vision.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
           "to_room": 1308,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
+        "south": {
+          "to_room": 1302,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
         "west": {
-          "to_room": 1304,
+          "to_room": 1306,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -213,25 +213,25 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1303,
-          "description": "The shadows cloud your vision.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 9301,
-          "description": "You see a shadowy tavern.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
           "to_room": 1309,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "east": {
           "to_room": 1305,
+          "description": "The shadows cloud your vision.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 9301,
+          "description": "You see a shadowy tavern.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 1303,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -248,13 +248,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1304,
+          "to_room": 1308,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 1308,
+          "to_room": 1309,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -266,7 +266,7 @@
           "key": -1
         },
         "west": {
-          "to_room": 1309,
+          "to_room": 1304,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -283,13 +283,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 1305,
+          "to_room": 1309,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 1309,
+          "to_room": 1307,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -301,7 +301,7 @@
           "key": -1
         },
         "west": {
-          "to_room": 1307,
+          "to_room": 1305,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -324,19 +324,19 @@
           "key": -1
         },
         "east": {
-          "to_room": 1307,
+          "to_room": 1308,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "south": {
-          "to_room": 1303,
+          "to_room": 1307,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 1308,
+          "to_room": 1303,
           "description": "The shadows cloud your vision.\n",
           "flags": "0",
           "key": -1
@@ -487,7 +487,7 @@
         "west": {
           "to_room": 1320,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -509,7 +509,7 @@
         "down": {
           "to_room": 1321,
           "keyword": "trapdoor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -558,7 +558,7 @@
         "east": {
           "to_room": 1316,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -575,7 +575,7 @@
         "up": {
           "to_room": 1317,
           "keyword": "trapdoor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -634,7 +634,7 @@
         "north": {
           "to_room": 1327,
           "keyword": "oak door",
-          "flags": "1",
+          "flags": "7",
           "key": 1323
         },
         "south": {
@@ -716,7 +716,7 @@
         "south": {
           "to_room": 1323,
           "keyword": "oak door",
-          "flags": "1",
+          "flags": "7",
           "key": -1
         }
       },
@@ -760,7 +760,7 @@
         "north": {
           "to_room": 1332,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -771,7 +771,7 @@
         "south": {
           "to_room": 1333,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -793,19 +793,19 @@
         "north": {
           "to_room": 1334,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
           "to_room": 1336,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 1335,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -827,7 +827,7 @@
         "south": {
           "to_room": 1330,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -844,7 +844,7 @@
         "north": {
           "to_room": 1330,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -866,13 +866,13 @@
         "east": {
           "to_room": 1337,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 1331,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -894,7 +894,7 @@
         "north": {
           "to_room": 1331,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -911,7 +911,7 @@
         "west": {
           "to_room": 1331,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -933,7 +933,7 @@
         "west": {
           "to_room": 1334,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -950,7 +950,7 @@
         "east": {
           "to_room": 1339,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -977,7 +977,7 @@
         "west": {
           "to_room": 1338,
           "keyword": "door charred",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -994,7 +994,7 @@
         "north": {
           "to_room": 1342,
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -1048,7 +1048,7 @@
         "south": {
           "to_room": 1340,
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -1070,7 +1070,7 @@
         "north": {
           "to_room": 1344,
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -1102,7 +1102,7 @@
         "south": {
           "to_room": 1343,
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1120,7 +1120,7 @@
           "to_room": 1346,
           "description": "A flash of blue light momentarily lights up the doors outline\n",
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -1147,7 +1147,7 @@
         "south": {
           "to_room": 1345,
           "keyword": "door oak",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1195,7 +1195,7 @@
         "west": {
           "to_room": 1349,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1212,7 +1212,7 @@
         "east": {
           "to_room": 1348,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1239,7 +1239,7 @@
         "west": {
           "to_room": 1352,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1266,7 +1266,7 @@
         "west": {
           "to_room": 1354,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1283,7 +1283,7 @@
         "east": {
           "to_room": 1350,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1321,7 +1321,7 @@
         "east": {
           "to_room": 1351,
           "keyword": "door metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1343,7 +1343,7 @@
         "south": {
           "to_room": 1357,
           "keyword": "door sturdy iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -1370,7 +1370,7 @@
         "south": {
           "to_room": 1359,
           "keyword": "door large oaken",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -1392,7 +1392,7 @@
         "north": {
           "to_room": 1355,
           "keyword": "door sturdy iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1414,7 +1414,7 @@
         "south": {
           "to_room": 1361,
           "keyword": "door small",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -1436,7 +1436,7 @@
         "north": {
           "to_room": 1356,
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1474,7 +1474,7 @@
         "north": {
           "to_room": 1358,
           "keyword": "door small",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1496,7 +1496,7 @@
         "east": {
           "to_room": 1364,
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -1523,7 +1523,7 @@
         "east": {
           "to_room": 1365,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -1545,7 +1545,7 @@
         "west": {
           "to_room": 1362,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1562,7 +1562,7 @@
         "west": {
           "to_room": 1363,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1584,7 +1584,7 @@
         "east": {
           "to_room": 1367,
           "keyword": "door glass",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -1606,7 +1606,7 @@
         "west": {
           "to_room": 1366,
           "keyword": "door glass",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1665,7 +1665,7 @@
         "north": {
           "to_room": 1371,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -1692,13 +1692,13 @@
         "south": {
           "to_room": 1370,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 1373,
           "keyword": "curtain",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1736,7 +1736,7 @@
         "east": {
           "to_room": 1371,
           "keyword": "curtain",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1754,7 +1754,7 @@
           "to_room": 1375,
           "description": "A dark room can be seen through the half opened door\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -1781,7 +1781,7 @@
         "south": {
           "to_room": 1374,
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1829,7 +1829,7 @@
         "west": {
           "to_room": 1379,
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1856,7 +1856,7 @@
         "west": {
           "to_room": 1381,
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1873,7 +1873,7 @@
         "east": {
           "to_room": 1377,
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -1921,19 +1921,19 @@
         "east": {
           "to_room": 1378,
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 1382,
           "keyword": "door ",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "up": {
           "to_room": 1412,
           "keyword": "vent",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1950,7 +1950,7 @@
         "north": {
           "to_room": 1381,
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -1993,7 +1993,7 @@
         "south": {
           "to_room": 1386,
           "keyword": "door steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2036,7 +2036,7 @@
         "north": {
           "to_room": 1384,
           "keyword": "door steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2063,7 +2063,7 @@
         "south": {
           "to_room": 1390,
           "keyword": "door steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2122,7 +2122,7 @@
         "north": {
           "to_room": 1387,
           "keyword": "door steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2150,7 +2150,7 @@
         "east": {
           "to_room": 1394,
           "keyword": "door bronze",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2170,24 +2170,29 @@
       "flags": 0,
       "exits": {
         "east": {
-          "to_room": 5113,
-          "flags": "0"
+          "to_room": 7428,
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 9141,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
-          "to_room": 7428,
-          "flags": "0"
+          "to_room": 5113,
+          "flags": "0",
+          "key": -1
         },
         "up": {
-          "to_room": 938,
-          "flags": "0"
+          "to_room": 3460,
+          "flags": "0",
+          "key": -1
         },
         "down": {
-          "to_room": 3460,
-          "flags": "0"
+          "to_room": 938,
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2230,7 +2235,7 @@
         "west": {
           "to_room": 1391,
           "keyword": "door bronze",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2247,13 +2252,13 @@
         "north": {
           "to_room": 1397,
           "keyword": "cage bars",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 1393,
           "keyword": "door bronze",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2291,7 +2296,7 @@
         "south": {
           "to_room": 1395,
           "keyword": "cage bars",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2350,7 +2355,7 @@
         "north": {
           "to_room": 1401,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2377,13 +2382,13 @@
         "south": {
           "to_room": 1400,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 1402,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2400,13 +2405,13 @@
         "east": {
           "to_room": 1401,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 1403,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2423,13 +2428,13 @@
         "east": {
           "to_room": 1402,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 1405,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2467,7 +2472,7 @@
         "north": {
           "to_room": 1403,
           "keyword": "door silver",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2546,7 +2551,7 @@
         "west": {
           "to_room": 1409,
           "keyword": "door rusty",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2568,7 +2573,7 @@
         "east": {
           "to_room": 1408,
           "keyword": "door rusty",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2579,7 +2584,7 @@
         "down": {
           "to_room": 1412,
           "keyword": "trapdoor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2628,13 +2633,13 @@
         "up": {
           "to_room": 1409,
           "keyword": "trapdoor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
           "to_room": 1381,
           "keyword": "vent",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2719,7 +2724,7 @@
         "south": {
           "to_room": 1417,
           "keyword": "door emerald",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2741,7 +2746,7 @@
         "north": {
           "to_room": 1416,
           "keyword": "door emerald",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2799,7 +2804,7 @@
         "south": {
           "to_room": 1420,
           "keyword": "door glass",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2821,7 +2826,7 @@
         "north": {
           "to_room": 1419,
           "keyword": "door glass",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2864,7 +2869,7 @@
         "east": {
           "to_room": 1423,
           "keyword": "door black",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2891,7 +2896,7 @@
         "west": {
           "to_room": 1422,
           "keyword": "door black",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3124,7 +3129,7 @@
         "east": {
           "to_room": 1435,
           "keyword": "door black",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -3146,7 +3151,7 @@
         "west": {
           "to_room": 1434,
           "keyword": "door black",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3577,7 +3582,7 @@
         "south": {
           "to_room": 1453,
           "keyword": "door grey",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3594,7 +3599,7 @@
         "north": {
           "to_room": 1452,
           "keyword": "door grey",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -3737,7 +3742,7 @@
         "east": {
           "to_room": 1461,
           "keyword": "door obsidian",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -3774,7 +3779,7 @@
         "west": {
           "to_room": 1460,
           "keyword": "door obsidian",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3865,7 +3870,7 @@
         "west": {
           "to_room": 1467,
           "keyword": "door ivory",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -3882,7 +3887,7 @@
         "east": {
           "to_room": 1466,
           "keyword": "door ivory",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -4141,7 +4146,7 @@
         "east": {
           "to_room": 1481,
           "keyword": "door secret",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -4152,7 +4157,7 @@
         "west": {
           "to_room": 1482,
           "keyword": "door secret",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -4169,7 +4174,7 @@
         "west": {
           "to_room": 1480,
           "keyword": "door secret",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -4234,7 +4239,7 @@
       "long_description": "A shadow guardian screams a challenge and attacks.\n",
       "description": "It seems to be made of nothing more than darkness ...\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "BDJP",
       "alignment": -350,
       "group": 0,
@@ -4244,23 +4249,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 1301,
@@ -4269,7 +4270,7 @@
       "long_description": "An emaciated adventurer is here looking lost and hopeless.\n",
       "description": "He looks haggard and sickly; no doubt he's been lost here for quite some time.\n",
       "race": "human",
-      "act_flags": "ABCHQ",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 400,
       "group": 0,
@@ -4279,23 +4280,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 14,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 14
     },
     {
       "id": 1302,
@@ -4304,7 +4301,7 @@
       "long_description": "Edgar the Human Swordpupil\n",
       "description": "Edgar says 'pardon me, can you tell me where to buy cups?'\n\nYou see before you, one of Midgaard's finest fighting elite, the mighty\nbunny slayer himself, Edgar the Horrible!\n",
       "race": "human",
-      "act_flags": "ACEH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 1000,
       "group": 0,
@@ -4314,23 +4311,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 1303,
@@ -4339,7 +4332,7 @@
       "long_description": "A huge diamond golem is standing guard here.\n",
       "description": "It looks quite strong.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 500,
       "group": 0,
@@ -4349,23 +4342,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 49,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 49
     },
     {
       "id": 1304,
@@ -4374,7 +4363,7 @@
       "long_description": "A young mage wanders about, oblivious to all.\n",
       "description": "He seems to be contemplating life, love and the mysteries of the universe.\nThen again, he may just have a headache.\n",
       "race": "human",
-      "act_flags": "AGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 450,
       "group": 0,
@@ -4384,23 +4373,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 21,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 21
     },
     {
       "id": 1305,
@@ -4409,7 +4394,7 @@
       "long_description": "Strick is here levitating drinks to his customers.\n",
       "description": "He looks rather harmless, but then again so does a sleeping dragon.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 750,
       "group": 0,
@@ -4419,23 +4404,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 100,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 100
     },
     {
       "id": 1306,
@@ -4444,7 +4425,7 @@
       "long_description": "Tatorious the wizard is here counting his earnings.\n",
       "description": "Tatorious winks at you mischievously.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 900,
       "group": 0,
@@ -4454,23 +4435,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 1307,
@@ -4479,7 +4456,7 @@
       "long_description": "Ezmerelda the cook is here stirring a large pot of something.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -4489,23 +4466,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 54,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 54
     },
     {
       "id": 1308,
@@ -4514,7 +4487,7 @@
       "long_description": "The cook's assistant is here assisting the cook.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -200,
       "group": 0,
@@ -4524,23 +4497,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 1309,
@@ -4549,7 +4518,7 @@
       "long_description": "A prisoner is chained to the wall here.\n",
       "description": "Though his clothes are all in rags, you can see that at one time they must\nhave been fine garments. A metal muzzle has been fitted over the poor\nwretch's mouth, whether to keep him from screaming, or to silence his spell\ncasting you cannot tell.\n\nHe looks quite mad, no doubt he's been mistreated horribly.\n",
       "race": "human",
-      "act_flags": "ABCFGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -4559,23 +4528,19 @@
       "hit_dice": "16d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1310,
@@ -4584,7 +4549,7 @@
       "long_description": "The Jailor is here enjoying a comfortable nap.\n",
       "description": "He looks rather dirty.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -4594,23 +4559,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 66,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 66
     },
     {
       "id": 1311,
@@ -4619,7 +4580,7 @@
       "long_description": "A straw broom is here leaning against the wall.\n",
       "description": "The broom screams 'Take that you lout!'\n",
       "race": "human",
-      "act_flags": "ABCFGS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 50,
       "group": 0,
@@ -4629,23 +4590,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1312,
@@ -4654,7 +4611,7 @@
       "long_description": "A pair of disembodied hands floats in the air here.\n",
       "description": "The hands twitch with anticipation of strangling someone.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -4664,23 +4621,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1313,
@@ -4689,7 +4642,7 @@
       "long_description": "A pair of disembodied eyes floats here glaring at you.\n",
       "description": "The eyes smolder with hatred.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -600,
       "group": 0,
@@ -4699,23 +4652,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1314,
@@ -4724,7 +4673,7 @@
       "long_description": "A visiting mage is here snoring away in peaceful slumber.\n",
       "description": "He looks quite sleepy.\n",
       "race": "human",
-      "act_flags": "ABCGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 250,
       "group": 0,
@@ -4734,23 +4683,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 36,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 36
     },
     {
       "id": 1315,
@@ -4759,7 +4704,7 @@
       "long_description": "A young apprentice magic user is here doing magical studies.\n",
       "description": "She looks quite intent on her studies.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 400,
       "group": 0,
@@ -4769,23 +4714,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "female",
-      "wealth": 18,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 18
     },
     {
       "id": 1316,
@@ -4794,7 +4735,7 @@
       "long_description": "A young apprentice is here mumbling words of magic to himself.\n",
       "description": "He looks to be oblivious to all but the spell he is memorizing.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 380,
       "group": 0,
@@ -4804,23 +4745,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 24,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 24
     },
     {
       "id": 1317,
@@ -4829,7 +4766,7 @@
       "long_description": "A young apprentice is sleeping here.\n",
       "description": "He seems to be dreaming.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -4839,23 +4776,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 10,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 10
     },
     {
       "id": 1318,
@@ -4864,7 +4797,7 @@
       "long_description": "A young apprentice is here teasing a cornered kitten.\n",
       "description": "He looks like a mischievous youth.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -4874,23 +4807,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 19,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 19
     },
     {
       "id": 1319,
@@ -4899,7 +4828,7 @@
       "long_description": "A small kitten is here meowing in terror.\n",
       "description": "The little ball of fur looks very unhappy.  Singed fur and a few minor burns\nmark its mottled coat.\n",
       "race": "human",
-      "act_flags": "ABGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -4909,23 +4838,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1320,
@@ -4934,7 +4859,7 @@
       "long_description": "A student of spells is here looking quite bored\n",
       "description": "The student yawns.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -4944,23 +4869,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 13,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 13
     },
     {
       "id": 1321,
@@ -4969,7 +4890,7 @@
       "long_description": "The instructor screams at your interruption and attacks you.\n",
       "description": "He looks quite angry at your interruption.\n",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 300,
       "group": 0,
@@ -4979,23 +4900,19 @@
       "hit_dice": "14d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 44,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 44
     },
     {
       "id": 1322,
@@ -5004,7 +4921,7 @@
       "long_description": "A student of spells is here trying to master invisibility.\n",
       "description": "He blinks in and out of existence, trying to master the spell.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "BD",
       "alignment": 400,
       "group": 0,
@@ -5014,23 +4931,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 9,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 9
     },
     {
       "id": 1323,
@@ -5039,7 +4952,7 @@
       "long_description": "A spell teacher screams at your interruption and attacks.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "BD",
       "alignment": 300,
       "group": 0,
@@ -5049,23 +4962,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 62,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 62
     },
     {
       "id": 1324,
@@ -5074,7 +4983,7 @@
       "long_description": "A student of spells has fallen asleep at her desk here.\n",
       "description": "She looks to have collapsed from sheer boredom.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 400,
       "group": 0,
@@ -5084,23 +4993,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "female",
-      "wealth": 28,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 28
     },
     {
       "id": 1325,
@@ -5109,7 +5014,7 @@
       "long_description": "An old wizard is here making a speech\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 400,
       "group": 0,
@@ -5119,23 +5024,19 @@
       "hit_dice": "18d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 123,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 123
     },
     {
       "id": 1326,
@@ -5144,7 +5045,7 @@
       "long_description": "A young mage is here learning hand to hand combat.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 300,
       "group": 0,
@@ -5154,23 +5055,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 34,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 34
     },
     {
       "id": 1327,
@@ -5179,7 +5076,7 @@
       "long_description": "The battle mistress is here teaching the fine uses of a dagger.\n",
       "description": "She looks quite rugged. In fact, she more resembles a warrior than a magic\nuser.\n",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 200,
       "group": 0,
@@ -5189,23 +5086,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 160,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 160
     },
     {
       "id": 1328,
@@ -5214,7 +5107,7 @@
       "long_description": "A spell teacher is here relaxing.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 200,
       "group": 0,
@@ -5224,23 +5117,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 1329,
@@ -5249,7 +5138,7 @@
       "long_description": "An aged wizard is sleeping here.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 350,
       "group": 0,
@@ -5259,23 +5148,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 78,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 78
     },
     {
       "id": 1330,
@@ -5284,7 +5169,7 @@
       "long_description": "A scribe is here working on some manuscripts.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 400,
       "group": 0,
@@ -5294,23 +5179,19 @@
       "hit_dice": "14d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 15,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 15
     },
     {
       "id": 1331,
@@ -5319,7 +5200,7 @@
       "long_description": "A scribe is here working diligently on some translations.\n",
       "description": "She's quite cute.  Too bad her only interest seems to be the words of\nlore she is translating.\n",
       "race": "human",
-      "act_flags": "ABGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 500,
       "group": 0,
@@ -5329,23 +5210,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 34,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 34
     },
     {
       "id": 1332,
@@ -5354,7 +5231,7 @@
       "long_description": "The master scribe is here looking a little upset\n",
       "description": "He seems to be so old, his skin has become nothing but a giant wrinkle.\nThe master scribe screams 'How dare you interrupt my important work???'\n",
       "race": "human",
-      "act_flags": "ABFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -5364,23 +5241,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 281,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 281
     },
     {
       "id": 1333,
@@ -5389,7 +5262,7 @@
       "long_description": "The scribe's assistant is here folding parchments.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -5399,23 +5272,19 @@
       "hit_dice": "16d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 52,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 52
     },
     {
       "id": 1334,
@@ -5424,7 +5293,7 @@
       "long_description": "The Enchanter is here placing a dweomer upon well made sword.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -200,
       "group": 0,
@@ -5434,23 +5303,19 @@
       "hit_dice": "23d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 340,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 340
     },
     {
       "id": 1335,
@@ -5459,7 +5324,7 @@
       "long_description": "A well crafted sword lies on the work table here.\n",
       "description": "It looks quite sharp.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -5469,23 +5334,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1336,
@@ -5494,7 +5355,7 @@
       "long_description": "The Mad Alchemist babbles something incomprehensible and attacks.\n",
       "description": "He looks like he's been quaffing too many potions. His eyes dart around\nwildly, and he starts to drool.\n\nThe Mad Alchemist throws back his head and cackles with insane glee!\n",
       "race": "human",
-      "act_flags": "ABCFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 150,
       "group": 0,
@@ -5504,23 +5365,19 @@
       "hit_dice": "24d9+100",
       "mana_dice": "4d4+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 117,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 117
     },
     {
       "id": 1337,
@@ -5529,7 +5386,7 @@
       "long_description": "The master summoner is here holding gateways open to other planes.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -200,
       "group": 0,
@@ -5539,23 +5396,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 1338,
@@ -5564,7 +5417,7 @@
       "long_description": "The master charmer utters the words, 'uuuzzldctz'.\n",
       "description": "The master charmer sizes you up, always looking for a new pet.\n",
       "race": "human",
-      "act_flags": "ABFR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -400,
       "group": 0,
@@ -5574,23 +5427,19 @@
       "hit_dice": "23d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 233,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 233
     },
     {
       "id": 1339,
@@ -5599,7 +5448,7 @@
       "long_description": "A wooden golem stands a silent vigil here, guarding the stairs.\n",
       "description": "He looks flammable.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -5609,23 +5458,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 1340,
@@ -5634,7 +5479,7 @@
       "long_description": "The master spell binder is here re-charging a blackened wand.\n",
       "description": "The master spell binder snarls at you and attacks.\n",
       "race": "human",
-      "act_flags": "ABCFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -5644,23 +5489,19 @@
       "hit_dice": "23d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 115,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 115
     },
     {
       "id": 1341,
@@ -5669,7 +5510,7 @@
       "long_description": "The golem maker is here chiseling some stone.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 300,
       "group": 0,
@@ -5679,23 +5520,19 @@
       "hit_dice": "21d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 133,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 133
     },
     {
       "id": 1342,
@@ -5704,7 +5541,7 @@
       "long_description": "A granite golem stands here waiting to do its master's bidding.\n",
       "description": "It looks like a statue, until you see it shamble towards you.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -5714,23 +5551,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1343,
@@ -5739,7 +5572,7 @@
       "long_description": "A bronze golem stands here shining in the light.\n",
       "description": "He looks rather dim witted.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -5749,23 +5582,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1344,
@@ -5774,7 +5603,7 @@
       "long_description": "A flesh golem stands guard here\n",
       "description": "It looks to be made of a potpourri of different body parts; some don't even\nresemble anything human.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -5784,23 +5613,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1345,
@@ -5809,7 +5634,7 @@
       "long_description": "A cloth golem wanders around here.\n",
       "description": "It looks like a bunch of old rags, quite surprising it can actually walk.\n",
       "race": "human",
-      "act_flags": "ABCG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -5819,23 +5644,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1346,
@@ -5844,7 +5665,7 @@
       "long_description": "An adamantite golem stands here looking very dangerous.\n",
       "description": "It seems to be forged of dark metal.  It looks strong and durable,\nbut somewhat un-intelligent.\n",
       "race": "human",
-      "act_flags": "ABCG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -5854,23 +5675,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 1347,
@@ -5879,7 +5696,7 @@
       "long_description": "A clay golem stands guard here.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 200,
       "group": 0,
@@ -5889,23 +5706,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1348,
@@ -5914,7 +5727,7 @@
       "long_description": "An enormous multi-colored three-headed dragon growls at you.\n",
       "description": "The image of an ugly dragon flickers slightly, and where the dragon was\nnow stands a small harmless looking old man.\n",
       "race": "human",
-      "act_flags": "ABCGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 150,
       "group": 0,
@@ -5924,23 +5737,19 @@
       "hit_dice": "21d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 117,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 117
     },
     {
       "id": 1349,
@@ -5949,7 +5758,7 @@
       "long_description": "The Necromancer is here raising undead servants\n",
       "description": "Attired all in black, the Necromancer is tall and gangly, but still quite\nan imposing figure.  A dark cowl shrouds most of his face, but two blazing\nembers which serve as eyes can be seen through the shadow.\nThe Necromancer shrieks some obscenities and orders his minions to attack.\n",
       "race": "human",
-      "act_flags": "ABCFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -950,
       "group": 0,
@@ -5959,23 +5768,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 584,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 584
     },
     {
       "id": 1350,
@@ -5984,7 +5789,7 @@
       "long_description": "An animated skeleton screams silently and attacks.\n",
       "description": "It feels no pain, and hacks at you ruthlessly.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -5994,23 +5799,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1351,
@@ -6019,7 +5820,7 @@
       "long_description": "An undead giant lumbers towards you.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -6029,23 +5830,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1352,
@@ -6054,7 +5851,7 @@
       "long_description": "An ugly witch is here scrying out secrets.\n",
       "description": "She has no face at all, just blank skin, rather disturbing.  From about where\nher mouth should be, comes a disgusting giggling sound that makes your skin\ncrawl with revulsion.\n",
       "race": "human",
-      "act_flags": "ABCFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -450,
       "group": 0,
@@ -6064,23 +5861,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 107,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 107
     },
     {
       "id": 1353,
@@ -6089,7 +5882,7 @@
       "long_description": "The Librarian has fallen asleep at his desk here.\n",
       "description": "He looks like a rather peaceful old man.\n",
       "race": "human",
-      "act_flags": "ABFGHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 450,
       "group": 0,
@@ -6099,23 +5892,19 @@
       "hit_dice": "23d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 64,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 64
     },
     {
       "id": 1354,
@@ -6124,7 +5913,7 @@
       "long_description": "The master's apprentice leaps to halt your passage.\n",
       "description": "A powerful wizard in his own right, the apprentice of the master of balance\nhas given up his station in the mage guild hierarchy in order to serve the\ngreat master in hopes of gleaning secrets one could never hope to uncover\nalone.\n",
       "race": "human",
-      "act_flags": "ABCFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 0,
       "group": 0,
@@ -6134,23 +5923,19 @@
       "hit_dice": "24d9+100",
       "mana_dice": "4d4+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 336,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 336
     },
     {
       "id": 1355,
@@ -6159,7 +5944,7 @@
       "long_description": "A grey cat is lounging lazily here.\n",
       "description": "The grey cat cocks an ear towards you, sensing your scrutiny, then purrs\ncontentedly.  It looks rather harmless, until you notice its very large claws.\n",
       "race": "cat",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "BPZ",
       "alignment": 0,
       "group": 0,
@@ -6169,23 +5954,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3212989",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1356,
@@ -6194,7 +5975,7 @@
       "long_description": "The master of Neutrality stands here contemplating the balance of the universe.\n",
       "description": "He looks quite peaceful.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": 0,
       "group": 0,
@@ -6204,23 +5985,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 767,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 767
     },
     {
       "id": 1357,
@@ -6229,7 +6006,7 @@
       "long_description": "A black robed apprentice jumps from the shadows and attacks.\n",
       "description": "She bears a wicked looking scar down the side of her face, though once she\nmust have been beautiful, now the scar combined with what seems to be a\npermanent scowl make her looks quite fearsome.\n",
       "race": "human",
-      "act_flags": "ABCFGR",
+      "act_flags": "0",
       "affected_by": "DP",
       "alignment": -750,
       "group": 0,
@@ -6239,23 +6016,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 693,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 693
     },
     {
       "id": 1358,
@@ -6264,7 +6037,7 @@
       "long_description": "A black cat with its fur up hisses at you.\n",
       "description": "It looks both mean and dangerous.  Petting seems to be completely out of\nthe question.\n",
       "race": "cat",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DPZ",
       "alignment": -800,
       "group": 0,
@@ -6274,23 +6047,19 @@
       "hit_dice": "16d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3212989",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1359,
@@ -6299,7 +6068,7 @@
       "long_description": "The master of the black robes is here plotting vile deeds.\n",
       "description": "The master glares at you.\n",
       "race": "human",
-      "act_flags": "ABCGR",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -1000,
       "group": 0,
@@ -6309,23 +6078,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1105,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1105
     },
     {
       "id": 1360,
@@ -6334,7 +6099,7 @@
       "long_description": "A white robed apprentice screams at your desecration of goodness.\n",
       "description": "He looks like a fanatic.\nThe apprentice screams 'Thou art unworthy of this honor!'\n",
       "race": "human",
-      "act_flags": "ABFGR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 750,
       "group": 0,
@@ -6344,23 +6109,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 370,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 370
     },
     {
       "id": 1361,
@@ -6369,7 +6130,7 @@
       "long_description": "A white cat is here preening its fur.\n",
       "description": "It seems to be nothing more than a large ball of fluff with claws.\n",
       "race": "cat",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DPZ",
       "alignment": 800,
       "group": 0,
@@ -6379,23 +6140,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3212989",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1362,
@@ -6404,7 +6161,7 @@
       "long_description": "The master of goodness is here frowning at your intrusion.\n",
       "description": "He looks like a self-righteous bastard.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": 1000,
       "group": 0,
@@ -6414,23 +6171,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1095,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1095
     },
     {
       "id": 1363,
@@ -6439,7 +6192,7 @@
       "long_description": "A large calico cat is here\n",
       "description": "It looks incredibly large for a cat, no doubt a giant of its species.\nA beautiful jewel encrusted collar about its neck is its only adornment.\n",
       "race": "cat",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DPZ",
       "alignment": 800,
       "group": 0,
@@ -6449,23 +6202,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3212989",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1364,
@@ -6474,7 +6223,7 @@
       "long_description": "The Grand Mistress of Magic is sitting here.\n",
       "description": "She looks quite comfortable on her emerald throne. Amazingly young and\npretty for one of such stature in the guild, no doubt she has kept her\nyouthful appearance through the use of strong magics.\nThe Grand Master pets her familiar and smiles at you in confidence.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": 0,
       "group": 0,
@@ -6484,23 +6233,19 @@
       "hit_dice": "50d9+100",
       "mana_dice": "6d6+17",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -19,
-      "ac_bash": -19,
-      "ac_slash": -19,
-      "ac_exotic": -4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 1365,
@@ -6509,7 +6254,7 @@
       "long_description": "A wandering wizard is here mumbling to himself.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ACGR",
+      "act_flags": "0",
       "affected_by": "DP",
       "alignment": 350,
       "group": 0,
@@ -6519,4738 +6264,51 @@
       "hit_dice": "17d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 160,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 160
     }
   ],
-  "objects": [
-    {
-      "id": 1301,
-      "name": "an oven",
-      "keywords": "oven black",
-      "description": "A huge black oven is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 1,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1000,
-        5,
-        0,
-        1000,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1302,
-      "name": "a meat locker",
-      "keywords": "locker",
-      "description": "An enormous meat locker is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1000,
-        5,
-        0,
-        1000,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "locker",
-          "description": "You just had the horrid thought that a cadaver might be in there.\n"
-        }
-      ]
-    },
-    {
-      "id": 1304,
-      "name": "a slice of pizza",
-      "keywords": "pizza slice",
-      "description": "A slice of pizza is here looking very tasty.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        15,
-        15,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "pizza slice",
-          "description": "Ahh!  Round Table pizza!  How appropriate.  Any root beer?\n"
-        }
-      ]
-    },
-    {
-      "id": 1305,
-      "name": "a large chunk of meat",
-      "keywords": "chunk meat",
-      "description": "A large chunk of meat is here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 24,
-      "condition": 100,
-      "values": [
-        24,
-        24,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1306,
-      "name": "a finger sandwich",
-      "keywords": "sandwich",
-      "description": "A finger sandwich is here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 18,
-      "condition": 100,
-      "values": [
-        20,
-        20,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "sandwich finger",
-          "description": "It would look quite tasty if someone had first removed the fingernails!\n"
-        }
-      ]
-    },
-    {
-      "id": 1307,
-      "name": "a straw broom",
-      "keywords": "broom straw",
-      "description": "A straw broom is here leaning against the wall.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "broom straw",
-          "description": "A magical flying broomstick?  Nah!  Not here.\n"
-        }
-      ]
-    },
-    {
-      "id": 1308,
-      "name": "a coffee machine",
-      "keywords": "machine coffee",
-      "description": "A coffee machine is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 2,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        10000,
-        0,
-        0,
-        1000,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1309,
-      "name": "a cabinet",
-      "keywords": "cabinet",
-      "description": "A cabinet is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        5000,
-        5,
-        0,
-        5000,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1310,
-      "name": "a bar of silver",
-      "keywords": "bar silver",
-      "description": "A bar of silver has been left here.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 60,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1311,
-      "name": "a bar of gold",
-      "keywords": "bar gold",
-      "description": "A bar of gold has been left here.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 60,
-      "cost": 5000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1312,
-      "name": "a bar of mithril",
-      "keywords": "bar mithril",
-      "description": "A bar of mithril has been left here.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 120,
-      "cost": 5000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1313,
-      "name": "a bar of adamantite",
-      "keywords": "bar adamantite",
-      "description": "A bar of adamantite has been left here.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 5000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1314,
-      "name": "a mithril hammer",
-      "keywords": "hammer mithril",
-      "description": "A mithril hammer has been left here",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 12,
-      "weight": 190,
-      "cost": 1410,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        6,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1315,
-      "name": "a chest",
-      "keywords": "chest",
-      "description": "A chest is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 1,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        5000,
-        15,
-        1316,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1316,
-      "name": "a small key",
-      "keywords": "key",
-      "description": "A small key has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1315,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1317,
-      "name": "a long sword",
-      "keywords": "long sword",
-      "description": "A long sword has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 80,
-      "cost": 720,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        8,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1318,
-      "name": "a silver dagger",
-      "keywords": "dagger silver",
-      "description": "A finely crafted dagger made of silver is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 10,
-      "weight": 50,
-      "cost": 970,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        3,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1319,
-      "name": "a curved scimitar",
-      "keywords": "scimitar",
-      "description": "A curved scimitar is here in a jewel-covered sheath.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 13,
-      "weight": 100,
-      "cost": 990,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        7,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1320,
-      "name": "a wooden staff",
-      "keywords": "staff wooden",
-      "description": "A wooden staff is against the wall here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 0,
-      "weight": 60,
-      "cost": 42,
-      "condition": 100,
-      "values": [
-        3,
-        1,
-        4,
-        8,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1321,
-      "name": "a silver chased cabinet",
-      "keywords": "cabinet silver",
-      "description": "A large cabinet with a silver finish is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        5000,
-        15,
-        1325,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1322,
-      "name": "a silver chased cabinet",
-      "keywords": "cabinet silver",
-      "description": "A large cabinet with a silver finish is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        5000,
-        15,
-        1325,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1323,
-      "name": "an old key",
-      "keywords": "key old",
-      "description": "An old key is here",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1324,
-      "name": "a silvery key",
-      "keywords": "silvery key",
-      "description": "A silvery key has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1321,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1325,
-      "name": "a silvery key",
-      "keywords": "silvery key",
-      "description": "A silvery key has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1322,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1326,
-      "name": "a red and white staff",
-      "keywords": "staff red white",
-      "description": "A red and white staff is leaning against the wall here",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 15,
-      "weight": 80,
-      "cost": 5600,
-      "condition": 100,
-      "values": [
-        20,
-        3,
-        3,
-        55,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1327,
-      "name": "a burnt staff",
-      "keywords": "staff burnt",
-      "description": "A burnt staff is leaning against the wall here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 6,
-      "weight": 60,
-      "cost": 1720,
-      "condition": 100,
-      "values": [
-        20,
-        4,
-        4,
-        4,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1328,
-      "name": "a black rod",
-      "keywords": "rod black",
-      "description": "A black rod has been left here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 11,
-      "weight": 40,
-      "cost": 2200,
-      "condition": 100,
-      "values": [
-        20,
-        3,
-        3,
-        36,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1329,
-      "name": "a wooden stick",
-      "keywords": "wand wooden",
-      "description": "A wooden stick is here",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 40,
-      "cost": 1640,
-      "condition": 100,
-      "values": [
-        20,
-        10,
-        10,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1330,
-      "name": "a metal wand",
-      "keywords": "wand metal",
-      "description": "A metal wand is here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 14,
-      "weight": 50,
-      "cost": 3200,
-      "condition": 100,
-      "values": [
-        20,
-        20,
-        4,
-        42,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1331,
-      "name": "a black cauldron",
-      "keywords": "cauldron black",
-      "description": "A large black cauldron is here bubbling.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1000,
-        0,
-        0,
-        1000,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1332,
-      "name": "a small pair of bat wings",
-      "keywords": "wings",
-      "description": "A small pair of bat wings is here.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1333,
-      "name": "an eyeball",
-      "keywords": "eye eyeball",
-      "description": "An eyeball has been left here",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1334,
-      "name": "the book of magic",
-      "keywords": "book tome",
-      "description": "An enormous book is lying open here",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 1,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        0,
-        0,
-        500,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1335,
-      "name": "a pair of spectacles",
-      "keywords": "spectacles glasses",
-      "description": "A pair of wire-rimmed spectacles has been left here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 64,
-      "wear_flags": 17,
-      "level": 7,
-      "weight": 40,
-      "cost": 1140,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        },
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1336,
-      "name": "a golden altar",
-      "keywords": "altar",
-      "description": "",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1000,
-        5,
-        0,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1337,
-      "name": "a heart shaped medallion",
-      "keywords": "medallion heart",
-      "description": "A heart shaped medallion is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 320,
-      "wear_flags": 5,
-      "level": 13,
-      "weight": 30,
-      "cost": 2200,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": -1
-        },
-        {
-          "location": 4,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1338,
-      "name": "a large chest",
-      "keywords": "chest",
-      "description": "A large chest is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 65,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        2000,
-        15,
-        1339,
-        200,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1339,
-      "name": "an intricately carved key",
-      "keywords": "key intricate",
-      "description": "An intricately carved key has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 150,
-      "condition": 100,
-      "values": [
-        1338,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1340,
-      "name": "a pile of coins",
-      "keywords": "a pile of coins",
-      "description": "A pile of coins is here.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        237,
-        11,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1341,
-      "name": "a brown cloak",
-      "keywords": "cloak brown",
-      "description": "A travel worn cloak has carelessly been left here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 35,
-      "weight": 50,
-      "cost": 4300,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -3
-        },
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1342,
-      "name": "a chameleon poncho",
-      "keywords": "chameleon poncho",
-      "description": "Some multicolored cloth is on the ground here",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 64,
-      "wear_flags": 1025,
-      "level": 17,
-      "weight": 40,
-      "cost": 3600,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -3
-        },
-        {
-          "location": 2,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1343,
-      "name": "a pair of old boots",
-      "keywords": "boots worn",
-      "description": "A pair of old boots is here, they look very comfortable.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 64,
-      "wear_flags": 65,
-      "level": 10,
-      "weight": 20,
-      "cost": 270,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 15
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1344,
-      "name": "a seashell ring",
-      "keywords": "ring seashell",
-      "description": "A small seashell has been left here.",
-      "material": "oldstyle",
-      "item_type": "boat",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 0,
-      "weight": 20,
-      "cost": 1000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1345,
-      "name": "a leather backpack",
-      "keywords": "backpack leather",
-      "description": "A leather backpack is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16777280,
-      "wear_flags": 17409,
-      "level": 0,
-      "weight": 90,
-      "cost": 1000,
-      "condition": 100,
-      "values": [
-        750,
-        0,
-        0,
-        50,
-        50
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1351,
-      "name": "a herbal brew",
-      "keywords": "cup brew herbal",
-      "description": "A herbal brew is here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 12,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        11,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1352,
-      "name": "a waybread",
-      "keywords": "waybread",
-      "description": "A loaf of waybread has been left here.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        25,
-        32,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1355,
-      "name": "a meat cleaver",
-      "keywords": "cleaver",
-      "description": "A meat cleaver is sticking in the wall here.",
-      "material": "mithril",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 17,
-      "weight": 20,
-      "cost": 840,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        5,
-        21,
-        8
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1356,
-      "name": "some chain shackles",
-      "keywords": "shackles chain",
-      "description": "Some chain shackles have been discarded here",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 192,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": -82
-        },
-        {
-          "location": 12,
-          "modifier": -100
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1357,
-      "name": "a silvery dagger",
-      "keywords": "dagger silvery",
-      "description": "A long dagger that seems to be made of silver is here.",
-      "material": "mithril",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 10,
-      "cost": 910,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        5,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1359,
-      "name": "a scroll",
-      "keywords": "scroll",
-      "description": "A scroll is here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 50,
-      "cost": 1570,
-      "condition": 100,
-      "values": [
-        21,
-        4,
-        28,
-        81,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1360,
-      "name": "a bound scroll",
-      "keywords": "scroll bound",
-      "description": "A bound scroll is here blowing in the breeze.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 24,
-      "weight": 30,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        16,
-        2,
-        85,
-        72,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1361,
-      "name": "a long cylindrical tube",
-      "keywords": "tube",
-      "description": "A long cylindrical tube is rolling around here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16777280,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        100,
-        5,
-        -1,
-        2,
-        90
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1362,
-      "name": "an old scroll",
-      "keywords": "scroll old",
-      "description": "An old scroll has been left here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 400,
-      "condition": 100,
-      "values": [
-        10,
-        18,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1363,
-      "name": "a scroll written on blue paper",
-      "keywords": "scroll blue",
-      "description": "A blue scroll has been left here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 8,
-      "weight": 50,
-      "cost": 1530,
-      "condition": 100,
-      "values": [
-        35,
-        41,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1364,
-      "name": "a leather pouch",
-      "keywords": "pouch leather",
-      "description": "A leather pouch is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16777280,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 20,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        150,
-        0,
-        0,
-        5,
-        20
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1365,
-      "name": "a silver stirring spoon",
-      "keywords": "spoon silver",
-      "description": "A silver stirring spoon has been left here.",
-      "material": "oldstyle",
-      "item_type": "furniture",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 150,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1366,
-      "name": "a blue potion",
-      "keywords": "potion blue",
-      "description": "A blue potion is here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 20,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1367,
-      "name": "a bright red potion",
-      "keywords": "potion red",
-      "description": "A bright red potion is here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 5,
-      "weight": 20,
-      "cost": 390,
-      "condition": 100,
-      "values": [
-        15,
-        23,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1368,
-      "name": "a green potion",
-      "keywords": "potion green",
-      "description": "A green potion is here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 5,
-      "weight": 20,
-      "cost": 470,
-      "condition": 100,
-      "values": [
-        20,
-        4,
-        85,
-        22,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1369,
-      "name": "an effervescent potion",
-      "keywords": "potion effervescent",
-      "description": "An effervescent potion is bubbling away here",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 260,
-      "condition": 100,
-      "values": [
-        16,
-        30,
-        33,
-        34,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion effervescent",
-          "description": "Ahh!  Schwepes Sparkling Soda a refreshing drink.\n"
-        }
-      ]
-    },
-    {
-      "id": 1370,
-      "name": "a milky white potion",
-      "keywords": "white milky potion",
-      "description": "A milky white potion is here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 17,
-      "weight": 20,
-      "cost": 1350,
-      "condition": 100,
-      "values": [
-        14,
-        88,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1371,
-      "name": "a black staff",
-      "keywords": "staff black",
-      "description": "A black staff is leaning against the wall here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 9,
-      "weight": 50,
-      "cost": 2600,
-      "condition": 100,
-      "values": [
-        18,
-        2,
-        2,
-        85,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1372,
-      "name": "a golden flute",
-      "keywords": "flute golden",
-      "description": "A golden flute has been left here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 96,
-      "wear_flags": 16385,
-      "level": 1,
-      "weight": 40,
-      "cost": 1000,
-      "condition": 100,
-      "values": [
-        22,
-        1,
-        1,
-        13,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1373,
-      "name": "a small figurine",
-      "keywords": "figurine",
-      "description": "A small figurine in the shape of a humanoid is standing here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 8,
-      "weight": 40,
-      "cost": 3400,
-      "condition": 100,
-      "values": [
-        21,
-        15,
-        15,
-        27,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1374,
-      "name": "a holstered belt",
-      "keywords": "belt holster",
-      "description": "A holstered belt is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 2049,
-      "level": 0,
-      "weight": 40,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        20,
-        0,
-        0,
-        4,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1375,
-      "name": "a blackened wand",
-      "keywords": "wand",
-      "description": "A blackened wand is here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 14,
-      "weight": 40,
-      "cost": 3800,
-      "condition": 100,
-      "values": [
+  "objects": [],
+  "mob_programs": [],
+  "shops": [
+    {
+      "keeper": 1305,
+      "buy_types": [
         17,
-        5,
-        1,
-        46,
+        19,
+        0,
+        0,
         0
       ],
-      "affects": [],
-      "extra_descriptions": []
+      "profit_buy": 210,
+      "profit_sell": 50,
+      "open_hour": 0,
+      "close_hour": 23
     },
     {
-      "id": 1376,
-      "name": "a runed chisel",
-      "keywords": "chisel runed",
-      "description": "A runed chisel is here.",
-      "material": "diamond",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 20,
-      "weight": 60,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
+      "keeper": 1306,
+      "buy_types": [
         2,
         3,
-        6,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1377,
-      "name": "a beltpouch",
-      "keywords": "pouch belt beltpouch",
-      "description": "A beltpouch is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 2049,
-      "level": 0,
-      "weight": 50,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        25,
-        0,
-        0,
-        5,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1378,
-      "name": "some sparkling dust",
-      "keywords": "dust",
-      "description": "Some sparkling dust is in a pile here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 5,
-      "weight": 20,
-      "cost": 1930,
-      "condition": 100,
-      "values": [
-        20,
-        1,
-        1,
-        81,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1379,
-      "name": "a dark cowl",
-      "keywords": "cowl dark",
-      "description": "A dark cowl is here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 576,
-      "wear_flags": 5,
-      "level": 26,
-      "weight": 50,
-      "cost": 2900,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1380,
-      "name": "an ashen wand",
-      "keywords": "wand ashen",
-      "description": "An ashen wand is here",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 512,
-      "wear_flags": 16385,
-      "level": 9,
-      "weight": 40,
-      "cost": 1860,
-      "condition": 100,
-      "values": [
-        20,
         4,
-        4,
-        8,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1381,
-      "name": "a huge spiked club",
-      "keywords": "club",
-      "description": "A huge spiked club has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 290,
-      "cost": 750,
-      "condition": 100,
-      "values": [
-        4,
-        3,
-        5,
-        8,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1382,
-      "name": "a grey robe",
-      "keywords": "robe grey",
-      "description": "A pile of grey cloth has been left here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16778816,
-      "wear_flags": 1025,
-      "level": 26,
-      "weight": 80,
-      "cost": 2900,
-      "condition": 100,
-      "values": [
-        50,
-        0,
-        0,
         10,
-        75
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1383,
-      "name": "a long grey cloak",
-      "keywords": "cloak grey",
-      "description": "A pile of grey cloth has been left here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 1600,
-      "wear_flags": 5,
-      "level": 29,
-      "weight": 70,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
         0
       ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -7
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1384,
-      "name": "a glinting silver bracelet",
-      "keywords": "bracelet silver",
-      "description": "A glinting hoop of silvery metal is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 4097,
-      "level": 20,
-      "weight": 50,
-      "cost": 1440,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1385,
-      "name": "an iron shod staff",
-      "keywords": "staff",
-      "description": "A grey piece of wood shod in iron has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 27,
-      "weight": 70,
-      "cost": 1280,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        9,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1386,
-      "name": "a ward minor",
-      "keywords": "minor ward cube clear",
-      "description": "A small clear cube is sitting here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 20,
-      "weight": 50,
-      "cost": 1440,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1387,
-      "name": "a black robe",
-      "keywords": "robe black",
-      "description": "A pile of black cloth is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16779840,
-      "wear_flags": 1025,
-      "level": 22,
-      "weight": 80,
-      "cost": 2400,
-      "condition": 100,
-      "values": [
-        50,
-        0,
-        0,
-        10,
-        75
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1388,
-      "name": "an onyx bracelet",
-      "keywords": "bracelet onyx",
-      "description": "A hoop of black onyx is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 4097,
-      "level": 20,
-      "weight": 60,
-      "cost": 1150,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1389,
-      "name": "a dark black cloak",
-      "keywords": "cloak black dark",
-      "description": "A pile of black cloth is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 2624,
-      "wear_flags": 5,
-      "level": 29,
-      "weight": 80,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -7
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1390,
-      "name": "a sharp shard of obsidian",
-      "keywords": "shard black obsidian",
-      "description": "A piece of black glass is here.",
-      "material": "obsidian",
-      "item_type": "weapon",
-      "extra_flags": 512,
-      "wear_flags": 8193,
-      "level": 29,
-      "weight": 80,
-      "cost": 2500,
-      "condition": 100,
-      "values": [
-        2,
-        4,
-        6,
-        1,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1391,
-      "name": "a white robe",
-      "keywords": "robe white",
-      "description": "A pile of white cloth is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16780352,
-      "wear_flags": 1025,
-      "level": 22,
-      "weight": 70,
-      "cost": 2400,
-      "condition": 100,
-      "values": [
-        50,
-        0,
-        0,
-        10,
-        75
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1392,
-      "name": "a white gold bracelet",
-      "keywords": "bracelet white gold",
-      "description": "A hoop of silvery metal is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 4097,
-      "level": 20,
-      "weight": 50,
-      "cost": 1150,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1393,
-      "name": "a white cloak",
-      "keywords": "cloak white",
-      "description": "A pile of white cloth is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 3392,
-      "wear_flags": 5,
-      "level": 29,
-      "weight": 70,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -7
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1394,
-      "name": "an ivory hilted dagger",
-      "keywords": "ivory dagger",
-      "description": "An ivory hilted dagger has been left here",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1344,
-      "wear_flags": 8193,
-      "level": 27,
-      "weight": 10,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        8,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1395,
-      "name": "a spiked collar",
-      "keywords": "collar spiked",
-      "description": "A small spiked collar is here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 5,
-      "level": 20,
-      "weight": 90,
-      "cost": 1970,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        2,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1396,
-      "name": "a shimmering cloak of many colors",
-      "keywords": "cloak shimmering",
-      "description": "A multi-colored pile of cloth is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 16777281,
-      "wear_flags": 5,
-      "level": 50,
-      "weight": 80,
-      "cost": 10800,
-      "condition": 100,
-      "values": [
-        100,
-        0,
-        0,
-        10,
-        25
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -4
-        },
-        {
-          "location": 17,
-          "modifier": -12
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1397,
-      "name": "a small emerald ring",
-      "keywords": "emerald ring",
-      "description": "A small ring with a green gemstone is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 20,
-      "weight": 50,
-      "cost": 580,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 20
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1398,
-      "name": "an emerald bracelet",
-      "keywords": "bracelet emerald",
-      "description": "A beautifully crafted hoop of emerald is here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 4097,
-      "level": 20,
-      "weight": 50,
-      "cost": 2200,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 1
-        },
-        {
-          "location": 17,
-          "modifier": -5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1399,
-      "name": "a ward major",
-      "keywords": "ward major clear crystal",
-      "description": "A large clear crystal cube is here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 40,
-      "weight": 60,
-      "cost": 5100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -10
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1400,
-      "name": "the ebony kris",
-      "keywords": "ebony kris",
-      "description": "A wavy bladed knife made of ebony is here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 46,
-      "weight": 30,
-      "cost": 10700,
-      "condition": 100,
-      "values": [
-        2,
-        6,
-        6,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 5
-        },
-        {
-          "location": 2,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1401,
-      "name": "a tight fitting green dragon scale shirt",
-      "keywords": "green scale shirt",
-      "description": "Some green dragon scales which have been sewn together are here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 9,
-      "level": 37,
-      "weight": 90,
-      "cost": 17800,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -5
-        },
-        {
-          "location": 2,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "green scale shirt",
-          "description": "Green dragon scale shirt was made from a poor unfortunate green dragon.\n"
-        }
-      ]
-    },
-    {
-      "id": 1402,
-      "name": "a fridge",
-      "keywords": "fridge refrigerator",
-      "description": "A small refrigerator.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 2,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        5,
-        0,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1403,
-      "name": "a bottle of Absolut vodka",
-      "keywords": "bottle vodka",
-      "description": "A bottle of Absolut vodka is here to drink.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 250,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        25,
-        25,
-        23,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1404,
-      "name": "a bottle of cranberry juice",
-      "keywords": "juice bottle",
-      "description": "A bottle of cranberry juice is here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 250,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        25,
-        25,
-        24,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "R",
-      "arg1": 1301,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1302,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1303,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1304,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1305,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1306,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1307,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1308,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1309,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 1392,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1300,
-      "arg2": 6,
-      "arg3": 1302,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1300,
-      "arg2": 6,
-      "arg3": 1304,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1300,
-      "arg2": 6,
-      "arg3": 1306,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1300,
-      "arg2": 6,
-      "arg3": 1308,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1300,
-      "arg2": 6,
-      "arg3": 1311,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1301,
-      "arg2": 1,
-      "arg3": 1311,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1302,
-      "arg2": 1,
-      "arg3": 1307,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1303,
-      "arg2": 1,
-      "arg3": 1312,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1313,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1314,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1314,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1315,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1316,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1318,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1304,
-      "arg2": 7,
-      "arg3": 1319,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1316,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1317,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1305,
-      "arg2": 1,
-      "arg3": 1318,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1351,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1352,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1306,
-      "arg2": 1,
-      "arg3": 1319,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1320,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1301,
-      "arg2": 1,
-      "arg3": 1320,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1304,
-      "arg2": 20,
-      "arg3": 1301,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1302,
-      "arg2": 1,
-      "arg3": 1320,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1305,
-      "arg2": 1,
-      "arg3": 1302,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1306,
-      "arg2": 1,
-      "arg3": 1302,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1307,
-      "arg2": 1,
-      "arg3": 1320,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1355,
-      "arg2": 2,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1308,
-      "arg2": 1,
-      "arg3": 1320,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1321,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1323,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1309,
-      "arg2": 1,
-      "arg3": 1327,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1356,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1327,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1310,
-      "arg2": 1,
-      "arg3": 1328,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1323,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1330,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1330,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1331,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1331,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1331,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1332,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1333,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1311,
-      "arg2": 2,
-      "arg3": 1333,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1311,
-      "arg2": 2,
-      "arg3": 1333,
-      "arg4": 2
-    },
-    {
-      "command": "O",
-      "arg1": 1307,
-      "arg2": 2,
-      "arg3": 1333,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1307,
-      "arg2": 2,
-      "arg3": 1333,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1334,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1334,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1335,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1335,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1335,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1335,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1335,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1313,
-      "arg2": 7,
-      "arg3": 1335,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1336,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1337,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1314,
-      "arg2": 1,
-      "arg3": 1337,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1338,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1339,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1340,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1340,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1342,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1315,
-      "arg2": 2,
-      "arg3": 1342,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1316,
-      "arg2": 2,
-      "arg3": 1342,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1317,
-      "arg2": 2,
-      "arg3": 1342,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1343,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1344,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1315,
-      "arg2": 2,
-      "arg3": 1344,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1316,
-      "arg2": 2,
-      "arg3": 1344,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1317,
-      "arg2": 2,
-      "arg3": 1344,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1345,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1318,
-      "arg2": 3,
-      "arg3": 1345,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1318,
-      "arg2": 3,
-      "arg3": 1345,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1318,
-      "arg2": 3,
-      "arg3": 1345,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1319,
-      "arg2": 1,
-      "arg3": 1345,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1346,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1348,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1349,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1320,
-      "arg2": 4,
-      "arg3": 1349,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1320,
-      "arg2": 4,
-      "arg3": 1349,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1320,
-      "arg2": 4,
-      "arg3": 1349,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1320,
-      "arg2": 4,
-      "arg3": 1349,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1321,
-      "arg2": 1,
-      "arg3": 1349,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1350,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1351,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1352,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1354,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1322,
-      "arg2": 4,
-      "arg3": 1354,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1322,
-      "arg2": 4,
-      "arg3": 1354,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1322,
-      "arg2": 4,
-      "arg3": 1354,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1322,
-      "arg2": 4,
-      "arg3": 1354,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1323,
-      "arg2": 1,
-      "arg3": 1354,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1355,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1356,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1357,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1324,
-      "arg2": 3,
-      "arg3": 1357,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1324,
-      "arg2": 3,
-      "arg3": 1357,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1324,
-      "arg2": 3,
-      "arg3": 1357,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1325,
-      "arg2": 1,
-      "arg3": 1357,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1358,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1359,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1326,
-      "arg2": 3,
-      "arg3": 1359,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1326,
-      "arg2": 3,
-      "arg3": 1359,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1326,
-      "arg2": 3,
-      "arg3": 1359,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1327,
-      "arg2": 1,
-      "arg3": 1359,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1357,
-      "arg2": -1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1361,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1362,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1363,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1364,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1328,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1365,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1329,
-      "arg2": 1,
-      "arg3": 1365,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1366,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1367,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1330,
-      "arg2": 1,
-      "arg3": 1367,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1368,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1339,
-      "arg2": 5,
-      "arg3": 1368,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1370,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1371,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1371,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1331,
-      "arg2": 2,
-      "arg3": 1371,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1331,
-      "arg2": 2,
-      "arg3": 1371,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1373,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1332,
-      "arg2": 1,
-      "arg3": 1373,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1359,
-      "arg2": 2,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1360,
-      "arg2": 2,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1361,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1333,
-      "arg2": 1,
-      "arg3": 1373,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 1362,
-      "arg2": 3,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1374,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1375,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1313,
-      "arg2": 7,
-      "arg3": 1375,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1377,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1378,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1379,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1310,
-      "arg2": 1,
-      "arg3": 1379,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1311,
-      "arg2": 1,
-      "arg3": 1379,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1312,
-      "arg2": 1,
-      "arg3": 1379,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1313,
-      "arg2": 1,
-      "arg3": 1379,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1381,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1381,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1381,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1314,
-      "arg2": 1,
-      "arg3": 1381,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1382,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1315,
-      "arg2": 1,
-      "arg3": 1382,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1317,
-      "arg2": 1,
-      "arg3": 1315,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1318,
-      "arg2": 1,
-      "arg3": 1315,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1319,
-      "arg2": 1,
-      "arg3": 1315,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1334,
-      "arg2": 1,
-      "arg3": 1382,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1316,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1363,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1335,
-      "arg2": 1,
-      "arg3": 1382,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1384,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1386,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1387,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1336,
-      "arg2": 1,
-      "arg3": 1388,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1364,
-      "arg2": 5,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1365,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1367,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1368,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1369,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1370,
-      "arg2": 2,
-      "arg3": 1364,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1390,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1337,
-      "arg2": 1,
-      "arg3": 1390,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1371,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1391,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1394,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1395,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1395,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1338,
-      "arg2": 1,
-      "arg3": 1395,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1372,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1373,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1397,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1339,
-      "arg2": 5,
-      "arg3": 1398,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1339,
-      "arg2": 5,
-      "arg3": 1398,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1400,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1313,
-      "arg2": 7,
-      "arg3": 1400,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1401,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1401,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1320,
-      "arg2": 1,
-      "arg3": 1401,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1402,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1402,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1340,
-      "arg2": 1,
-      "arg3": 1402,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1325,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1374,
-      "arg2": 2,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1375,
-      "arg2": 2,
-      "arg3": 1374,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1403,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1403,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1321,
-      "arg2": 1,
-      "arg3": 1403,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1326,
-      "arg2": 1,
-      "arg3": 1321,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1327,
-      "arg2": 1,
-      "arg3": 1321,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1322,
-      "arg2": 1,
-      "arg3": 1403,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1328,
-      "arg2": 1,
-      "arg3": 1322,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1329,
-      "arg2": 1,
-      "arg3": 1322,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1330,
-      "arg2": 1,
-      "arg3": 1322,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1405,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1408,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1409,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1409,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1341,
-      "arg2": 1,
-      "arg3": 1409,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1376,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1342,
-      "arg2": 1,
-      "arg3": 1409,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1345,
-      "arg2": 2,
-      "arg3": 1409,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1343,
-      "arg2": 1,
-      "arg3": 1411,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1344,
-      "arg2": 1,
-      "arg3": 1411,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1346,
-      "arg2": 1,
-      "arg3": 1411,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1347,
-      "arg2": 1,
-      "arg3": 1411,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1412,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1412,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1416,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1417,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1348,
-      "arg2": 1,
-      "arg3": 1417,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1377,
-      "arg2": 3,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1378,
-      "arg2": 3,
-      "arg3": 1377,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1419,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1420,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1422,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1423,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1349,
-      "arg2": 1,
-      "arg3": 1425,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1379,
-      "arg2": 2,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1380,
-      "arg2": 2,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1350,
-      "arg2": 4,
-      "arg3": 1425,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1350,
-      "arg2": 4,
-      "arg3": 1425,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1351,
-      "arg2": 1,
-      "arg3": 1425,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1381,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1339,
-      "arg2": 5,
-      "arg3": 1428,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1339,
-      "arg2": 5,
-      "arg3": 1428,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1312,
-      "arg2": 10,
-      "arg3": 1430,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1313,
-      "arg2": 7,
-      "arg3": 1433,
-      "arg4": 2
-    },
-    {
-      "command": "D",
-      "arg1": 1434,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1435,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1352,
-      "arg2": 3,
-      "arg3": 1435,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1352,
-      "arg2": 3,
-      "arg3": 1435,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1352,
-      "arg2": 3,
-      "arg3": 1435,
-      "arg4": 3
-    },
-    {
-      "command": "O",
-      "arg1": 1331,
-      "arg2": 1,
-      "arg3": 1435,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1332,
-      "arg2": 1,
-      "arg3": 1331,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1333,
-      "arg2": 1,
-      "arg3": 1331,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1353,
-      "arg2": 1,
-      "arg3": 1437,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1334,
-      "arg2": 1,
-      "arg3": 1445,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1335,
-      "arg2": 1,
-      "arg3": 1334,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1313,
-      "arg2": 7,
-      "arg3": 1449,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1452,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1453,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1354,
-      "arg2": 1,
-      "arg3": 1453,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1382,
-      "arg2": 1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1384,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1355,
-      "arg2": 1,
-      "arg3": 1454,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1356,
-      "arg2": 1,
-      "arg3": 1454,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1383,
-      "arg2": 1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1385,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1386,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1460,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1461,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1357,
-      "arg2": 1,
-      "arg3": 1461,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1387,
-      "arg2": 1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1388,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1358,
-      "arg2": 1,
-      "arg3": 1464,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1359,
-      "arg2": 1,
-      "arg3": 1464,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1389,
-      "arg2": 1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1390,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1386,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1466,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1467,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1360,
-      "arg2": 1,
-      "arg3": 1467,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1391,
-      "arg2": 1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1392,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1361,
-      "arg2": 1,
-      "arg3": 1469,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1362,
-      "arg2": 1,
-      "arg3": 1469,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1393,
-      "arg2": 1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1394,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1386,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1473,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1474,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1474,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1475,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1475,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1476,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1363,
-      "arg2": 1,
-      "arg3": 1477,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1395,
-      "arg2": 1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1364,
-      "arg2": 1,
-      "arg3": 1477,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1401,
-      "arg2": 2,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1397,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1398,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1399,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1400,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1339,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1480,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1480,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1336,
-      "arg2": 1,
-      "arg3": 1480,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1337,
-      "arg2": 1,
-      "arg3": 1336,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1481,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1338,
-      "arg2": 1,
-      "arg3": 1481,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1340,
-      "arg2": 1,
-      "arg3": 1338,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1341,
-      "arg2": 1,
-      "arg3": 1482,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1342,
-      "arg2": 1,
-      "arg3": 1482,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1343,
-      "arg2": 1,
-      "arg3": 1482,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1345,
-      "arg2": 1,
-      "arg3": 1482,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1344,
-      "arg2": 1,
-      "arg3": 1345,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 1402,
-      "arg2": 1,
-      "arg3": 1499,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1403,
-      "arg2": 1,
-      "arg3": 1402,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 1404,
-      "arg2": 1,
-      "arg3": 1402,
-      "arg4": 1
+      "profit_buy": 250,
+      "profit_sell": 30,
+      "open_hour": 0,
+      "close_hour": 23
     }
   ],
   "specials": [
@@ -11470,5 +6528,11 @@
       "mob_vnum": 1365,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 1300,
+    "high": 1499
+  }
 }

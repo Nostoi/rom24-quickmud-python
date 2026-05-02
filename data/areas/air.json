@@ -18,17 +18,20 @@
         "east": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -44,22 +47,26 @@
         "north": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -75,22 +82,26 @@
         "north": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -106,22 +117,26 @@
         "north": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -137,17 +152,20 @@
         "north": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -163,22 +181,26 @@
         "east": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -194,27 +216,32 @@
         "north": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -230,27 +257,32 @@
         "north": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -266,27 +298,32 @@
         "north": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -302,22 +339,26 @@
         "north": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -333,22 +374,26 @@
         "east": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -364,27 +409,32 @@
         "north": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -400,27 +450,32 @@
         "north": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -436,27 +491,32 @@
         "north": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -472,22 +532,26 @@
         "north": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -503,17 +567,20 @@
         "south": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -529,27 +596,32 @@
         "north": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 3057,
           "description": "More of the same\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -565,22 +637,26 @@
         "north": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -596,22 +672,26 @@
         "north": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -627,17 +707,20 @@
         "north": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -653,17 +736,20 @@
         "east": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1001,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -679,22 +765,26 @@
         "north": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1002,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -710,22 +800,26 @@
         "north": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1003,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -741,22 +835,26 @@
         "north": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1004,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -772,17 +870,20 @@
         "north": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1005,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -798,22 +899,26 @@
         "east": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1021,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1006,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -829,27 +934,32 @@
         "north": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1022,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1007,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -865,27 +975,32 @@
         "north": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1023,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1008,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -901,27 +1016,32 @@
         "north": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1024,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1009,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -937,22 +1057,26 @@
         "north": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1025,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1010,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -968,22 +1092,26 @@
         "east": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1026,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1011,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -999,27 +1127,32 @@
         "north": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1027,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1012,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1035,27 +1168,32 @@
         "north": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1028,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1013,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1071,27 +1209,32 @@
         "north": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1029,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1014,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1107,22 +1250,26 @@
         "north": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1030,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1015,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1138,22 +1285,26 @@
         "south": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1031,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 7700,
           "description": "The rainbow leads onward and upward into the sky.\nIt looks safe to travel on.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1016,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1169,22 +1320,26 @@
         "north": {
           "to_room": 1036,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1032,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1200,22 +1355,26 @@
         "north": {
           "to_room": 1037,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1033,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1018,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1231,22 +1390,26 @@
         "north": {
           "to_room": 1038,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1040,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1034,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1019,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1262,17 +1425,20 @@
         "north": {
           "to_room": 1039,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1035,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1020,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1287,7 +1453,7 @@
       "long_description": "A fairy dragon is fluttering around here looking for something to do...\n",
       "description": "It's a cute little multi-colored dragon...about 2 foot long.\nIt gracefully dances around your head.\n",
       "race": "human",
-      "act_flags": "AGR",
+      "act_flags": "0",
       "affected_by": "DE",
       "alignment": 500,
       "group": 0,
@@ -1297,23 +1463,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 1001,
@@ -1322,7 +1484,7 @@
       "long_description": "A large black winged griffin swoops into an attack.\n",
       "description": "Golden maned and black all over.  It's quite a beautiful creature if not\nfor the fact it is hungry and is attacking you!\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -1332,89 +1494,34 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     }
   ],
-  "objects": [
-    {
-      "id": 1001,
-      "name": "a red rose",
-      "keywords": "rose",
-      "description": "A red rose is lying on the ground.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 17,
-      "level": 0,
-      "weight": 80,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        6,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "rose",
-          "description": "It's a beautiful red rose, with a soft and romantic fragrance.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 1000,
-      "arg2": 10,
-      "arg3": 1005,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1000,
-      "arg2": 10,
-      "arg3": 1022,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1000,
-      "arg2": 10,
-      "arg3": 1019,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1001,
-      "arg2": 3,
-      "arg3": 1034,
-      "arg4": 3
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 1000,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 1000,
+    "high": 1099
+  }
 }

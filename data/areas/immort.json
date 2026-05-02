@@ -70,7 +70,7 @@
           "to_room": 1209,
           "description": "Alander's workroom is to the north.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -83,7 +83,7 @@
           "to_room": 1208,
           "description": "A sea cave is south of here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -113,7 +113,7 @@
           "to_room": 1218,
           "description": "Valhalla is to the north.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -156,7 +156,7 @@
           "to_room": 1217,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -215,7 +215,7 @@
           "to_room": 1203,
           "description": "Valhalla lies to the north.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -233,7 +233,7 @@
           "to_room": 1203,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -260,7 +260,7 @@
           "to_room": 1217,
           "description": "Valhalla is to the north\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -291,7 +291,7 @@
           "to_room": 1218,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -461,7 +461,7 @@
           "to_room": 1207,
           "description": "The Satin Memorial Reading Room is north of here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -474,7 +474,7 @@
           "to_room": 1210,
           "description": "Bigfoots' room is south of here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -504,7 +504,7 @@
           "to_room": 1211,
           "description": "Pontius' room is north of here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -517,7 +517,7 @@
           "to_room": 1204,
           "description": "Priscilla's Pleasure Palace is south of here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -614,7 +614,7 @@
       "id": 1221,
       "name": "The End of the Rainbow Bridge",
       "description": "You have reached the end of the Rainbow Bridge.  Asgard stretches out above \nyou.  Looking around, you search for the legendary guardian of Asgard.  The\nclouds are far below you and a sense of beauty and peacefulness surrounds you. \n",
-      "sector_type": "-1",
+      "sector_type": "inside",
       "flags": 0,
       "exits": {
         "up": {
@@ -642,7 +642,7 @@
       "long_description": "Heimdall, guardian of Bifrost, stands guard over the Rainbow Bridge.\n",
       "description": "Standing over 7 feet tall and muscled as only a god can be, Heimdall keeps\nhis unsleeping gaze over the Rainbow bridge.  His trusty Gjallor-horn never\nleaves his side, and shall remain unwinded until the dread ship Naglfar sails\ntowards Valhalla on the dawn of Ragnarok.\n",
       "race": "human",
-      "act_flags": "ABTV",
+      "act_flags": "0",
       "affected_by": "CDFJZ",
       "alignment": 1000,
       "group": 0,
@@ -652,118 +652,29 @@
       "hit_dice": "1d1+499",
       "mana_dice": "5d4+40",
       "damage_dice": "crush",
-      "damage_type": "beating",
-      "ac_pierce": -20,
-      "ac_bash": -20,
-      "ac_slash": -20,
-      "ac_exotic": -10,
+      "damage_type": "none",
       "offensive": "ACDEFHIKLNOT",
       "immune": "ABP",
       "resist": "CD",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "large",
-      "material": "0"
+      "wealth": 0
     }
   ],
   "objects": [],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 1200,
-      "arg2": 1,
-      "arg3": 1221,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 1204,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1218,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1207,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1217,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1208,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1203,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1209,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1203,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1210,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1217,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1211,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 1218,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    }
-  ],
-  "specials": []
+  "mob_programs": [],
+  "shops": [],
+  "specials": [],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 1200,
+    "high": 1299
+  }
 }

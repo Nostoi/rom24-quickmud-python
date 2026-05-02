@@ -207,7 +207,7 @@
           "to_room": 7707,
           "description": "Through the gate you see a massive field of blackness that extends as far\nas you can see.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -252,7 +252,7 @@
           "to_room": 7706,
           "description": "The astral gate leads back to your world.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -290,13 +290,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7713,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7710,
+          "to_room": 7714,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -313,8 +307,14 @@
           "flags": "0",
           "key": -1
         },
+        "up": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "down": {
-          "to_room": 7714,
+          "to_room": 7713,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -331,25 +331,25 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7714,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
           "to_room": 7716,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
-          "to_room": 7707,
+        "east": {
+          "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7714,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "up": {
-          "to_room": 7710,
+          "to_room": 7707,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -372,13 +372,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7715,
+          "to_room": 7707,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7707,
+          "to_room": 7715,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -390,13 +390,13 @@
           "key": -1
         },
         "up": {
-          "to_room": 7713,
+          "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7709,
+          "to_room": 7713,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -412,14 +412,14 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
-          "to_room": 7716,
+        "east": {
+          "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "east": {
-          "to_room": 7712,
+        "south": {
+          "to_room": 7716,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -431,13 +431,13 @@
           "key": -1
         },
         "up": {
-          "to_room": 7709,
+          "to_room": 7707,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7707,
+          "to_room": 7712,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -454,31 +454,31 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7717,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7708,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7711,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "south": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
           "to_room": 7707,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "up": {
           "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7708,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -495,37 +495,37 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7718,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7715,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7708,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
-          "to_room": 7720,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "up": {
           "to_room": 7714,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "east": {
           "to_room": 7710,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7715,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7718,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7708,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -542,37 +542,37 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7719,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7717,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
           "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "east": {
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
           "to_room": 7718,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
+        "west": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "up": {
-          "to_room": 7708,
+          "to_room": 7719,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7713,
+          "to_room": 7708,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -589,13 +589,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7720,
+          "to_room": 7712,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7722,
+          "to_room": 7720,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -613,13 +613,13 @@
           "key": -1
         },
         "up": {
-          "to_room": 7712,
+          "to_room": 7716,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7716,
+          "to_room": 7722,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -636,7 +636,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7721,
+          "to_room": 7711,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -648,19 +648,19 @@
           "key": -1
         },
         "south": {
-          "to_room": 7711,
+          "to_room": 7721,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 7709,
+          "to_room": 7715,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "up": {
-          "to_room": 7715,
+          "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -683,7 +683,7 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7722,
+          "to_room": 7716,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -701,19 +701,19 @@
           "key": -1
         },
         "west": {
-          "to_room": 7714,
+          "to_room": 7721,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "up": {
-          "to_room": 7716,
+          "to_room": 7714,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7721,
+          "to_room": 7722,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -730,19 +730,19 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7709,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
           "to_room": 7714,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
+        "east": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "south": {
-          "to_room": 7713,
+          "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -754,14 +754,14 @@
           "key": -1
         },
         "up": {
-          "to_room": 7733,
-          "description": "The astral field leads off into infinity.\n",
+          "to_room": 7736,
+          "description": "You see a tangible strand of silvery light.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7736,
-          "description": "You see a tangible strand of silvery light.\n",
+          "to_room": 7713,
+          "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         }
@@ -777,25 +777,25 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7710,
+          "to_room": 7716,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7718,
-          "description": "The astral field leads off into infinity.\n",
+          "to_room": 7738,
+          "description": "You see a tangible strand of silvery light.\n",
           "flags": "0",
           "key": -1
         },
         "south": {
-          "to_room": 7714,
+          "to_room": 7710,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "west": {
-          "to_room": 7716,
+          "to_room": 7718,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -807,8 +807,8 @@
           "key": -1
         },
         "down": {
-          "to_room": 7738,
-          "description": "You see a tangible strand of silvery light.\n",
+          "to_room": 7714,
+          "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         }
@@ -842,20 +842,20 @@
           "key": -1
         },
         "west": {
+          "to_room": 7740,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
           "to_room": 7721,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "down": {
           "to_room": 7735,
           "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "down": {
-          "to_room": 7740,
-          "description": "You see a tangible strand of silvery light.\n",
           "flags": "0",
           "key": -1
         }
@@ -871,19 +871,19 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7712,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
           "to_room": 7720,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "south": {
+        "east": {
           "to_room": 7716,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7733,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -901,7 +901,7 @@
           "key": -1
         },
         "down": {
-          "to_room": 7733,
+          "to_room": 7712,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -917,27 +917,27 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
-          "to_room": 7712,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7717,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
+        "east": {
           "to_room": 7715,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "south": {
           "to_room": 7744,
           "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7717,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7712,
+          "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
@@ -959,13 +959,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7724,
+          "to_room": 7728,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7728,
+          "to_room": 7724,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1006,31 +1006,31 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7725,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7729,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7723,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7733,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "east": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
           "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7725,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1053,13 +1053,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7741,
-          "description": "You see a tangible strand of silvery light.\n",
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7727,
+          "to_room": 7734,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1071,7 +1071,7 @@
           "key": -1
         },
         "west": {
-          "to_room": 7734,
+          "to_room": 7727,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1083,8 +1083,8 @@
           "key": -1
         },
         "down": {
-          "to_room": 7730,
-          "description": "The astral field leads off into infinity.\n",
+          "to_room": 7741,
+          "description": "You see a tangible strand of silvery light.\n",
           "flags": "0",
           "key": -1
         }
@@ -1100,37 +1100,37 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7731,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7723,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7727,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7735,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "east": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
           "to_room": 7743,
           "description": "You see a tangible strand of silvery light.\n",
           "flags": "0",
           "key": -1
         },
+        "west": {
+          "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7731,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "down": {
-          "to_room": 7729,
+          "to_room": 7727,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1147,38 +1147,38 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7726,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7732,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7733,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7725,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "east": {
+          "to_room": 7726,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7744,
+          "description": "You see a tangible strand of silvery light.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
           "to_room": 7731,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
+        "up": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "down": {
-          "to_room": 7744,
-          "description": "You see a tangible strand of silvery light.\n",
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         }
@@ -1194,19 +1194,19 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7709,
+          "to_room": 7725,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7747,
+          "to_room": 7745,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
         "south": {
-          "to_room": 7734,
+          "to_room": 7709,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1218,13 +1218,13 @@
           "key": -1
         },
         "up": {
-          "to_room": 7745,
+          "to_room": 7747,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7725,
+          "to_room": 7734,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1241,37 +1241,37 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7730,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7749,
-          "description": "The astral field leads off into the depths.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7735,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7724,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "east": {
+          "to_room": 7735,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
           "to_room": 7726,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "west": {
           "to_room": 7746,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7730,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7749,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
@@ -1288,38 +1288,38 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7747,
-          "description": "The astral field leads off into the depths.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7733,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
-          "to_room": 7729,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
-          "to_room": 7745,
-          "description": "The astral field leads off into the depths.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "up": {
           "to_room": 7725,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "east": {
+          "to_room": 7729,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
+          "to_room": 7747,
+          "description": "The astral field leads off into the depths.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 7733,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
           "to_room": 7724,
           "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7745,
+          "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         }
@@ -1335,37 +1335,37 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7732,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7734,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "south": {
           "to_room": 7726,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "east": {
+          "to_room": 7732,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "south": {
           "to_room": 7748,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "west": {
           "to_room": 7746,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "up": {
           "to_room": 7727,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7734,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1382,13 +1382,13 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7749,
+          "to_room": 7748,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7735,
+          "to_room": 7727,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1400,19 +1400,19 @@
           "key": -1
         },
         "west": {
-          "to_room": 7727,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "up": {
-          "to_room": 7748,
+          "to_room": 7749,
           "description": "The astral field leads off into the depths.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "up": {
           "to_room": 7723,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "down": {
+          "to_room": 7735,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1429,19 +1429,19 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7727,
+          "to_room": 7718,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "east": {
-          "to_room": 7724,
+          "to_room": 7730,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
-          "to_room": 7730,
+        "south": {
+          "to_room": 7724,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1453,7 +1453,7 @@
           "key": -1
         },
         "down": {
-          "to_room": 7718,
+          "to_room": 7727,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1470,31 +1470,31 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 7728,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "east": {
-          "to_room": 7725,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7731,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "east": {
           "to_room": 7722,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
+        "south": {
+          "to_room": 7728,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
           "to_room": 7719,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 7725,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1517,25 +1517,25 @@
           "key": -1
         },
         "east": {
-          "to_room": 7726,
-          "description": "The astral field leads off into infinity.\n",
-          "flags": "0",
-          "key": -1
-        },
-        "west": {
           "to_room": 7732,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
+        "south": {
+          "to_room": 7720,
+          "description": "The astral field leads off into infinity.\n",
+          "flags": "0",
+          "key": -1
+        },
         "up": {
-          "to_room": 7723,
+          "to_room": 7726,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
         },
         "down": {
-          "to_room": 7720,
+          "to_room": 7723,
           "description": "The astral field leads off into infinity.\n",
           "flags": "0",
           "key": -1
@@ -1551,15 +1551,15 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
-          "to_room": 7737,
-          "description": "The strand of light twists and turns out of sight.\n",
+        "east": {
+          "to_room": 7718,
+          "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
-          "to_room": 7718,
-          "description": "You see the infinite expanse of the astral field.\n",
+        "down": {
+          "to_room": 7737,
+          "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         }
@@ -1580,7 +1580,7 @@
           "flags": "0",
           "key": -1
         },
-        "south": {
+        "up": {
           "to_room": 7736,
           "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
@@ -1597,13 +1597,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "east": {
+        "up": {
           "to_room": 7739,
           "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
+        "down": {
           "to_room": 7719,
           "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
@@ -1620,15 +1620,15 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "west": {
-          "to_room": 7738,
-          "description": "The strand of light twists and turns out of sight.\n",
+        "south": {
+          "to_room": 7724,
+          "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
-          "to_room": 7724,
-          "description": "You see the infinite expanse of the astral field.\n",
+        "down": {
+          "to_room": 7738,
+          "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         }
@@ -1643,15 +1643,15 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "east": {
-          "to_room": 7741,
-          "description": "The strand of light twists and turns out of sight.\n",
+        "north": {
+          "to_room": 7720,
+          "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "up": {
-          "to_room": 7720,
-          "description": "You see the infinite expanse of the astral field.\n",
+        "east": {
+          "to_room": 7741,
+          "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         }
@@ -1666,13 +1666,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "south": {
+        "north": {
           "to_room": 7725,
           "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "west": {
+        "south": {
           "to_room": 7740,
           "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
@@ -1689,13 +1689,13 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "north": {
+        "west": {
           "to_room": 7743,
           "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         },
-        "east": {
+        "down": {
           "to_room": 7721,
           "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
@@ -1713,14 +1713,14 @@
       "flags": 0,
       "exits": {
         "south": {
-          "to_room": 7742,
-          "description": "The strand of light twists and turns out of sight.\n",
+          "to_room": 7726,
+          "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
-          "to_room": 7726,
-          "description": "You see the infinite expanse of the astral field.\n",
+        "west": {
+          "to_room": 7742,
+          "description": "The strand of light twists and turns out of sight.\n",
           "flags": "0",
           "key": -1
         }
@@ -1735,15 +1735,15 @@
       "sector_type": "field",
       "flags": 0,
       "exits": {
-        "up": {
-          "to_room": 7727,
-          "description": "You see the endless expanse of the astral field.\n",
+        "east": {
+          "to_room": 7722,
+          "description": "You see the infinite expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         },
-        "down": {
-          "to_room": 7722,
-          "description": "You see the infinite expanse of the astral field.\n",
+        "west": {
+          "to_room": 7727,
+          "description": "You see the endless expanse of the astral field.\n",
           "flags": "0",
           "key": -1
         }
@@ -1997,7 +1997,7 @@
           "to_room": 7751,
           "description": "You see a rusty steel door which leads into the keep.\n",
           "keyword": "steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -2026,21 +2026,21 @@
           "to_room": 7761,
           "description": "You see an iron door which leads out onto a grey stone road.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
           "to_room": 7750,
           "description": "You see a rusty steel door which leads out to the nexial link.\n",
           "keyword": "steel",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
           "to_room": 7752,
           "description": "You see an iron door which leads out onto a grey stone road.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2073,7 +2073,7 @@
           "to_room": 7751,
           "description": "You see an iron door which leads into a small stone building set into the wall\nof the keep.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2102,7 +2102,7 @@
           "to_room": 7762,
           "description": "You see a small stone building with a wooden door.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2115,7 +2115,7 @@
           "to_room": 7769,
           "description": "An iron door blocks your entrance into a large stone building.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2165,7 +2165,7 @@
           "to_room": 7774,
           "description": "Looming before you is a forbidding pair of metal doors.\n",
           "keyword": "doors metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2206,7 +2206,7 @@
           "to_room": 7764,
           "description": "You see a tall stone building with a wooden door.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2235,7 +2235,7 @@
           "to_room": 7773,
           "description": "You see a tall stone building with a wooden door.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2276,7 +2276,7 @@
           "to_room": 7767,
           "description": "An iron door blocks your entrance into a large stone building.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2334,7 +2334,7 @@
           "to_room": 7765,
           "description": "An iron door blocks your entrance into a large stone building.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2363,7 +2363,7 @@
           "to_room": 7763,
           "description": "You see a small stone building with a wooden door.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2376,7 +2376,7 @@
           "to_room": 7751,
           "description": "You see an iron door which leads into a small stone building set into the wall\nof the keep.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2403,7 +2403,7 @@
           "to_room": 7753,
           "description": "The wooden door leads back out onto the grey cobblestone road.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2426,7 +2426,7 @@
           "to_room": 7761,
           "description": "The wooden door leads back out onto the grey cobblestone road.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2449,7 +2449,7 @@
           "to_room": 7756,
           "description": "The wooden door leads back out onto the grey cobblestone road.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2478,7 +2478,7 @@
           "to_room": 7760,
           "description": "The iron door leads back out onto the grey cobblestone road.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2507,7 +2507,7 @@
           "to_room": 7768,
           "description": "Through the grille in the furnace door you see only flames.\n",
           "keyword": "door furnace",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2542,7 +2542,7 @@
           "to_room": 7758,
           "description": "The iron door leads back out onto the grey cobblestone road.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2583,7 +2583,7 @@
           "to_room": 7766,
           "description": "The flames blind you and obscure your vision.\n",
           "keyword": "door furnace",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2601,7 +2601,7 @@
           "to_room": 7753,
           "description": "You see an iron door which leads back out onto the grey cobblestone road.\n",
           "keyword": "door iron",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2630,7 +2630,7 @@
           "to_room": 7771,
           "description": "You see a small cell.\n",
           "keyword": "door cell",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "east": {
@@ -2643,7 +2643,7 @@
           "to_room": 7772,
           "description": "You see a small cell.\n",
           "keyword": "door cell",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2666,7 +2666,7 @@
           "to_room": 7770,
           "description": "You see the cellblock.\n",
           "keyword": "door cell",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2689,7 +2689,7 @@
           "to_room": 7770,
           "description": "You see the cellblock.\n",
           "keyword": "door cell",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2712,7 +2712,7 @@
           "to_room": 7757,
           "description": "The wooden door leads back out onto the grey cobblestone road.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2741,7 +2741,7 @@
           "to_room": 7755,
           "description": "The metal doors lead out onto the grey cobblestone road.\n",
           "keyword": "doors metal",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2772,7 +2772,7 @@
           "to_room": 7776,
           "description": "You think you can see some steps leading up to an altar...\n",
           "keyword": "mist door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -2815,7 +2815,7 @@
           "to_room": 7775,
           "description": "You think you can see the hall.\n",
           "keyword": "mist door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2844,7 +2844,7 @@
           "to_room": 7778,
           "description": "The floor of the altar is pockmarked with small holes, draining blood.\n",
           "keyword": "hole",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -2875,7 +2875,7 @@
           "to_room": 7777,
           "description": "You see the altar chamber.\n",
           "keyword": "hole",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -2917,7 +2917,7 @@
       "long_description": "A grey figure guards the entrance to the astral plane.\n",
       "description": "You see a slate grey vaguely humanoid shape, devoid of any true features.\nIt stands before you with arms folded, seemingly uninterested in you.\n",
       "race": "human",
-      "act_flags": "ABT",
+      "act_flags": "0",
       "affected_by": "DFHN",
       "alignment": 0,
       "group": 0,
@@ -2927,23 +2927,19 @@
       "hit_dice": "18d9+100",
       "mana_dice": "3d10+12",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -12,
-      "ac_bash": -12,
-      "ac_slash": -12,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 7701,
@@ -2952,7 +2948,7 @@
       "long_description": "A nightmare is here, kicking at you with its flaming hooves.\n",
       "description": "The nightmare is a wholly evil being, sent out by the rulers of the lower \nplanes to torment mortals.  It vaguely resembles a horse, with a hide blacker\nthan the darkest night, and hooves that burn with unholy fires.\n",
       "race": "human",
-      "act_flags": "AD",
+      "act_flags": "0",
       "affected_by": "DJT",
       "alignment": -950,
       "group": 0,
@@ -2962,23 +2958,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 7702,
@@ -2987,7 +2979,7 @@
       "long_description": "A night hag reaches out to steal your soul.\n",
       "description": "You see a shadowy creature with long talons and an evil grin, whose sole \npurpose is to hunt down and slay mortals in order to obtain souls for her foul\nmaster to torment.\n",
       "race": "human",
-      "act_flags": "ADFR",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": -1000,
       "group": 0,
@@ -2997,23 +2989,19 @@
       "hit_dice": "24d9+100",
       "mana_dice": "4d4+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 625,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 625
     },
     {
       "id": 7703,
@@ -3022,7 +3010,7 @@
       "long_description": "You see a wavy distortion in the air.\n",
       "description": "You see only a wavy distortion in the air.  You reach out to touch it, and\nfeel nothing, not even the slightest of motions.\n",
       "race": "human",
-      "act_flags": "AD",
+      "act_flags": "0",
       "affected_by": "BT",
       "alignment": 200,
       "group": 0,
@@ -3032,23 +3020,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 7704,
@@ -3057,7 +3041,7 @@
       "long_description": "The soulless one wanders mindlessly.\n",
       "description": "This unfortunate being has had its very soul torn from its body.  It now roams\nmindlessly, unaware of its surroundings.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -3067,23 +3051,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 12,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 12
     },
     {
       "id": 7705,
@@ -3092,7 +3072,7 @@
       "long_description": "A githyanki hunter searches for signs of the githzerai.\n",
       "description": "You see a leathery-skinned humanoid creature that stands almost as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow\nand sunken.\n",
       "race": "human",
-      "act_flags": "ACS",
+      "act_flags": "0",
       "affected_by": "DFJP",
       "alignment": -500,
       "group": 0,
@@ -3102,23 +3082,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 7706,
@@ -3127,7 +3103,7 @@
       "long_description": "You see a humanoid figure clad in splinted armor.\n",
       "description": "You see a leathery-skinned humanoid creature that stands as tall as a normal\nman.  Like all githyanki, his teeth are fanged and his eyes hollow and sunken.\nHe is clad in ornately designed splinted armor, and wields a sword that\nwhistles through the air as it slices towards your neck.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3137,23 +3113,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 125,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 125
     },
     {
       "id": 7707,
@@ -3162,7 +3134,7 @@
       "long_description": "A humanoid figure clad in splinted armor blocks your way.\n",
       "description": "You see a leathery-skinned humanoid creature that stands as tall as a normal\nman.  Like all githyanki, his teeth are fanged and his eyes hollow and sunken.\nHe is clad in ornately designed splinted armor, and wields a sword that\nwhistles through the air as it slices towards your neck.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3172,23 +3144,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 7708,
@@ -3197,7 +3165,7 @@
       "long_description": "A tall figure armored in black observes you quietly.\n",
       "description": "You see a leathery-skinned humanoid creature that stands a full foot taller\nthan a normal man.  His features are obscured by a suit of ornately designed\nsplinted armor -- you only hear the hissing of his breath and the scraping\nof his sword against its scabbard as it is unsheathed.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3207,23 +3175,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 7709,
@@ -3232,7 +3196,7 @@
       "long_description": "A black knight of the githyanki protects his queen.\n",
       "description": "You see a leathery-skinned humanoid creature that stands a full foot taller\nthan a normal man.  His features are obscured by a suit of ornately designed\nsplinted armor -- you only hear the hissing of his breath and the scraping\nof his sword against its scabbard as it is unsheathed.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3242,23 +3206,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 7710,
@@ -3267,7 +3227,7 @@
       "long_description": "A small githyanki laughs at you through fanged teeth.\n",
       "description": "You see a leathery-skinned humanoid creature that stands nearly as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow and\nsunken.  The gish are well-versed in the arcane arts, unlike the normal gith\npeople.  You notice this from the blast of lightning headed towards you.\n",
       "race": "human",
-      "act_flags": "AR",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3277,23 +3237,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 150
     },
     {
       "id": 7711,
@@ -3302,7 +3258,7 @@
       "long_description": "A gish laughs as flame leaps from his hands towards your face.\n",
       "description": "You see a leathery-skinned humanoid creature that stands nearly as tall as a\nnormal man.  Like all githyanki, his teeth are fanged and his eyes hollow and\nsunken.  The gish are well-versed in the arcane arts, unlike the normal gith\npeople.  You notice this from the blast of lightning headed towards you.\n",
       "race": "human",
-      "act_flags": "ACFR",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -500,
       "group": 0,
@@ -3312,23 +3268,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 150
     },
     {
       "id": 7712,
@@ -3337,7 +3289,7 @@
       "long_description": "A humanoid figure stands here, holding a silvery sword.\n",
       "description": "You see a leathery-skinned creature, clad all in black and bearing a silvery-\ncolored sword.  Like all githyanki, his teeth are fanged and his eyes hollow\nand sunken.  As you turn to flee, you feel the impact of a fireball against\nyour back.\n",
       "race": "human",
-      "act_flags": "AFR",
+      "act_flags": "0",
       "affected_by": "DEJ",
       "alignment": -500,
       "group": 0,
@@ -3347,23 +3299,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 7713,
@@ -3372,7 +3320,7 @@
       "long_description": "The evil lich-queen of the Gith reaches out to destroy you.\n",
       "description": "The lich-queen of the githyanki was once human, but no longer.  Her skin has\ncompletely shrunken around her skull, held together solely by the force of\nunholy magic and the powers of this plane of existence.  The cold glare of her\nhollow eyes sends you into paroxysms of fright.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "DEFHJ",
       "alignment": -750,
       "group": 0,
@@ -3382,23 +3330,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 7714,
@@ -3407,7 +3351,7 @@
       "long_description": "Lord Gith suddenly forms from a cloud of blackness.\nHe stares right through you with deadly, cold eyes.\n",
       "description": "Lord Gith is the dead savior of the githyanki people, the warrior who led them\nto freedom from their former enslavers, the mind flayers.  He has been dead\nfor centuries and stands before you now due to an unholy alliance with powers\nbeyond mortal ken.\n\nHe gestures towards you.  You feel your heart tremble and your throat begin\nto tighten.  You are about to die.\n",
       "race": "human",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "BDFHJ",
       "alignment": -900,
       "group": 0,
@@ -3417,23 +3361,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 7715,
@@ -3442,7 +3382,7 @@
       "long_description": "A ghost wanders here, intent on destroying all life.\n",
       "description": "The ghost makes no sound.  It is a shadowy shell of its former self, cursed\nnow to roam forever without rest.  The mind of this creature has been twisted\nand destroyed in this torment, and it now envys and intends to destroy all the\ntrue living beings it encounters, including you.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "JTU",
       "alignment": -1000,
       "group": 0,
@@ -3452,23 +3392,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 7716,
@@ -3477,7 +3413,7 @@
       "long_description": "A githzerai plots his escape plan.\n",
       "description": "You see a conniving humanoid, a descendant of a race of humans once enslaved\nby the mindflayers and related to the githyanki.  Unfortunately, the two races\nare bitter enemies, and this one happened to get caught.  He intends to escape.\n",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": -250,
       "group": 0,
@@ -3487,23 +3423,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7717,
@@ -3512,7 +3444,7 @@
       "long_description": "A mindflayer lies here, scarred from the torture inflicted by the Gith.\n",
       "description": "You see a formerly tall humanoid creature, with four tentacles hanging from the\nmiddle of its head.  It is hunched over, bent and scarred from torture inflicted\nby the githyanki.  It cringes as you approach.\n",
       "race": "human",
-      "act_flags": "ABR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -3522,23 +3454,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 7718,
@@ -3547,7 +3475,7 @@
       "long_description": "A giant red dragon is chained here, his breath heating the furnace.\n",
       "description": "The mighty scaled beast has been magically bound and subdued by the residents\nof the keep.  Nevertheless, he is still an impressive sight, some twenty feet\nin length with an even more massive wingspan.  He watches you, smoke drifting\nfrom his open mouth.\n",
       "race": "dragon",
-      "act_flags": "ABR",
+      "act_flags": "0",
       "affected_by": "DJT",
       "alignment": -400,
       "group": 0,
@@ -3557,23 +3485,19 @@
       "hit_dice": "28d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
+      "form": "33554561",
+      "parts": "11634685",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHZ",
-      "parts": "0ACDEFGHIJKPQUVX",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 7719,
@@ -3582,7 +3506,7 @@
       "long_description": "The fires of the furnace burn away at your skin!\n",
       "description": "The fire feeds on your skin like a living being, licking out at your hair.\n",
       "race": "human",
-      "act_flags": "ABDF",
+      "act_flags": "0",
       "affected_by": "J",
       "alignment": 0,
       "group": 0,
@@ -3592,2440 +3516,24 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     }
   ],
-  "objects": [
-    {
-      "id": 7700,
-      "name": "a massive slate-grey sledgehammer",
-      "keywords": "hammer sledge grey",
-      "description": "The ground cracks under the weight of a grey hammer lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1536,
-      "wear_flags": 8193,
-      "level": 38,
-      "weight": 550,
-      "cost": 5200,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        8,
-        8,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 6
-        },
-        {
-          "location": 18,
-          "modifier": -2
-        },
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "hammer sledge grey",
-          "description": "This massive hammer is incredibly hard, heavy, and utterly grey and featureless.\n"
-        }
-      ]
-    },
-    {
-      "id": 7701,
-      "name": "a violet scroll",
-      "keywords": "scroll violet",
-      "description": "A rolled piece of violet parchment lies on the floor.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 256,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 10,
-      "cost": 1510,
-      "condition": 100,
-      "values": [
-        15,
-        2,
-        3,
-        79,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "scroll violet",
-          "description": "The scroll is written on soft violet parchment that has a pleasing smell to it.\n"
-        }
-      ]
-    },
-    {
-      "id": 7702,
-      "name": "a black etched tablet",
-      "keywords": "tablet scroll black",
-      "description": "Lying on the ground is a jet black stone tablet.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 16,
-      "wear_flags": 1,
-      "level": 12,
-      "weight": 50,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        30,
-        84,
-        13,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "tablet scroll black",
-          "description": "The tablet is an unreflective black rectangular piece of stone, with strange\nwritings etched deep into its surface.\n"
-        }
-      ]
-    },
-    {
-      "id": 7703,
-      "name": "a scroll with githyanki writings on it",
-      "keywords": "scroll githyanki",
-      "description": "You see a scroll written in an alien tongue.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 7,
-      "weight": 10,
-      "cost": 1240,
-      "condition": 100,
-      "values": [
-        24,
-        62,
-        62,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "scroll githyanki",
-          "description": "The scroll has writings on it that you cannot comprehend.\n"
-        }
-      ]
-    },
-    {
-      "id": 7704,
-      "name": "a small demon's amulet",
-      "keywords": "amulet demon",
-      "description": "A small amulet lies here in the dirt.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 144,
-      "wear_flags": 16385,
-      "level": 11,
-      "weight": 50,
-      "cost": 2600,
-      "condition": 100,
-      "values": [
-        25,
-        5,
-        5,
-        42,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": -1
-        },
-        {
-          "location": 3,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "amulet demon",
-          "description": "The amulet is a small circular object made from some bizarre metallic alloy.\nIt is inscribed with various symbols and raised images of snakes, tortured\nvictims, and other things too horrible to describe.\n\nStenciled in the center is an unpronounceable name which it would behoove you\nnot to utter aloud.\n"
-        }
-      ]
-    },
-    {
-      "id": 7705,
-      "name": "a devilish talisman",
-      "keywords": "talisman devilish",
-      "description": "On the ground is a small talisman which radiates a tangible evil.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 144,
-      "wear_flags": 16385,
-      "level": 14,
-      "weight": 50,
-      "cost": 5300,
-      "condition": 100,
-      "values": [
-        25,
-        5,
-        5,
-        48,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": -10
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "talisman devilish",
-          "description": "The talisman is a red circular stone object hanging from a metallic chain.  It\nseems to pulse with a life of its own, and you feel uncomfortable being anywhere\nnear it.\n\nEngraved in the center is one word.  Merely reading the word induces fright.\n"
-        }
-      ]
-    },
-    {
-      "id": 7706,
-      "name": "a silvery knife",
-      "keywords": "knife silvery",
-      "description": "A flat-bladed silvery knife lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 30,
-      "cost": 480,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "knife silvery",
-          "description": "The knife is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
-        }
-      ]
-    },
-    {
-      "id": 7707,
-      "name": "a silvery dagger",
-      "keywords": "dagger silvery",
-      "description": "A sharp-looking silvery dagger lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 13,
-      "weight": 30,
-      "cost": 980,
-      "condition": 100,
-      "values": [
-        2,
-        3,
-        4,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "dagger silvery",
-          "description": "The dagger is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
-        }
-      ]
-    },
-    {
-      "id": 7708,
-      "name": "an extremely sharp and thin sword",
-      "keywords": "sword thin",
-      "description": "Light glints off the edge of a razor-sharp sword.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 16,
-      "weight": 30,
-      "cost": 2300,
-      "condition": 100,
-      "values": [
-        1,
-        4,
-        3,
-        1,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        },
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword thin",
-          "description": "The sword is forged from a strange silvery metal.  It barely measures an inch\nacross at its widest point, yet it is totally inflexible and razor-sharp.  It\ncould probably cut through stone.\n"
-        }
-      ]
-    },
-    {
-      "id": 7709,
-      "name": "a thin two-handed sword",
-      "keywords": "sword thin two two-handed",
-      "description": "A heavy yet thinly bladed two-handed sword lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 24,
-      "weight": 160,
-      "cost": 2600,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        12,
-        3,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword thin two two-handed",
-          "description": "The sword is forged from a strange silvery metal.  It barely measures two inches\nacross at its widest point, yet it is totally inflexible and razor sharp.  It\ncould probably cut through stone.\n"
-        }
-      ]
-    },
-    {
-      "id": 7710,
-      "name": "a silvery sword",
-      "keywords": "sword silvery two-handed",
-      "description": "A silvery sword gleams unnaturally with an alien light.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 19,
-      "weight": 130,
-      "cost": 4600,
-      "condition": 100,
-      "values": [
-        1,
-        4,
-        4,
-        3,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 2,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword silvery",
-          "description": "The sword is forged from a strange silvery metal the likes of which you have\nnever seen in your own world.  It is incredibly sharp and hard, yet feels almost\nfluid to the touch.\n"
-        }
-      ]
-    },
-    {
-      "id": 7711,
-      "name": "an iron barbed flail",
-      "keywords": "flail barbed iron",
-      "description": "A rusty iron flail with wicked barbs on it tears at the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 18,
-      "wear_flags": 8193,
-      "level": 29,
-      "weight": 140,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        6,
-        5,
-        5,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "flail barbed iron",
-          "description": "This hideous weapon has claimed many lives.  You can tell from the bloodstains\ndried into the iron and from the residue of flesh that hangs from the many\nbarbs on it.\n"
-        }
-      ]
-    },
-    {
-      "id": 7712,
-      "name": "the unholy sword of the githyanki",
-      "keywords": "sword gith two-handed",
-      "description": "You feel tendrils of evil emanating from a wicked blade.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 4240,
-      "wear_flags": 8193,
-      "level": 31,
-      "weight": 250,
-      "cost": 5100,
-      "condition": 100,
-      "values": [
-        1,
-        9,
-        3,
-        3,
-        32
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 4
-        },
-        {
-          "location": 4,
-          "modifier": -1
-        },
-        {
-          "location": 3,
-          "modifier": -1
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword gith",
-          "description": "The blade of this sword is a featureless gray.  As you touch it you feel an\nevil presence reaching out to consume your soul.\n\nMaybe picking it up wasn't such a good idea.\n"
-        }
-      ]
-    },
-    {
-      "id": 7713,
-      "name": "a brightly flaming stone",
-      "keywords": "stone flame",
-      "description": "The room is lit by a hot blue flame coming from a small stone.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 20,
-      "weight": 10,
-      "cost": 1440,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        -1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "stone flame",
-          "description": "This stone burns with an flame that emits great heat, yet it can be held with\nease.  The flame creates a light that allows you to see for miles.\n"
-        }
-      ]
-    },
-    {
-      "id": 7714,
-      "name": "some astral powder",
-      "keywords": "powder astral",
-      "description": "Twinkling powder floats before your eyes.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "powder astral",
-          "description": "You see the residue of the astral plane.\n"
-        }
-      ]
-    },
-    {
-      "id": 7715,
-      "name": "a splint mail vest",
-      "keywords": "vest splint",
-      "description": "An intricately fashioned splint mail vest lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 15,
-      "weight": 450,
-      "cost": 2100,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "vest splint",
-          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
-        }
-      ]
-    },
-    {
-      "id": 7716,
-      "name": "a splint mail skirt",
-      "keywords": "skirt splint",
-      "description": "An intricately fashioned splint mail skirt lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 33,
-      "level": 20,
-      "weight": 200,
-      "cost": 1450,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "skirt splint",
-          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
-        }
-      ]
-    },
-    {
-      "id": 7717,
-      "name": "a pair of splint mail sleeves",
-      "keywords": "sleeves splint",
-      "description": "A pair of intricately fashioned splint mail sleeves lie here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 257,
-      "level": 20,
-      "weight": 150,
-      "cost": 1450,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "sleeves splint",
-          "description": "This splint mail has been expertly and ornately fashioned from the highest\nquality of steels.\n"
-        }
-      ]
-    },
-    {
-      "id": 7718,
-      "name": "a pair of ornately designed gauntlets",
-      "keywords": "gauntlets ornate",
-      "description": "A pair of painstakingly designed ornate gauntlets lie here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 129,
-      "level": 20,
-      "weight": 50,
-      "cost": 2700,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "gauntlets ornate",
-          "description": "These gauntlets have been expertly and ornately fashioned from the highest\nquality of steels.\n"
-        }
-      ]
-    },
-    {
-      "id": 7719,
-      "name": "a decaying vest made from cracked leather",
-      "keywords": "vest cracked leather",
-      "description": "A decaying hunk of cracked leather has been discarded here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 31,
-      "weight": 50,
-      "cost": 8500,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -6
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "vest cracked leather",
-          "description": "The ancient vest is barely intact.  All of the leather has cracked and dried\nto a husk.  It is covered with stains, burns, scorch marks, and blood.\n"
-        }
-      ]
-    },
-    {
-      "id": 7720,
-      "name": "a violet potion",
-      "keywords": "potion violet",
-      "description": "A tall glass flask holds a translucent violet fluid.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 2,
-      "weight": 20,
-      "cost": 320,
-      "condition": 100,
-      "values": [
-        18,
-        60,
-        72,
-        30,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion violet",
-          "description": "The violet fluid inside shifts and swirls.\n"
-        }
-      ]
-    },
-    {
-      "id": 7721,
-      "name": "a vial of murky fluid",
-      "keywords": "potion vial murky",
-      "description": "A small vial contains a murky, sludge-like substance.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 10,
-      "weight": 10,
-      "cost": 760,
-      "condition": 100,
-      "values": [
-        15,
-        4,
-        79,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion vial murky",
-          "description": "The murky liquid inside this vial looks a lot like sewer water.\n"
-        }
-      ]
-    },
-    {
-      "id": 7722,
-      "name": "a silvery-colored potion",
-      "keywords": "potion silvery",
-      "description": "An octagonal vial holds a silvery-colored fluid that reflects light.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 1,
-      "weight": 20,
-      "cost": 320,
-      "condition": 100,
-      "values": [
-        20,
-        33,
-        34,
-        35,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion silvery",
-          "description": "The octagonal vial contains a silvery-colored liquid that shimmers in the light.\n"
-        }
-      ]
-    },
-    {
-      "id": 7723,
-      "name": "a tasty-looking chocolate mint",
-      "keywords": "mint chocolate",
-      "description": "Someone has dropped a delicious-looking chocolate mint here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 0,
-      "cost": 990,
-      "condition": 100,
-      "values": [
-        35,
-        76,
-        55,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "mint chocolate",
-          "description": "This mint is made from the finest of chocolates, surrounding a cool peppermint\ninterior that must be savored, not swallowed.\n"
-        }
-      ]
-    },
-    {
-      "id": 7724,
-      "name": "a black pentagram",
-      "keywords": "pentagram",
-      "description": "A small black metal pentagram has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 32,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 100,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "pentagram",
-          "description": "The pentagram is a small circular hoop that surrounds a five-pointed star.\nInscribed on its exterior loop are markings in an alien tongue.\n"
-        }
-      ]
-    },
-    {
-      "id": 7725,
-      "name": "a rotting pouch",
-      "keywords": "pouch rotting",
-      "description": "A small pouch rots away on the floor here.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        100,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "pouch rotting",
-          "description": "You think you see glints of metal through the holes...\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "R",
-      "arg1": 7708,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7709,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7710,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7712,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7713,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7714,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7715,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7716,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7717,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7718,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7720,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7721,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7722,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7723,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7724,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7725,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7726,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7727,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7728,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7729,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7730,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7731,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7732,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7733,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7734,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7735,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7736,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7737,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7738,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7739,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7740,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7741,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7742,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7743,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 7744,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7700,
-      "arg2": 1,
-      "arg3": 7706,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7700,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7706,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7707,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7701,
-      "arg2": 2,
-      "arg3": 7733,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7704,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7701,
-      "arg2": 2,
-      "arg3": 7734,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7704,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7702,
-      "arg2": 1,
-      "arg3": 7746,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7705,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7703,
-      "arg2": 4,
-      "arg3": 7720,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7714,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7703,
-      "arg2": 4,
-      "arg3": 7724,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7714,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7703,
-      "arg2": 4,
-      "arg3": 7726,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7714,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7703,
-      "arg2": 4,
-      "arg3": 7730,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7714,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7713,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7714,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7715,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7716,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7717,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7718,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7719,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7720,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7721,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7704,
-      "arg2": 10,
-      "arg3": 7722,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7705,
-      "arg2": 8,
-      "arg3": 7718,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7707,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7705,
-      "arg2": 8,
-      "arg3": 7720,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7707,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7705,
-      "arg2": 8,
-      "arg3": 7722,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7707,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7705,
-      "arg2": 8,
-      "arg3": 7724,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7707,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7706,
-      "arg2": 6,
-      "arg3": 7723,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7706,
-      "arg2": 6,
-      "arg3": 7727,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7708,
-      "arg2": 3,
-      "arg3": 7730,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7709,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7716,
-      "arg2": -1,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7717,
-      "arg2": -1,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7710,
-      "arg2": 6,
-      "arg3": 7729,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7710,
-      "arg2": 6,
-      "arg3": 7731,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7715,
-      "arg2": 3,
-      "arg3": 7745,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7721,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7715,
-      "arg2": 3,
-      "arg3": 7747,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7721,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7715,
-      "arg2": 3,
-      "arg3": 7749,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 7721,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7750,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7751,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7751,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7751,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7752,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7753,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7753,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7755,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7756,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7757,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7758,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7760,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7761,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7761,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7762,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7763,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7764,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7773,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7765,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7766,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7767,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7768,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7769,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7770,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7770,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7771,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7772,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7774,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7775,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7776,
-      "arg2": 2,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7777,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7778,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 7778,
-      "arg2": 5,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7751,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7751,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7765,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7765,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7767,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7767,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7769,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7707,
-      "arg2": 8,
-      "arg3": 7769,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7708,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7708,
-      "arg2": 3,
-      "arg3": 7755,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7709,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7716,
-      "arg2": -1,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7717,
-      "arg2": -1,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7753,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7759,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7762,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7763,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7762,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7722,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7711,
-      "arg2": 6,
-      "arg3": 7763,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7706,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7722,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7712,
-      "arg2": 4,
-      "arg3": 7764,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7710,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7703,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7712,
-      "arg2": 4,
-      "arg3": 7773,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7710,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7703,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7712,
-      "arg2": 4,
-      "arg3": 7774,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7710,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7703,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7712,
-      "arg2": 4,
-      "arg3": 7774,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7710,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7703,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7716,
-      "arg2": 1,
-      "arg3": 7772,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7717,
-      "arg2": 1,
-      "arg3": 7771,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 7718,
-      "arg2": 1,
-      "arg3": 7768,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7713,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7719,
-      "arg2": 6,
-      "arg3": 7768,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 7709,
-      "arg2": 2,
-      "arg3": 7776,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7709,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7716,
-      "arg2": -1,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7717,
-      "arg2": -1,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7718,
-      "arg2": -1,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7709,
-      "arg2": 2,
-      "arg3": 7776,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 7709,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7715,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7716,
-      "arg2": -1,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7717,
-      "arg2": -1,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7718,
-      "arg2": -1,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7713,
-      "arg2": 1,
-      "arg3": 7777,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7711,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7724,
-      "arg2": -1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7702,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 7714,
-      "arg2": 1,
-      "arg3": 7779,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 7712,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 7719,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 7725,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 7702,
@@ -6071,5 +3579,11 @@
       "mob_vnum": 7719,
       "spec": "spec_breath_fire"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 7700,
+    "high": 7799
+  }
 }

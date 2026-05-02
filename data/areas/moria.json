@@ -236,16 +236,19 @@
       "exits": {
         "north": {
           "to_room": 4001,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6562,
           "description": "You see the mountains of the dwarven kingdom. \n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3500,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -260,11 +263,13 @@
       "exits": {
         "north": {
           "to_room": 4002,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4000,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -279,11 +284,13 @@
       "exits": {
         "north": {
           "to_room": 4010,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4001,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -307,11 +314,13 @@
       "exits": {
         "north": {
           "to_room": 4011,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4002,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -331,11 +340,13 @@
       "exits": {
         "north": {
           "to_room": 4014,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4010,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -350,11 +361,13 @@
       "exits": {
         "north": {
           "to_room": 4016,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4013,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -369,11 +382,13 @@
       "exits": {
         "east": {
           "to_room": 4014,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4012,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -388,19 +403,23 @@
       "exits": {
         "north": {
           "to_room": 4018,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4015,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4011,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4013,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -415,11 +434,13 @@
       "exits": {
         "north": {
           "to_room": 4019,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4014,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -434,15 +455,18 @@
       "exits": {
         "east": {
           "to_room": 4017,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4012,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4023,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -457,7 +481,8 @@
       "exits": {
         "west": {
           "to_room": 4016,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -472,11 +497,13 @@
       "exits": {
         "north": {
           "to_room": 4025,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4014,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -496,11 +523,13 @@
       "exits": {
         "north": {
           "to_room": 4026,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4015,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -515,11 +544,13 @@
       "exits": {
         "north": {
           "to_room": 4027,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 4064,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -534,11 +565,13 @@
       "exits": {
         "east": {
           "to_room": 4022,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 4115,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -553,15 +586,18 @@
       "exits": {
         "north": {
           "to_room": 4023,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4024,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4021,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -576,11 +612,13 @@
       "exits": {
         "east": {
           "to_room": 4016,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4022,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -595,11 +633,13 @@
       "exits": {
         "south": {
           "to_room": 4059,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4022,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -614,11 +654,13 @@
       "exits": {
         "east": {
           "to_room": 4026,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4018,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -633,19 +675,23 @@
       "exits": {
         "north": {
           "to_room": 4028,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4027,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4019,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4025,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -660,15 +706,18 @@
       "exits": {
         "north": {
           "to_room": 4029,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4020,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4026,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -683,11 +732,13 @@
       "exits": {
         "north": {
           "to_room": 4030,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4026,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -702,11 +753,13 @@
       "exits": {
         "north": {
           "to_room": 4031,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4027,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -721,7 +774,8 @@
       "exits": {
         "south": {
           "to_room": 4028,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -736,11 +790,13 @@
       "exits": {
         "north": {
           "to_room": 4032,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4029,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -760,11 +816,13 @@
       "exits": {
         "north": {
           "to_room": 4033,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4031,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -779,15 +837,18 @@
       "exits": {
         "north": {
           "to_room": 4034,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4037,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4032,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -802,15 +863,18 @@
       "exits": {
         "north": {
           "to_room": 4035,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4033,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4042,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -825,11 +889,13 @@
       "exits": {
         "north": {
           "to_room": 4036,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4034,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -844,7 +910,8 @@
       "exits": {
         "south": {
           "to_room": 4035,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -859,11 +926,13 @@
       "exits": {
         "east": {
           "to_room": 4038,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4033,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -878,11 +947,13 @@
       "exits": {
         "east": {
           "to_room": 4039,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4037,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -897,11 +968,13 @@
       "exits": {
         "east": {
           "to_room": 4040,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4038,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -916,16 +989,19 @@
       "exits": {
         "north": {
           "to_room": 4041,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 7114,
           "description": "It doesn't look safe this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4039,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -940,7 +1016,8 @@
       "exits": {
         "south": {
           "to_room": 4040,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -955,11 +1032,13 @@
       "exits": {
         "east": {
           "to_room": 4034,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4043,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -974,11 +1053,13 @@
       "exits": {
         "east": {
           "to_room": 4042,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4044,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -993,7 +1074,8 @@
       "exits": {
         "east": {
           "to_room": 4043,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1008,11 +1090,13 @@
       "exits": {
         "east": {
           "to_room": 4051,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4053,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1027,11 +1111,13 @@
       "exits": {
         "east": {
           "to_room": 4052,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4050,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1046,11 +1132,13 @@
       "exits": {
         "south": {
           "to_room": 4100,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4051,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1065,11 +1153,13 @@
       "exits": {
         "north": {
           "to_room": 4050,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4054,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1084,15 +1174,18 @@
       "exits": {
         "east": {
           "to_room": 4055,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4056,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4053,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1107,7 +1200,8 @@
       "exits": {
         "west": {
           "to_room": 4054,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1122,11 +1216,13 @@
       "exits": {
         "north": {
           "to_room": 4054,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4061,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1141,11 +1237,13 @@
       "exits": {
         "east": {
           "to_room": 4058,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4062,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1160,11 +1258,13 @@
       "exits": {
         "south": {
           "to_room": 4063,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4057,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1179,11 +1279,13 @@
       "exits": {
         "north": {
           "to_room": 4024,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4060,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1198,11 +1300,13 @@
       "exits": {
         "east": {
           "to_room": 4061,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4059,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1217,11 +1321,13 @@
       "exits": {
         "north": {
           "to_room": 4056,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4060,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1236,11 +1342,13 @@
       "exits": {
         "north": {
           "to_room": 4057,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4065,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1255,11 +1363,13 @@
       "exits": {
         "north": {
           "to_room": 4058,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4064,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1274,11 +1384,13 @@
       "exits": {
         "west": {
           "to_room": 4063,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 4020,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1293,11 +1405,13 @@
       "exits": {
         "east": {
           "to_room": 4066,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4062,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1312,15 +1426,18 @@
       "exits": {
         "east": {
           "to_room": 4067,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4069,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4065,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1335,7 +1452,8 @@
       "exits": {
         "west": {
           "to_room": 4066,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1350,11 +1468,13 @@
       "exits": {
         "east": {
           "to_room": 4069,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4070,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1369,15 +1489,18 @@
       "exits": {
         "north": {
           "to_room": 4066,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4071,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4068,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1392,11 +1515,13 @@
       "exits": {
         "north": {
           "to_room": 4068,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4071,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1411,15 +1536,18 @@
       "exits": {
         "north": {
           "to_room": 4069,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4072,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4070,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1434,15 +1562,18 @@
       "exits": {
         "east": {
           "to_room": 4073,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4074,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4071,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1457,7 +1588,8 @@
       "exits": {
         "west": {
           "to_room": 4072,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1472,11 +1604,13 @@
       "exits": {
         "north": {
           "to_room": 4072,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 4171,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1491,11 +1625,13 @@
       "exits": {
         "north": {
           "to_room": 4052,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4101,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1510,11 +1646,13 @@
       "exits": {
         "east": {
           "to_room": 4100,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4102,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1529,11 +1667,13 @@
       "exits": {
         "east": {
           "to_room": 4101,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4103,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1548,15 +1688,18 @@
       "exits": {
         "east": {
           "to_room": 4102,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4106,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4104,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1571,11 +1714,13 @@
       "exits": {
         "east": {
           "to_room": 4103,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4152,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1590,11 +1735,13 @@
       "exits": {
         "south": {
           "to_room": 4108,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4106,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1609,15 +1756,18 @@
       "exits": {
         "north": {
           "to_room": 4103,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4105,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4109,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1632,11 +1782,13 @@
       "exits": {
         "south": {
           "to_room": 4113,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4108,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1651,15 +1803,18 @@
       "exits": {
         "north": {
           "to_room": 4105,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4107,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4109,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1674,15 +1829,18 @@
       "exits": {
         "north": {
           "to_room": 4106,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4108,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4114,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1697,7 +1855,8 @@
       "exits": {
         "west": {
           "to_room": 4111,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1712,11 +1871,13 @@
       "exits": {
         "east": {
           "to_room": 4110,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4112,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1731,11 +1892,13 @@
       "exits": {
         "east": {
           "to_room": 4111,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4113,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1750,15 +1913,18 @@
       "exits": {
         "north": {
           "to_room": 4107,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4112,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4116,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1773,11 +1939,13 @@
       "exits": {
         "north": {
           "to_room": 4109,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4115,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1792,11 +1960,13 @@
       "exits": {
         "east": {
           "to_room": 4114,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 4021,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1811,11 +1981,13 @@
       "exits": {
         "north": {
           "to_room": 4113,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4120,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1830,7 +2002,8 @@
       "exits": {
         "south": {
           "to_room": 4122,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1845,11 +2018,13 @@
       "exits": {
         "south": {
           "to_room": 4123,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4119,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1864,15 +2039,18 @@
       "exits": {
         "east": {
           "to_room": 4118,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4124,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4121,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1887,11 +2065,13 @@
       "exits": {
         "north": {
           "to_room": 4116,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4125,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1906,11 +2086,13 @@
       "exits": {
         "east": {
           "to_room": 4119,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4122,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1925,11 +2107,13 @@
       "exits": {
         "north": {
           "to_room": 4117,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4121,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1944,11 +2128,13 @@
       "exits": {
         "north": {
           "to_room": 4118,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4124,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1963,15 +2149,18 @@
       "exits": {
         "north": {
           "to_room": 4119,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4123,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4125,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1986,11 +2175,13 @@
       "exits": {
         "north": {
           "to_room": 4120,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4124,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2005,7 +2196,8 @@
       "exits": {
         "south": {
           "to_room": 4151,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2020,15 +2212,18 @@
       "exits": {
         "north": {
           "to_room": 4150,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4156,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4155,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2043,11 +2238,13 @@
       "exits": {
         "east": {
           "to_room": 4104,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4153,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2062,15 +2259,18 @@
       "exits": {
         "north": {
           "to_room": 4152,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4154,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4157,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2085,11 +2285,13 @@
       "exits": {
         "east": {
           "to_room": 4155,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4153,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2104,11 +2306,13 @@
       "exits": {
         "east": {
           "to_room": 4151,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4154,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2123,11 +2327,13 @@
       "exits": {
         "north": {
           "to_room": 4151,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4160,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2142,15 +2348,18 @@
       "exits": {
         "north": {
           "to_room": 4153,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4158,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4161,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2165,15 +2374,18 @@
       "exits": {
         "east": {
           "to_room": 4159,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4162,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4157,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2188,11 +2400,13 @@
       "exits": {
         "south": {
           "to_room": 4163,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4158,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2207,11 +2421,13 @@
       "exits": {
         "north": {
           "to_room": 4156,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4164,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -2231,11 +2447,13 @@
       "exits": {
         "north": {
           "to_room": 4157,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4165,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2250,15 +2468,18 @@
       "exits": {
         "north": {
           "to_room": 4158,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4163,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4166,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2273,15 +2494,18 @@
       "exits": {
         "north": {
           "to_room": 4159,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4164,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4162,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2296,15 +2520,18 @@
       "exits": {
         "north": {
           "to_room": 4160,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4168,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4163,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2319,11 +2546,13 @@
       "exits": {
         "north": {
           "to_room": 4161,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4169,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2338,15 +2567,18 @@
       "exits": {
         "north": {
           "to_room": 4162,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4167,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4170,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2361,15 +2593,18 @@
       "exits": {
         "east": {
           "to_room": 4168,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 4171,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4166,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2384,11 +2619,13 @@
       "exits": {
         "north": {
           "to_room": 4164,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4167,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2403,11 +2640,13 @@
       "exits": {
         "north": {
           "to_room": 4165,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4170,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2422,15 +2661,18 @@
       "exits": {
         "north": {
           "to_room": 4166,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 4172,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 4169,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2445,11 +2687,13 @@
       "exits": {
         "north": {
           "to_room": 4167,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 4074,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2464,7 +2708,8 @@
       "exits": {
         "west": {
           "to_room": 4170,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2479,7 +2724,7 @@
       "long_description": "The huge python rears its head and hisses at you. \n",
       "description": "It sways back and forth contemplating whether or not to eat you.\n",
       "race": "snake",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -200,
       "group": 0,
@@ -2489,23 +2734,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "3d4+2",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": 0,
-      "ac_slash": 3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FHNOR",
       "immune": "0",
       "resist": "FL",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "large",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4001,
@@ -2514,7 +2755,7 @@
       "long_description": "A small green garter snake slithers along the floor.\n",
       "description": "It looks harmless enough.  Or is it?\n",
       "race": "snake",
-      "act_flags": "ABU",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -2524,23 +2765,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d10+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 3,
-      "ac_slash": 5,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "FHR",
       "immune": "0",
       "resist": "EL",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "small",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4002,
@@ -2549,7 +2786,7 @@
       "long_description": "A small centipede here is looking for vegetation.\n",
       "description": "It looks completely harmless but who knows for sure?\n",
       "race": "centipede",
-      "act_flags": "ABU",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": 100,
       "group": 0,
@@ -2559,23 +2796,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d6+0",
       "damage_dice": "sting",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 7,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "FR",
       "immune": "0",
       "resist": "0FI",
       "vuln": "0E",
+      "form": "16451",
+      "parts": "1029",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0ABGO",
-      "parts": "0ACK",
-      "size": "tiny",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 4003,
@@ -2584,7 +2817,7 @@
       "long_description": "An ugly kobold mumbles something under its breath.\n",
       "description": "It looks ugly enough to scare its own mother.\n",
       "race": "kobold",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -100,
       "group": 0,
@@ -2594,23 +2827,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+1",
       "damage_dice": "claw",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "R",
       "immune": "0",
       "resist": "0L",
       "vuln": "0C",
+      "form": "2101379",
+      "parts": "67583",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 18,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKQ",
-      "size": "small",
-      "material": "0"
+      "sex": "none",
+      "wealth": 18
     },
     {
       "id": 4004,
@@ -2619,7 +2848,7 @@
       "long_description": "This orc is frothing around the mouth.  Better stay away.\n",
       "description": "You notice a slight tinge of madness in his eyes.\n",
       "race": "orc",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -400,
       "group": 0,
@@ -2629,23 +2858,19 @@
       "hit_dice": "1d1+199",
       "mana_dice": "1d6+3",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "CDNR",
       "immune": "0",
       "resist": "CQ",
       "vuln": "0S",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 60,
-      "form": "BAHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 60
     },
     {
       "id": 4005,
@@ -2654,7 +2879,7 @@
       "long_description": "This large orc is looking for someone small to pick on.\n",
       "description": "The orc says, \"Whatcha look'n at?\"\n",
       "race": "orc",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -500,
       "group": 0,
@@ -2664,23 +2889,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+2",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "CJR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0S",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 120,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 120
     },
     {
       "id": 4050,
@@ -2689,7 +2910,7 @@
       "long_description": "This tall warrior has more scars than even you!\n",
       "description": "He's surely a strong, brainless fighter.  Like you.\n",
       "race": "human",
-      "act_flags": "ABCFT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -2699,23 +2920,19 @@
       "hit_dice": "1d1+149",
       "mana_dice": "1d8+4",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": -1,
-      "ac_slash": 2,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "CIQR",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 4051,
@@ -2724,7 +2941,7 @@
       "long_description": "This veteran warrior is old enough to be your father.\n",
       "description": "He seems to know his way with weapons.  And he wants\nto show you what he can do!\n",
       "race": "human",
-      "act_flags": "ACFT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -2734,23 +2951,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d7+2",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 5,
-      "ac_slash": 4,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "CIQR",
       "immune": "0",
       "resist": "0",
       "vuln": "C",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 140,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 140
     },
     {
       "id": 4052,
@@ -2759,7 +2972,7 @@
       "long_description": "A small beat-up hobgoblin cringes in the corner.\n",
       "description": "Looking into the eyes of this poor soul makes you feel\nsad as you see the terror and fear in its eyes.  Why\ndon't you put it out of its misery?\n",
       "race": "hobgoblin",
-      "act_flags": "ACGHT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -300,
       "group": 0,
@@ -2769,23 +2982,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d6+1",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "N",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "C",
+      "form": "18878593",
+      "parts": "16779263",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 12,
-      "form": "0AHMVY",
-      "parts": "0ABCDEFGHIJKY",
-      "size": "medium",
-      "material": "0"
+      "wealth": 12
     },
     {
       "id": 4053,
@@ -2794,7 +3003,7 @@
       "long_description": "A sickly brown snake watches you with caution.\n",
       "description": "A closer look reveals a hungry demeanor.  Don't get too close!\n",
       "race": "snake",
-      "act_flags": "ABFU",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -600,
       "group": 0,
@@ -2804,23 +3013,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d6+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "FGNR",
       "immune": "0",
       "resist": "EFL",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4054,
@@ -2829,7 +3034,7 @@
       "long_description": "A white centipede crawls along the cave floors randomly.\n",
       "description": "The centipede doesn't really seem to notice you.\n",
       "race": "centipede",
-      "act_flags": "ABU",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": -100,
       "group": 0,
@@ -2839,23 +3044,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+0",
       "damage_dice": "sting",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 7,
-      "ac_slash": 5,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "FR",
       "immune": "0",
       "resist": "0FI",
       "vuln": "0E",
+      "form": "16451",
+      "parts": "1029",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0ABGO",
-      "parts": "0ACK",
-      "size": "small",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 4055,
@@ -2864,7 +3065,7 @@
       "long_description": "A large hobgoblin is here wondering if he should tear you apart.\n",
       "description": "Red, bloodshot eyes and drool dripping from its mouth makes you\nwonder just how far away you should be.\n",
       "race": "hobgoblin",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -500,
       "group": 0,
@@ -2874,23 +3075,19 @@
       "hit_dice": "1d1+149",
       "mana_dice": "2d4+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "CDJR",
       "immune": "0",
       "resist": "CLQ",
       "vuln": "0",
+      "form": "18878593",
+      "parts": "16779263",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 210,
-      "form": "0AHMVY",
-      "parts": "0ABCDEFGHIJKY",
-      "size": "medium",
-      "material": "0"
+      "wealth": 210
     },
     {
       "id": 4056,
@@ -2899,7 +3096,7 @@
       "long_description": "An orc is here, looking for something (or perhaps someone) to eat.\n",
       "description": "As you already know, orcs have quite a ravenous appetite.  \nCare to be dinner?\n",
       "race": "orc",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -800,
       "group": 0,
@@ -2909,23 +3106,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+2",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 2,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "CNR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0S",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 60,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 60
     },
     {
       "id": 4057,
@@ -2934,7 +3127,7 @@
       "long_description": "A mountain lion bears its teeth at the sight of more food.\n",
       "description": "Huge claws and big teeth make quite a fearsome opponent for\nthe weary.  Are you next?\n",
       "race": "cat",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": -100,
       "group": 0,
@@ -2944,23 +3137,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d6+1",
       "damage_dice": "claw",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "ERFH",
       "immune": "0",
       "resist": "E",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3212989",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQUV",
-      "size": "large",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4058,
@@ -2969,7 +3158,7 @@
       "long_description": "A hill giant is here tossing rocks around.  Marbles perhaps?\n",
       "description": "The hill giant looks like he's about 9 feet tall. By his actions you\ncome to the conclusion that he's not very intelligent.  A perfect\nplaymate for you.\n",
       "race": "giant",
-      "act_flags": "AGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2979,23 +3168,19 @@
       "hit_dice": "10d10+100",
       "mana_dice": "2d6+6",
       "damage_dice": "smash",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": -2,
-      "ac_slash": 0,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "DOR",
       "immune": "0",
       "resist": "DHI",
       "vuln": "0JP",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "huge",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 4100,
@@ -3004,7 +3189,7 @@
       "long_description": "A small intelligent looking mage is standing here. It looks like he\nknows his way with magic. \n",
       "description": "This guy can ace the SAT with his frontal lobe tied behind his back.\n",
       "race": "human",
-      "act_flags": "ABCFR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -100,
       "group": 0,
@@ -3014,23 +3199,19 @@
       "hit_dice": "13d10+100",
       "mana_dice": "1d6+2",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FQ",
       "immune": "0",
       "resist": "C",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 4101,
@@ -3039,7 +3220,7 @@
       "long_description": "This large mean-looking troll wants to take a closer look at you.\n",
       "description": "Whilst you look at this troll, you realize he is trying to\nfigure just how tender you are.\n",
       "race": "troll",
-      "act_flags": "ABCFT",
+      "act_flags": "0",
       "affected_by": "0FJc",
       "alignment": -800,
       "group": 0,
@@ -3049,23 +3230,19 @@
       "hit_dice": "5d10+100",
       "mana_dice": "2d7+3",
       "damage_dice": "claw",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": -3,
-      "ac_slash": 2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "CEORD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
+      "form": "2101379",
+      "parts": "3147775",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 200,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKUV",
-      "size": "large",
-      "material": "0"
+      "wealth": 200
     },
     {
       "id": 4102,
@@ -3074,7 +3251,7 @@
       "long_description": "A large green snake is guardian for something.\n",
       "description": "You take a closer look at this large snake while it tries to\nbite your head off!\n",
       "race": "snake",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -700,
       "group": 0,
@@ -3084,23 +3261,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d6+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "HMNOR",
       "immune": "0",
       "resist": "FL",
       "vuln": "GI",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4103,
@@ -3109,7 +3282,7 @@
       "long_description": "A thief, all dressed in black.\n",
       "description": "Well COUNT your money!\n",
       "race": "human",
-      "act_flags": "ACHS",
+      "act_flags": "0",
       "affected_by": "PQ",
       "alignment": -100,
       "group": 0,
@@ -3119,23 +3292,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d5+1",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 4,
-      "ac_slash": 3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFJN",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 100,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 100
     },
     {
       "id": 4104,
@@ -3144,7 +3313,7 @@
       "long_description": "An ugly orc is standing here waiting for someone to practice on.\n",
       "description": "Yrkk..  He belches in your face!\n",
       "race": "orc",
-      "act_flags": "ACFGHT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -200,
       "group": 0,
@@ -3154,23 +3323,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "CJR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0S",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 150
     },
     {
       "id": 4105,
@@ -3179,7 +3344,7 @@
       "long_description": "A small harmless centipede is here looking for some vegetation to eat.\n",
       "description": "It doesn't seem to pay any attention towards you.  You are probably\nnot important.\n",
       "race": "centipede",
-      "act_flags": "ABU",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": 300,
       "group": 0,
@@ -3189,23 +3354,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d4+1",
       "damage_dice": "sting",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 6,
-      "ac_slash": 4,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "FR",
       "immune": "0",
       "resist": "0FI",
       "vuln": "0E",
+      "form": "16451",
+      "parts": "1029",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0ABGO",
-      "parts": "0ACK",
-      "size": "small",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 4106,
@@ -3214,7 +3375,7 @@
       "long_description": "A human warrior grins an evil grin in your face.\n",
       "description": "He doesn't look friendly at all...  He is no Mr. Rogers!\n",
       "race": "human",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -3224,23 +3385,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 2,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "CJQU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 4107,
@@ -3249,7 +3406,7 @@
       "long_description": "A green kobold hobbles along the cave walls puking periodically.\n",
       "description": "It looks a little sick.  Something he ate maybe?\n",
       "race": "kobold",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -100,
       "group": 0,
@@ -3259,23 +3416,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d4+1",
       "damage_dice": "claw",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "NR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0C",
+      "form": "2101379",
+      "parts": "67583",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 25,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKQ",
-      "size": "small",
-      "material": "0"
+      "sex": "none",
+      "wealth": 25
     },
     {
       "id": 4150,
@@ -3284,7 +3437,7 @@
       "long_description": "A blue bat flies in circles while electrical charges arc here and there.\n",
       "description": "Bzzzt.  Zap.  Crackle.  Speak about static electricity!\n",
       "race": "bat",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -100,
       "group": 0,
@@ -3294,23 +3447,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d9+1",
       "damage_dice": "shbite",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "J",
       "resist": "0",
       "vuln": "RYZS",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "tiny",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4151,
@@ -3319,7 +3468,7 @@
       "long_description": "A red bat hangs upside down from the ceiling, glowing.\n",
       "description": "You can definitely feel some heat from this thing.  A fever perhaps?\n",
       "race": "bat",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -100,
       "group": 0,
@@ -3329,23 +3478,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d9+1",
       "damage_dice": "flbite",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "H",
       "resist": "0",
       "vuln": "IRS",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "tiny",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4152,
@@ -3354,7 +3499,7 @@
       "long_description": "A green bat flies from wall to wall leaving an awful smell.\n",
       "description": "Whew!  What a stinker!\n",
       "race": "bat",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -100,
       "group": 0,
@@ -3364,23 +3509,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d9+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "L",
       "resist": "0",
       "vuln": "0S",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "BAGV",
-      "parts": "0ACDEFHJKP",
-      "size": "tiny",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4153,
@@ -3389,7 +3530,7 @@
       "long_description": "A white bat rests on the ceiling.  You wonder where the cold is coming from.\n",
       "description": "Brrr!  You almost can't distinguish this bat from an ice cube.\n",
       "race": "bat",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -100,
       "group": 0,
@@ -3399,23 +3540,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d9+1",
       "damage_dice": "frbite",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "I",
       "resist": "0",
       "vuln": "HS",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "tiny",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4154,
@@ -3424,7 +3561,7 @@
       "long_description": "A black bat flies from wall to wall leaving something hissing behind.\n",
       "description": "Amazing!  This bat is grooming itself with acid!\n",
       "race": "bat",
-      "act_flags": "ABF",
+      "act_flags": "0",
       "affected_by": "0TZ",
       "alignment": -100,
       "group": 0,
@@ -3434,23 +3571,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d9+1",
       "damage_dice": "acbite",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "RFH",
       "immune": "K",
       "resist": "0",
       "vuln": "0S",
+      "form": "2097217",
+      "parts": "34493",
+      "size": "tiny",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKP",
-      "size": "tiny",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4155,
@@ -3459,7 +3592,7 @@
       "long_description": "A sneaky thief appears and disappears within the shadows.\n",
       "description": "He definitely knows what he's doing.  Trust him.\n",
       "race": "human",
-      "act_flags": "ACGS",
+      "act_flags": "0",
       "affected_by": "BQ",
       "alignment": 400,
       "group": 0,
@@ -3469,23 +3602,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d4+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "BFJNQU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 4156,
@@ -3494,7 +3623,7 @@
       "long_description": "A large ugly troll is here mumbling something.\n",
       "description": "He looks quite mean.  Don't mess with him.\n",
       "race": "troll",
-      "act_flags": "ABCFT",
+      "act_flags": "0",
       "affected_by": "0FJc",
       "alignment": -700,
       "group": 0,
@@ -3504,23 +3633,19 @@
       "hit_dice": "14d4+100",
       "mana_dice": "3d4+5",
       "damage_dice": "claw",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -3,
-      "ac_slash": -1,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "CEORD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "CHK",
+      "form": "2101379",
+      "parts": "3147775",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1000,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKUV",
-      "size": "huge",
-      "material": "0"
+      "wealth": 1000
     },
     {
       "id": 4157,
@@ -3529,7 +3654,7 @@
       "long_description": "A small man is here researching magical incantations.\n",
       "description": "His little head is buried into his magic books.  He'd be very\nangry should you bother his studies.\n",
       "race": "human",
-      "act_flags": "ACFGR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -3539,23 +3664,19 @@
       "hit_dice": "11d12+100",
       "mana_dice": "1d6+1",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "QU",
       "immune": "0",
       "resist": "C",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 200,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 200
     },
     {
       "id": 4158,
@@ -3564,7 +3685,7 @@
       "long_description": "A brown snake hisses at you.\n",
       "description": "Sickly brown as it is, you know what it really wants is you\nfor dinner.\n",
       "race": "snake",
-      "act_flags": "ABFU",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -3574,23 +3695,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d12+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FGNR",
       "immune": "0",
       "resist": "EFL",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "medium",
+      "material": "0",
       "start_pos": "fight",
       "default_pos": "fight",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 4159,
@@ -3599,7 +3716,7 @@
       "long_description": "A 'small' troll is here happily dancing.  Trala-la-la.  La-la.\n",
       "description": "He is so happy, you are disgusted.  Kill him now!\n",
       "race": "troll",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0FJc",
       "alignment": -300,
       "group": 0,
@@ -3609,23 +3726,19 @@
       "hit_dice": "8d4+100",
       "mana_dice": "2d5+2",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 1,
-      "ac_slash": 3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EJRD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
+      "form": "2101379",
+      "parts": "3147775",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 100,
-      "form": "0ABHMV",
-      "parts": "0ABCDEFGHIJKUV",
-      "size": "large",
-      "material": "0"
+      "wealth": 100
     },
     {
       "id": 4160,
@@ -3634,7 +3747,7 @@
       "long_description": "A large orc growls in your face.\n",
       "description": "He is just looking for a fight isn't he?\n",
       "race": "orc",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -200,
       "group": 0,
@@ -3644,1870 +3757,24 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d8+2",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 1,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "CJNR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0S",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "sex": "none",
+      "wealth": 150
     }
   ],
-  "objects": [
-    {
-      "id": 4000,
-      "name": "a yellow and green ring",
-      "keywords": "ring yellow green",
-      "description": "A ring, with yellow and green ornamentation. It looks very old.",
-      "material": "copper",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 3,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 75,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ring",
-          "description": "It feels heavy.\n"
-        }
-      ]
-    },
-    {
-      "id": 4001,
-      "name": "a corpse",
-      "keywords": "corpse",
-      "description": "A halfway decayed corpse of a cartographer.",
-      "material": "flesh",
-      "item_type": "npc_corpse",
-      "extra_flags": 32768,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 1000,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "corpse",
-          "description": "Ew.  This must have been the mapper that was lost in Moria.  His rotted hand\nstill clutches a partially digested map...\n"
-        }
-      ]
-    },
-    {
-      "id": 4002,
-      "name": "some coins",
-      "keywords": "coins",
-      "description": "A small pile of coins.",
-      "material": "silver",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 5000,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        200,
-        3,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 4003,
-      "name": "a rusty dagger",
-      "keywords": "dagger rusty",
-      "description": "A worn and rusty dagger is here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 0,
-      "weight": 10,
-      "cost": 165,
-      "condition": 50,
-      "values": [
-        2,
-        1,
-        5,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "dagger",
-          "description": "It's old and rusted, but it still has a good edge.\n"
-        }
-      ]
-    },
-    {
-      "id": 4004,
-      "name": "a bullwhip",
-      "keywords": "bullwhip whip",
-      "description": "A coiled length of leather is here...looks like a nasty whip!",
-      "material": "leather",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 3,
-      "weight": 30,
-      "cost": 240,
-      "condition": 90,
-      "values": [
-        7,
-        1,
-        7,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 4005,
-      "name": "a huge club",
-      "keywords": "club tree huge",
-      "description": "An uprooted tree leans against the wall.",
-      "material": "wood",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 14,
-      "weight": 250,
-      "cost": 780,
-      "condition": 90,
-      "values": [
-        4,
-        2,
-        9,
-        8,
-        32
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "club tree",
-          "description": "This is the biggest club you have ever seen!  The giant didn't even bother to\ntrim the roots off the end.\n"
-        }
-      ]
-    },
-    {
-      "id": 4006,
-      "name": "some smelly furs",
-      "keywords": "furs smelly",
-      "description": "A heap of smelly furs sit here.",
-      "material": "fur",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 8,
-      "weight": 100,
-      "cost": 510,
-      "condition": 75,
-      "values": [
-        5,
-        6,
-        5,
-        1,
-        3
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "furs",
-          "description": "They're heavy and smelly and would probably slow you down...but they do look\nlike good armor.\n"
-        }
-      ]
-    },
-    {
-      "id": 4050,
-      "name": "a purple potion",
-      "keywords": "potion purple",
-      "description": "A purple potion is here.",
-      "material": "glass",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 11,
-      "weight": 10,
-      "cost": 720,
-      "condition": 90,
-      "values": [
-        13,
-        22,
-        78,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion purple",
-          "description": "It looks rather strange!\n"
-        }
-      ]
-    },
-    {
-      "id": 4051,
-      "name": "a metal helmet",
-      "keywords": "helmet metal",
-      "description": "A metal helmet is here.",
-      "material": "iron",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 17,
-      "level": 5,
-      "weight": 40,
-      "cost": 650,
-      "condition": 90,
-      "values": [
-        4,
-        4,
-        3,
-        2,
-        1
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 4052,
-      "name": "a mushroom",
-      "keywords": "mushroom",
-      "description": "A small mushroom is here.",
-      "material": "food",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 90,
-      "values": [
-        2,
-        2,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "mushroom",
-          "description": "Let's put it this way - I wouldn't eat it !\n"
-        }
-      ]
-    },
-    {
-      "id": 4053,
-      "name": "a thieves dirk",
-      "keywords": "dirk",
-      "description": "A beautifully crafted dirk is lying here.",
-      "material": "steel",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 20,
-      "cost": 590,
-      "condition": 90,
-      "values": [
-        2,
-        2,
-        5,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "dirk",
-          "description": "It's a medium sized, beautifully crafted dirk made from grey alloy.\nIts blade is double-edged and very thin ... this looks like a good\nthieves weapon.\n"
-        }
-      ]
-    },
-    {
-      "id": 4054,
-      "name": "a war axe",
-      "keywords": "axe war",
-      "description": "A razor-sharp war axe rests on the ground.",
-      "material": "steel",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 12,
-      "weight": 70,
-      "cost": 930,
-      "condition": 100,
-      "values": [
-        5,
-        3,
-        4,
-        25,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "axe",
-          "description": "It has an edge sharp enough to cut a passing thought. A good find, this.\n"
-        }
-      ]
-    },
-    {
-      "id": 4055,
-      "name": "a broad sword",
-      "keywords": "sword broad",
-      "description": "A well-polished broadsword sits here.",
-      "material": "steel",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 80,
-      "cost": 550,
-      "condition": 90,
-      "values": [
-        1,
-        1,
-        10,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "sword",
-          "description": "It's much heavier than a long sword, but not as well balanced.\n"
-        }
-      ]
-    },
-    {
-      "id": 4056,
-      "name": "a two-headed flail",
-      "keywords": "flail two two-headed",
-      "description": "A flail with two heavy, spiked heads is here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 3,
-      "weight": 70,
-      "cost": 290,
-      "condition": 75,
-      "values": [
-        6,
-        1,
-        7,
-        27,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": 1
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "flail",
-          "description": "It's a stout wooden rod with two spiked balls attached, each weighing over 2\npounds.  It's a little worn for wear, but looks most painful.\n"
-        }
-      ]
-    },
-    {
-      "id": 4057,
-      "name": "a heavy iron mace",
-      "keywords": "mace heavy",
-      "description": "A large iron mace with a wicked head rests on the ground.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 100,
-      "cost": 390,
-      "condition": 90,
-      "values": [
-        4,
-        2,
-        4,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "mace",
-          "description": "A metal shaft mounted with an iron head, shaped into armor-shattering form.\n"
-        }
-      ]
-    },
-    {
-      "id": 4058,
-      "name": "a falchion",
-      "keywords": "falchion sword",
-      "description": "A curved sword with a heavy tip sits here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 80,
-      "cost": 490,
-      "condition": 90,
-      "values": [
-        1,
-        2,
-        4,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "falchion",
-          "description": "It's curved like a scimitar, only with no recurved blade and a tip designed\nfor piercing as well as slashing.\n"
-        }
-      ]
-    },
-    {
-      "id": 4059,
-      "name": "a voulge",
-      "keywords": "voulge polearm",
-      "description": "A long polearm with a curved blade is here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 10,
-      "weight": 120,
-      "cost": 520,
-      "condition": 75,
-      "values": [
-        8,
-        2,
-        6,
-        3,
-        32
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "voulge",
-          "description": "It looks a lot like a staff with a pruning knife tied to the end, but it's\nquite effective.\n"
-        }
-      ]
-    },
-    {
-      "id": 4100,
-      "name": "the black demon blade",
-      "keywords": "blade black demon",
-      "description": "An evil black demon blade is here.",
-      "material": "adamantite",
-      "item_type": "weapon",
-      "extra_flags": 2624,
-      "wear_flags": 8193,
-      "level": 11,
-      "weight": 80,
-      "cost": 940,
-      "condition": 100,
-      "values": [
-        1,
-        3,
-        4,
-        21,
-        36
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "blade",
-          "description": "You'll become as evil as the weapon, if you use it!\n"
-        }
-      ]
-    },
-    {
-      "id": 4101,
-      "name": "swordsman's gloves",
-      "keywords": "gloves",
-      "description": "Some gloves are here.  They look like the right equipment for fighting.",
-      "material": "leather",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 129,
-      "level": 7,
-      "weight": 10,
-      "cost": 730,
-      "condition": 90,
-      "values": [
-        1,
-        3,
-        3,
-        1,
-        1
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 4102,
-      "name": "a scroll which reads \"ysafg\"",
-      "keywords": "scroll ysafg",
-      "description": "A scroll which reads \"ysafg\", it looks very fragile and quite old.",
-      "material": "parchment",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 10,
-      "cost": 840,
-      "condition": 50,
-      "values": [
-        10,
-        58,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "scroll",
-          "description": "It looks informative.\n"
-        }
-      ]
-    },
-    {
-      "id": 4103,
-      "name": "a green slime mold",
-      "keywords": "slime mold",
-      "description": "A green slime mold is here. It smells REAL bad.",
-      "material": "food",
-      "item_type": "food",
-      "extra_flags": 32768,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 90,
-      "values": [
-        24,
-        24,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "slime mold",
-          "description": "It wasn't meant to be food, - Certainly not for humans.\n"
-        }
-      ]
-    },
-    {
-      "id": 4104,
-      "name": "a green slime mold",
-      "keywords": "slime mold",
-      "description": "A green slime mold is here. It smells REAL bad.",
-      "material": "food",
-      "item_type": "food",
-      "extra_flags": 32768,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 90,
-      "values": [
-        24,
-        24,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "slime mold",
-          "description": "It wasn't meant to be food, - Certainly not for humans.\n"
-        }
-      ]
-    },
-    {
-      "id": 4105,
-      "name": "an iron-shod staff",
-      "keywords": "staff iron iron-shod",
-      "description": "A long staff capped with iron leans against a wall.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 10,
-      "weight": 60,
-      "cost": 630,
-      "condition": 90,
-      "values": [
-        3,
-        2,
-        5,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "staff",
-          "description": "It's a superb weapon for warrior or mage.\n"
-        }
-      ]
-    },
-    {
-      "id": 4150,
-      "name": "a black potion",
-      "keywords": "black potion",
-      "description": "A thick black potion is here.",
-      "material": "glass",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 5,
-      "weight": 10,
-      "cost": 320,
-      "condition": 90,
-      "values": [
-        9,
-        23,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion black",
-          "description": "It looks healthy.\n"
-        }
-      ]
-    },
-    {
-      "id": 4151,
-      "name": "a heavy oak staff",
-      "keywords": "staff oak",
-      "description": "A ancient heavy oak staff is here.",
-      "material": "wood",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 13,
-      "weight": 50,
-      "cost": 5400,
-      "condition": 90,
-      "values": [
-        15,
-        4,
-        2,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": -20
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "runes",
-          "description": "The runes says : Funthark.\n"
-        },
-        {
-          "keyword": "staff oak",
-          "description": "You see it has some sort of runes on it.\n"
-        }
-      ]
-    },
-    {
-      "id": 4152,
-      "name": "a light silver dagger",
-      "keywords": "dagger light silver",
-      "description": "A light silver dagger is here.",
-      "material": "silver",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 7,
-      "weight": 20,
-      "cost": 660,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "dagger light silver",
-          "description": "It looks like an excellent weapon for thieves.\n"
-        }
-      ]
-    },
-    {
-      "id": 4153,
-      "name": "a morning star",
-      "keywords": "star morning morningstar",
-      "description": "A heavy, spiked morning star is here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 9,
-      "weight": 120,
-      "cost": 270,
-      "condition": 90,
-      "values": [
-        4,
-        2,
-        6,
-        27,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -1
-        },
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "star morning",
-          "description": "It's a huge length of wood studded with iron spikes and bands. You wouldn't\nwant to meet this in a dark alley...\n"
-        }
-      ]
-    },
-    {
-      "id": 4154,
-      "name": "a map of the second level of Moria",
-      "keywords": "map moria second",
-      "description": "A rolled up map is here.",
-      "material": "paper",
-      "item_type": "map",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 100,
-      "condition": 50,
-      "values": [
-        1,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "map moria second",
-          "description": ".\n    * * * MORIA - Map 2 * * *\n     = = =============== = =\n\nMaze--Maze\n |     |    (Map 1)\n |    Maze--Tunnel*\n |\nMaze--Maze--Maze--Maze\n              |\n     Large--Large\n     Cave   Cave\n      |       |\n     Large--Large--Tunnel--End of\n     Cave    Cave    |     Tunnel\n                   *Hole\n                  (Map 3)\n"
-        }
-      ]
-    },
-    {
-      "id": 4155,
-      "name": "a map of the third level of Moria",
-      "keywords": "map moria third",
-      "description": "A rolled up map is here.",
-      "material": "paper",
-      "item_type": "map",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 200,
-      "condition": 90,
-      "values": [
-        1,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "map moria third",
-          "description": ".\n                                                   (Map 1*)\n                             Long                     |\n        Tunnel----Tunnel----Tunnel--Tunnel--Tunnel--Tunnel\n          |                   |\n          |                  Gold--Gold\n          |                  Cave  Cave\n          |                   |      |\n          |                  Gold--Gold---Passage\n          |                  Cave  Cave      |\n          |                   |           Passage--Tunnel--Tunnel--Tunnel\n          |          Dark*---Gold            |\n          |         Passage  Cave            |     Secret\n          |                               Passage  Chamber\n          |                      Hole        |       |\n          |                        |      Passage  Secret\n        Large   Large   Large    Small       |     Chamber--Cave--Cave\n        Tunnel--Tunnel--Tunnel--Passage      |                |      |\n          |                        |      Passage-----------Cave--Cave\n          |                       Long\n          |                      Tunnel\n         Wet    Small  Small       |\n        Tunnel--Maze---Maze   Inscription\n          |       |      |         |\n         Wet    Small--Small-----Small\n        Tunnel  Maze   Maze      Maze\n          |       |                |\n          |      Wet    Wet      End of\n        Water    Maze---Maze-----Tunnel\n          |       |      |\n        Water---Water  End of\n                       Maze*\n                      (Map 2)\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 4000,
-      "arg2": 1,
-      "arg3": 4030,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 4001,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 4002,
-      "arg2": -1,
-      "arg3": 4001,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 4154,
-      "arg2": 9,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4001,
-      "arg2": 2,
-      "arg3": 4025,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4001,
-      "arg2": 2,
-      "arg3": 4015,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4002,
-      "arg2": 3,
-      "arg3": 4023,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4002,
-      "arg2": 3,
-      "arg3": 4017,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4002,
-      "arg2": 3,
-      "arg3": 4020,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4021,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4003,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4021,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3023,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4013,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3021,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3117,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4013,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3023,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4027,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3021,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4003,
-      "arg2": 6,
-      "arg3": 4027,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3025,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3117,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4004,
-      "arg2": 3,
-      "arg3": 4015,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3029,
-      "arg2": 3,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4004,
-      "arg2": 3,
-      "arg3": 4028,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4004,
-      "arg2": 4,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4004,
-      "arg2": 3,
-      "arg3": 4028,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4005,
-      "arg2": 1,
-      "arg3": 4022,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4000,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3114,
-      "arg2": 9,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4057,
-      "arg2": 2,
-      "arg3": 4042,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 4058,
-      "arg2": 1,
-      "arg3": 4044,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4005,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 4006,
-      "arg2": 5,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4050,
-      "arg2": 1,
-      "arg3": 4062,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4051,
-      "arg2": 3,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 4054,
-      "arg2": 4,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3116,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4051,
-      "arg2": 4,
-      "arg3": 4070,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3027,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": 20,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4051,
-      "arg2": 4,
-      "arg3": 4050,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4056,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3077,
-      "arg2": 20,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4051,
-      "arg2": 4,
-      "arg3": 4073,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4055,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": 20,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4051,
-      "arg2": 4,
-      "arg3": 4055,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4057,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3074,
-      "arg2": 20,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4052,
-      "arg2": 3,
-      "arg3": 4056,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3023,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4052,
-      "arg2": 3,
-      "arg3": 4065,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3025,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4052,
-      "arg2": 3,
-      "arg3": 4059,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3028,
-      "arg2": 29,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4053,
-      "arg2": 2,
-      "arg3": 4058,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4053,
-      "arg2": 2,
-      "arg3": 4068,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4054,
-      "arg2": 3,
-      "arg3": 4060,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4054,
-      "arg2": 3,
-      "arg3": 4053,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4054,
-      "arg2": 3,
-      "arg3": 4052,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4055,
-      "arg2": 2,
-      "arg3": 4064,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4058,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4050,
-      "arg2": 15,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4055,
-      "arg2": 2,
-      "arg3": 4071,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4059,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4050,
-      "arg2": 15,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4056,
-      "arg2": 2,
-      "arg3": 4067,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4004,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3097,
-      "arg2": 20,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4056,
-      "arg2": 2,
-      "arg3": 4057,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3026,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 4052,
-      "arg2": 8,
-      "arg3": 4068,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 4052,
-      "arg2": 8,
-      "arg3": 4069,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 4052,
-      "arg2": 8,
-      "arg3": 4070,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 4052,
-      "arg2": 8,
-      "arg3": 4071,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4100,
-      "arg2": 1,
-      "arg3": 4114,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 4102,
-      "arg2": 4,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4155,
-      "arg2": 9,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4101,
-      "arg2": 1,
-      "arg3": 4122,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4100,
-      "arg2": 2,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4102,
-      "arg2": 2,
-      "arg3": 4111,
-      "arg4": 2
-    },
-    {
-      "command": "G",
-      "arg1": 4103,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4102,
-      "arg2": 2,
-      "arg3": 4111,
-      "arg4": 2
-    },
-    {
-      "command": "G",
-      "arg1": 4104,
-      "arg2": 3,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4102,
-      "arg2": 3,
-      "arg3": 4103,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 4103,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4103,
-      "arg2": 1,
-      "arg3": 4103,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4053,
-      "arg2": 4,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3068,
-      "arg2": 8,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3066,
-      "arg2": 8,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3069,
-      "arg2": 8,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4104,
-      "arg2": 3,
-      "arg3": 4124,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 4057,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4104,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4105,
-      "arg2": 3,
-      "arg3": 4108,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 4106,
-      "arg2": 2,
-      "arg3": 4113,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 4105,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 4101,
-      "arg2": 3,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4107,
-      "arg2": 1,
-      "arg3": 4119,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3023,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4104,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4150,
-      "arg2": 2,
-      "arg3": 4155,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4150,
-      "arg2": 2,
-      "arg3": 4170,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4151,
-      "arg2": 2,
-      "arg3": 4157,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4151,
-      "arg2": 2,
-      "arg3": 4159,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4152,
-      "arg2": 2,
-      "arg3": 4159,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4152,
-      "arg2": 2,
-      "arg3": 4155,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4153,
-      "arg2": 2,
-      "arg3": 4164,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4153,
-      "arg2": 2,
-      "arg3": 4170,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4154,
-      "arg2": 2,
-      "arg3": 4164,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4154,
-      "arg2": 2,
-      "arg3": 4157,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4155,
-      "arg2": 1,
-      "arg3": 4158,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4152,
-      "arg2": 3,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4156,
-      "arg2": 1,
-      "arg3": 4151,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 4105,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4157,
-      "arg2": 2,
-      "arg3": 4167,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4157,
-      "arg2": 2,
-      "arg3": 4167,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 4151,
-      "arg2": 3,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3351,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4158,
-      "arg2": 2,
-      "arg3": 4162,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4158,
-      "arg2": 2,
-      "arg3": 4169,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4159,
-      "arg2": 2,
-      "arg3": 4168,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4159,
-      "arg2": 2,
-      "arg3": 4153,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 4160,
-      "arg2": 2,
-      "arg3": 4160,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3045,
-      "arg2": 20,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 4055,
-      "arg2": 9,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 4150,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 4160,
-      "arg2": 2,
-      "arg3": 4161,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3110,
-      "arg2": 20,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3026,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 4000,
@@ -5561,5 +3828,11 @@
       "mob_vnum": 4158,
       "spec": "spec_poison"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 3900,
+    "high": 4199
+  }
 }

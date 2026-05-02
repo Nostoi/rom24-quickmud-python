@@ -350,7 +350,8 @@
           "to_room": 9007,
           "description": "A mighty door sits to the east\n",
           "keyword": "door",
-          "flags": "2"
+          "flags": "2",
+          "key": -1
         },
         "south": {
           "to_room": 9006,
@@ -666,7 +667,8 @@
           "to_room": 9031,
           "description": "you see a massive door\n",
           "keyword": "door",
-          "flags": "2"
+          "flags": "2",
+          "key": -1
         },
         "east": {
           "to_room": 9032,
@@ -793,7 +795,8 @@
           "to_room": 9026,
           "description": "A large door blocks the way to the south.\n",
           "keyword": "door",
-          "flags": "2"
+          "flags": "2",
+          "key": -1
         },
         "west": {
           "to_room": 9029,
@@ -1434,7 +1437,7 @@
       "long_description": "A tridrone is here doing a menial task.\n",
       "description": "You see what appears to be a 3 sided pyramid with spidery arms and legs.\n",
       "race": "modron",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": 300,
       "group": 0,
@@ -1444,23 +1447,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d5+3",
       "damage_dice": "pound",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 3,
-      "ac_slash": 4,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "NQR",
       "immune": "0BMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0H",
-      "parts": "IABCGHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9001,
@@ -1469,7 +1468,7 @@
       "long_description": "A quadrone is here watching for trespassers.\n",
       "description": "A cubic creature, with spiny arms and legs.\n",
       "race": "modron",
-      "act_flags": "AFGT",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1479,23 +1478,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "3d4+2",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 0,
-      "ac_slash": 1,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "CEKQR",
       "immune": "0BMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0H",
-      "parts": "IABCGHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9002,
@@ -1504,7 +1499,7 @@
       "long_description": "The pentadrone is here policing the area.\n",
       "description": "A five-armed creature which resembles a starfish on thin stilt-like legs.\n",
       "race": "modron",
-      "act_flags": "ABFGT",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1514,23 +1509,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "4d4+3",
       "damage_dice": "slap",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": 0,
-      "ac_exotic": -1,
+      "damage_type": "none",
       "offensive": "CEFLNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0H",
-      "parts": "NABCGHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9003,
@@ -1539,7 +1530,7 @@
       "long_description": "A decaton is here overseeing the other modrons.\n",
       "description": "The decaton is a large, ten-tentacled sphere on stumpy legs.\n",
       "race": "modron",
-      "act_flags": "ABFGQT",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1549,23 +1540,19 @@
       "hit_dice": "17d8+50",
       "mana_dice": "4d5+3",
       "damage_dice": "pound",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": 0,
-      "ac_exotic": -2,
+      "damage_type": "none",
       "offensive": "ACEKNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "NABCGHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9004,
@@ -1574,7 +1561,7 @@
       "long_description": "A nonaton is here preserving law and order.\n",
       "description": "A cylidrical modron with 9 tentacles and stubby legs.\n",
       "race": "modron",
-      "act_flags": "ABFGQT",
+      "act_flags": "0",
       "affected_by": "DHJ",
       "alignment": 300,
       "group": 0,
@@ -1584,23 +1571,19 @@
       "hit_dice": "20d8+75",
       "mana_dice": "4d6+4",
       "damage_dice": "pound",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -2,
-      "ac_exotic": -3,
+      "damage_type": "none",
       "offensive": "AEFNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "G",
+      "form": "128",
+      "parts": "1735",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "NABCGHJK",
-      "size": "large",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9005,
@@ -1609,7 +1592,7 @@
       "long_description": "An octon is here governing his ward of responsilbility.\n",
       "description": "The octon has a collar at shoulder level with 8 tentacled arms growing out of\nit.\n",
       "race": "modron",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1619,23 +1602,19 @@
       "hit_dice": "18d10+75",
       "mana_dice": "4d6+5",
       "damage_dice": "crush",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -3,
-      "ac_exotic": -4,
+      "damage_type": "none",
       "offensive": "ACEHKQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "G",
+      "form": "128",
+      "parts": "1735",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "NABCGHJK",
-      "size": "large",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9006,
@@ -1644,7 +1623,7 @@
       "long_description": "A septon is here preserving order.\n",
       "description": "The septon appears as a human with a large bald head. It has a shoulder collar\nwith 7 tentacles coming from it.\n",
       "race": "modron",
-      "act_flags": "ABFGQR",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1654,23 +1633,19 @@
       "hit_dice": "20d10+100",
       "mana_dice": "6d4+5",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": -4,
+      "damage_type": "none",
       "offensive": "AFKOQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "INABCGHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9007,
@@ -1679,7 +1654,7 @@
       "long_description": "A hexton is here watching over his armies.\n",
       "description": "A hexton appears as a humanoid with 6 arms: 2 large human arms with 6 fingers,\nand 4 tentacles below tipped with sharp claws.\n",
       "race": "modron",
-      "act_flags": "ABFGQT",
+      "act_flags": "0",
       "affected_by": "DFHJ",
       "alignment": 300,
       "group": 0,
@@ -1689,23 +1664,19 @@
       "hit_dice": "20d10+75",
       "mana_dice": "4d8+6",
       "damage_dice": "slash",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": -4,
+      "damage_type": "none",
       "offensive": "ACEFHIKLNQR",
       "immune": "ARBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "INPABCGHJK",
-      "size": "large",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9008,
@@ -1714,7 +1685,7 @@
       "long_description": "A quinton is here keeping records.\n",
       "description": "Quintons look like tall, stocky humanoids with 4 flexible arms jutting from the\nshoulders.  A prehensile tail serves as the creature's 5th arm, and they have\nfan-like wings attached to their shoulders.\n",
       "race": "modron",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1724,23 +1695,19 @@
       "hit_dice": "20d12+100",
       "mana_dice": "4d8+7",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -8,
-      "ac_slash": -6,
-      "ac_exotic": -8,
+      "damage_type": "none",
       "offensive": "AKMOQR",
       "immune": "ARBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "large",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "INPQABCGHJK",
-      "size": "large",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9009,
@@ -1749,7 +1716,7 @@
       "long_description": "A tertian is here administering the law.\n",
       "description": "Tertians look very human, save for their 12 foot size, the horns jutting from\nthe sides of their bald heads, and the long prehensile tail ending in a mace-\nlike ball.\n",
       "race": "modron",
-      "act_flags": "ABFGQRT",
+      "act_flags": "0",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1759,23 +1726,19 @@
       "hit_dice": "20d20+50",
       "mana_dice": "8d6+12",
       "damage_dice": "pound",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -13,
-      "ac_slash": -10,
-      "ac_exotic": -9,
+      "damage_type": "none",
       "offensive": "CEFQR",
       "immune": "ARBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "IWABCGHJK",
-      "size": "huge",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9010,
@@ -1784,7 +1747,7 @@
       "long_description": "A Secundus, one of the Viceroys of Nirvana, is here.\n",
       "description": "The secundi is an incredibly thin, tall humanoids with long, narrow faces\nand deepset eyes. It radiates intense power.\n",
       "race": "modron",
-      "act_flags": "ABFGQRT",
+      "act_flags": "0",
       "affected_by": "DFHJ",
       "alignment": 0,
       "group": 0,
@@ -1794,23 +1757,19 @@
       "hit_dice": "40d20+50",
       "mana_dice": "7d8+15",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -14,
-      "ac_slash": -11,
-      "ac_exotic": -12,
+      "damage_type": "none",
       "offensive": "EFHIKNQR",
       "immune": "AHIKRBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "IABCGHJK",
-      "size": "huge",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9011,
@@ -1819,7 +1778,7 @@
       "long_description": "Primus, ruler of the Plane of Nirvana, forms out of an energy pool.\n",
       "description": "Primus is a huge being who rises out of the energy pool and glares at you with\nviolet eyes. His right hand is wreathed in darkness, his left in light, and\nhe looks very displeased to see you.\n",
       "race": "modron",
-      "act_flags": "ABFGQRT",
+      "act_flags": "0",
       "affected_by": "DFHJ",
       "alignment": 0,
       "group": 0,
@@ -1829,408 +1788,29 @@
       "hit_dice": "1d1+3999",
       "mana_dice": "6d10+25",
       "damage_dice": "wrath",
-      "damage_type": "beating",
-      "ac_pierce": -15,
-      "ac_bash": -15,
-      "ac_slash": -15,
-      "ac_exotic": -15,
+      "damage_type": "none",
       "offensive": "AHQR",
       "immune": "AHIKRSBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
+      "form": "128",
+      "parts": "1735",
+      "size": "giant",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "MH",
-      "parts": "IABCGHJK",
-      "size": "giant",
-      "material": "0"
+      "wealth": 0
     }
   ],
-  "objects": [
-    {
-      "id": 9000,
-      "name": "THE long sword",
-      "keywords": "sword long the",
-      "description": "THE long sword of Primus is here.",
-      "material": "adamantite",
-      "item_type": "weapon",
-      "extra_flags": 1601,
-      "wear_flags": 8193,
-      "level": 39,
-      "weight": 400,
-      "cost": 8800,
-      "condition": 100,
-      "values": [
-        1,
-        5,
-        6,
-        3,
-        48
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 5
-        },
-        {
-          "location": 18,
-          "modifier": 5
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword long the",
-          "description": "This is an extremely long and heavy sword, with many magical runes inscribed\non it.  It glows with the power of Primus, Lord of the Plane of Nirvana.\n"
-        }
-      ]
-    },
-    {
-      "id": 9001,
-      "name": "a luminescent moonstone",
-      "keywords": "moonstone moon stone white",
-      "description": "A softly glowing white stone rests on the floor.",
-      "material": "gem",
-      "item_type": "warp_stone",
-      "extra_flags": 524289,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 0,
-      "cost": 500,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "moonstone moon stone white",
-          "description": "Looking into the smooth surface of this moonstone, you feel strangely at \npeace and balance with the world around you.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 9000,
-      "arg2": 10,
-      "arg3": 9002,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9000,
-      "arg2": 10,
-      "arg3": 9013,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9000,
-      "arg2": 10,
-      "arg3": 9029,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9000,
-      "arg2": 10,
-      "arg3": 9027,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9000,
-      "arg2": 10,
-      "arg3": 9003,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9001,
-      "arg2": 9,
-      "arg3": 9001,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9001,
-      "arg2": 9,
-      "arg3": 9028,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9001,
-      "arg2": 9,
-      "arg3": 9012,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9011,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9031,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9038,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9045,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9058,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9002,
-      "arg2": 6,
-      "arg3": 9052,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9003,
-      "arg2": 1,
-      "arg3": 9055,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9004,
-      "arg2": 1,
-      "arg3": 9048,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9001,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9005,
-      "arg2": 4,
-      "arg3": 9040,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9005,
-      "arg2": 4,
-      "arg3": 9033,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9005,
-      "arg2": 4,
-      "arg3": 9054,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9005,
-      "arg2": 4,
-      "arg3": 9047,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9006,
-      "arg2": 2,
-      "arg3": 9041,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9006,
-      "arg2": 2,
-      "arg3": 9034,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9043,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9044,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9036,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9037,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9050,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9051,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9056,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9007,
-      "arg2": 8,
-      "arg3": 9057,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9008,
-      "arg2": 4,
-      "arg3": 9022,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9008,
-      "arg2": 4,
-      "arg3": 9016,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9008,
-      "arg2": 4,
-      "arg3": 9025,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9008,
-      "arg2": 4,
-      "arg3": 9017,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9009,
-      "arg2": 4,
-      "arg3": 9019,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9009,
-      "arg2": 4,
-      "arg3": 9024,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9009,
-      "arg2": 4,
-      "arg3": 9018,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9009,
-      "arg2": 4,
-      "arg3": 9021,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9010,
-      "arg2": 4,
-      "arg3": 9038,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9010,
-      "arg2": 4,
-      "arg3": 9045,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9010,
-      "arg2": 4,
-      "arg3": 9058,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9010,
-      "arg2": 4,
-      "arg3": 9052,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9011,
-      "arg2": 1,
-      "arg3": 9020,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9000,
-      "arg2": 2,
-      "arg3": 16,
-      "arg4": 0
-    }
-  ],
-  "specials": []
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
+  "specials": [],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 9000,
+    "high": 9099
+  }
 }

@@ -17,11 +17,13 @@
       "exits": {
         "north": {
           "to_room": 4000,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3501,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -36,11 +38,13 @@
       "exits": {
         "north": {
           "to_room": 3500,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3502,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -56,22 +60,26 @@
         "north": {
           "to_room": 3501,
           "description": "An old road leads towards the abandoned mines of Moria and the Dwarven Kingom.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3525,
           "description": "The road continues east, where you hear faint singing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5261,
           "description": "A once mighty road leads through the dwarf forest towards ruined Thalos.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3503,
           "description": "The road leads west towards Midgaard.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -86,11 +94,13 @@
       "exits": {
         "east": {
           "to_room": 3502,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3053,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -106,22 +116,26 @@
         "north": {
           "to_room": 3256,
           "description": "To the north, you see the southern gates of Midgaard.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3506,
           "description": "More light forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3507,
           "description": "This path cuts through the darkness of the Miden'nir.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3570,
           "description": "The Woodsman's Inn.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -147,12 +161,14 @@
         "south": {
           "to_room": 3509,
           "description": "The forest is darker to the south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3505,
           "description": "The forest gets lighter as you go west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -168,17 +184,20 @@
         "north": {
           "to_room": 3505,
           "description": "The forest is lighter in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3510,
           "description": "More and darker woods.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3508,
           "description": "There is a small path leading west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -194,12 +213,14 @@
         "east": {
           "to_room": 3507,
           "description": "Wind-swept forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3511,
           "description": "To the south, the trail continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -215,17 +236,20 @@
         "north": {
           "to_room": 3506,
           "description": "The trees lighten up a bit this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3512,
           "description": "Huge grey mountains lie in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3514,
           "description": "The forest continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -241,17 +265,20 @@
         "north": {
           "to_room": 3507,
           "description": "Trees as far as the eye can see.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3514,
           "description": "There is an especially dark part of the forest this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3516,
           "description": "There is an especially dark section of forest this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -267,12 +294,14 @@
         "north": {
           "to_room": 3508,
           "description": "The trail bends to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3515,
           "description": "To the south, the path re-enters the forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -293,12 +322,14 @@
         "south": {
           "to_room": 3513,
           "description": "A light section of forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3509,
           "description": "The forest continues here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -314,12 +345,14 @@
         "north": {
           "to_room": 3512,
           "description": "There is a small clearing to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3514,
           "description": "It gets darker and thicker this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -335,22 +368,26 @@
         "north": {
           "to_room": 3509,
           "description": "More forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3513,
           "description": "Lighter forest and mountains in the distance.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3517,
           "description": "More trees.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3510,
           "description": "The forest continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -366,17 +403,20 @@
         "north": {
           "to_room": 3511,
           "description": "A trail leading north-south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3516,
           "description": "The trees get thicker as you go east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3518,
           "description": "More trees and some small hills.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -392,22 +432,26 @@
         "north": {
           "to_room": 3510,
           "description": "The Miden'nir continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3517,
           "description": "More trees.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3519,
           "description": "The trees get VERY thick to the south. You can barely see...\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3515,
           "description": "Some light trees and daylight.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -423,12 +467,14 @@
         "north": {
           "to_room": 3514,
           "description": "Many trees to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3516,
           "description": "There is a bit of a slope downward to the west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -444,17 +490,20 @@
         "north": {
           "to_room": 3515,
           "description": "You can see a trail this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": -1,
           "description": "The trees are nearly trunk-to-trunk this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3522,
           "description": "Dark forests.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -470,22 +519,26 @@
         "north": {
           "to_room": 3516,
           "description": "The forest gets lighter this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3520,
           "description": "The forest continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3521,
           "description": "There is a strong stench coming from this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": -1,
           "description": "The trees are nearly trunk-to-trunk this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -501,12 +554,14 @@
         "south": {
           "to_room": 3523,
           "description": "The thick forest continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3519,
           "description": "The thick forest continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -522,17 +577,20 @@
         "north": {
           "to_room": 3519,
           "description": "Darkness...\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3523,
           "description": "Your light does not extend that far.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3522,
           "description": "More dark forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -553,12 +611,14 @@
         "north": {
           "to_room": 3518,
           "description": "You see daylight and a trail to follow.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3521,
           "description": "The stench seems to becoming from this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -574,7 +634,8 @@
         "north": {
           "to_room": 3520,
           "description": "It appears to get much darker that direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3551,
@@ -584,7 +645,8 @@
         "west": {
           "to_room": 3521,
           "description": "The sky becomes lighter in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -960,22 +1022,26 @@
         "north": {
           "to_room": 3571,
           "description": "You can go north around the inn.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3505,
           "description": "Back through the trees to the Miden'nir.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3572,
           "description": "You can go south around the inn.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3574,
           "description": "The front door of the inn beckons.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -1017,17 +1083,20 @@
         "north": {
           "to_room": 3570,
           "description": "This way leads to the front of the inn.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3575,
           "description": "The trail heads south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3573,
           "description": "This way leads to the back of the inn.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1043,12 +1112,14 @@
         "east": {
           "to_room": 3572,
           "description": "You can go around the inn this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3578,
           "description": "Only rats and fool adventurers play in garbage.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1064,21 +1135,25 @@
         "north": {
           "to_room": 3576,
           "description": "The bar is here, manned by the innkeeper.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3570,
           "description": "You can leave now and return to fresher air.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3579,
           "description": "An empty table is a rare commodity.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3577,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1094,12 +1169,14 @@
         "north": {
           "to_room": 3572,
           "description": "The inn lies to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3581,
           "description": "A trail thru the woods.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1115,7 +1192,8 @@
         "south": {
           "to_room": 3574,
           "description": "You may retreat south back to the common room.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1131,7 +1209,8 @@
         "east": {
           "to_room": 3574,
           "description": "You see the main floor of the Inn to the east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1147,7 +1226,8 @@
         "east": {
           "to_room": 3573,
           "description": "You can return to cleaner lands this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1163,7 +1243,8 @@
         "north": {
           "to_room": 3574,
           "description": "You see the common room.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1179,7 +1260,8 @@
         "east": {
           "to_room": 3575,
           "description": "Back to ambush point.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 3582,
@@ -1201,7 +1283,8 @@
         "east": {
           "to_room": 3581,
           "description": "The trail continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 3583,
@@ -1246,7 +1329,8 @@
         "east": {
           "to_room": 3583,
           "description": "Back to along the trail.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1261,7 +1345,7 @@
       "long_description": "A monstrous wyvern slowly circles just above your head.\n",
       "description": "This huge winged creature looks really menacing.  You are happy it doesn't\nAPPEAR to be very hungry ... yet.\n",
       "race": "wyvern",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0DFT",
       "alignment": -200,
       "group": 0,
@@ -1271,23 +1355,19 @@
       "hit_dice": "1d1+149",
       "mana_dice": "2d6+1",
       "damage_dice": "bite",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 4,
-      "ac_slash": 5,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "DNRCFH",
       "immune": "0L",
       "resist": "0",
       "vuln": "0S",
+      "form": "33554499",
+      "parts": "10553021",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
-      "sex": "either",
-      "wealth": 0,
-      "form": "0ABGZ",
-      "parts": "0ACDEFHJKQVX",
-      "size": "huge",
-      "material": "0"
+      "sex": "none",
+      "wealth": 0
     },
     {
       "id": 3501,
@@ -1296,7 +1376,7 @@
       "long_description": "A mountain goblin is wandering about, mumbling to himself.\n",
       "description": "You see before you a small and twisted creature with knotted muscles.\n",
       "race": "goblin",
-      "act_flags": "AFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -500,
       "group": 0,
@@ -1306,23 +1386,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d4+1",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 6,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "KR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0C",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "small",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "small",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 3502,
@@ -1331,7 +1407,7 @@
       "long_description": "A small boy sits here, licking his wounds.\n",
       "description": "The poor boy has numerous cuts and scratches, but appears to be all right.\nHe is apparently the only survivor of the ambush.\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -1341,23 +1417,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d6+0",
       "damage_dice": "beating",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "I",
       "immune": "0",
       "resist": "0",
       "vuln": "C",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "small",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "small",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 3503,
@@ -1366,7 +1438,7 @@
       "long_description": "The Innkeeper stands here, cleaning glasses.\n",
       "description": "The Innkeeper now spends most of his days waiting for customers, while the\nnights are spent watching out for goblins.  His inn is no longer the happy\nplace that is used to be in days past.\n",
       "race": "human",
-      "act_flags": "ABT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -1376,23 +1448,19 @@
       "hit_dice": "1d1+149",
       "mana_dice": "2d8+1",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "BFKQ",
       "immune": "AB",
       "resist": "CD",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 350,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 350
     },
     {
       "id": 3504,
@@ -1401,7 +1469,7 @@
       "long_description": "A sullen bard is here, drinking away his problems.\n",
       "description": "You can smell the alcohol on his breath from across the room.  This poor bard\nhas been sitting here quite a while, drinking himself into oblivion.\n",
       "race": "human",
-      "act_flags": "ABST",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 600,
       "group": 0,
@@ -1411,23 +1479,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d6+0",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 5,
-      "ac_slash": 3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FIJKNQ",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 260,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 260
     },
     {
       "id": 3505,
@@ -1436,7 +1500,7 @@
       "long_description": "A dark horseman is here, mounted on his black steed.\n",
       "description": "The man is obviously an outlaw, and has no qualms about slashing you into\nlittle bits.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -900,
       "group": 0,
@@ -1446,23 +1510,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d5+2",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "BFJKQ",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 3506,
@@ -1471,7 +1531,7 @@
       "long_description": "A goblin lieutenant stands here, attempting to get his men in order.\n",
       "description": "The goblin lieutenant is rather angry, and looking for one of his men to\nbeat up upon, but maybe you will do just fine ...\n",
       "race": "goblin",
-      "act_flags": "AFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -600,
       "group": 0,
@@ -1481,23 +1541,19 @@
       "hit_dice": "1d1+149",
       "mana_dice": "1d10+1",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 5,
-      "ac_slash": 3,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "DKNR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0C",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 55,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 55
     },
     {
       "id": 3507,
@@ -1506,7 +1562,7 @@
       "long_description": "The goblin leader surveys the room.\n",
       "description": "The leader doesn't look too happy that you have found him here.  He grabs\nfor his shortsword and lunges for your neck.\n",
       "race": "goblin",
-      "act_flags": "ACFGT",
+      "act_flags": "0",
       "affected_by": "0J",
       "alignment": -900,
       "group": 0,
@@ -1516,512 +1572,34 @@
       "hit_dice": "1d1+199",
       "mana_dice": "1d12+3",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 3,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "DJKNR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0C",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     }
   ],
-  "objects": [
-    {
-      "id": 3500,
-      "name": "a goblin's short sword",
-      "keywords": "sword short",
-      "description": "A rusted sword lies on the ground.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 40,
-      "cost": 460,
-      "condition": 75,
-      "values": [
-        1,
-        2,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword",
-          "description": "It looks heavier than your average short sword, but it could use some oiling.\n"
-        }
-      ]
-    },
-    {
-      "id": 3501,
-      "name": "a long spear",
-      "keywords": "spear long",
-      "description": "A blackened spear with an evil-looking blade lies here.",
-      "material": "iron",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 80,
-      "cost": 100,
-      "condition": 75,
-      "values": [
-        8,
-        2,
-        7,
-        34,
-        32
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "spear",
-          "description": "This used to be a boar spear, but it has been used for more dangerous game.\n"
-        }
-      ]
-    },
-    {
-      "id": 3502,
-      "name": "a black horned helmet",
-      "keywords": "helmet horned black",
-      "description": "A helmet with sharp black horns sits here.",
-      "material": "iron",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 17,
-      "level": 5,
-      "weight": 30,
-      "cost": 490,
-      "condition": 75,
-      "values": [
-        3,
-        5,
-        4,
-        0,
-        1
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 3503,
-      "name": "a stained travelling cloak",
-      "keywords": "cloak stained",
-      "description": "A worn and stained cloak is crumpled up on the floor.",
-      "material": "cloth",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 3,
-      "weight": 40,
-      "cost": 310,
-      "condition": 75,
-      "values": [
-        2,
-        3,
-        4,
-        0,
-        1
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 3504,
-      "name": "an enchanted leather bracer",
-      "keywords": "bracer leather enchanted",
-      "description": "A leather bracer with mystic symbols sits here.",
-      "material": "leather",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 4097,
-      "level": 7,
-      "weight": 10,
-      "cost": 690,
-      "condition": 90,
-      "values": [
-        2,
-        4,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "bracer",
-          "description": "This bracer is covered with runes of protection and luck in combat.\n"
-        }
-      ]
-    },
-    {
-      "id": 3505,
-      "name": "a rune-covered knife",
-      "keywords": "knife dagger",
-      "description": "A wide-bladed knife sits undisturbed on the floor.",
-      "material": "mithril",
-      "item_type": "weapon",
-      "extra_flags": 1088,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 10,
-      "cost": 420,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        4,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "knife dagger",
-          "description": "It's very sharp, you suspect this knife is more effective than many swords.\nIt appears to be of elvish origins, and is made of finely crafted mithril,\nwith a stylized ivory hilt.\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 3500,
-      "arg2": 2,
-      "arg3": 3521,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 3500,
-      "arg2": 2,
-      "arg3": 3521,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 8,
-      "arg3": 3512,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3045,
-      "arg2": 6,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 10,
-      "arg3": 3512,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3502,
-      "arg2": 6,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3075,
-      "arg2": 6,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 10,
-      "arg3": 3509,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": 6,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 10,
-      "arg3": 3506,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3074,
-      "arg2": 6,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 10,
-      "arg3": 3513,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3077,
-      "arg2": 6,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3501,
-      "arg2": 10,
-      "arg3": 3556,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 18,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3076,
-      "arg2": 6,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3506,
-      "arg2": 4,
-      "arg3": 3551,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3502,
-      "arg2": -1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": 8,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3506,
-      "arg2": 4,
-      "arg3": 3556,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3500,
-      "arg2": 20,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3502,
-      "arg2": -1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": 8,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3507,
-      "arg2": 1,
-      "arg3": 3556,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3072,
-      "arg2": -1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3501,
-      "arg2": 6,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3502,
-      "arg2": -1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3502,
-      "arg2": 1,
-      "arg3": 3575,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3503,
-      "arg2": 1,
-      "arg3": 3576,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 3504,
-      "arg2": 1,
-      "arg3": 3577,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3505,
-      "arg2": 3,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3505,
-      "arg2": 4,
-      "arg3": 3583,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3503,
-      "arg2": 8,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 3505,
-      "arg2": 4,
-      "arg3": 3584,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 3504,
-      "arg2": 4,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3022,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 3500,
       "spec": "spec_poison"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 3500,
+    "high": 3599
+  }
 }

@@ -723,7 +723,7 @@
       "long_description": "A smurf is singing and walking along.\n",
       "description": "A cute little blue smurf with a white hat and white boots.  You have a sudden\nurge to crush him.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -733,23 +733,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d2+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 10,
-      "ac_bash": 10,
-      "ac_slash": 10,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 102,
@@ -758,7 +754,7 @@
       "long_description": "A smurf is here, picking berries.\n",
       "description": "A small smurf is quietly picking berries.  He seems to hardly notice you.\n",
       "race": "human",
-      "act_flags": "ABHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -768,23 +764,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d2+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 10,
-      "ac_bash": 10,
-      "ac_slash": 10,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 103,
@@ -793,7 +785,7 @@
       "long_description": "Brainy Smurf is here, mumbling something to himself.\n",
       "description": "Brainy Smurf has on his usual glasses.  Brainy Smurf isn't liked much by the\nother smurfs.  They fear his knowledge.  Knowledge is power!\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -803,23 +795,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 104,
@@ -828,7 +816,7 @@
       "long_description": "Handy Smurf is building something here.\n",
       "description": "Handy is always building something.  He never takes a break.  Why don't you\ngive him a break, like all of his bones.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -838,23 +826,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 105,
@@ -863,7 +847,7 @@
       "long_description": "Sleepy Smurf is sleep walking here.\n",
       "description": "Sleepy never gets enough sleep.  You would think he goes to college.  I wonder\nif he has ever stayed up a whole night without sleeping.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -873,23 +857,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 106,
@@ -898,7 +878,7 @@
       "long_description": "Hefty Smurf is lifting weights here.\n",
       "description": "Hefty is a total health nut.  He lifts weights, eats right, and exercises all\nthe time.  Won't do him much good when he's DEAD.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -908,23 +888,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 107,
@@ -933,7 +909,7 @@
       "long_description": "Grumpy Smurf is here, swearing.\n",
       "description": "Grumpy has never been happy in his whole life.  So why don't you just end it?\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -943,23 +919,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 108,
@@ -968,7 +940,7 @@
       "long_description": "Jokey Smurf is here, holding a present.\n",
       "description": "Jokey loves to give people presents.  Too bad the present explodes when opened.\nOh well, to each his own.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -978,23 +950,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 109,
@@ -1003,7 +971,7 @@
       "long_description": "Smurfette is here, looking beautiful.\n",
       "description": "Smurfette is the cutest little smurf you've ever seen.  If only she were your\nsize.  I wonder how much she charges the other smurfs.\n",
       "race": "human",
-      "act_flags": "AGHS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 100,
       "group": 0,
@@ -1013,23 +981,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 110,
@@ -1038,7 +1002,7 @@
       "long_description": "Papa Smurf is practicing magic here.\n",
       "description": "Yep, its Papa Smurf all right.  Red hat and boots and the funny little white\nbeard.  Papa Smurf treats his fellow smurfs with dignity and respect.  That\nis why Papa Smurf is so popular among the ladies.\n",
       "race": "human",
-      "act_flags": "AGHR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -1048,23 +1012,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 111,
@@ -1073,7 +1033,7 @@
       "long_description": "Gargamel is here, cursing out the smurfs.\n",
       "description": "Gargamel has never done anything right in his life.  He has caught smurfs\nbefore but always lets them escape.  He brings true meaning to the word moron.\n",
       "race": "human",
-      "act_flags": "ABHQ",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -1083,23 +1043,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 112,
@@ -1108,7 +1064,7 @@
       "long_description": "Azreal is here, licking himself.\n",
       "description": "Gargamel's worthless cat.  He is just about as dumb as Gargamel.  He should\njust grab a smurf in his teeth and chew away.\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -1118,532 +1074,24 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     }
   ],
-  "objects": [
-    {
-      "id": 100,
-      "name": "a bunch of smurfberries",
-      "keywords": "bunch berries smurfberries",
-      "description": "A bunch of delicious looking smurfberries lie here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 180,
-      "condition": 100,
-      "values": [
-        8,
-        0,
-        0,
-        12,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 101,
-      "name": "a pair of glasses",
-      "keywords": "glasses",
-      "description": "An odd pair of glasses has been left here.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 1,
-      "wear_flags": 17,
-      "level": 3,
-      "weight": 20,
-      "cost": 270,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        },
-        {
-          "location": 2,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 102,
-      "name": "a smurf hat",
-      "keywords": "smurf hat",
-      "description": "A smurf hat has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 17,
-      "level": 3,
-      "weight": 20,
-      "cost": 310,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 103,
-      "name": "a small axe",
-      "keywords": "axe small",
-      "description": "A small axe has been dropped here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 3,
-      "weight": 20,
-      "cost": 370,
-      "condition": 100,
-      "values": [
-        5,
-        1,
-        7,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 104,
-      "name": "a small necklace",
-      "keywords": "necklace",
-      "description": "A small necklace is lying on the ground.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1,
-      "wear_flags": 5,
-      "level": 5,
-      "weight": 20,
-      "cost": 550,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 105,
-      "name": "a pink potion",
-      "keywords": "pink potion",
-      "description": "A pink potion is barely visible on the ground.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 160,
-      "condition": 100,
-      "values": [
-        6,
-        2,
-        22,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 106,
-      "name": "a small wand",
-      "keywords": "wand",
-      "description": "A small wand lies on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 3,
-      "weight": 20,
-      "cost": 540,
-      "condition": 100,
-      "values": [
-        5,
-        1,
-        1,
-        5,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 107,
-      "name": "a tiny key",
-      "keywords": "key",
-      "description": "A tiny key is lying on the ground.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        2,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 108,
-      "name": "a smurf well",
-      "keywords": "well",
-      "description": "A small smurfy well is here.",
-      "material": "oldstyle",
-      "item_type": "fountain",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        50,
-        50,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 109,
-      "name": "a small key",
-      "keywords": "key",
-      "description": "A key to Gargamel's door lies here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        2,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "O",
-      "arg1": 108,
-      "arg2": 1,
-      "arg3": 109,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 102,
-      "arg2": 3,
-      "arg3": 118,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 100,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 102,
-      "arg2": 3,
-      "arg3": 117,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 100,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 102,
-      "arg2": 3,
-      "arg3": 116,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 100,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 105,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 110,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 102,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 111,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 112,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 102,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 107,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 108,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 102,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 109,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 104,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 102,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 103,
-      "arg2": 1,
-      "arg3": 119,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 101,
-      "arg2": 8,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 104,
-      "arg2": 1,
-      "arg3": 120,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 103,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 105,
-      "arg2": 1,
-      "arg3": 122,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 106,
-      "arg2": 1,
-      "arg3": 121,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 103,
-      "arg2": 8,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 107,
-      "arg2": 1,
-      "arg3": 123,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 108,
-      "arg2": 1,
-      "arg3": 124,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 109,
-      "arg2": 1,
-      "arg3": 129,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 104,
-      "arg2": 8,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 107,
-      "arg2": 8,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 110,
-      "arg2": 1,
-      "arg3": 125,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 105,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 109,
-      "arg2": 8,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 111,
-      "arg2": 1,
-      "arg3": 128,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 106,
-      "arg2": 8,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 112,
-      "arg2": 1,
-      "arg3": 128,
-      "arg4": 1
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 101,
@@ -1693,5 +1141,11 @@
       "mob_vnum": 112,
       "spec": "spec_poison"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 100,
+    "high": 199
+  }
 }

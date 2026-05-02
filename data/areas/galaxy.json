@@ -1387,7 +1387,8 @@
       "exits": {
         "north": {
           "to_room": 9370,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1402,7 +1403,7 @@
       "long_description": "A poor mudder, lost in this place.\n",
       "description": "You will become him if you are not careful.\n",
       "race": "human",
-      "act_flags": "ACGS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -1412,23 +1413,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 9302,
@@ -1437,7 +1434,7 @@
       "long_description": "A beautiful white star smiles at you.\n",
       "description": "You can't tell what the star looks like, she is too bright!\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -1447,23 +1444,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 9303,
@@ -1472,7 +1465,7 @@
       "long_description": "A young nebula, waiting to become a star.\n",
       "description": "It hasn't got a definite shape, it is just a cloud of mist.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -1482,23 +1475,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 9304,
@@ -1507,7 +1496,7 @@
       "long_description": "A speedy comet is waiting to crush your head in.\n",
       "description": "You see the offspring of Halley's comet, here just to wipe everything out.\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -1517,23 +1506,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 9305,
@@ -1542,7 +1527,7 @@
       "long_description": "An enormous, red supergiant is forced to protect the galaxy.\n",
       "description": "You notice the giant is not as tough as his name sounds ...\nStill he can be very powerful.\n",
       "race": "human",
-      "act_flags": "ABGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1552,23 +1537,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 100,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 100
     },
     {
       "id": 9306,
@@ -1577,7 +1558,7 @@
       "long_description": "A tiny white dwarf is trying to sneak away from duty. \n",
       "description": "Like the red giant, he is also appointed to stand guard for the galaxy.\nBut somehow he manages to escape.  Though tiny, it can take a lot of hits!\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1587,23 +1568,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 100,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 100
     },
     {
       "id": 9307,
@@ -1612,7 +1589,7 @@
       "long_description": "A huge nebula is here, resembling a horsehead.\n",
       "description": "You can only make out its shape from the darkness.  He was cursed to stay in\nhere and his face may never be seen by anyone again.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "PQ",
       "alignment": -1000,
       "group": 0,
@@ -1622,23 +1599,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 300,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 300
     },
     {
       "id": 9308,
@@ -1647,7 +1620,7 @@
       "long_description": "The poor Andromeda is chained to the wall, suffering ...\n",
       "description": "She was once a princess of beauty.  However, her beauty has led to a Goddess's\njealousy and she has to suffer here endlessly until Perseus comes.\n",
       "race": "human",
-      "act_flags": "ABEG",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -1657,23 +1630,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 375,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 375
     },
     {
       "id": 9309,
@@ -1682,7 +1651,7 @@
       "long_description": "The Mighty Hercules is working hard on his extra Labours for the Gods.\n",
       "description": "He has been put to do the Ten Labours -- ten impossible tasks, by Hera, the\nqueen goddess, who disliked him.  But he finished them all and at the end was\ngranted immortality. He is a very brave and strong fighter.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -1692,23 +1661,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 375,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 375
     },
     {
       "id": 9310,
@@ -1717,7 +1682,7 @@
       "long_description": "The wild pegasus is grazing peacefully.\n",
       "description": "It is the legendary horse with wings on its back.\n",
       "race": "human",
-      "act_flags": "ABGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -1727,23 +1692,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 9311,
@@ -1752,7 +1713,7 @@
       "long_description": "Orion is still hunting for Scorpio.\n",
       "description": "He is the legendary hunter who almost defeated Taurus the bull, but got\nkilled by Scorpio.  The gods put them both up as constellations but one\nappears on one side of the sky and the other the other side so they will\nnever meet. \n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 300,
       "group": 0,
@@ -1762,23 +1723,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 375,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 375
     },
     {
       "id": 9312,
@@ -1787,7 +1744,7 @@
       "long_description": "The Pleiades are here, weeping for the loss of their sisters.\n",
       "description": "These are the seven sisters of the Myths, and as for why they are here, no\none knows; even the Gods themselves have forgotten.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -1797,23 +1754,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 150
     },
     {
       "id": 9313,
@@ -1822,7 +1775,7 @@
       "long_description": "The gigantic Head of Draco lurks out from beneath and prepares to roast you.\n",
       "description": "This evil-looking head is even larger than a giant.  He is the last guardian \nbefore entering the inner galaxy.  His neck is flexing in a random fashion so \nhitting the head is certainly not easy.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -1000,
       "group": 0,
@@ -1832,23 +1785,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 750,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 750
     },
     {
       "id": 9314,
@@ -1857,7 +1806,7 @@
       "long_description": "A baby draco is crawling on the Draco's body.\n",
       "description": "You see a tiny creature which looks like a dragon except that its body\nresembles a snake.  Gosh, is this a draco, you wonder, is this the thing\nwe are on now?\n",
       "race": "human",
-      "act_flags": "ACGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -700,
       "group": 0,
@@ -1867,23 +1816,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 200,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 200
     },
     {
       "id": 9315,
@@ -1892,7 +1837,7 @@
       "long_description": "Aries is sitting here, welcoming you.\n",
       "description": "You see a white goat here, the first guardian of the Zodiac,\nalso the ruler of Spring. He looks as if he is expecting you.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 700,
       "group": 0,
@@ -1902,23 +1847,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9316,
@@ -1927,7 +1868,7 @@
       "long_description": "Taurus wants to leave, but has been forced to stay as a guardian here.\n",
       "description": "You see a wild-looking bull with a bad temper.  He is well-built and looks like \nhe can fight well ... indeed he has fought with Orion before and survived.\n",
       "race": "human",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -100,
       "group": 0,
@@ -1937,23 +1878,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9317,
@@ -1962,7 +1899,7 @@
       "long_description": "Gemini is looking for his brother; have you seen him?\n",
       "description": "As soon as you see him you know that he is the most perfect man you have seen.\nYou can't find any imperfections on him.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -1972,23 +1909,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9318,
@@ -1997,7 +1930,7 @@
       "long_description": "Gemini is hiding from his brother, grinning evilly at you.\n",
       "description": "As soon as you see him you see the most imperfect man you have ever seen.\nHow can there be such a contrast?  You wonder ...\n",
       "race": "human",
-      "act_flags": "ABCFGHQ",
+      "act_flags": "0",
       "affected_by": "DHU",
       "alignment": -1000,
       "group": 0,
@@ -2007,23 +1940,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 9319,
@@ -2032,7 +1961,7 @@
       "long_description": "Cancer the crab is here, hoarding the treasure away from you.\n",
       "description": "You see a gigantic crab (YES, it is bigger than you!) with a crushed shell.\nLegend is that he was crushed by Hercules when he was sent by Hera to kill him.\nSo Hera made Cancer a constellation for his work. \n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 0,
       "group": 0,
@@ -2042,23 +1971,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 600,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 600
     },
     {
       "id": 9320,
@@ -2067,7 +1992,7 @@
       "long_description": "Leo the lion is roaring at you, ready for a strike!\n",
       "description": "His metallic skin means that he could be the one which was killed by Hercules\nduring his first Labour.  His skin is so weapon-proof that Hercules had to use\nhis bare hands to tear the lion into two from its mouth!\n",
       "race": "human",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -100,
       "group": 0,
@@ -2077,23 +2002,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9321,
@@ -2102,7 +2023,7 @@
       "long_description": "Virgo is sitting here, winking at you suggestively ... you are alarmed!\n",
       "description": "From what you have seen, you now realize that legends are legends, and Virgo\nmay not be the maid of chastity and purity at all!  But still she looks\ngorgeous and is waiting for your first move, whatever it is ...\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2112,23 +2033,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "female",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9322,
@@ -2137,7 +2054,7 @@
       "long_description": "Libra, the fair and just, is staring at you, weighing up the sins of your past.\n",
       "description": "He is a wise old man and can see people's thoughts through their eyes....\nNow all he can see from you is greed and bloodshed.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2147,23 +2064,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9323,
@@ -2172,7 +2085,7 @@
       "long_description": "Scorpio is moving his tail towards you, waiting to put an end to some mortals.\n",
       "description": "Ever since he killed Orion in the myths, he has been punished by having \nSagittarius' arrow aimed at his heart forever.\n",
       "race": "human",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -200,
       "group": 0,
@@ -2182,23 +2095,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9324,
@@ -2207,7 +2116,7 @@
       "long_description": "Sagittarius the centaur is waiting to let go of his well aimed arrow ...\n",
       "description": "He is a centaur and a well trained archer. No one can escape his arrows.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2217,23 +2126,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9325,
@@ -2242,7 +2147,7 @@
       "long_description": "Capricorn is here, feeling bored ... he wants a fight!\n",
       "description": "You see a mean-looking ram here.  He used to be a fierce fighter in the ancient\nwar but now the gods have decided to put him here, to live out the rest of his \ndays in peace.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 700,
       "group": 0,
@@ -2252,23 +2157,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9326,
@@ -2277,7 +2178,7 @@
       "long_description": "The beautiful Aquarius is standing here, holding THE vessel.\n",
       "description": "The pretty Water Bearer is smiling at you, you think you'd better give her a \nhand with holding the vessel. \n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2287,23 +2188,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9327,
@@ -2312,7 +2209,7 @@
       "long_description": "Pisces the mermaid is sitting here, waiting for your help.\n",
       "description": "She has been forced to serve her husband, who had been cursed to turn into a\nfish and she deserves your pity.\n",
       "race": "human",
-      "act_flags": "ABGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2322,23 +2219,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "female",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9328,
@@ -2347,7 +2240,7 @@
       "long_description": "Pisces the fish, is jealous of your approach...\n",
       "description": "He was once a very handsome man but now has turned into an ugly big fish.\nSo he becomes jealous of any living thing which is more handsome than him.\n",
       "race": "human",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": -1000,
       "group": 0,
@@ -2357,23 +2250,19 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9329,
@@ -2382,7 +2271,7 @@
       "long_description": "Ursa Major the bear is the last defense against any intruders.\n",
       "description": "The Huge Bear which resides in the northern skies is here. \nYou think you'd better turn back.  At least you have got a chance of survival.\n",
       "race": "bear",
-      "act_flags": "ABFGQ",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": 0,
       "group": 0,
@@ -2392,23 +2281,19 @@
       "hit_dice": "27d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "IKRDEO",
       "immune": "0",
       "resist": "0EI",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3147455",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 750,
-      "form": "0AGV",
-      "parts": "0ABCDEFHJKUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 750
     },
     {
       "id": 9330,
@@ -2417,7 +2302,7 @@
       "long_description": "Cassiopeia, the queen of the Universe, is sitting on her throne.\n",
       "description": "She is the Queen of Dignity; facing her you feel all your dignity has gone.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": 700,
       "group": 0,
@@ -2427,23 +2312,19 @@
       "hit_dice": "26d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "female",
-      "wealth": 600,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 600
     },
     {
       "id": 9331,
@@ -2452,7 +2333,7 @@
       "long_description": "Cepheus, the king of the Universe, is sitting on his throne.\n",
       "description": "He is the King of Might as well as of the Universe. You suddenly feel very\nweak and useless in front of him.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 700,
       "group": 0,
@@ -2462,23 +2343,19 @@
       "hit_dice": "26d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 600,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 600
     },
     {
       "id": 9332,
@@ -2487,7 +2364,7 @@
       "long_description": "Polaris, the polar star, who commands the whole Universe, stands before you!\n",
       "description": "He is the Master of the Universe, (NOT He-Man!), the most powerful!  \nEven the King and the Queen obey him.  As you look at him you notice he is \nactually a STAR, with dazzling bright light ... maybe you shouldn't have come\nhere at all?\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "BDH",
       "alignment": 1000,
       "group": 0,
@@ -2497,1552 +2374,24 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1000
     }
   ],
-  "objects": [
-    {
-      "id": 9301,
-      "name": "a comet's tail",
-      "keywords": "comet's tail",
-      "description": "A long, slender whip lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 3,
-      "wear_flags": 8193,
-      "level": 10,
-      "weight": 90,
-      "cost": 390,
-      "condition": 100,
-      "values": [
-        7,
-        2,
-        6,
-        4,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9302,
-      "name": "the Titanic Arm plates of Hercules",
-      "keywords": "arm hercules",
-      "description": "Arm plates of the Zodiac lie here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 257,
-      "level": 22,
-      "weight": 100,
-      "cost": 3100,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "arm",
-          "description": "These mighty armors have been worn by this immortal, since the ancient time.\n"
-        }
-      ]
-    },
-    {
-      "id": 9304,
-      "name": "the Titanic Belt of Orion",
-      "keywords": "belt orion",
-      "description": "A belt of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 2049,
-      "level": 17,
-      "weight": 70,
-      "cost": 3800,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "belt",
-          "description": "You can immediately see that it belongs to Orion, from the three stars\nengraved on it.\n"
-        }
-      ]
-    },
-    {
-      "id": 9305,
-      "name": "an ugly skull of Draco",
-      "keywords": "skull draco",
-      "description": "A massive skull of a dead Draco lies here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 194,
-      "wear_flags": 16385,
-      "level": 14,
-      "weight": 200,
-      "cost": 4300,
-      "condition": 100,
-      "values": [
-        15,
-        5,
-        5,
-        6,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9306,
-      "name": "the Titanic Fleece of Aries",
-      "keywords": "fleece aries",
-      "description": "A fleece of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 5,
-      "level": 20,
-      "weight": 90,
-      "cost": 2000,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "fleece",
-          "description": "From a look it resembles the Golden Fleece that exists in the Greek myths.\n"
-        }
-      ]
-    },
-    {
-      "id": 9307,
-      "name": "the Titanic Hoof of Taurus",
-      "keywords": "hoof taurus",
-      "description": "A hoof of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 65,
-      "level": 20,
-      "weight": 100,
-      "cost": 1280,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 14,
-          "modifier": 20
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "hoof",
-          "description": "It is with these hooves that Taurus can stand against Orion's attacks.\n"
-        }
-      ]
-    },
-    {
-      "id": 9308,
-      "name": "the Titanic Mask of Gemini",
-      "keywords": "mask gemini",
-      "description": "A mask of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1217,
-      "wear_flags": 17,
-      "level": 16,
-      "weight": 70,
-      "cost": 3600,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        2,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 2
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "mask",
-          "description": "You notice the mask has got two faces, one smiling and the other crying.\nYou don't know which way you should wear it.\n"
-        }
-      ]
-    },
-    {
-      "id": 9309,
-      "name": "the Titanic Shell of Cancer",
-      "keywords": "shell cancer",
-      "description": "A shell of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 9,
-      "level": 20,
-      "weight": 150,
-      "cost": 3800,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "shell",
-          "description": "A shell which is dented in the middle, resulting from the Hercules' mighty\npound when the Crab was still an enemy of Hercules in ancient times.\n"
-        }
-      ]
-    },
-    {
-      "id": 9310,
-      "name": "the Titanic Skin of Leo",
-      "keywords": "skin leo",
-      "description": "A skin of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 1025,
-      "level": 20,
-      "weight": 150,
-      "cost": 1740,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        5,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "skin",
-          "description": "A skin made of metal, which was worn by Hercules during his Ten Labours.\n"
-        }
-      ]
-    },
-    {
-      "id": 9311,
-      "name": "the Titanic Bracelet of Virgo",
-      "keywords": "bracelet virgo",
-      "description": "A bracelet of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1089,
-      "wear_flags": 4097,
-      "level": 15,
-      "weight": 10,
-      "cost": 2600,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "bracelet",
-          "description": "A bracelet of purity and youth, only worn by selected virgins.\n"
-        }
-      ]
-    },
-    {
-      "id": 9312,
-      "name": "the Titanic Scale of Libra",
-      "keywords": "scale libra",
-      "description": "A shield of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 513,
-      "level": 25,
-      "weight": 150,
-      "cost": 3900,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 5
-        },
-        {
-          "location": 17,
-          "modifier": -3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "scale",
-          "description": "It is a shield of justice, used in the ancient battle against injustice.\n"
-        }
-      ]
-    },
-    {
-      "id": 9313,
-      "name": "the Titanic Scale of Libra",
-      "keywords": "scale libra",
-      "description": "A shield of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 194,
-      "wear_flags": 513,
-      "level": 0,
-      "weight": 150,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1,
-        1,
-        1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": -30
-        },
-        {
-          "location": 17,
-          "modifier": 6
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "scale",
-          "description": "It is a shield of injustice, it picks on the innocent.\n"
-        }
-      ]
-    },
-    {
-      "id": 9314,
-      "name": "the Sting of Scorpio",
-      "keywords": "sting scorpio",
-      "description": "Sting of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1089,
-      "wear_flags": 8193,
-      "level": 19,
-      "weight": 70,
-      "cost": 2700,
-      "condition": 100,
-      "values": [
-        0,
-        4,
-        4,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sting",
-          "description": "This dreadful weapon put a lot of mortals to death before Scorpio was banished.\n"
-        }
-      ]
-    },
-    {
-      "id": 9315,
-      "name": "the Arrow of Sagittarius",
-      "keywords": "arrow sagittarius",
-      "description": "The Arrow of Sagittarius lies here.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1089,
-      "wear_flags": 16385,
-      "level": 11,
-      "weight": 70,
-      "cost": 3400,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        62,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "arrow",
-          "description": "It's an arrow of lightning; it will never miss any target.\n"
-        }
-      ]
-    },
-    {
-      "id": 9316,
-      "name": "the Titanic Bow of Sagittarius",
-      "keywords": "bow sagittarius",
-      "description": "The Titanic Bow of Sagittarius lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1089,
-      "wear_flags": 8193,
-      "level": 20,
-      "weight": 200,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        0,
-        2,
-        9,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "bow",
-          "description": "The gigantic bow used by the Archer; it is a very powerful weapon.\n"
-        }
-      ]
-    },
-    {
-      "id": 9317,
-      "name": "the Titanic Horns of Capricorn",
-      "keywords": "horns capricon",
-      "description": "A pair of horns of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 129,
-      "level": 22,
-      "weight": 60,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "horn",
-          "description": "These strange horns are the work of gods, shaped to fit on hands.\nThey look powerful indeed.\n"
-        }
-      ]
-    },
-    {
-      "id": 9318,
-      "name": "the Ancient Vessel of Aquarius",
-      "keywords": "vessel aquarius",
-      "description": "A vessel of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 1089,
-      "wear_flags": 16385,
-      "level": 12,
-      "weight": 120,
-      "cost": 5900,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        20,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "vessel",
-          "description": "This vessel has been carried by the Water Bearer ever since she came to the\nZodiac.\n"
-        }
-      ]
-    },
-    {
-      "id": 9319,
-      "name": "the Titanic Tail of Pisces",
-      "keywords": "tail pisces",
-      "description": "A fish tail of the Zodiac lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1089,
-      "wear_flags": 33,
-      "level": 21,
-      "weight": 100,
-      "cost": 950,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -2
-        },
-        {
-          "location": 17,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "tail",
-          "description": "This tail can actually be worn by mortals somehow as leggings ... another\nwork of the gods.\n"
-        }
-      ]
-    },
-    {
-      "id": 9320,
-      "name": "the Ring of Dignity",
-      "keywords": "ring dignity",
-      "description": "A ring of specialty lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1123,
-      "wear_flags": 3,
-      "level": 26,
-      "weight": 30,
-      "cost": 4200,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": 2
-        },
-        {
-          "location": 12,
-          "modifier": 25
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ring",
-          "description": "This ring belongs to Cassiopeia, queen of the Universe.\nMortals, do not touch!\n"
-        }
-      ]
-    },
-    {
-      "id": 9321,
-      "name": "the Sceptre of Might",
-      "keywords": "sceptre might",
-      "description": "A sceptre of interest lies here.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 1123,
-      "wear_flags": 16349,
-      "level": 22,
-      "weight": 40,
-      "cost": 2400,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        -1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sceptre",
-          "description": "You'd better give it back, or the king of the Universe will punish you.\n"
-        }
-      ]
-    },
-    {
-      "id": 9322,
-      "name": "the ring of the universe",
-      "keywords": "ring universe",
-      "description": "Here lies a fortune ... a small ring of power.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 355,
-      "wear_flags": 3,
-      "level": 30,
-      "weight": 30,
-      "cost": 1690,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 30
-        },
-        {
-          "location": 12,
-          "modifier": 10
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "ring",
-          "description": "It conceals the power of the universe.\n"
-        }
-      ]
-    },
-    {
-      "id": 9323,
-      "name": "the Great Dipper of the Skies",
-      "keywords": "great dipper",
-      "description": "A dazzling white object lies on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 355,
-      "wear_flags": 8193,
-      "level": 29,
-      "weight": 200,
-      "cost": 4200,
-      "condition": 100,
-      "values": [
-        0,
-        4,
-        6,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9324,
-      "name": "a spring shoot",
-      "keywords": "spring shoot",
-      "description": "A shoot grows here, covered with dew.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 3,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9325,
-      "name": "a summer flower",
-      "keywords": "summer flower",
-      "description": "A flower grows here, waiting to be picked up.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 3,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9326,
-      "name": "an autumn leaf",
-      "keywords": "autumn leaf",
-      "description": "A leaf lies here, as if just fallen from a tree.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 3,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9327,
-      "name": "a winter branch",
-      "keywords": "winter branch",
-      "description": "A branch lies here, still covered with snow.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 3,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9328,
-      "name": "chains of Andromeda",
-      "keywords": "chains andromeda",
-      "description": "Some chains lie on the floor.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 33,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 500,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "chains",
-          "description": "They certainly look important!\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 9301,
-      "arg2": 3,
-      "arg3": 9313,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9301,
-      "arg2": 3,
-      "arg3": 9322,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9301,
-      "arg2": 3,
-      "arg3": 9323,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9304,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9308,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9312,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9321,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9321,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9321,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9321,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9333,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9302,
-      "arg2": 9,
-      "arg3": 9355,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9303,
-      "arg2": 5,
-      "arg3": 9310,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9303,
-      "arg2": 5,
-      "arg3": 9310,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9303,
-      "arg2": 5,
-      "arg3": 9310,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9303,
-      "arg2": 5,
-      "arg3": 9318,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9303,
-      "arg2": 5,
-      "arg3": 9322,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9304,
-      "arg2": 4,
-      "arg3": 9322,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 9301,
-      "arg2": 50,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9304,
-      "arg2": 4,
-      "arg3": 9322,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 9301,
-      "arg2": 50,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9304,
-      "arg2": 4,
-      "arg3": 9317,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 9301,
-      "arg2": 50,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9304,
-      "arg2": 4,
-      "arg3": 9317,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 9301,
-      "arg2": 50,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9305,
-      "arg2": 4,
-      "arg3": 9304,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9305,
-      "arg2": 4,
-      "arg3": 9308,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9305,
-      "arg2": 4,
-      "arg3": 9309,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9305,
-      "arg2": 4,
-      "arg3": 9313,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9306,
-      "arg2": 3,
-      "arg3": 9306,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9306,
-      "arg2": 3,
-      "arg3": 9314,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9306,
-      "arg2": 3,
-      "arg3": 9322,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9307,
-      "arg2": 1,
-      "arg3": 9310,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9308,
-      "arg2": 1,
-      "arg3": 9330,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9328,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9309,
-      "arg2": 1,
-      "arg3": 9332,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9302,
-      "arg2": 1,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9310,
-      "arg2": 1,
-      "arg3": 9317,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9311,
-      "arg2": 1,
-      "arg3": 9328,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9304,
-      "arg2": 1,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9312,
-      "arg2": 7,
-      "arg3": 9326,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9313,
-      "arg2": 1,
-      "arg3": 9363,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9305,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9314,
-      "arg2": 2,
-      "arg3": 9358,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9314,
-      "arg2": 2,
-      "arg3": 9360,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9315,
-      "arg2": 1,
-      "arg3": 9342,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9324,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9306,
-      "arg2": 1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9316,
-      "arg2": 1,
-      "arg3": 9343,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9307,
-      "arg2": 1,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9317,
-      "arg2": 1,
-      "arg3": 9344,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9308,
-      "arg2": 1,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9318,
-      "arg2": 1,
-      "arg3": 9344,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9319,
-      "arg2": 1,
-      "arg3": 9345,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9325,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9309,
-      "arg2": 1,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9320,
-      "arg2": 1,
-      "arg3": 9346,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9310,
-      "arg2": 1,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9321,
-      "arg2": 1,
-      "arg3": 9347,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9311,
-      "arg2": 1,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9322,
-      "arg2": 1,
-      "arg3": 9348,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9326,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 9312,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9313,
-      "arg2": 1,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9323,
-      "arg2": 1,
-      "arg3": 9349,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9314,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9324,
-      "arg2": 1,
-      "arg3": 9350,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9315,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9316,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9325,
-      "arg2": 1,
-      "arg3": 9351,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9327,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9317,
-      "arg2": 1,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9326,
-      "arg2": 1,
-      "arg3": 9352,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9318,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9327,
-      "arg2": 1,
-      "arg3": 9353,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9319,
-      "arg2": 1,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9328,
-      "arg2": 1,
-      "arg3": 9353,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9329,
-      "arg2": 1,
-      "arg3": 9370,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9330,
-      "arg2": 1,
-      "arg3": 9365,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9320,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9331,
-      "arg2": 1,
-      "arg3": 9367,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9321,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9332,
-      "arg2": 1,
-      "arg3": 9371,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9322,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9323,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 9339,
-      "arg2": 4,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 9354,
-      "arg2": 4,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 9359,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 9363,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 9301,
@@ -4128,5 +2477,11 @@
       "mob_vnum": 9332,
       "spec": "spec_breath_acid"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 9300,
+    "high": 9399
+  }
 }

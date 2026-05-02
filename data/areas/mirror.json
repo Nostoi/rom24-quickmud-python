@@ -24,7 +24,8 @@
         "west": {
           "to_room": 5301,
           "description": "You see happiness everywhere. Houses cover your vision. You see strange cute\nbeasts walking hand in hand with people.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [
@@ -45,22 +46,26 @@
         "north": {
           "to_room": 5339,
           "description": "It's a cobbled alley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5300,
           "description": "The entrance to the city lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5355,
           "description": "It's a cobbled alley.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5302,
           "description": "Main Street lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -76,22 +81,26 @@
         "north": {
           "to_room": 5336,
           "description": "A store lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5301,
           "description": "Main Street continues back east.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5332,
           "description": "The main building in the city, the City Hall is there.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5303,
           "description": "A lush, green garden path lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -107,22 +116,26 @@
         "north": {
           "to_room": 5304,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5302,
           "description": "This is the main street leading to the city's entrance.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5306,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5350,
           "description": "You can hear music coming from within the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -138,17 +151,20 @@
         "north": {
           "to_room": 5311,
           "description": "A side street leads off to the northern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5303,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5305,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -164,12 +180,14 @@
         "east": {
           "to_room": 5304,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5350,
           "description": "You can hear music coming from within the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -185,12 +203,14 @@
         "north": {
           "to_room": 5303,
           "description": "The garden path continues around the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5312,
           "description": "A small side street leads to the southern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -206,17 +226,20 @@
         "north": {
           "to_room": 5325,
           "description": "A small table is here, laden with fine jewelery and gems sold by the jeweler.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5320,
           "description": "Fruits and vegetables are piled on boxes waiting to be sold and eaten.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5308,
           "description": "The market place continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -232,17 +255,20 @@
         "north": {
           "to_room": 5322,
           "description": "Beautiful carpets and enormous bales of silk are being stared with awe by\nthe citizens.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5307,
           "description": "The center of the market lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5317,
           "description": ">From the great smell, the meat and poultry stand must be south!\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -257,15 +283,18 @@
       "exits": {
         "east": {
           "to_room": 5343,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5310,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5328,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -280,7 +309,8 @@
       "exits": {
         "north": {
           "to_room": 5309,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5344,
@@ -290,12 +320,14 @@
         },
         "south": {
           "to_room": 5311,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5326,
           "description": "A small clay dwelling sits here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -310,22 +342,26 @@
       "exits": {
         "north": {
           "to_room": 5310,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5337,
           "description": "An unusually tall dwelling stands looming over you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5304,
           "description": "A garden path circles around the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5327,
           "description": "Here lies a small stone house with a thatched roof.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -341,7 +377,8 @@
         "north": {
           "to_room": 5306,
           "description": "A small garden path encircles the temple.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5332,
@@ -351,12 +388,14 @@
         },
         "south": {
           "to_room": 5313,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5321,
           "description": "Inside the building you see long pieces of metal, an oven, and some\nanvils.  Obviously a smithy.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -371,21 +410,25 @@
       "exits": {
         "north": {
           "to_room": 5312,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5330,
           "description": "From the looks of it, this is a very impressive two story abode.\nThe entire first floor is covered with a huge marble bar with merry men\ntelling tall tales and drinking their fill.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5314,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5319,
           "description": "This seems to be the only guild house in the entire city. You feel uneasy\nabout this building.  For some reason it seems not to belong.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -400,19 +443,23 @@
       "exits": {
         "north": {
           "to_room": 5313,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5351,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5329,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5318,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -427,15 +474,18 @@
       "exits": {
         "north": {
           "to_room": 5316,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5318,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5347,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -451,12 +501,14 @@
         "north": {
           "to_room": 5317,
           "description": "You see the back-side of the market place meat stand.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5315,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -472,16 +524,19 @@
         "north": {
           "to_room": 5308,
           "description": "The market place lies this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5320,
           "description": "This is a cart full of fresh vegetables and fruits.  You are almost\ntempted to take some.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5316,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -497,12 +552,14 @@
         "east": {
           "to_room": 5314,
           "description": "A small side street welcomes you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5315,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -518,7 +575,8 @@
         "east": {
           "to_room": 5313,
           "description": "A small side street runs past the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -534,12 +592,14 @@
         "north": {
           "to_room": 5307,
           "description": "The market place is jammed packed with people scurrying about.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5317,
           "description": "A strong aromatic smell emanates from the meat stand next to you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -555,7 +615,8 @@
         "east": {
           "to_room": 5312,
           "description": "A small side street runs past the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -570,17 +631,20 @@
       "exits": {
         "north": {
           "to_room": 5323,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5325,
           "description": "A fine jewelry stand lies majestically next to you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5308,
           "description": "The market place is swarming with people scurrying about.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -596,11 +660,13 @@
         "north": {
           "to_room": 5324,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5322,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -615,16 +681,19 @@
       "exits": {
         "east": {
           "to_room": 5328,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5323,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5346,
           "description": "Above you stands a tall watchtower.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -640,12 +709,14 @@
         "south": {
           "to_room": 5307,
           "description": "The market place is packed with people scurrying about doing their\nbusiness.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5322,
           "description": "Next to you is a stand full of fine clothes and expensive rugs.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -661,7 +732,8 @@
         "east": {
           "to_room": 5310,
           "description": "Outside is a small side street.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -677,7 +749,8 @@
         "east": {
           "to_room": 5311,
           "description": "A small side street runs past the house.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -692,11 +765,13 @@
       "exits": {
         "east": {
           "to_room": 5309,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5324,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -712,7 +787,8 @@
         "north": {
           "to_room": 5314,
           "description": "A small side street runs past the shop.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -728,7 +804,8 @@
         "west": {
           "to_room": 5313,
           "description": "A small side street runs past the tavern.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -744,11 +821,13 @@
         "north": {
           "to_room": 5332,
           "description": "The long hallway leads back to the main reception area of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5334,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -764,17 +843,20 @@
         "north": {
           "to_room": 5302,
           "description": "Main street runs past the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5333,
           "description": "A hallway leads to the east wing of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5331,
           "description": "A hallway leads to the south wing of the city hall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5312,
@@ -794,11 +876,13 @@
       "exits": {
         "south": {
           "to_room": 5334,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5332,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -813,11 +897,13 @@
       "exits": {
         "north": {
           "to_room": 5333,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5331,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -833,7 +919,8 @@
         "east": {
           "to_room": 5355,
           "description": "The alley runs by this building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -849,7 +936,8 @@
         "south": {
           "to_room": 5302,
           "description": "Main street runs past this dwelling.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -865,17 +953,20 @@
         "east": {
           "to_room": 5338,
           "description": "Another room in the library is here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5311,
           "description": "A small side street winds past this building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5345,
           "description": "You see a second floor to the library.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -891,7 +982,8 @@
         "west": {
           "to_room": 5337,
           "description": "The main room of the library is there.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -907,12 +999,14 @@
         "north": {
           "to_room": 5340,
           "description": "You see a mighty watchtower north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5301,
           "description": "Main street runs past here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -928,12 +1022,14 @@
         "north": {
           "to_room": 5341,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5339,
           "description": "The cobbled alley continues on.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -948,16 +1044,19 @@
       "exits": {
         "south": {
           "to_room": 5340,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5343,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5348,
           "description": "You see up the powerful watchtower.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -973,12 +1072,14 @@
         "north": {
           "to_room": 5343,
           "description": "A cobbled alley is there.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5344,
           "description": "Another resting room is here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -994,17 +1095,20 @@
         "east": {
           "to_room": 5341,
           "description": "A watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5342,
           "description": "You hear laughter and splashing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5309,
           "description": "A side street greets you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1019,12 +1123,14 @@
       "exits": {
         "east": {
           "to_room": 5342,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5310,
           "description": "A small side street runs past the building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1039,7 +1145,8 @@
       "exits": {
         "down": {
           "to_room": 5337,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1055,7 +1162,8 @@
         "down": {
           "to_room": 5324,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1071,7 +1179,8 @@
         "down": {
           "to_room": 5315,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1087,7 +1196,8 @@
         "down": {
           "to_room": 5341,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1103,12 +1213,14 @@
         "north": {
           "to_room": 5305,
           "description": "A side street leads to the northern half of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5303,
           "description": "Main street leads out to the main gate of the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1124,12 +1236,14 @@
         "east": {
           "to_room": 5352,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5314,
           "description": "A small side street greets you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1144,15 +1258,18 @@
       "exits": {
         "north": {
           "to_room": 5353,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5351,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5354,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1168,12 +1285,14 @@
         "north": {
           "to_room": 5355,
           "description": "The alley continues to the north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5352,
           "description": "A tall watchtower stands a silent vigil over the city.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1189,7 +1308,8 @@
         "down": {
           "to_room": 5352,
           "description": "The city lies below.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1205,16 +1325,19 @@
         "north": {
           "to_room": 5301,
           "description": "You see main street.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5353,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5335,
           "description": "You see a little building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1230,12 +1353,14 @@
         "east": {
           "to_room": 5357,
           "description": "You see the trail.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5300,
           "description": "You see Thalos!\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1251,12 +1376,14 @@
         "east": {
           "to_room": 5358,
           "description": "You see the bend ahead of you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5356,
           "description": "You see the trail continue on.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1272,12 +1399,14 @@
         "north": {
           "to_room": 5359,
           "description": "You see the trail bend north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5357,
           "description": "You see the trail bend west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1293,12 +1422,14 @@
         "north": {
           "to_room": 5360,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5358,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1314,12 +1445,14 @@
         "north": {
           "to_room": 5361,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5359,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1335,12 +1468,14 @@
         "north": {
           "to_room": 5362,
           "description": "You see the trail continue north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5360,
           "description": "You see the trail continue south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1355,19 +1490,23 @@
       "exits": {
         "north": {
           "to_room": 5363,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5369,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5361,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5364,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1382,11 +1521,13 @@
       "exits": {
         "north": {
           "to_room": 5365,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5362,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1401,11 +1542,13 @@
       "exits": {
         "east": {
           "to_room": 5362,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5385,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1420,7 +1563,8 @@
       "exits": {
         "south": {
           "to_room": 5363,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1696,30 +1840,35 @@
       "sector_type": "forest",
       "flags": 0,
       "exits": {
+        "north": {
+          "to_room": 5368,
+          "description": "You see a fuzzy portal of some sort and a little green.\n",
+          "flags": "0",
+          "key": -1
+        },
         "east": {
           "to_room": 5378,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
-          "to_room": 5368,
-          "description": "You see a fuzzy portal of some sort and a little green.\n",
-          "flags": "0"
-        },
-        "west": {
           "to_room": 5378,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
-        "up": {
+        "west": {
           "to_room": 5376,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5376,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1735,32 +1884,38 @@
         "north": {
           "to_room": 5377,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 5376,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
-          "to_room": 5377,
-          "description": "You see stars.\n",
-          "flags": "0"
-        },
-        "west": {
-          "to_room": 5376,
-          "description": "You see stars.\n",
-          "flags": "0"
-        },
-        "up": {
           "to_room": 5375,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
+        },
+        "west": {
+          "to_room": 5377,
+          "description": "You see stars.\n",
+          "flags": "0",
+          "key": -1
+        },
+        "up": {
+          "to_room": 5376,
+          "description": "You see stars.\n",
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5375,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1774,34 +1929,40 @@
       "flags": 0,
       "exits": {
         "north": {
-          "to_room": 5376,
-          "description": "You see stars.\n",
-          "flags": "0"
-        },
-        "east": {
           "to_room": 5377,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
+        },
+        "east": {
+          "to_room": 5376,
+          "description": "You see stars.\n",
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 5376,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
-          "to_room": 5377,
+          "to_room": 5378,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 5378,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
-          "to_room": 5378,
+          "to_room": 5377,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1814,30 +1975,35 @@
       "sector_type": "forest",
       "flags": 0,
       "exits": {
-        "east": {
-          "to_room": 5375,
+        "north": {
+          "to_room": 5377,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
-        "south": {
+        "east": {
           "to_room": 8903,
           "description": "You see a fuzzy portal of some sort and a little green.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5375,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
-          "to_room": 5377,
+          "to_room": 5375,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 5377,
           "description": "You see stars.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -2085,7 +2251,7 @@
       "long_description": "You meet a baby beholder's cute gaze!\n",
       "description": "It has a large central eye that blinks like a guppy and eyestalks atop the \nround body which can charm you with its cuteness.  Baby beholders are known for\ntheir playful personality.  Hmmm....  It looks like the baby is teething!\n",
       "race": "human",
-      "act_flags": "ABCHR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 500,
       "group": 0,
@@ -2095,23 +2261,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 11,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 11
     },
     {
       "id": 5301,
@@ -2120,7 +2282,7 @@
       "long_description": "A pet lamia stands here waiting for her next command.\n",
       "description": "This is a creature with the upper torso of a beautiful woman, but the lower\nbody of a four-legged beast.\n",
       "race": "human",
-      "act_flags": "ACH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2130,23 +2292,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 5302,
@@ -2155,7 +2313,7 @@
       "long_description": "A citizen of Thalos is here, conversing with everyone.\n",
       "description": "He smiles at you, almost as if he knows you.  He is so friendly, you have no\nchoice but to reciprocate.\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2165,23 +2323,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 5303,
@@ -2190,7 +2344,7 @@
       "long_description": "An imperial cityguard is here, keeping the peace of Thalos.\n",
       "description": "He is dressed in plate, and he looks quite formidable.  At the moment, though,\nhe is just giggling with a kid running about.\n",
       "race": "human",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2200,23 +2354,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 5304,
@@ -2225,7 +2375,7 @@
       "long_description": "A female citizen of Thalos is here, showing off her new dress.\n",
       "description": "She is beautiful, dressed in a sundress that sparkles with gems sown in.  She\nsmiles at you, and your heart flutters at the thought that you have her\nattention, if only for a moment.\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2235,23 +2385,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 5305,
@@ -2260,7 +2406,7 @@
       "long_description": "Gordon the Brave, the Defender of Thalos, is here, looking at no\none but you, the only stranger in town.\n",
       "description": "Gordon is dressed in full mithril plate, and he looks indestructible.  He eyes\nyou suspiciously not only because you are a stranger, but because you are an\nARMED stranger.  Better not do any funny stuff in his presence.\n",
       "race": "human",
-      "act_flags": "AT",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2270,23 +2416,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 5306,
@@ -2295,7 +2437,7 @@
       "long_description": "A fanatic priest is here, foretelling the destruction of Thalos.\n",
       "description": "The priest must have lost his mind.  He keeps saying that one day, evil will\nprevail and take over Thalos and bring the whole city down.  Obviously, no one\nlistens to this fool.  The priest's right fist is covered in golden silk,\nand he clenches it at you.  Other than that, he is dressed all in black.\n",
       "race": "human",
-      "act_flags": "ABHQ",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -2305,23 +2447,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 5307,
@@ -2330,7 +2468,7 @@
       "long_description": "The priest of Thalos tells you of the glories of this city.\n",
       "description": "He stands here gloriously telling of Thalos's history, how it is now referred by\nthe world as 'The City of Peace'.  He is very happy to be the high priest here.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2340,23 +2478,19 @@
       "hit_dice": "20d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 5308,
@@ -2365,7 +2499,7 @@
       "long_description": "In the corner you see a large, stone golem faithfully standing watch.\n",
       "description": "It is a big chunk of rock that has been magically formed into a giant\nstone creature.  It stands here guarding the city.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "N",
       "alignment": 1000,
       "group": 0,
@@ -2375,23 +2509,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 212,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 212
     },
     {
       "id": 5309,
@@ -2400,7 +2530,7 @@
       "long_description": "The mayor of Thalos is sitting here, doing his paperwork.\n",
       "description": "He looks very busy, but he takes the time to say, 'Hi!  Welcome to Thalos!'\nHe looks very proud of his work.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 800,
       "group": 0,
@@ -2410,23 +2540,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5310,
@@ -2435,7 +2561,7 @@
       "long_description": "Dan the Barkeep stands by the counter wiping a glass.\n",
       "description": "He looks at you, and says, 'What's your poison, stranger?'\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -2445,23 +2571,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5311,
@@ -2470,7 +2592,7 @@
       "long_description": "George the Butcher is here whacking away at a side of beef.\n",
       "description": "Looking down at you with blood splattered all over his face and apron,\nhe asks, 'How much you want?'\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -2480,23 +2602,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5312,
@@ -2505,7 +2623,7 @@
       "long_description": "Farmer Betty looks at you sweetly offering you some apples.\n",
       "description": "She smiles at you meekly.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 650,
       "group": 0,
@@ -2515,23 +2633,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5313,
@@ -2540,7 +2654,7 @@
       "long_description": "Thaellor is here selling his metal wares.\n",
       "description": "Thaellor sweats rivers and complains about the heat as he pounds the\nmetal into items of defense and destruction.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 550,
       "group": 0,
@@ -2550,23 +2664,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5314,
@@ -2575,7 +2685,7 @@
       "long_description": "Ben the Smith sells metal odds and ends to anyone interested.\n",
       "description": "Ben tries to pawn his various wares to you.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -2585,23 +2695,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5315,
@@ -2610,7 +2716,7 @@
       "long_description": "The librarian is here shelving books away neatly.\n",
       "description": "The librarian looks busy and whispers, 'Shhh!'\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2620,23 +2726,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5316,
@@ -2645,7 +2747,7 @@
       "long_description": "A young scholar studies quietly in the corner.\n",
       "description": "This young scholar is studying to be a priest.\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -2655,23 +2757,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5317,
@@ -2680,7 +2778,7 @@
       "long_description": "An old wizard sits quietly at the counter waiting for a sale.\n",
       "description": "This old wizard almost looks like he is about to fall over and sleep.\n",
       "race": "human",
-      "act_flags": "ABR",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 550,
       "group": 0,
@@ -2690,23 +2788,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 5318,
@@ -2715,7 +2809,7 @@
       "long_description": "A beautiful woman is here offering you a massage.\n",
       "description": "She is beautiful, dressed in a sundress that sparkles with gems sown in.  She\nsmiles at you, and your heart flutters at the thought that you have her\nattention, and you jump to her offer for a massage.\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 700,
       "group": 0,
@@ -2725,23 +2819,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 5319,
@@ -2750,7 +2840,7 @@
       "long_description": "A man is here bathing.\n",
       "description": "He smiles at you, almost as if he knows you.  He is so friendly, you have no\nchoice but to reciprocate and join him and the others in the soothing pool.\n",
       "race": "human",
-      "act_flags": "ABH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 650,
       "group": 0,
@@ -2760,23 +2850,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5320,
@@ -2785,7 +2871,7 @@
       "long_description": "An imperial cityguard overseeing patrols in the city.\n",
       "description": "He is dressed in plate, and he looks quite formidable.  At the moment,\nhe is looking at a map of Thalos aside his fellow co-workers keeping\ntrack of each city patrol.\n",
       "race": "human",
-      "act_flags": "ABCGT",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2795,23 +2881,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 5321,
@@ -2820,7 +2902,7 @@
       "long_description": "An imperial cityguard guards the Grand Gate.\n",
       "description": "He is dressed in plate, and he looks quite formidable.  At the moment,\nhe is watching the children play with amusement.\n",
       "race": "human",
-      "act_flags": "ABCGT",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 1000,
       "group": 0,
@@ -2830,23 +2912,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 5322,
@@ -2855,7 +2933,7 @@
       "long_description": "A doe munches on grass.\n",
       "description": "This peaceful creature looks at you with big dark eyes.  Her nose twitches as\nshe sniffs at you, but she goes back to chewing some grass.\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2865,23 +2943,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5323,
@@ -2890,7 +2964,7 @@
       "long_description": "A deer stares back at you.\n",
       "description": "The deer looks angered at your intrusion.  He butts his head against you, \nalbeit ineffectively.\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2900,23 +2974,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5324,
@@ -2925,7 +2995,7 @@
       "long_description": "A large deer stag protects his territory.\n",
       "description": "He eyes you with contained anger.  You'd better leave him alone!\n",
       "race": "human",
-      "act_flags": "AFGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2935,23 +3005,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5325,
@@ -2960,7 +3026,7 @@
       "long_description": "A small bunny pokes from bush to bush.\n",
       "description": "This bunny looks so adorable, you wished you had one just like this!\n",
       "race": "human",
-      "act_flags": "AGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2970,23 +3036,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5326,
@@ -2995,7 +3057,7 @@
       "long_description": "A small snake slithers between the grass.\n",
       "description": "Upon careful inspection, you are sure it is NOT a cobra!\n",
       "race": "snake",
-      "act_flags": "AFGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": 0,
       "group": 0,
@@ -3005,23 +3067,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
+      "form": "293601345",
+      "parts": "10554425",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGXYc",
-      "parts": "0ADEFKLQVX",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5327,
@@ -3030,7 +3088,7 @@
       "long_description": "A druid is here in meditation.\n",
       "description": "He doesn't like you bothering him, but is too polite to ask you to leave.\n",
       "race": "human",
-      "act_flags": "AGHQ",
+      "act_flags": "0",
       "affected_by": "DN",
       "alignment": 1000,
       "group": 0,
@@ -3040,23 +3098,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 5328,
@@ -3065,7 +3119,7 @@
       "long_description": "A druidess peers at you.\n",
       "description": "She wonders why you are staring at her, and how you got in here.\n",
       "race": "human",
-      "act_flags": "AGHQ",
+      "act_flags": "0",
       "affected_by": "DN",
       "alignment": 1000,
       "group": 0,
@@ -3075,23 +3129,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 5329,
@@ -3100,7 +3150,7 @@
       "long_description": "A bard sings of the glory of Thalos.\n",
       "description": "This musical fellow plays a happy song with his fellow comrades.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 450,
       "group": 0,
@@ -3110,23 +3160,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 5330,
@@ -3135,7 +3181,7 @@
       "long_description": "This bard merrily skips along singing of the glory of Thalos.\n",
       "description": "This musical fellow wanders the world singing of the glory of Thalos.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 550,
       "group": 0,
@@ -3145,23 +3191,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 7,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 7
     },
     {
       "id": 5331,
@@ -3170,7 +3212,7 @@
       "long_description": "A cityguard stands here.\n",
       "description": "A big, strong, helpful, trustworthy guard.\n",
       "race": "human",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 1000,
       "group": 0,
@@ -3180,23 +3222,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 5332,
@@ -3205,7 +3243,7 @@
       "long_description": "A janitor is walking around, cleaning up.\n",
       "description": "",
       "race": "human",
-      "act_flags": "A",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 900,
       "group": 0,
@@ -3215,23 +3253,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 5333,
@@ -3240,7 +3274,7 @@
       "long_description": "Beastly Fido is here.\n",
       "description": "Fido is a small dog that has a foul smell and pieces of rotted meat hanging\naround his teeth.\n",
       "race": "fido",
-      "act_flags": "AFH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -3250,23 +3284,19 @@
       "hit_dice": "0d1+99",
       "mana_dice": "1d2+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 10,
-      "ac_bash": 10,
-      "ac_slash": 10,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENFR",
       "immune": "0",
       "resist": "0",
       "vuln": "0C",
+      "form": "2097219",
+      "parts": "2164413",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0ABGV",
-      "parts": "0ACDEFHJKQV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 5334,
@@ -3275,7 +3305,7 @@
       "long_description": "A cityguard is here, guarding the gate.\n",
       "description": "A big, strong, helpful, trustworthy guard.\n",
       "race": "human",
-      "act_flags": "ABGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 1000,
       "group": 0,
@@ -3285,2770 +3315,107 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     }
   ],
-  "objects": [
+  "objects": [],
+  "mob_programs": [],
+  "shops": [
     {
-      "id": 5300,
-      "name": "a lamia collar",
-      "keywords": "collar",
-      "description": "A lamia collar is on the ground.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 3,
-      "weight": 50,
-      "cost": 310,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
+      "keeper": 5310,
+      "buy_types": [
         0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5301,
-      "name": "a beautiful iron breast plate",
-      "keywords": "breast plate iron",
-      "description": "A beautiful iron breast plate lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 20,
-      "weight": 450,
-      "cost": 3200,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
         0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5302,
-      "name": "a green serpentine staff",
-      "keywords": "staff serpentine",
-      "description": "A green serpentine staff has been left here.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 96,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 120,
-      "cost": 2000,
-      "condition": 100,
-      "values": [
-        20,
-        2,
-        2,
-        39,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5304,
-      "name": "a scroll of enchantment",
-      "keywords": "scroll magic",
-      "description": "A scroll of magical enchantment has been left here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 8,
-      "weight": 150,
-      "cost": 1420,
-      "condition": 100,
-      "values": [
-        30,
-        41,
         0,
         0,
         0
       ],
-      "affects": [],
-      "extra_descriptions": []
+      "profit_buy": 120,
+      "profit_sell": 90,
+      "open_hour": 0,
+      "close_hour": 23
     },
     {
-      "id": 5305,
-      "name": "a bound scroll",
-      "keywords": "scroll bound",
-      "description": "A bound scroll of detection lies at your feet.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 150,
-      "cost": 800,
-      "condition": 100,
-      "values": [
-        30,
-        30,
-        33,
-        34,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5306,
-      "name": "a large beautiful fountain",
-      "keywords": "fountain",
-      "description": "An elaborate white marble fountain is here.",
-      "material": "oldstyle",
-      "item_type": "fountain",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "fountain",
-          "description": "You see the most beautiful fountain in the world.  The white marble glistens\nas sunlight hits its wet surfaces.  Fish swim around in the inner fountain, and\nan exterior fountain is reserved just for drinking.\n"
-        }
-      ]
-    },
-    {
-      "id": 5307,
-      "name": "the curved desk",
-      "keywords": "desk",
-      "description": "A beautiful desk made from a gigantic sea shell is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        100,
-        13,
-        5224,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "desk",
-          "description": "The sea shell desk here is just gorgeous.  The creamy white of the table\nsurface makes you dream of being in a pool swimming among mermaids.\n"
-        }
-      ]
-    },
-    {
-      "id": 5308,
-      "name": "the glass cabinet",
-      "keywords": "cabinet",
-      "description": "A sturdy glass cabinet is here.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        500,
-        13,
-        5226,
-        100,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "cabinet",
-          "description": "A cabinet made of oak and mahogany, this piece of woodmanship is just splendid \nto view.  The wood is varnished with a very strong stain that looks as if it\nwould last longer than the cabinet itself.\n"
-        }
-      ]
-    },
-    {
-      "id": 5309,
-      "name": "a mandolin",
-      "keywords": "mandolin",
-      "description": "A mandolin lies against the wall.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 10,
-      "weight": 200,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        18,
+      "keeper": 5311,
+      "buy_types": [
         5,
+        17,
+        19,
+        0,
+        0
+      ],
+      "profit_buy": 110,
+      "profit_sell": 90,
+      "open_hour": 6,
+      "close_hour": 20
+    },
+    {
+      "keeper": 5312,
+      "buy_types": [
+        19,
+        0,
+        0,
+        0,
+        0
+      ],
+      "profit_buy": 110,
+      "profit_sell": 90,
+      "open_hour": 7,
+      "close_hour": 19
+    },
+    {
+      "keeper": 5313,
+      "buy_types": [
         5,
-        23,
+        9,
+        0,
+        0,
         0
       ],
-      "affects": [],
-      "extra_descriptions": []
+      "profit_buy": 130,
+      "profit_sell": 70,
+      "open_hour": 5,
+      "close_hour": 21
     },
     {
-      "id": 5310,
-      "name": "a golden harp",
-      "keywords": "harp golden",
-      "description": "A beautiful golden harp is waiting to be played.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 64,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 1000,
-      "cost": 3200,
-      "condition": 100,
-      "values": [
-        30,
+      "keeper": 5314,
+      "buy_types": [
         1,
-        1,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5311,
-      "name": "a silver flute",
-      "keywords": "flute silver",
-      "description": "A brilliant silver flute glimmers from its holster.",
-      "material": "oldstyle",
-      "item_type": "staff",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 9,
-      "weight": 60,
-      "cost": 3900,
-      "condition": 100,
-      "values": [
-        30,
-        1,
-        1,
-        13,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5312,
-      "name": "a green potion",
-      "keywords": "potion green",
-      "description": "You see a green potion on the floor.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 25,
-      "weight": 50,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        20,
-        92,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5313,
-      "name": "some bluish herbs",
-      "keywords": "bluish herbs",
-      "description": "Some bluish herbs are scattered here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 1,
-      "weight": 10,
-      "cost": 270,
-      "condition": 100,
-      "values": [
-        15,
-        0,
-        0,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5314,
-      "name": "some purplish herbs",
-      "keywords": "purplish herbs",
-      "description": "Some purplish herbs are scattered here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 250,
-      "condition": 100,
-      "values": [
-        15,
-        0,
-        0,
+        8,
         12,
-        0
+        13,
+        22
       ],
-      "affects": [],
-      "extra_descriptions": []
+      "profit_buy": 135,
+      "profit_sell": 65,
+      "open_hour": 8,
+      "close_hour": 18
     },
     {
-      "id": 5315,
-      "name": "some grayish herbs",
-      "keywords": "grayish herbs",
-      "description": "Some grayish herbs are scattered here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 5,
-      "weight": 10,
-      "cost": 360,
-      "condition": 100,
-      "values": [
-        5,
-        0,
-        53,
-        70,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5316,
-      "name": "some orangish herbs",
-      "keywords": "orangish herbs",
-      "description": "Some orangish herbs are scattered here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 150,
-      "condition": 100,
-      "values": [
-        5,
-        0,
-        0,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5317,
-      "name": "an imperial sword",
-      "keywords": "sword",
-      "description": "You see an imperial sword here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 14,
-      "weight": 50,
-      "cost": 1420,
-      "condition": 100,
-      "values": [
-        1,
-        3,
-        4,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "sword",
-          "description": "You see a sword of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5318,
-      "name": "an imperial mace",
-      "keywords": "mace",
-      "description": "You see an imperial mace here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 50,
-      "cost": 1180,
-      "condition": 100,
-      "values": [
-        4,
+      "keeper": 5317,
+      "buy_types": [
         2,
-        7,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "mace",
-          "description": "You see a mace of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5319,
-      "name": "an imperial chest plate",
-      "keywords": "chest plate",
-      "description": "You see an imperial chest plate here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 10,
-      "weight": 50,
-      "cost": 1450,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "chest plate",
-          "description": "You see a chest plate of great craftsmanship.  Stamped on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5320,
-      "name": "an imperial shield",
-      "keywords": "shield",
-      "description": "You see an imperial shield here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 513,
-      "level": 10,
-      "weight": 50,
-      "cost": 1190,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        2,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "shield",
-          "description": "You see a shield of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5321,
-      "name": "an imperial cloak",
-      "keywords": "cloak",
-      "description": "You see an imperial cloak here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 5,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "cloak",
-          "description": "You see a cloak of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5322,
-      "name": "an imperial helm",
-      "keywords": "helm",
-      "description": "You see an imperial helm here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 17,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "helm",
-          "description": "You see a helm of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5323,
-      "name": "a pair of imperial plate leggings",
-      "keywords": "plate leggings",
-      "description": "You see a pair of imperial plate leggings here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 33,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "plate leggings",
-          "description": "You see plate leggings of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5324,
-      "name": "a pair of imperial plate boots",
-      "keywords": "plate boots",
-      "description": "You see a pair of imperial plate boots here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 65,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "plate boots",
-          "description": "You see plate boots of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5325,
-      "name": "a pair of imperial plate gloves",
-      "keywords": "plate gloves",
-      "description": "You see a pair of imperial plate gloves here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 129,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "plate gloves",
-          "description": "You see plate gloves of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5326,
-      "name": "a pair of imperial plate sleeves",
-      "keywords": "plate sleeves",
-      "description": "You see a pair of imperial plate sleeves here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 257,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "plate sleeves",
-          "description": "You see plate sleeves of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5327,
-      "name": "an imperial cape",
-      "keywords": "cape",
-      "description": "You see an imperial cape here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "cape",
-          "description": "You see a cape of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5328,
-      "name": "an imperial belt",
-      "keywords": "belt",
-      "description": "You see an imperial belt here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 2049,
-      "level": 10,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "belt",
-          "description": "You see a belt of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5329,
-      "name": "an imperial metal bracer",
-      "keywords": "metal bracer",
-      "description": "You see an imperial metal bracer here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 4097,
-      "level": 5,
-      "weight": 50,
-      "cost": 550,
-      "condition": 100,
-      "values": [
         3,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "metal bracer",
-          "description": "You see a metal bracer of great craftsmanship.  Imprinted on the side is:\nMerc Industries\n"
-        }
-      ]
-    },
-    {
-      "id": 5330,
-      "name": "an imperial city guard signet ring",
-      "keywords": "ring signet",
-      "description": "You see a ring with a strange symbol on the floor.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 16,
-      "weight": 10,
-      "cost": 1280,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -1
-        },
-        {
-          "location": 17,
-          "modifier": -4
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 5331,
-      "name": "an imperial war banner",
-      "keywords": "imperial banner",
-      "description": "An imperial war banner is on the floor here.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 65,
-      "wear_flags": 1,
-      "level": 20,
-      "weight": 10,
-      "cost": 1440,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        -1,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -2
-        },
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "banner",
-          "description": "This is the official Merc war banner to see you through the darkest realm!\n"
-        }
-      ]
-    },
-    {
-      "id": 5332,
-      "name": "a two-handed sword",
-      "keywords": "two-handed two sword",
-      "description": "A nice two-handed sword hangs on a hook in the wall.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1088,
-      "wear_flags": 8193,
-      "level": 34,
-      "weight": 240,
-      "cost": 4400,
-      "condition": 100,
-      "values": [
-        1,
         4,
-        7,
-        21,
-        40
+        10,
+        0
       ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 5306,
-      "arg2": 1,
-      "arg3": 5319,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5218,
-      "arg2": 8,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5222,
-      "arg2": 8,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5252,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5239,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5305,
-      "arg2": 1,
-      "arg3": 5336,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5204,
-      "arg2": 8,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5203,
-      "arg2": 8,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5205,
-      "arg2": 8,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5206,
-      "arg2": 8,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5201,
-      "arg2": 8,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5202,
-      "arg2": 8,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5301,
-      "arg2": 8,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5332,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5226,
-      "arg2": 12,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5300,
-      "arg2": 1,
-      "arg3": 5350,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5243,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5307,
-      "arg2": 1,
-      "arg3": 5350,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5302,
-      "arg2": 8,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5223,
-      "arg2": 10,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5300,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5304,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5306,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5310,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5314,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5316,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5320,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5322,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5326,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5328,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5332,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5334,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5338,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5340,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5344,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5346,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5348,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5350,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5352,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5301,
-      "arg2": 20,
-      "arg3": 5354,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5300,
-      "arg2": -1,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5306,
-      "arg2": 1,
-      "arg3": 5334,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5330,
-      "arg2": 1,
-      "arg3": 5300,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5311,
-      "arg2": 3,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5329,
-      "arg2": 2,
-      "arg3": 5330,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5309,
-      "arg2": 3,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5329,
-      "arg2": 2,
-      "arg3": 5330,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5310,
-      "arg2": 3,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5316,
-      "arg2": 2,
-      "arg3": 5345,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5315,
-      "arg2": 1,
-      "arg3": 5337,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5319,
-      "arg2": 2,
-      "arg3": 5342,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5318,
-      "arg2": 4,
-      "arg3": 5344,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 5308,
-      "arg2": 8,
-      "arg3": 5347,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5232,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5308,
-      "arg2": 8,
-      "arg3": 5346,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5233,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5308,
-      "arg2": 8,
-      "arg3": 5348,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5235,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5308,
-      "arg2": 8,
-      "arg3": 5354,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5221,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5237,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5311,
-      "arg2": 1,
-      "arg3": 5317,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5219,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 601,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 602,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 603,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 604,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 605,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5312,
-      "arg2": 1,
-      "arg3": 5320,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 609,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 610,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 611,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 612,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 613,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5313,
-      "arg2": 1,
-      "arg3": 5329,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5310,
-      "arg2": 1,
-      "arg3": 5330,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 648,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 649,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 650,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5314,
-      "arg2": 1,
-      "arg3": 5321,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 601,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 615,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5317,
-      "arg2": 1,
-      "arg3": 5338,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5309,
-      "arg2": 1,
-      "arg3": 5331,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5224,
-      "arg2": 9,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 5307,
-      "arg2": 1,
-      "arg3": 5331,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 5304,
-      "arg2": 4,
-      "arg3": 5307,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 5305,
-      "arg2": 4,
-      "arg3": 5307,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 5231,
-      "arg2": 9,
-      "arg3": 5307,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 5308,
-      "arg2": 1,
-      "arg3": 5333,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 3105,
-      "arg2": 8,
-      "arg3": 5308,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 5214,
-      "arg2": 8,
-      "arg3": 5308,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 5230,
-      "arg2": 1,
-      "arg3": 5308,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5320,
-      "arg2": 3,
-      "arg3": 5335,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 5330,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5320,
-      "arg2": 3,
-      "arg3": 5335,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 5330,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5329,
-      "arg2": 10,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5320,
-      "arg2": 3,
-      "arg3": 5335,
-      "arg4": 3
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5329,
-      "arg2": 10,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5321,
-      "arg2": 2,
-      "arg3": 5300,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5331,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5322,
-      "arg2": 10,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5323,
-      "arg2": 10,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5324,
-      "arg2": 10,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5325,
-      "arg2": 10,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5321,
-      "arg2": 2,
-      "arg3": 5300,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 5331,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5324,
-      "arg2": 10,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5325,
-      "arg2": 10,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5326,
-      "arg2": 10,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5300,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5329,
-      "arg2": 10,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5304,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5307,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5329,
-      "arg2": 10,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5313,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5330,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5315,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5324,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5331,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5329,
-      "arg2": 10,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5334,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5330,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5341,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5350,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5321,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5320,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5317,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5303,
-      "arg2": 11,
-      "arg3": 5352,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 5330,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5319,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5327,
-      "arg2": 10,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5328,
-      "arg2": 10,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 5318,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5302,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5304,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5307,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5308,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5312,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5316,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5326,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5327,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5330,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5330,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5332,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5338,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5340,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5344,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5344,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5350,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5304,
-      "arg2": 9,
-      "arg3": 5361,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5302,
-      "arg2": 9,
-      "arg3": 5367,
-      "arg4": 9
-    },
-    {
-      "command": "R",
-      "arg1": 5375,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 5376,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 5377,
-      "arg2": 6,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "R",
-      "arg1": 5378,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5327,
-      "arg2": 2,
-      "arg3": 5368,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5313,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5327,
-      "arg2": 2,
-      "arg3": 5371,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5315,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5328,
-      "arg2": 2,
-      "arg3": 5374,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5314,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5328,
-      "arg2": 2,
-      "arg3": 5372,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 5316,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5322,
-      "arg2": 2,
-      "arg3": 5367,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5323,
-      "arg2": 3,
-      "arg3": 5370,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5324,
-      "arg2": 1,
-      "arg3": 5369,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 5325,
-      "arg2": 3,
-      "arg3": 5373,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 5326,
-      "arg2": 4,
-      "arg3": 5372,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5334,
-      "arg2": 1,
-      "arg3": 5384,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3365,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3364,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3350,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3353,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3354,
-      "arg2": 10,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5331,
-      "arg2": 1,
-      "arg3": 5381,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 3365,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3364,
-      "arg2": 10,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3350,
-      "arg2": -1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3353,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 3355,
-      "arg2": 10,
-      "arg3": 4,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 5332,
-      "arg2": 2,
-      "arg3": 5380,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5333,
-      "arg2": 3,
-      "arg3": 5382,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 5323,
-      "arg2": 3,
-      "arg3": 5358,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 5326,
-      "arg2": 4,
-      "arg3": 5356,
-      "arg4": 2
+      "profit_buy": 120,
+      "profit_sell": 50,
+      "open_hour": 9,
+      "close_hour": 17
     }
   ],
   "specials": [
@@ -6108,5 +3475,11 @@
       "mob_vnum": 5334,
       "spec": "spec_guard"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 5300,
+    "high": 5399
+  }
 }

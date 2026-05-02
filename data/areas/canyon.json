@@ -1326,7 +1326,7 @@
       "long_description": "A mountain climber is making the same trek that you are.\n",
       "description": "He wants to see what's on the other side of the mountain too.\n",
       "race": "human",
-      "act_flags": "ACGT",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 500,
       "group": 0,
@@ -1336,23 +1336,19 @@
       "hit_dice": "1d1+99",
       "mana_dice": "1d4+1",
       "damage_dice": "punch",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "JN",
       "immune": "0",
       "resist": "HIJR",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 30
     },
     {
       "id": 9202,
@@ -1361,7 +1357,7 @@
       "long_description": "A hungry cyclops snarls at you!\n",
       "description": "He looks like he's about to have dinner (maybe it's you?).\n",
       "race": "giant",
-      "act_flags": "ABFQT",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -700,
       "group": 0,
@@ -1371,23 +1367,19 @@
       "hit_dice": "10d10+100",
       "mana_dice": "6d4+10",
       "damage_dice": "smash",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": -2,
+      "damage_type": "none",
       "offensive": "ACDIO",
       "immune": "AB",
       "resist": "CDHI",
       "vuln": "0JP",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "huge",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 600,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "huge",
-      "material": "0"
+      "wealth": 600
     },
     {
       "id": 9203,
@@ -1396,7 +1388,7 @@
       "long_description": "A tiny elemental form wanders about.\n",
       "description": "Rather small for an elemental form, looks like a reject.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1406,23 +1398,19 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9204,
@@ -1431,7 +1419,7 @@
       "long_description": "The elemental guardian of the canyon.\n",
       "description": "You can't tell which kind of elemental it is, maybe it's a bit o' all of them?\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1441,23 +1429,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9205,
@@ -1466,7 +1450,7 @@
       "long_description": "A small, rather non-descript elemental.\n",
       "description": "A small elemental, a resident of the canyon.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1476,23 +1460,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 12,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 12
     },
     {
       "id": 9206,
@@ -1501,7 +1481,7 @@
       "long_description": "A medium-sized elemental.\n",
       "description": "A medium elemental, a resident of the canyon.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 10,
       "group": 0,
@@ -1511,23 +1491,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 37,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 37
     },
     {
       "id": 9207,
@@ -1536,7 +1512,7 @@
       "long_description": "A large elemental.\n",
       "description": "A large elemental, a resident of the canyon.",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 20,
       "group": 0,
@@ -1546,23 +1522,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 100,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 100
     },
     {
       "id": 9208,
@@ -1571,7 +1543,7 @@
       "long_description": "The Ruler of the earth elementals.\n",
       "description": "He looks as old as the earth itself.  He seems to know all the \nsecrets and knowledge of the Earth.  You can't really tell where \nhe begins and the rock wall ends.\n",
       "race": "human",
-      "act_flags": "ABQ",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 0,
       "group": 0,
@@ -1581,23 +1553,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 9209,
@@ -1606,7 +1574,7 @@
       "long_description": "The Ruler of the fire elementals.\n",
       "description": "As you look at him he seems to blend in with the fire in his throne.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 0,
       "group": 0,
@@ -1616,23 +1584,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 9210,
@@ -1641,7 +1605,7 @@
       "long_description": "The Ruler of the air elementals.\n",
       "description": "As you peer at him you seem to be looking at the sky itself.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 0,
       "group": 0,
@@ -1651,23 +1615,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 9211,
@@ -1676,7 +1636,7 @@
       "long_description": "The Ruler of the lightning elementals.\n",
       "description": "As you examine him there is a blinding flash of light and a deafening boom!\nYou rub your eyes and look and the ruler is there grinning at you.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "H",
       "alignment": 0,
       "group": 0,
@@ -1686,23 +1646,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 9212,
@@ -1711,7 +1667,7 @@
       "long_description": "The Ruler of the water elementals.\n",
       "description": "As you look at him he changes to mist, which swirls around you.  Just\nas you get scared, it reforms in elemental form.\n",
       "race": "water fowl",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "HTb",
       "alignment": 0,
       "group": 0,
@@ -1721,23 +1677,19 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0R",
       "vuln": "0",
+      "form": "4194369",
+      "parts": "33981",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5000,
-      "form": "0AGW",
-      "parts": "0ACDEFHKP",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 9214,
@@ -1746,7 +1698,7 @@
       "long_description": "A small puddle of water elemental.\n",
       "description": "It trickles along the ground and gets your feet wet.\n",
       "race": "water fowl",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0Tb",
       "alignment": 0,
       "group": 0,
@@ -1756,23 +1708,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0R",
       "vuln": "0",
+      "form": "4194369",
+      "parts": "33981",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 11,
-      "form": "0AGW",
-      "parts": "0ACDEFHKP",
-      "size": "medium",
-      "material": "0"
+      "wealth": 11
     },
     {
       "id": 9215,
@@ -1781,7 +1729,7 @@
       "long_description": "A small flickering flame elemental.\n",
       "description": "It smolders along the grass aimlessly.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1791,23 +1739,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 7,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 7
     },
     {
       "id": 9216,
@@ -1816,7 +1760,7 @@
       "long_description": "A frozen snowflake water elemental.\n",
       "description": "It looks a little blue.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 520,
       "group": 0,
@@ -1826,23 +1770,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9217,
@@ -1851,7 +1791,7 @@
       "long_description": "A small rock.\n",
       "description": "It seems to be a small living pebble!\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1861,23 +1801,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 4,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 4
     },
     {
       "id": 9218,
@@ -1886,7 +1822,7 @@
       "long_description": "A small spark of electricity fizzles here.\n",
       "description": "Zipping from place to place at the speed of light is tough work.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1896,23 +1832,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 6,
-      "ac_bash": 6,
-      "ac_slash": 6,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 7,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 7
     },
     {
       "id": 9219,
@@ -1921,7 +1853,7 @@
       "long_description": "A small blob of acid aimlessly eats away at the stone.\n",
       "description": "The magical blob of acid is a cross between lightning and water.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1931,23 +1863,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 9220,
@@ -1956,7 +1884,7 @@
       "long_description": "A lava beast spews from place to place.\n",
       "description": "The magical lava beast is a cross between fire and earth.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1966,23 +1894,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 15,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 15
     },
     {
       "id": 9221,
@@ -1991,7 +1915,7 @@
       "long_description": "A mud monster slops around.\n",
       "description": "The magical mud monster is a cross between water and earth.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2001,23 +1925,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 20,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 20
     },
     {
       "id": 9222,
@@ -2026,7 +1946,7 @@
       "long_description": "The air is magically misty here.\n",
       "description": "The magical mist is a cross between water and air.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2036,23 +1956,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 15,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 15
     },
     {
       "id": 9223,
@@ -2061,7 +1977,7 @@
       "long_description": "A sub-atomic particle is too small for you to see.\n",
       "description": "The magical manifestation of energy.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2071,23 +1987,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9224,
@@ -2096,7 +2008,7 @@
       "long_description": "A dust cloud blowing by makes you sneeze.\n",
       "description": "The magical dust cloud is a cross between air and earth.\n",
       "race": "human",
-      "act_flags": "AGS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -2106,23 +2018,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 9225,
@@ -2131,7 +2039,7 @@
       "long_description": "A small eddie current swirls junk around here.\n",
       "description": "The magical eddie current is a manifestation of an air elemental.\n",
       "race": "human",
-      "act_flags": "AGS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -2141,23 +2049,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 9,
-      "ac_bash": 9,
-      "ac_slash": 9,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 9226,
@@ -2166,7 +2070,7 @@
       "long_description": "The Blue Flame burns mysteriously here.\n",
       "description": "As you look you see what seems to be a face and almost a \nhumanoid figure somehow trapped in the fire.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -2176,23 +2080,19 @@
       "hit_dice": "13d9+100",
       "mana_dice": "3d7+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1250
     },
     {
       "id": 9227,
@@ -2201,7 +2101,7 @@
       "long_description": "The Magneto considers zapping you for the heck of it.\n",
       "description": "A humanoid figure seems to be trapped in the field of the Magneto.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -150,
       "group": 0,
@@ -2211,23 +2111,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9228,
@@ -2236,7 +2132,7 @@
       "long_description": "The Ice Bandit strikes cold fear in your heart.\n",
       "description": "A humanoid figure encased in ice but still apparently alive.\n",
       "race": "human",
-      "act_flags": "ABGH",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -250,
       "group": 0,
@@ -2246,23 +2142,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1500
     },
     {
       "id": 9229,
@@ -2271,7 +2163,7 @@
       "long_description": "The Rock Monster considers you in stoney silence.\n",
       "description": "A humanoid figure trapped in stone seems alive.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -310,
       "group": 0,
@@ -2281,23 +2173,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 950,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 950
     },
     {
       "id": 9230,
@@ -2306,7 +2194,7 @@
       "long_description": "A Hurricane rages across the sky.\n",
       "description": "A humanoid figure is trapped in the rushing wind.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "P",
       "alignment": -10,
       "group": 0,
@@ -2316,23 +2204,19 @@
       "hit_dice": "14d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2054,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2054
     },
     {
       "id": 9231,
@@ -2341,7 +2225,7 @@
       "long_description": "An elemental magician seeks magical stones for a spell.\n",
       "description": "The elemental magician has come here in search of the fabled\nStone of Surrender which can be used to render opponents senseless.\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "B",
       "alignment": -50,
       "group": 0,
@@ -2351,23 +2235,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 4,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 9232,
@@ -2376,7 +2256,7 @@
       "long_description": "A warrior of the Rainbow Cult swears his loyalty.\n",
       "description": "The Rainbow Cult has received special powers for their service to \nthe elemental forces.\n",
       "race": "human",
-      "act_flags": "AGQ",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 150,
       "group": 0,
@@ -2386,23 +2266,19 @@
       "hit_dice": "18d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 400,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 400
     },
     {
       "id": 9233,
@@ -2411,7 +2287,7 @@
       "long_description": "The illusionist seeks the aid of the elemental forces.\n",
       "description": "He seeks their aid for a powerful new spell of deception.\n\n<wielded>            The Sword of Illusions\n",
       "race": "human",
-      "act_flags": "ABGR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -50,
       "group": 0,
@@ -2421,23 +2297,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 95,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 95
     },
     {
       "id": 9234,
@@ -2446,7 +2318,7 @@
       "long_description": "An alchemist wanders by in search of magical herbs.\n",
       "description": "Rare herbs are rumored to grow only in the canyon.\n",
       "race": "human",
-      "act_flags": "AGS",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -50,
       "group": 0,
@@ -2456,23 +2328,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 95,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 95
     },
     {
       "id": 9235,
@@ -2481,7 +2349,7 @@
       "long_description": "A baby rainbow dragon plays among the elements here.\n",
       "description": "It's only a baby by dragon standards.\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -2491,23 +2359,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9236,
@@ -2516,7 +2380,7 @@
       "long_description": "A little imp runs along being annoying.\n",
       "description": "The little bugger steals stuff and is generally obnoxious.\n",
       "race": "human",
-      "act_flags": "ACGH",
+      "act_flags": "0",
       "affected_by": "PQ",
       "alignment": -500,
       "group": 0,
@@ -2526,23 +2390,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9237,
@@ -2551,7 +2411,7 @@
       "long_description": "A HUGE elemental form stands here.\n",
       "description": "HUGE, need i say more?\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 30,
       "group": 0,
@@ -2561,23 +2421,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 9238,
@@ -2586,7 +2442,7 @@
       "long_description": "A vendor is willing to sell you elixirs.\n",
       "description": "I WOULD NOT suggest you attack me ...!\n",
       "race": "human",
-      "act_flags": "ABEGR",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 900,
       "group": 0,
@@ -2596,2055 +2452,37 @@
       "hit_dice": "30d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -9,
-      "ac_bash": -9,
-      "ac_slash": -9,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "ABCD",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     }
   ],
-  "objects": [
+  "objects": [],
+  "mob_programs": [],
+  "shops": [
     {
-      "id": 9201,
-      "name": "the earth ring",
-      "keywords": "ring earth",
-      "description": "A dark ring which seems to absorb all the light around it lies here.",
-      "material": "oldstyle",
-      "item_type": "furniture",
-      "extra_flags": 256,
-      "wear_flags": 3,
-      "level": 7,
-      "weight": 50,
-      "cost": 1140,
-      "condition": 100,
-      "values": [
+      "keeper": 9238,
+      "buy_types": [
         0,
         0,
         0,
         0,
         0
       ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        },
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9202,
-      "name": "a stoney breastplate",
-      "keywords": "breastplate stoney breast plate",
-      "description": "A breastplate made of the stone from deep within the earth lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 31,
-      "weight": 700,
-      "cost": 5500,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 1
-        },
-        {
-          "location": 2,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9203,
-      "name": "a fiery dagger",
-      "keywords": "dagger fiery",
-      "description": "A dagger made of fire crackles mysteriously here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 29,
-      "weight": 20,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        2,
-        5,
-        4,
-        11,
-        1
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 4
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9204,
-      "name": "a flame red cape",
-      "keywords": "cape flame flaming red",
-      "description": "A cape made of ethereal red fiber lies neatly folded on the ground here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1,
-      "wear_flags": 5,
-      "level": 30,
-      "weight": 30,
-      "cost": 3100,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9205,
-      "name": "the wind boots",
-      "keywords": "boots wind",
-      "description": "A pair of boots that look fast standing still are here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 65,
-      "level": 26,
-      "weight": 10,
-      "cost": 5200,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9206,
-      "name": "a hurricane helmet",
-      "keywords": "helmet hurricane",
-      "description": "A helmet that looks like it has weathered many storms has been set here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 2,
-      "wear_flags": 17,
-      "level": 31,
-      "weight": 40,
-      "cost": 3800,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9207,
-      "name": "a sparking lightning sword",
-      "keywords": "sword lightning bolt",
-      "description": "A lightning bolt fashioned into a sword spits sparks here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 3,
-      "wear_flags": 8193,
-      "level": 25,
-      "weight": 100,
-      "cost": 2200,
-      "condition": 100,
-      "values": [
-        1,
-        5,
-        4,
-        3,
-        128
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9208,
-      "name": "an electric shield",
-      "keywords": "shield electric",
-      "description": "A shield made entirely of energy buzzes here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 2,
-      "wear_flags": 513,
-      "level": 28,
-      "weight": 80,
-      "cost": 4500,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": 1
-        },
-        {
-          "location": 1,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9209,
-      "name": "an icy girth",
-      "keywords": "girth icy",
-      "description": "A girth made of magical ice has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 2049,
-      "level": 31,
-      "weight": 100,
-      "cost": 1540,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 5,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9210,
-      "name": "a waterfall cloak",
-      "keywords": "cloak waterfall",
-      "description": "A cloak fashioned from a small magical waterfall is here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 1025,
-      "level": 30,
-      "weight": 60,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -2
-        },
-        {
-          "location": 12,
-          "modifier": 25
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9211,
-      "name": "an elemental amulet",
-      "keywords": "amulet elemental",
-      "description": "An amulet depicting fire, water, lightning, earth, and air lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1,
-      "wear_flags": 5,
-      "level": 20,
-      "weight": 10,
-      "cost": 860,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9212,
-      "name": "an elemental bracelet",
-      "keywords": "bracelet elemental",
-      "description": "A bracelet made of elemental magic lies here.",
-      "material": "oldstyle",
-      "item_type": "gem",
-      "extra_flags": 0,
-      "wear_flags": 4097,
-      "level": 20,
-      "weight": 40,
-      "cost": 580,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 20
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9213,
-      "name": "a platinum arm band",
-      "keywords": "armband platinum band",
-      "description": "A platinum arm band, once worn by the Cyclops, lie here.",
-      "material": "platinum",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 4097,
-      "level": 26,
-      "weight": 40,
-      "cost": 1700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": -2
-        },
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9214,
-      "name": "some platinum leg bands",
-      "keywords": "legbands platinum bands",
-      "description": "A pair of platinum leg bands, once worn by the Cyclops, lie here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 33,
-      "level": 26,
-      "weight": 40,
-      "cost": 1700,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 3,
-          "modifier": -2
-        },
-        {
-          "location": 2,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9215,
-      "name": "elemental wand of fire",
-      "keywords": "wand",
-      "description": "A fire wand lies forgotten on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1,
-      "wear_flags": 16385,
-      "level": 16,
-      "weight": 70,
-      "cost": 3900,
-      "condition": 100,
-      "values": [
-        15,
-        3,
-        3,
-        46,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9216,
-      "name": "an ice staff",
-      "keywords": "staff ice",
-      "description": "An ice staff lies forgotten on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1,
-      "wear_flags": 16385,
-      "level": 25,
-      "weight": 70,
-      "cost": 13700,
-      "condition": 100,
-      "values": [
-        12,
-        3,
-        3,
-        91,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9217,
-      "name": "an elemental rod of earthquake",
-      "keywords": "rod earthquake",
-      "description": "An earthquake rod lies forgotten on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 70,
-      "cost": 1000,
-      "condition": 100,
-      "values": [
-        7,
-        3,
-        3,
-        39,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9218,
-      "name": "elemental wand of wind and air",
-      "keywords": "wand air wind",
-      "description": "An air wand lies forgotten on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1,
-      "wear_flags": 16385,
-      "level": 27,
-      "weight": 70,
-      "cost": 12600,
-      "condition": 100,
-      "values": [
-        11,
-        1,
-        1,
-        92,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9219,
-      "name": "elemental wand of lightning",
-      "keywords": "wand",
-      "description": "A lightning wand lies forgotten on the ground.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 1,
-      "wear_flags": 16385,
-      "level": 7,
-      "weight": 70,
-      "cost": 1420,
-      "condition": 100,
-      "values": [
-        9,
-        1,
-        1,
-        62,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9220,
-      "name": "a stone club",
-      "keywords": "stone club two-handed",
-      "description": "A large stone club lies on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 13,
-      "weight": 160,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        8,
-        7,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9221,
-      "name": "a lodestone",
-      "keywords": "lode load lodestone loadstone stone",
-      "description": "A dull red rock lies here amid the weeds.",
-      "material": "oldstyle",
-      "item_type": "wand",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 13,
-      "weight": 20,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        19,
-        2,
-        2,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9222,
-      "name": "a lava lamp",
-      "keywords": "lava lamp",
-      "description": "A lantern which glows with a red glowing light has been dumped.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 1,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 40,
-      "cost": 250,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        1000,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9223,
-      "name": "an energy scroll",
-      "keywords": "energy scroll",
-      "description": "A scroll of energy replacement lies here.",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 2,
-      "wear_flags": 1,
-      "level": 5,
-      "weight": 10,
-      "cost": 860,
-      "condition": 100,
-      "values": [
-        19,
-        23,
-        76,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9224,
-      "name": "a water jug",
-      "keywords": "water jug",
-      "description": "A large but surprisingly light jug of water stands here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 20,
-      "cost": 200,
-      "condition": 100,
-      "values": [
-        150,
-        150,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9225,
-      "name": "magic dust",
-      "keywords": "dust",
-      "description": "A pile of dust of appearance has gathered here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 300,
-      "condition": 100,
-      "values": [
-        20,
-        33,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9226,
-      "name": "a flame lance",
-      "keywords": "flame lance",
-      "description": "A lance of blue flame burns the ground around it.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 29,
-      "weight": 140,
-      "cost": 220,
-      "condition": 100,
-      "values": [
-        3,
-        2,
-        15,
-        34,
-        1
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 2
-        },
-        {
-          "location": 13,
-          "modifier": -20
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9227,
-      "name": "an icicle",
-      "keywords": "icicle dagger ice",
-      "description": "A glowing icicle dagger lies here amid a patch of frost.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 28,
-      "weight": 10,
-      "cost": 1630,
-      "condition": 100,
-      "values": [
-        2,
-        7,
-        3,
-        11,
-        2
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": -1
-        },
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9228,
-      "name": "the avalanche",
-      "keywords": "avalanche",
-      "description": "An avalanche is about to crush you!",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 24,
-      "weight": 160,
-      "cost": 3000,
-      "condition": 100,
-      "values": [
-        0,
-        1,
-        25,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9229,
-      "name": "the morning star",
-      "keywords": "star morning",
-      "description": "A chain with a star on the end lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1,
-      "wear_flags": 8193,
-      "level": 23,
-      "weight": 110,
-      "cost": 3300,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        3,
-        8,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -3
-        },
-        {
-          "location": 20,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9230,
-      "name": "the Shock Whip",
-      "keywords": "shock whip",
-      "description": "A whip hums innocently too itself.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 2,
-      "wear_flags": 8193,
-      "level": 20,
-      "weight": 100,
-      "cost": 64,
-      "condition": 100,
-      "values": [
-        7,
-        4,
-        5,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": -2
-        },
-        {
-          "location": 19,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9231,
-      "name": "anti-cyclops elixir",
-      "keywords": "elixir anti",
-      "description": "An elixir to ward off cyclopi has been bought then left behind here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 10,
-      "cost": 250,
-      "condition": 100,
-      "values": [
-        15,
-        60,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 9201,
-      "arg2": 3,
-      "arg3": 9201,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9201,
-      "arg2": 3,
-      "arg3": 9202,
-      "arg4": 3
-    },
-    {
-      "command": "G",
-      "arg1": 9231,
-      "arg2": 30,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9201,
-      "arg2": 3,
-      "arg3": 9203,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9238,
-      "arg2": 1,
-      "arg3": 9203,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9231,
-      "arg2": 30,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9202,
-      "arg2": 0,
-      "arg3": 9204,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9213,
-      "arg2": 10,
-      "arg3": 10,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9214,
-      "arg2": 10,
-      "arg3": 7,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9204,
-      "arg2": 1,
-      "arg3": 9209,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9211,
-      "arg2": 8,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9212,
-      "arg2": 8,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9208,
-      "arg2": 1,
-      "arg3": 9227,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9201,
-      "arg2": 6,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9202,
-      "arg2": 6,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9209,
-      "arg2": 1,
-      "arg3": 9245,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9203,
-      "arg2": 6,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9204,
-      "arg2": 6,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9210,
-      "arg2": 1,
-      "arg3": 9260,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9205,
-      "arg2": 6,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9206,
-      "arg2": 6,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9211,
-      "arg2": 1,
-      "arg3": 9252,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9208,
-      "arg2": 6,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9212,
-      "arg2": 1,
-      "arg3": 9236,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9209,
-      "arg2": 6,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 9210,
-      "arg2": 6,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9208,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9210,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9217,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9219,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9225,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9215,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9215,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9203,
-      "arg2": 15,
-      "arg3": 9218,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 15,
-      "arg3": 9218,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 12,
-      "arg3": 9207,
-      "arg4": 12
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 12,
-      "arg3": 9250,
-      "arg4": 12
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 12,
-      "arg3": 9209,
-      "arg4": 12
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 12,
-      "arg3": 9234,
-      "arg4": 12
-    },
-    {
-      "command": "M",
-      "arg1": 9205,
-      "arg2": 12,
-      "arg3": 9222,
-      "arg4": 12
-    },
-    {
-      "command": "E",
-      "arg1": 9224,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9206,
-      "arg2": 9,
-      "arg3": 9246,
-      "arg4": 9
-    },
-    {
-      "command": "M",
-      "arg1": 9206,
-      "arg2": 9,
-      "arg3": 9212,
-      "arg4": 9
-    },
-    {
-      "command": "E",
-      "arg1": 9221,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9206,
-      "arg2": 9,
-      "arg3": 9254,
-      "arg4": 9
-    },
-    {
-      "command": "M",
-      "arg1": 9206,
-      "arg2": 9,
-      "arg3": 9225,
-      "arg4": 9
-    },
-    {
-      "command": "E",
-      "arg1": 9219,
-      "arg2": 7,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 9218,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 9260,
-      "arg4": 6
-    },
-    {
-      "command": "E",
-      "arg1": 9220,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 9242,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 9209,
-      "arg4": 6
-    },
-    {
-      "command": "M",
-      "arg1": 9207,
-      "arg2": 6,
-      "arg3": 9218,
-      "arg4": 6
-    },
-    {
-      "command": "E",
-      "arg1": 9223,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9226,
-      "arg2": 1,
-      "arg3": 9238,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9226,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9227,
-      "arg2": 1,
-      "arg3": 9238,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9230,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9228,
-      "arg2": 1,
-      "arg3": 9242,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9227,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9229,
-      "arg2": 1,
-      "arg3": 9242,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9228,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9230,
-      "arg2": 1,
-      "arg3": 9242,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 9229,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9231,
-      "arg2": 5,
-      "arg3": 9216,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 9215,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9231,
-      "arg2": 5,
-      "arg3": 9211,
-      "arg4": 5
-    },
-    {
-      "command": "E",
-      "arg1": 9215,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9232,
-      "arg2": 8,
-      "arg3": 9209,
-      "arg4": 8
-    },
-    {
-      "command": "E",
-      "arg1": 9220,
-      "arg2": 16,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9232,
-      "arg2": 8,
-      "arg3": 9208,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9233,
-      "arg2": 8,
-      "arg3": 9253,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9233,
-      "arg2": 7,
-      "arg3": 9218,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9233,
-      "arg2": 7,
-      "arg3": 9255,
-      "arg4": 7
-    },
-    {
-      "command": "M",
-      "arg1": 9234,
-      "arg2": 6,
-      "arg3": 9230,
-      "arg4": 6
-    },
-    {
-      "command": "E",
-      "arg1": 9218,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9234,
-      "arg2": 6,
-      "arg3": 9238,
-      "arg4": 6
-    },
-    {
-      "command": "E",
-      "arg1": 9217,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9235,
-      "arg2": 2,
-      "arg3": 9249,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9235,
-      "arg2": 2,
-      "arg3": 9257,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 9216,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9202,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9207,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9237,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9220,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9228,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9246,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9236,
-      "arg2": 15,
-      "arg3": 9255,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9233,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9216,
-      "arg2": 5,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9234,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9235,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9224,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9230,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9231,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9232,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9236,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9214,
-      "arg2": 15,
-      "arg3": 9236,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9242,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9245,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9215,
-      "arg2": 5,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9242,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9215,
-      "arg2": 5,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9242,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9245,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9215,
-      "arg2": 15,
-      "arg3": 9245,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9221,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9222,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9223,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9217,
-      "arg2": 5,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9224,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9225,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9227,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9227,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9217,
-      "arg2": 15,
-      "arg3": 9226,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9247,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9248,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9249,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9250,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9219,
-      "arg2": 7,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9251,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9252,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9218,
-      "arg2": 7,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9252,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9218,
-      "arg2": 15,
-      "arg3": 9246,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9255,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9218,
-      "arg2": 7,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9256,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9257,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9258,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9259,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9260,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9260,
-      "arg4": 15
-    },
-    {
-      "command": "M",
-      "arg1": 9225,
-      "arg2": 15,
-      "arg3": 9255,
-      "arg4": 15
-    },
-    {
-      "command": "E",
-      "arg1": 9225,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9219,
-      "arg2": 8,
-      "arg3": 9228,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9219,
-      "arg2": 8,
-      "arg3": 9229,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9219,
-      "arg2": 8,
-      "arg3": 9238,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9219,
-      "arg2": 8,
-      "arg3": 9246,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9216,
-      "arg2": 5,
-      "arg3": 9232,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 9216,
-      "arg2": 5,
-      "arg3": 9232,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 9216,
-      "arg2": 5,
-      "arg3": 9212,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 9216,
-      "arg2": 5,
-      "arg3": 9225,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 9220,
-      "arg2": 8,
-      "arg3": 9238,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9220,
-      "arg2": 8,
-      "arg3": 9242,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9220,
-      "arg2": 8,
-      "arg3": 9220,
-      "arg4": 8
-    },
-    {
-      "command": "E",
-      "arg1": 9222,
-      "arg2": 10,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9220,
-      "arg2": 8,
-      "arg3": 9221,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9221,
-      "arg2": 8,
-      "arg3": 9222,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9221,
-      "arg2": 8,
-      "arg3": 9222,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9221,
-      "arg2": 8,
-      "arg3": 9231,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9221,
-      "arg2": 8,
-      "arg3": 9231,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9222,
-      "arg2": 8,
-      "arg3": 9232,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9222,
-      "arg2": 8,
-      "arg3": 9213,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9222,
-      "arg2": 8,
-      "arg3": 9255,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9222,
-      "arg2": 8,
-      "arg3": 9254,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9223,
-      "arg2": 8,
-      "arg3": 9248,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9223,
-      "arg2": 8,
-      "arg3": 9253,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9223,
-      "arg2": 8,
-      "arg3": 9221,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9223,
-      "arg2": 8,
-      "arg3": 9210,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9224,
-      "arg2": 8,
-      "arg3": 9227,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9224,
-      "arg2": 8,
-      "arg3": 9222,
-      "arg4": 8
-    },
-    {
-      "command": "E",
-      "arg1": 9225,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9224,
-      "arg2": 8,
-      "arg3": 9259,
-      "arg4": 8
-    },
-    {
-      "command": "M",
-      "arg1": 9224,
-      "arg2": 8,
-      "arg3": 9257,
-      "arg4": 8
+      "profit_buy": 105,
+      "profit_sell": 15,
+      "open_hour": 0,
+      "close_hour": 23
     }
   ],
   "specials": [
@@ -4740,5 +2578,11 @@
       "mob_vnum": 9238,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 9200,
+    "high": 9299
+  }
 }

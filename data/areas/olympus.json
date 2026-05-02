@@ -254,7 +254,7 @@
         "down": {
           "to_room": 918,
           "keyword": "throne trapdoor",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -794,7 +794,7 @@
           "to_room": 938,
           "description": "You see a concealed door!\n",
           "keyword": "door concealed",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         }
       },
@@ -853,7 +853,7 @@
           "to_room": 948,
           "description": "You see a sign on the hatch.  It reads 'Private Property. No trespassing!'\n",
           "keyword": "hatch",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -1076,7 +1076,7 @@
       "long_description": "Zeus sits here on a throne.\n",
       "description": "You see before you the greatest of the Olympians.  It seems as if he could\ndestroy you with a thought.  Every glance penetrates deep into your soul.\nYou now know what true fear is.\n",
       "race": "human",
-      "act_flags": "ABCQ",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1086,23 +1086,19 @@
       "hit_dice": "60d9+100",
       "mana_dice": "5d10+28",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -30,
-      "ac_bash": -30,
-      "ac_slash": -30,
-      "ac_exotic": -3,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 902,
@@ -1111,7 +1107,7 @@
       "long_description": "Prometheus is here, playing with a match.\n",
       "description": "This mortal risked the wrath of Zeus to give the gift of fire to humans.  He\nlooks up at you and smiles.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1121,23 +1117,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "5d8+20",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -21,
-      "ac_bash": -21,
-      "ac_slash": -21,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2000
     },
     {
       "id": 903,
@@ -1146,7 +1138,7 @@
       "long_description": "Hermes is busy, delivering a message.\n",
       "description": "This is the messenger of the Gods.  He wears a winged helm and boots, and\ndarts from place to place.  He looks very busy, and it seems as if he doesn't\neven notice your presence.\n",
       "race": "human",
-      "act_flags": "ACS",
+      "act_flags": "0",
       "affected_by": "BDFHNPT",
       "alignment": 1000,
       "group": 0,
@@ -1156,23 +1148,19 @@
       "hit_dice": "28d9+100",
       "mana_dice": "10d4+23",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -25,
-      "ac_bash": -25,
-      "ac_slash": -25,
-      "ac_exotic": -1,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 904,
@@ -1181,7 +1169,7 @@
       "long_description": "Poseidon is dining here.\n",
       "description": "He is the brother of Zeus himself, chosen to rule the seas.  He must be\nvisiting Mount Olympus.  He nods at you and motions for you to enter and\nhave a seat.\n",
       "race": "human",
-      "act_flags": "ABCR",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1191,23 +1179,19 @@
       "hit_dice": "59d9+100",
       "mana_dice": "10d4+24",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -28,
-      "ac_bash": -28,
-      "ac_slash": -28,
-      "ac_exotic": -9,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 905,
@@ -1216,7 +1200,7 @@
       "long_description": "Apollo is here, playing a tune.\n",
       "description": "This jovial God is strumming on a lyre.  He smiles at you and asks you to\njoin him.  You notice a dangerous looking bow by his side, however, and think\nthat he knows more than music.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1226,23 +1210,19 @@
       "hit_dice": "29d9+100",
       "mana_dice": "5d10+25",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -28,
-      "ac_bash": -28,
-      "ac_slash": -28,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2000
     },
     {
       "id": 906,
@@ -1251,7 +1231,7 @@
       "long_description": "Ares is here, kicking your ass.\n",
       "description": "The God of War is here, studying some maps.  He scowls at you as you enter\nand says 'I am very busy.  What do you want?'\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": -1000,
       "group": 0,
@@ -1261,23 +1241,19 @@
       "hit_dice": "29d9+100",
       "mana_dice": "8d6+26",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -29,
-      "ac_bash": -29,
-      "ac_slash": -29,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 907,
@@ -1286,7 +1262,7 @@
       "long_description": "Athena is relaxing here.\n",
       "description": "Zeus' favorite daughter is sitting on a couch eating grapes.  She smiles at\nyou and invites you to join her.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1296,23 +1272,19 @@
       "hit_dice": "28d9+100",
       "mana_dice": "10d4+24",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -26,
-      "ac_bash": -26,
-      "ac_slash": -26,
-      "ac_exotic": 1,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 3000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3000
     },
     {
       "id": 908,
@@ -1321,7 +1293,7 @@
       "long_description": "Hephaestus the Smith is here, crafting a fine weapon.\n",
       "description": "This God is the only one who is not physically perfect.  He is lame and very\nugly.  You get the impression that he is kind, however, and would go out of his\nway to help you.  He is attended by three golden maidens.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1331,23 +1303,19 @@
       "hit_dice": "27d9+100",
       "mana_dice": "10d4+23",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -25,
-      "ac_bash": -25,
-      "ac_slash": -25,
-      "ac_exotic": 2,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 3000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3000
     },
     {
       "id": 909,
@@ -1356,7 +1324,7 @@
       "long_description": "A Handmaid of gold is here, assisting the smith.\n",
       "description": "As you gaze upon this creation, you realize that she is made from solid\ngold.  She seems to be very lifelike as she assists the smith in his work.\n",
       "race": "human",
-      "act_flags": "ABCT",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 0,
       "group": 0,
@@ -1366,23 +1334,19 @@
       "hit_dice": "13d9+100",
       "mana_dice": "3d7+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "CDEIKLU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 910,
@@ -1391,7 +1355,7 @@
       "long_description": "A soldier is here, assisting Ares.\n",
       "description": "This man is waiting on Ares.  Although he does not look very strong, you\nrealize that Ares would not have any weaklings working for him.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": 0,
       "group": 0,
@@ -1401,23 +1365,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 911,
@@ -1426,7 +1386,7 @@
       "long_description": "A musician is here, learning from Apollo.\n",
       "description": "This man has mastered his first profession, and is now studying music from the\nimmortal Apollo.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": 1000,
       "group": 0,
@@ -1436,23 +1396,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 125,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 125
     },
     {
       "id": 912,
@@ -1461,7 +1417,7 @@
       "long_description": "A servant is here, feeding Athena her grapes.\n",
       "description": "This boy is truly lucky to be able to serve Athena herself.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": 1000,
       "group": 0,
@@ -1471,23 +1427,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 913,
@@ -1496,7 +1448,7 @@
       "long_description": "A large hound snarls at you.\n",
       "description": "This great beast can barely be called a dog.  It has been bred to cause fear\non the battle field, and you have no doubt that it does its job well.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": -600,
       "group": 0,
@@ -1506,23 +1458,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 914,
@@ -1531,7 +1479,7 @@
       "long_description": "Odin is resting here.\n",
       "description": "As you gaze at Odin, you realize how insignificant you truly are.  He towers\nover you, and is so intent on his activities that he barely recognizes your\npresence.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1541,23 +1489,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "8d6+28",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -30,
-      "ac_bash": -30,
-      "ac_slash": -30,
-      "ac_exotic": 0,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 915,
@@ -1566,7 +1510,7 @@
       "long_description": "Julius the Green Grocer stands here.\n",
       "description": "This jovial man has devoted his life to selling fruit and other foods to the\ninhabitants of this city.  Although he may seem like a wimp, it would be wise\nnot to underestimate him.  He smiles warmly at you and shows you his selection\nof delicious looking foods.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1576,23 +1520,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "5d8+19",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -20,
-      "ac_bash": -20,
-      "ac_slash": -20,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 916,
@@ -1601,7 +1541,7 @@
       "long_description": "The ancient, wizened Alchemist stands here.\n",
       "description": "Skilled in all manner of magic, as well as the ancient art of alchemy, he\nstands ready to supply the citizens here (but not you) with all manner of\narcane supplies.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1611,23 +1551,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "5d8+19",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -20,
-      "ac_bash": -20,
-      "ac_slash": -20,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 917,
@@ -1636,7 +1572,7 @@
       "long_description": "Clive the Weapons Master is practicing with his bow and axe.\n",
       "description": "Clive looks VERY big and VERY tough.  All those years in the army must have\npaid off.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1646,23 +1582,19 @@
       "hit_dice": "25d9+100",
       "mana_dice": "5d8+19",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -20,
-      "ac_bash": -20,
-      "ac_slash": -20,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2000
     },
     {
       "id": 918,
@@ -1671,7 +1603,7 @@
       "long_description": "Samuel the Armourer glares at you.\n",
       "description": "Samuel looks just like Clive the Weapons Master: VERY big and VERY tough.\nHe doesn't like what you've been doing in his city.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1681,23 +1613,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+10",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 500
     },
     {
       "id": 919,
@@ -1706,7 +1634,7 @@
       "long_description": "Ra the Egyptian Sun God is resting here.\n",
       "description": "Ra is very bright!  It hurts your eyes to look at him, so you can tell little\nabout his appearance.  What you can tell, however, suggests that he is no one\nto be trifled with.\n",
       "race": "rabbit",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1716,23 +1644,19 @@
       "hit_dice": "30d9+100",
       "mana_dice": "8d6+28",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -30,
-      "ac_bash": -30,
-      "ac_slash": -30,
-      "ac_exotic": 0,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "1725",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5000,
-      "form": "0AGV",
-      "parts": "0ACDEFHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 920,
@@ -1741,7 +1665,7 @@
       "long_description": "A chimera prowls the cell.\n",
       "description": "This bizarre creature has three heads - one of a goat, one of a lion, and one\nof a dragon.  It growls at you as you enter the cell, then suddenly attacks!\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "BDFHT",
       "alignment": -1000,
       "group": 0,
@@ -1751,23 +1675,19 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+10",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -11,
-      "ac_bash": -11,
-      "ac_slash": -11,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 921,
@@ -1776,7 +1696,7 @@
       "long_description": "Hera is here.\n",
       "description": "Hera, the wife of Zeus is here.  She smiles at you as you enter and invites you\nto rest and sit for a while.\n",
       "race": "human",
-      "act_flags": "ABCQ",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1786,23 +1706,19 @@
       "hit_dice": "59d9+100",
       "mana_dice": "6d8+26",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -29,
-      "ac_bash": -29,
-      "ac_slash": -29,
-      "ac_exotic": -3,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5000
     },
     {
       "id": 922,
@@ -1811,7 +1727,7 @@
       "long_description": "A roc is here.\n",
       "description": "This is a giant bird.  It looks at you quizzically, then makes a noise and\nlooks away.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 0,
       "group": 0,
@@ -1821,23 +1737,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     },
     {
       "id": 923,
@@ -1846,7 +1758,7 @@
       "long_description": "A citizen of this town is strolling down the street here.\n",
       "description": "He looks happy and carefree.  He smiles and tips his hat to you.\n",
       "race": "human",
-      "act_flags": "ACS",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1856,23 +1768,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 3,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3
     },
     {
       "id": 924,
@@ -1881,7 +1789,7 @@
       "long_description": "A large horse with wings is here.\n",
       "description": "This horse is snow white with large wings.  Although it doesn't look very\nthreatening, it seems as though it would be dangerous if provoked.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 0,
       "group": 0,
@@ -1891,23 +1799,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 40,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 40
     },
     {
       "id": 925,
@@ -1916,7 +1820,7 @@
       "long_description": "A cook is here, hard at work.\n",
       "description": "This man looks as is he has been spending WAY too much time in the kitchen.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 1000,
       "group": 0,
@@ -1926,23 +1830,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 926,
@@ -1951,7 +1851,7 @@
       "long_description": "The jailer is here, watching for intruders.\n",
       "description": "He looks as though he has spent a lot of time underground, guarding the\nprisoners.\n",
       "race": "human",
-      "act_flags": "ABCR",
+      "act_flags": "0",
       "affected_by": "BDFHNT",
       "alignment": 0,
       "group": 0,
@@ -1961,1553 +1861,37 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -5,
-      "ac_bash": -5,
-      "ac_slash": -5,
-      "ac_exotic": 3,
+      "damage_type": "none",
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     }
   ],
-  "objects": [
+  "objects": [],
+  "mob_programs": [],
+  "shops": [
     {
-      "id": 900,
-      "name": "the Aegis",
-      "keywords": "aegis plate",
-      "description": "A powerful breast plate has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 9,
-      "level": 35,
-      "weight": 500,
-      "cost": 8400,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 901,
-      "name": "the Thunder Bolt",
-      "keywords": "hammer thunder bolt thunderbolt",
-      "description": "A huge hammer has been carelessly dropped here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1120,
-      "wear_flags": 8193,
-      "level": 50,
-      "weight": 240,
-      "cost": 5400,
-      "condition": 100,
-      "values": [
-        4,
-        7,
-        6,
-        6,
-        64
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 3
-        },
-        {
-          "location": 4,
-          "modifier": -1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 902,
-      "name": "a Winged Helmet",
-      "keywords": "helmet winged",
-      "description": "A helmet with small wings lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 17,
-      "level": 35,
-      "weight": 50,
-      "cost": 7300,
-      "condition": 100,
-      "values": [
-        10,
-        10,
-        10,
-        5,
-        0
-      ],
-      "affects": [
-        {
-          "location": 2,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 903,
-      "name": "the spear of Ares",
-      "keywords": "spear ares",
-      "description": "A wicked spear rests on the ground here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 608,
-      "wear_flags": 8193,
-      "level": 48,
-      "weight": 180,
-      "cost": 2000,
-      "condition": 100,
-      "values": [
-        3,
-        5,
-        8,
-        34,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 904,
-      "name": "a pair of winged sandals",
-      "keywords": "sandals winged",
-      "description": "A pair of well made sandals lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 65,
-      "level": 25,
-      "weight": 50,
-      "cost": 2200,
-      "condition": 100,
-      "values": [
-        8,
-        8,
-        8,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 0,
-          "modifier": 0
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 906,
-      "name": "poseidon's Trident",
-      "keywords": "trident poseidon",
-      "description": "A huge three pronged spear lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1120,
-      "wear_flags": 8193,
-      "level": 47,
-      "weight": 160,
-      "cost": 5700,
-      "condition": 100,
-      "values": [
-        3,
-        7,
-        6,
-        11,
-        32
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 907,
-      "name": "a silver bow",
-      "keywords": "bow silver",
-      "description": "A silver bow.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1120,
-      "wear_flags": 8193,
-      "level": 47,
-      "weight": 150,
-      "cost": 10300,
-      "condition": 100,
-      "values": [
-        0,
-        6,
-        7,
-        11,
-        32
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 908,
-      "name": "flaming gauntlets",
-      "keywords": "gauntlets flaming",
-      "description": "A pair of metal gauntlets flame here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 129,
-      "level": 27,
-      "weight": 60,
-      "cost": 2900,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        4,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 25
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 909,
-      "name": "ambrosia",
-      "keywords": "vial potion ambrosia",
-      "description": "A vial of ambrosia lies here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 1120,
-      "wear_flags": 1,
-      "level": 11,
-      "weight": 10,
-      "cost": 1130,
-      "condition": 100,
-      "values": [
-        30,
-        36,
-        55,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 910,
-      "name": "a glowing necklace",
-      "keywords": "necklace glowing",
-      "description": "A necklace with an inner glow lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1120,
-      "wear_flags": 5,
-      "level": 25,
-      "weight": 20,
-      "cost": 980,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 25
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 911,
-      "name": "a sapphire ring",
-      "keywords": "ring sapphire",
-      "description": "A sapphire ring lies here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1120,
-      "wear_flags": 3,
-      "level": 35,
-      "weight": 10,
-      "cost": 6900,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 4,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 912,
-      "name": "a brightly glowing shield",
-      "keywords": "shield glowing",
-      "description": "A shield lies here, filling the room with its aura.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 513,
-      "level": 30,
-      "weight": 100,
-      "cost": 5300,
-      "condition": 100,
-      "values": [
-        9,
-        9,
-        9,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 913,
-      "name": "a notched axe",
-      "keywords": "axe notched",
-      "description": "A notched axe.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1120,
-      "wear_flags": 8193,
-      "level": 35,
-      "weight": 120,
-      "cost": 3600,
-      "condition": 100,
-      "values": [
-        5,
-        3,
-        11,
+      "keeper": 915,
+      "buy_types": [
         1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 914,
-      "name": "a bunch of grapes",
-      "keywords": "grapes",
-      "description": "A bunch of grapes.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        24,
-        24,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 915,
-      "name": "a fan made of peacock feathers",
-      "keywords": "fan",
-      "description": "A fan made of peacock feathers.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 916,
-      "name": "a lute",
-      "keywords": "lute",
-      "description": "A lute.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 917,
-      "name": "a gold nugget",
-      "keywords": "nugget gold",
-      "description": "A gold nugget lies gleaming here.",
-      "material": "oldstyle",
-      "item_type": "treasure",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 5000,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 918,
-      "name": "an apple",
-      "keywords": "apple",
-      "description": "An apple is here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 340,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 919,
-      "name": "a pear",
-      "keywords": "pear",
-      "description": "A pear is here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 6,
-      "weight": 10,
-      "cost": 530,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        26,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 920,
-      "name": "a orange",
-      "keywords": "orange",
-      "description": "A orange is here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 340,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        2,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 921,
-      "name": "a kiwi",
-      "keywords": "kiwi",
-      "description": "A kiwi is here.",
-      "material": "oldstyle",
-      "item_type": "pill",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 6,
-      "weight": 10,
-      "cost": 530,
-      "condition": 100,
-      "values": [
-        24,
-        0,
-        0,
-        26,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 922,
-      "name": "the Amulet of Ra",
-      "keywords": "amulet",
-      "description": "A sun shaped medallion is lying here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 1120,
-      "wear_flags": 5,
-      "level": 40,
-      "weight": 10,
-      "cost": 4900,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 50
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 923,
-      "name": "the Sword of the Sun",
-      "keywords": "sun sword",
-      "description": "A beautiful sword with the rising sun etched on the pommel is lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 1120,
-      "wear_flags": 8193,
-      "level": 50,
-      "weight": 200,
-      "cost": 6800,
-      "condition": 100,
-      "values": [
-        1,
-        4,
-        11,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 924,
-      "name": "a blue robe",
-      "keywords": "robe blue",
-      "description": "A deep blue robe is on the ground here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 1025,
-      "level": 17,
-      "weight": 100,
-      "cost": 1960,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
         8,
-        0
+        13,
+        15,
+        19
       ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 15
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 925,
-      "name": "a wide brimmed hat",
-      "keywords": "hat",
-      "description": "A hat is lying here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 1120,
-      "wear_flags": 17,
-      "level": 5,
-      "weight": 50,
-      "cost": 580,
-      "condition": 100,
-      "values": [
-        4,
-        4,
-        4,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 926,
-      "name": "nectar",
-      "keywords": "nectar",
-      "description": "A vial of nectar is lying here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 12,
-      "weight": 10,
-      "cost": 810,
-      "condition": 100,
-      "values": [
-        12,
-        78,
-        53,
-        2,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 927,
-      "name": "a Cell key",
-      "keywords": "key cell",
-      "description": "A key has been left here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 928,
-      "name": "a secret map of Olympus",
-      "keywords": "map olympus secret",
-      "description": "A rolled up map is here.",
-      "material": "oldstyle",
-      "item_type": "map",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 500,
-      "condition": 100,
-      "values": [
-        1,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "map olympus secret",
-          "description": ".\n                              The Secret Map Of\n                               *****OLYMPUS*****\n \n                                   (Hermes)\n                                   Bedroom    The Portal\n                                      |           |\n                                   Northern  Hall of Gods\n                                     Hall    /\n                        Western       |    /    Eastern\n              Bedroom----Hall----Second Floor----Hall----Bedroom\n              (Hera)            /     |                 (Poseidon)\n                         Stairway  Southern\n          (Prometheus)       |       Hall                    North\n              Cell    /Throne Room    |                        |  /Up\n                |   /     (Zeus)   Bedroom                     |/\n       Cell-Dungeon-Cell     |                          West---+---East\n  (Chimera)(Jailor)(Chimera) |                                /|\n                             |                          Down/  |\n                  Kitchen    |     Stable                    South\n        (Odin)       |       |       |       (Ra)\n        Guest     Western  Castle  Eastern   Guest      ()Mob Location\n       Quarters----Wing----Entry----Wing----Quarters\n                     |       |       |\n                  Storage   Z|   Storage Room\n                   Room     e|\n                            u|  Believer\n                            s|     |    (Hephaestus)\n                             |  Planning---Smithy\n                            S|  Room(Ares)   |\n                            t|               |  (Clive)\n                 (Alchemist) +--Ares Street--+--Weapon\n                    Mystery  |               |   Shop\n                    Shop-----+               |\n                             |            Armoury\n                   Residence-+-Residence  (Samuel)\n                   (Apollo)  |  (Athena)\n                             |\n             (Julius)Bakery--+\n                             |\n                       **Entrance**\n                            /\n                      Mountain\n"
-        }
-      ]
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 915,
-      "arg2": 1,
-      "arg3": 924,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 914,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 918,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 919,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 920,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 921,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 916,
-      "arg2": 1,
-      "arg3": 927,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 905,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 910,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 917,
-      "arg2": 1,
-      "arg3": 936,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 907,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 913,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 918,
-      "arg2": 1,
-      "arg3": 935,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 904,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 908,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 911,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 914,
-      "arg2": 1,
-      "arg3": 929,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 924,
-      "arg2": 100,
-      "arg3": 12,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 925,
-      "arg2": 100,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 901,
-      "arg2": 1,
-      "arg3": 910,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 900,
-      "arg2": 100,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 901,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 902,
-      "arg2": 1,
-      "arg3": 920,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 928,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 908,
-      "arg2": 100,
-      "arg3": 9,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 920,
-      "arg2": 2,
-      "arg3": 921,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 920,
-      "arg2": 2,
-      "arg3": 922,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 907,
-      "arg2": 1,
-      "arg3": 925,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 910,
-      "arg2": 100,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 905,
-      "arg2": 100,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 905,
-      "arg2": 1,
-      "arg3": 926,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 907,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 904,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 905,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 906,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 907,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 908,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 928,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 923,
-      "arg2": 10,
-      "arg3": 934,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 925,
-      "arg2": 4,
-      "arg3": 914,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 925,
-      "arg2": 4,
-      "arg3": 914,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 926,
-      "arg2": 1,
-      "arg3": 918,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 927,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 912,
-      "arg2": 4,
-      "arg3": 925,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 915,
-      "arg2": 100,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 914,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 912,
-      "arg2": 4,
-      "arg3": 925,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 915,
-      "arg2": 100,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 914,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 911,
-      "arg2": 4,
-      "arg3": 926,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 916,
-      "arg2": 100,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 921,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 911,
-      "arg2": 4,
-      "arg3": 926,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 916,
-      "arg2": 100,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 921,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 919,
-      "arg2": 1,
-      "arg3": 931,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 922,
-      "arg2": 100,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 923,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 922,
-      "arg2": 3,
-      "arg3": 933,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 922,
-      "arg2": 3,
-      "arg3": 933,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 924,
-      "arg2": 3,
-      "arg3": 933,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 924,
-      "arg2": 3,
-      "arg3": 933,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 908,
-      "arg2": 1,
-      "arg3": 937,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 912,
-      "arg2": 100,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 909,
-      "arg2": 4,
-      "arg3": 937,
-      "arg4": 4
-    },
-    {
-      "command": "G",
-      "arg1": 917,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 909,
-      "arg2": 4,
-      "arg3": 937,
-      "arg4": 4
-    },
-    {
-      "command": "G",
-      "arg1": 917,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 906,
-      "arg2": 1,
-      "arg3": 938,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 903,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 910,
-      "arg2": 4,
-      "arg3": 938,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 913,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 919,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 910,
-      "arg2": 4,
-      "arg3": 938,
-      "arg4": 4
-    },
-    {
-      "command": "E",
-      "arg1": 913,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 919,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 921,
-      "arg2": 1,
-      "arg3": 945,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 911,
-      "arg2": 100,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 904,
-      "arg2": 1,
-      "arg3": 946,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 906,
-      "arg2": 100,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 903,
-      "arg2": 1,
-      "arg3": 947,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 904,
-      "arg2": 100,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 902,
-      "arg2": 100,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 926,
-      "arg2": 100,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 909,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 913,
-      "arg2": 5,
-      "arg3": 954,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 913,
-      "arg2": 5,
-      "arg3": 954,
-      "arg4": 5
-    },
-    {
-      "command": "M",
-      "arg1": 913,
-      "arg2": 5,
-      "arg3": 954,
-      "arg4": 5
-    },
-    {
-      "command": "D",
-      "arg1": 910,
-      "arg2": 5,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 937,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 939,
-      "arg2": 4,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 919,
-      "arg2": 0,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 919,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 919,
-      "arg2": 3,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 920,
-      "arg2": 2,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 922,
-      "arg2": 3,
-      "arg3": 2,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 921,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
+      "profit_buy": 120,
+      "profit_sell": 80,
+      "open_hour": 0,
+      "close_hour": 23
     }
   ],
   "specials": [
@@ -3571,5 +1955,11 @@
       "mob_vnum": 926,
       "spec": "spec_cast_mage"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 900,
+    "high": 999
+  }
 }

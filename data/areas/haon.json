@@ -18,7 +18,8 @@
         "north": {
           "to_room": 1100,
           "description": "You see a dimly lit path.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 3052,
@@ -360,7 +361,7 @@
           "to_room": 6010,
           "description": "The wooden door is quite sturdy but does not appear to be equipped with a lock.\n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "south": {
@@ -983,7 +984,8 @@
         "north": {
           "to_room": 6150,
           "description": "You see a dark trail north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6102,
@@ -2151,7 +2153,8 @@
         "north": {
           "to_room": 1300,
           "description": "You see a dark grove north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 6136,
@@ -2315,7 +2318,7 @@
           "to_room": 6153,
           "description": "The tree door is carved beautifully.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "west": {
@@ -2339,7 +2342,7 @@
           "to_room": 6152,
           "description": "the door is carved beautifully.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -2401,7 +2404,7 @@
       "long_description": "John the Lumberjack is here, looking for some trees to chop down.\n",
       "description": "He is six feet tall and looks quite strong, muscles bulging under his heavy,\nchequered shirt.  His features are worn with hard work and his expression is\none of a peaceful man leading a simple life.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 350,
       "group": 0,
@@ -2411,23 +2414,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2
     },
     {
       "id": 6002,
@@ -2436,7 +2435,7 @@
       "long_description": "A big, brown, angry-looking bear is here.\n",
       "description": "The bear is a big, brown, furry animal with very large claws and very sharp\nteeth.  It doesn't resemble those cute little thingies from toy shops at all.\n",
       "race": "bear",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -50,
       "group": 0,
@@ -2446,23 +2445,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "FNRDEO",
       "immune": "0",
       "resist": "0EI",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "3147455",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ABCDEFHJKUV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6003,
@@ -2471,7 +2466,7 @@
       "long_description": "A ferocious rabbit is here, glaring hungrily at you.\n",
       "description": "This small, furry creature with long ears and big feet has been attacked by\nthe dreaded rabbit rabies, a horrible disease that turns helpless and innocent\nrabbits into ferocious and bloodthirsty monsters.\n",
       "race": "rabbit",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -150,
       "group": 0,
@@ -2481,23 +2476,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "1725",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sleep",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6004,
@@ -2506,7 +2497,7 @@
       "long_description": "A fallow deer is grazing peacefully here.\n",
       "description": "She is a graceful creature on long, slender legs, and with large, brown eyes\nlooking back at you with an air of watchful interest.\n",
       "race": "human",
-      "act_flags": "ABEGI",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 350,
       "group": 0,
@@ -2516,23 +2507,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6005,
@@ -2541,7 +2528,7 @@
       "long_description": "A brown fox is here, looking for some rabbits to chew up.\n",
       "description": "It is a large fox with beautiful, red-brown fur and a long, thick brush.\n",
       "race": "fox",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": -50,
       "group": 0,
@@ -2551,23 +2538,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 8,
-      "ac_bash": 8,
-      "ac_slash": 8,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "2164413",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFHJKQV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6100,
@@ -2576,7 +2559,7 @@
       "long_description": "A vicious warg is here, snarling angrily at you.\n",
       "description": "It is an exceptionally large wolf with thick, black fur.  Saliva is dripping\nquickly from its long, white fangs.  It looks quite dangerous and very angry.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -350,
       "group": 0,
@@ -2586,23 +2569,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6101,
@@ -2611,7 +2590,7 @@
       "long_description": "A ferocious warg is here, snarling angrily at you.\n",
       "description": "It is an exceptionally large wolf with thick, black fur.  Saliva is dripping\nquickly from its long, white fangs.  It looks quite dangerous and very angry.\n",
       "race": "human",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -350,
       "group": 0,
@@ -2621,23 +2600,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6102,
@@ -2646,7 +2621,7 @@
       "long_description": "A large, grey wolf is here, glaring hungrily at you.\n",
       "description": "The large, grey wolf eyes you with interest while licking its lips.\n",
       "race": "wolf",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": -150,
       "group": 0,
@@ -2656,23 +2631,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "2164285",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFJKQV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6103,
@@ -2681,7 +2652,7 @@
       "long_description": "A large, black wolf is here, glaring hungrily at you.\n",
       "description": "The large, black wolf eyes you with interest while licking its lips.\n",
       "race": "wolf",
-      "act_flags": "AFG",
+      "act_flags": "0",
       "affected_by": "0Z",
       "alignment": -150,
       "group": 0,
@@ -2691,23 +2662,19 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 7,
-      "ac_bash": 7,
-      "ac_slash": 7,
-      "ac_exotic": 10,
+      "damage_type": "none",
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2097217",
+      "parts": "2164285",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AGV",
-      "parts": "0ACDEFJKQV",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 6112,
@@ -2716,7 +2683,7 @@
       "long_description": "A huge green dragon is here, its narrow yellow eyes glowing with rage.\n",
       "description": "This enormous winged serpent has dark green scales covering most of its\ncolossal body.  Numerous holes in its heavy wings tell of many fights as does\nthe nicks in the horns on its head.  It smells as disgusting as only dragons\ndo.\n",
       "race": "dragon",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "DJT",
       "alignment": -1000,
       "group": 0,
@@ -2726,23 +2693,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
+      "form": "33554561",
+      "parts": "11634685",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2500,
-      "form": "0AHZ",
-      "parts": "0ACDEFGHIJKPQUVX",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 6115,
@@ -2751,7 +2714,7 @@
       "long_description": "Shargugh the Forest Brownie is here, grinning broadly at you.\n",
       "description": "This little fellow is only three foot tall with wild matted brown hair and long\ntangled brown beard.  He wears ragged brown and green clothing and looks as if\nhe is having great fun.\n",
       "race": "human",
-      "act_flags": "ACEH",
+      "act_flags": "0",
       "affected_by": "BDP",
       "alignment": 1000,
       "group": 0,
@@ -2761,23 +2724,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 6116,
@@ -2786,7 +2745,7 @@
       "long_description": "The elder druid is here ... he looks very upset at your presence in his home.\n",
       "description": "The druid looks quite old.  You would think him venerable, but you know\nhe would be a tough foe.\n",
       "race": "human",
-      "act_flags": "ABCFQ",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 0,
       "group": 0,
@@ -2796,958 +2755,24 @@
       "hit_dice": "17d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 250
     }
   ],
-  "objects": [
-    {
-      "id": 6000,
-      "name": "a lumber axe",
-      "keywords": "axe lumber two-handed",
-      "description": "A heavy lumber axe lies here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 100,
-      "cost": 820,
-      "condition": 100,
-      "values": [
-        5,
-        2,
-        6,
-        25,
-        32
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "axe lumber",
-          "description": "It is a heavy axe of the kind lumberjacks use to chop down trees.\n"
-        }
-      ]
-    },
-    {
-      "id": 6001,
-      "name": "a chequered shirt",
-      "keywords": "shirt",
-      "description": "A chequered shirt lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 9,
-      "level": 3,
-      "weight": 20,
-      "cost": 610,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "shirt",
-          "description": "It is an extra large, chequered shirt made from heavy cloth.\n"
-        }
-      ]
-    },
-    {
-      "id": 6002,
-      "name": "a pair of leather boots",
-      "keywords": "boots",
-      "description": "A pair of leather boots lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 65,
-      "level": 3,
-      "weight": 40,
-      "cost": 310,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "boots",
-          "description": "They are fashioned from rough leather that has been oiled frequently to make\nit stay waterproof.  They look worn but quite functional.\n"
-        }
-      ]
-    },
-    {
-      "id": 6003,
-      "name": "a fireplace",
-      "keywords": "fireplace",
-      "description": "A fireplace made from stone is set against the east wall.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        200,
-        0,
-        0,
-        200,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "fireplace",
-          "description": "It is fashioned from stones of various sizes that have been stacked on top of\neach other and fastened with mortar.  Its chimney is constructed likewise and\nleads the smoke out through the low cabin ceiling.\n"
-        }
-      ]
-    },
-    {
-      "id": 6005,
-      "name": "a wooden chest",
-      "keywords": "chest",
-      "description": "A wooden chest stands in the corner.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 400,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        100,
-        13,
-        6006,
-        20,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "chest",
-          "description": "It is a robust chest made from short, heavy planks that have been fastened\ntogether with tenons.  It is equipped with a simple brass lock.\n"
-        }
-      ]
-    },
-    {
-      "id": 6006,
-      "name": "a small brass key",
-      "keywords": "key",
-      "description": "A small brass key lies here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        6005,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "key",
-          "description": "It is a small, simple brass key with no inscriptions or marks of any kind.\n"
-        }
-      ]
-    },
-    {
-      "id": 6007,
-      "name": "a heap of silver coins",
-      "keywords": "coins silver",
-      "description": "Some silver coins lie piled up in a heap on the floor.",
-      "material": "oldstyle",
-      "item_type": "money",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        89,
-        1,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "coins",
-          "description": "The coins seem to be gold.  They are obviously valuable.\n"
-        }
-      ]
-    },
-    {
-      "id": 6010,
-      "name": "some blackberries",
-      "keywords": "blackberries",
-      "description": "Some blackberries grow on a bush nearby.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "blackberries",
-          "description": "They look very tasty indeed.\n"
-        }
-      ]
-    },
-    {
-      "id": 6011,
-      "name": "a mushroom",
-      "keywords": "mushroom",
-      "description": "A small mushroom grows nearby.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "mushroom",
-          "description": "It is a tasty little thing.\n"
-        }
-      ]
-    },
-    {
-      "id": 6013,
-      "name": "the barrel",
-      "keywords": "water barrel",
-      "description": "A water barrel has been left here.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 200,
-      "cost": 20,
-      "condition": 100,
-      "values": [
-        256,
-        256,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6102,
-      "name": "a colossal tree",
-      "keywords": "tree opening",
-      "description": "A colossal tree blocks the way westwards.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 0,
-      "level": 0,
-      "weight": 0,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1000,
-        0,
-        0,
-        400,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "opening",
-          "description": "The opening is far too narrow for you to squeeze through but it looks as if the\ntree is hollow.\n"
-        },
-        {
-          "keyword": "tree",
-          "description": "This enormous tree must be a thousand years old.  Its rough bark looks grey\nand pale and is decorated with scratches and claw marks.  On its west side is a\nsmall opening just above ground level.\n"
-        }
-      ]
-    },
-    {
-      "id": 6103,
-      "name": "a long, grey branch",
-      "keywords": "branch",
-      "description": "A long, grey branch rests heavily on the ground.",
-      "material": "oldstyle",
-      "item_type": "light",
-      "extra_flags": 0,
-      "wear_flags": 16385,
-      "level": 0,
-      "weight": 200,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        25,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6104,
-      "name": "a long, grey branch",
-      "keywords": "branch",
-      "description": "A long, grey branch rests heavily on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 6,
-      "weight": 300,
-      "cost": 290,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        5,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": -2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6105,
-      "name": "a long, grey branch",
-      "keywords": "branch",
-      "description": "A long, grey branch rests heavily on the ground.",
-      "material": "oldstyle",
-      "item_type": "trash",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 400,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 6106,
-      "name": "a toadstool",
-      "keywords": "toadstool",
-      "description": "A large toadstool grows nearby.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        12,
-        12,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "toadstool",
-          "description": "It is a large, brown boletus that must weigh nearly five pounds.  The top\nsurface is covered in a thin layer of transparent slime that emits a weak,\nmusty smell.  Not the most delicious thing you have seen.\n"
-        }
-      ]
-    },
-    {
-      "id": 6107,
-      "name": "a toadstool",
-      "keywords": "toadstool",
-      "description": "A large toadstool grows nearby.",
-      "material": "oldstyle",
-      "item_type": "food",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 50,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        12,
-        12,
-        0,
-        1,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "toadstool",
-          "description": "It is a large, brown boletus that must weigh nearly five pounds.  It has small\nwhite spots and the top surface is covered in a thin layer of transparent slime\nthat emits a weak, musty smell.  Not the most delicious thing you have seen.\n"
-        }
-      ]
-    },
-    {
-      "id": 6110,
-      "name": "a yellow potion",
-      "keywords": "potion yellow",
-      "description": "A yellow potion has been left here.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 64,
-      "wear_flags": 1,
-      "level": 4,
-      "weight": 20,
-      "cost": 350,
-      "condition": 100,
-      "values": [
-        15,
-        53,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "potion yellow",
-          "description": "It has a deep yellow colour and and a strong spicy smell.\n"
-        }
-      ]
-    },
-    {
-      "id": 6111,
-      "name": "a large round shield",
-      "keywords": "shield large",
-      "description": "A large round shield has been left here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 513,
-      "level": 15,
-      "weight": 150,
-      "cost": 1760,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        3,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "shield large",
-          "description": "It is made from hard wood that has been reinforced with heavy iron bands.\n"
-        }
-      ]
-    },
-    {
-      "id": 6112,
-      "name": "an iron crown",
-      "keywords": "crown iron",
-      "description": "An iron crown rests on the ground.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 17,
-      "level": 15,
-      "weight": 100,
-      "cost": 1050,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "crown iron",
-          "description": "It is a heavy human-sized crown made from solid iron.\n"
-        }
-      ]
-    },
-    {
-      "id": 6114,
-      "name": "an iron ring",
-      "keywords": "ring iron",
-      "description": "An iron ring has been left here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 0,
-      "weight": 10,
-      "cost": 50,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "ring iron",
-          "description": "It is a quite heavy human-sized ring made from solid iron.  It lacks\ndecorations of any kind.\n"
-        }
-      ]
-    },
-    {
-      "id": 6155,
-      "name": "the morning star",
-      "keywords": "morning-star star morning",
-      "description": "The morning star is here collecting dust while it lies on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 100,
-      "cost": 750,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        8,
-        8,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 6000,
-      "arg2": 1,
-      "arg3": 6009,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6000,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 6001,
-      "arg2": 10,
-      "arg3": 5,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 6002,
-      "arg2": 10,
-      "arg3": 8,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 6009,
-      "arg2": 0,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 5,
-      "arg3": 6012,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 5,
-      "arg3": 6015,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 5,
-      "arg3": 6017,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 309,
-      "arg2": 5,
-      "arg3": 6019,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6002,
-      "arg2": 1,
-      "arg3": 6022,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6004,
-      "arg2": 1,
-      "arg3": 6023,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 6005,
-      "arg2": 2,
-      "arg3": 6014,
-      "arg4": 2
-    },
-    {
-      "command": "O",
-      "arg1": 6003,
-      "arg2": 1,
-      "arg3": 6010,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6005,
-      "arg2": 1,
-      "arg3": 6010,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 6007,
-      "arg2": 1,
-      "arg3": 6005,
-      "arg4": 1
-    },
-    {
-      "command": "P",
-      "arg1": 6006,
-      "arg2": 1,
-      "arg3": 6003,
-      "arg4": 1
-    },
-    {
-      "command": "O",
-      "arg1": 6013,
-      "arg2": 3,
-      "arg3": 6010,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6010,
-      "arg2": 2,
-      "arg3": 6023,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6011,
-      "arg2": 3,
-      "arg3": 6006,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6011,
-      "arg2": 3,
-      "arg3": 6013,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6011,
-      "arg2": 3,
-      "arg3": 6016,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6100,
-      "arg2": 2,
-      "arg3": 6116,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6100,
-      "arg2": 2,
-      "arg3": 6116,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6101,
-      "arg2": 2,
-      "arg3": 6127,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6101,
-      "arg2": 2,
-      "arg3": 6127,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6102,
-      "arg2": 4,
-      "arg3": 6108,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6102,
-      "arg2": 4,
-      "arg3": 6108,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6102,
-      "arg2": 4,
-      "arg3": 6104,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6102,
-      "arg2": 4,
-      "arg3": 6104,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6103,
-      "arg2": 4,
-      "arg3": 6112,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6103,
-      "arg2": 4,
-      "arg3": 6112,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6103,
-      "arg2": 4,
-      "arg3": 6118,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6103,
-      "arg2": 4,
-      "arg3": 6118,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 6112,
-      "arg2": 1,
-      "arg3": 6143,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 6110,
-      "arg2": -1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 6112,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 6111,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6115,
-      "arg2": 1,
-      "arg3": 6100,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6114,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 6116,
-      "arg2": 1,
-      "arg3": 6155,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 6155,
-      "arg2": 1,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 6152,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "D",
-      "arg1": 6153,
-      "arg2": 3,
-      "arg3": 1,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6102,
-      "arg2": 1,
-      "arg3": 6103,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6103,
-      "arg2": 1,
-      "arg3": 6113,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6104,
-      "arg2": 1,
-      "arg3": 6125,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6105,
-      "arg2": 1,
-      "arg3": 6105,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6106,
-      "arg2": 4,
-      "arg3": 6104,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6106,
-      "arg2": 4,
-      "arg3": 6111,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6106,
-      "arg2": 4,
-      "arg3": 6122,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 6107,
-      "arg2": 4,
-      "arg3": 6119,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 6112,
@@ -3757,5 +2782,11 @@
       "mob_vnum": 6116,
       "spec": "spec_cast_cleric"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 6000,
+    "high": 6199
+  }
 }

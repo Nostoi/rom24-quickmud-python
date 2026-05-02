@@ -985,7 +985,7 @@
         "east": {
           "to_room": 3001,
           "keyword": "picture",
-          "flags": "1",
+          "flags": "3",
           "key": -1
         },
         "down": {
@@ -2038,7 +2038,7 @@
       "long_description": "The screaming, filthy harpy claws madly at your face!\n",
       "description": "The harpy looks at you with blood in her eyes.  Her entire body is\ncaked in filth and grime and she stinks to high heaven.  Her razor-\nsharp talons flex as she considers you for her dinner.\n",
       "race": "human",
-      "act_flags": "ACF",
+      "act_flags": "0",
       "affected_by": "DFP",
       "alignment": -500,
       "group": 0,
@@ -2048,23 +2048,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1525,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1525
     },
     {
       "id": 9102,
@@ -2073,7 +2069,7 @@
       "long_description": "The screaming harpy leader tries to scratch your eyes out!\n",
       "description": "The harpy leader looks at you and grins menacingly.  She stretches\nher wings and you see insects crawling around them.  Her hair is\nmatted and greasy and you are sickened by the stench that pervades\nher presence.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "DFP",
       "alignment": -750,
       "group": 0,
@@ -2083,23 +2079,19 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2125,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2125
     },
     {
       "id": 9103,
@@ -2108,7 +2100,7 @@
       "long_description": "The ghostly air elemental.\n",
       "description": "The air elemental is hard to see.  You know that it is there\nbecause objects behind it seem to waver and are slightly blurred.\n",
       "race": "human",
-      "act_flags": "ACF",
+      "act_flags": "0",
       "affected_by": "DFPQ",
       "alignment": 0,
       "group": 0,
@@ -2118,23 +2110,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -7,
-      "ac_bash": -7,
-      "ac_slash": -7,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 50
     },
     {
       "id": 9104,
@@ -2143,7 +2131,7 @@
       "long_description": "The mysterious efreeti grins in delight at its new prey.\n",
       "description": "The efreeti towers menacingly over you.  It is dressed in the\nfinest ghostly silks and a headdress with an elaborate brooch.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "DHP",
       "alignment": -100,
       "group": 0,
@@ -2153,23 +2141,19 @@
       "hit_dice": "13d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2500,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2500
     },
     {
       "id": 9105,
@@ -2178,7 +2162,7 @@
       "long_description": "The gigantic roc.\n",
       "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 50,
       "group": 0,
@@ -2188,23 +2172,19 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -6,
-      "ac_bash": -6,
-      "ac_slash": -6,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 9106,
@@ -2213,7 +2193,7 @@
       "long_description": "The gigantic roc stares menacingly at you.\n",
       "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.\n",
       "race": "human",
-      "act_flags": "AG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 50,
       "group": 0,
@@ -2223,23 +2203,19 @@
       "hit_dice": "14d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -8,
-      "ac_bash": -8,
-      "ac_slash": -8,
-      "ac_exotic": 6,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 2000
     },
     {
       "id": 9107,
@@ -2248,7 +2224,7 @@
       "long_description": "The ugly, wicked witch cackles maniacally.\n",
       "description": "The witch has jet black hair and sickly green skin.  She is covered\nwith warts and boils.  Her nails are long and sharp and look like\nthey would be quite painful.  Her eyes pierce your very soul.\n",
       "race": "human",
-      "act_flags": "ABCF",
+      "act_flags": "0",
       "affected_by": "DH",
       "alignment": -600,
       "group": 0,
@@ -2258,511 +2234,34 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+9",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -10,
-      "ac_bash": -10,
-      "ac_slash": -10,
-      "ac_exotic": 5,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 3000,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 3000
     }
   ],
-  "objects": [
-    {
-      "id": 9101,
-      "name": "a pair of winged boots",
-      "keywords": "winged boots",
-      "description": "A pair of winged boots flutters about",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 65,
-      "level": 13,
-      "weight": 100,
-      "cost": 2800,
-      "condition": 100,
-      "values": [
-        3,
-        3,
-        3,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": 1
-        },
-        {
-          "location": 2,
-          "modifier": 2
-        },
-        {
-          "location": 0,
-          "modifier": 0
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9103,
-      "name": "an ornate brooch",
-      "keywords": "ornate brooch",
-      "description": "An ornate brooch was carelessly left here.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 32,
-      "wear_flags": 5,
-      "level": 7,
-      "weight": 100,
-      "cost": 1140,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        },
-        {
-          "location": 3,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9104,
-      "name": "magenta potion",
-      "keywords": "magenta potion",
-      "description": "Bright magenta potion gathers dust.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 512,
-      "wear_flags": 16385,
-      "level": 3,
-      "weight": 20,
-      "cost": 320,
-      "condition": 100,
-      "values": [
-        8,
-        2,
-        25,
-        70,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 9105,
-      "name": "an ancient illustrated parchment",
-      "keywords": "ancient parchment",
-      "description": "An ancient illustrated parchment in the corner",
-      "material": "oldstyle",
-      "item_type": "scroll",
-      "extra_flags": 129,
-      "wear_flags": 16385,
-      "level": 12,
-      "weight": 50,
-      "cost": 1330,
-      "condition": 100,
-      "values": [
-        5,
-        4,
-        28,
-        70,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9102,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9102,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9105,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9105,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9127,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9127,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9127,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9108,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9108,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9108,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9112,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9112,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9117,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9119,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9119,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9119,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9121,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9122,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9122,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9129,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9131,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9133,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9135,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9144,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9145,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9146,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9147,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9149,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9150,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9151,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9152,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9158,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9158,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9162,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9101,
-      "arg2": 35,
-      "arg3": 9162,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 9102,
-      "arg2": 2,
-      "arg3": 9123,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9104,
-      "arg2": 10,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9102,
-      "arg2": 2,
-      "arg3": 9124,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9105,
-      "arg2": 1,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9103,
-      "arg2": 5,
-      "arg3": 9148,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9103,
-      "arg2": 5,
-      "arg3": 9109,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9103,
-      "arg2": 5,
-      "arg3": 9137,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9103,
-      "arg2": 5,
-      "arg3": 9163,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9103,
-      "arg2": 5,
-      "arg3": 9177,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9104,
-      "arg2": 2,
-      "arg3": 9182,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9102,
-      "arg2": 9,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9104,
-      "arg2": 2,
-      "arg3": 9187,
-      "arg4": 1
-    },
-    {
-      "command": "G",
-      "arg1": 9103,
-      "arg2": 20,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 9105,
-      "arg2": 1,
-      "arg3": 9156,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9106,
-      "arg2": 1,
-      "arg3": 9153,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 9107,
-      "arg2": 1,
-      "arg3": 9141,
-      "arg4": 1
-    },
-    {
-      "command": "D",
-      "arg1": 9141,
-      "arg2": 1,
-      "arg3": 1,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 9107,
       "spec": "spec_cast_undead"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 9100,
+    "high": 9199
+  }
 }

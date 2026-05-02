@@ -188,6 +188,13 @@
   ],
   "mobiles": [],
   "objects": [],
-  "resets": [],
-  "specials": []
+  "mob_programs": [],
+  "shops": [],
+  "specials": [],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 6900,
+    "high": 6999
+  }
 }

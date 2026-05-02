@@ -18,12 +18,14 @@
         "east": {
           "to_room": 1602,
           "description": "The road heads into low hills this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1702,
           "description": "The cross-roads and a trading post lie in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -39,12 +41,14 @@
         "east": {
           "to_room": 1603,
           "description": "You see a pair of tall towers in the distance.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1601,
           "description": "The road continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -60,12 +64,14 @@
         "east": {
           "to_room": 1604,
           "description": "Two fantastic towers surrounded by a moat rise before you.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1602,
           "description": "The road continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -81,17 +87,20 @@
         "north": {
           "to_room": 1605,
           "description": "A worn path leads to a cluster of low buildings.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1620,
           "description": "The Towers loom directly over you, just beyond the moat.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1603,
           "description": "An old ill-kept roads leads away to the west.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -107,12 +116,14 @@
         "north": {
           "to_room": 1606,
           "description": "Several low buildings lie this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1604,
           "description": "The path ends west of the moat.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -128,22 +139,26 @@
         "north": {
           "to_room": 1609,
           "description": "There is an entrance to a building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1607,
           "description": "A sign over the door reads 'House of Pancakes'.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1605,
           "description": "A path heads south toward the west side of the towers.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1608,
           "description": "There is an entrance to a building here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -168,7 +183,8 @@
       "exits": {
         "east": {
           "to_room": 1606,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -183,12 +199,14 @@
       "exits": {
         "south": {
           "to_room": 1606,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1610,
           "description": "You see a concealed opening leading down.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -203,7 +221,8 @@
       "exits": {
         "up": {
           "to_room": 1609,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -218,19 +237,23 @@
       "exits": {
         "north": {
           "to_room": 1621,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1623,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1622,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1604,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -245,7 +268,8 @@
       "exits": {
         "south": {
           "to_room": 1620,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -260,7 +284,8 @@
       "exits": {
         "north": {
           "to_room": 1620,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -275,11 +300,13 @@
       "exits": {
         "east": {
           "to_room": 1624,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1620,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -294,11 +321,13 @@
       "exits": {
         "east": {
           "to_room": 1625,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1623,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -313,19 +342,23 @@
       "exits": {
         "north": {
           "to_room": 1627,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1626,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1628,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1624,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -340,19 +373,23 @@
       "exits": {
         "north": {
           "to_room": 1629,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1631,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1630,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1625,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -367,7 +404,8 @@
       "exits": {
         "south": {
           "to_room": 1625,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -382,7 +420,8 @@
       "exits": {
         "north": {
           "to_room": 1625,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -397,7 +436,8 @@
       "exits": {
         "south": {
           "to_room": 1626,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -412,7 +452,8 @@
       "exits": {
         "north": {
           "to_room": 1626,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -427,20 +468,24 @@
       "exits": {
         "north": {
           "to_room": 1632,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1633,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1626,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1635,
           "description": "You see a spiral staircase leading up.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -455,7 +500,8 @@
       "exits": {
         "south": {
           "to_room": 1631,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1634,
@@ -476,7 +522,8 @@
       "exits": {
         "north": {
           "to_room": 1631,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -507,11 +554,13 @@
       "exits": {
         "up": {
           "to_room": 1636,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1631,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -526,11 +575,13 @@
       "exits": {
         "west": {
           "to_room": 1637,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1635,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -545,19 +596,23 @@
       "exits": {
         "north": {
           "to_room": 1638,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1636,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1639,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1640,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -572,7 +627,8 @@
       "exits": {
         "south": {
           "to_room": 1637,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -587,7 +643,8 @@
       "exits": {
         "north": {
           "to_room": 1637,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -602,16 +659,19 @@
       "exits": {
         "east": {
           "to_room": 1637,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1641,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "up": {
           "to_room": 1642,
           "description": "You see the spiral staircase leading up.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -626,7 +686,8 @@
       "exits": {
         "east": {
           "to_room": 1640,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -641,11 +702,13 @@
       "exits": {
         "up": {
           "to_room": 1643,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1640,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -665,7 +728,8 @@
         },
         "down": {
           "to_room": 1642,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -766,7 +830,8 @@
         "west": {
           "to_room": 1649,
           "description": "There is a small opening this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "down": {
           "to_room": 1647,
@@ -786,12 +851,14 @@
       "exits": {
         "east": {
           "to_room": 1648,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1650,
           "description": "A mirror-like portal glimmers, allowing entry into the western turret.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -806,12 +873,14 @@
       "exits": {
         "east": {
           "to_room": 1649,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1651,
           "description": "A mirror-like portal glimmers in this wall.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -826,11 +895,13 @@
       "exits": {
         "east": {
           "to_room": 1650,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1652,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -845,7 +916,8 @@
       "exits": {
         "east": {
           "to_room": 1651,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -861,11 +933,13 @@
         "east": {
           "to_room": 1702,
           "description": "You see a cross roads and an old building.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 5267,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -881,21 +955,25 @@
         "north": {
           "to_room": 1704,
           "description": "You see a trail leading north.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1601,
           "description": "The old Eastern road continues this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1703,
           "description": "An old, ram-shackle building serves as a trading post here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1701,
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -911,7 +989,8 @@
         "north": {
           "to_room": 1702,
           "description": "The door opens out on the crossroads.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -927,12 +1006,14 @@
         "north": {
           "to_room": 1705,
           "description": "The trail continues toward a deep, dark, forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1702,
           "description": "A major crossroads and a building lie in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -948,12 +1029,14 @@
         "north": {
           "to_room": 1706,
           "description": "The trail enters a dark forest of thick oaks this way.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1704,
           "description": "The trail continues.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -969,12 +1052,14 @@
         "north": {
           "to_room": 1707,
           "description": "You see the trail continuing into the forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1705,
           "description": "You see the trail head back on south.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -990,12 +1075,14 @@
         "north": {
           "to_room": 1708,
           "description": "You see the trail continue into thick, dark forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1706,
           "description": "The edge of the forest is visible in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1011,17 +1098,20 @@
         "east": {
           "to_room": 1720,
           "description": "A path disappears into thick forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1707,
           "description": "A path disappears into thick forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1709,
           "description": "You see the path to the Centaur village.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1037,12 +1127,14 @@
         "east": {
           "to_room": 1708,
           "description": "A path disappears into thick forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1710,
           "description": "There is a small clearing in this direction.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1058,22 +1150,26 @@
         "north": {
           "to_room": 1712,
           "description": "There is a hut here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1709,
           "description": "A path leads away through the forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1713,
           "description": "There is a hut here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1711,
           "description": "You see the west side of the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1089,22 +1185,26 @@
         "north": {
           "to_room": 1714,
           "description": "There is a hut here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "east": {
           "to_room": 1710,
           "description": "You see the east side of the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "south": {
           "to_room": 1715,
           "description": "There is a hut here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1716,
           "description": "There is a hut here.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1120,7 +1220,8 @@
         "south": {
           "to_room": 1710,
           "description": "The opening leads out onto the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1136,7 +1237,8 @@
         "north": {
           "to_room": 1710,
           "description": "The opening leads out onto the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1152,7 +1254,8 @@
         "south": {
           "to_room": 1711,
           "description": "The opening leads out onto the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1168,7 +1271,8 @@
         "north": {
           "to_room": 1711,
           "description": "The opening leads out onto the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1184,12 +1288,14 @@
         "east": {
           "to_room": 1711,
           "description": "The opening leads out onto the clearing.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         },
         "west": {
           "to_room": 1717,
           "description": "There is a curtain here separating this section from the next.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1205,7 +1311,8 @@
         "east": {
           "to_room": 1716,
           "description": "There is a curtain here separating this room from the front of the hut.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1221,7 +1328,8 @@
         "west": {
           "to_room": 1708,
           "description": "The path continues west through thick forest.\n",
-          "flags": "0"
+          "flags": "0",
+          "key": -1
         }
       },
       "extra_descriptions": [],
@@ -1236,7 +1344,7 @@
       "long_description": "A killer frog rises up out of the water.\n",
       "description": "The killer frog looks ravenous.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -1246,23 +1354,19 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 5,
-      "ac_bash": 5,
-      "ac_slash": 5,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 1
     },
     {
       "id": 1602,
@@ -1271,7 +1375,7 @@
       "long_description": "A stone gargoyle looms over you.\n",
       "description": "As you look, the figure seems to shift and move ...\n",
       "race": "human",
-      "act_flags": "ABFGH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -400,
       "group": 0,
@@ -1281,23 +1385,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 20,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 20
     },
     {
       "id": 1603,
@@ -1306,7 +1406,7 @@
       "long_description": "An angry gargoyle glares at you.\n",
       "description": "He looks ready to attack!\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -600,
       "group": 0,
@@ -1316,23 +1416,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 25
     },
     {
       "id": 1604,
@@ -1341,7 +1437,7 @@
       "long_description": "An elite gargoyle guards this room against intrusion.\n",
       "description": "He snarls at you and says LEAVE OR DIE!\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -600,
       "group": 0,
@@ -1351,23 +1447,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 40,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 40
     },
     {
       "id": 1605,
@@ -1376,7 +1468,7 @@
       "long_description": "The gargoyle shaman is here, preparing to do battle.\n",
       "description": "She says 'I can SEE you! I have been waiting ...'.\n",
       "race": "human",
-      "act_flags": "ABCGQ",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -900,
       "group": 0,
@@ -1386,23 +1478,19 @@
       "hit_dice": "13d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 150,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 150
     },
     {
       "id": 1606,
@@ -1411,7 +1499,7 @@
       "long_description": "Amidst the jungle here, a huge Carnivorous plant reaches out to grab you!\n",
       "description": "The plant looks something like a Venus fly-trap, only MUCH larger.\n",
       "race": "human",
-      "act_flags": "ABFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1421,23 +1509,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1607,
@@ -1446,7 +1530,7 @@
       "long_description": "A huge, gruesome ogre is sprawled here, gnawing some strange meat.\n",
       "description": "It thinks that perhaps you would make a better meal.\n",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -200,
       "group": 0,
@@ -1456,23 +1540,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 60,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 60
     },
     {
       "id": 1608,
@@ -1481,7 +1561,7 @@
       "long_description": "A dark shadow moves about the room.\n",
       "description": "The Shadow is vaguely humanoid. Two glowing pinpoints look at you.\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "BDF",
       "alignment": -1000,
       "group": 0,
@@ -1491,23 +1571,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 45,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 45
     },
     {
       "id": 1609,
@@ -1516,7 +1592,7 @@
       "long_description": "An evil wight lurks in the shadows!\n",
       "description": "He glares at you savagely and charges!\n",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -1000,
       "group": 0,
@@ -1526,23 +1602,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 110,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 110
     },
     {
       "id": 1610,
@@ -1551,7 +1623,7 @@
       "long_description": "A burly minotaur watches you solemnly.\n",
       "description": "This powerful creature wonders whether to kill you or not ...\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -600,
       "group": 0,
@@ -1561,23 +1633,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -1,
-      "ac_bash": -1,
-      "ac_slash": -1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 75
     },
     {
       "id": 1612,
@@ -1586,7 +1654,7 @@
       "long_description": "A bloodthirsty minotaur slowly counts his loot\n",
       "description": "He looks up at you and screams 'SO! Coming to steal my hoard!'\n",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -600,
       "group": 0,
@@ -1596,23 +1664,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1613,
@@ -1621,7 +1685,7 @@
       "long_description": "Sitting here in this room is the Minotaur Captain.\n",
       "description": "He looks at you, and a sinister grin slowly spreads on his face ...\n",
       "race": "human",
-      "act_flags": "ABCFG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": -900,
       "group": 0,
@@ -1631,23 +1695,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1614,
@@ -1656,7 +1716,7 @@
       "long_description": "A huge black pudding fills the center of the room!!\n",
       "description": "It is a huge black blob that oozes about the room. Its heading toward YOU!\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": -1000,
       "group": 0,
@@ -1666,23 +1726,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1615,
@@ -1691,7 +1747,7 @@
       "long_description": "A lesser Golem stands guarding the entrance.\n",
       "description": "The golem appears to be made of some kind of clay, enchanted to come to life!\n",
       "race": "human",
-      "act_flags": "ABG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 0,
       "group": 0,
@@ -1701,23 +1757,19 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1616,
@@ -1726,7 +1778,7 @@
       "long_description": "An enormous, ancient wyvern stares down at your tiny form...\n",
       "description": "It thunders loudly 'I must protect my Master's wealth!'\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "DF",
       "alignment": -1000,
       "group": 0,
@@ -1736,23 +1788,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -3,
-      "ac_bash": -3,
-      "ac_slash": -3,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1617,
@@ -1761,7 +1809,7 @@
       "long_description": "A spectre has begun to materialize in front of you!\n",
       "description": "Terror fills your heart as you view this master of the undead.\n",
       "race": "human",
-      "act_flags": "ACFG",
+      "act_flags": "0",
       "affected_by": "BDH",
       "alignment": -1000,
       "group": 0,
@@ -1771,23 +1819,19 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1702,
@@ -1796,7 +1840,7 @@
       "long_description": "A trapper stands here, bartering his pelts.\n",
       "description": "The trapper is clad mostly in the fur of various animals he's caught.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1806,23 +1850,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 6,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 6
     },
     {
       "id": 1704,
@@ -1831,7 +1871,7 @@
       "long_description": "A hunter rests in here, carrying a fresh kill.\n",
       "description": "The hunter is rugged and sturdy from his occupation.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1841,23 +1881,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 3,
-      "ac_bash": 3,
-      "ac_slash": 3,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 6,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 6
     },
     {
       "id": 1706,
@@ -1866,7 +1902,7 @@
       "long_description": "A grim ranger reclines at a table.\n",
       "description": "The years of wanderings have left the ranger hardened and strong.\n",
       "race": "human",
-      "act_flags": "ACG",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 200,
       "group": 0,
@@ -1876,23 +1912,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1707,
@@ -1901,7 +1933,7 @@
       "long_description": "A leader of the Rangers is watching you solemnly.\n",
       "description": "This individual has quite a reputation at the local trading posts!\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 300,
       "group": 0,
@@ -1911,23 +1943,19 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -2,
-      "ac_bash": -2,
-      "ac_slash": -2,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1708,
@@ -1936,7 +1964,7 @@
       "long_description": "The Lord of the Rangers catches your eye.\n",
       "description": "",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "D",
       "alignment": 400,
       "group": 0,
@@ -1946,23 +1974,19 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": -4,
-      "ac_bash": -4,
-      "ac_slash": -4,
-      "ac_exotic": 7,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1710,
@@ -1971,7 +1995,7 @@
       "long_description": "A male centaur wanders about this area.\n",
       "description": "The centaur has the upper torso of a man and lower body of a horse.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -1981,23 +2005,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 6,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 6
     },
     {
       "id": 1711,
@@ -2006,7 +2026,7 @@
       "long_description": "A female centaur wanders about this area.\n",
       "description": "The centaur has the upper torso of a woman and lower body of a horse.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -2016,23 +2036,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 1712,
@@ -2041,7 +2057,7 @@
       "long_description": "An old centaur is resting in a corner.\n",
       "description": "This centaur has lived a full life.\n",
       "race": "human",
-      "act_flags": "AC",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -2051,23 +2067,19 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 4,
-      "ac_bash": 4,
-      "ac_slash": 4,
-      "ac_exotic": 9,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 5,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 5
     },
     {
       "id": 1714,
@@ -2076,7 +2088,7 @@
       "long_description": "One of the centaur elders is here, watching you.\n",
       "description": "The elders act as counselors and advisors to the chief.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "B",
       "alignment": 200,
       "group": 0,
@@ -2086,23 +2098,19 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 2,
-      "ac_bash": 2,
-      "ac_slash": 2,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1715,
@@ -2111,7 +2119,7 @@
       "long_description": "A strong centaur is standing guard here.\n",
       "description": "He appears to be blocking entrance to the next room.\n",
       "race": "human",
-      "act_flags": "AB",
+      "act_flags": "0",
       "affected_by": "B",
       "alignment": 200,
       "group": 0,
@@ -2121,23 +2129,19 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1716,
@@ -2146,7 +2150,7 @@
       "long_description": "The chief of the centaur villagers reclines here.\n",
       "description": "He has been the leader of this tribe for many years, and has acquired much\nwisdom.\n",
       "race": "human",
-      "act_flags": "ABC",
+      "act_flags": "0",
       "affected_by": "B",
       "alignment": 200,
       "group": 0,
@@ -2156,23 +2160,19 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 0,
-      "ac_bash": 0,
-      "ac_slash": 0,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "rest",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     },
     {
       "id": 1720,
@@ -2181,7 +2181,7 @@
       "long_description": "A displacer beast is grazing nearby.\n",
       "description": "As you watch this strange creature, its position seems to flicker and shift.\n",
       "race": "human",
-      "act_flags": "AH",
+      "act_flags": "0",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2191,1152 +2191,24 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "beating",
-      "ac_pierce": 1,
-      "ac_bash": 1,
-      "ac_slash": 1,
-      "ac_exotic": 8,
+      "damage_type": "none",
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
+      "form": "2101377",
+      "parts": "2047",
+      "size": "medium",
+      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0,
-      "form": "0AHMV",
-      "parts": "0ABCDEFGHIJK",
-      "size": "medium",
-      "material": "0"
+      "wealth": 0
     }
   ],
-  "objects": [
-    {
-      "id": 1601,
-      "name": "a rusty cleaver",
-      "keywords": "rusty cleaver",
-      "description": "A rusty cleaver lies on a counter top.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 1,
-      "weight": 20,
-      "cost": 230,
-      "condition": 100,
-      "values": [
-        2,
-        1,
-        6,
-        25,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1602,
-      "name": "the fine mace",
-      "keywords": "fine mace",
-      "description": "There is a large mace of fine quality here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 64,
-      "wear_flags": 8193,
-      "level": 10,
-      "weight": 110,
-      "cost": 570,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        6,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1603,
-      "name": "a long elven dagger",
-      "keywords": "elven dagger",
-      "description": "A long elven dagger made of adamantite is here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 8,
-      "weight": 20,
-      "cost": 700,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        5,
-        11,
-        0
-      ],
-      "affects": [
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1604,
-      "name": "a steel broad sword",
-      "keywords": "steel broad sword",
-      "description": "A fine steel broad sword is lying on the ground.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 11,
-      "weight": 120,
-      "cost": 910,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        6,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1605,
-      "name": "a steel broad sword",
-      "keywords": "steel broad sword",
-      "description": "A very fine steel broad sword is lying on the ground.",
-      "material": "steel",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 15,
-      "weight": 120,
-      "cost": 1510,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        7,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 2
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1606,
-      "name": "the rod of might",
-      "keywords": "rod might",
-      "description": "A Rod of Might is lying here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 66,
-      "wear_flags": 8193,
-      "level": 14,
-      "weight": 130,
-      "cost": 1550,
-      "condition": 100,
-      "values": [
-        4,
-        2,
-        7,
-        6,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        },
-        {
-          "location": 18,
-          "modifier": 2
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1612,
-      "name": "a black kite shield",
-      "keywords": "black kite shield",
-      "description": "There is a large black kite shield lying here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 65,
-      "wear_flags": 513,
-      "level": 13,
-      "weight": 60,
-      "cost": 1530,
-      "condition": 100,
-      "values": [
-        6,
-        6,
-        6,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 20,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1614,
-      "name": "a commander's helm",
-      "keywords": "helm",
-      "description": "A commander's helm rests on a table here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 65,
-      "wear_flags": 17,
-      "level": 20,
-      "weight": 40,
-      "cost": 2300,
-      "condition": 100,
-      "values": [
-        7,
-        7,
-        7,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 4,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "helm",
-          "description": "This elegant helm is plated in mithril and silver."
-        }
-      ]
-    },
-    {
-      "id": 1615,
-      "name": "a mithril bracer",
-      "keywords": "bracer",
-      "description": "A magical bracer made from mithril lies on the ground!",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 66,
-      "wear_flags": 4097,
-      "level": 12,
-      "weight": 20,
-      "cost": 1540,
-      "condition": 100,
-      "values": [
-        4,
-        6,
-        6,
-        2,
-        0
-      ],
-      "affects": [
-        {
-          "location": 1,
-          "modifier": 1
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1616,
-      "name": "a dark blue cloak",
-      "keywords": "dark blue cloak",
-      "description": "A valuable cloak of dark blue cloth lies on the floor.",
-      "material": "oldstyle",
-      "item_type": "clothing",
-      "extra_flags": 65,
-      "wear_flags": 5,
-      "level": 0,
-      "weight": 20,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": 6
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1621,
-      "name": "a dark red potion",
-      "keywords": "dark red potion",
-      "description": "A dark red potion rests on the ground.",
-      "material": "oldstyle",
-      "item_type": "potion",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 5,
-      "weight": 10,
-      "cost": 320,
-      "condition": 100,
-      "values": [
-        9,
-        22,
-        23,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1651,
-      "name": "a bronze chest",
-      "keywords": "bronze chest",
-      "description": "There is a sturdy bronze chest in the corner.",
-      "material": "oldstyle",
-      "item_type": "container",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 100,
-      "cost": 100,
-      "condition": 100,
-      "values": [
-        30,
-        5,
-        0,
-        10,
-        100
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1652,
-      "name": "a barrel of ale",
-      "keywords": "ale barrel",
-      "description": "There is a small barrel in one corner.",
-      "material": "oldstyle",
-      "item_type": "drink",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 80,
-      "cost": 10,
-      "condition": 100,
-      "values": [
-        150,
-        2,
-        3,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1691,
-      "name": "the twin towers key",
-      "keywords": "key twin towers",
-      "description": "There is a shiny skeleton key on the ground here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 0,
-      "wear_flags": 1,
-      "level": 0,
-      "weight": 10,
-      "cost": 0,
-      "condition": 100,
-      "values": [
-        1,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1692,
-      "name": "a strange key",
-      "keywords": "strange key",
-      "description": "There is a very strange-looking key on the ground here.",
-      "material": "oldstyle",
-      "item_type": "key",
-      "extra_flags": 65,
-      "wear_flags": 16385,
-      "level": 12,
-      "weight": 10,
-      "cost": 750,
-      "condition": 100,
-      "values": [
-        2,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 17,
-          "modifier": -3
-        }
-      ],
-      "extra_descriptions": [
-        {
-          "keyword": "strange key",
-          "description": "This key is of an unusual shape ... must go to an unusual lock!"
-        }
-      ]
-    },
-    {
-      "id": 1701,
-      "name": "a short bow",
-      "keywords": "short bow",
-      "description": "A short bow has been carelessly left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 0,
-      "wear_flags": 8193,
-      "level": 5,
-      "weight": 50,
-      "cost": 730,
-      "condition": 100,
-      "values": [
-        0,
-        2,
-        4,
-        11,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": [
-        {
-          "keyword": "short bow",
-          "description": "It looks like the bows used by rustin hunters.\n"
-        }
-      ]
-    },
-    {
-      "id": 1702,
-      "name": "a long bow",
-      "keywords": "long bow",
-      "description": "A long bow has been foolishly abandoned here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 65,
-      "wear_flags": 8193,
-      "level": 12,
-      "weight": 70,
-      "cost": 220,
-      "condition": 100,
-      "values": [
-        3,
-        2,
-        6,
-        7,
-        0
-      ],
-      "affects": [
-        {
-          "location": 13,
-          "modifier": 5
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1704,
-      "name": "an ancient long sword",
-      "keywords": "ancient sword",
-      "description": "An ancient long sword has been left here.",
-      "material": "oldstyle",
-      "item_type": "weapon",
-      "extra_flags": 66,
-      "wear_flags": 8193,
-      "level": 19,
-      "weight": 100,
-      "cost": 2500,
-      "condition": 100,
-      "values": [
-        1,
-        2,
-        8,
-        3,
-        0
-      ],
-      "affects": [
-        {
-          "location": 19,
-          "modifier": 3
-        },
-        {
-          "location": 18,
-          "modifier": 3
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1711,
-      "name": "a fur cap",
-      "keywords": "fur cap",
-      "description": "A fur cap lies here on the ground.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 0,
-      "wear_flags": 17,
-      "level": 0,
-      "weight": 10,
-      "cost": 168,
-      "condition": 100,
-      "values": [
-        2,
-        2,
-        2,
-        0,
-        0
-      ],
-      "affects": [],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1712,
-      "name": "a pair of travelling boots",
-      "keywords": "travelling boots",
-      "description": "A sturdy pair of travelling boots lies here.",
-      "material": "oldstyle",
-      "item_type": "armor",
-      "extra_flags": 64,
-      "wear_flags": 65,
-      "level": 12,
-      "weight": 20,
-      "cost": 880,
-      "condition": 100,
-      "values": [
-        5,
-        5,
-        5,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 14,
-          "modifier": 10
-        }
-      ],
-      "extra_descriptions": []
-    },
-    {
-      "id": 1713,
-      "name": "a bronze ring",
-      "keywords": "bronze ring",
-      "description": "A ring of etched bronze gleams dimly on the ground.",
-      "material": "oldstyle",
-      "item_type": "jewelry",
-      "extra_flags": 64,
-      "wear_flags": 3,
-      "level": 5,
-      "weight": 10,
-      "cost": 55,
-      "condition": 100,
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "affects": [
-        {
-          "location": 12,
-          "modifier": 5
-        }
-      ],
-      "extra_descriptions": []
-    }
-  ],
-  "resets": [
-    {
-      "command": "R",
-      "arg1": 1644,
-      "arg2": 0,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1652,
-      "arg2": 2,
-      "arg3": 1608,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1601,
-      "arg2": 2,
-      "arg3": 1627,
-      "arg4": 0
-    },
-    {
-      "command": "O",
-      "arg1": 1651,
-      "arg2": 1,
-      "arg3": 1645,
-      "arg4": 0
-    },
-    {
-      "command": "P",
-      "arg1": 1603,
-      "arg2": 1,
-      "arg3": 1651,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1601,
-      "arg2": 4,
-      "arg3": 1620,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1601,
-      "arg2": 4,
-      "arg3": 1620,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1601,
-      "arg2": 4,
-      "arg3": 1621,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1601,
-      "arg2": 4,
-      "arg3": 1622,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1623,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1623,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1624,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1624,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1625,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 1631,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1603,
-      "arg2": 3,
-      "arg3": 1630,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1603,
-      "arg2": 3,
-      "arg3": 1632,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1603,
-      "arg2": 3,
-      "arg3": 1637,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1604,
-      "arg2": 4,
-      "arg3": 1636,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1604,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1604,
-      "arg2": 4,
-      "arg3": 1636,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1604,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1604,
-      "arg2": 4,
-      "arg3": 1639,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1604,
-      "arg2": 4,
-      "arg3": 1639,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1605,
-      "arg2": 1,
-      "arg3": 1638,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1602,
-      "arg2": 6,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1621,
-      "arg2": 3,
-      "arg3": 13,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1606,
-      "arg2": 1,
-      "arg3": 1628,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1607,
-      "arg2": 1,
-      "arg3": 1629,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1608,
-      "arg2": 4,
-      "arg3": 1644,
-      "arg4": 4
-    },
-    {
-      "command": "M",
-      "arg1": 1609,
-      "arg2": 1,
-      "arg3": 1634,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1692,
-      "arg2": 1,
-      "arg3": 17,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1610,
-      "arg2": 2,
-      "arg3": 1645,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1610,
-      "arg2": 2,
-      "arg3": 1645,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1612,
-      "arg2": 1,
-      "arg3": 1610,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1604,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1612,
-      "arg2": 3,
-      "arg3": 11,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1613,
-      "arg2": 1,
-      "arg3": 1646,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1605,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "E",
-      "arg1": 1614,
-      "arg2": 3,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1614,
-      "arg2": 1,
-      "arg3": 1643,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1615,
-      "arg2": 2,
-      "arg3": 1647,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1606,
-      "arg2": 2,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1616,
-      "arg2": 1,
-      "arg3": 1648,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1615,
-      "arg2": 2,
-      "arg3": 14,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1621,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1617,
-      "arg2": 1,
-      "arg3": 1650,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1616,
-      "arg2": 2,
-      "arg3": 3,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1702,
-      "arg2": 2,
-      "arg3": 1703,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1711,
-      "arg2": 5,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1702,
-      "arg2": 2,
-      "arg3": 1703,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1711,
-      "arg2": 5,
-      "arg3": 6,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1704,
-      "arg2": 2,
-      "arg3": 1703,
-      "arg4": 2
-    },
-    {
-      "command": "M",
-      "arg1": 1704,
-      "arg2": 2,
-      "arg3": 1703,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1701,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1706,
-      "arg2": 1,
-      "arg3": 1703,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1702,
-      "arg2": 5,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "G",
-      "arg1": 1621,
-      "arg2": 5,
-      "arg3": 0,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1710,
-      "arg2": 3,
-      "arg3": 1704,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1701,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1710,
-      "arg2": 3,
-      "arg3": 1708,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1701,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1710,
-      "arg2": 3,
-      "arg3": 1710,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1711,
-      "arg2": 2,
-      "arg3": 1706,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1711,
-      "arg2": 2,
-      "arg3": 1709,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1712,
-      "arg2": 3,
-      "arg3": 1710,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1712,
-      "arg2": 3,
-      "arg3": 1712,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1712,
-      "arg2": 3,
-      "arg3": 1713,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1714,
-      "arg2": 3,
-      "arg3": 1711,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1714,
-      "arg2": 3,
-      "arg3": 1714,
-      "arg4": 1
-    },
-    {
-      "command": "M",
-      "arg1": 1714,
-      "arg2": 3,
-      "arg3": 1715,
-      "arg4": 3
-    },
-    {
-      "command": "M",
-      "arg1": 1715,
-      "arg2": 2,
-      "arg3": 1716,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1604,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1715,
-      "arg2": 2,
-      "arg3": 1716,
-      "arg4": 2
-    },
-    {
-      "command": "E",
-      "arg1": 1604,
-      "arg2": 10,
-      "arg3": 16,
-      "arg4": 0
-    },
-    {
-      "command": "M",
-      "arg1": 1716,
-      "arg2": 1,
-      "arg3": 1717,
-      "arg4": 1
-    },
-    {
-      "command": "E",
-      "arg1": 1713,
-      "arg2": 1,
-      "arg3": 2,
-      "arg4": 0
-    }
-  ],
+  "objects": [],
+  "mob_programs": [],
+  "shops": [],
   "specials": [
     {
       "mob_vnum": 1605,
@@ -3362,5 +2234,11 @@
       "mob_vnum": 1716,
       "spec": "spec_cast_undead"
     }
-  ]
+  ],
+  "helps": [],
+  "security": 9,
+  "level_range": {
+    "low": 1600,
+    "high": 1799
+  }
 }

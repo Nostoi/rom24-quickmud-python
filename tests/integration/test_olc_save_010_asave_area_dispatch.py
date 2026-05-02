@@ -71,8 +71,7 @@ def test_asave_area_dispatches_aedit_session(builder_char, test_area):
 
     result = cmd_asave(builder_char, "area")
 
-    assert "saved" in result.lower()
-    assert "OLC_SAVE-010 Area" in result
+    assert result == "Area saved.\n\r"  # ROM src/olc_save.c:1126
 
 
 def test_asave_area_dispatches_oedit_session(builder_char, test_area):
@@ -85,8 +84,7 @@ def test_asave_area_dispatches_oedit_session(builder_char, test_area):
 
         result = cmd_asave(builder_char, "area")
 
-        assert "saved" in result.lower()
-        assert "OLC_SAVE-010 Area" in result
+        assert result == "Area saved.\n\r"  # ROM src/olc_save.c:1126
     finally:
         obj_registry.pop(9001, None)
 
@@ -101,8 +99,7 @@ def test_asave_area_dispatches_medit_session(builder_char, test_area):
 
         result = cmd_asave(builder_char, "area")
 
-        assert "saved" in result.lower()
-        assert "OLC_SAVE-010 Area" in result
+        assert result == "Area saved.\n\r"  # ROM src/olc_save.c:1126
     finally:
         mob_registry.pop(9002, None)
 
@@ -117,8 +114,7 @@ def test_asave_area_dispatches_redit_session(builder_char, test_area):
 
         result = cmd_asave(builder_char, "area")
 
-        assert "saved" in result.lower()
-        assert "OLC_SAVE-010 Area" in result
+        assert result == "Area saved.\n\r"  # ROM src/olc_save.c:1126
     finally:
         room_registry.pop(9003, None)
 
