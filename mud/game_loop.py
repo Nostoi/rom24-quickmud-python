@@ -11,7 +11,7 @@ from mud.affects.engine import tick_spell_effects
 from mud.ai import aggressive_update, mobile_update
 from mud.characters.conditions import gain_condition
 from mud.combat.engine import update_pos
-from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick
+from mud.config import get_pulse_area, get_pulse_music, get_pulse_tick, get_pulse_violence
 from mud.imc import pump_idle
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
@@ -270,15 +270,17 @@ def mana_gain(character: Character) -> int:
             if character.pcdata.condition[Condition.THIRST] == 0:
                 gain //= 2
 
-    gain = gain * getattr(room, "heal_rate", 100) // 100
+    # ROM src/update.c:297 — mana uses mana_rate, not heal_rate
+    gain = gain * getattr(room, "mana_rate", 100) // 100
 
     furniture = getattr(character, "on", None)
     if furniture is not None:
         item_type = getattr(furniture.prototype, "item_type", None)
         if item_type == ItemType.FURNITURE or item_type == int(ItemType.FURNITURE):
             values = getattr(furniture, "value", [100, 100, 100, 100, 100])
-            if len(values) > 3:
-                gain = gain * int(values[3]) // 100
+            # ROM src/update.c:300 — mana furniture bonus uses value[4], not value[3]
+            if len(values) > 4:
+                gain = gain * int(values[4]) // 100
 
     if _has_affect(character, AffectFlag.POISON):
         gain //= 4
@@ -504,8 +506,10 @@ def _idle_to_limbo(character: Character) -> None:
     if getattr(character, "was_in_room", None) is None:
         character.was_in_room = room
 
+    # ROM src/update.c:741-744 — stop_fighting(ch, TRUE) to clean both sides
     if getattr(character, "fighting", None) is not None:
-        character.fighting = None
+        from mud.combat.engine import stop_fighting
+        stop_fighting(character, both=True)
 
     if int(getattr(character, "level", 0) or 0) > 1:
         try:
@@ -551,9 +555,126 @@ def _auto_quit_character(character: Character) -> None:
         pass
 
 
-def char_update() -> None:
-    """Port of ROM's char_update: regen, conditions, idle handling."""
+def _char_update_tick_effects(character: Character) -> bool:
+    """Apply per-tick affect damage (plague, poison, incap, mortal).
 
+    Mirrors ROM src/update.c:char_update lines 793-871.
+    Returns True if character was extracted (caller must skip remaining processing).
+    """
+    from mud.combat.engine import apply_damage as _damage
+    from mud.models.constants import DamageType
+
+    # Plague tick — ROM src/update.c:794-846
+    if _has_affect(character, AffectFlag.PLAGUE):
+        room = getattr(character, "room", None)
+        if room is None:
+            return False
+
+        _message_room(room, f"{getattr(character, 'name', 'Someone')} writhes in agony as plague sores erupt from their skin.")
+        _send_to_char(character, "You writhe in agony from the plague.\r\n")
+
+        # Find the plague affect to get its level
+        affects = getattr(character, "affected", None) or []
+        plague_af = None
+        for af in affects:
+            spell_name = getattr(af, "type", None) or getattr(af, "spell_name", None)
+            if spell_name == "plague":
+                plague_af = af
+                break
+
+        if plague_af is None:
+            # Bit set but no affect entry — clear the flag
+            affected_by = int(getattr(character, "affected_by", 0) or 0)
+            character.affected_by = affected_by & ~int(AffectFlag.PLAGUE)
+        else:
+            af_level = int(getattr(plague_af, "level", 1) or 1)
+            if af_level > 1:
+                # Spread to room occupants — ROM src/update.c:828-841
+                spread_level = af_level - 1
+                for vch in list(getattr(room, "people", [])):
+                    if vch is character:
+                        continue
+                    if _has_affect(vch, AffectFlag.PLAGUE):
+                        continue
+                    if int(getattr(vch, "level", 0) or 0) >= LEVEL_IMMORTAL:
+                        continue
+                    if rng_mm.number_bits(4) != 0:
+                        continue
+                    # saves_spell check — simplified: use level check
+                    from mud.affects.saves import saves_spell
+                    from mud.models.constants import DamageType
+                    if saves_spell(spread_level - 2, vch, int(DamageType.DISEASE)):
+                        continue
+                    _send_to_char(vch, "You feel hot and feverish.\r\n")
+                    _message_room(room, f"{getattr(vch, 'name', 'Someone')} shivers and looks very ill.", exclude=vch)
+                    if hasattr(vch, "add_affect"):
+                        from mud.models.character import AffectData
+                        new_af = AffectData(
+                            type="plague",
+                            level=spread_level,
+                            duration=rng_mm.number_range(1, 2 * spread_level),
+                            location="str",
+                            modifier=-5,
+                            bitvector=int(AffectFlag.PLAGUE),
+                        )
+                        vch.add_affect(new_af)
+
+            # Drain mana and move — ROM src/update.c:843-845
+            dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
+            character.mana = max(0, int(getattr(character, "mana", 0) or 0) - dam)
+            character.move = max(0, int(getattr(character, "move", 0) or 0) - dam)
+            try:
+                _damage(character, character, dam, int(DamageType.DISEASE))
+            except Exception:
+                pass
+        return False
+
+    # Poison tick — ROM src/update.c:848-862
+    if _has_affect(character, AffectFlag.POISON) and not _has_affect(character, AffectFlag.SLOW):
+        affects = getattr(character, "affected", None) or []
+        poison_af = None
+        for af in affects:
+            spell_name = getattr(af, "type", None) or getattr(af, "spell_name", None)
+            if spell_name == "poison":
+                poison_af = af
+                break
+        if poison_af is not None:
+            room = getattr(character, "room", None)
+            if room is not None:
+                _message_room(room, f"{getattr(character, 'name', 'Someone')} shivers and suffers.", exclude=character)
+            _send_to_char(character, "You shiver and suffer.\r\n")
+            af_level = int(getattr(poison_af, "level", 1) or 1)
+            dam = af_level // 10 + 1
+            try:
+                _damage(character, character, dam, int(DamageType.POISON))
+            except Exception:
+                pass
+        return False
+
+    # Incapacitated — ROM src/update.c:864-867 — 50% chance of 1 damage
+    pos = Position(int(getattr(character, "position", Position.STANDING)))
+    if pos == Position.INCAP and rng_mm.number_range(0, 1) == 0:
+        try:
+            _damage(character, character, 1, int(DamageType.NONE) if hasattr(DamageType, "NONE") else 0)
+        except Exception:
+            pass
+        return False
+
+    # Mortal — ROM src/update.c:868-871 — 1 damage every tick
+    if pos == Position.MORTAL:
+        try:
+            _damage(character, character, 1, int(DamageType.NONE) if hasattr(DamageType, "NONE") else 0)
+        except Exception:
+            pass
+
+    return False
+
+
+def char_update() -> None:
+    """Port of ROM's char_update: regen, conditions, idle handling.
+
+    Mirrors ROM src/update.c:char_update.
+    """
     global _AUTOSAVE_ROTATION
     _AUTOSAVE_ROTATION = (_AUTOSAVE_ROTATION + 1) % _AUTOSAVE_WINDOW
 
@@ -563,13 +684,38 @@ def char_update() -> None:
     for character in list(character_registry):
         position = Position(int(getattr(character, "position", Position.STANDING)))
         if position >= Position.STUNNED:
+            # GL-009: NPC wanders home — ROM src/update.c:688-696
+            # If an NPC is outside its home zone and not fighting/charmed,
+            # 5% chance per tick to be extracted (despawned).
+            if getattr(character, "is_npc", False):
+                room = getattr(character, "room", None)
+                ch_zone = getattr(character, "zone", None)
+                if (
+                    ch_zone is not None
+                    and room is not None
+                    and getattr(room, "area", None) is not ch_zone
+                    and getattr(character, "desc", None) is None
+                    and getattr(character, "fighting", None) is None
+                    and not _has_affect(character, AffectFlag.CHARM)
+                    and rng_mm.number_percent() < 5
+                ):
+                    from mud.mob_cmds import _extract_character
+                    _message_room(room, f"{getattr(character, 'name', 'Someone')} wanders on home.")
+                    _extract_character(character, fPull=True)
+                    continue
+
             _apply_regeneration(character)
 
         if position == Position.STUNNED:
             update_pos(character)
 
+        # Spell affect duration ticks (wear-off messages)
         for message in tick_spell_effects(character):
             _send_to_char(character, message)
+
+        # Per-tick damage effects: plague, poison, incap, mortal (GL-011..GL-014)
+        # ROM src/update.c:793-871
+        _char_update_tick_effects(character)
 
         if getattr(character, "is_npc", False):
             continue
@@ -887,6 +1033,15 @@ def _broadcast_decay(obj: ObjectData, message: str) -> None:
 
     room = getattr(obj, "in_room", None)
     if room is not None:
+        # GL-018: ROM src/update.c:1017-1018 — suppress decay message if obj is
+        # inside a pit (vnum 3010) that cannot be taken.
+        in_obj = getattr(obj, "in_obj", None)
+        if in_obj is not None:
+            proto = getattr(in_obj, "pIndexData", None) or getattr(in_obj, "prototype", None)
+            in_vnum = int(getattr(proto, "vnum", -1) or -1)
+            in_wear = int(getattr(in_obj, "wear_flags", 0) or 0)
+            if in_vnum == 3010 and not (in_wear & int(WearFlag.TAKE)):
+                return
         _message_room(room, message)
 
 
@@ -1101,13 +1256,16 @@ _point_counter = get_pulse_tick()
 _area_counter = get_pulse_area()
 _music_counter = get_pulse_music()
 _mobile_counter = 0  # Will be initialized on first tick
+_violence_counter = 0  # Will be initialized on first tick
 
 
-def violence_tick() -> None:
-    """Process combat rounds and consume wait/daze counters.
+def violence_tick(*, do_combat: bool = False) -> None:
+    """Process wait/daze counters every pulse, and combat rounds on PULSE_VIOLENCE cadence.
 
-    Mirrors ROM src/fight.c:violence_update which iterates all characters,
-    checks if they're fighting, and calls multi_hit() to process combat rounds.
+    Mirrors ROM src/fight.c:violence_update — wait/daze decay happens every
+    pulse, but multi_hit() (actual combat rounds) only fires when do_combat=True,
+    which game_tick() sets on PULSE_VIOLENCE intervals.
+    # mirroring ROM src/update.c:update_handler (pulse_violence gate)
     """
     from mud.combat.engine import multi_hit, stop_fighting
 
@@ -1126,6 +1284,9 @@ def violence_tick() -> None:
             else:
                 ch.daze = max(0, daze)
 
+        if not do_combat:
+            continue
+
         # Process combat rounds (ROM src/fight.c:72-96)
         victim = getattr(ch, "fighting", None)
         if victim is None or getattr(ch, "room", None) is None:
@@ -1141,23 +1302,58 @@ def violence_tick() -> None:
 
 
 def game_tick() -> None:
-    """Run a full game tick: time, regen, weather, timed events, and resets."""
-    global _pulse_counter, _point_counter, _area_counter, _music_counter, _mobile_counter
+    """Run a full game tick: time, regen, weather, timed events, and resets.
+
+    Order mirrors ROM src/update.c:update_handler exactly:
+        area → music → mobile → violence → point(time/weather/char/obj) → aggr
+    Python-only additions (event_tick, pump_idle) are inserted at the
+    closest logical position without breaking ROM ordering.
+    """
+    global _pulse_counter, _point_counter, _area_counter, _music_counter, _mobile_counter, _violence_counter
     _pulse_counter += 1
 
-    # Initialize _mobile_counter on first tick
+    # Initialize counters on first tick
     if _mobile_counter == 0:
         from mud.config import get_pulse_mobile
 
         _mobile_counter = get_pulse_mobile()
 
-    # Consume wait/daze every pulse before evaluating cadence counters.
-    violence_tick()
+    if _violence_counter == 0:
+        _violence_counter = get_pulse_violence()
 
-    # Point pulses drive time/weather/regen updates.
+    # 1. Area resets — ROM: if (--pulse_area <= 0)
+    _area_counter -= 1
+    if _area_counter <= 0:
+        _area_counter = get_pulse_area()
+        reset_tick()
+
+    # 2. Music — ROM: if (--pulse_music <= 0)
+    _music_counter -= 1
+    if _music_counter <= 0:
+        _music_counter = get_pulse_music()
+        song_update()
+
+    # 3. Mobile AI + NPC spec_funs — ROM: if (--pulse_mobile <= 0) { mobile_update(); }
+    #    spec_fun is called inside mobile_update in ROM src/update.c:408-430.
+    _mobile_counter -= 1
+    if _mobile_counter <= 0:
+        from mud.config import get_pulse_mobile
+
+        _mobile_counter = get_pulse_mobile()
+        mobile_update()
+        run_npc_specs()
+
+    # 4. Violence (combat rounds) — ROM: if (--pulse_violence <= 0)
+    #    wait/daze decrement happens every pulse; multi_hit only on cadence.
+    _violence_counter -= 1
+    do_combat = _violence_counter <= 0
+    if do_combat:
+        _violence_counter = get_pulse_violence()
+    violence_tick(do_combat=do_combat)
+
+    # 5. Point pulse: time/weather/regen — ROM: if (--pulse_point <= 0)
     _point_counter -= 1
-    point_pulse = _point_counter <= 0
-    if point_pulse:
+    if _point_counter <= 0:
         _point_counter = get_pulse_tick()
         time_tick()
         weather_tick()
@@ -1165,28 +1361,9 @@ def game_tick() -> None:
         obj_update()
         pump_idle()
 
-    _area_counter -= 1
-    if _area_counter <= 0:
-        _area_counter = get_pulse_area()
-        reset_tick()
-
-    _music_counter -= 1
-    if _music_counter <= 0:
-        _music_counter = get_pulse_music()
-        song_update()
-
-    # Mobile update runs on PULSE_MOBILE cadence (ROM parity)
-    _mobile_counter -= 1
-    if _mobile_counter <= 0:
-        from mud.config import get_pulse_mobile
-
-        _mobile_counter = get_pulse_mobile()
-        mobile_update()
-
+    # 6. Every-pulse housekeeping — ROM: aggr_update(); tail_chain();
     event_tick()
     aggressive_update()
-    # Invoke NPC special functions after resets to mirror ROM's update cadence
-    run_npc_specs()
 
 
 async def async_game_loop() -> None:

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 
+import mud.game_loop as _gl
 from mud.advancement import advance_level, exp_per_level, gain_exp
 from mud.commands.dispatcher import process_command
 from mud.game_loop import game_tick
@@ -113,7 +114,8 @@ def test_kill_mob_grants_xp_integration(test_character, test_mob):
     char.position = Position.FIGHTING
     mob.position = Position.FIGHTING
 
-    for _ in range(30):
+    _gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
+    for _ in range(60):
         game_tick()
         if mob.hit <= 0:
             break

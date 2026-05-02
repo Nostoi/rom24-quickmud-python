@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.1] — update.c Parity Gap Closures (GL-004/005/009/011/012/013/014/015/018)
+
+### Fixed
+- **GL-004**: `mana_gain` now uses `room.mana_rate` instead of `room.heal_rate`; rooms with custom mana rates now regenerate mana at the correct rate (ROM `update.c:300`).
+- **GL-005**: `mana_gain` furniture bonus now reads `value[4]` (mana bonus) instead of `value[3]` (hit bonus) (ROM `update.c:218,300`).
+- **GL-009**: NPC `char_update` wanders-home: out-of-zone NPCs that are not fighting and not charmed now have a 5% per-tick chance of being extracted (despawned) — mirrors ROM `update.c:688-696`. Previously missing entirely.
+- **GL-011**: Plague tick implemented: spreads to room occupants (5% per-tick per target, saves vs disease), drains mana and move, and deals HP damage per tick (ROM `update.c:794-846`). Previously missing.
+- **GL-012**: Poison tick implemented: sends "You shiver and suffer" message and deals `level // 10 + 1` HP damage per tick (ROM `update.c:848-862`). Previously missing.
+- **GL-013**: INCAP position tick damage: 50% chance of 1 HP damage per tick (ROM `update.c:864-867`). Previously missing.
+- **GL-014**: MORTAL position tick damage: 1 HP damage every tick unconditionally (ROM `update.c:868-871`). Previously missing.
+- **GL-015**: `_idle_to_limbo` now calls `stop_fighting(ch, both=True)` instead of `ch.fighting = None`, properly cleaning both sides of any fight (ROM `update.c:741-744`).
+- **GL-018**: Decay messages for objects inside an untakeable pit (vnum 3010) are now suppressed (ROM `update.c:1017-1018`). Previously objects inside a pit always broadcast their decay message to the room.
+
+### Added
+- `_char_update_tick_effects()` helper in `mud/game_loop.py` encapsulating all per-tick damage effects (plague, poison, INCAP, MORTAL).
+- Integration tests: `tests/integration/test_update_c_parity.py` — 11 tests covering all closed gaps.
+
 ## [2.7.0] — ROM Character-First Login
 
 ### Changed

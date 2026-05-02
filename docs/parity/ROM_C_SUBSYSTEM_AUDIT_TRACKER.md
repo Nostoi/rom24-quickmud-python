@@ -184,28 +184,39 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ✅ P0-4: update.c (AUDITED - 95%)
+### ✅ P0-4: update.c (AUDITED - 99%)
 
-**Status**: ✅ **Audited December 2025**
+**Status**: ✅ **Re-audited May 2026 — GL gaps closed**
 
 **ROM Functions**: 9 update functions
 **QuickMUD Module**: `mud/game_loop.py`
 
 **Audit Results**:
-- ✅ `update_handler()` → `game_tick()` (100% parity)
-- ✅ `violence_update()` → `violence_tick()` (FIXED Dec 2025)
-- ✅ `mobile_update()` → `mobile_update()` (FIXED Dec 2025 - PULSE_MOBILE)
+- ✅ `update_handler()` → `game_tick()` (100% parity — GL-order fixed)
+- ✅ `violence_update()` → `violence_tick()` (FIXED — GL-combat-fast)
+- ✅ `mobile_update()` → `mobile_update()` (FIXED — GL-healer-spam)
 - ✅ `weather_update()` → `weather_tick()` (100% parity)
-- ✅ `char_update()` → `char_update()` (100% parity)
-- ✅ `obj_update()` → `obj_update()` (100% parity)
+- ✅ `char_update()` → `char_update()` (GL-004/005/009/011/012/013/014/015 FIXED May 2026)
+- ✅ `obj_update()` → `obj_update()` (GL-018 FIXED May 2026)
 - ✅ `aggr_update()` → `aggressive_update()` (100% parity)
 - ✅ `area_update()` → `reset_tick()` (100% parity)
 - ✅ `song_update()` → `song_update()` (100% parity)
 
-**Missing Functions**:
-- [ ] `wiznet("TICK!")` message (5%)
+**Closed Gaps (May 2026)**:
+- GL-004: `mana_gain` now uses `room.mana_rate` (was `heal_rate`)
+- GL-005: `mana_gain` furniture uses `value[4]` (was `value[3]`)
+- GL-009: NPC out-of-zone wanders-home → `extract_char` (was missing entirely)
+- GL-011: Plague tick: spread + mana/move drain + damage (was missing)
+- GL-012: Poison tick: shiver message + damage (was missing)
+- GL-013: INCAP tick 50% chance 1 HP damage (was missing)
+- GL-014: MORTAL tick 1 HP damage (was missing)
+- GL-015: `_idle_to_limbo` uses `stop_fighting(ch, both=True)` (was `fighting=None`)
+- GL-018: Pit (vnum 3010) decay message suppression (was missing)
 
-**Integration Tests**: ✅ Complete (`tests/test_game_loop.py`)
+**Remaining**:
+- GL-021: `wiznet("TICK!")` message (P3 — low priority)
+
+**Integration Tests**: ✅ Complete (`tests/test_game_loop.py`, `tests/integration/test_update_c_parity.py`)
 
 **Next Steps**:
 - [ ] Add TICK! wiznet message (P3 priority)

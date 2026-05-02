@@ -232,6 +232,8 @@ class TestPassiveSkillsIntegration:
         char.position = Position.FIGHTING
         mob.position = Position.FIGHTING
 
+        import mud.game_loop as gl
+        gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
         initial_hp = char.hit
         for _ in range(5):
             game_tick()
@@ -273,9 +275,11 @@ class TestPassiveSkillsIntegration:
         # the seed before this test's combat tick loop.
         rng_mm.seed_mm(12345)
 
-        # 30 ticks gives the level-50 attacker enough swings to defeat a 50-hp
-        # mob even on a streak of grazes/misses under the seeded RNG.
-        for _ in range(30):
+        # Reset violence counter so combat fires within the first PULSE_VIOLENCE
+        # window (12 pulses). 200 ticks = ~16 combat rounds at ROM 3-second cadence.
+        import mud.game_loop as gl
+        gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
+        for _ in range(200):
             game_tick()
             if mob.hit <= 0:
                 break

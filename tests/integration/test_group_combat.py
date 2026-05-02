@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import pytest
 
+import mud.game_loop as _gl
 from mud.commands.dispatcher import process_command
 from mud.commands.group_commands import is_same_group
 from mud.game_loop import game_tick
@@ -328,8 +329,12 @@ class TestGroupExperienceSharing:
         follower2.fighting = mob
         follower2.position = Position.FIGHTING
 
-        # Fight until mob dies
-        for _ in range(15):
+        # Reset violence counter so first game_tick() triggers re-init and
+        # combat fires within the first PULSE_VIOLENCE window.
+        _gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
+
+        # 60 ticks = 5 combat rounds at ROM 3-second cadence (PULSE_VIOLENCE=12)
+        for _ in range(60):
             game_tick()
             if mob.hit <= 0:
                 break
