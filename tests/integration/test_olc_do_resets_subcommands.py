@@ -16,6 +16,7 @@ import pytest
 from mud.models.constants import ItemType, WearLocation
 from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
+from mud.models.room_json import ResetJson
 from mud.models.room import Room
 from mud.registry import mob_registry, obj_registry, room_registry
 
@@ -413,6 +414,77 @@ def test_do_resets_delete_existing(builder_char, olc_room, obj_proto_sword):
     out = call_resets(builder_char, "1 delete")
     assert "Reset deleted." in out
     assert len(olc_room.resets) == 0
+
+
+# ---------------------------------------------------------------------------
+# OLC-021: add_reset insertion semantics
+# ---------------------------------------------------------------------------
+
+
+def test_add_reset_index_one_inserts_at_head(olc_room):
+    """Index 1 inserts at the head.
+
+    mirrors ROM src/olc.c:1207-1212
+    """
+    from mud.commands.imm_olc import _add_reset
+
+    first = ResetJson(command="O", arg1=1)
+    second = ResetJson(command="M", arg1=2)
+    olc_room.resets = [first]
+
+    _add_reset(olc_room, second, 1)
+
+    assert olc_room.resets == [second, first]
+
+
+def test_add_reset_index_two_inserts_after_head(olc_room):
+    """Index 2 inserts after the first existing reset.
+
+    mirrors ROM src/olc.c:1218-1222 after internal `index--`
+    """
+    from mud.commands.imm_olc import _add_reset
+
+    first = ResetJson(command="O", arg1=1)
+    third = ResetJson(command="R", arg1=3)
+    second = ResetJson(command="M", arg1=2)
+    olc_room.resets = [first, third]
+
+    _add_reset(olc_room, second, 2)
+
+    assert olc_room.resets == [first, second, third]
+
+
+def test_add_reset_zero_appends_to_tail(olc_room):
+    """Non-positive indices append to the tail.
+
+    mirrors ROM src/olc.c:1215-1227 (`index--`, then walk to last)
+    """
+    from mud.commands.imm_olc import _add_reset
+
+    first = ResetJson(command="O", arg1=1)
+    second = ResetJson(command="M", arg1=2)
+    olc_room.resets = [first]
+
+    _add_reset(olc_room, second, 0)
+
+    assert olc_room.resets == [first, second]
+
+
+def test_add_reset_oversize_index_appends_to_tail(olc_room):
+    """Oversize positive index falls through to tail insertion.
+
+    mirrors ROM src/olc.c:1218-1227 when the walk reaches the last reset
+    without hitting the requested slot.
+    """
+    from mud.commands.imm_olc import _add_reset
+
+    first = ResetJson(command="O", arg1=1)
+    second = ResetJson(command="M", arg1=2)
+    olc_room.resets = [first]
+
+    _add_reset(olc_room, second, 99)
+
+    assert olc_room.resets == [first, second]
 
 
 # ---------------------------------------------------------------------------

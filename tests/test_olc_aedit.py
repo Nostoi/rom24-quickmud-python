@@ -35,6 +35,7 @@ def builder_char():
 
     char = Character()
     char.name = "TestBuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
@@ -63,6 +64,7 @@ def test_aedit_requires_builder_permission(test_area):
 
     char = Character()
     char.name = "NotABuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 0})()
@@ -276,6 +278,7 @@ def test_aedit_builder_by_name(test_area):
 
     char = Character()
     char.name = "TestBuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 0})()

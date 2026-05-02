@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **OLC-004/005**: Active OLC editors now support ROM-style `commands` listings with five fixed-width columns, mirroring `src/olc.c:153-209`.
+
 ## [2.7.1] — update.c Parity Gap Closures (GL-004/005/009/011/012/013/014/015/018)
 
 ### Fixed

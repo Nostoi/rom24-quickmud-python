@@ -67,6 +67,7 @@ def builder_char():
 
     char = Character()
     char.name = "TestBuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
@@ -85,17 +86,16 @@ def test_medit_vnum_must_be_number(builder_char):
     assert "Mobile vnum must be a number" in result
 
 
-def test_medit_creates_new_mobile_if_vnum_in_range(builder_char, test_area):
+def test_medit_missing_vnum_requires_explicit_create(builder_char, test_area):
     result = cmd_medit(builder_char, "1050")
-    assert "New mobile prototype created" in result
-    assert 1050 in mob_registry
-    assert mob_registry[1050].vnum == 1050
-    assert test_area.changed is True
+    assert "That mobile does not exist" in result
+    assert "create <vnum>" in result
+    assert 1050 not in mob_registry
 
 
-def test_medit_vnum_not_in_area_range(builder_char):
+def test_medit_unknown_vnum_is_not_an_area_assignment_error(builder_char):
     result = cmd_medit(builder_char, "5000")
-    assert "That vnum is not assigned to an area" in result
+    assert "That mobile does not exist" in result
 
 
 def test_medit_requires_builder_permission(test_mobile):
@@ -103,6 +103,7 @@ def test_medit_requires_builder_permission(test_mobile):
 
     char = Character()
     char.name = "NotABuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 0})()

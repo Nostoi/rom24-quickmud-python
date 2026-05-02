@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import deque
+from datetime import datetime
 from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
@@ -89,9 +90,11 @@ class WebSocketStream:
     async def send_text(self, message: str, *, newline: bool = False) -> None:
         if self._closed:
             return
+        # TODO: remove debug timestamp before merging to master
         payload: dict[str, Any] = {
             "type": "output" if self._in_game else "info",
             "text": self._normalize(message, newline=newline),
+            "ts": datetime.now().isoformat(timespec="milliseconds"),
         }
         if self._in_game and self._character is not None:
             room = getattr(self._character, "room", None)

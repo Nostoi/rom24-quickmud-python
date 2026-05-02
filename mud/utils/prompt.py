@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from mud.models.constants import CommFlag
+from mud.olc.editor_state import EditorMode
 
 
 def _is_npc(char: Any) -> bool:
@@ -62,6 +63,88 @@ def _bust_default_prompt(char: Any) -> str:
     move = int(getattr(char, "move", 0))
     prefix = getattr(char, "prefix", None) or ""
     return f"{{p<{hit}hp {mana}m {move}mv>{{x {prefix}"
+
+
+def _olc_editor_mode(char: Any) -> EditorMode:
+    """Return the active OLC editor mode for ``char``.
+
+    mirroring ROM `src/olc.c:67-144` via the descriptor `editor` field,
+    while tolerating the Python port's legacy `session.editor` string.
+    """
+
+    session = getattr(char, "desc", None)
+    if session is None:
+        return EditorMode.NONE
+
+    mode = getattr(session, "editor_mode", EditorMode.NONE)
+    if isinstance(mode, EditorMode):
+        return mode
+
+    legacy = getattr(session, "editor", None)
+    legacy_map = {
+        "aedit": EditorMode.AREA,
+        "redit": EditorMode.ROOM,
+        "oedit": EditorMode.OBJECT,
+        "medit": EditorMode.MOBILE,
+        "mpedit": EditorMode.MPCODE,
+        "hedit": EditorMode.HELP,
+    }
+    return legacy_map.get(str(legacy or "").lower(), EditorMode.NONE)
+
+
+def _olc_ed_name(char: Any) -> str:
+    """Render ROM `olc_ed_name(ch)` for prompt token ``%o``."""
+
+    mode = _olc_editor_mode(char)
+    if mode == EditorMode.AREA:
+        return "AEdit"
+    if mode == EditorMode.ROOM:
+        return "REdit"
+    if mode == EditorMode.OBJECT:
+        return "OEdit"
+    if mode == EditorMode.MOBILE:
+        return "MEdit"
+    if mode == EditorMode.MPCODE:
+        return "MPEdit"
+    if mode == EditorMode.HELP:
+        return "HEdit"
+    return " "
+
+
+def _olc_ed_vnum(char: Any) -> str:
+    """Render ROM `olc_ed_vnum(ch)` for prompt token ``%O``."""
+
+    mode = _olc_editor_mode(char)
+    session = getattr(char, "desc", None)
+    editor_state = getattr(session, "editor_state", {}) if session is not None else {}
+
+    if mode == EditorMode.AREA:
+        area = editor_state.get("area") if isinstance(editor_state, dict) else None
+        return str(int(getattr(area, "vnum", 0) or 0))
+    if mode == EditorMode.ROOM:
+        room = getattr(char, "room", None)
+        return str(int(getattr(room, "vnum", 0) or 0))
+    if mode == EditorMode.OBJECT:
+        obj_proto = editor_state.get("obj_proto") if isinstance(editor_state, dict) else None
+        return str(int(getattr(obj_proto, "vnum", 0) or 0))
+    if mode == EditorMode.MOBILE:
+        mob_proto = editor_state.get("mob_proto") if isinstance(editor_state, dict) else None
+        return str(int(getattr(mob_proto, "vnum", 0) or 0))
+    if mode == EditorMode.MPCODE:
+        mprog = None
+        if isinstance(editor_state, dict):
+            mprog = editor_state.get("mpcode") or editor_state.get("mprog") or editor_state.get("mob_prog")
+        return str(int(getattr(mprog, "vnum", 0) or 0))
+    if mode == EditorMode.HELP:
+        help_entry = editor_state.get("help") if isinstance(editor_state, dict) else None
+        keyword = getattr(help_entry, "keyword", None)
+        if keyword:
+            return str(keyword)
+        keywords = getattr(help_entry, "keywords", None) or []
+        if isinstance(keywords, str):
+            return keywords
+        return " ".join(str(part) for part in keywords)
+    return " "
 
 
 def bust_a_prompt(char: Any) -> str:
@@ -154,10 +237,12 @@ def bust_a_prompt(char: Any) -> str:
                 out.append(" ")
         elif token == "e":
             out.append(_exits_token(char))
-        elif token in {"o", "O"}:
-            # ROM olc_ed_name / olc_ed_vnum — Python OLC editor state machine
-            # not yet ported; render empty for now. Follow-up gap if needed.
-            out.append("")
+        elif token == "o":
+            # mirroring ROM src/olc.c:67-97 — prompt token `%o`
+            out.append(_olc_ed_name(char))
+        elif token == "O":
+            # mirroring ROM src/olc.c:101-144 — prompt token `%O`
+            out.append(_olc_ed_vnum(char))
         else:
             # mirroring ROM src/comm.c:1461-1463 — unknown tokens render a space
             out.append(" ")

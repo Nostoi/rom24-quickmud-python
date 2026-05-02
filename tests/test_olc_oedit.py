@@ -65,6 +65,7 @@ def builder_char():
 
     char = Character()
     char.name = "TestBuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 9})()
@@ -83,17 +84,16 @@ def test_oedit_vnum_must_be_number(builder_char):
     assert "Object vnum must be a number" in result
 
 
-def test_oedit_creates_new_object_if_vnum_in_range(builder_char, test_area):
+def test_oedit_missing_vnum_requires_explicit_create(builder_char, test_area):
     result = cmd_oedit(builder_char, "1050")
-    assert "New object prototype created" in result
-    assert 1050 in obj_index_registry
-    assert obj_index_registry[1050].vnum == 1050
-    assert test_area.changed is True
+    assert "That object does not exist" in result
+    assert "create <vnum>" in result
+    assert 1050 not in obj_index_registry
 
 
-def test_oedit_vnum_not_in_area_range(builder_char):
+def test_oedit_unknown_vnum_is_not_an_area_assignment_error(builder_char):
     result = cmd_oedit(builder_char, "5000")
-    assert "That vnum is not assigned to an area" in result
+    assert "That object does not exist" in result
 
 
 def test_oedit_requires_builder_permission(test_object):
@@ -101,6 +101,7 @@ def test_oedit_requires_builder_permission(test_object):
 
     char = Character()
     char.name = "NotABuilder"
+    char.is_npc = False
     char.level = LEVEL_HERO
     char.trust = LEVEL_HERO
     char.pcdata = type("PCData", (), {"security": 0})()

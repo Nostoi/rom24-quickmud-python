@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import shlex
 from collections import defaultdict
+from pathlib import Path
 
 from mud.models.area import Area
 from mud.models.character import Character
@@ -31,10 +33,10 @@ from mud.models.constants import (
     Sector,
     Sex,
     Size,
-    WearFlag,
-    WearLocation,
     WeaponFlag,
     WeaponType,
+    WearFlag,
+    WearLocation,
     convert_flags_from_letters,
 )
 from mud.models.object import Object
@@ -42,6 +44,7 @@ from mud.models.races import get_race_by_index
 from mud.models.room import Exit, ExtraDescr, Room
 from mud.models.room_json import ResetJson
 from mud.net.session import Session
+from mud.olc.editor_state import EditorMode
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
@@ -176,6 +179,141 @@ _APPLY_NAMES: dict[int, str] = {
     25: "spellaffect",
 }
 
+_AEDIT_COMMANDS: tuple[str, ...] = (
+    "age",
+    "builder",
+    "commands",
+    "create",
+    "filename",
+    "name",
+    "reset",
+    "security",
+    "show",
+    "vnum",
+    "lvnum",
+    "uvnum",
+    "credits",
+    "?",
+    "version",
+)
+
+_REDIT_COMMANDS: tuple[str, ...] = (
+    "commands",
+    "create",
+    "desc",
+    "ed",
+    "format",
+    "name",
+    "show",
+    "heal",
+    "mana",
+    "clan",
+    "north",
+    "south",
+    "east",
+    "west",
+    "up",
+    "down",
+    "mreset",
+    "oreset",
+    "mlist",
+    "rlist",
+    "olist",
+    "mshow",
+    "oshow",
+    "owner",
+    "room",
+    "sector",
+    "?",
+    "version",
+)
+
+_OEDIT_COMMANDS: tuple[str, ...] = (
+    "addaffect",
+    "addapply",
+    "commands",
+    "cost",
+    "create",
+    "delaffect",
+    "ed",
+    "long",
+    "name",
+    "short",
+    "show",
+    "v0",
+    "v1",
+    "v2",
+    "v3",
+    "v4",
+    "weight",
+    "extra",
+    "wear",
+    "type",
+    "material",
+    "level",
+    "condition",
+    "?",
+    "version",
+)
+
+_MEDIT_COMMANDS: tuple[str, ...] = (
+    "alignment",
+    "commands",
+    "create",
+    "desc",
+    "level",
+    "long",
+    "name",
+    "shop",
+    "short",
+    "show",
+    "spec",
+    "sex",
+    "act",
+    "affect",
+    "armor",
+    "form",
+    "part",
+    "imm",
+    "res",
+    "vuln",
+    "material",
+    "off",
+    "size",
+    "hitdice",
+    "manadice",
+    "damdice",
+    "race",
+    "position",
+    "wealth",
+    "hitroll",
+    "damtype",
+    "group",
+    "addmprog",
+    "delmprog",
+    "?",
+    "version",
+)
+
+_MPEDIT_COMMANDS: tuple[str, ...] = (
+    "commands",
+    "create",
+    "code",
+    "show",
+    "list",
+    "?",
+)
+
+_HEDIT_COMMANDS: tuple[str, ...] = (
+    "keyword",
+    "text",
+    "new",
+    "level",
+    "delete",
+    "list",
+    "show",
+)
+
 # mirroring ROM src/tables.c weapon_class — names match WeaponType members lowercased.
 _WEAPON_CLASS_NAMES: dict[int, str] = {
     int(WeaponType.EXOTIC): "exotic",
@@ -188,6 +326,20 @@ _WEAPON_CLASS_NAMES: dict[int, str] = {
     int(WeaponType.WHIP): "whip",
     int(WeaponType.POLEARM): "polearm",
 }
+
+
+def _show_olc_cmds(command_names: tuple[str, ...]) -> str:
+    # mirroring ROM src/olc.c:153-175 show_olc_cmds — 15 chars, 5 columns.
+    output = []
+    col = 0
+    for name in command_names:
+        output.append(f"{name:<15.15}")
+        col += 1
+        if col % 5 == 0:
+            output.append("\n\r")
+    if col % 5 != 0:
+        output.append("\n\r")
+    return "".join(output)
 
 
 def _get_session(char: Character) -> Session | None:
@@ -256,11 +408,13 @@ def _describe_proto(proto: object, fallback: str = "entry") -> str:
 
 def _ensure_session_room(session: Session, room: Room) -> None:
     session.editor = "redit"
-    session.editor_state["room"] = room
+    session.editor_mode = EditorMode.ROOM
+    session.editor_state = {"room": room}
 
 
 def _clear_session(session: Session) -> None:
     session.editor = None
+    session.editor_mode = EditorMode.NONE
     session.editor_state.clear()
 
 
@@ -1117,6 +1271,9 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
         _clear_session(session)
         return "Exiting room editor."
 
+    if cmd == "commands":
+        return _show_olc_cmds(_REDIT_COMMANDS)
+
     if cmd == "show":
         return _room_summary(room)
 
@@ -1582,6 +1739,7 @@ def _aedit_create(session: Session) -> str:
 
 def _ensure_session_area(session: Session, area: Area) -> None:
     session.editor = "aedit"
+    session.editor_mode = EditorMode.AREA
     session.editor_state = {"area": area}
 
 
@@ -1625,6 +1783,9 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
         # inside an active aedit session also allocates a new area and
         # switches the descriptor's edit target.
         return _aedit_create(session)
+
+    if cmd == "commands":
+        return _show_olc_cmds(_AEDIT_COMMANDS)
 
     if cmd == "show":
         return _aedit_show(area)
@@ -1870,6 +2031,7 @@ def _oedit_create(session: Session, char: Character, argument: str) -> str:
 
 def _ensure_session_obj(session: Session, obj_proto) -> None:
     session.editor = "oedit"
+    session.editor_mode = EditorMode.OBJECT
     session.editor_state = {"obj_proto": obj_proto}
 
 
@@ -1914,6 +2076,9 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
         # mirrors ROM oedit_table dispatch — `create <vnum>` typed inside an
         # active oedit session also allocates and switches the edit target.
         return _oedit_create(session, char, " ".join(args_parts))
+
+    if cmd == "commands":
+        return _show_olc_cmds(_OEDIT_COMMANDS)
 
     if cmd == "show":
         return _oedit_show(obj_proto)
@@ -2401,6 +2566,7 @@ def _medit_create(session: Session, char: Character, argument: str) -> str:
 
 def _ensure_session_mob(session: Session, mob_proto) -> None:
     session.editor = "medit"
+    session.editor_mode = EditorMode.MOBILE
     session.editor_state = {"mob_proto": mob_proto}
 
 
@@ -2445,6 +2611,9 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         # mirrors ROM medit_table dispatch — `create <vnum>` typed inside an
         # active medit session also allocates and switches the edit target.
         return _medit_create(session, char, " ".join(args_parts))
+
+    if cmd == "commands":
+        return _show_olc_cmds(_MEDIT_COMMANDS)
 
     if cmd == "show":
         return _medit_show(mob_proto)
@@ -3091,7 +3260,7 @@ def cmd_vlist(char: Character, args: str) -> str:
 
 def cmd_hedit(char: Character, args: str) -> str:
     """Help file editor - ROM builder tool."""
-    from mud.models.help import help_registry, register_help, HelpEntry
+    from mud.models.help import HelpEntry, help_registry
 
     session = _get_session(char)
     if session is None:
@@ -3128,6 +3297,7 @@ def cmd_hedit(char: Character, args: str) -> str:
 
 def _ensure_session_help(session: Session, help_entry, is_new: bool = False) -> None:
     session.editor = "hedit"
+    session.editor_mode = EditorMode.HELP
     session.editor_state = {
         "help": help_entry,
         "is_new": is_new,
@@ -3152,7 +3322,7 @@ def _reindex_help_entry(help_entry, original_keywords: list[str]) -> None:
 
 def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
     """Command interpreter for hedit."""
-    from mud.models.help import register_help, HelpEntry
+    from mud.models.help import HelpEntry, register_help
 
     help_entry = session.editor_state.get("help") if session.editor_state else None
     if not isinstance(help_entry, HelpEntry):
@@ -3192,6 +3362,9 @@ def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
                 _reindex_help_entry(help_entry, original_keywords)
         _clear_session(session)
         return "Help entry saved. Use '@hesave' to write to disk."
+
+    if cmd == "commands":
+        return _show_olc_cmds(_HEDIT_COMMANDS)
 
     if cmd == "show":
         return _hedit_show(help_entry)
@@ -3233,7 +3406,7 @@ def _hedit_show(help_entry) -> str:
     return "\n".join(lines)
 
 
-def cmd_hesave(char: Character, args: str, help_file: "Path | None" = None) -> str:
+def cmd_hesave(char: Character, args: str, help_file: Path | None = None) -> str:
     """Save help files to disk - ROM builder tool.
 
     Args:
@@ -3241,8 +3414,6 @@ def cmd_hesave(char: Character, args: str, help_file: "Path | None" = None) -> s
         args: Command arguments (unused)
         help_file: Optional path for testing; defaults to data/help.json
     """
-    import json
-    from pathlib import Path
     from mud.models.help import help_entries
 
     if not _has_help_security(char):

@@ -11,6 +11,8 @@ from mud.commands.auto_settings import do_prompt
 from mud.models.character import Character
 from mud.models.constants import CommFlag
 from mud.models.room import Room
+from mud.net.session import Session
+from mud.olc.editor_state import EditorMode
 from mud.utils.prompt import bust_a_prompt
 
 
@@ -120,6 +122,39 @@ def test_room_token_renders_room_name(char_with_stats: Character) -> None:
     char_with_stats.prompt = "in %r "
     rendered = bust_a_prompt(char_with_stats)
     assert f"in {char_with_stats.room.name}" in rendered
+
+
+def test_olc_editor_name_token_renders_active_editor(char_with_stats: Character) -> None:
+    """``%o`` expands through ROM ``olc_ed_name`` for the active editor.
+
+    mirrors ROM src/olc.c:67-97
+    """
+
+    session = Session(name=char_with_stats.name or "", character=char_with_stats, reader=None, connection=None)
+    session.editor_mode = EditorMode.ROOM
+    char_with_stats.desc = session
+    char_with_stats.prompt = "[%o] "
+
+    rendered = bust_a_prompt(char_with_stats)
+
+    assert "[REdit]" in rendered
+
+
+def test_olc_editor_vnum_token_renders_active_target(char_with_stats: Character) -> None:
+    """``%O`` expands through ROM ``olc_ed_vnum`` for the active editor.
+
+    mirrors ROM src/olc.c:101-144
+    """
+
+    session = Session(name=char_with_stats.name or "", character=char_with_stats, reader=None, connection=None)
+    session.editor_mode = EditorMode.OBJECT
+    session.editor_state["obj_proto"] = type("ObjProto", (), {"vnum": 3456})()
+    char_with_stats.desc = session
+    char_with_stats.prompt = "[%O] "
+
+    rendered = bust_a_prompt(char_with_stats)
+
+    assert "[3456]" in rendered
 
 
 def test_do_prompt_stores_string_on_char_not_pcdata_color_triplet(

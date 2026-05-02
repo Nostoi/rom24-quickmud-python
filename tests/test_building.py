@@ -46,7 +46,7 @@ def test_redit_requires_builder_security_and_marks_area():
     assert session.editor == "redit"
 
     renamed = process_command(builder, 'name "New Room"')
-    assert "room name set" in renamed.lower()
+    assert renamed == "Name set."
     assert builder.room.name == "New Room"
     assert builder.room.area.changed is True
 

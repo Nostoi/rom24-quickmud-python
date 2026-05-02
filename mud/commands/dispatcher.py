@@ -9,6 +9,8 @@ from mud.models.character import Character
 from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, MAX_LEVEL, AffectFlag, PlayerFlag, Position
 from mud.models.social import find_social
 from mud.net.session import Session
+from mud.olc.editor_state import DescriptorRoute, EditorMode, route_descriptor_input
+from mud.utils.string_editor import string_add
 from mud.wiznet import cmd_wiznet
 
 from .admin_commands import (
@@ -813,6 +815,9 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
     if not stripped:
         return "", ""
 
+    if stripped[0] == "@" and len(stripped) > 1 and stripped[1].isalnum():
+        return _one_argument(stripped)
+
     first = stripped[0]
     # ROM punctuation aliases ('.', ',', '/', etc.) are single-char
     # commands; '"' and "'" are quote sentinels for one_argument.
@@ -881,19 +886,70 @@ def _expand_aliases(char: Character, input_str: str, *, max_depth: int = 5) -> t
     return expanded, alias_used
 
 
+def _olc_handler_from_session(session: Session) -> Callable[[Character, Session, str], str] | None:
+    mode = getattr(session, "editor_mode", EditorMode.NONE)
+    if mode == EditorMode.ROOM:
+        return handle_redit_command
+    if mode == EditorMode.AREA:
+        return handle_aedit_command
+    if mode == EditorMode.OBJECT:
+        return handle_oedit_command
+    if mode == EditorMode.MOBILE:
+        return handle_medit_command
+    if mode == EditorMode.HELP:
+        return handle_hedit_command
+
+    editor = getattr(session, "editor", None)
+    if editor == "redit":
+        return handle_redit_command
+    if editor == "aedit":
+        return handle_aedit_command
+    if editor == "oedit":
+        return handle_oedit_command
+    if editor == "medit":
+        return handle_medit_command
+    if editor == "hedit":
+        return handle_hedit_command
+    return None
+
+
+def _should_fallback_from_olc(result: str) -> bool:
+    return result.startswith(
+        (
+            "Unknown area editor command:",
+            "Unknown room editor command.",
+            "Unknown object editor command:",
+            "Unknown mobile editor command:",
+            "Unknown help editor command:",
+        )
+    )
+
+
+def _process_descriptor_input(char: Character, session: Session, input_str: str) -> str | None:
+    route = route_descriptor_input(session)
+
+    if route == DescriptorRoute.STRING_EDIT:
+        result = string_add(session, input_str)
+        return result or ""
+
+    handler = _olc_handler_from_session(session)
+    if route == DescriptorRoute.OLC_EDITOR or (route == DescriptorRoute.NORMAL and handler is not None):
+        if handler is None:
+            return None
+        result = handler(char, session, input_str)
+        if _should_fallback_from_olc(result):
+            return None
+        return result
+
+    return None
+
+
 def process_command(char: Character, input_str: str) -> str:
     session = getattr(char, "desc", None)
     if isinstance(session, Session):
-        if session.editor == "redit":
-            return handle_redit_command(char, session, input_str)
-        if session.editor == "aedit":
-            return handle_aedit_command(char, session, input_str)
-        if session.editor == "oedit":
-            return handle_oedit_command(char, session, input_str)
-        if session.editor == "medit":
-            return handle_medit_command(char, session, input_str)
-        if session.editor == "hedit":
-            return handle_hedit_command(char, session, input_str)
+        routed = _process_descriptor_input(char, session, input_str)
+        if routed is not None:
+            return routed
 
     if not input_str.strip():
         # mirroring ROM src/interp.c:401-404 — interpret() strips leading
