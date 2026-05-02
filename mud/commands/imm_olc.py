@@ -454,61 +454,64 @@ def do_alist(char: Character, args: str) -> str:
 
 
 def do_edit(char: Character, args: str) -> str:
+    """Top-level ``olc`` / ``edit`` dispatcher — ROM ``do_olc`` (src/olc.c:661-690).
+
+    Routes ``olc <subcmd> [args]`` through the six-entry ``editor_table[]``
+    (src/olc.c:646-657) using prefix matching identical to ROM ``str_prefix``:
+
+        area    → do_aedit  (cmd_aedit in build.py)
+        room    → do_redit  (cmd_redit in build.py)
+        object  → do_oedit  (cmd_oedit in build.py)
+        mobile  → do_medit  (cmd_medit in build.py)
+        mpcode  → do_mpedit (do_mpedit below)
+        hedit   → do_hedit  (cmd_hedit in build.py)
+
+    Missing or unrecognised subcmd → help text (mirrors ROM ``do_help(ch,"olc")``).
+    NPCs are rejected immediately, matching ROM ``IS_NPC`` guard.
     """
-    General edit command router.
+    # ROM: if (IS_NPC(ch)) return;
+    if getattr(char, "is_npc", False):
+        return ""
 
-    ROM Reference: src/olc.c
+    # mirroring ROM src/olc.c:661-690 — editor_table[] + str_prefix dispatch
+    from mud.commands.build import cmd_aedit, cmd_redit, cmd_oedit, cmd_medit, cmd_hedit
 
-    Usage:
-    - edit room [vnum]      - Edit a room
-    - edit mob <vnum>       - Edit a mobile
-    - edit obj <vnum>       - Edit an object
-    - edit area [vnum]      - Edit an area
-    """
-    if not args or not args.strip():
-        return ("Syntax:\n"
-                "  edit room [vnum]      - Edit a room\n"
-                "  edit mob <vnum>       - Edit a mobile\n"
-                "  edit obj <vnum>       - Edit an object\n"
-                "  edit area [vnum]      - Edit an area")
+    _OLC_HELP = (
+        "Syntax:  olc <area|room|object|mobile|mpcode|hedit> [args]\r\n"
+        "         olc area     [vnum]        - edit / create an area\r\n"
+        "         olc room     [vnum]        - edit / create a room\r\n"
+        "         olc object   <vnum>        - edit / create an object prototype\r\n"
+        "         olc mobile   <vnum>        - edit / create a mobile prototype\r\n"
+        "         olc mpcode   <vnum>        - edit a mob program\r\n"
+        "         olc hedit    [keyword]     - edit a help entry\r\n"
+    )
 
-    parts = args.strip().split()
-    edit_type = parts[0].lower()
-    vnum_arg = parts[1] if len(parts) > 1 else None
+    # editor_table[] — ROM src/olc.c:646-657
+    _EDITOR_TABLE: list[tuple[str, object]] = [
+        ("area",   cmd_aedit),
+        ("room",   cmd_redit),
+        ("object", cmd_oedit),
+        ("mobile", cmd_medit),
+        ("mpcode", do_mpedit),
+        ("hedit",  cmd_hedit),
+    ]
 
-    if edit_type == "room":
-        if vnum_arg and vnum_arg.isdigit():
-            return f"Entering room editor for vnum {vnum_arg}."
-        room = getattr(char, "room", None)
-        if room:
-            return f"Entering room editor for vnum {getattr(room, 'vnum', 0)}."
-        return "You're not in a room."
+    arg = (args or "").strip()
+    if not arg:
+        return _OLC_HELP
 
-    if edit_type in ("mob", "mobile"):
-        if not vnum_arg or not vnum_arg.isdigit():
-            return "Syntax: edit mob <vnum>"
-        return f"Entering mobile editor for vnum {vnum_arg}."
+    # one_argument: peel first token, rest becomes argument for the sub-handler
+    parts = arg.split(None, 1)
+    command = parts[0].lower()
+    remainder = parts[1] if len(parts) > 1 else ""
 
-    if edit_type in ("obj", "object"):
-        if not vnum_arg or not vnum_arg.isdigit():
-            return "Syntax: edit obj <vnum>"
-        return f"Entering object editor for vnum {vnum_arg}."
+    # str_prefix matching (command is a prefix of table entry name)
+    for name, fn in _EDITOR_TABLE:
+        if name.startswith(command):
+            return fn(char, remainder)  # type: ignore[arg-type]
 
-    if edit_type == "area":
-        if vnum_arg and vnum_arg.isdigit():
-            return f"Entering area editor for area {vnum_arg}."
-        room = getattr(char, "room", None)
-        if room:
-            area = getattr(room, "area", None)
-            if area:
-                return f"Entering area editor for '{getattr(area, 'name', 'Unknown')}'."
-        return "You're not in an area."
-
-    return ("Syntax:\n"
-            "  edit room [vnum]      - Edit a room\n"
-            "  edit mob <vnum>       - Edit a mobile\n"
-            "  edit obj <vnum>       - Edit an object\n"
-            "  edit area [vnum]      - Edit an area")
+    # invalid subcmd → help, mirroring ROM do_help(ch,"olc")
+    return _OLC_HELP
 
 
 def do_mpedit(char: Character, args: str) -> str:

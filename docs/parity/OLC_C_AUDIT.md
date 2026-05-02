@@ -174,12 +174,12 @@ ROM uses a doubly-linked list (`reset_first`/`reset_last` on `ROOM_INDEX_DATA`);
 | `OLC-007` | IMPORTANT | `src/olc.c:242-279` | `mud/commands/build.py:961-1069` | `redit_table[]` (29 entries) not ported as a data table; many entries (`mreset`, `oreset`, `mlist`, `rlist`, `olist`, `mshow`, `oshow`, `heal`, `mana`, `clan`, `format`) have no Python implementation at all. | 🔄 OPEN |
 | `OLC-008` | IMPORTANT | `src/olc.c:283-315` | `mud/commands/build.py:1477-1613` | `oedit_table[]` (24 entries) not ported as a data table; missing entries: `addaffect`, `addapply`, `delaffect`, `v0..v4`, `extra`, `wear`, `material`, `level`, `condition`. | 🔄 OPEN |
 | `OLC-009` | IMPORTANT | `src/olc.c:319-362` | `mud/commands/build.py:1761-1976` | `medit_table[]` (38 entries) not ported as a data table; missing entries include `affect`, `armor`, `form`, `part`, `imm`, `res`, `vuln`, `material`, `off`, `size`, `hitdice`, `manadice`, `damdice`, `position`, `wealth`, `hitroll`, `damtype`, `group`, `addmprog`, `delmprog`. | 🔄 OPEN |
-| `OLC-010` | MINOR | `src/olc.c:646-657` | (no equivalent) | `editor_table[]` 6-entry top-level dispatch not ported. | 🔄 OPEN |
+| `OLC-010` | MINOR | `src/olc.c:646-657` | `mud/commands/imm_olc.py:do_edit` | `editor_table[]` 6-entry top-level dispatch ported as `_EDITOR_TABLE` list inside `do_edit`. | ✅ FIXED (OLC-015) |
 | `OLC-011` | IMPORTANT | `src/olc.c:410-469` | `mud/commands/build.py:1261` | `aedit` interpreter missing the `flag_value(area_flags, command)` toggle prefix — builder cannot toggle area flags by typing the flag name. Also missing `interpret()` fallback to normal command tree. | 🔄 OPEN |
 | `OLC-012` | MINOR | `src/olc.c:474-527` | `mud/commands/build.py:961` | `redit` interpreter missing explicit fallback to `interpret()` for unknown commands. (Python dispatcher route makes this functionally close.) | 🔄 OPEN |
 | `OLC-013` | MINOR | `src/olc.c:532-584` | `mud/commands/build.py:1477` | `oedit` interpreter missing explicit fallback to `interpret()`. | 🔄 OPEN |
 | `OLC-014` | MINOR | `src/olc.c:589-641` | `mud/commands/build.py:1761` | `medit` interpreter missing explicit fallback to `interpret()`. | 🔄 OPEN |
-| `OLC-015` | MINOR | `src/olc.c:661-690` | (no equivalent) | `do_olc` top-level user command not ported. Users cannot type `olc room`/`olc area`/etc. (must type the editor name directly). | 🔄 OPEN |
+| `OLC-015` | MINOR | `src/olc.c:661-690` | `mud/commands/imm_olc.py:do_edit` | `do_olc` ported: NPC guard, prefix matching via `_EDITOR_TABLE`, remainder args forwarded, help text on no-arg/unknown subcmd. Registered as both `olc` and `edit` in dispatcher. | ✅ FIXED |
 | `OLC-016` | CRITICAL | `src/olc.c:695-740` | `mud/commands/build.py:cmd_aedit` + `_aedit_create` | Closed by OLC_ACT-001 closure — `aedit create` wired; new area gets ROM `new_area()` defaults from `src/mem.c:91-122`; `AreaFlag.ADDED` set; descriptor edit pointer wired. | ✅ FIXED |
 | `OLC-017` | CRITICAL | `src/olc.c:745-821` | `mud/commands/build.py:cmd_redit` + `_redit_create` + `_redit_vnum_teleport` + `_apply_resets_for_redit` | Closed by OLC_ACT-002/003/004 closure — `create <vnum>` (full ROM defaults + builder relocate), `reset` (security + apply_resets + "Room reset.\n\r"), and `<vnum>` silent teleport (reuses `_char_from_room`/`_char_to_room`) all wired. | ✅ FIXED |
 | `OLC-018` | CRITICAL | `src/olc.c:826-895` | `mud/commands/build.py:cmd_oedit` + `_oedit_create` | Closed by OLC_ACT-005 closure — `oedit create <vnum>` wired with full ROM validation chain (vnum, area, IS_BUILDER, exists); `new_obj_index` defaults applied; auto-create-on-unknown-vnum bug removed. | ✅ FIXED |
@@ -245,6 +245,6 @@ Current session details (`OLC-004` / `OLC-005`):
 
 `olc.c` remains ⚠️ Partial, but the audit is now past the "inventory only" stage. The remaining meaningful open set is:
 
-- `OLC-010` / `OLC-015` — top-level `olc` shell
+- `OLC-010` / `OLC-015` — top-level `olc` shell (`editor_table[]` + `do_olc`)
 - `OLC-006`..`OLC-009` / `OLC-011` — data-driven editor tables and the `aedit` flag-toggle prefix
 - `OLC-012` / `OLC-013` / `OLC-014` — explicit per-editor `interpret()` fallback

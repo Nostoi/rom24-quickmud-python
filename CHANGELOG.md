@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **OLC-004/005**: Active OLC editors now support ROM-style `commands` listings with five fixed-width columns, mirroring `src/olc.c:153-209`.
+- **OLC-010/015**: `do_olc` / `editor_table[]` ported — `olc <area|room|object|mobile|mpcode|hedit>` now dispatches to the real per-editor entry points via prefix matching (`str_prefix` parity), NPC guard, and remainder-arg forwarding, mirroring ROM `src/olc.c:646-690`. Both `olc` and `edit` command aliases are live. Integration tests: `tests/integration/test_olc_010_015_do_olc_router.py` (14 cases).
 
 ## [2.7.1] — update.c Parity Gap Closures (GL-004/005/009/011/012/013/014/015/018)
 
