@@ -130,7 +130,7 @@ from .imm_display import (
 )
 from .imm_emote import do_gecho, do_pmote, do_smote
 from .imm_load import do_load, do_mload, do_oload, do_purge, do_restore, do_sla, do_slay
-from .imm_olc import do_alist, do_edit, do_mpedit, do_resets
+from .imm_olc import do_alist, do_edit, do_mpedit, do_resets, handle_mpedit_command
 from .imm_punish import do_disconnect, do_nochannels, do_noemote, do_noshout, do_notell, do_pardon
 from .imm_search import (
     do_clone,
@@ -898,6 +898,8 @@ def _olc_handler_from_session(session: Session) -> Callable[[Character, Session,
         return handle_medit_command
     if mode == EditorMode.HELP:
         return handle_hedit_command
+    if mode == EditorMode.MPCODE:
+        return handle_mpedit_command
 
     editor = getattr(session, "editor", None)
     if editor == "redit":
@@ -910,6 +912,8 @@ def _olc_handler_from_session(session: Session) -> Callable[[Character, Session,
         return handle_medit_command
     if editor == "hedit":
         return handle_hedit_command
+    if editor == "mpedit":
+        return handle_mpedit_command
     return None
 
 

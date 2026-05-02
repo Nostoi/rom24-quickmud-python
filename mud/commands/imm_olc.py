@@ -620,6 +620,153 @@ def _mpedit_create(char: Character, argument: str) -> str:
     # ROM src/olc_mpcode.c:193 — "MobProgram Code Created.\n\r"
     return "MobProgram Code Created.\n\r"
 
+
+# ---------------------------------------------------------------------------
+# mpedit session subcommand helpers
+# ---------------------------------------------------------------------------
+
+def _mpedit_show(pMcode) -> str:
+    """Show mprog code details — ROM src/olc_mpcode.c:198-211 mpedit_show().
+
+    ROM format: 'Vnum:       [%d]\\n\\rCode:\\n\\r%s\\n\\r'
+    """
+    # mirroring ROM src/olc_mpcode.c:205-208
+    return f"Vnum:       [{pMcode.vnum}]\n\rCode:\n\r{pMcode.code}\n\r"
+
+
+def _mpedit_code(session, pMcode, argument: str) -> str:
+    """Edit the code body — ROM src/olc_mpcode.c:213-226 mpedit_code().
+
+    No arg: enter string_append (returns '' as hook; session uses string_edit_mode).
+    Arg present: 'Syntax: code\\n\\r'.
+    """
+    # mirroring ROM src/olc_mpcode.c:218-225
+    if not argument:
+        # ROM: string_append(ch, &pMcode->code) — returns TRUE
+        # Python: enter string_edit mode; the session string_append hook will
+        # write back to pMcode.code when the user types '@'.
+        session.string_edit_target = pMcode
+        session.string_edit_field = "code"
+        from mud.commands.dispatcher import DescriptorRoute
+        session.route = DescriptorRoute.STRING_EDIT
+        return ""
+    return "Syntax: code\n\r"
+
+
+def _mpedit_list(char, argument: str) -> str:
+    """List mob-program code blocks — ROM src/olc_mpcode.c:228-272 mpedit_list().
+
+    'list all' → all entries; no arg → current area's vnum range only.
+    Format: '[%3d] (%c) %5d\\n\\r' per entry.
+    """
+    from mud.commands.build import _get_area_for_vnum
+    from mud.models.mob import mprog_code_registry
+
+    # mirroring ROM src/olc_mpcode.c:234
+    f_all = (argument.strip().lower() == "all")
+
+    # ROM: ch->in_room->area->min_vnum / max_vnum for area filter
+    char_room = getattr(char, "room", None) or getattr(char, "in_room", None)
+    char_area = getattr(char_room, "area", None)
+    area_min = getattr(char_area, "min_vnum", 0)
+    area_max = getattr(char_area, "max_vnum", 0)
+
+    buf: list[str] = []
+    count = 1
+    for mprg in mprog_code_registry.values():
+        if f_all or (area_min <= mprg.vnum <= area_max):
+            ad = _get_area_for_vnum(mprg.vnum)
+            if ad is None:
+                blah = "?"
+            elif _is_builder(char, ad):
+                blah = "*"
+            else:
+                blah = " "
+            # mirroring ROM src/olc_mpcode.c:254
+            buf.append(f"[{count:3d}] ({blah}) {mprg.vnum:5d}\n\r")
+            count += 1
+
+    if count == 1:
+        # ROM src/olc_mpcode.c:261-266
+        if f_all:
+            buf.append("MobPrograms do not exist!\n\r")
+        else:
+            buf.append("MobPrograms do not exist in this area.\n\r")
+
+    return "".join(buf)
+
+
+# mpedit dispatch table — mirrors ROM src/olc_mpcode.c:22-33 mpedit_table[]
+_MPEDIT_TABLE: list[tuple[str, object]] = [
+    ("commands", None),   # show_commands — placeholder
+    ("create",   None),   # mpedit_create — handled in do_mpedit
+    ("code",     "_code"),
+    ("show",     "_show"),
+    ("list",     "_list"),
+    ("?",        None),   # show_help — placeholder
+]
+
+
+def _interpret_mpedit(session, char: Character, raw_input: str) -> str:
+    """Session interpreter for mpedit — mirrors ROM src/olc_mpcode.c:35-94 mpedit().
+
+    Called each time a character in an mpedit session sends input.
+    """
+    from mud.commands.build import _clear_session, _get_area_for_vnum
+    from mud.models.mob import MprogCode
+
+    pMcode = session.editor_state.get("mpcode") if session.editor_state else None
+    if not isinstance(pMcode, MprogCode):
+        _clear_session(session)
+        return "MPEdit: Session lost.\n\r"
+
+    # ROM src/olc_mpcode.c:49-66 — security re-check on every command
+    if pMcode is not None:
+        ad = _get_area_for_vnum(pMcode.vnum)
+        if ad is None:
+            _clear_session(session)
+            return ""
+        if not _is_builder(char, ad):
+            # ROM src/olc_mpcode.c:61-65
+            _clear_session(session)
+            return "MPEdit: Insufficient security to modify code.\n\r"
+
+    # ROM src/olc_mpcode.c:68-72 — empty command → show
+    arg = raw_input.replace("~", "")  # smash_tilde
+    parts = arg.split(None, 1)
+    command = parts[0].lower() if parts else ""
+    remainder = parts[1] if len(parts) > 1 else ""
+
+    if not command:
+        return _mpedit_show(pMcode)
+
+    # ROM src/olc_mpcode.c:74-78 — "done"
+    if command == "done":
+        _clear_session(session)
+        return ""
+
+    # ROM src/olc_mpcode.c:80-89 — prefix-match mpedit_table
+    if command.startswith("sh"):  # "show"
+        return _mpedit_show(pMcode)
+    if "code".startswith(command) and command:
+        return _mpedit_code(session, pMcode, remainder)
+    if "list".startswith(command) and command:
+        return _mpedit_list(char, remainder)
+    if "commands".startswith(command) and command:
+        return (
+            "MPEdit commands: code, show, list [all], commands, done\n\r"
+        )
+
+    # ROM src/olc_mpcode.c:91 — fallback to interpret(ch, arg)
+    from mud.commands.dispatcher import process_command
+    return process_command(char, raw_input) or ""
+
+
+def handle_mpedit_command(char: Character, session, input_str: str) -> str:
+    """Dispatcher entry point for mpedit sessions — called by dispatcher.py."""
+    return _interpret_mpedit(session, char, input_str)
+
+
 def _is_builder(char: Character, area) -> bool:
     """Check if character can build in an area."""
     # Implementers can build anywhere
