@@ -2189,6 +2189,169 @@ def _ensure_session_obj(session: Session, obj_proto) -> None:
     session.editor_state = {"obj_proto": obj_proto}
 
 
+def _oedit_extra(obj_proto, arg: str) -> str:
+    """Toggle extra flag — mirrors ROM src/olc_act.c:3370-3393 oedit_extra."""
+    if arg:
+        val = flag_value(ExtraFlag, arg)
+        if val is not None:
+            obj_proto.extra_flags = int(obj_proto.extra_flags or 0) ^ val
+            _mark_obj_changed(obj_proto)
+            return "Extra flag toggled."
+    return "Syntax:  extra [flag]\nType '? extra' for a list of flags."
+
+
+def _oedit_wear(obj_proto, arg: str) -> str:
+    """Toggle wear flag — mirrors ROM src/olc_act.c:3394-3450 oedit_wear."""
+    if arg:
+        val = flag_value(WearFlag, arg)
+        if val is not None:
+            obj_proto.wear_flags = int(obj_proto.wear_flags or 0) ^ val
+            _mark_obj_changed(obj_proto)
+            return "Wear flag toggled."
+    return "Syntax:  wear [flag]\nType '? wear' for a list of flags."
+
+
+# Apply location name → integer (APPLY_* constants from src/merc.h:1205-1231).
+# Mirrors ROM's apply_flags[] table used by flag_value(apply_flags, loc).
+_APPLY_LOC_TABLE: dict[str, int] = {
+    "none": 0,
+    "strength": 1,
+    "dexterity": 2,
+    "intelligence": 3,
+    "wisdom": 4,
+    "constitution": 5,
+    "sex": 6,
+    "class": 7,
+    "level": 8,
+    "age": 9,
+    "height": 10,
+    "weight": 11,
+    "mana": 12,
+    "hp": 13,
+    "hit": 13,
+    "moves": 14,
+    "move": 14,
+    "gold": 15,
+    "experience": 16,
+    "exp": 16,
+    "armor": 17,
+    "ac": 17,
+    "hitroll": 18,
+    "damroll": 19,
+    "saves": 20,
+    "saving": 20,
+    "spell": 24,
+    "affect": 25,
+}
+
+_TO_OBJECT = 1  # mirrors ROM src/merc.h TO_OBJECT
+
+
+def _apply_loc_value(name: str) -> int | None:
+    """Prefix-match apply location name → int or None (mirrors flag_value(apply_flags, ...))."""
+    name_lo = name.lower()
+    for key, val in _APPLY_LOC_TABLE.items():
+        if key.startswith(name_lo):
+            return val
+    return None
+
+
+def _oedit_addaffect(obj_proto, arg: str) -> str:
+    """Add affect to obj proto — mirrors ROM src/olc_act.c:2818-2858 oedit_addaffect.
+
+    Syntax: addaffect <location> <modifier>
+    pAf->where = TO_OBJECT; pAf->type = -1; pAf->duration = -1; pAf->bitvector = 0
+    """
+    from mud.models.obj import Affect
+
+    parts = arg.split()
+    if len(parts) < 2:
+        return "Syntax:  addaffect [location] [#xmod]"
+    loc_name, mod_str = parts[0], parts[1]
+    if not mod_str.lstrip("-").isdigit():
+        return "Syntax:  addaffect [location] [#xmod]"
+    loc_val = _apply_loc_value(loc_name)
+    if loc_val is None:
+        return "Valid affects are:\n(use 'strength', 'dexterity', 'hp', 'mana', 'ac', 'hitroll', 'damroll', etc.)"
+    modifier = int(mod_str)
+    af = Affect(
+        where=_TO_OBJECT,   # mirroring ROM src/olc_act.c:2843 — pAf->where = TO_OBJECT
+        type=-1,            # mirroring ROM src/olc_act.c:2844 — pAf->type = -1
+        level=int(getattr(obj_proto, "level", 0) or 0),
+        duration=-1,        # mirroring ROM src/olc_act.c:2845 — pAf->duration = -1
+        location=loc_val,
+        modifier=modifier,
+        bitvector=0,        # mirroring ROM src/olc_act.c:2846 — pAf->bitvector = 0
+    )
+    obj_proto.affected.append(af)
+    _mark_obj_changed(obj_proto)
+    return "Affect added."
+
+
+def _oedit_addapply(obj_proto, arg: str) -> str:
+    """Add apply to obj proto — mirrors ROM src/olc_act.c:2859-2925 oedit_addapply.
+
+    Syntax: addapply <type> <location> <modifier> <bitvector>
+    This is the bitvector-aware variant of addaffect.
+    """
+    from mud.models.obj import Affect
+
+    parts = arg.split()
+    if len(parts) < 4:
+        return "Syntax:  addapply [type] [location] [#xmod] [bitvector]"
+    _type_str, loc_name, mod_str, bv_str = parts[0], parts[1], parts[2], parts[3]
+    # type maps to pAf->where; simplified: accept TO_OBJECT (1) or 'object'
+    where_val = _TO_OBJECT
+    if _type_str.lower() not in {"object", "1", "to_object"}:
+        return "Invalid apply type. Valid apply types are: object"
+    if not mod_str.lstrip("-").isdigit():
+        return "Syntax:  addapply [type] [location] [#xmod] [bitvector]"
+    loc_val = _apply_loc_value(loc_name)
+    if loc_val is None:
+        return "Valid applys are:\n(use 'strength', 'dexterity', 'hp', 'mana', 'ac', 'hitroll', 'damroll', etc.)"
+    try:
+        bv_val = int(bv_str, 0)
+    except ValueError:
+        return "Invalid bitvector type."
+    af = Affect(
+        where=where_val,
+        type=-1,
+        level=int(getattr(obj_proto, "level", 0) or 0),
+        duration=-1,
+        location=loc_val,
+        modifier=int(mod_str),
+        bitvector=bv_val,
+    )
+    obj_proto.affected.append(af)
+    _mark_obj_changed(obj_proto)
+    return "Apply added."
+
+
+def _oedit_delaffect(obj_proto, arg: str) -> str:
+    """Remove affect by index — mirrors ROM src/olc_act.c:2926-2983 oedit_delaffect.
+
+    value=0 removes head; value>0 walks the list and splices out index.
+    """
+    if not arg or not arg.isdigit():
+        return "Syntax:  delaffect [#xaffect]"
+    value = int(arg)
+    if value < 0:
+        return "Only non-negative affect-numbers allowed."
+    affected = obj_proto.affected
+    if not affected:
+        return "OEdit:  Non-existant affect."
+    if value == 0:
+        # mirroring ROM src/olc_act.c:2957-2961 — first affect
+        obj_proto.affected = affected[1:]
+    else:
+        if value >= len(affected):
+            return "No such affect."
+        # mirroring ROM src/olc_act.c:2963-2976 — splice at index
+        obj_proto.affected = affected[:value] + affected[value + 1:]
+    _mark_obj_changed(obj_proto)
+    return "Affect removed."
+
+
 def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
     """Command interpreter for oedit - ROM src/olc.c:oedit_table."""
     from mud.models.obj import ObjIndex
@@ -2331,6 +2494,26 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
 
     if cmd == "ed":
         return _handle_obj_extra_command(obj_proto, args_parts)
+
+    if cmd == "extra":
+        # mirroring ROM src/olc_act.c:3370-3393 — oedit_extra
+        return _oedit_extra(obj_proto, " ".join(args_parts))
+
+    if cmd == "wear":
+        # mirroring ROM src/olc_act.c:3394-3450 — oedit_wear
+        return _oedit_wear(obj_proto, " ".join(args_parts))
+
+    if cmd == "addaffect":
+        # mirroring ROM src/olc_act.c:2818-2858 — oedit_addaffect
+        return _oedit_addaffect(obj_proto, " ".join(args_parts))
+
+    if cmd == "addapply":
+        # mirroring ROM src/olc_act.c:2859-2925 — oedit_addapply
+        return _oedit_addapply(obj_proto, " ".join(args_parts))
+
+    if cmd == "delaffect":
+        # mirroring ROM src/olc_act.c:2926-2983 — oedit_delaffect
+        return _oedit_delaffect(obj_proto, " ".join(args_parts))
 
     return f"Unknown object editor command: {cmd}"
 
