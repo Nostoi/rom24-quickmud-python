@@ -474,7 +474,7 @@ def do_edit(char: Character, args: str) -> str:
         return ""
 
     # mirroring ROM src/olc.c:661-690 — editor_table[] + str_prefix dispatch
-    from mud.commands.build import cmd_aedit, cmd_redit, cmd_oedit, cmd_medit, cmd_hedit
+    from mud.commands.build import cmd_aedit, cmd_hedit, cmd_medit, cmd_oedit, cmd_redit
 
     _OLC_HELP = (
         "Syntax:  olc <area|room|object|mobile|mpcode|hedit> [args]\r\n"
@@ -515,31 +515,110 @@ def do_edit(char: Character, args: str) -> str:
 
 
 def do_mpedit(char: Character, args: str) -> str:
+    """Edit standalone mob-program code blocks.
+
+    # mirroring ROM src/olc_mpcode.c:96-151 do_mpedit()
+
+    Usage:
+        mpedit <vnum>          - open existing code block for editing
+        mpedit create <vnum>   - create a new code block
     """
-    Edit mob programs.
+    from mud.commands.build import _get_area_for_vnum
+    from mud.models.mob import get_mprog_index
+    from mud.olc.editor_state import EditorMode
 
-    ROM Reference: src/olc.c
+    arg = (args or "").strip()
+    if not arg:
+        # ROM src/olc_mpcode.c:147-150 — syntax on no args
+        return "Sintaxis : mpedit [vnum]\n\r           mpedit create [vnum]\n\r"
 
-    Usage: mpedit <vnum>
-    """
-    if not args or not args.strip():
-        return "Syntax: mpedit <vnum>"
+    parts = arg.split(None, 1)
+    command = parts[0]
+    remainder = parts[1] if len(parts) > 1 else ""
 
-    vnum_arg = args.strip().split()[0]
+    # --- numeric vnum: open existing code block ---
+    if command.isdigit():
+        vnum = int(command)
+        pMcode = get_mprog_index(vnum)
+        if pMcode is None:
+            # ROM src/olc_mpcode.c:110 — "MPEdit : That vnum does not exist.\n\r"
+            return "MPEdit : That vnum does not exist.\n\r"
 
-    if not vnum_arg.isdigit():
-        return "Vnum must be numeric."
+        ad = _get_area_for_vnum(vnum)
+        if ad is None:
+            # ROM src/olc_mpcode.c:118 — "MPEdit : VNUM no asignado a ningun area.\n\r"
+            return "MPEdit : VNUM no asignado a ningun area.\n\r"
 
-    from mud import registry
-    vnum = int(vnum_arg)
+        if not _is_builder(char, ad):
+            # ROM src/olc_mpcode.c:124-127
+            return "MPEdit : Insuficiente seguridad para editar area.\n\r"
 
-    if vnum not in registry.mob_prototypes:
-        return "No mobile has that vnum."
+        # ROM src/olc_mpcode.c:129-131 — set pEdit + editor = ED_MPCODE, silent return
+        session = getattr(char, "desc", None)
+        if session is not None:
+            session.editor = "mpedit"
+            session.editor_mode = EditorMode.MPCODE
+            session.editor_state = {"mpcode": pMcode}
+        return ""
 
-    return f"Entering mobprog editor for mobile vnum {vnum}."
+    # --- "create" subcommand ---
+    if command.lower() == "create":
+        if not remainder:
+            # ROM src/olc_mpcode.c:139 — "Sintaxis : mpedit create [vnum]\n\r"
+            return "Sintaxis : mpedit create [vnum]\n\r"
+        return _mpedit_create(char, remainder)
+
+    # --- anything else → double syntax lines ---
+    # ROM src/olc_mpcode.c:147-150
+    return "Sintaxis : mpedit [vnum]\n\r           mpedit create [vnum]\n\r"
 
 
 # Helper function
+
+
+def _mpedit_create(char: Character, argument: str) -> str:
+    """Create a new standalone mob-program code block.
+
+    # mirroring ROM src/olc_mpcode.c:153-196 mpedit_create()
+    """
+    from mud.commands.build import _get_area_for_vnum
+    from mud.models.mob import MprogCode, get_mprog_index, mprog_code_registry
+    from mud.olc.editor_state import EditorMode
+
+    arg = argument.strip()
+    if not arg or not arg.split()[0].isdigit():
+        # ROM src/olc_mpcode.c:161 — "Sintaxis : mpedit create [vnum]\n\r"
+        return "Sintaxis : mpedit create [vnum]\n\r"
+
+    value = int(arg.split()[0])
+    if value < 1:
+        return "Sintaxis : mpedit create [vnum]\n\r"
+
+    ad = _get_area_for_vnum(value)
+    if ad is None:
+        # ROM src/olc_mpcode.c:169 — "MPEdit : VNUM no asignado a ningun area.\n\r"
+        return "MPEdit : VNUM no asignado a ningun area.\n\r"
+
+    if not _is_builder(char, ad):
+        # ROM src/olc_mpcode.c:175-178
+        return "MPEdit : Insuficiente seguridad para crear MobProgs.\n\r"
+
+    if get_mprog_index(value) is not None:
+        # ROM src/olc_mpcode.c:182-184 — "MPEdit: Code vnum already exists.\n\r"
+        return "MPEdit: Code vnum already exists.\n\r"
+
+    # ROM src/olc_mpcode.c:186-194 — new_mpcode(), set vnum, prepend to mprog_list
+    pMcode = MprogCode(vnum=value, code="")
+    mprog_code_registry[value] = pMcode
+
+    session = getattr(char, "desc", None)
+    if session is not None:
+        session.editor = "mpedit"
+        session.editor_mode = EditorMode.MPCODE
+        session.editor_state = {"mpcode": pMcode}
+
+    # ROM src/olc_mpcode.c:193 — "MobProgram Code Created.\n\r"
+    return "MobProgram Code Created.\n\r"
 
 def _is_builder(char: Character, area) -> bool:
     """Check if character can build in an area."""
