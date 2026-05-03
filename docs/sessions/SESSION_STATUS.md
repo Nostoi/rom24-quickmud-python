@@ -60,7 +60,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.1 |
+| Version | 2.8.3 |
 | Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
@@ -86,13 +86,7 @@
 
 ## Open Follow-ups (not blocking the broad sweep)
 
-- ~~**DB schema cleanup (post INV-008):**~~ Obsolete after INV-008
-  reversal — those columns are now load-bearing under the
-  DB-canonical scheme. New follow-up: `mud/persistence.py` is a
-  deprecation stub holding only `time_info` save/load; consider
-  moving those helpers to a `mud/world/time_persistence.py` and
-  deleting `mud/persistence.py` outright once nothing imports the
-  module's deprecated symbols.
+- ~~**`mud/persistence.py` cleanup (post INV-008):**~~ Done in 2.8.3 — `time_info` helpers extracted to `mud/world/time_persistence.py`, serialization helpers to `mud/db/serializers.py`, `mud/persistence.py` deleted.
 - ~~**Pre-existing persistence test failures (3):**~~ Retired with
   the JSON-pfile path in 2.8.1 (the test files were deleted; the
   failing surface no longer exists).

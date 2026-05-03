@@ -56,7 +56,7 @@ stable IDs (INV-NNN), and points each at an enforcement test.
 | INV-005 | SAME-ROOM-COMBAT-ONLY | `src/fight.c:violence_update` skips if `ch->in_room != victim->in_room` | `mud/game_loop.py:violence_tick` checks `attacker.room == victim.room` before `multi_hit` | `tests/integration/test_inv005_same_room_combat.py` | ✅ ENFORCED |
 | INV-006 | FIGHTING-POINTER-COHERENCE | `src/fight.c:stop_fighting(victim, TRUE)` sweeps `char_list`, clears every `fch->fighting == victim` | `mud/combat/engine.py:stop_fighting(ch, both=True)` iterates `character_registry` | `tests/integration/test_inv006_fighting_pointer_coherence.py` | ✅ ENFORCED |
 | INV-007 | RNG-DETERMINISM | `src/db.c init_mm` Mitchell-Moore RNG is the only source of combat/affect rolls | All `mud/combat/`, `mud/skills/`, `mud/spells/` use `mud.math.rng_mm.number_*`; never `random.*` | `tests/test_rng_determinism.py` | ✅ ENFORCED |
-| INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) Single canonical store for player state; no dual JSON-pfile / DB-row split | `mud/db/models.py:Character` is canonical (39 + base columns); `mud/account/account_manager.py:save_character` calls `save_character_to_db` (UPDATE), `load_character` queries the DB and runs `Character.from_orm`; the JSON pfile path is gone (deprecation banner on `mud/persistence.py`) | `tests/integration/test_inv008_persistence_coherence.py` + `tests/integration/test_db_canonical_round_trip.py` | ✅ ENFORCED |
+| INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) Single canonical store for player state; no dual JSON-pfile / DB-row split | `mud/db/models.py:Character` is canonical (39 + base columns); `mud/account/account_manager.py:save_character` calls `save_character_to_db` (UPDATE), `load_character` queries the DB and runs `Character.from_orm`; serialization helpers live in `mud/db/serializers.py`; time-info persistence in `mud/world/time_persistence.py`; `mud/persistence.py` deleted (2.8.3) | `tests/integration/test_inv008_persistence_coherence.py` + `tests/integration/test_db_canonical_round_trip.py` | ✅ ENFORCED |
 
 ## Action items
 
@@ -70,18 +70,19 @@ stable IDs (INV-NNN), and points each at an enforcement test.
    — `tests/test_rng_determinism.py` scans `mud/combat/`, `mud/skills/`,
    `mud/spells/`; vestigial `Random` removed from `SkillRegistry` as prerequisite.
 3. ~~**Resolve INV-008** by consolidating the two `load_character`
-   paths.~~ **Reversed in 2.8.x — now DB-canonical.** First closed in
-   2.7.6 with the JSON pfile as canonical and the DB demoted to
-   auth-only; that hybrid had a hidden seam at `create_character` /
-   `Character.from_orm`, which still wrote/read the DB row at
-   first-login. Reversed in two phases: 2.8.0 extended the
-   `Character` SQLAlchemy model with 39 columns covering every
-   `PlayerSave` field (incl. JSON columns for skills/affects/aliases/
-   inventory/equipment); 2.8.1 swapped `account_manager.save_character`
-   / `load_character` to the DB path and removed the JSON pfile
-   delegation. `mud/persistence.py` is now a deprecation stub keeping
-   only `time_info` helpers. See `docs/parity/INV008_REVERSAL_AUDIT.md`
-   for the 71-field map that drove the reversal.
+   paths.~~ **Fully resolved in 2.8.3.** First closed in 2.7.6 with
+   the JSON pfile as canonical and the DB demoted to auth-only; that
+   hybrid had a hidden seam at `create_character` / `Character.from_orm`,
+   which still wrote/read the DB row at first-login. Reversed in three
+   phases: 2.8.0 extended the `Character` SQLAlchemy model with 39
+   columns covering every `PlayerSave` field (incl. JSON columns for
+   skills/affects/aliases/inventory/equipment); 2.8.1 swapped
+   `account_manager.save_character` / `load_character` to the DB path
+   and removed the JSON pfile delegation; 2.8.3 extracted the remaining
+   helpers from the stub (`time_info` → `mud/world/time_persistence.py`,
+   serializers → `mud/db/serializers.py`) and deleted `mud/persistence.py`
+   entirely. See `docs/parity/INV008_REVERSAL_AUDIT.md` for the
+   71-field map that drove the reversal.
 
 ## Stale-row footnotes (linked from `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`)
 

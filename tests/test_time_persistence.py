@@ -1,4 +1,4 @@
-import mud.persistence as persistence
+import mud.world.time_persistence as persistence
 from mud.time import Sunlight, time_info
 
 
