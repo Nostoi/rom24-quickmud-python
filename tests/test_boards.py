@@ -34,6 +34,7 @@ def test_note_persistence(tmp_path):
         initialize_world("area/area.lst")
         character_registry.clear()
         char = create_test_character("Author", 3001)
+        assert char.pcdata is not None
         char.level = 5
         output = process_command(char, "note post Hello|This is a test")
         assert "posted" in output.lower()
@@ -72,6 +73,7 @@ def test_note_list_filters_visible_range(tmp_path):
         notes.save_board(board)
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 5
 
         full_list = process_command(char, "note list")
@@ -117,6 +119,7 @@ def test_note_list_hides_private_notes(tmp_path):
         notes.save_board(board)
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 5
 
         output = process_command(char, "note list")
@@ -157,6 +160,7 @@ def test_initialize_world_loads_boards_from_disk(tmp_path):
         assert loaded_board.description == "General discussion"
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 5
         board_output = process_command(char, "board")
         assert "general" in board_output.lower()
@@ -193,6 +197,7 @@ def test_board_switching_and_unread_counts(tmp_path):
         notes.save_board(general)
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 10
         board_output = process_command(char, "board")
         assert "general" in board_output.lower()
@@ -235,6 +240,7 @@ def test_board_listing_uses_rom_colors(tmp_path):
         general.post("Immortal", "Welcome", "Read the rules")
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 5
 
         output = process_command(char, "board")
@@ -290,7 +296,9 @@ def test_board_switching_persists_last_note(tmp_path):
         session = SessionLocal()
         try:
             db_char = session.query(DBCharacter).filter_by(name="Archivist").first()
+            assert db_char is not None
             char = from_orm(db_char)
+            assert char.pcdata is not None
         finally:
             session.close()
         char.level = 50
@@ -314,6 +322,7 @@ def test_board_switching_persists_last_note(tmp_path):
 
         loaded = load_character("Archivist")
         assert loaded is not None
+        assert loaded.pcdata is not None
         assert loaded.pcdata.board_name == ideas.storage_key()
         board_listing = process_command(loaded, "board")
         assert "ideas" in board_listing.lower()
@@ -344,6 +353,7 @@ def test_board_listing_retains_current_board_without_access(tmp_path):
         notes.save_board(personal)
 
         char = create_test_character("Scout", 3001)
+        assert char.pcdata is not None
         char.level = 30
         char.trust = 30
         char.pcdata.board_name = personal.storage_key()
@@ -371,6 +381,7 @@ def test_board_listing_falls_back_to_default_when_missing(tmp_path):
         notes.save_board(general)
 
         char = create_test_character("Traveler", 3001)
+        assert char.pcdata is not None
         char.level = 10
         char.pcdata.board_name = "ghost"
 
@@ -401,6 +412,7 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
         notes.save_board(board)
 
         char = create_test_character("Scribe", 3001)
+        assert char.pcdata is not None
         char.level = 60
         char.trust = 60
 
@@ -411,6 +423,7 @@ def test_note_write_pipeline_enforces_defaults(tmp_path):
         assert "must include imm" in start_output.lower()
 
         set_to = process_command(char, "note to mortal")
+        assert char.pcdata.in_progress is not None
         assert "mortal imm" in char.pcdata.in_progress.to.lower()
         assert "mortal imm" in set_to.lower()
 
@@ -448,6 +461,7 @@ def test_note_expire_allows_immortal_override(tmp_path, monkeypatch: pytest.Monk
         notes.save_board(board)
 
         char = create_test_character("Sage", 3001)
+        assert char.pcdata is not None
         char.level = MAX_LEVEL
         char.trust = MAX_LEVEL
 
@@ -491,6 +505,7 @@ def test_note_expire_rejects_mortals(tmp_path, monkeypatch: pytest.MonkeyPatch):
         notes.save_board(board)
 
         char = create_test_character("Author", 3001)
+        assert char.pcdata is not None
         char.level = 20
         char.trust = 20
 
@@ -575,6 +590,7 @@ def test_note_remove_rejects_notes_not_addressed_to_character(tmp_path):
         notes.save_board(board)
 
         mortal = create_test_character("Adventurer", 3001)
+        assert mortal.pcdata is not None
         mortal.level = 30
         mortal.trust = 30
 
@@ -614,6 +630,7 @@ def test_note_read_respects_visibility(tmp_path):
         notes.save_board(board)
 
         mortal = create_test_character("Adventurer", 3001)
+        assert mortal.pcdata is not None
         mortal.level = 30
         mortal.trust = 30
 
@@ -666,6 +683,7 @@ def test_note_read_includes_header_metadata(tmp_path):
         assert "Greetings, adventurers!" in explicit
 
         auto_reader = create_test_character("Historian", 3001)
+        assert auto_reader.pcdata is not None
         auto_reader.level = 60
         auto_reader.trust = 60
 
@@ -699,6 +717,7 @@ def test_note_catchup_marks_all_read(tmp_path):
         notes.save_board(board)
 
         char = create_test_character("Archivist", 3001)
+        assert char.pcdata is not None
         char.level = 45
         char.trust = 45
 
@@ -735,6 +754,7 @@ def test_note_read_defaults_to_next_unread(tmp_path):
         notes.save_board(board)
 
         char = create_test_character("Reader", 3001)
+        assert char.pcdata is not None
         char.level = 50
         char.trust = 50
 
@@ -786,6 +806,7 @@ def test_note_read_advances_to_next_board_when_exhausted(tmp_path):
         notes.save_board(ideas)
 
         char = create_test_character("Seeker", 3001)
+        assert char.pcdata is not None
         char.level = 50
         char.trust = 50
         char.pcdata.last_notes[general.storage_key()] = general_note.timestamp
@@ -826,6 +847,7 @@ def test_board_change_blocked_during_note_draft(tmp_path):
         notes.save_board(ideas)
 
         char = create_test_character("Scribe", 3001)
+        assert char.pcdata is not None
         char.level = 60
         char.trust = 60
 

@@ -1,8 +1,12 @@
 import asyncio
+from asyncio import StreamReader
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from types import SimpleNamespace
+
+from mud.models.room import Room
+from mud.net.connection import TelnetStream
 
 from mud.commands import process_command
 import mud.logging as mud_logging
@@ -26,8 +30,9 @@ def setup_module(module):
 
 def teardown_function(function):
     for character in list(character_registry):
-        if getattr(character, "room", None):
-            character.room.remove_character(character)
+        room = getattr(character, "room", None)
+        if room is not None:
+            room.remove_character(character)
     character_registry.clear()
     SESSIONS.clear()
     set_log_all(False)
@@ -150,7 +155,9 @@ def test_log_flag_persists_in_save(monkeypatch, tmp_path):
     session = SessionLocal()
     try:
         db_char = session.query(DBCharacter).filter_by(name="Player").first()
+        assert db_char is not None
         player = from_orm(db_char)
+        assert player is not None
     finally:
         session.close()
 
@@ -241,15 +248,16 @@ def test_forced_disconnect_logs_closing_link(monkeypatch):
     dummy_conn = DummyConnection()
     player.connection = dummy_conn
     broadcasted: list[str] = []
-    player.room = SimpleNamespace(
+    player.room = cast(Room, SimpleNamespace(
         broadcast=lambda message, exclude=None: broadcasted.append(message),
         remove_character=lambda character: None,
-    )
+    ))
+    assert player.name is not None
     session = Session(
         name=player.name,
         character=player,
-        reader=SimpleNamespace(),
-        connection=dummy_conn,
+        reader=cast(StreamReader, SimpleNamespace()),
+        connection=cast(TelnetStream, dummy_conn),
         account_name="account",
         ansi_enabled=True,
     )

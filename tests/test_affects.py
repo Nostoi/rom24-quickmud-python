@@ -178,7 +178,7 @@ def test_check_immune_handles_unknown_damage_type():
     victim.imm_flags = DefenseBit.MAGIC
     assert _check_immune(victim, 999) == 1
 
-    assert _check_immune(victim, None) == -1
+    assert _check_immune(victim, None) == -1  # type: ignore[arg-type]  # exercises None-handling edge case
 
 
 def test_saves_spell_handles_unknown_damage_type(monkeypatch):
@@ -187,7 +187,7 @@ def test_saves_spell_handles_unknown_damage_type(monkeypatch):
     victim.imm_flags = DefenseBit.MAGIC
 
     assert saves_spell(10, victim, 999) is True
-    assert saves_spell(10, victim, None) is True
+    assert saves_spell(10, victim, None) is True  # type: ignore[arg-type]  # exercises None-handling edge case
 
 
 def test_saves_dispel_matches_rom(monkeypatch):
@@ -454,7 +454,9 @@ def test_affect_persistence():
     session = SessionLocal()
     try:
         db_char = session.query(DBCharacter).filter_by(name="Flags").first()
+        assert db_char is not None
         ch = from_orm(db_char)
+        assert ch is not None
     finally:
         session.close()
 
