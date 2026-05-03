@@ -350,6 +350,12 @@ class PlayerSave:
     # TABLES-001 — schema version for AffectFlag bit-position migration.
     # 0 = legacy pfile (pre-2.6.34) using old Python bits; 1 = ROM-canonical.
     pfile_version: int = 0
+    # INV-008 — auth credential round-trip.  Stored here so the JSON pfile is
+    # the single source of truth for ALL player state (gameplay + auth).  The
+    # DB row's password_hash is only written explicitly (e.g. on do_password)
+    # for the auth path that reads from the DB; the JSON copy is the canonical
+    # one loaded at login.
+    password_hash: str = ""
 
 
 _SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
@@ -1017,6 +1023,7 @@ def save_character(char: Character) -> None:
         colours=colour_table,
         pet=_serialize_pet(char.pet) if getattr(char, "pet", None) else None,  # ROM save.c fwrite_pet
         pfile_version=PFILE_SCHEMA_VERSION,  # TABLES-001 — ROM-canonical AffectFlag bits
+        password_hash=getattr(getattr(char, "pcdata", None), "pwd", "") or "",  # INV-008
     )
     path = PLAYERS_DIR / f"{char_name.lower()}.json"
     tmp_path = path.with_suffix(".tmp")
@@ -1148,6 +1155,8 @@ def load_character(name: str) -> Character | None:
     pcdata.group_known = groups_tuple
     _apply_colour_table(pcdata, getattr(data, "colours", {}))
     char.pcdata = pcdata
+    # INV-008 — restore auth credential so do_password / auth can read pcdata.pwd
+    pcdata.pwd = getattr(data, "password_hash", "") or ""
     char.log_commands = bool(getattr(data, "log_commands", False))
 
     # Restore pet (ROM save.c fread_pet)
