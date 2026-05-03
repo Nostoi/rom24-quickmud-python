@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.5]
+
+### Added
+- **INV-007 RNG-DETERMINISM enforcement test** (`tests/test_rng_determinism.py`): scans every `.py` file under `mud/combat/`, `mud/skills/`, and `mud/spells/` for `import random`, `from random`, or `random.` and fails with path:line detail if any match. Runs in <1s. INV-007 flipped from ⚠️ ENFORCED BY CONVENTION → ✅ ENFORCED. 7 of 8 cross-file invariants are now ✅ ENFORCED; INV-008 (DUAL-LOAD-CHARACTER-COHERENCE) remains a known divergence.
+
+### Removed
+- **Vestigial `stdlib Random` from `SkillRegistry`** (`mud/skills/registry.py`): `__init__` accepted `rng: Random | None` and stored `self.rng`, but `self.rng` was never read — all rolls in registry.py already went through `rng_mm`. Removed the dead field, the dead parameter, and the `from random import Random` import. `tests/test_skills.py:load_registry` updated accordingly. Required before INV-007's grep test could be written cleanly.
+
 ## [2.7.4]
 
 ### Added

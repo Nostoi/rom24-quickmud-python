@@ -1,15 +1,21 @@
-# Session Status — 2026-05-03 — INV-005 / INV-006 enforcement tests shipped
+# Session Status — 2026-05-03 — INV-005 / INV-006 / INV-007 enforcement tests shipped
 
 ## Current State
 
-- **Cross-file invariants INV-005 / INV-006 — ENFORCED (this
-  session, version 2.7.4).** Both were ⚠️ VERIFIED MANUALLY in the
+- **Cross-file invariant INV-007 — ENFORCED (this session, version
+  2.7.5).** `tests/test_rng_determinism.py` now scans `mud/combat/`,
+  `mud/skills/`, and `mud/spells/` for any `import random` / `from
+  random` / `random.` usage and fails with path:line detail. Prerequisite:
+  vestigial `stdlib Random` removed from `SkillRegistry.__init__`
+  (field was never read; all rolls already used `rng_mm`). 7/8
+  cross-file invariants now ✅ ENFORCED; only INV-008
+  (DUAL-LOAD-CHARACTER-COHERENCE) remains a known divergence.
+- **Cross-file invariants INV-005 / INV-006 — ENFORCED (earlier
+  today, version 2.7.4).** Both were ⚠️ VERIFIED MANUALLY in the
   cross-file invariants tracker; they now have failing-test-able
   enforcement at `tests/integration/test_inv005_same_room_combat.py`
   and `tests/integration/test_inv006_fighting_pointer_coherence.py`.
-  Tracker rows flipped to ✅ ENFORCED. Remaining unenforced
-  invariants: INV-007 (RNG-DETERMINISM, decision pending) and
-  INV-008 (DUAL-LOAD-CHARACTER-COHERENCE, requires consolidation).
+  Tracker rows flipped to ✅ ENFORCED.
 - **Death-path parity sweep — SHIPPED (commits `f586d11`, `59bebf0`,
   + this session's release commit).** User reported "I die in combat
   and get disconnected." Live log proved two real bugs (not the
@@ -33,8 +39,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.7.4 |
-| Cross-file invariants enforced | 6/8 (INV-001..006); INV-007 convention, INV-008 known divergence |
+| Version | 2.7.5 |
+| Cross-file invariants enforced | 7/8 (INV-001..007); INV-008 known divergence |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
 | `comm.c` message delivery | ✅ single-delivery; mailbox is fallback only |

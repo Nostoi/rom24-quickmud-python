@@ -55,7 +55,7 @@ stable IDs (INV-NNN), and points each at an enforcement test.
 | INV-004 | PC-CONNECTION-SURVIVES-DEATH | `src/handler.c:2103-2187 extract_char(ch, FALSE)` keeps PC descriptor open | `mud/combat/death.py:raw_kill` does not touch `char.connection`; PC stays in registry | `tests/integration/test_pc_death_keeps_connection.py` | ✅ ENFORCED |
 | INV-005 | SAME-ROOM-COMBAT-ONLY | `src/fight.c:violence_update` skips if `ch->in_room != victim->in_room` | `mud/game_loop.py:violence_tick` checks `attacker.room == victim.room` before `multi_hit` | `tests/integration/test_inv005_same_room_combat.py` | ✅ ENFORCED |
 | INV-006 | FIGHTING-POINTER-COHERENCE | `src/fight.c:stop_fighting(victim, TRUE)` sweeps `char_list`, clears every `fch->fighting == victim` | `mud/combat/engine.py:stop_fighting(ch, both=True)` iterates `character_registry` | `tests/integration/test_inv006_fighting_pointer_coherence.py` | ✅ ENFORCED |
-| INV-007 | RNG-DETERMINISM | `src/db.c init_mm` Mitchell-Moore RNG is the only source of combat/affect rolls | All `mud/combat/`, `mud/skills/`, `mud/spells/` use `mud.math.rng_mm.number_*`; never `random.*` | _grep-based CI check; informal_ | ⚠️ ENFORCED BY CONVENTION |
+| INV-007 | RNG-DETERMINISM | `src/db.c init_mm` Mitchell-Moore RNG is the only source of combat/affect rolls | All `mud/combat/`, `mud/skills/`, `mud/spells/` use `mud.math.rng_mm.number_*`; never `random.*` | `tests/test_rng_determinism.py` | ✅ ENFORCED |
 | INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) two `load_character` / `save_character` paths exist (`mud/persistence.py` + `mud/account/account_manager.py`); both must produce equivalent runtime state | Both paths must populate `character_registry`, `equipment`, `inventory`, `room`, etc. | _missing — see Open Follow-ups in `SESSION_STATUS.md`_ | ⚠️ KNOWN DIVERGENCE |
 
 ## Action items
@@ -64,9 +64,11 @@ stable IDs (INV-NNN), and points each at an enforcement test.
    INV-006 (fighting-pointer coherence after death).~~ **Done in 2.7.4**
    — see `tests/integration/test_inv005_same_room_combat.py` and
    `tests/integration/test_inv006_fighting_pointer_coherence.py`.
-2. **Decide on INV-007**: either codify as a `pytest -k` check (e.g.
+2. ~~**Decide on INV-007**: either codify as a `pytest -k` check (e.g.
    `tests/test_rng_determinism.py` greps for `random.` in `mud/combat/`)
-   or accept it as convention and note in CONTRIBUTING.
+   or accept it as convention and note in CONTRIBUTING.~~ **Done in 2.7.5**
+   — `tests/test_rng_determinism.py` scans `mud/combat/`, `mud/skills/`,
+   `mud/spells/`; vestigial `Random` removed from `SkillRegistry` as prerequisite.
 3. **Resolve INV-008** by consolidating the two `load_character` paths
    (open follow-up in `SESSION_STATUS.md`). Until then, every change
    to either file must be mirrored to the other.
