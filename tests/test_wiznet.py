@@ -1,6 +1,5 @@
 from types import SimpleNamespace
 
-import mud.persistence as persistence
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
 from mud.models.constants import Sex, LEVEL_IMMORTAL
@@ -168,17 +167,38 @@ def test_wiznet_command_trailing_newlines():
         assert response.endswith(ROM_NEWLINE)
 
 
-def test_wiznet_persistence(tmp_path):
-    # Persist wiznet flags and ensure round-trip retains bitfield.
-    persistence.PLAYERS_DIR = tmp_path
+def test_wiznet_persistence():
+    # Persist wiznet flags and ensure round-trip retains bitfield via DB-canonical path.
+    from mud.account.account_manager import load_character, save_character
+    from mud.account.account_service import clear_active_accounts, create_character
+    from mud.db.models import Base
+    from mud.db.session import SessionLocal, engine
+    from mud.models.character import from_orm
+    from mud.db.models import Character as DBCharacter
+    from mud.models.constants import ROOM_VNUM_SCHOOL
+    from mud.security import bans
     from mud.world import initialize_world
+    from mud.world.world_state import reset_lockdowns
 
     initialize_world("area/area.lst")
-    imm = _connected_character(name="Imm", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
-    # Set multiple flags
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    create_character(None, "Imm", starting_room_vnum=ROOM_VNUM_SCHOOL)
+    session = SessionLocal()
+    try:
+        db_char = session.query(DBCharacter).filter_by(name="Imm").first()
+        imm = from_orm(db_char)
+    finally:
+        session.close()
+
+    imm.level = LEVEL_IMMORTAL
     imm.wiznet = int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_TICKS | WiznetFlag.WIZ_DEBUG)
-    persistence.save_character(imm)
-    loaded = persistence.load_character("Imm")
+    save_character(imm)
+    loaded = load_character("Imm")
     assert loaded is not None
     assert loaded.wiznet & int(WiznetFlag.WIZ_ON)
     assert loaded.wiznet & int(WiznetFlag.WIZ_TICKS)

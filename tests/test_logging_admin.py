@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 from types import SimpleNamespace
 
-import mud.persistence as persistence
 from mud.commands import process_command
 import mud.logging as mud_logging
 from mud.logging import log_game_event
@@ -132,17 +131,33 @@ def test_log_command_allows_prefix_lookup(monkeypatch, tmp_path):
 
 def test_log_flag_persists_in_save(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(persistence, "PLAYERS_DIR", tmp_path / "players")
-    admin, player = _create_admin_and_player()
+    from mud.account.account_manager import load_character, save_character
+    from mud.account.account_service import clear_active_accounts, create_character
+    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.session import SessionLocal, engine
+    from mud.models.character import from_orm
+    from mud.models.constants import ROOM_VNUM_SCHOOL
+    from mud.security import bans
+    from mud.world.world_state import reset_lockdowns
 
-    out_on = process_command(admin, "log Player")
-    assert out_on == "LOG set."
-    assert player.log_commands is True
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
 
-    persistence.save_character(player)
+    create_character(None, "Player", starting_room_vnum=ROOM_VNUM_SCHOOL)
+    session = SessionLocal()
+    try:
+        db_char = session.query(DBCharacter).filter_by(name="Player").first()
+        player = from_orm(db_char)
+    finally:
+        session.close()
 
-    character_registry.clear()
-    loaded = persistence.load_character("Player")
+    player.log_commands = True
+    save_character(player)
+
+    loaded = load_character("Player")
     assert loaded is not None
     assert loaded.log_commands is True
 

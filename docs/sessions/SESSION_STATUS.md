@@ -1,20 +1,28 @@
-# Session Status — 2026-05-03 — INV-005 / INV-006 / INV-007 / INV-008 closed (cross-file invariants 8/8)
+# Session Status — 2026-05-03 — INV-008 reversed to DB-canonical (cross-file invariants 8/8)
 
 ## Current State
 
-- **Cross-file invariant INV-008 — ENFORCED (this session, version
-  2.7.6).** `mud/account/account_manager.py` is now a thin shim
-  delegating `load_character` / `save_character` to `mud.persistence`.
-  The JSON pfile owns all 51+ ROM-faithful gameplay fields; the DB
-  row keeps `name` + `password_hash` for auth only. Vestigial DB
-  gameplay columns left in place for now (drop in a later schema
-  session). 30+ PC fields previously dropped on every WS logout
-  (mana, move, gold, silver, exp, hitroll, damroll, AC, conditions,
-  affects, skills, aliases, pets, item state, container contents…)
-  now round-trip. Field-level audit at
-  `docs/parity/INV008_DIVERGENCE_AUDIT.md`. Enforcement test:
-  `tests/integration/test_inv008_persistence_coherence.py` (4 cases,
-  all green). **All 8 cross-file invariants ✅ ENFORCED.**
+- **INV-008 reversed — DB row is canonical (this session, version
+  2.8.1).** The 2.7.6 hybrid (JSON pfile canonical, DB auth-only) had
+  a hidden seam at `create_character` / `Character.from_orm`, which
+  still wrote/read DB columns at first-login. Reversed in two phases:
+  - **2.8.0 (Phase 1)** — extended `mud/db/models.py:Character` with
+    39 new columns (21 scalars + 11 JSON collections + inventory_state
+    / equipment_state JSON blobs); extended `Character.from_orm` to
+    hydrate them; added `save_character_to_db(session, char)` to
+    `mud/account/account_manager.py`. Round-trip proven by 7 new
+    tests in `tests/integration/test_db_canonical_round_trip.py`.
+    Driven by `docs/parity/INV008_REVERSAL_AUDIT.md` (71-field map).
+  - **2.8.1 (Phase 2)** — `account_manager.save_character` /
+    `load_character` swapped to the DB path; JSON-pfile delegation
+    removed. `mud/persistence.py` reduced to a deprecation stub
+    (still keeps `time_info` save/load). 7 pfile-only test files
+    deleted (their surface no longer exists); coverage replaced by
+    the DB-path suites. The 3 pre-existing vnum-3022 persistence
+    failures retired with the deleted tests. INV-008 enforcement
+    test rewritten (`tests/integration/test_inv008_persistence_coherence.py`,
+    5 cases, all green). **All 8 cross-file invariants ✅ ENFORCED
+    again under the new architecture.**
 - **Cross-file invariant INV-007 — ENFORCED (this session, version
   2.7.5).** `tests/test_rng_determinism.py` now scans `mud/combat/`,
   `mud/skills/`, and `mud/spells/` for any `import random` / `from
@@ -52,7 +60,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.7.6 |
+| Version | 2.8.1 |
 | Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
@@ -78,20 +86,16 @@
 
 ## Open Follow-ups (not blocking the broad sweep)
 
-- **DB schema cleanup (post INV-008):** vestigial gameplay columns
-  on `mud/db/models.py:Character` (level, hp, race, ch_class, sex,
-  alignment, act, hometown_vnum, perm_stats, size, form, parts,
-  imm_flags, res_flags, vuln_flags, practice, train, perm_hit/mana/
-  move, default_weapon_vnum, creation_points, creation_groups,
-  creation_skills, newbie_help_seen, room_vnum, true_sex) are no
-  longer read or written by production code under the hybrid scheme
-  — only `name` and `password_hash` matter. Drop them in a future
-  schema-migration session once the JSON-canonical path has soaked
-  for a while.
-- **Pre-existing persistence test failures (3):**
-  `tests/test_persistence.py::test_character_json_persistence`,
-  `tests/test_persistence.py::test_inventory_round_trip_preserves_object_state`,
-  `tests/test_inventory_persistence.py::test_inventory_and_equipment_persistence`.
+- ~~**DB schema cleanup (post INV-008):**~~ Obsolete after INV-008
+  reversal — those columns are now load-bearing under the
+  DB-canonical scheme. New follow-up: `mud/persistence.py` is a
+  deprecation stub holding only `time_info` save/load; consider
+  moving those helpers to a `mud/world/time_persistence.py` and
+  deleting `mud/persistence.py` outright once nothing imports the
+  module's deprecated symbols.
+- ~~**Pre-existing persistence test failures (3):**~~ Retired with
+  the JSON-pfile path in 2.8.1 (the test files were deleted; the
+  failing surface no longer exists).
   Verified pre-existing at commit `3aef2b6` (before INV-008 work).
   All fail via `inventory_object_factory` returning None for vnum
   3022 — likely a world-init / fixture issue, not the persistence

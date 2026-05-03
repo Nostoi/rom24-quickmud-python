@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Integer, JSON, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -128,5 +128,52 @@ class Character(Base):
     creation_points: Mapped[int] = mapped_column(Integer, default=40)
     creation_groups: Mapped[str] = mapped_column(String, default="")
     creation_skills: Mapped[str] = mapped_column(String, default="")
+
+    # --- INV-008 Phase 1: new columns for DB-canonical persistence ---
+    # Scalar fields missing from original schema
+    max_hit: Mapped[int] = mapped_column(Integer, default=20)
+    mana: Mapped[int] = mapped_column(Integer, default=100)
+    move: Mapped[int] = mapped_column(Integer, default=100)
+    gold: Mapped[int] = mapped_column(Integer, default=0)
+    silver: Mapped[int] = mapped_column(Integer, default=0)
+    exp: Mapped[int] = mapped_column(Integer, default=0)
+    trust: Mapped[int] = mapped_column(Integer, default=0)
+    invis_level: Mapped[int] = mapped_column(Integer, default=0)
+    incog_level: Mapped[int] = mapped_column(Integer, default=0)
+    saving_throw: Mapped[int] = mapped_column(Integer, default=0)
+    hitroll: Mapped[int] = mapped_column(Integer, default=0)
+    damroll: Mapped[int] = mapped_column(Integer, default=0)
+    wimpy: Mapped[int] = mapped_column(Integer, default=0)
+    position: Mapped[int] = mapped_column(Integer, default=8)  # Position.STANDING = 8
+    played: Mapped[int] = mapped_column(Integer, default=0)
+    logon: Mapped[int] = mapped_column(Integer, default=0)
+    lines: Mapped[int] = mapped_column(Integer, default=22)
+    prompt: Mapped[str | None] = mapped_column(String, nullable=True)
+    prefix: Mapped[str | None] = mapped_column(String, nullable=True)
+    title: Mapped[str | None] = mapped_column(String, nullable=True)
+    bamfin: Mapped[str | None] = mapped_column(String, nullable=True)
+    bamfout: Mapped[str | None] = mapped_column(String, nullable=True)
+    security: Mapped[int] = mapped_column(Integer, default=0)
+    points: Mapped[int] = mapped_column(Integer, default=0)
+    last_level: Mapped[int] = mapped_column(Integer, default=0)
+    affected_by: Mapped[int] = mapped_column(Integer, default=0)
+    comm: Mapped[int] = mapped_column(Integer, default=0)
+    wiznet: Mapped[int] = mapped_column(Integer, default=0)
+    log_commands: Mapped[bool] = mapped_column(Boolean, default=False)
+    pfile_version: Mapped[int] = mapped_column(Integer, default=1)  # TABLES-001
+    board: Mapped[str] = mapped_column(String, default="general")
+    # JSON collection fields
+    mod_stat: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    armor: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    conditions: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    aliases: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    skills: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    groups: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    last_notes: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    colours: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    pet_state: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # Option A from audit §3.1: full inventory/equipment as JSON blobs
+    inventory_state: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    equipment_state: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     objects: Mapped[list[ObjectInstance]] = relationship("ObjectInstance", back_populates="character")

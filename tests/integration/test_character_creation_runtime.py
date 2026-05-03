@@ -9,7 +9,6 @@ ROM Reference: src/nanny.c:742-802 (CON_READ_MOTD - final character initializati
 
 from __future__ import annotations
 
-import mud.persistence as _persistence
 import pytest
 
 from mud.account.account_manager import load_character
@@ -44,18 +43,14 @@ def setup_world():
 
 
 @pytest.fixture(autouse=True)
-def cleanup_db(tmp_path):
+def cleanup_db():
     """Clean up database before each test."""
-    # INV-008: redirect pfile writes so save_character never touches data/players/
-    original_players_dir = _persistence.PLAYERS_DIR
-    _persistence.PLAYERS_DIR = tmp_path / "players"
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
     clear_active_accounts()
     reset_lockdowns()
     yield
-    _persistence.PLAYERS_DIR = original_players_dir
 
 
 def create_and_load_character(username: str, password: str, char_name: str, **create_kwargs) -> Character | None:
@@ -282,7 +277,10 @@ class TestCharacterRegistryRegistration:
         )
         assert runtime_char is not None
         try:
-            assert runtime_char in character_registry, (
+            # Use identity check: dataclass __eq__ on Character recurses into
+            # inventory/equipment graphs once from_orm populates them (INV-008 phase 2).
+            # The registry invariant is about object identity, not value equality.
+            assert any(c is runtime_char for c in character_registry), (
                 "load_character must append the PC to character_registry — "
                 "otherwise violence_tick, char_update, and the idle pump "
                 "will never iterate the player and combat is one-way."
@@ -294,7 +292,8 @@ class TestCharacterRegistryRegistration:
                 character_registry.remove(runtime_char)
             except ValueError:
                 pass
-            # Restore prior snapshot if anything else changed.
+            # Restore prior snapshot using identity comparison.
+            char_ids_before = {id(c) for c in before}
             character_registry[:] = [
                 c for c in before if c is not runtime_char
-            ] + [c for c in character_registry if c not in before]
+            ] + [c for c in character_registry if id(c) not in char_ids_before]
