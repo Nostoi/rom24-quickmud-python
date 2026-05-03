@@ -58,7 +58,11 @@ def _bust_default_prompt(char: Any) -> str:
     mirroring ROM src/comm.c:1437-1443
     """
 
-    hit = int(getattr(char, "hit", 0))
+    # Clamp displayed hit to >= 0: ROM never renders negative hp because
+    # raw_kill (src/fight.c:1718) clamps hit to >= 1 before the next prompt
+    # in its single-threaded loop. Python's async dispatch can interleave a
+    # prompt between damage and raw_kill, exposing the negative transient.
+    hit = max(0, int(getattr(char, "hit", 0)))
     mana = int(getattr(char, "mana", 0))
     move = int(getattr(char, "move", 0))
     prefix = getattr(char, "prefix", None) or ""
@@ -187,7 +191,8 @@ def bust_a_prompt(char: Any) -> str:
         elif token == "c":
             out.append("\n\r")
         elif token == "h":
-            out.append(str(int(getattr(char, "hit", 0))))
+            # Clamp to >= 0 — see _bust_default_prompt for rationale.
+            out.append(str(max(0, int(getattr(char, "hit", 0)))))
         elif token == "H":
             out.append(str(int(getattr(char, "max_hit", 0))))
         elif token == "m":
