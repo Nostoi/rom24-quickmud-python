@@ -1,13 +1,14 @@
 import mud.skills.handlers as skill_handlers
 from mud import mobprog
 from mud.characters import is_clan_member, is_same_group
-from mud.combat import attack_round, multi_hit
+from mud.combat import multi_hit
 from mud.combat.engine import apply_damage, check_killer, get_wielded_weapon, stop_fighting
 from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
+    LEVEL_IMMORTAL,
     ActFlag,
     AffectFlag,
     DamageType,
@@ -16,7 +17,6 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     Stat,
-    LEVEL_IMMORTAL,
     convert_flags_from_letters,
 )
 from mud.skills import skill_registry
@@ -122,7 +122,11 @@ def do_kill(char: Character, args: str) -> str:
 
     skill_registry._apply_wait_state(char, get_pulse_violence())
     check_killer(char, victim)
-    return attack_round(char, victim)
+    # mirroring ROM src/fight.c:2815-2817 — do_kill enters combat via multi_hit
+    attack_messages = multi_hit(char, victim)
+    if not attack_messages:
+        return ""
+    return attack_messages[0]
 
 
 def do_kick(char: Character, args: str) -> str:

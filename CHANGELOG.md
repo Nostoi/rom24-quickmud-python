@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.5]
+
+### Fixed
+- **FIGHT-001 combat-entry parity**: `mud/commands/combat.py:do_kill` now mirrors ROM `src/fight.c:2815-2817` by entering combat through `multi_hit(ch, victim, TYPE_UNDEFINED)` instead of a single `attack_round()`. This restores haste / second-attack / third-attack follow-up swings for `kill` command combat starts. Regression coverage: `tests/integration/test_fight_c_do_kill_parity.py`.
+
 ## [2.8.4]
 
 ### Changed

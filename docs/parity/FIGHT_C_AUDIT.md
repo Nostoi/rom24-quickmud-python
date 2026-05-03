@@ -65,21 +65,20 @@ ROM applies the same safety contract by routing attack variants through `damage(
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
-| `FIGHT-001` | CRITICAL | `src/fight.c:2815-2817`, `src/fight.c:209-244` | `mud/commands/combat.py:123-125`, `mud/combat/engine.py:312-388` | `do_kill()` calls a single `attack_round()` instead of ROM `multi_hit(ch, victim, TYPE_UNDEFINED)`, so `kill` starts combat with one swing instead of the full ROM multi-attack sequence. | ❌ OPEN — add integration test that proves `kill` produces at least the ROM baseline multi-hit behavior, then swap the command entrypoint to `multi_hit()`. |
+| `FIGHT-001` | CRITICAL | `src/fight.c:2815-2817`, `src/fight.c:209-244` | `mud/commands/combat.py:123-128`, `mud/combat/engine.py:312-388` | `do_kill()` calls a single `attack_round()` instead of ROM `multi_hit(ch, victim, TYPE_UNDEFINED)`, so `kill` starts combat with one swing instead of the full ROM multi-attack sequence. | ✅ FIXED — `do_kill()` now routes through `multi_hit()` and preserves the first combat message as the command return. Regression test: `tests/integration/test_fight_c_do_kill_parity.py::test_do_kill_uses_rom_multi_hit_sequence`. Commit SHA recorded in session report for this one-gap commit. |
 | `FIGHT-002` | CRITICAL | `src/fight.c:725-733`, plus all attack variants that rely on `damage()` | `mud/combat/engine.py:528-620` (`apply_damage`) and downstream callers such as `mud/combat/engine.py:1502`, `mud/combat/engine.py:1522`, `mud/combat/engine.py:1532`, `mud/combat/engine.py:1546` | The ROM `damage()` function early-exits through `is_safe(ch, victim)` before any fighting-state or HP mutation. Python never re-checks `is_safe()` inside the damage path, so combat continues after safe-room transitions. | ❌ OPEN — add integration test that teleports an active target into a safe room and proves the next damage tick exits cleanly; then gate `apply_damage()` and all special-attack paths through `is_safe()`. |
 
 ## Phase 4 — Closures
 
 None yet. The intended closure order for this session is:
 
-1. `FIGHT-001` — failing integration test first, then swap `do_kill()` to `multi_hit()` and update this row with commit SHA.
+1. `FIGHT-001` — ✅ closed in this session with `tests/integration/test_fight_c_do_kill_parity.py`.
 2. `FIGHT-002` — failing integration test first, then add the missing `is_safe()` gate at the `apply_damage()` entrypoint and verify the inherited special-attack callers.
 
 ## Phase 5 — Completion summary
 
 `fight.c` remains at 95% audited pending the two combat-path gaps above. Both are CRITICAL because they change live combat behavior, not just internal structure:
 
-- `FIGHT-001` reduces a ROM combat command to a single swing.
 - `FIGHT-002` violates ROM’s safe-room stop-combat contract once a fight is already in progress.
 
 No tracker flip is appropriate until both gaps are closed with integration coverage.
