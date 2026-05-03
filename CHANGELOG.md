@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.4]
+
+### Changed
+- **Pyright cleanup across test suite.** Eliminated ~30 pre-existing `reportOptionalMemberAccess` / `reportArgumentType` / `reportAttributeAccessIssue` warnings across `tests/test_boards.py`, `tests/test_logging_admin.py`, `tests/test_commands.py`, `tests/test_wiznet.py`, `tests/test_affects.py`, and `tests/test_account_auth.py`. Approach: per-call-site `assert x is not None` guards on `Optional` returns from `find_board(...)`, `from_orm(db_char)`, `load_character(...)`, `Character.pcdata`, etc.; `cast(StreamReader, …)` / `cast(TelnetStream, …)` / `cast(Room, …)` for test doubles; widened `DummyWriter.write` overrides to `bytes | bytearray | memoryview`; initialized possibly-unbound `menu_task: asyncio.Task | None = None`; `# type: ignore[arg-type]` on the two intentional `dam_type=None` cases that exercise edge-case handling. No behavior change; tests still pass at the prior pre-existing-failure baseline.
+
 ## [2.8.3]
 
 ### Changed

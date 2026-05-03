@@ -43,3 +43,4 @@ htmlcov/
 
 # Editor / OS backup files
 *.bak
+.claude/worktrees/

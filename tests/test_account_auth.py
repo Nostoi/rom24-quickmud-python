@@ -4,7 +4,8 @@ from contextlib import suppress
 from pathlib import Path
 from socket import socket as Socket
 from types import SimpleNamespace
-from typing import Sequence, cast
+from collections.abc import Sequence
+from typing import Protocol, cast
 
 import pytest
 from sqlalchemy import create_engine, inspect, text
@@ -62,6 +63,7 @@ from mud.models.constants import (
 )
 from mud.models.character import (
     Character as RuntimeCharacter,
+    PCData,
     _decode_creation_skills,
     character_registry,
 )
@@ -88,6 +90,19 @@ TELNET_DO = 253
 TELNET_DONT = 254
 TELNET_GA = 249
 TELNET_TELOPT_ECHO = 1
+
+
+class _ConnProto(Protocol):
+    """Structural subset of TelnetStream used by test doubles.
+
+    Functions like _run_character_login, _run_character_creation_flow, and
+    _select_character accept TelnetStream, but several tests pass lightweight
+    SimpleNamespace / FakeStream objects that satisfy the same structural
+    contract.  Casting to TelnetStream (via cast()) silences the arg-type errors
+    without changing runtime behaviour.
+    """
+
+    peer_host: str | None
 
 
 @pytest.fixture(autouse=True)
@@ -136,7 +151,7 @@ class _MemoryTransport(asyncio.Transport):
         self.buffer = bytearray()
         self._closing = False
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: bytes | bytearray | memoryview) -> None:  # type: ignore[override]
         self.buffer.extend(data)
 
     def is_closing(self) -> bool:
@@ -560,7 +575,7 @@ def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(net_connection, "do_help", fake_do_help)
 
     async def run() -> None:
-        race = await net_connection._prompt_for_race(object(), helper)
+        race = await net_connection._prompt_for_race(cast(net_connection.TelnetStream, object()), helper)  # test double for TelnetStream
         assert race is not None
         assert race.name == "human"
 
@@ -712,6 +727,7 @@ def test_customization_menu_repeats_menu_choice_help(monkeypatch: pytest.MonkeyP
 
         monkeypatch.setattr(net_connection, "do_help", fake_do_help)
 
+        menu_task: asyncio.Task | None = None
         try:
             menu_task = asyncio.create_task(net_connection._run_customization_menu(conn, selection))
             await asyncio.sleep(0)
@@ -731,9 +747,10 @@ def test_customization_menu_repeats_menu_choice_help(monkeypatch: pytest.MonkeyP
             help_output = transport.buffer.decode(errors="ignore")
             assert "Menu choice text" in help_output
         finally:
-            menu_task.cancel()
-            with suppress(asyncio.CancelledError):
-                await menu_task
+            if menu_task is not None:
+                menu_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await menu_task
             transport.close()
             protocol.connection_lost(None)
 
@@ -747,7 +764,7 @@ def test_customization_requires_forty_creation_points():
             self.buffer = bytearray()
             self._closing = False
 
-        def write(self, data: bytes) -> None:
+        def write(self, data: bytes | bytearray | memoryview) -> None:  # type: ignore[override]
             self.buffer.extend(data)
 
         def is_closing(self) -> bool:
@@ -815,6 +832,7 @@ def test_customization_requires_forty_creation_points():
         assert "Creation points: 44" in final_output
         assert "Experience per level: 1200" in final_output
         assert result is selection
+        assert result is not None
         assert result.creation_points == 44
         assert result.minimum_creation_points() == 40
 
@@ -831,7 +849,7 @@ def test_customization_menu_supports_drop_and_info():
             self.buffer = bytearray()
             self._closing = False
 
-        def write(self, data: bytes) -> None:
+        def write(self, data: bytes | bytearray | memoryview) -> None:  # type: ignore[override]
             self.buffer.extend(data)
 
         def is_closing(self) -> bool:
@@ -859,7 +877,9 @@ def test_customization_menu_supports_drop_and_info():
         group_name, group_cost = next(
             (name, cost) for name, cost in selection.available_groups() if name.lower() == "creation"
         )
-        group_members = get_group(group_name).skills
+        _group = get_group(group_name)
+        assert _group is not None, f"group {group_name!r} not found"
+        group_members = _group.skills
 
         menu_task = asyncio.create_task(net_connection._run_customization_menu(conn, selection))
         await asyncio.sleep(0)
@@ -1613,7 +1633,7 @@ def test_character_login_rejects_wrong_password_once(monkeypatch):
     bad_result = LoginResult(account=None, failure=LoginFailureReason.BAD_CREDENTIALS, was_reconnect=False)
     monkeypatch.setattr(net_connection, "login_with_host", lambda *a, **kw: bad_result, raising=False)
 
-    result = asyncio.run(_run_character_login(FakeStream(), None))
+    result = asyncio.run(_run_character_login(cast(net_connection.TelnetStream, FakeStream()), None))  # test double for TelnetStream
 
     assert result is None
     assert prompts.count("Name: ") == 1
@@ -1627,7 +1647,7 @@ def test_password_echo_suppressed():
             self.writes: list[bytes] = []
             self.closed = False
 
-        def write(self, data: bytes) -> None:
+        def write(self, data: bytes | bytearray | memoryview) -> None:  # type: ignore[override]
             self.writes.append(bytes(data))
 
         async def drain(self) -> None:  # pragma: no cover - behavioural stub
@@ -1642,7 +1662,7 @@ def test_password_echo_suppressed():
     async def run() -> None:
         reader = asyncio.StreamReader()
         writer = DummyWriter()
-        conn = net_connection.TelnetStream(reader, writer)
+        conn = net_connection.TelnetStream(reader, cast(asyncio.StreamWriter, writer))  # test double for StreamWriter
 
         reader.feed_data(b"secret\r\n")
         reader.feed_eof()
@@ -1791,7 +1811,7 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
             monkeypatch.setattr(net_connection, "_prompt_for_weapon", fake_prompt_for_weapon)
             monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
 
-            dummy_conn = SimpleNamespace(peer_host="academy.example")
+            dummy_conn = cast(net_connection.TelnetStream, SimpleNamespace(peer_host="academy.example"))  # test double for TelnetStream
             dummy_account = SimpleNamespace(id=1)
 
             result = await net_connection._run_character_creation_flow(dummy_conn, dummy_account, "Nova")
@@ -1839,7 +1859,7 @@ def test_newbie_banned_blocks_character_creation(monkeypatch):
     monkeypatch.setattr(net_connection, "create_character", fake_create_character)
 
     async def run_test() -> bool:
-        dummy_conn = SimpleNamespace(peer_host="blocked.example")
+        dummy_conn = cast(net_connection.TelnetStream, SimpleNamespace(peer_host="blocked.example"))  # test double for TelnetStream
         dummy_account = SimpleNamespace(id=1)
         return await net_connection._run_character_creation_flow(
             dummy_conn,
@@ -1872,7 +1892,7 @@ def test_select_character_blocks_newbie_creation_when_banned(monkeypatch):
 
     async def run_test():
         net_connection.SESSIONS.clear()
-        dummy_conn = SimpleNamespace()
+        dummy_conn = cast(net_connection.TelnetStream, SimpleNamespace())  # test double for TelnetStream
         account = SimpleNamespace()
         result = await net_connection._select_character(
             dummy_conn,
@@ -2383,7 +2403,7 @@ def test_reconnect_announces_note_reminder(monkeypatch):
         sex=Sex.MALE,
     )
     reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
-    reconnecting.pcdata = SimpleNamespace(in_progress="draft")
+    reconnecting.pcdata = cast(PCData, SimpleNamespace(in_progress="draft"))  # test double for PCData
 
     link_listener = RuntimeCharacter(
         name="LinkImm",
@@ -2507,7 +2527,7 @@ def test_character_selection_filters_permit_hosts():
         assert permit_login.account is not None
         account_q = permit_login.account
 
-        conn_q = SimpleNamespace(host="127.0.0.1")
+        conn_q = cast(net_connection.TelnetStream, SimpleNamespace(host="127.0.0.1"))  # test double for TelnetStream
         result = await net_connection._select_character(
             conn_q, account_q, "quorblix", permit_banned=True
         )
